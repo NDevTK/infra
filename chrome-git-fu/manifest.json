@@ -4,15 +4,20 @@
   "description": "git sha1 munger",
   "version": "0.1",
   "permissions": [
-    "https://code.google.com/p/chromium/*",
+    "https://code.google.com/p/chromium/issues/*",
     "https://*.googlesource.com/*",
     "storage"
   ],
-  "browser_action": {
+  "background": {
+    "scripts": ["eventPage.js"],
+    "persistent": false
+  },
+  "page_action": {
     "default_icon": {
       "19": "images/icon_19.png",
       "38": "images/icon_38.png"
     },
+    "default_title": "chrome-git-fu",
     "default_popup": "popup.html"
   },
   "content_scripts": [
