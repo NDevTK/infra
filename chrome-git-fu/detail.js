@@ -65,6 +65,11 @@
     // Second pass: Find/annotate sha1's.
     for (var j = 0; j < node.childNodes.length; j++) {
       var n = node.childNodes[j];
+      // Discard previous annotations.
+      if (n.nodeType == Node.ELEMENT_NODE && n.tagName == "SPAN" &&
+	  (n.getAttribute("class") || "").substr(0, 9) == "contains_") {
+	continue;
+      }
       if (n.nodeType != Node.TEXT_NODE) {
         new_nodes.push(n);
         continue;
@@ -75,15 +80,20 @@
         var sha1_str = n.wholeText.substr(match_pos, 40);
         modified = true;
         var new_text = document.createTextNode(
-  	  n.wholeText.substr(start_pos, match_pos - start_pos));
+  	  n.wholeText.substr(start_pos, match_pos - start_pos + 40));
         new_nodes.push(new_text);
-        var new_span = document.createElement('span');
-        new_span.setAttribute('class', 'sha1');
-        new_text = document.createTextNode(sha1_str);
-        new_span.appendChild(new_text);
-	new_nodes.push(new_span);
 	if (gitiles_url) {
-	  new_nodes.push(branch_contains(gitiles_url, sha1_str, "master"));
+	  // If this is a re-annotation after tracking_branch changed, don't
+	  // recompute information for "master".
+	  if (match_pos + 40 == n.wholeText.length &&
+	      n.nextSibling && n.nextSibling.nodeType == Node.ELEMENT_NODE &&
+	      n.nextSibling.tagName == "SPAN" &&
+	      (n.nextSibling.getAttribute("class") || "").substr(0, 9) == "contains_" &&
+	      n.nextSibling.firstChild.wholeText == " (master)") {
+	    new_nodes.push(n.nextSibling);
+	  } else {
+	    new_nodes.push(branch_contains(gitiles_url, sha1_str, "master"));
+	  }
 	  if (tb) {
 	    new_nodes.push(
 		branch_contains(gitiles_url, sha1_str, "branch-heads/" + tb));
@@ -112,15 +122,27 @@
     }
   }
 
-  chrome.storage.local.get("tracking_branch", function(tb) {
-    var tracking_branch = tb["tracking_branch"];
-    var comments = document.getElementsByClassName('cursor_off vt issuecomment');
-    for (var i = 0; i < comments.length; i++) {
-      var el = comments.item(i).getElementsByTagName('pre');
-      if (el.length != 1) {
-        continue;
+  chrome.runtime.sendMessage(null, "show");
+
+  function annotate_page () {
+    chrome.storage.local.get("tracking_branch", function(tb) {
+      var tracking_branch = tb["tracking_branch"];
+      var comments = document.getElementsByClassName('cursor_off vt issuecomment');
+      for (var i = 0; i < comments.length; i++) {
+        var el = comments.item(i).getElementsByTagName('pre');
+        if (el.length != 1) {
+          continue;
+        }
+        annotate_shas(el[0], tracking_branch);
       }
-      annotate_shas(el[0], tracking_branch);
+    });
+  }
+
+  chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+    if (message == 'tracking_branch_changed') {
+      setTimeout(function() { annotate_page() }, 0);
     }
   });
+
+  annotate_page();
 })();
