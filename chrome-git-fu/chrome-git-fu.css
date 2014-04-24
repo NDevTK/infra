@@ -1,0 +1,12 @@
+.sha1 {
+  color: #000;
+}
+.contains_loading {
+  color: #ccc;
+}
+.contains_yes {
+  color: #0e0;
+}
+.contains_no {
+  color: #e00;
+}

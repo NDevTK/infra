@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+  "name": "chrome-git-fu",
+  "description": "git sha1 munger",
+  "version": "0.1",
+  "permissions": [
+    "https://code.google.com/p/chromium/*",
+    "https://*.googlesource.com/*",
+    "storage"
+  ],
+  "browser_action": {
+    "default_icon": {
+      "19": "images/icon_19.png",
+      "38": "images/icon_38.png"
+    },
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://code.google.com/p/chromium/issues/detail*"],
+      "css": ["chrome-git-fu.css"],
+      "js": ["detail.js"],
+      "run_at": "document_end"
+    }
+  ]
+}
