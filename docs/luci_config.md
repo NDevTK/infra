@@ -38,7 +38,7 @@ Luci-config imports config files from
 * Ref configs are typically imported from `infra/config` directory of a branch.
 
 ConfigSet->Location mapping can be found by calling
-[get_mapping API](https://luci-config.appspot.com/_ah/api/explorer#p/config/v1/config.get_mapping).
+[get\_mapping API](https://luci-config.appspot.com/_ah/api/explorer#p/config/v1/config.get_mapping).
 
 ## Who uses it?
 
