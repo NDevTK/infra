@@ -1,41 +1,115 @@
-# Test Polymer custom-elements with web component tester
+# appengine/
 
-# Configure node.js and npm to install in  $HOME/local as a global location
-# Ensure ~/local/bin is on $PATH
-    $ mkdir ~/local
-    $ export PATH="$HOME/local/bin:$PATH"
+This directory contains appengine applications, one per subdirectory (the
+testing framework relies on this assumption to list all tests). To be consistent
+with appengine principles, each of these directories must contain everything it
+needs to work. Code shared between several applications should live in
+`appengine_modules/` and be symlinked into each application directory that needs
+it.
 
-# Install Node
-    $ mkdir -p /tmp/node-install && cd /tmp/node-install
-    $ curl http://nodejs.org/dist/node-latest.tar.gz | tar xz --strip-components=1
-    $ ./configure --prefix=$HOME/local
-    $ make install
+# Creating an appengine application
+
+## TL;DR
+
+Create a new Appengine app by running `run.py infra.tools.new_app <app_name>`.
+
+The script will create a minimal structure of a working Appengine app in
+infra.git:
+
+* an app directory under `appengine/`, say `appengine/myapp`
+* `appengine/myapp/app.yaml`
+* `appengine/myapp/main.py` implements a trivial public endpoint.
+* `appengine/myapp/.expect_tests_pretest.py` is a symlink pointing at
+  `appengine_module/expect_tests_pretest.py`. This is required for
+  testing, see below. Not required if you're not planning to write any
+  tests (but you should).
+* `appengine/myapp/.expect_tests.cfg` lists any third party components
+  that should be skipped by tests.
+* `appengine/myapp/components` (optional) points at
+  `luci/appengine/components/components`. Most infra apps require
+  authentication, and components/auth is our standard. Delete this
+  link if your app does not use it, and edit `.expect_tests.cfg`
+  appropriately.
+* `appengine/myapp/gae.py` points at
+  `luci/appengine/components/tools/gae.py` (optional), a handy script
+  for deploying and managing your app.
+* `appengine/myapp/test/main_test.py` (optional, but highly
+  recommended) tests for main.py.
 
 
-#Install bower
-		$ bower install
+Example: the myapp application should live in `appengine/myapp`. To use
+`appengine_module/testing_utils`, create a symlink to it in
+`appengine/myapp/testing_utils`. The name should remain the same as
+Python relies on directory names for its import system.
 
-#At this point, you should have bower, node, npm in ~/local/bin
+Note: symbolic links do not work on Managed VMs.
+A workaround is to create a temporary deployment directory:
 
-#Install wct. wct will be installed in ~/local/bin.
-    $ npm install -g web-component-tester
+    rsync -L -r appengine/myapp /tmp/deploy_myapp
+    pushd /tmp/deploy_myapp/myapp
+    <deploy your app here>
 
-#Create a wct.conf.js in the project directory
-    $ emacs wct.conf.js
-#Put following content into wct.conf.js
+# AppEngine Modules
 
-var WEB_COMPONENT= [
-    {'/components/<basename>': '.'},
-    {'/components': 'bower_components'},
-    {'/components': '..'},
-    {'/': '.'},
-];
-module.export ={
-  verbose: true,
-  suite: ['CUSTOM_ELEMENTS_FOLDER/**/test/*-test.html'],
-};
+The default module is configured in `app.yaml`. Any non-default module must be
+configured in `module-<module_name>.yaml`.  This is how the `gae.py` script
+will know you what modules you have.
 
+## Testing
 
-#Run the following wct command inside the project directory
-    $ wct CUSTOM_ELEMENTS_FOLDER/**/ElEMENT/test/*-test.html
+Tests included in AppEngine applications (classes deriving from
+`unittest.TestCase`) are run by `test.py`. Some convenience functions to
+help using the testbed server are included in
+[appengine_modules/testing_utils](../appengine_modules/testing_utils).
+Some examples can be found in
+existing applications, and a simple test setup is also provided by the
+`infra.tools.new_app` script..
 
+See [Testing in infra.git](/doc/testing.md) for more details. In particular,
+it's important to have a test file `tests/foo_test.py` for every source file
+`foo.py`.
+
+Note that for test code to be able to import modules from the AE SDK
+(e.g. `endpoints`), some manipulation of `sys.path` has to be done by
+`test.py`. This manipulation has to be performed in an
+`.expect_tests_pretest.py` file located at the root of the appengine
+app, with the content of `appengine_module/expect_tests_pretest.py`.
+**Adding a symlink to that file should be enough for 99.99% of cases.**
+(and yes, it's very hacky, we know).
+
+## Managing AppEngine apps
+
+A convenience script wrapping `appcfg.py` called `gae.py` can be used to
+simplify and normalize the deployment process in `infra.git`. Just add a
+symlink to it in your application as `tools/gae`. It is located in
+`luci/appengine/components/tools/gae.py`:
+
+    cd myproject
+    ln -s tools/gae ../../../luci/appengine/components/tools/gae.py
+
+* `tools/gae devserver`
+
+  Run all modules in the local dev_appserver.
+
+* `tools/gae login`
+
+  Authenticates with Google Cloud using OAuth2.
+
+* `tools/gae upload -A my-project-id`
+
+  Deploys your app to the Cloud Project `my-project-id`. If `-A` is omitted,
+  uses the application ID from `app.yaml`. It is advised to use the staging
+  instance project ID in `app.yaml` (e.g. `my-project-id-dev`), to avoid
+  accidental deployments to production version.
+
+* `tools/gae switch`
+
+  Sets the default version for all modules. The command will list all deployed
+  versions and suggest the latest one interactively.
+
+* `tools/gae help`
+
+  Prints a help message.
+
+* `tools/gae [command] --help`
+  Prints a help message for a specific command.
