@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "389d8670_11f7ec88",
+        "filename": "README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2015-07-13T23:51:56Z",
+      "side": 1,
+      "message": "I am a legal-noob. Do we need this?",
+      "parentUuid": "58987a8f_a5db285b",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 3
+      },
+      "revId": "4d5130cb28f6937bbf9ea19e04f16f7a019c0a09",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "78b0de09_bb1fc717",
         "filename": "README.md",
         "patchSetId": 5
@@ -36,6 +60,30 @@
       "writtenOn": "2015-07-13T23:22:52Z",
       "side": 1,
       "message": "nit, it\u0027s \"Check out\" when used in this manner (like \"Hey! Check out that car!\").",
+      "range": {
+        "startLine": 11,
+        "startChar": 26,
+        "endLine": 11,
+        "endChar": 34
+      },
+      "revId": "4d5130cb28f6937bbf9ea19e04f16f7a019c0a09",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b8c33659_35905051",
+        "filename": "README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2015-07-13T23:51:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "78b0de09_bb1fc717",
       "range": {
         "startLine": 11,
         "startChar": 26,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "98c2f255_94bbe42d",
+        "filename": "README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2015-07-13T23:51:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "187d22ed_ab1f958c",
+      "range": {
+        "startLine": 25,
+        "startChar": 38,
+        "endLine": 25,
+        "endChar": 43
+      },
+      "revId": "4d5130cb28f6937bbf9ea19e04f16f7a019c0a09",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "78b0de09_1b111b08",
         "filename": "appengine/README.md",
         "patchSetId": 5
@@ -82,6 +154,30 @@
       "writtenOn": "2015-07-13T23:22:52Z",
       "side": 1,
       "message": "this renders really weridly: https://chromium.googlesource.com/infra/infra/+/4d5130cb28f6937bbf9ea19e04f16f7a019c0a09/appengine",
+      "range": {
+        "startLine": 89,
+        "startChar": 0,
+        "endLine": 89,
+        "endChar": 1
+      },
+      "revId": "4d5130cb28f6937bbf9ea19e04f16f7a019c0a09",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "18a442b9_102524b9",
+        "filename": "appengine/README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2015-07-13T23:51:56Z",
+      "side": 1,
+      "message": "It was a repetition of `gae.py --help` anyway. Simplified",
+      "parentUuid": "78b0de09_1b111b08",
       "range": {
         "startLine": 89,
         "startChar": 0,
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "389d8670_d1e484d1",
+        "filename": "bootstrap/README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2015-07-13T23:51:56Z",
+      "side": 1,
+      "message": "It is parent dir. Replaced with / (the base is always the treeish). My goal is to point to the repo itself",
+      "parentUuid": "187d22ed_4b5a9951",
+      "range": {
+        "startLine": 11,
+        "startChar": 14,
+        "endLine": 11,
+        "endChar": 19
+      },
+      "revId": "4d5130cb28f6937bbf9ea19e04f16f7a019c0a09",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "98975254_20de5287",
         "filename": "bootstrap/README.md",
         "patchSetId": 5
@@ -128,6 +248,30 @@
       "writtenOn": "2015-07-13T23:22:52Z",
       "side": 1,
       "message": "this callout style should be used in some other places (like the appengine/ readme)",
+      "range": {
+        "startLine": 62,
+        "startChar": 4,
+        "endLine": 62,
+        "endChar": 8
+      },
+      "revId": "4d5130cb28f6937bbf9ea19e04f16f7a019c0a09",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b8c33659_5585cc11",
+        "filename": "bootstrap/README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2015-07-13T23:51:56Z",
+      "side": 1,
+      "message": "For some reason, I thought a ``` code block cannot be in a note box. Turns out it can.\n\nAdded two note boxes in total",
+      "parentUuid": "98975254_20de5287",
       "range": {
         "startLine": 62,
         "startChar": 4,
@@ -157,6 +301,24 @@
     },
     {
       "key": {
+        "uuid": "b8c33659_957e848d",
+        "filename": "bootstrap/deps.pyl",
+        "patchSetId": 5
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2015-07-13T23:51:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "58987a8f_c50f4c69",
+      "revId": "4d5130cb28f6937bbf9ea19e04f16f7a019c0a09",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9870321a_c7fa0038",
         "filename": "docs/testing.md",
         "patchSetId": 5
@@ -168,6 +330,30 @@
       "writtenOn": "2015-07-13T23:22:52Z",
       "side": 1,
       "message": "need escape on _?",
+      "range": {
+        "startLine": 142,
+        "startChar": 4,
+        "endLine": 142,
+        "endChar": 13
+      },
+      "revId": "4d5130cb28f6937bbf9ea19e04f16f7a019c0a09",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "389d8670_d1b564ba",
+        "filename": "docs/testing.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2015-07-13T23:51:56Z",
+      "side": 1,
+      "message": "No. a_b and a_b_c are not made italic, and a\\_b\\_c looks akward.\nI\u0027ve replaced \\_ with _ in other files",
+      "parentUuid": "9870321a_c7fa0038",
       "range": {
         "startLine": 142,
         "startChar": 4,
