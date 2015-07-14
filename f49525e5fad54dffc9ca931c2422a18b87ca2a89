@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "58987a8f_25271844",
+        "filename": "bootstrap/README.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1003232
+      },
+      "writtenOn": "2015-07-14T01:09:29Z",
+      "side": 1,
+      "message": "I\u0027m not sure that we actually need the copyright notices here, but I suppose it doesn\u0027t hurt.",
+      "revId": "f49525e5fad54dffc9ca931c2422a18b87ca2a89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "58987a8f_c52e2c1a",
+        "filename": "docs/users/builders.pyl.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1003232
+      },
+      "writtenOn": "2015-07-14T01:09:29Z",
+      "side": 1,
+      "message": "did the old version have an author? I wouldn\u0027t bother listing me here ...",
+      "revId": "f49525e5fad54dffc9ca931c2422a18b87ca2a89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "78b0de09_1e30e9ee",
+        "filename": "docs/users/builders.pyl.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1003232
+      },
+      "writtenOn": "2015-07-14T01:09:29Z",
+      "side": 1,
+      "message": "technically, this is python code, not json code.",
+      "revId": "f49525e5fad54dffc9ca931c2422a18b87ca2a89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
