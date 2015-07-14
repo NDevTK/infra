@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "589a3a79_d2400409",
+        "filename": "bootstrap/README.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2015-07-14T01:56:27Z",
+      "side": 1,
+      "message": "If we don\u0027t have to put them, I will remove them. The less to maintain, the better.",
+      "parentUuid": "58987a8f_25271844",
+      "revId": "f49525e5fad54dffc9ca931c2422a18b87ca2a89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "58987a8f_c52e2c1a",
         "filename": "docs/users/builders.pyl.md",
         "patchSetId": 6
@@ -47,6 +65,24 @@
       "writtenOn": "2015-07-14T01:09:29Z",
       "side": 1,
       "message": "technically, this is python code, not json code.",
+      "revId": "f49525e5fad54dffc9ca931c2422a18b87ca2a89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "98c2f255_d7039e41",
+        "filename": "docs/users/builders.pyl.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2015-07-14T01:56:27Z",
+      "side": 1,
+      "message": "Done, thanks",
+      "parentUuid": "78b0de09_1e30e9ee",
       "revId": "f49525e5fad54dffc9ca931c2422a18b87ca2a89",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
