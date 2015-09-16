@@ -4,7 +4,7 @@
 
 It's a service (aka a bot) that commits rietveld changes for you, instead of
 your directly committing the change. We support a wide variety of projects
-already and can support your project too (see [internal docs][internal-docs]).
+already and can support your project too (see [internal docs]).
 
 For enabled projects, we display a CQ checkbox/button on Rietveld interface.
 
@@ -42,7 +42,7 @@ a try job is flaky.
 
 Please follow these general guidelines:
 
-1. Please report issues to [chrome-troopers][chrome-troopers].
+1. Please report issues to [chrome-troopers].
 1. If you have a feature request, feel free to file a bug, use label
    Build-CommitQueue. Be sure to search for
    [current feature requests][current-feature-requests]
@@ -62,8 +62,8 @@ the CQ please use Rietveld's dry run feature.
     TBR=<username>
 
 This stands for "to be reviewed". If a change has a TBR line with a valid
-reviewer, the CQ will skip checks for LGTMs. See [guidelines][guidelines] of
-when it's acceptable to use this.
+reviewer, the CQ will skip checks for LGTMs. See [guidelines] of when it's
+acceptable to use this.
 
     NOPRESUBMIT=true
 
@@ -106,7 +106,7 @@ Take a look at
 https://codereview.chromium.org/search?closed=3&commit=2&limit=100&order=modified.
 If there are issues older than ~4 hours, they could probably be stuck. Note
 that the Commit Queue could be stuck only for some issues but not all of them.
-In case of doubt, please contact [chrome-troopers][chrome-troopers].
+In case of doubt, please contact [chrome-troopers].
 
 ### The CQ seems hung
 
@@ -211,7 +211,7 @@ This is controlled by a config file cq.cfg (e.g.
 [config for chromium][chromium-cq-cfg]). Also see [this document][analyze-step]
 for details on the analyze step.
 
-[internal-docs]: https://chrome-internal.googlesource.com/infra/infra_internal/+/master/doc/commit_queue.md
+[internal docs]: https://chrome-internal.googlesource.com/infra/infra_internal/+/master/doc/commit_queue.md
 [commit-queue-patches]: https://codereview.chromium.org/search?closed=3&commit=2
 [chrome-troopers]: https://chromium.googlesource.com/infra/infra/+/master/doc/users/contacting_troopers.md
 [current-feature-requests]: https://code.google.com/p/chromium/issues/list?q=label:Build-CommitQueue
