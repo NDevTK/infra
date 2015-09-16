@@ -155,6 +155,7 @@ This'll still check for try jobs; see the next section if you can't wait for
 them, either.
 
 The important part is to have **TBR**=foo@chromium.org in the CL description.
+
 * `--send-mail` sends an email right away.
 * `-c` sets the commit bit right away, short for `--use-commit-queue`.
 * `--cc joe@chromium.org,hppo@chromium.org` to cc more people instead of
