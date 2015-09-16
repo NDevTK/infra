@@ -32,10 +32,9 @@ a try job is flaky.
     1. At the command line, type `git cl set_commit`.
     1. Have a reviewer use 'Quick LGTM & CQ'.
 1. Wait an hour. The current list of patches to be queued can be found at
-   [Commit Queue Patches][commit-queue-patches], while CQ progress can be
-   tracked at the link posted by CQ on the CL (after some delay at which CQ
-   checks for new CLs). The commit queue will wait automatically for the tree to
-   reopen.
+   [Commit Queue Patches], while CQ progress can be tracked at the link posted
+   by CQ on the CL (after some delay at which CQ checks for new CLs). The commit
+   queue will wait automatically for the tree to reopen.
 1. Wait for an email from commit-bot@chromium.org with success or failure.
 
 ### Why (is it broken)?
@@ -44,9 +43,7 @@ Please follow these general guidelines:
 
 1. Please report issues to [chrome-troopers].
 1. If you have a feature request, feel free to file a bug, use label
-   Build-CommitQueue. Be sure to search for
-   [current feature requests][current-feature-requests]
-   first.
+   Build-CommitQueue. Be sure to search for [current feature requests] first.
 
 ## Options
 
@@ -119,7 +116,7 @@ Please report issues to [chrome-troopers].
 
 ### My patch failed to apply
 
-See the [Try Server FAQ][try-server-faq].
+See the [Try Server FAQ].
 
 ### What about LKGR?
 
@@ -161,7 +158,7 @@ Now, did you know there's `git cl help upload`?
 
 ### Sending CL through CQ in dry-run mode
 
-To dry run through the CQ please use Rietveld's [dry run][dry-run] feature.
+To dry run through the CQ please use Rietveld's [dry run] feature.
 
 ### Picking custom trybots
 
@@ -183,10 +180,9 @@ increases exponentially with the number of files in the CL.
 
 ### Moving, renaming or copying files
 
-Was implemented in [bug 125984][bug-125984] and [bug 125983][bug-125983]. If
-the diff on Rietveld doesn't look right, use the `--similarity` (defaults to
-50%) and disable/enable file copy with `--find-copies`/`--no-find-copies`. For
-more help please run:
+Was implemented in [bug 125984] and [bug 125983]. If the diff on Rietveld
+doesn't look right, use the `--similarity` (defaults to 50%) and disable/enable
+file copy with `--find-copies`/`--no-find-copies`. For more help please run:
 
     git cl help
     man git diff
@@ -212,14 +208,14 @@ This is controlled by a config file cq.cfg (e.g.
 for details on the analyze step.
 
 [internal docs]: https://chrome-internal.googlesource.com/infra/infra_internal/+/master/doc/commit_queue.md
-[commit-queue-patches]: https://codereview.chromium.org/search?closed=3&commit=2
+[Commit Queue Patches]: https://codereview.chromium.org/search?closed=3&commit=2
 [chrome-troopers]: https://chromium.googlesource.com/infra/infra/+/master/doc/users/contacting_troopers.md
-[current-feature-requests]: https://code.google.com/p/chromium/issues/list?q=label:Build-CommitQueue
+[current feature requests]: https://code.google.com/p/chromium/issues/list?q=label:Build-CommitQueue
 [guidelines]: http://www.chromium.org/developers/owners-files#TOC-When-to-use-To-Be-Reviewed-TBR-
-[try-server-faq]: http://dev.chromium.org/developers/testing/try-server-usage
-[dry-run]: https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/G5-X0_tfmok
+[Try Server FAQ]: http://dev.chromium.org/developers/testing/try-server-usage
+[dry run]: https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/G5-X0_tfmok
 [gae-500]: http://code.google.com/status/appengine
-[bug-125984]: https://code.google.com/p/chromium/issues/detail?id=125984
-[bug-125983]: https://code.google.com/p/chromium/issues/detail?id=125983
+[bug 125984]: https://code.google.com/p/chromium/issues/detail?id=125984
+[bug 125983]: https://code.google.com/p/chromium/issues/detail?id=125983
 [chromium-cq-cfg]: https://chromium.googlesource.com/chromium/src/+/master/infra/config/cq.cfg
-[analyze-steps]: http://dev.chromium.org/developers/testing/commit-queue/chromium_trybot-json
+[analyze-step]: http://dev.chromium.org/developers/testing/commit-queue/chromium_trybot-json
