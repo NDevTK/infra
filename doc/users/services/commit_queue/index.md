@@ -4,7 +4,7 @@
 
 It's a service (aka a bot) that commits rietveld changes for you, instead of
 your directly committing the change. We support a wide variety of projects
-already and can support your project too (see [internal docs](https://chrome-internal.googlesource.com/infra/infra_internal/+/master/doc/troopers/commit_queue.md)).
+already and can support your project too (see [internal docs][internal-docs]).
 
 For enabled projects, we display a CQ checkbox/button on Rietveld interface.
 
@@ -32,20 +32,20 @@ a try job is flaky.
     1. At the command line, type `git cl set_commit`.
     1. Have a reviewer use 'Quick LGTM & CQ'.
 1. Wait an hour. The current list of patches to be queued can be found at
-   [Commit Queue Patches](https://codereview.chromium.org/search?closed=3&commit=2),
-   while CQ progress can be tracked at the link posted by CQ on the CL (after
-   some delay at which CQ checks for new CLs). The commit queue will wait
-   automatically for the tree to reopen.
+   [Commit Queue Patches][commit-queue-patches], while CQ progress can be
+   tracked at the link posted by CQ on the CL (after some delay at which CQ
+   checks for new CLs). The commit queue will wait automatically for the tree to
+   reopen.
 1. Wait for an email from commit-bot@chromium.org with success or failure.
 
 ### Why (is it broken)?
 
 Please follow these general guidelines:
 
-1. Please report issues to [chrome-troopers](https://chromium.googlesource.com/infra/infra/+/master/doc/users/contacting_troopers.md).
+1. Please report issues to [chrome-troopers][chrome-troopers].
 1. If you have a feature request, feel free to file a bug, use label
    Build-CommitQueue. Be sure to search for
-   [current feature requests](https://code.google.com/p/chromium/issues/list?q=label:Build-CommitQueue)
+   [current feature requests][current-feature-requests]
    first.
 
 ## Options
@@ -62,9 +62,8 @@ the CQ please use Rietveld's dry run feature.
     TBR=<username>
 
 This stands for "to be reviewed". If a change has a TBR line with a valid
-reviewer, the CQ will skip checks for LGTMs. See
-[guidelines](http://www.chromium.org/developers/owners-files#TOC-When-to-use-To-Be-Reviewed-TBR-)
-of when it's acceptable to use this.
+reviewer, the CQ will skip checks for LGTMs. See [guidelines][guidelines] of
+when it's acceptable to use this.
 
     NOPRESUBMIT=true
 
@@ -107,8 +106,7 @@ Take a look at
 https://codereview.chromium.org/search?closed=3&commit=2&limit=100&order=modified.
 If there are issues older than ~4 hours, they could probably be stuck. Note
 that the Commit Queue could be stuck only for some issues but not all of them.
-In case of doubt, please contact
-[chrome-troopers](https://chromium.googlesource.com/infra/infra/+/master/doc/users/contacting_troopers.md).
+In case of doubt, please contact [chrome-troopers][chrome-troopers].
 
 ### The CQ seems hung
 
@@ -117,13 +115,11 @@ commits per hour.
 
 ### Please Help! I just want to ask on irc!
 
-Please report issues to
-[chrome-troopers](https://chromium.googlesource.com/infra/infra/+/master/doc/users/contacting_troopers.md).
-
+Please report issues to [chrome-troopers].
 
 ### My patch failed to apply
 
-See the [Try Server FAQ](http://dev.chromium.org/developers/testing/try-server-usage).
+See the [Try Server FAQ][try-server-faq].
 
 ### What about LKGR?
 
@@ -165,18 +161,15 @@ Now, did you know there's `git cl help upload`?
 
 ### Sending CL through CQ in dry-run mode
 
-To dry run through the CQ please use Rietveld's
-[dry run](https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/G5-X0_tfmok)
-feature.
+To dry run through the CQ please use Rietveld's [dry run][dry-run] feature.
 
 ### Picking custom trybots
 
-See the CQ_INCLUDE_TRYBOTS option, above.
+See the `CQ_INCLUDE_TRYBOTS` option, above.
 
 ### Try job results aren't showing up consistently on Rietveld
 
-If you never had a HTTP 500 on GAE, chances are that
-[you will](http://code.google.com/status/appengine).
+If you never had a HTTP 500 on GAE, chances are that [you will][gae-500].
 
 ### Binary files?
 
@@ -190,12 +183,10 @@ increases exponentially with the number of files in the CL.
 
 ### Moving, renaming or copying files
 
-Was implemented in
-[bug 125984](https://code.google.com/p/chromium/issues/detail?id=125984) and
-[bug 125983](https://code.google.com/p/chromium/issues/detail?id=125983). If the
-diff on Rietveld doesn't look right, use the `--similarity` (defaults to 50%)
-and disable/enable file copy with `--find-copies`/`--no-find-copies`. In case
-of confusing;
+Was implemented in [bug 125984][bug-125984] and [bug 125983][bug-125983]. If
+the diff on Rietveld doesn't look right, use the `--similarity` (defaults to
+50%) and disable/enable file copy with `--find-copies`/`--no-find-copies`. For
+more help please run:
 
     git cl help
     man git diff
@@ -217,7 +208,18 @@ errors so keep an eye open when you receive the CQ commit email.
 ### What determines the set of tests and targets the try bots run?
 
 This is controlled by a config file cq.cfg (e.g.
-[config for chromium](https://chromium.googlesource.com/chromium/src/+/master/infra/config/cq.cfg)).
-Also see
-[this document](http://dev.chromium.org/developers/testing/commit-queue/chromium_trybot-json)
+[config for chromium][chromium-cq-cfg]). Also see [this document][analyze-step]
 for details on the analyze step.
+
+[internal-docs]: https://chrome-internal.googlesource.com/infra/infra_internal/+/master/doc/commit_queue.md
+[commit-queue-patches]: https://codereview.chromium.org/search?closed=3&commit=2
+[chrome-troopers]: https://chromium.googlesource.com/infra/infra/+/master/doc/users/contacting_troopers.md
+[current-feature-requests]: https://code.google.com/p/chromium/issues/list?q=label:Build-CommitQueue
+[guidelines]: http://www.chromium.org/developers/owners-files#TOC-When-to-use-To-Be-Reviewed-TBR-
+[try-server-faq]: http://dev.chromium.org/developers/testing/try-server-usage
+[dry-run]: https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/G5-X0_tfmok
+[gae-500]: http://code.google.com/status/appengine
+[bug-125984]: https://code.google.com/p/chromium/issues/detail?id=125984
+[bug-125983]: https://code.google.com/p/chromium/issues/detail?id=125983
+[chromium-cq-cfg]: https://chromium.googlesource.com/chromium/src/+/master/infra/config/cq.cfg
+[analyze-steps]: http://dev.chromium.org/developers/testing/commit-queue/chromium_trybot-json
