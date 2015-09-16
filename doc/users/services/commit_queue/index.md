@@ -184,7 +184,7 @@ Yes, binary file are supported by try jobs as well as CQ now!
 
 ### My CL has a bazillion files, will it blend?
 
-The CQ was able to commit a CL with 838 files so it is technically possible;
+The CQ was able to commit a CL with 838 files so it is technically possible:
 https://codereview.chromium.org/12261012/. The likelihood of the CQ failing
 increases exponentially with the number of files in the CL.
 
@@ -216,8 +216,8 @@ errors so keep an eye open when you receive the CQ commit email.
 
 ### What determines the set of tests and targets the try bots run?
 
-This is controlled by a config file cq.cfg
-([config for chromium](https://chromium.googlesource.com/chromium/src/+/master/infra/config/cq.cfg).
+This is controlled by a config file cq.cfg (e.g.
+[config for chromium](https://chromium.googlesource.com/chromium/src/+/master/infra/config/cq.cfg)).
 Also see
 [this document](http://dev.chromium.org/developers/testing/commit-queue/chromium_trybot-json)
 for details on the analyze step.
