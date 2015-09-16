@@ -66,19 +66,19 @@ reviewer, the CQ will skip checks for LGTMs. See
 [guidelines](http://www.chromium.org/developers/owners-files#TOC-When-to-use-To-Be-Reviewed-TBR-)
 of when it's acceptable to use this.
 
-   NOPRESUBMIT=true
+    NOPRESUBMIT=true
 
 If you want to skip the presubmit check you can add this line and the commit
 queue won't run the presubmit for your change. This should only be used when
 there's a bug in the PRESUBMIT scripts. Please check that there's a bug filed
 against the bad script, and if there isn't, file one.
 
-   NOTRY=true
+    NOTRY=true
 
 This should only be used for reverts to green the tree, since it skips try bots
 and might therefore break the tree. You shouldn't use this otherwise.
 
-   NOTREECHECKS=true
+    NOTREECHECKS=true
 
 If you want to skip the tree status checks, so the CQ will commit a CL even if
 the tree is closed, add this line to the CL description. Obviously this is
@@ -86,13 +86,13 @@ strongly discouraged, since the tree is closed for a reason. However, in rare
 cases this is acceptable, primarily to fix build breakages (i.e., your CL will
 help in reopening the tree).
 
-   NO_DEPENDENCY_CHECKS=true
+    NO_DEPENDENCY_CHECKS=true
 
 The CQ rejects patchsets with open dependencies. An open dependency exists when
 a CL depends on another CL that is not yet closed. You can skip this check with
 this keyword.
 
-   CQ_INCLUDE_TRYBOTS=<trybots>
+    CQ_INCLUDE_TRYBOTS=<trybots>
 
 This flag allows you to specify some additional bots to run for this CL, in
 addition to the default bots. The format for the list of trybots is
@@ -155,9 +155,9 @@ This'll still check for try jobs; see the next section if you can't wait for
 them, either.
 
 The important part is to have **TBR**=foo@chromium.org in the CL description.
- - `--send-mail` sends an email right away.
- - `-c` sets the commit bit right away, short for --use-commit-queue.
- - `--cc` joe@chromium.org,hppo@chromium.org to cc more people instead of
+ * `--send-mail` sends an email right away.
+ * `-c` sets the commit bit right away, short for `--use-commit-queue`.
+ * `--cc joe@chromium.org,hppo@chromium.org` to cc more people instead of
    putting everyone as reviewer.
 
 Now, did you know there's `git cl help upload`?
