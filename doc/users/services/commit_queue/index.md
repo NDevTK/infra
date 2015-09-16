@@ -8,8 +8,6 @@ already and can support your project too (see [internal docs]).
 
 For enabled projects, we display a CQ checkbox/button on Rietveld interface.
 
-## Design document
-
 ## How (does it work)?
 
 The commit queue is not really a queue at the moment, since it processes the
