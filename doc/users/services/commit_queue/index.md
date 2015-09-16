@@ -3,7 +3,7 @@
 ## What (is it)?
 
 It's a service (aka a bot) that commits rietveld changes for you, instead of
-your directly committing the change. We support a wide variety of projects
+you directly committing the change. We support a wide variety of projects
 already and can support your project too (see [internal docs]).
 
 For enabled projects, we display a CQ checkbox/button on Rietveld interface.
@@ -28,7 +28,7 @@ a try job is flaky.
         1. Only the issue owner, someone at @chromium.org or @google.com can
            check the box.
         1. Yes, **non-Chromium committers are allowed** to use the commit queue
-           but cannot LGTM a change.
+           but their LGTM (approval) on other issues is not accepted.
     1. At the command line, type `git cl set_commit`.
     1. Have a reviewer use 'Quick LGTM & CQ'.
 1. Wait an hour. The current list of patches to be queued can be found at
