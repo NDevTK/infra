@@ -69,8 +69,8 @@ against the bad script, and if there isn't, file one.
 
     NOTRY=true
 
-This should only be used for reverts to green the tree, since it skips try bots
-and might therefore break the tree. You shouldn't use this otherwise.
+This should only be used for reverts to make the tree green, since it skips try
+bots and might therefore break the tree. You shouldn't use this otherwise.
 
     NOTREECHECKS=true
 
@@ -168,7 +168,7 @@ If you never had a HTTP 500 on GAE, chances are that [you will][gae-500].
 
 ### Binary files?
 
-Yes, binary file are supported by try jobs as well as CQ now!
+Yes, binary files are supported by try jobs as well as CQ now!
 
 ### My CL has a bazillion files, will it blend?
 
