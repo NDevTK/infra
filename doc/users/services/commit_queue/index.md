@@ -154,7 +154,7 @@ The important part is to have **TBR**=foo@chromium.org in the CL description.
 
 Now, did you know there's `git cl help upload`?
 
-### Sending CL through CQ in dry-run mode
+### Sending CL through CQ without committing (dry run)
 
 To dry run through the CQ please use Rietveld's [dry run] feature.
 
