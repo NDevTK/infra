@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0ffc242a_336b5aa2",
+        "filename": "crdx/feedback/feedback.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2016-06-09T18:19:14Z",
+      "side": 1,
+      "message": ".6 is what Inbox uses. Just using something darker because we have more white backgrounds than grayish backgrounds?",
+      "revId": "01719364361950e0a7095bc5e7702da6275bbdac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
