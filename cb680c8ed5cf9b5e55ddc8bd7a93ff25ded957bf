@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2f05714a_e462823f",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/elements/som-extension-build-failure.html",
+        "patchSetId": 2
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-07-26T23:48:12Z",
+      "side": 1,
+      "message": "\u0027tests\u003d\u0027",
+      "revId": "cb680c8ed5cf9b5e55ddc8bd7a93ff25ded957bf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2f05714a_0466a655",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/test/som-extension-build-failure-test.html",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-07-26T23:48:12Z",
+      "side": 1,
+      "message": "single quotes, here and elsewhere.",
+      "revId": "cb680c8ed5cf9b5e55ddc8bd7a93ff25ded957bf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
