@@ -31,12 +31,15 @@ var (
 	monorailRE = regexp.MustCompile("\n    BUG=([a-z]+):([0-9]+)")
 	authorRE   = regexp.MustCompile("\nAuthor:.+<(.+)>")
 	hashRE     = regexp.MustCompile("commit (.*)\n")
+	reviewRE   = regexp.MustCompile("\n    (Review-Url|Reviewed-on): (.*)\n")
 )
 
 type commit struct {
 	hash      string
 	author    string
 	committer string
+	summary   string
+	reviewURL string
 	bugs      []string
 }
 
@@ -62,22 +65,41 @@ func parseCommit(s string) *commit {
 		c.hash = h[1]
 	}
 
+	c.summary = strings.Trim(strings.Split(s, "\n")[4], " \t")
+	reviewURL := reviewRE.FindAllStringSubmatch(s, -1)
+	if len(reviewURL) > 0 && len(reviewURL[0]) > 2 {
+		c.reviewURL = reviewURL[0][2]
+	}
+	c.summary = fmt.Sprintf("- [%s](%s) (%s)", c.summary, c.reviewURL, c.author)
+
 	if strings.Trim(c.author, "\n\t ") == "" {
 		fmt.Print(s)
 	}
 	return c
 }
 
+func usage() {
+	fmt.Fprintf(os.Stderr, "Usage of %s <flags> [optional relative path]:\n", os.Args[0])
+	flag.PrintDefaults()
+}
+
 func main() {
+	flag.Usage = usage
 	flag.Parse()
+	args := flag.Args()
+	path := "."
+	if len(args) > 0 {
+		path = args[0]
+	}
+
 	var cmd *exec.Cmd
 	switch {
 	case *hash != "":
-		cmd = exec.Command("git", "log", fmt.Sprintf("%s..", *hash), ".")
+		cmd = exec.Command("git", "log", fmt.Sprintf("%s..", *hash), path)
 	case *date != "":
-		cmd = exec.Command("git", "log", "--since", *date, ".")
+		cmd = exec.Command("git", "log", "--since", *date, path)
 	default:
-		fmt.Printf("Please specify either --hash or --date\n")
+		fmt.Printf("Please specify either --since-hash or --since-date\n")
 		os.Exit(1)
 	}
 	cmd.Stderr = os.Stderr
@@ -103,9 +125,11 @@ func main() {
 	authors := map[string]bool{}
 	bugs := map[string]bool{}
 	bugsByAuthor := map[string]map[string]bool{}
+	summaries := []string{}
 
 	for _, cstr := range commits {
 		c := parseCommit(cstr)
+		summaries = append(summaries, c.summary)
 		for _, b := range c.bugs {
 			commitsByBug[b] = append(commitsByBug[b], c)
 			bugs[b] = true
@@ -128,14 +152,19 @@ func main() {
 		toNotify = append(toNotify, a)
 	}
 
-	fmt.Printf("%d Patches since %s %s\n", len(commits), *hash, *date)
-	fmt.Printf("%d Authors:\n%v\n\n", len(toNotify), strings.Join(toNotify, ", "))
-	fmt.Printf("%d Bugs\n", len(fixed))
+	fmt.Printf("# Release Notes\n\n")
+	fmt.Printf("- %d Patches since %s %s\n", len(commits), *hash, *date)
+	fmt.Printf("- %d Authors: %v\n", len(toNotify), strings.Join(toNotify, ", "))
+	fmt.Printf("- %d Bugs updated\n", len(fixed))
 
+	fmt.Printf("\n## Changes in this release\n\n")
+	fmt.Printf("%s\n", strings.Join(summaries, "\n"))
+
+	fmt.Printf("\n## Bugs updated, by author\n")
 	for a, bugs := range bugsByAuthor {
-		fmt.Printf("\n%s's bugs:\n", a)
+		fmt.Printf("\n### %s's bugs:\n", a)
 		for b := range bugs {
-			fmt.Printf("%s\n", b)
+			fmt.Printf("- [%s](%s)\n", b, b)
 		}
 	}
 }
