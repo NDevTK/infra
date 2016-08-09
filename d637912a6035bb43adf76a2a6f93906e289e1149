@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1969dfe4_eaf4eaed",
+        "filename": "go/src/infra/tools/relnotes/relnotes.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2016-08-09T01:15:12Z",
+      "side": 1,
+      "message": "nit: square brackets already imply optional",
+      "range": {
+        "startLine": 82,
+        "startChar": 46,
+        "endLine": 82,
+        "endChar": 54
+      },
+      "revId": "d637912a6035bb43adf76a2a6f93906e289e1149",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1969dfe4_4addd666",
+        "filename": "go/src/infra/tools/relnotes/relnotes.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2016-08-09T01:15:12Z",
+      "side": 1,
+      "message": "Make this a bulletted list as well?",
+      "revId": "d637912a6035bb43adf76a2a6f93906e289e1149",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
