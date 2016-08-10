@@ -16,6 +16,24 @@
       "revId": "9d79de32e10ca9d35f91e9ffea64c6829f265736",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "39cea3f0_28d7cb48",
+        "filename": "recipes/recipe_modules/recipe_autoroller/api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1002740
+      },
+      "writtenOn": "2016-08-10T15:26:05Z",
+      "side": 1,
+      "message": "Agreed.\n\nTo make things safer though, how about this: I\u0027d keep it for now, and once confirmed working, attempt to get it to work with Gerrit (with restoring the origin)?",
+      "parentUuid": "39cea3f0_68f8a3e0",
+      "revId": "9d79de32e10ca9d35f91e9ffea64c6829f265736",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
