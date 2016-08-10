@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "39cea3f0_68f8a3e0",
+        "filename": "recipes/recipe_modules/recipe_autoroller/api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2016-08-10T15:24:44Z",
+      "side": 1,
+      "message": "this shouldn\u0027t be necessary. Once issue is set, it should be in correct codereview system.",
+      "revId": "9d79de32e10ca9d35f91e9ffea64c6829f265736",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
