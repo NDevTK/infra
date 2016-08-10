@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "99930fda_9b862b78",
+        "filename": "appengine/monorail/static/css/ph_detail.css",
+        "patchSetId": 1
+      },
+      "lineNbr": 398,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2016-08-10T21:43:43Z",
+      "side": 1,
+      "message": "You could reduce this to 1em.",
+      "revId": "63afa9284a37865817cb8b14f46941eed4531e75",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "99930fda_5b5ca31f",
+        "filename": "appengine/monorail/static/css/ph_detail.css",
+        "patchSetId": 1
+      },
+      "lineNbr": 400,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2016-08-10T21:43:43Z",
+      "side": 1,
+      "message": "On mobile, you could make this 95%.",
+      "revId": "63afa9284a37865817cb8b14f46941eed4531e75",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
