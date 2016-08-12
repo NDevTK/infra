@@ -25,6 +25,24 @@
     },
     {
       "key": {
+        "uuid": "9ef695e4_435ea681",
+        "filename": "go/src/infra/tools/relnotes/relnotes.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-08-12T21:32:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1969dfe4_eaf4eaed",
+      "revId": "d637912a6035bb43adf76a2a6f93906e289e1149",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1969dfe4_4addd666",
         "filename": "go/src/infra/tools/relnotes/relnotes.go",
         "patchSetId": 2
@@ -36,6 +54,24 @@
       "writtenOn": "2016-08-09T01:15:12Z",
       "side": 1,
       "message": "Make this a bulletted list as well?",
+      "revId": "d637912a6035bb43adf76a2a6f93906e289e1149",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9ef695e4_236baa1b",
+        "filename": "go/src/infra/tools/relnotes/relnotes.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-08-12T21:32:14Z",
+      "side": 1,
+      "message": "They are already. See line 73. https://chromium-review.googlesource.com/c/366401/2/go/src/infra/tools/relnotes/relnotes.go#73\n\nYou know what, this is a job for templates. I make one for markdown and add that to this cl.",
+      "parentUuid": "1969dfe4_4addd666",
       "revId": "d637912a6035bb43adf76a2a6f93906e289e1149",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
