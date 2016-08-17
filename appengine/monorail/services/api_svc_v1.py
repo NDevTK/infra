@@ -322,19 +322,19 @@ class MonorailApi(remote.Service):
         mar.auth.user_id, self._services.user, delete=delete)
     return api_pb2_v1.IssuesCommentsDeleteResponse()
 
-  def increment_request_limit(self, request, client_id, client_email):
+  def increment_request_limit(self, _request, client_id, client_email):
     """Check whether the requester has exceeded API quotas limit,
     and increment request count in DB and ts_mon.
     """
-    mar = self.mar_factory(request)
+    #? mar = self.mar_factory(request)
     # soft_limit == hard_limit for api_request, so this function either
     # returns False if under limit, or raise ExcessiveActivityException
-    if not actionlimit.NeedCaptcha(
-        mar.auth.user_pb, actionlimit.API_REQUEST, skip_lifetime_check=True):
-      actionlimit.CountAction(
-          mar.auth.user_pb, actionlimit.API_REQUEST, delta=1)
-      self._services.user.UpdateUser(
-          mar.cnxn, mar.auth.user_id, mar.auth.user_pb)
+    #? if not actionlimit.NeedCaptcha(
+    #?     mar.auth.user_pb, actionlimit.API_REQUEST, skip_lifetime_check=True):
+    #?   actionlimit.CountAction(
+    #?       mar.auth.user_pb, actionlimit.API_REQUEST, delta=1)
+    #?   self._services.user.UpdateUser(
+    #?       mar.cnxn, mar.auth.user_id, mar.auth.user_pb)
 
     # Avoid value explosision and protect PII info
     if not framework_helpers.IsServiceAccount(client_email):
@@ -1119,7 +1119,7 @@ class ClientConfigApi(remote.Service):
       # 1: create the user if non-existent
       user_id = self._services.user.LookupUserID(
           mar.cnxn, client.client_email, autocreate=True)
-      user_pb = self._services.user.GetUser(mar.cnxn, user_id)
+      #? user_pb = self._services.user.GetUser(mar.cnxn, user_id)
 
       logging.info('User ID %d for email %s', user_id, client.client_email)
 
@@ -1127,9 +1127,10 @@ class ClientConfigApi(remote.Service):
       # new_soft_limit, new_hard_limit, new_lifetime_limit
       new_limit_tuple = (
           client.period_limit, client.period_limit, client.lifetime_limit)
-      action_limit_updates = {'api_request': new_limit_tuple}
-      self._services.user.UpdateUserSettings(
-          mar.cnxn, user_id, user_pb, action_limit_updates=action_limit_updates)
+      #? action_limit_updates = {'api_request': new_limit_tuple}
+      #? self._services.user.UpdateUserSettings(
+      #?     mar.cnxn, user_id, user_pb, 
+      #?     action_limit_updates=action_limit_updates)
 
       logging.info('Updated api request limit %r', new_limit_tuple)
 
