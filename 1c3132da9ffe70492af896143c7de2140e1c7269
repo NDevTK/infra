@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c83053eb_55225e0c",
+        "filename": "go/src/infra/crimson/cmd/cmdhelper/cmdhelper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1116444
+      },
+      "writtenOn": "2016-08-20T02:37:39Z",
+      "side": 1,
+      "message": "This was the bug. net.ParseIP() returns an IPv6 format even for IPv4 inputs.",
+      "range": {
+        "startLine": 139,
+        "startChar": 24,
+        "endLine": 139,
+        "endChar": 36
+      },
+      "revId": "1c3132da9ffe70492af896143c7de2140e1c7269",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c83053eb_152cd6fc",
+        "filename": "go/src/infra/crimson/common/netutil/netutil.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1116444
+      },
+      "writtenOn": "2016-08-20T02:37:39Z",
+      "side": 1,
+      "message": "All this code is moved unchanged from crimsondb.go.",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 15
+      },
+      "revId": "1c3132da9ffe70492af896143c7de2140e1c7269",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c83053eb_751d5ace",
+        "filename": "go/src/infra/crimson/common/netutil/netutil_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1116444
+      },
+      "writtenOn": "2016-08-20T02:37:39Z",
+      "side": 1,
+      "message": "All this code is moved unchanged from crimsondb_test.go.",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 15
+      },
+      "revId": "1c3132da9ffe70492af896143c7de2140e1c7269",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
