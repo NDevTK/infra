@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e8dd172d_43043aeb",
+        "filename": "appengine/chromium_status/appengine_module/chromium_status/status.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 424,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2016-08-22T23:37:22Z",
+      "side": 1,
+      "message": "This would be \"\"\"\nfrom google.appengine.api import app_identity\nif app_identity.get_application_id() \u003d\u003d \u0027chromiumos-status\u0027:\n\"\"\"\n\nBut I\u0027d rather have it be based on a value in the datastore. Create a new datastore object which holds a preamble message, and if that object exists in the datastore and has a value, then display it. That way every project could take advantage of the preamble without having to put a project-specific switch statement here and redeploy all the apps.",
+      "revId": "3c5d1c82e157af957681038d79638324c1935187",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e8dd172d_43999ac8",
+        "filename": "appengine/chromium_status/templates/main.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2016-08-22T23:37:22Z",
+      "side": 1,
+      "message": "Put this between the text entry box and the \"Last 25 status messages\" list. Keep user-interaction elements at a consistent height, basically.",
+      "revId": "3c5d1c82e157af957681038d79638324c1935187",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
