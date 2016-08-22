@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "e8dd172d_83e56233",
+        "filename": "appengine/chromium_status/appengine_module/chromium_status/status.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 424,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2016-08-22T23:45:07Z",
+      "side": 1,
+      "message": "IS_CHROMIUMOS is already defined by base_page.py for some other purpose, so I was gonna hijack that.\n\nThat said, yeah, having a datastore value for the preamble might be nice. How do I fetch data here from the datastore, and how do I write to the datastore?",
+      "parentUuid": "e8dd172d_43043aeb",
+      "revId": "3c5d1c82e157af957681038d79638324c1935187",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e8dd172d_43999ac8",
         "filename": "appengine/chromium_status/templates/main.html",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2016-08-22T23:37:22Z",
       "side": 1,
       "message": "Put this between the text entry box and the \"Last 25 status messages\" list. Keep user-interaction elements at a consistent height, basically.",
+      "revId": "3c5d1c82e157af957681038d79638324c1935187",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e8dd172d_a37b3e52",
+        "filename": "appengine/chromium_status/templates/main.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2016-08-22T23:45:07Z",
+      "side": 1,
+      "message": "The intent is for this to be a \"Read this before editing the status\" type message, which was why I thought to put it above the status.\n\nBut yeah, you might be right.\n\nAlso, question: Is something going to barf if |premable| contains html?",
+      "parentUuid": "e8dd172d_43999ac8",
       "revId": "3c5d1c82e157af957681038d79638324c1935187",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
