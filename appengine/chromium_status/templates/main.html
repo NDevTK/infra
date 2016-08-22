@@ -7,6 +7,10 @@
 {% endblock %}
 
 {% block content %}
+  {% if preamble %}
+    {{ preamble }}
+  {% endif %}
+
   <!-- Keep in sync with status.py:Status.general_state() logic -->
   <div id="help" class="help" hidden>
     The message is scanned for partial matches (in the order listed)<br>

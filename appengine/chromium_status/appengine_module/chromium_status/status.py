@@ -421,6 +421,9 @@ class MainPage(BasePage):
     template_values['limit'] = limit
     self.DisplayTemplate('main.html', template_values)
 
+    if self.IS_CHROMIUMOS:
+      template_values['preamble'] = 'Some ChromiumOS-specific preamble text.'
+
   @utils.requires_login
   @utils.requires_write_access
   def post(self):
