@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "a8f6bfe3_03dd4e07",
+        "filename": "appengine/chromium_status/appengine_module/chromium_status/status.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 424,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2016-08-23T17:46:42Z",
+      "side": 1,
+      "message": "Adding a POST endpoint seems overboard for a seldom-edited string.\n\nBut, what happens when somebody else who isn\u0027t familiar with how this app is deployed wants to make a change to the custom text? I\u0027m not convinced that sending them off to cloud console to make edits in the data store is as transparent as sending them to the source code.",
+      "parentUuid": "e8dd172d_c6e8587a",
+      "revId": "3c5d1c82e157af957681038d79638324c1935187",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e8dd172d_43999ac8",
         "filename": "appengine/chromium_status/templates/main.html",
         "patchSetId": 1
@@ -102,6 +120,24 @@
       "side": 1,
       "message": "Not sure if the template engine will barf (it should), but I will if it doesn\u0027t. Templates should always autoescape everything they\u0027re using to fill fields.",
       "parentUuid": "e8dd172d_a37b3e52",
+      "revId": "3c5d1c82e157af957681038d79638324c1935187",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a8f6bfe3_a3267a1c",
+        "filename": "appengine/chromium_status/templates/main.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2016-08-23T17:46:42Z",
+      "side": 1,
+      "message": "I\u0027m not really familiar with templating engines and their syntax. Does the one we\u0027re using here have a name, so I can read up on it and get this right?",
+      "parentUuid": "e8dd172d_e6df1400",
       "revId": "3c5d1c82e157af957681038d79638324c1935187",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
