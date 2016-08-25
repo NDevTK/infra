@@ -83,12 +83,14 @@ class MetricStoreTestBase(object):
     self.store.set('foo', (('field', 'value'),), None, 42)
     self.store.set('foo', (('field', 'value2'),), None, 43)
 
+    self.mock_time.assert_has_calls([mock.call()])
+
     all_metrics = list(self.store.get_all())
     self.assertEqual(1, len(all_metrics))
     self.assertEqual('foo', all_metrics[0][1].name)
     self.assertEqual(1234, all_metrics[0][2])
 
-    self.mock_time.assert_called_once_with()
+    self.mock_time.assert_has_calls([mock.call()] * 2)
 
   def test_uses_start_time_from_metric(self):
     self.metric._start_time = 5678
@@ -96,12 +98,14 @@ class MetricStoreTestBase(object):
     self.store.set('foo', (('field', 'value'),), None, 42)
     self.store.set('foo', (('field', 'value2'),), None, 43)
 
+    self.mock_time.assert_has_calls([])
+
     all_metrics = list(self.store.get_all())
     self.assertEqual(1, len(all_metrics))
     self.assertEqual('foo', all_metrics[0][1].name)
     self.assertEqual(5678, all_metrics[0][2])
 
-    self.assertFalse(self.mock_time.called)
+    self.mock_time.assert_has_calls([mock.call()])
 
   def test_get(self):
     fields1 = (('field', 'value'),)

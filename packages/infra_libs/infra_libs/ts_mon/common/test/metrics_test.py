@@ -6,8 +6,8 @@ import sys
 import unittest
 
 import mock
-from infra_libs.ts_mon.protos import metrics_pb2
-
+from infra_libs.ts_mon.protos.current import metrics_pb2
+from infra_libs.ts_mon.protos.new import metrics_pb2 as new_metrics_pb2
 
 from infra_libs.ts_mon.common import distribution
 from infra_libs.ts_mon.common import errors
@@ -16,7 +16,6 @@ from infra_libs.ts_mon.common import metric_store
 from infra_libs.ts_mon.common import metrics
 from infra_libs.ts_mon.common import targets
 from infra_libs.ts_mon.common.test import stubs
-from infra_libs.ts_mon.protos import metrics_pb2
 
 
 class TestBase(unittest.TestCase):
@@ -35,6 +34,7 @@ class TestBase(unittest.TestCase):
 
 
 class MetricTest(TestBase):
+
   def test_name_property(self):
     m1 = metrics.Metric('/foo', fields={'asdf': 1})
     self.assertEquals(m1.name, 'foo')
@@ -120,6 +120,105 @@ class MetricTest(TestBase):
     m.reset()
     self.assertIsNone(m.get())
 
+  def test_map_units(self):
+    units = metrics.MetricsDataUnits
+    self.assertEqual(
+        '{unknown}', metrics.Metric._map_units_to_string(units.UNKNOWN_UNITS))
+    self.assertEqual('{unknown}',
+                     metrics.Metric._map_units_to_string('random_value'))
+    self.assertEqual('s', metrics.Metric._map_units_to_string(units.SECONDS))
+
+  @mock.patch('infra_libs.ts_mon.common.metrics.Metric.is_cumulative',
+              autospec=True)
+  @mock.patch('infra_libs.ts_mon.common.metrics.Metric._populate_value_type',
+              autospec=True)
+  @mock.patch(('infra_libs.ts_mon.common.metrics.Metric'
+               '._populate_field_descriptors'), autospec=True)
+  def test_populate_data_set(self, _value_type, _fd,  _is_cumulative):
+    interface.state.metric_name_prefix = '/infra/test/'
+    scenarios = [(True, 'desc', new_metrics_pb2.CUMULATIVE),
+                 (False, None, new_metrics_pb2.GAUGE)]
+    for cumulative, desc, stream_kind in scenarios:
+      _is_cumulative.return_value = cumulative
+      m = metrics.Metric('test', description=desc,
+                         units=metrics.MetricsDataUnits.SECONDS)
+      data_set = new_metrics_pb2.MetricsDataSet()
+      m._populate_data_set(data_set, fields={})
+
+      self.assertEqual(stream_kind, data_set.stream_kind)
+      self.assertEqual('/infra/test/test', data_set.metric_name)
+      self.assertEqual(desc or '', data_set.description)
+      self.assertEqual('s', data_set.annotations.unit)
+
+  @mock.patch('infra_libs.ts_mon.common.metrics.Metric._populate_value_new',
+              autospec=True)
+  @mock.patch('infra_libs.ts_mon.common.metrics.Metric._populate_fields_new',
+              autospec=True)
+  def test_populate_data(self, _fields, _value):
+    m = metrics.Metric('test')
+    data_set = new_metrics_pb2.MetricsDataSet()
+    m._populate_data(data_set, 100.4, 1000.6, {}, 5)
+
+    self.assertEqual(100, data_set.data[0].start_timestamp.seconds)
+    self.assertEqual(1000, data_set.data[0].end_timestamp.seconds)
+
+    _fields.assert_has_calls([mock.call(m, data_set.data[0], {})])
+    _value.assert_has_calls([mock.call(m, data_set.data[0], 5)])
+
+  def test_populate_field_descriptor(self):
+    data_set_pb = new_metrics_pb2.MetricsDataSet()
+    fields = [('a', 1), ('b', True), ('c', 'test')]
+    m = metrics.Metric('test')
+    m._populate_field_descriptors(data_set_pb, fields)
+
+    field_type = new_metrics_pb2.MetricsDataSet.MetricFieldDescriptor
+    self.assertEqual(3, len(data_set_pb.field_descriptor))
+
+    self.assertEqual('a', data_set_pb.field_descriptor[0].name)
+    self.assertEqual(field_type.INT64,
+                     data_set_pb.field_descriptor[0].field_type)
+
+    self.assertEqual('b', data_set_pb.field_descriptor[1].name)
+    self.assertEqual(field_type.BOOL,
+                     data_set_pb.field_descriptor[1].field_type)
+
+    self.assertEqual('c', data_set_pb.field_descriptor[2].name)
+    self.assertEqual(field_type.STRING,
+                     data_set_pb.field_descriptor[2].field_type)
+
+  def test_populate_field_descriptor_error(self):
+    data_set_pb = new_metrics_pb2.MetricsDataSet()
+    fields = [('a', 1.234)]
+    m = metrics.Metric('test')
+
+    with self.assertRaises(errors.MonitoringInvalidFieldTypeError):
+      m._populate_field_descriptors(data_set_pb, fields)
+
+  def test_populate_fields(self):
+    data = new_metrics_pb2.MetricsData()
+    fields = [('a', 1), ('b', True), ('c', 'test')]
+    m = metrics.Metric('test')
+    m._populate_fields_new(data, fields)
+
+    self.assertEqual(3, len(data.field))
+
+    self.assertEqual('a', data.field[0].name)
+    self.assertEqual(1, data.field[0].int64_value)
+
+    self.assertEqual('b', data.field[1].name)
+    self.assertTrue(data.field[1].bool_value)
+
+    self.assertEqual('c', data.field[2].name)
+    self.assertEqual('test', data.field[2].string_value)
+
+  def test_populate_fields_error(self):
+    data = new_metrics_pb2.MetricsData()
+    fields = [('a', 1.234)]
+    m = metrics.Metric('test')
+
+    with self.assertRaises(errors.MonitoringInvalidFieldTypeError):
+      m._populate_fields_new(data, fields)
+
 
 class StringMetricTest(TestBase):
 
@@ -128,6 +227,18 @@ class StringMetricTest(TestBase):
     m = metrics.StringMetric('test')
     m._populate_value(pb, 'foo', 1234)
     self.assertEquals(pb.string_value, 'foo')
+
+  def test_populate_value_new(self):
+    pb = new_metrics_pb2.MetricsData()
+    m = metrics.StringMetric('test')
+    m._populate_value_new(pb, 'foo')
+    self.assertEquals(pb.string_value, 'foo')
+
+  def test_populate_value_type(self):
+    pb = new_metrics_pb2.MetricsDataSet()
+    m = metrics.StringMetric('test')
+    m._populate_value_type(pb)
+    self.assertEquals(pb.value_type, new_metrics_pb2.STRING)
 
   def test_set(self):
     m = metrics.StringMetric('test')
@@ -151,6 +262,18 @@ class BooleanMetricTest(TestBase):
     m = metrics.BooleanMetric('test')
     m._populate_value(pb, True, 1234)
     self.assertEquals(pb.boolean_value, True)
+
+  def test_populate_value_new(self):
+    pb = new_metrics_pb2.MetricsData()
+    m = metrics.BooleanMetric('test')
+    m._populate_value_new(pb, True)
+    self.assertEquals(pb.bool_value, True)
+
+  def test_populate_value_type(self):
+    pb = new_metrics_pb2.MetricsDataSet()
+    m = metrics.BooleanMetric('test')
+    m._populate_value_type(pb)
+    self.assertEquals(pb.value_type, new_metrics_pb2.BOOL)
 
   def test_set(self):
     m = metrics.BooleanMetric('test')
@@ -178,6 +301,18 @@ class CounterMetricTest(TestBase):
     m = metrics.CounterMetric('test')
     m._populate_value(pb, 1, 1234)
     self.assertEquals(pb.counter, 1)
+
+  def test_populate_value_new(self):
+    pb = new_metrics_pb2.MetricsData()
+    m = metrics.CounterMetric('test')
+    m._populate_value_new(pb, 1)
+    self.assertEquals(pb.int64_value, 1)
+
+  def test_populate_value_type(self):
+    pb = new_metrics_pb2.MetricsDataSet()
+    m = metrics.CounterMetric('test')
+    m._populate_value_type(pb)
+    self.assertEquals(pb.value_type, new_metrics_pb2.INT64)
 
   def test_set(self):
     m = metrics.CounterMetric('test')
@@ -259,6 +394,18 @@ class GaugeMetricTest(TestBase):
     m._populate_value(pb, 1, 1234)
     self.assertEquals(pb.gauge, 1)
 
+  def test_populate_value_new(self):
+    pb = new_metrics_pb2.MetricsData()
+    m = metrics.GaugeMetric('test')
+    m._populate_value_new(pb, 1)
+    self.assertEquals(pb.int64_value, 1)
+
+  def test_populate_value_type(self):
+    pb = new_metrics_pb2.MetricsDataSet()
+    m = metrics.GaugeMetric('test')
+    m._populate_value_type(pb)
+    self.assertEquals(pb.value_type, new_metrics_pb2.INT64)
+
   def test_set(self):
     m = metrics.GaugeMetric('test')
     m.set(10)
@@ -283,6 +430,18 @@ class CumulativeMetricTest(TestBase):
     m = metrics.CumulativeMetric('test')
     m._populate_value(pb, 1.618, 1234)
     self.assertAlmostEquals(pb.cumulative_double_value, 1.618)
+
+  def test_populate_value_new(self):
+    pb = new_metrics_pb2.MetricsData()
+    m = metrics.CumulativeMetric('test')
+    m._populate_value_new(pb, 1.618)
+    self.assertAlmostEquals(pb.double_value, 1.618)
+
+  def test_populate_value_type(self):
+    pb = new_metrics_pb2.MetricsDataSet()
+    m = metrics.CumulativeMetric('test')
+    m._populate_value_type(pb)
+    self.assertEqual(pb.value_type, new_metrics_pb2.DOUBLE)
 
   def test_set(self):
     m = metrics.CumulativeMetric('test')
@@ -322,6 +481,18 @@ class FloatMetricTest(TestBase):
     m = metrics.FloatMetric('test')
     m._populate_value(pb, 1.618, 1234)
     self.assertEquals(pb.noncumulative_double_value, 1.618)
+
+  def test_populate_value_new(self):
+    pb = new_metrics_pb2.MetricsData()
+    m = metrics.FloatMetric('test')
+    m._populate_value_new(pb, 1.618)
+    self.assertEquals(pb.double_value, 1.618)
+
+  def test_populate_value_type(self):
+    pb = new_metrics_pb2.MetricsDataSet()
+    m = metrics.FloatMetric('test')
+    m._populate_value_type(pb)
+    self.assertEquals(pb.value_type, new_metrics_pb2.DOUBLE)
 
   def test_set(self):
     m = metrics.FloatMetric('test')
@@ -478,6 +649,52 @@ class DistributionMetricTest(TestBase):
 
     m._populate_value(pb, d, 1234)
     self.assertFalse(pb.distribution.is_cumulative)
+
+  def test_populate_fixed_width_buckets_new(self):
+    pb = new_metrics_pb2.MetricsData()
+    dist = distribution.Distribution(
+        distribution.FixedWidthBucketer(width=9, num_finite_buckets=10))
+    dist.add(1)
+    dist.add(10)
+    dist.add(100)
+    dist.add(1000)
+    m = metrics.DistributionMetric('test')
+    m._populate_value_new(pb, dist)
+
+    self.assertAlmostEqual(277.75, pb.distribution_value.mean)
+    self.assertEqual(9, pb.distribution_value.linear_buckets.width)
+    self.assertEqual(0, pb.distribution_value.linear_buckets.offset)
+    self.assertEqual(10,
+                     pb.distribution_value.linear_buckets.num_finite_buckets)
+    self.assertEqual([0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                     list(pb.distribution_value.bucket_count))
+
+  def test_populate_geometric_buckets_new(self):
+    pb = new_metrics_pb2.MetricsData()
+    dist = distribution.Distribution(
+        distribution.GeometricBucketer(growth_factor=10**0.2,
+                                       num_finite_buckets=10))
+    dist.add(1)
+    dist.add(10)
+    dist.add(100)
+    dist.add(1000)
+    m = metrics.DistributionMetric('test')
+    m._populate_value_new(pb, dist)
+
+    self.assertAlmostEqual(277.75, pb.distribution_value.mean)
+    self.assertAlmostEqual(1.0, pb.distribution_value.exponential_buckets.scale)
+    self.assertAlmostEqual(
+         10**0.2, pb.distribution_value.exponential_buckets.growth_factor)
+    self.assertEqual(
+        10, pb.distribution_value.exponential_buckets.num_finite_buckets)
+    self.assertEqual([0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 2],
+                     list(pb.distribution_value.bucket_count))
+
+  def test_populate_value_type(self):
+    pb = new_metrics_pb2.MetricsDataSet()
+    m = metrics.CumulativeDistributionMetric('test')
+    m._populate_value_type(pb)
+    self.assertEqual(pb.value_type, new_metrics_pb2.DISTRIBUTION)
 
   def test_add(self):
     m = metrics.DistributionMetric('test')
