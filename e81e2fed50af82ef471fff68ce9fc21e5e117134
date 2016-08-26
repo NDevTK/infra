@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0545f683_25d58d41",
+        "filename": "appengine/chromium_status/templates/main.html",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2016-08-26T16:43:23Z",
+      "side": 1,
+      "message": "The preamble and postamble will appear in the exact same spot on the page for the majority of users. The only content between them right now is the help message, which is hidden by default.\n\nAlso, they\u0027re both outside the \u003ccenter\u003e tag.",
+      "revId": "e81e2fed50af82ef471fff68ce9fc21e5e117134",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
