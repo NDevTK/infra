@@ -24,5 +24,6 @@ from infra_libs.event_mon.protos.chrome_infra_log_pb2 import ServiceEvent
 from infra_libs.event_mon.protos.chrome_infra_log_pb2 import InfraEventSource
 from infra_libs.event_mon.protos.chrome_infra_log_pb2 import CodeVersion
 from infra_libs.event_mon.protos.chrome_infra_log_pb2 import CQEvent
+from infra_libs.event_mon.protos.chrome_infra_log_pb2 import MachineProviderEvent
 
 from infra_libs.event_mon.protos.log_request_lite_pb2 import LogRequestLite
