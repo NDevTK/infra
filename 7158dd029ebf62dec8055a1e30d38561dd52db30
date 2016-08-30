@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e58d42b7_e67794ff",
+        "filename": "go/src/infra/tools/cloudtail/client.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2016-08-30T03:21:23Z",
+      "side": 1,
+      "message": "so only HTTP 500 and beyond will be retried",
+      "range": {
+        "startLine": 148,
+        "startChar": 60,
+        "endLine": 148,
+        "endChar": 78
+      },
+      "revId": "7158dd029ebf62dec8055a1e30d38561dd52db30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
