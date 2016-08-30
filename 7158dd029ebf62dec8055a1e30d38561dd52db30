@@ -66,6 +66,24 @@
     },
     {
       "key": {
+        "uuid": "e58d42b7_063560ef",
+        "filename": "go/src/infra/tools/cloudtail/buffer.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1143160
+      },
+      "writtenOn": "2016-08-30T03:55:20Z",
+      "side": 1,
+      "message": "ahh awesome, I hadn\u0027t seen that part in the diff, thanks.\n\nLGTM.",
+      "parentUuid": "e58d42b7_a63cace6",
+      "revId": "7158dd029ebf62dec8055a1e30d38561dd52db30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e58d42b7_e67794ff",
         "filename": "go/src/infra/tools/cloudtail/client.go",
         "patchSetId": 1
