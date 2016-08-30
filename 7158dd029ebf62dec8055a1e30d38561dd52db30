@@ -48,6 +48,24 @@
     },
     {
       "key": {
+        "uuid": "e58d42b7_a63cace6",
+        "filename": "go/src/infra/tools/cloudtail/buffer.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2016-08-30T03:50:28Z",
+      "side": 1,
+      "message": "It is logged in flush() already, see line 210",
+      "parentUuid": "e58d42b7_c6aff829",
+      "revId": "7158dd029ebf62dec8055a1e30d38561dd52db30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e58d42b7_e67794ff",
         "filename": "go/src/infra/tools/cloudtail/client.go",
         "patchSetId": 1
