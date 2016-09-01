@@ -15,9 +15,10 @@ import traceback
 from googleapiclient import discovery
 from googleapiclient import errors
 from infra_libs import httplib2_utils
+from infra_libs.ts_mon.common import interface
 from infra_libs.ts_mon.common import http_metrics
 from infra_libs.ts_mon.common import pb_to_popo
-from infra_libs.ts_mon.protos import metrics_pb2
+from infra_libs.ts_mon.protos.current import metrics_pb2
 from oauth2client import gce
 from oauth2client.client import GoogleCredentials
 from oauth2client.file import Storage
@@ -95,10 +96,16 @@ class HttpsMonitor(Monitor):
     self._http = credentials.authorize(http)
 
   def encodeToJson(self, metric_pb):
-    return json.dumps({ 'resource': pb_to_popo.convert(metric_pb) })
+    if interface.state.use_new_proto:
+      return json.dumps({'payload': pb_to_popo.convert(metric_pb)})
+    else:
+      return json.dumps({'resource': pb_to_popo.convert(metric_pb)})
 
   def send(self, metric_pb):
-    body = self.encodeToJson(self._wrap_proto(metric_pb))
+    if interface.state.use_new_proto:
+      body = self.encodeToJson(metric_pb)
+    else:
+      body = self.encodeToJson(self._wrap_proto(metric_pb))
 
     try:
       resp, content = self._http.request(self._endpoint, method='POST',
