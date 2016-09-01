@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "4500ceb2_d867edb8",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/metrics.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "No. It\u0027s just wrong identation. It\u0027s weird that linting didn\u0027t tell me about this.",
+      "parentUuid": "45b8cef5_3bd50341",
+      "range": {
+        "startLine": 110,
+        "startChar": 40,
+        "endLine": 110,
+        "endChar": 50
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "45b8cef5_9e2abde0",
         "filename": "packages/infra_libs/infra_libs/ts_mon/common/targets.py",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2016-08-27T01:26:23Z",
       "side": 1,
       "message": "That\u0027s no longer accurate (same as above, actually - stale comment).",
+      "range": {
+        "startLine": 101,
+        "startChar": 44,
+        "endLine": 101,
+        "endChar": 50
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4500ceb2_387d4946",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/targets.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45b8cef5_9e2abde0",
       "range": {
         "startLine": 101,
         "startChar": 44,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "4500ceb2_7877c165",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/interface_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45b8cef5_7e1929d5",
+      "range": {
+        "startLine": 39,
+        "startChar": 4,
+        "endLine": 39,
+        "endChar": 40
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "45b8cef5_3e45f1a2",
         "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/interface_test.py",
         "patchSetId": 1
@@ -82,6 +154,30 @@
       "writtenOn": "2016-08-27T01:26:23Z",
       "side": 1,
       "message": "Do you actually need to mock this? I don\u0027t see it doing anything that would disrupt or slow down your tests. Same below.",
+      "range": {
+        "startLine": 68,
+        "startChar": 2,
+        "endLine": 69,
+        "endChar": 28
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e58d42b7_7d6f97f5",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/interface_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45b8cef5_3e45f1a2",
       "range": {
         "startLine": 68,
         "startChar": 2,
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "e58d42b7_fdbe4772",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/interface_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45b8cef5_deb4b597",
+      "range": {
+        "startLine": 138,
+        "startChar": 2,
+        "endLine": 139,
+        "endChar": 28
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "45b8cef5_c1505867",
         "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/interface_test.py",
         "patchSetId": 1
@@ -128,6 +248,30 @@
       "writtenOn": "2016-08-27T01:26:23Z",
       "side": 1,
       "message": "Please use interface.METRICS_DATA_LENGTH_LIMIT + 1 rather than hard-coded numbers. Same below.",
+      "range": {
+        "startLine": 160,
+        "startChar": 20,
+        "endLine": 160,
+        "endChar": 24
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e58d42b7_ddb98b8d",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/interface_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45b8cef5_c1505867",
       "range": {
         "startLine": 160,
         "startChar": 20,
@@ -163,6 +307,30 @@
     },
     {
       "key": {
+        "uuid": "e58d42b7_5dce5b2f",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/interface_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 408,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45b8cef5_010f7041",
+      "range": {
+        "startLine": 408,
+        "startChar": 29,
+        "endLine": 408,
+        "endChar": 48
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "45b8cef5_41fd6802",
         "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/interface_test.py",
         "patchSetId": 1
@@ -174,6 +342,30 @@
       "writtenOn": "2016-08-27T01:26:23Z",
       "side": 1,
       "message": "nit: for readability, I\u0027d suggest \"for i, ds in enumerate(data_sets):\"",
+      "range": {
+        "startLine": 437,
+        "startChar": 8,
+        "endLine": 437,
+        "endChar": 24
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e58d42b7_5de73ba7",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/interface_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 437,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45b8cef5_41fd6802",
       "range": {
         "startLine": 437,
         "startChar": 8,
@@ -209,6 +401,30 @@
     },
     {
       "key": {
+        "uuid": "e58d42b7_9d53834b",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/interface_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 442,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45b8cef5_c17cd87d",
+      "range": {
+        "startLine": 442,
+        "startChar": 31,
+        "endLine": 442,
+        "endChar": 53
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "45b8cef5_0cb687ef",
         "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/interface_test.py",
         "patchSetId": 1
@@ -220,6 +436,30 @@
       "writtenOn": "2016-08-27T01:26:23Z",
       "side": 1,
       "message": "Same as above - I\u0027d set the time explicitly between invocations.",
+      "range": {
+        "startLine": 458,
+        "startChar": 32,
+        "endLine": 458,
+        "endChar": 74
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e58d42b7_bd583f66",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/interface_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 458,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45b8cef5_0cb687ef",
       "range": {
         "startLine": 458,
         "startChar": 32,
@@ -255,6 +495,30 @@
     },
     {
       "key": {
+        "uuid": "e58d42b7_fd62c711",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/interface_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 468,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45b8cef5_0c9fa75f",
+      "range": {
+        "startLine": 468,
+        "startChar": 9,
+        "endLine": 468,
+        "endChar": 70
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "45b8cef5_6c90634a",
         "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/interface_test.py",
         "patchSetId": 1
@@ -266,6 +530,30 @@
       "writtenOn": "2016-08-27T01:26:23Z",
       "side": 1,
       "message": "same as above",
+      "range": {
+        "startLine": 517,
+        "startChar": 17,
+        "endLine": 517,
+        "endChar": 53
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e58d42b7_dd36eb04",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/interface_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 517,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45b8cef5_6c90634a",
       "range": {
         "startLine": 517,
         "startChar": 17,
@@ -301,6 +589,30 @@
     },
     {
       "key": {
+        "uuid": "e58d42b7_9d59c33c",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/metric_store_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45b8cef5_c7d3c808",
+      "range": {
+        "startLine": 86,
+        "startChar": 4,
+        "endLine": 86,
+        "endChar": 50
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "45b8cef5_a7d8d423",
         "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/metrics_test.py",
         "patchSetId": 1
@@ -312,6 +624,54 @@
       "writtenOn": "2016-08-27T01:26:23Z",
       "side": 1,
       "message": "nit: let\u0027s move these to the same block with infra_libs imports. I\u0027m not sure why protos were imported twice in the old code.",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 71
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e58d42b7_fd6807c3",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/metrics_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45b8cef5_a7d8d423",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 71
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e58d42b7_fd0c8712",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/metrics_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45b8cef5_a7d8d423",
       "range": {
         "startLine": 9,
         "startChar": 0,
@@ -347,6 +707,30 @@
     },
     {
       "key": {
+        "uuid": "e58d42b7_fd93a7a6",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/metrics_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45b8cef5_471338b6",
+      "range": {
+        "startLine": 131,
+        "startChar": 2,
+        "endLine": 136,
+        "endChar": 62
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "45b8cef5_874b90b8",
         "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/metrics_test.py",
         "patchSetId": 1
@@ -358,6 +742,30 @@
       "writtenOn": "2016-08-27T01:26:23Z",
       "side": 1,
       "message": "Same as above - I\u0027d skip the mocks and use a specific metric constructor instead. You can then test that the data fields are populated (ultimately, that\u0027s what matters), rather than that a call to a helper function happened.",
+      "range": {
+        "startLine": 153,
+        "startChar": 2,
+        "endLine": 156,
+        "endChar": 28
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e58d42b7_9dfd43d4",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/metrics_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45b8cef5_874b90b8",
       "range": {
         "startLine": 153,
         "startChar": 2,
@@ -393,6 +801,30 @@
     },
     {
       "key": {
+        "uuid": "e58d42b7_7da077e6",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/metrics_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45b8cef5_67487cbb",
+      "range": {
+        "startLine": 165,
+        "startChar": 4,
+        "endLine": 165,
+        "endChar": 11
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "45b8cef5_27cba41f",
         "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/metrics_test.py",
         "patchSetId": 1
@@ -404,6 +836,30 @@
       "writtenOn": "2016-08-27T01:26:23Z",
       "side": 1,
       "message": "I wonder if these tests could be simpler and more robust to refactoring if done similarly to interface_test.py - declare a metric, set a value, serialize it to the new proto (e.g. interface._generate_proto_new()) and check that the proto is correct. It\u0027s how the old proto is tested.\n\nSame for all other metrics.",
+      "range": {
+        "startLine": 231,
+        "startChar": 2,
+        "endLine": 241,
+        "endChar": 60
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "916ccd82_6a0e37ec",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/metrics_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 241,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45b8cef5_27cba41f",
       "range": {
         "startLine": 231,
         "startChar": 2,
@@ -439,6 +895,30 @@
     },
     {
       "key": {
+        "uuid": "916ccd82_2a183f2d",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/metrics_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 681,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45b8cef5_87edd089",
+      "range": {
+        "startLine": 681,
+        "startChar": 16,
+        "endLine": 681,
+        "endChar": 34
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "45b8cef5_beec61be",
         "filename": "packages/infra_libs/infra_libs/ts_mon/protos/new/acquisition_task.proto",
         "patchSetId": 1
@@ -462,6 +942,30 @@
     },
     {
       "key": {
+        "uuid": "e58d42b7_bd44bf24",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/protos/new/acquisition_task.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45b8cef5_beec61be",
+      "range": {
+        "startLine": 6,
+        "startChar": 8,
+        "endLine": 6,
+        "endChar": 21
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "45b8cef5_7baa5b82",
         "filename": "packages/infra_libs/infra_libs/ts_mon/protos/new/metrics.proto",
         "patchSetId": 1
@@ -473,6 +977,30 @@
       "writtenOn": "2016-08-27T01:26:23Z",
       "side": 1,
       "message": "Let\u0027s rename to ts_mon.proto, just like in the old version. I don\u0027t believe this changes anything functionally.",
+      "range": {
+        "startLine": 6,
+        "startChar": 8,
+        "endLine": 6,
+        "endChar": 24
+      },
+      "revId": "9de6375e2f6bf28c884458208c2a78aff8999817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e58d42b7_dd498b3b",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/protos/new/metrics.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1160021
+      },
+      "writtenOn": "2016-09-01T18:06:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45b8cef5_7baa5b82",
       "range": {
         "startLine": 6,
         "startChar": 8,
