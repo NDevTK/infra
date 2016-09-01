@@ -16,7 +16,7 @@ setup(
     install_requires=[
         'google-api-python-client',
         'oauth2client',
-        'protobuf',
+        'protobuf>=3.0.0',
     ],
     package_data={
         '': ['*.md', '*.proto'],
