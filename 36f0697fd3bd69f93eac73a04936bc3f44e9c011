@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "966683cf_29579922",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/interface_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 386,
+      "author": {
+        "id": 1116444
+      },
+      "writtenOn": "2016-09-08T19:21:22Z",
+      "side": 1,
+      "message": "nit: better practice is to use mock.create_autospec(time.time, spec_set\u003dTrue). It\u0027s basically the same as MagicMock(), but checks for correct invocation.",
+      "range": {
+        "startLine": 386,
+        "startChar": 19,
+        "endLine": 386,
+        "endChar": 33
+      },
+      "revId": "36f0697fd3bd69f93eac73a04936bc3f44e9c011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "966683cf_8969858d",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/metric_store_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1116444
+      },
+      "writtenOn": "2016-09-08T19:21:22Z",
+      "side": 1,
+      "message": "nit: these are fragile and likely unnecessary. Consider removing.",
+      "range": {
+        "startLine": 91,
+        "startChar": 4,
+        "endLine": 91,
+        "endChar": 54
+      },
+      "revId": "36f0697fd3bd69f93eac73a04936bc3f44e9c011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "966683cf_c97b7d52",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/metric_store_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1116444
+      },
+      "writtenOn": "2016-09-08T19:21:22Z",
+      "side": 1,
+      "message": "nit: same here - consider removing.",
+      "range": {
+        "startLine": 104,
+        "startChar": 4,
+        "endLine": 104,
+        "endChar": 50
+      },
+      "revId": "36f0697fd3bd69f93eac73a04936bc3f44e9c011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "966683cf_09373507",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/metrics_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1116444
+      },
+      "writtenOn": "2016-09-08T19:21:22Z",
+      "side": 1,
+      "message": "Please use create_autospec(time.time, spec_set\u003dTrue) instead.",
+      "range": {
+        "startLine": 34,
+        "startChar": 24,
+        "endLine": 34,
+        "endChar": 33
+      },
+      "revId": "36f0697fd3bd69f93eac73a04936bc3f44e9c011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "966683cf_a9b729f8",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/test/monitors_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1116444
+      },
+      "writtenOn": "2016-09-08T19:21:22Z",
+      "side": 1,
+      "message": "nit: I\u0027d add reset_for_unittest() to setUp() as well, just for good measure.",
+      "range": {
+        "startLine": 40,
+        "startChar": 4,
+        "endLine": 40,
+        "endChar": 40
+      },
+      "revId": "36f0697fd3bd69f93eac73a04936bc3f44e9c011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "966683cf_a9e9e9e3",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/protos/current/__init__.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1116444
+      },
+      "writtenOn": "2016-09-08T19:21:22Z",
+      "side": 1,
+      "message": "nit: 2016",
+      "range": {
+        "startLine": 1,
+        "startChar": 12,
+        "endLine": 1,
+        "endChar": 16
+      },
+      "revId": "36f0697fd3bd69f93eac73a04936bc3f44e9c011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "966683cf_a94489ff",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/protos/new/any.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1116444
+      },
+      "writtenOn": "2016-09-08T19:21:22Z",
+      "side": 1,
+      "message": "nit: 2016",
+      "range": {
+        "startLine": 1,
+        "startChar": 13,
+        "endLine": 1,
+        "endChar": 17
+      },
+      "revId": "36f0697fd3bd69f93eac73a04936bc3f44e9c011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "966683cf_490dadeb",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/protos/new/metrics.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1116444
+      },
+      "writtenOn": "2016-09-08T19:21:22Z",
+      "side": 1,
+      "message": "nit: 2016 :-)",
+      "range": {
+        "startLine": 1,
+        "startChar": 13,
+        "endLine": 1,
+        "endChar": 17
+      },
+      "revId": "36f0697fd3bd69f93eac73a04936bc3f44e9c011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
