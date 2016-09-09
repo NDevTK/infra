@@ -1,0 +1,128 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+syntax = "proto3";
+
+package ts_mon.proto;
+
+import "any.proto";
+import "timestamp.proto";
+import "acquisition_network_device.proto";
+import "acquisition_task.proto";
+
+message MetricsPayload {
+  repeated MetricsCollection metrics_collection = 1;
+}
+
+message MetricsCollection {
+  repeated MetricsDataSet metrics_data_set = 1;
+  oneof target_schema {
+    NetworkDevice network_device = 11;
+    Task task = 12;
+  }
+}
+
+message MetricsDataSet {
+  string metric_name = 1;
+  repeated MetricFieldDescriptor field_descriptor = 2;
+  StreamKind stream_kind = 3;
+  ValueType value_type = 4;
+  string description = 5;
+  Annotations annotations = 6;
+  repeated MetricsData data = 7;
+  message MetricFieldDescriptor {
+    string name = 1;
+
+    FieldType field_type = 2;
+    enum FieldType {
+      STRING = 0;
+      INT64 = 1;
+      BOOL = 2;
+    }
+  }
+}
+
+message MetricsData {
+  oneof value {
+    bool bool_value = 1;
+    string string_value = 2;
+    int64 int64_value = 3;
+    double double_value = 4;
+    Distribution distribution_value = 5;
+  }
+
+  repeated MetricField field = 6;
+  message MetricField {
+    string name = 1;
+
+    oneof value {
+      string string_value = 2;
+      int64 int64_value = 3;
+      bool bool_value = 4;
+    }
+  }
+
+  Timestamp start_timestamp = 7;
+  Timestamp end_timestamp = 8;
+
+  message Distribution {
+    int64 count = 1;
+    double mean = 2;
+    double sum_of_squared_deviation = 3;
+    double minimum = 4;
+    double maximum = 5;
+
+    oneof bucket_options {
+      LinearOptions linear_buckets = 6;
+      ExponentialOptions exponential_buckets = 7;
+      ExplicitOptions explicit_buckets = 8;
+    }
+
+    message LinearOptions {
+      int32 num_finite_buckets = 1;
+      double width = 2;
+      double offset = 3;
+    }
+
+    message ExponentialOptions {
+      int32 num_finite_buckets = 1;
+      double growth_factor = 2;
+      double scale = 3;
+    }
+
+    message ExplicitOptions {
+      repeated double bound = 1 [packed = true];
+    }
+
+    repeated int64 bucket_count = 9 [packed = true];
+
+    repeated Exemplar exemplar = 10;
+
+    message Exemplar {
+      double value = 1;
+      Timestamp timestamp = 2;
+      repeated Any attachment = 3;
+    }
+  }
+}
+
+message Annotations {
+  string unit = 1;
+  bool timestamp = 2;
+  string deprecation = 3;
+  repeated Any annotation = 4;
+}
+
+enum StreamKind {
+  GAUGE = 0;
+  CUMULATIVE = 1;
+  DELTA = 2;
+}
+
+enum ValueType {
+  BOOL = 0;
+  STRING = 1;
+  INT64 = 2;
+  DOUBLE = 3;
+  DISTRIBUTION = 4;
+}
