@@ -33,7 +33,10 @@ class ClientMonitor(jsonfeed.JsonFeed):
 
     post_data = mr.request.POST
     errors = post_data.get('errors')
-    errors = json.loads(errors)
+    if errors:
+      errors = json.loads(errors)
+    else:
+      logging.error('bad client monitor report: %s', post_data)
 
     total_errors = 0
     for error_key in errors:
