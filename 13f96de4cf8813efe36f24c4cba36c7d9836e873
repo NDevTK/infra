@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0b28aa68_bcf2eefc",
+        "filename": "appengine/monorail/framework/clientmon.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2016-09-16T22:50:15Z",
+      "side": 1,
+      "message": "It might be better to use a try-except here because there might be a non-empty string that simply cannot be parsed.",
+      "revId": "13f96de4cf8813efe36f24c4cba36c7d9836e873",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0b28aa68_3ce7de3d",
+        "filename": "appengine/monorail/framework/clientmon.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2016-09-16T22:50:15Z",
+      "side": 1,
+      "message": "I always go with %r for logging to reduce the chance of confusing output.",
+      "revId": "13f96de4cf8813efe36f24c4cba36c7d9836e873",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
