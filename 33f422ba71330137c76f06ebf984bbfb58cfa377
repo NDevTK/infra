@@ -1,0 +1,234 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "25dbdf69_0e9b2b18",
+        "filename": "infra/experimental/doc/luci-swarmbucket-cq.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2016-09-26T23:28:58Z",
+      "side": 1,
+      "message": "This sentence comes right after mentioning cq.cfg, so it may create an impression that JSON blob mentioned here is specified in cq.cfg. Perhaps moving a sentence from line 36 before this one will make it more clear.",
+      "range": {
+        "startLine": 5,
+        "startChar": 199,
+        "endLine": 5,
+        "endChar": 243
+      },
+      "revId": "33f422ba71330137c76f06ebf984bbfb58cfa377",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "25dbdf69_ee29ff8f",
+        "filename": "infra/experimental/doc/luci-swarmbucket-cq.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2016-09-26T23:28:58Z",
+      "side": 1,
+      "message": "Because bucket config is same for entire repo/project, while there could be several CQs for individual branches in the repo. There is a proposal to change this and move cq.cfg to the same place as cr-buildbucket.cfg: https://docs.google.com/document/d/1AxvFPzflI9Pt2qUYDvRNdGDWrY1TvLxIS_Z4sOMF3Xg/edit?ts\u003d57d036f4.",
+      "range": {
+        "startLine": 42,
+        "startChar": 63,
+        "endLine": 42,
+        "endChar": 141
+      },
+      "revId": "33f422ba71330137c76f06ebf984bbfb58cfa377",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "25dbdf69_ae71b79f",
+        "filename": "infra/experimental/doc/luci-swarmbucket-cq.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2016-09-26T23:28:58Z",
+      "side": 1,
+      "message": "`parameters`",
+      "range": {
+        "startLine": 81,
+        "startChar": 217,
+        "endLine": 81,
+        "endChar": 229
+      },
+      "revId": "33f422ba71330137c76f06ebf984bbfb58cfa377",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "25dbdf69_6e450f41",
+        "filename": "infra/experimental/doc/luci-swarmbucket-cq.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2016-09-26T23:28:58Z",
+      "side": 1,
+      "message": "`create_task_async`",
+      "range": {
+        "startLine": 81,
+        "startChar": 17,
+        "endLine": 81,
+        "endChar": 34
+      },
+      "revId": "33f422ba71330137c76f06ebf984bbfb58cfa377",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "25dbdf69_0e4c4b6a",
+        "filename": "infra/experimental/doc/luci-swarmbucket-cq.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2016-09-26T23:28:58Z",
+      "side": 1,
+      "message": "`create_task_def_async`",
+      "range": {
+        "startLine": 81,
+        "startChar": 152,
+        "endLine": 81,
+        "endChar": 173
+      },
+      "revId": "33f422ba71330137c76f06ebf984bbfb58cfa377",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "25dbdf69_0ec20b98",
+        "filename": "infra/experimental/doc/luci-swarmbucket-cq.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2016-09-26T23:28:58Z",
+      "side": 1,
+      "message": "not sure if it\u0027s useful to mention finding documentation in the documentation :-)",
+      "range": {
+        "startLine": 83,
+        "startChar": 0,
+        "endLine": 83,
+        "endChar": 76
+      },
+      "revId": "33f422ba71330137c76f06ebf984bbfb58cfa377",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "25dbdf69_6ee98f0a",
+        "filename": "infra/experimental/doc/luci-swarmbucket-cq.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2016-09-26T23:28:58Z",
+      "side": 1,
+      "message": "`cr-buildbucket.cfg` and other config file names below",
+      "range": {
+        "startLine": 144,
+        "startChar": 23,
+        "endLine": 144,
+        "endChar": 41
+      },
+      "revId": "33f422ba71330137c76f06ebf984bbfb58cfa377",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "25dbdf69_8e039be7",
+        "filename": "infra/experimental/doc/luci-swarmbucket-cq.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2016-09-26T23:28:58Z",
+      "side": 1,
+      "message": "`$repository` and other $vars below",
+      "range": {
+        "startLine": 144,
+        "startChar": 0,
+        "endLine": 144,
+        "endChar": 11
+      },
+      "revId": "33f422ba71330137c76f06ebf984bbfb58cfa377",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "25dbdf69_aed5373f",
+        "filename": "infra/experimental/doc/luci-swarmbucket-cq.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2016-09-26T23:28:58Z",
+      "side": 1,
+      "message": "missing link?",
+      "range": {
+        "startLine": 153,
+        "startChar": 89,
+        "endLine": 153,
+        "endChar": 93
+      },
+      "revId": "33f422ba71330137c76f06ebf984bbfb58cfa377",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "25dbdf69_ce4f6335",
+        "filename": "infra/experimental/doc/luci-swarmbucket-cq.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2016-09-26T23:28:58Z",
+      "side": 1,
+      "message": "Is this supposed to be a $?",
+      "range": {
+        "startLine": 157,
+        "startChar": 20,
+        "endLine": 157,
+        "endChar": 21
+      },
+      "revId": "33f422ba71330137c76f06ebf984bbfb58cfa377",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
