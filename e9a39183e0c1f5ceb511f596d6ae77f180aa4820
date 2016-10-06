@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ffddd82c_062de045",
+        "filename": "appengine/chromium_bugs/static/js/wizard.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-10-06T21:50:32Z",
+      "side": 1,
+      "message": "tabs, here and several places below in this file",
+      "revId": "e9a39183e0c1f5ceb511f596d6ae77f180aa4820",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
