@@ -44,6 +44,22 @@ function showStep(step_num, opt_focus_id) {
     }
 }
 
+function selectRole(role_name) {
+    $("user_menu").style.display = "none";
+    $("dev_menu").style.display = "none";
+    $(role_name + "_menu").style.display = "";
+    $("next2").disabled = "disabled";
+
+    var devRadios = $("dev_menu").querySelectorAll('input');
+    for (var i = 0; i < devRadios.length; i++) {
+	devRadios[i].checked = "";
+    }
+    var userRadios = $("user_menu").querySelectorAll('input');
+    for (var i = 0; i < userRadios.length; i++) {
+	userRadios[i].checked = "";
+    }
+}
+
 function selectComp(component_name) {
     $("next2").disabled = "";
     $("component_name").innerHTML = component_name;
@@ -81,11 +97,12 @@ var nextFileID = 1;
   * insert it into the page DOM.
   * @param {string} id The id of the parent HTML element.
   */
- function addAttachmentFields(id) {
+ function addAttachmentFields(idPrefix) {
+   idPrefix = idPrefix || '';
    if (nextFileID >= 16) {
      return;
    }
-   var el = $('attachmentarea');
+   var el = $(idPrefix + 'attachmentarea');
    el.style.marginTop = '4px';
    var div = document.createElement('div');
    div.innerHTML = '<input type="file" name="file' + nextFileID +
@@ -96,11 +113,11 @@ var nextFileID = 1;
    el.appendChild(div);
    ++nextFileID;
    if (nextFileID < 16) {
-     $(ATTACHAFILE_ID).innerHTML = 'Attach another file'; // TODO: i18n
+     $(idPrefix + ATTACHAFILE_ID).innerHTML = 'Attach another file'; // TODO: i18n
    } else {
-     $(ATTACHPROMPT_ID).style.display = 'none';
+     $(idPrefix + ATTACHPROMPT_ID).style.display = 'none';
    }
-   $(ATTACHMAXSIZE_ID).style.display = '';
+   $(idPrefix + ATTACHMAXSIZE_ID).style.display = '';
  }
 
 
@@ -118,7 +135,7 @@ var originalDescriptionParts = [
     "about:sync contents: $ABOUT_SYNC",
     "Did this work before? $WORKED_BEFORE $WHEN_WORKED",
     "Is it a problem with Flash or HTML5? $FLASH_OR_HTML5",
-    "Does this work in other browsers? $WORKS_OTHERS $WORKS_WHICH",
+    "Does this work in other browsers? $WORKS_OTHERS\n $WORKS_WHICH",
     ("Chrome version: $CHROMEVERSION  Channel: $CHANNEL\n" +
      "OS Version: $OSVERSION\n"  +
      "Flash Version: $FLASHVERSION"),
@@ -255,21 +272,24 @@ function stuffDataAndSubmit() {
       $("post_label_bitness").value = 'Arch-x86_64';
     }
 
+    if ($("reduced_attachmentarea")) {
+	while ($('reduced_attachmentarea').hasChildNodes()) {
+	    $('submit_attachmentarea').appendChild($('reduced_attachmentarea').firstChild);
+	}
+    }
+
     while ($('attachmentarea').hasChildNodes()) {
 	$('submit_attachmentarea').appendChild($('attachmentarea').firstChild);
     }
 
-    // If the wizard is not posting to codesite this time, convert label1
-    // to a component value.
-    // TODO(jrobbins): after chromium is migrated to monorail, simplify
-    // this logic and use a components field all the time instad of label1.
     $("post_components").value = "";
-    var isMonorail = !location.search.includes('code.google.com');
     var compLabelEl = document.forms[0].label1;
-    if (isMonorail && compLabelEl && compLabelEl.value.startsWith(CR_PREFIX)) {
+    if (compLabelEl) {
 	var compValue = compLabelEl.value;
-	compValue = compValue.substring(CR_PREFIX.length);
-	compValue = compValue.replace(/-/g, '>');
+	if (compValue.startsWith(CR_PREFIX)) {
+	    compValue = compValue.substring(CR_PREFIX.length);
+	    compValue = compValue.replace(/-/g, '>');
+	}
 	$("post_components").value = compValue;
 	$("post_label1").value = "";
     }
