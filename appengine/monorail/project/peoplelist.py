@@ -159,7 +159,8 @@ class PeopleList(servlet.Servlet):
         mr.cnxn, self.services.user, post_data.get('addmembers'))
     role = post_data['role']
 
-    owner_ids, committer_ids, contributor_ids = project_helpers.MembersWith(
+    (owner_ids, committer_ids,
+     contributor_ids) = project_helpers.MembersWithGivenIDs(
         mr.project, new_member_ids, role)
 
     total_people = len(owner_ids) + len(committer_ids) + len(contributor_ids)
@@ -199,7 +200,8 @@ class PeopleList(servlet.Servlet):
     logging.info('remove_strs = %r', remove_strs)
     remove_ids = set(
         self.services.user.LookupUserIDs(mr.cnxn, remove_strs).values())
-    owner_ids, committer_ids, contributor_ids = project_helpers.MembersWithout(
+    (owner_ids, committer_ids,
+     contributor_ids) = project_helpers.MembersWithoutGivenIDs(
         mr.project, remove_ids)
 
     # 2. Call services layer to save changes.
