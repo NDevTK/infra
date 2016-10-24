@@ -1,0 +1,27 @@
+<h4>Hotlist details</h4>
+
+<div class="section">
+  Hotlist name:<br>
+  [initial_name]<br>
+
+  Hotlist summary:<br>
+  [initial_summary]<br>
+
+  Hotlist description:<br>
+  [initial_description]<br>
+</div>
+
+<h4>Hotlist defaults</h4>
+
+<div class="section">
+  Default columns shown in list view:<br>
+  [initial_default_col_spec]<br>
+</div>
+
+<h4>Hotlist access</h4>
+<div class="section">
+  <br>Public hotlists can be seen by anyone on the internet. Issues in the list can be seen by anyone who can normally see them.<br>
+  <br>Private hotlists can only be seen by users who are added to the hotlist by an owner or admin.<br>
+  <br>This hotlist is [if-any initial_is_private]private[else]public[end]<br>
+  
+</div>
