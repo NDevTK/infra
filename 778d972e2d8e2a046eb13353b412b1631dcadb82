@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "21d3d849_3822a56a",
+        "filename": "appengine/monorail/features/hotlistdetails.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2016-10-25T22:02:24Z",
+      "side": 1,
+      "message": "We use an EZT variable named \u0027read_only\u0027 to indicate when the whole site is read-only, e.g., for database maintenance windows.  So, if the site is read-only and a user visits a hotlist that they are allowed to edit, they will see editing widgets even though the app cannot write to the DB.  So, instead try naming this cant_administer_hotlist and then in hotlist-details-page.ezt check it like:\n[if-any read_only cant_administer_hotlist][include \"read-only-hotlist-details-page.ezt\"]\n[else]\n...",
+      "revId": "778d972e2d8e2a046eb13353b412b1631dcadb82",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "21d3d849_f84c2d3f",
+        "filename": "appengine/monorail/features/hotlistdetails.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2016-10-25T22:02:24Z",
+      "side": 1,
+      "message": "You could do this with !\u003d.\nis_private \u003d post_data.get(\u0027is_private\u0027) !\u003d \u0027no\u0027",
+      "revId": "778d972e2d8e2a046eb13353b412b1631dcadb82",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "21d3d849_78413d02",
+        "filename": "appengine/monorail/services/features_svc.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 537,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2016-10-25T22:02:24Z",
+      "side": 1,
+      "message": "We don\u0027t have a fulltext index of hotlists.  So, this comment should be:\n# Update the hotlist PB in RAM.",
+      "revId": "778d972e2d8e2a046eb13353b412b1631dcadb82",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "21d3d849_18bb69c7",
+        "filename": "appengine/monorail/templates/features/hotlist-details-page.ezt",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2016-10-25T22:02:24Z",
+      "side": 1,
+      "message": "Instead of using \"Public\" and \"Private\", let\u0027s use \"Anyone on the Internet\" and \"Members only\".",
+      "revId": "778d972e2d8e2a046eb13353b412b1631dcadb82",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "21d3d849_78b49dd8",
+        "filename": "appengine/monorail/templates/features/read-only-hotlist-details-page.ezt",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2016-10-25T22:02:24Z",
+      "side": 1,
+      "message": "Let\u0027s put this line first in this section.  And, use a colon rather than an English sentence. E.g.,\n\u003cp\u003eWho can view this hotlist: [if-any initial_is_private]Members only[else]Anyone on the Internet[end]\u003c/p\u003e\n\nIf you go with that wording, I don\u0027t think that you need the other text to explain what public and private mean.  You might still want a paragraph explaining that individual issues in the list can be seen only by users who can normally see them.",
+      "revId": "778d972e2d8e2a046eb13353b412b1631dcadb82",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
