@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "21d3d849_bbc58f2a",
+        "filename": "appengine/monorail/features/hotlistdetails.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-10-25T22:33:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "21d3d849_3822a56a",
+      "revId": "778d972e2d8e2a046eb13353b412b1631dcadb82",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "21d3d849_f84c2d3f",
         "filename": "appengine/monorail/features/hotlistdetails.py",
         "patchSetId": 4
@@ -30,6 +48,24 @@
       "writtenOn": "2016-10-25T22:02:24Z",
       "side": 1,
       "message": "You could do this with !\u003d.\nis_private \u003d post_data.get(\u0027is_private\u0027) !\u003d \u0027no\u0027",
+      "revId": "778d972e2d8e2a046eb13353b412b1631dcadb82",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "21d3d849_7bb017c5",
+        "filename": "appengine/monorail/features/hotlistdetails.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-10-25T22:33:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "21d3d849_f84c2d3f",
       "revId": "778d972e2d8e2a046eb13353b412b1631dcadb82",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "21d3d849_1bb7e3bb",
+        "filename": "appengine/monorail/services/features_svc.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 537,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-10-25T22:33:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "21d3d849_78413d02",
+      "revId": "778d972e2d8e2a046eb13353b412b1631dcadb82",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "21d3d849_18bb69c7",
         "filename": "appengine/monorail/templates/features/hotlist-details-page.ezt",
         "patchSetId": 4
@@ -70,6 +124,24 @@
     },
     {
       "key": {
+        "uuid": "21d3d849_3b8bbfaa",
+        "filename": "appengine/monorail/templates/features/hotlist-details-page.ezt",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-10-25T22:33:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "21d3d849_18bb69c7",
+      "revId": "778d972e2d8e2a046eb13353b412b1631dcadb82",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "21d3d849_78b49dd8",
         "filename": "appengine/monorail/templates/features/read-only-hotlist-details-page.ezt",
         "patchSetId": 4
@@ -81,6 +153,24 @@
       "writtenOn": "2016-10-25T22:02:24Z",
       "side": 1,
       "message": "Let\u0027s put this line first in this section.  And, use a colon rather than an English sentence. E.g.,\n\u003cp\u003eWho can view this hotlist: [if-any initial_is_private]Members only[else]Anyone on the Internet[end]\u003c/p\u003e\n\nIf you go with that wording, I don\u0027t think that you need the other text to explain what public and private mean.  You might still want a paragraph explaining that individual issues in the list can be seen only by users who can normally see them.",
+      "revId": "778d972e2d8e2a046eb13353b412b1631dcadb82",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "21d3d849_bbc8ef08",
+        "filename": "appengine/monorail/templates/features/read-only-hotlist-details-page.ezt",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-10-25T22:33:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "21d3d849_78b49dd8",
       "revId": "778d972e2d8e2a046eb13353b412b1631dcadb82",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
