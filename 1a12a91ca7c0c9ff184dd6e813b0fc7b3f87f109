@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6655e638_77a470a2",
+        "filename": "appengine/cr-buildbucket/swarming/swarming.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2016-10-28T18:39:36Z",
+      "side": 1,
+      "message": "0, 99\n\notherwise 100% canary is actually ~99% canary (randint returns [0, 100], including both ends of the range).",
+      "range": {
+        "startLine": 223,
+        "startChar": 24,
+        "endLine": 223,
+        "endChar": 30
+      },
+      "revId": "1a12a91ca7c0c9ff184dd6e813b0fc7b3f87f109",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
