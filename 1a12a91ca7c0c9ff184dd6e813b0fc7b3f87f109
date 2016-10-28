@@ -22,6 +22,24 @@
       "revId": "1a12a91ca7c0c9ff184dd6e813b0fc7b3f87f109",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6655e638_1ac4392e",
+        "filename": "appengine/cr-buildbucket/swarming/swarming.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2016-10-28T18:47:50Z",
+      "side": 1,
+      "message": "i thought second parameter is exclusive. Done",
+      "parentUuid": "6655e638_77a470a2",
+      "revId": "1a12a91ca7c0c9ff184dd6e813b0fc7b3f87f109",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
