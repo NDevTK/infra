@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4b7aab69_25b6d8df",
+        "filename": "go/src/infra/monitoring/sysmon/puppet/puppet.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2016-11-11T03:34:49Z",
+      "side": 1,
+      "message": "unrelated: does it make sense to send these errors as tsmon metrics? Even as coarse \"sysmon/errors\" counter with no extra fields, so we can know to look in logs if it\u0027s non-zero.",
+      "range": {
+        "startLine": 72,
+        "startChar": 4,
+        "endLine": 72,
+        "endChar": 20
+      },
+      "revId": "52e7f4e5b8ef4f4be7734d36ed939b0a7eda9cae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
