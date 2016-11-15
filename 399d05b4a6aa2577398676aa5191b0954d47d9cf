@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1042a47e_7fb2829a",
+        "filename": "appengine/monorail/services/test/features_svc_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 490,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-11-15T17:13:48Z",
+      "side": 1,
+      "message": "Should this test assert something after calling UpdateHotlistIssues?",
+      "revId": "399d05b4a6aa2577398676aa5191b0954d47d9cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
