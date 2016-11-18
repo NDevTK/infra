@@ -1,0 +1,95 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "308fa83f_7a8c7e19",
+        "filename": "appengine/monorail/features/hotlist_helpers.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-11-18T19:48:58Z",
+      "side": 1,
+      "message": "only need to indent two spaces here (and other instances below) after the \u0027with\u0027 statement",
+      "revId": "017eebc2d29cabc8c3274b358b0ed1ea53354027",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "308fa83f_5a1422bb",
+        "filename": "appengine/monorail/features/hotlist_helpers.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-11-18T19:48:58Z",
+      "side": 1,
+      "message": "Is there a missing element in this tuple or is this comma extraneous?",
+      "range": {
+        "startLine": 85,
+        "startChar": 51,
+        "endLine": 85,
+        "endChar": 52
+      },
+      "revId": "017eebc2d29cabc8c3274b358b0ed1ea53354027",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "700680a0_4806bf3e",
+        "filename": "appengine/monorail/features/hotlist_helpers.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-11-18T19:48:58Z",
+      "side": 1,
+      "message": "pydoc, here and below",
+      "revId": "017eebc2d29cabc8c3274b358b0ed1ea53354027",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f0943052_c162e6be",
+        "filename": "appengine/monorail/features/hotlist_helpers.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-11-18T19:48:58Z",
+      "side": 1,
+      "message": "only two blank lines",
+      "revId": "017eebc2d29cabc8c3274b358b0ed1ea53354027",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b0355864_a2ce9e6f",
+        "filename": "appengine/monorail/static/js/tracker/render-hotlist-table.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 305,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-11-18T19:48:58Z",
+      "side": 1,
+      "message": "at least window.console.error() it",
+      "revId": "017eebc2d29cabc8c3274b358b0ed1ea53354027",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
