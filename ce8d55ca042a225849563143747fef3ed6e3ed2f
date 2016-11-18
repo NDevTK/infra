@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "308fa83f_4b145abb",
+        "filename": "appengine/monorail/framework/sorting.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-11-18T02:30:01Z",
+      "side": 1,
+      "message": "I\u0027m going to call this in the json servlet after ranks get updated.",
+      "range": {
+        "startLine": 75,
+        "startChar": 0,
+        "endLine": 75,
+        "endChar": 40
+      },
+      "revId": "ce8d55ca042a225849563143747fef3ed6e3ed2f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
