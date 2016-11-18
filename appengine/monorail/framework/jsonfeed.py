@@ -83,7 +83,7 @@ class JsonFeed(servlet.Servlet):
 
   # pylint: disable=unused-argument
   # pylint: disable=arguments-differ
-  def get(self, project_name=None, viewed_username=None):
+  def get(self, project_name=None, viewed_username=None, hotlist_id=None):
     """Collect page-specific and generic info, then render the page.
 
     Args:
@@ -96,7 +96,7 @@ class JsonFeed(servlet.Servlet):
 
   # pylint: disable=unused-argument
   # pylint: disable=arguments-differ
-  def post(self, project_name=None, viewed_username=None):
+  def post(self, project_name=None, viewed_username=None, hotlist_id=None):
     """Parse the request, check base perms, and call form-specific code."""
     self._DoRequestHandling(self.mr.request, self.mr)
 
