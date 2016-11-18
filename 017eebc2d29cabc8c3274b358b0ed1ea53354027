@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "b0355864_456ebca9",
+        "filename": "appengine/monorail/features/hotlist_helpers.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-11-18T20:43:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "308fa83f_7a8c7e19",
+      "revId": "017eebc2d29cabc8c3274b358b0ed1ea53354027",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "308fa83f_5a1422bb",
         "filename": "appengine/monorail/features/hotlist_helpers.py",
         "patchSetId": 3
@@ -42,6 +60,24 @@
     },
     {
       "key": {
+        "uuid": "b0355864_a573088e",
+        "filename": "appengine/monorail/features/hotlist_helpers.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-11-18T20:43:21Z",
+      "side": 1,
+      "message": "extraneous. deleted.",
+      "parentUuid": "308fa83f_5a1422bb",
+      "revId": "017eebc2d29cabc8c3274b358b0ed1ea53354027",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "700680a0_4806bf3e",
         "filename": "appengine/monorail/features/hotlist_helpers.py",
         "patchSetId": 3
@@ -53,6 +89,24 @@
       "writtenOn": "2016-11-18T19:48:58Z",
       "side": 1,
       "message": "pydoc, here and below",
+      "revId": "017eebc2d29cabc8c3274b358b0ed1ea53354027",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b0355864_c5788c6c",
+        "filename": "appengine/monorail/features/hotlist_helpers.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-11-18T20:43:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "700680a0_4806bf3e",
       "revId": "017eebc2d29cabc8c3274b358b0ed1ea53354027",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
@@ -76,6 +130,24 @@
     },
     {
       "key": {
+        "uuid": "b0355864_658e6051",
+        "filename": "appengine/monorail/features/hotlist_helpers.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-11-18T20:43:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f0943052_c162e6be",
+      "revId": "017eebc2d29cabc8c3274b358b0ed1ea53354027",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b0355864_a2ce9e6f",
         "filename": "appengine/monorail/static/js/tracker/render-hotlist-table.js",
         "patchSetId": 3
@@ -87,6 +159,24 @@
       "writtenOn": "2016-11-18T19:48:58Z",
       "side": 1,
       "message": "at least window.console.error() it",
+      "revId": "017eebc2d29cabc8c3274b358b0ed1ea53354027",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b0355864_858b643e",
+        "filename": "appengine/monorail/static/js/tracker/render-hotlist-table.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 305,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-11-18T20:43:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b0355864_a2ce9e6f",
       "revId": "017eebc2d29cabc8c3274b358b0ed1ea53354027",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
