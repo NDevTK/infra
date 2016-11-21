@@ -1,0 +1,174 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b0355864_5333d827",
+        "filename": "appengine/monorail/features/hotlist_helpers.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2016-11-21T22:29:14Z",
+      "side": 1,
+      "message": "Style guide says to use two blank lines before each top-level function.  Here and throughout this file, because these were methods that have been converted to top-level.\n\nAlso, please add docstring.",
+      "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b0355864_33fc1400",
+        "filename": "appengine/monorail/features/hotlistissues.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2016-11-21T22:29:14Z",
+      "side": 1,
+      "message": "I use a variable named issues to be a list of issue PBs, but here you are passing in a list of (IID, rank) pairs.  So, renamed to hotlist_issues, or actually I like iid_rank_pairs better, so you could eliminate hotlist_issues from the caller too.\n\nAlso, docstring args no longer match the real parameter list.",
+      "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b0355864_73ea9c2f",
+        "filename": "appengine/monorail/features/hotlistissues.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2016-11-21T22:29:14Z",
+      "side": 1,
+      "message": "Please remove parens around the list of variables on the left-hand-side.  You should only use them if that part is long enough to line-wrap.",
+      "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b0355864_f33b0cde",
+        "filename": "appengine/monorail/features/rerankhotlist.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2016-11-21T22:29:14Z",
+      "side": 1,
+      "message": "Remove parens.",
+      "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b0355864_5358b817",
+        "filename": "appengine/monorail/features/rerankhotlist.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2016-11-21T22:29:14Z",
+      "side": 1,
+      "message": "Please add a TODO comment here.  It would be helpful to explain that the table_data value will be a JSON representation of the entire pagination page of the hotlist.",
+      "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b0355864_33f414d7",
+        "filename": "appengine/monorail/features/rerankhotlist.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2016-11-21T22:29:14Z",
+      "side": 1,
+      "message": "This looks right.  But, I tried\nhttps://6771-ccc4c44-tainted-jojwang-dot-monorail-staging.appspot.com/u/110247670/hotlists/999\nand got a 500 error instead of a 404.  So, I am thinking that you fixed the code after uploading the demo app, right?",
+      "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b0355864_73e29c16",
+        "filename": "appengine/monorail/framework/jsonfeed.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2016-11-21T22:29:14Z",
+      "side": 1,
+      "message": "Please update docstring Args section.  \n\nSeeing this code reminds me that is not obvious why these functions need to have these unused arguments.  Can you add a comment explaining why they are needed?  it is because they are specified in registerpages.py as an extra URL validation step even though we do our own URL parsing.",
+      "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b0355864_33f734b6",
+        "filename": "appengine/monorail/framework/sorting.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2016-11-21T22:29:14Z",
+      "side": 1,
+      "message": "Please use two blank lines between top-level functions/classes.",
+      "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b0355864_13d470ff",
+        "filename": "appengine/monorail/static/js/tracker/render-hotlist-table.js",
+        "patchSetId": 4
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2016-11-21T22:29:14Z",
+      "side": 1,
+      "message": "Does this work?  I would think that table.childNode.length gets reduced as you iterate through the list, so it would stop before reaching the end of the list.  E.g., if you had a several TBODYs, it would only delete the first 1/2 of them.",
+      "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b0355864_16c8de42",
+        "filename": "appengine/monorail/static/js/tracker/render-hotlist-table.js",
+        "patchSetId": 4
+      },
+      "lineNbr": 311,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2016-11-21T22:29:14Z",
+      "side": 1,
+      "message": "So, response[\u0027table_data\u0027] is a complete new set of data?  I guess that is more robust than trying to make an incremental edit to the existing tableData array.\n\nIf it sends back a whole table, and that table is paginated, it means that you need a TODO to pass pagination state to the server.  Otherwise if the user navigates to page 2 and then reranks, they could suddenly see page 1 again.",
+      "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
