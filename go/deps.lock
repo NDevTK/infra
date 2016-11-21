@@ -1,5 +1,5 @@
-hash: 5b9475709d60c3452dbdec8d21c69b1c7c726c3fcc7abeada976315422ae1660
-updated: 2016-11-18T10:42:42.805705911-08:00
+hash: 6988bbdf915d07113064d375e786af3a9e5db24198ebb885d2bf4656c089dba0
+updated: 2016-11-18T17:12:56.62393651-08:00
 imports:
 - name: cloud.google.com/go
   version: 5aca3b7200b228d4b47e9e511f1d77ac270855ff
@@ -9,6 +9,11 @@ imports:
   - compute/metadata
   - pubsub
   - storage
+- name: github.com/bradfitz/gomemcache
+  version: fb1f79c6b65acda83063cbc69f6bba1522558bfc
+  repo: https://chromium.googlesource.com/external/github.com/bradfitz/gomemcache.git
+  subpackages:
+  - memcache
 - name: github.com/DATA-DOG/go-sqlmock
   version: d4cd2ca2ad1cc2130bba385aab072218f131f636
   repo: https://chromium.googlesource.com/external/github.com/DATA-DOG/go-sqlmock.git
@@ -54,7 +59,7 @@ imports:
   version: c2c54e542fb797ad986b31721e1baedf214ca413
   repo: https://chromium.googlesource.com/external/github.com/kardianos/osext.git
 - name: github.com/kisielk/errcheck
-  version: 5b29f57a6f51b05cd8af8b345e728d7089123ab4
+  version: db0ca22445717d1b2c51ac1034440e0a2a2de645
   repo: https://chromium.googlesource.com/external/github.com/kisielk/errcheck.git
 - name: github.com/kisielk/gotool
   version: 5e136deb9b893bbe6c8f23236ff4378b7a8a0dbb
@@ -232,7 +237,7 @@ imports:
   subpackages:
   - protobuf
 - name: google.golang.org/grpc
-  version: b13ef794997191ec801db90a42c50034df91850a
+  version: 63bd55dfbf781b183216d2dd4433a659c947648a
   repo: https://chromium.googlesource.com/external/github.com/grpc/grpc-go.git
   subpackages:
   - codes
