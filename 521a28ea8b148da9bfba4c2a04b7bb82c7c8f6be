@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b0355864_f91e8d8a",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1148599
+      },
+      "writtenOn": "2016-11-21T23:19:43Z",
+      "side": 1,
+      "message": "not needed",
+      "revId": "521a28ea8b148da9bfba4c2a04b7bb82c7c8f6be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
