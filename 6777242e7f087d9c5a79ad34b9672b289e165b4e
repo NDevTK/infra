@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "b0355864_8464b4f7",
+        "filename": "appengine/monorail/features/hotlist_helpers.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-11-22T19:32:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b0355864_5333d827",
+      "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b0355864_33fc1400",
         "filename": "appengine/monorail/features/hotlistissues.py",
         "patchSetId": 4
@@ -30,6 +48,24 @@
       "writtenOn": "2016-11-21T22:29:14Z",
       "side": 1,
       "message": "I use a variable named issues to be a list of issue PBs, but here you are passing in a list of (IID, rank) pairs.  So, renamed to hotlist_issues, or actually I like iid_rank_pairs better, so you could eliminate hotlist_issues from the caller too.\n\nAlso, docstring args no longer match the real parameter list.",
+      "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b0355864_04abc46d",
+        "filename": "appengine/monorail/features/hotlistissues.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-11-22T19:32:38Z",
+      "side": 1,
+      "message": "Ok now GetTableViewData only takes one argument, mr. I think this is what your comment is asking me to do. I didn\u0027t extend this change to CreateHotlistTableData because the rerankhotlist Json servlet will eventually call CreatehotlistTableData and in that case the list of (IID, rank) pairs is not its mr.hotlist.iid_rank_pairs. rerankhotlist will pass in another list of pairs so CreateHotlistTableData should not be getting iid_rank_paris from mr.",
+      "parentUuid": "b0355864_33fc1400",
       "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "7014c0d4_982755e0",
+        "filename": "appengine/monorail/features/hotlistissues.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-11-22T19:32:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b0355864_73ea9c2f",
+      "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b0355864_f33b0cde",
         "filename": "appengine/monorail/features/rerankhotlist.py",
         "patchSetId": 4
@@ -64,6 +118,24 @@
       "writtenOn": "2016-11-21T22:29:14Z",
       "side": 1,
       "message": "Remove parens.",
+      "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b0355864_ff798d36",
+        "filename": "appengine/monorail/features/rerankhotlist.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-11-22T19:32:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b0355864_f33b0cde",
       "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "b0355864_1fb9d1b0",
+        "filename": "appengine/monorail/features/rerankhotlist.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-11-22T19:32:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b0355864_5358b817",
+      "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b0355864_33f414d7",
         "filename": "appengine/monorail/features/rerankhotlist.py",
         "patchSetId": 4
@@ -98,6 +188,24 @@
       "writtenOn": "2016-11-21T22:29:14Z",
       "side": 1,
       "message": "This looks right.  But, I tried\nhttps://6771-ccc4c44-tainted-jojwang-dot-monorail-staging.appspot.com/u/110247670/hotlists/999\nand got a 500 error instead of a 404.  So, I am thinking that you fixed the code after uploading the demo app, right?",
+      "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7014c0d4_b8dc9932",
+        "filename": "appengine/monorail/features/rerankhotlist.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-11-22T19:32:38Z",
+      "side": 1,
+      "message": "I found the problem in monorailrequest. LIne 545, _LookupHotlist\nhttps://cs.chromium.org/chromium/infra/appengine/monorail/framework/monorailrequest.py?dr\u003dC\u0026q\u003dmonorailre+file:%5Einfra/appengine/monorail/\u0026sq\u003dpackage:chromium\u0026l\u003d1\n\nthe method copies _LookupProject but the features.GetHotlist method returns a NoSuchHotlistException. I can\u0027t add a try except for features_svc.NoSuchHotlistException yet because I would need to import features_svc which would cause circular dependency. I\u0027ll fix this immediately in another CL.",
+      "parentUuid": "b0355864_33f414d7",
       "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
@@ -121,6 +229,24 @@
     },
     {
       "key": {
+        "uuid": "b0355864_7f01fd69",
+        "filename": "appengine/monorail/framework/jsonfeed.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-11-22T19:32:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b0355864_73e29c16",
+      "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b0355864_33f734b6",
         "filename": "appengine/monorail/framework/sorting.py",
         "patchSetId": 4
@@ -132,6 +258,24 @@
       "writtenOn": "2016-11-21T22:29:14Z",
       "side": 1,
       "message": "Please use two blank lines between top-level functions/classes.",
+      "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b0355864_ff6bcd2a",
+        "filename": "appengine/monorail/framework/sorting.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-11-22T19:32:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b0355864_33f734b6",
       "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
@@ -155,6 +299,24 @@
     },
     {
       "key": {
+        "uuid": "b0355864_8a583da3",
+        "filename": "appengine/monorail/static/js/tracker/render-hotlist-table.js",
+        "patchSetId": 4
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-11-22T19:32:38Z",
+      "side": 1,
+      "message": "When a user groups the rows the page refreshes, none of the table.childNodes.tageName \u003d\u003d TBODY. It\u0027s either \u0027SCRIPT\u0027 or undefined and we\u0027re also working with a blank table. So the only time when the table ever has a childNode with tagName \u003d\u003d TBODY is when reranking is enabled and in that case there is always only one childNode with tagName \u003d\u003d TBODY. Now that you\u0027ve pointed it out I realize this might not be the most robust way to go about things. I can add a TODO to redo this.",
+      "parentUuid": "b0355864_13d470ff",
+      "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b0355864_16c8de42",
         "filename": "appengine/monorail/static/js/tracker/render-hotlist-table.js",
         "patchSetId": 4
@@ -166,6 +328,24 @@
       "writtenOn": "2016-11-21T22:29:14Z",
       "side": 1,
       "message": "So, response[\u0027table_data\u0027] is a complete new set of data?  I guess that is more robust than trying to make an incremental edit to the existing tableData array.\n\nIf it sends back a whole table, and that table is paginated, it means that you need a TODO to pass pagination state to the server.  Otherwise if the user navigates to page 2 and then reranks, they could suddenly see page 1 again.",
+      "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5067bc9f_6a7cf723",
+        "filename": "appengine/monorail/static/js/tracker/render-hotlist-table.js",
+        "patchSetId": 4
+      },
+      "lineNbr": 311,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-11-22T19:32:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b0355864_16c8de42",
       "revId": "6777242e7f087d9c5a79ad34b9672b289e165b4e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
