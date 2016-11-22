@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b0355864_45ca2660",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1116444
+      },
+      "writtenOn": "2016-11-22T05:27:35Z",
+      "side": 1,
+      "message": "Is there an actual bug filed for this? Could be useful to motivate the CL. Thx!",
+      "range": {
+        "startLine": 7,
+        "startChar": 6,
+        "endLine": 7,
+        "endChar": 9
+      },
+      "revId": "4790f0dd7be856e1a889b58d4bda3de9bf8e7342",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
