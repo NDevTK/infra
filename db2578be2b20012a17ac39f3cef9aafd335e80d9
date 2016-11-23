@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6d08671c_385c6909",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/som/alerts.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1148599
+      },
+      "writtenOn": "2016-11-23T19:33:46Z",
+      "side": 1,
+      "message": "Add a TODO to cache this somewhere?",
+      "revId": "db2578be2b20012a17ac39f3cef9aafd335e80d9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6d08671c_d8e56d1f",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/som/alerts.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1148599
+      },
+      "writtenOn": "2016-11-23T19:33:46Z",
+      "side": 1,
+      "message": "typo",
+      "range": {
+        "startLine": 187,
+        "startChar": 37,
+        "endLine": 187,
+        "endChar": 48
+      },
+      "revId": "db2578be2b20012a17ac39f3cef9aafd335e80d9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6d08671c_180525c4",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/som/main_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 525,
+      "author": {
+        "id": 1148599
+      },
+      "writtenOn": "2016-11-23T19:33:46Z",
+      "side": 1,
+      "message": "You aren\u0027t checking the return values of this?",
+      "revId": "db2578be2b20012a17ac39f3cef9aafd335e80d9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
