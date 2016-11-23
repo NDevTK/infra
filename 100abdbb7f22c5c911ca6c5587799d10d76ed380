@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b04b9845_52a01474",
+        "filename": "go/src/infra/appengine/test-results/frontend/testflakiness_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2016-11-23T15:53:34Z",
+      "side": 1,
+      "message": "For some reason this line is not fully displayed in diff, filed http://crbug.com/668173. Please see actual diff here: https://chromium.googlesource.com/infra/infra/+/100abdbb7f22c5c911ca6c5587799d10d76ed380%5E%21/#F1.",
+      "revId": "100abdbb7f22c5c911ca6c5587799d10d76ed380",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
