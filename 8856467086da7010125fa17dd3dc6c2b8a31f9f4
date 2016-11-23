@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6d08671c_9b600f15",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/som/alerts.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1148599
+      },
+      "writtenOn": "2016-11-23T20:51:09Z",
+      "side": 1,
+      "message": "comment should be in function?",
+      "revId": "8856467086da7010125fa17dd3dc6c2b8a31f9f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6d08671c_5b34b70f",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/som/main_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 538,
+      "author": {
+        "id": 1148599
+      },
+      "writtenOn": "2016-11-23T20:51:09Z",
+      "side": 1,
+      "message": "I had thought you needed to reset the writer. But if this passes then nevermind :)",
+      "revId": "8856467086da7010125fa17dd3dc6c2b8a31f9f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
