@@ -32,7 +32,10 @@ const dirsQuery = `
 	GROUP BY layout_test_dir;`
 
 const suitesQuery = `
-  SELECT regexp_extract(test_name, r'^([^\.\/]+)\.[^\/]+(?:\/[^\.]+)?$') as suite
+  SELECT 
+	  if(regexp_match(test_name, r'^org\..*#.*$'),
+		   regexp_extract(test_name, r'^(org\..*)#.*$'),
+		   regexp_extract(test_name, r'^([^\.\/]+)\.[^\/]+(?:\/[^\.]+)?$')) as suite
   FROM plx.google.chrome_infra.flaky_tests_with_layout_team_dir_info.all
   GROUP BY suite
   HAVING suite is not Null;`
