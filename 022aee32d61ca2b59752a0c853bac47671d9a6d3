@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "adbc1f98_2d29b99a",
+        "filename": "go/src/infra/tricium/proto/data.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2016-12-02T14:46:35Z",
+      "side": 1,
+      "message": "nit: delete extra space",
+      "range": {
+        "startLine": 112,
+        "startChar": 25,
+        "endLine": 112,
+        "endChar": 27
+      },
+      "revId": "022aee32d61ca2b59752a0c853bac47671d9a6d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4dde43f8_d263e231",
+        "filename": "go/src/infra/tricium/proto/data.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2016-12-02T14:46:35Z",
+      "side": 1,
+      "message": "maybe ..to the ...?",
+      "range": {
+        "startLine": 112,
+        "startChar": 21,
+        "endLine": 112,
+        "endChar": 24
+      },
+      "revId": "022aee32d61ca2b59752a0c853bac47671d9a6d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0dc44b28_93b564b1",
+        "filename": "go/src/infra/tricium/proto/tricium.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2016-12-02T14:46:35Z",
+      "side": 1,
+      "message": "s/on/of",
+      "range": {
+        "startLine": 99,
+        "startChar": 24,
+        "endLine": 99,
+        "endChar": 26
+      },
+      "revId": "022aee32d61ca2b59752a0c853bac47671d9a6d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4db723b6_2a2e7fbc",
+        "filename": "go/src/infra/tricium/proto/tricium.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2016-12-02T14:46:35Z",
+      "side": 1,
+      "message": "really? why not repeated field instead to use \"key:value\" as for swarming dimensions?",
+      "range": {
+        "startLine": 193,
+        "startChar": 5,
+        "endLine": 193,
+        "endChar": 20
+      },
+      "revId": "022aee32d61ca2b59752a0c853bac47671d9a6d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
