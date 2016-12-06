@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cd24f349_5c00d1e2",
+        "filename": "appengine/findit/templates/flake/dashboard.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2016-12-06T22:01:40Z",
+      "side": 1,
+      "message": "Apply to other parameters too.",
+      "range": {
+        "startLine": 43,
+        "startChar": 32,
+        "endLine": 43,
+        "endChar": 50
+      },
+      "revId": "560b4e663975e9963f793aa38b1b3335014f9e0c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
