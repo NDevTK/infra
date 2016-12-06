@@ -62,6 +62,18 @@
   <input type="hidden" id="bulk_spam_value" name="spam" value="true">
 </form>
 
+<form id='bulkremoveissues' method="POST" action="[hotlist_id].do">
+<input type="hidden" name="token" value="[remove_issues_token]">
+  <input type="hidden" id="bulk_remove_local_ids" name="remove_local_ids">
+  <input type ="hidden" id="bulk_remove_value" name = "remove" value="false">
+  <span id="addissuesspec" style="display:none; font-size:90%"><span>Issues:
+     </span><span id="issues_field"><input type="text" size="60" name="add_local_ids"
+                   value=""></span>
+            <input type="submit" name="nobtn" value="Add Issues">
+     [# TODO(jrobbins): <a href="TODO">Learn more</a> ]
+     </span>
+</form>
+
 <script type="text/javascript" nonce="[nonce]">
 runOnLoad(function() {
   if ($("selectall")) {
