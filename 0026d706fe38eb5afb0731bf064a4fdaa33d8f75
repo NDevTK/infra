@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cd24f349_f3ab10bc",
+        "filename": "appengine/monorail/services/test/features_svc_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 552,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-12-06T16:57:41Z",
+      "side": 1,
+      "message": "having issue_id\u003dremove is not working here because the test hotlist does not have any iid_rank_pairs. \nUpdateHotlistIssues will not try to delete an issue from the hotlist if that issue is already not in the hotlist, and issue 555L is not an iid_rank_pair in hotlist 456. \nThe next CL will change this test by adding iid_rank_pairs to hotlist 456 and testing several cases.",
+      "range": {
+        "startLine": 552,
+        "startChar": 46,
+        "endLine": 552,
+        "endChar": 48
+      },
+      "revId": "0026d706fe38eb5afb0731bf064a4fdaa33d8f75",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
