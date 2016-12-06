@@ -40,7 +40,7 @@
         parameters['end_date'] = $('#end_date').val() == 'mm/dd/yyyy' ? undefined : $('#end_date').val();
       }
       parameters['step_name'] = $('#step_name').val();
-      parameters['test_name'] = encodeURI($('#test_name').val());
+      parameters['test_name'] = encodeURIComponent($('#test_name').val());
       parameters['result_status'] = $('#result_status').val() == 'default' ? undefined : $('#result_status').val();
       return parameters
     }
