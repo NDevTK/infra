@@ -1043,6 +1043,15 @@ function TKR_handleListActions(actionsMenu) {
     case 'unflagspam':
       TKR_flagSpam(false);
       break;
+    case 'addissues':
+      _showID('addissuesspec');
+      break;
+    case 'removeissues':
+      HTL_removeIssues();
+      break;
+    case 'issuesperpage':
+      break;
+
   }
   actionsMenu.value = 'moreactions';
 }
@@ -1430,4 +1439,32 @@ function TKR_trimCommas() {
   if (ccField) {
     ccField.value = ccField.value.replace(/,\s*$/, '');
    }
+}
+
+
+/**
+ * Identify which issues have been checkedboxed for removal from hotlist.
+ */
+function HTL_removeIssues() {
+  var selected_local_IDs = [];
+  for (var i = 0; i<issueRefs.length; i++) {
+    var checkbox = document.getElementById('cb_' + issueRefs[i]['id']);
+    if (checkbox && checkbox.checked) {
+      selected_local_IDs.push(issueRefs[i]['project_name']+':'+issueRefs[i]['id']);
+    }
+  }
+  if (selected_local_IDs.length > 0) {
+    if (!confirm('Remove all selected issues?')) {
+      return;
+    }
+    var selected_local_IDString = selected_local_IDs.join(',');
+    $('bulk_remove_local_ids').value = selected_local_IDString;
+    $('bulk_remove_value').value = 'true';
+
+    var form = $('bulkremoveissues');
+    form.submit();
+  }
+  else {
+    alert('Please select some issues to remove');
+  }
 }
