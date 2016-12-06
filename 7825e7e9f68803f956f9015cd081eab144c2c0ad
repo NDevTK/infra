@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6da147aa_d6b554b0",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/elements/som-drawer.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1143154
+      },
+      "writtenOn": "2016-12-06T03:42:45Z",
+      "side": 1,
+      "message": "This is good as it is.\n\nSheriff rotations may change their frequency (and are currently very likely to change), and I think it is best to not have the code rely on the current rate of change.",
+      "range": {
+        "startLine": 187,
+        "startChar": 0,
+        "endLine": 188,
+        "endChar": 47
+      },
+      "revId": "7825e7e9f68803f956f9015cd081eab144c2c0ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6da147aa_f6b258c5",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/test/som-drawer-test.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1143154
+      },
+      "writtenOn": "2016-12-06T03:42:45Z",
+      "side": 1,
+      "message": "super glad to see this test!",
+      "range": {
+        "startLine": 51,
+        "startChar": 0,
+        "endLine": 67,
+        "endChar": 7
+      },
+      "revId": "7825e7e9f68803f956f9015cd081eab144c2c0ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
