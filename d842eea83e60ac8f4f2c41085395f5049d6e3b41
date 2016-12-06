@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "cd24f349_bc2d65c0",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/elements/som-drawer.html",
+        "patchSetId": 2
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2016-12-06T21:30:13Z",
+      "side": 1,
+      "message": "Changed. Thanks!",
+      "parentUuid": "cd24f349_79d27fee",
+      "revId": "d842eea83e60ac8f4f2c41085395f5049d6e3b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cd24f349_19cfcb41",
         "filename": "go/src/infra/appengine/sheriff-o-matic/elements/som-drawer.html",
         "patchSetId": 2
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "cd24f349_fc33dd26",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/elements/som-drawer.html",
+        "patchSetId": 2
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2016-12-06T21:30:13Z",
+      "side": 1,
+      "message": "Added an end date to the display. There were a few edge cases to account for like weekends (the rotation calendar seems to have gaps in dates for weekends). \n\nI quickly mocked up the next sheriff, but it ends up adding a scrollbar to the sidebar, which I don\u0027t really want. So I think I\u0027ll hold off on that for now until we can figure out a better way to display the information, perhaps?",
+      "parentUuid": "cd24f349_19cfcb41",
+      "revId": "d842eea83e60ac8f4f2c41085395f5049d6e3b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cd24f349_d9f63371",
         "filename": "go/src/infra/appengine/sheriff-o-matic/elements/som-drawer.html",
         "patchSetId": 2
@@ -47,6 +83,24 @@
       "writtenOn": "2016-12-06T19:25:46Z",
       "side": 1,
       "message": "We should at the very least indicate what timezone the rotation calendar uses, if we can\u0027t correct for it here.",
+      "revId": "d842eea83e60ac8f4f2c41085395f5049d6e3b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cd24f349_9c28a9b1",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/elements/som-drawer.html",
+        "patchSetId": 2
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2016-12-06T21:30:13Z",
+      "side": 1,
+      "message": "Good idea! I added the timezone to the end date timestamp.",
+      "parentUuid": "cd24f349_d9f63371",
       "revId": "d842eea83e60ac8f4f2c41085395f5049d6e3b41",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
