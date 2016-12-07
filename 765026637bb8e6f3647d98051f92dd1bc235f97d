@@ -25,6 +25,24 @@
     },
     {
       "key": {
+        "uuid": "cd24f349_e191ed32",
+        "filename": "appengine/monorail/static/js/tracker/tracker-editing.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 1449,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-12-07T23:27:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cd24f349_95cf17b9",
+      "revId": "765026637bb8e6f3647d98051f92dd1bc235f97d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cd24f349_f590cba2",
         "filename": "appengine/monorail/static/js/tracker/tracker-editing.js",
         "patchSetId": 5
@@ -48,6 +66,24 @@
     },
     {
       "key": {
+        "uuid": "cd24f349_817ef91a",
+        "filename": "appengine/monorail/static/js/tracker/tracker-editing.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 1450,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-12-07T23:27:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cd24f349_f590cba2",
+      "revId": "765026637bb8e6f3647d98051f92dd1bc235f97d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cd24f349_75bb5b0d",
         "filename": "appengine/monorail/static/js/tracker/tracker-editing.js",
         "patchSetId": 5
@@ -59,6 +95,24 @@
       "writtenOn": "2016-12-07T19:15:31Z",
       "side": 1,
       "message": "} else { (one line)\n\nI realize this is from elsewhere in the file but we shouldn\u0027t have done it like that in those other places either.",
+      "revId": "765026637bb8e6f3647d98051f92dd1bc235f97d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cd24f349_c1dab106",
+        "filename": "appengine/monorail/static/js/tracker/tracker-editing.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 1466,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-12-07T23:27:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cd24f349_75bb5b0d",
       "revId": "765026637bb8e6f3647d98051f92dd1bc235f97d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
@@ -82,6 +136,24 @@
     },
     {
       "key": {
+        "uuid": "cd24f349_014509b6",
+        "filename": "appengine/monorail/templates/tracker/issue-list-controls-top.ezt",
+        "patchSetId": 5
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-12-07T23:27:45Z",
+      "side": 1,
+      "message": "Like this?\n  \u003cinput type \u003d\"hidden\" id\u003d\"bulk_remove_value\" name \u003d \"remove\" value\u003d\"false\"\u003e\n  \u003cspan id\u003d\"addissuesspec\" style\u003d\"display:none; font-size:90%\"\u003e\n    \u003cspan\u003eIssues:\u003c/span\u003e\n    \u003cspan id\u003d\"issues_field\"\u003e\u003cinput type\u003d\"text\" size\u003d\"60\" name\u003d\"add_local_ids\"\n                   value\u003d\"\"\u003e\u003c/span\u003e\n    \u003cinput type\u003d\"submit\" name\u003d\"nobtn\" value\u003d\"Add Issues\"\u003e\n  \u003c/span\u003e",
+      "parentUuid": "cd24f349_d5f34fed",
+      "revId": "765026637bb8e6f3647d98051f92dd1bc235f97d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cd24f349_f551abf5",
         "filename": "appengine/monorail/tracker/issuelist.py",
         "patchSetId": 5
@@ -93,6 +165,24 @@
       "writtenOn": "2016-12-07T19:15:31Z",
       "side": 1,
       "message": "you can move this comment up to line 168",
+      "revId": "765026637bb8e6f3647d98051f92dd1bc235f97d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cd24f349_e1432daf",
+        "filename": "appengine/monorail/tracker/issuelist.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2016-12-07T23:27:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cd24f349_f551abf5",
       "revId": "765026637bb8e6f3647d98051f92dd1bc235f97d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
