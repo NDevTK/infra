@@ -92,6 +92,24 @@
       "revId": "21e50ac08dd439ee5366e1007e454b81384582fc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cd24f349_d0eefd03",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/som/bugqueue.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-12-07T20:26:09Z",
+      "side": 1,
+      "message": "Oh yeah, that makes sense.",
+      "parentUuid": "cd24f349_90bba50c",
+      "revId": "21e50ac08dd439ee5366e1007e454b81384582fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
