@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cd24f349_55989f60",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/elements/som-bug-queue.html",
+        "patchSetId": 4
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-12-07T20:03:58Z",
+      "side": 1,
+      "message": "this._bugsLoaded \u003d assignedBugsLoaded; since bugsLoaded is true at this point.",
+      "revId": "21e50ac08dd439ee5366e1007e454b81384582fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cd24f349_d0735d56",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/elements/som-bug-queue.html",
+        "patchSetId": 4
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-12-07T20:03:58Z",
+      "side": 1,
+      "message": "And this._bugsLoaded \u003d bugsLoaded; here",
+      "revId": "21e50ac08dd439ee5366e1007e454b81384582fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cd24f349_d0c11d22",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/som/bugqueue.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-12-07T20:03:58Z",
+      "side": 1,
+      "message": "is label:%[1]s supposed to appear in the fmt string twice?",
+      "range": {
+        "startLine": 88,
+        "startChar": 52,
+        "endLine": 88,
+        "endChar": 63
+      },
+      "revId": "21e50ac08dd439ee5366e1007e454b81384582fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
