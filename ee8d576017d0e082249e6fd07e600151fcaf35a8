@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cd24f349_48856bee",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/elements/som-drawer.html",
+        "patchSetId": 2
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-12-07T01:21:17Z",
+      "side": 1,
+      "message": "Huh. Date.setHours() with a negative value appears to actually roll the date back too.  #TIL",
+      "revId": "ee8d576017d0e082249e6fd07e600151fcaf35a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
