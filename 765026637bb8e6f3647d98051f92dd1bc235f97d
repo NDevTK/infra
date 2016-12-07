@@ -1,0 +1,101 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cd24f349_95cf17b9",
+        "filename": "appengine/monorail/static/js/tracker/tracker-editing.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 1449,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-12-07T19:15:31Z",
+      "side": 1,
+      "message": "google js naming style is camelCase instead of snake_case. (The fact that a bunch of html ids in this app are snake_case doesn\u0027t help :/)",
+      "range": {
+        "startLine": 1449,
+        "startChar": 6,
+        "endLine": 1449,
+        "endChar": 24
+      },
+      "revId": "765026637bb8e6f3647d98051f92dd1bc235f97d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cd24f349_f590cba2",
+        "filename": "appengine/monorail/static/js/tracker/tracker-editing.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 1450,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-12-07T19:15:31Z",
+      "side": 1,
+      "message": "i \u003c issueRefs (spaces around comparator)",
+      "range": {
+        "startLine": 1450,
+        "startChar": 18,
+        "endLine": 1450,
+        "endChar": 29
+      },
+      "revId": "765026637bb8e6f3647d98051f92dd1bc235f97d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cd24f349_75bb5b0d",
+        "filename": "appengine/monorail/static/js/tracker/tracker-editing.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 1466,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-12-07T19:15:31Z",
+      "side": 1,
+      "message": "} else { (one line)\n\nI realize this is from elsewhere in the file but we shouldn\u0027t have done it like that in those other places either.",
+      "revId": "765026637bb8e6f3647d98051f92dd1bc235f97d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cd24f349_d5f34fed",
+        "filename": "appengine/monorail/templates/tracker/issue-list-controls-top.ezt",
+        "patchSetId": 5
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-12-07T19:15:31Z",
+      "side": 1,
+      "message": "formatting: take the \u003cspan\u003eIssues: from the 69 and drop it down to 70, since it\u0027s a sibling to #issues_field it can be at the same indentation level.",
+      "revId": "765026637bb8e6f3647d98051f92dd1bc235f97d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cd24f349_f551abf5",
+        "filename": "appengine/monorail/tracker/issuelist.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-12-07T19:15:31Z",
+      "side": 1,
+      "message": "you can move this comment up to line 168",
+      "revId": "765026637bb8e6f3647d98051f92dd1bc235f97d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
