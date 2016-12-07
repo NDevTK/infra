@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "cd24f349_b0b82110",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/elements/som-bug-queue.html",
+        "patchSetId": 4
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2016-12-07T20:20:23Z",
+      "side": 1,
+      "message": "Great catch! Thanks! and fixed both.",
+      "parentUuid": "cd24f349_d0735d56",
+      "revId": "21e50ac08dd439ee5366e1007e454b81384582fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cd24f349_d0c11d22",
         "filename": "go/src/infra/appengine/sheriff-o-matic/som/bugqueue.go",
         "patchSetId": 4
@@ -53,6 +71,24 @@
         "endLine": 88,
         "endChar": 63
       },
+      "revId": "21e50ac08dd439ee5366e1007e454b81384582fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cd24f349_90bba50c",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/som/bugqueue.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2016-12-07T20:20:23Z",
+      "side": 1,
+      "message": "When I tested, it didn\u0027t seem like Monorail included the label as part of the second clause in the OR unless it was included again. I could be missing something though.",
+      "parentUuid": "cd24f349_d0c11d22",
       "revId": "21e50ac08dd439ee5366e1007e454b81384582fc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
