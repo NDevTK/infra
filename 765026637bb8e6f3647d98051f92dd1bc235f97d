@@ -154,6 +154,24 @@
     },
     {
       "key": {
+        "uuid": "cd24f349_88b379ca",
+        "filename": "appengine/monorail/templates/tracker/issue-list-controls-top.ezt",
+        "patchSetId": 5
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-12-08T01:25:15Z",
+      "side": 1,
+      "message": "Yep",
+      "parentUuid": "cd24f349_014509b6",
+      "revId": "765026637bb8e6f3647d98051f92dd1bc235f97d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cd24f349_f551abf5",
         "filename": "appengine/monorail/tracker/issuelist.py",
         "patchSetId": 5
