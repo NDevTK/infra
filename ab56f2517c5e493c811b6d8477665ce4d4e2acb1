@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a756307_dfdb9036",
+        "filename": "go/src/infra/monitoring/analyzer/step/test_step_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 257,
+      "author": {
+        "id": 1148599
+      },
+      "writtenOn": "2016-12-15T22:38:39Z",
+      "side": 1,
+      "message": "you reviewed this too quickly :P",
+      "revId": "ab56f2517c5e493c811b6d8477665ce4d4e2acb1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
