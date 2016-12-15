@@ -48,10 +48,10 @@ func (t *testFailure) Severity() messages.Severity {
 func (t *testFailure) Title(bses []*messages.BuildStep) string {
 	f := bses[0]
 	if len(bses) == 1 {
-		return fmt.Sprintf("%s failing on %s/%s", f.Step.Name, f.Master.Name(), f.Build.BuilderName)
+		return fmt.Sprintf("%s failing on %s/%s", GetTestName(f.Step), f.Master.Name(), f.Build.BuilderName)
 	}
 
-	return fmt.Sprintf("%s failing on %d builders", f.Step.Name, len(bses))
+	return fmt.Sprintf("%s failing on %d builders", GetTestName(f.Step), len(bses))
 }
 
 // testFailureAnalyzer analyzes steps to see if there is any data in the tests
@@ -112,14 +112,17 @@ func testAnalyzeFailure(ctx context.Context, f *messages.BuildStep) (messages.Re
 	return nil, nil
 }
 
-func getStepName(name string) string {
-	stepName := name
-	s := strings.Split(name, " ")
+// GetTestName returns the name of the test for a given step. Currently, it has
+// a bunch of custom logic to parse through all the suffixes added by various recipe code.
+// Eventually, it should just read something structured from the step.
+func GetTestName(step *messages.Step) string {
+	testName := step.Name
+	s := strings.Split(step.Name, " ")
 
 	// Android tests add Instrumentation test as a prefix to the step name :/
 	if len(s) > 2 && s[0] == "Instrumentation" && s[1] == "test" {
-		stepName = s[2]
-		s = []string{name}
+		testName = s[2]
+		s = []string{step.Name}
 	}
 	// Some test steps have names like "webkit_tests iOS(dbug)" so we look at the first
 	// term before the space, if there is one.
@@ -132,14 +135,13 @@ func getStepName(name string) string {
 	// Added in this code:
 	// https://chromium.googlesource.com/chromium/tools/build/+/9ef66559727c320b3263d7e82fb3fcd1b6a3bd55/scripts/slave/recipe_modules/swarming/api.py#846
 	if len(s) > 2 && s[1] == "on" {
-		stepName = s[0]
+		testName = s[0]
 	}
 
-	return stepName
+	return testName
 }
 
 func getTestNames(ctx context.Context, f *messages.BuildStep) (string, []string, error) {
-	name := getStepName(f.Step.Name)
 	if name == "" {
 		return "", nil, nil
 	}

@@ -566,7 +566,7 @@ func (a *Analyzer) builderStepAlerts(ctx context.Context, tree string, master *m
 	// Get findit results for latestBuild.
 	stepNames := make([]string, len(importantFailures))
 	for i, f := range importantFailures {
-		stepNames[i] = f.Step.Name
+		stepNames[i] = step.GetTestName(f.Step)
 	}
 	latestBuild := recentBuildIDs[0]
 
@@ -668,7 +668,7 @@ func (a *Analyzer) builderStepAlerts(ctx context.Context, tree string, master *m
 		// FIXME: This is a very simplistic model, and we're throwing away a lot of the findit data.
 		// This data should really be a part of the regression range data.
 		for _, result := range finditResults {
-			if result.StepName != mergedBF.StepAtFault.Step.Name {
+			if result.StepName != step.GetTestName(mergedBF.StepAtFault.Step) {
 				continue
 			}
 
@@ -854,7 +854,7 @@ func (a *Analyzer) stepFailureAlerts(ctx context.Context, tree string, failures 
 			// Read Findit results and add information to the revisions that Findit suspects.
 			if len(finditResults) != 0 {
 				finditSuspectedCLs := map[string][]*messages.SuspectCL{}
-				saveFinditResultInMap(finditResults, f.Step.Name, finditSuspectedCLs)
+				saveFinditResultInMap(finditResults, step.GetTestName(f.Step), finditSuspectedCLs)
 
 				// Add Findit results to regression ranges.
 				// There are only the first and last revisions in regRange.Revisions,
@@ -928,7 +928,7 @@ func (a *Analyzer) stepFailureAlerts(ctx context.Context, tree string, failures 
 			}
 
 			alr.Type = messages.AlertBuildFailure
-			alr.Key = alertKey(f.Master.Name(), f.Build.BuilderName, f.Step.Name, "")
+			alr.Key = alertKey(f.Master.Name(), f.Build.BuilderName, step.GetTestName(f.Step), "")
 			alr.Extension = bf
 
 			rs <- res{
