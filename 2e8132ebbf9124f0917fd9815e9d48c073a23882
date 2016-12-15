@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a756307_b349ba33",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/test/som-annotations-test.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 332,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-12-15T00:59:10Z",
+      "side": 1,
+      "message": "oh I wonder if this fixes the intermittent ?dom\u003dshadow issue I was seeing with this particular assert.",
+      "revId": "2e8132ebbf9124f0917fd9815e9d48c073a23882",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
