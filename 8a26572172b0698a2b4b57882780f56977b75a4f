@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a756307_ade14fb6",
+        "filename": "go/src/infra/monitoring/analyzer/step/test_step.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2016-12-15T19:13:31Z",
+      "side": 1,
+      "message": "Are there any bugs to link to about this, either on perf\u0027s side or infra\u0027s? We should at least be explicit about whose builders we\u0027re doing this for. It could potentially affect how we group other teams\u0027 test failures in ways they don\u0027t appreciate.",
+      "revId": "8a26572172b0698a2b4b57882780f56977b75a4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
