@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a5073f1_1f8f660f",
+        "filename": "go/src/infra/monitoring/analyzer/step/test_step.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 1148599
+      },
+      "writtenOn": "2016-12-19T18:48:19Z",
+      "side": 1,
+      "message": "Fixes the flakiness.",
+      "revId": "56ee1def316326fd90987aa945036b598bab4a60",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
