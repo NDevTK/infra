@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d7a2c67b_60e24bbc",
+        "filename": "appengine/monorail/framework/csv_helpers.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2016-12-21T00:02:25Z",
+      "side": 1,
+      "message": "This will always be the URL for the issue list rather than for the hotlist.  You could pass in this value.",
+      "revId": "0f6250b6dab32e3c2ab125348f3b51ad86fc3038",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
