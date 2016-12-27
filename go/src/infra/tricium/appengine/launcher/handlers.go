@@ -6,17 +6,16 @@
 package launcher
 
 import (
-	"errors"
 	"fmt"
-	"net/http"
+
+	"golang.org/x/net/context"
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/google/go-querystring/query"
+	ds "github.com/luci/gae/service/datastore"
+	tq "github.com/luci/gae/service/taskqueue"
+	"github.com/luci/luci-go/common/logging"
 	"github.com/luci/luci-go/server/router"
-
-	"google.golang.org/appengine/datastore"
-	"google.golang.org/appengine/log"
-	"google.golang.org/appengine/taskqueue"
 
 	admin "infra/tricium/api/admin/v1"
 	"infra/tricium/api/v1"
@@ -24,34 +23,107 @@ import (
 	"infra/tricium/appengine/common/pipeline"
 )
 
-func init() {
-	r := router.New()
-	base := common.MiddlewareForInternal()
-
-	r.POST("/launcher/internal/queue", base, queueHandler)
-
-	http.DefaultServeMux.Handle("/", r)
+func queueHandler(ctx *router.Context) {
+	c, r, w := ctx.Context, ctx.Request, ctx.Writer
+	if err := r.ParseForm(); err != nil {
+		logging.WithError(err).Errorf(c, "Launch queue handler encountered errors")
+		w.WriteHeader(500)
+		return
+	}
+	lr, err := pipeline.ParseLaunchRequest(r.Form)
+	if err != nil {
+		logging.WithError(err).Errorf(c, "Launch queue handler encountered errors")
+		w.WriteHeader(501)
+		return
+	}
+	logging.Infof(c, "[launcher] Launch request (run ID: %d)", lr.RunID)
+	if err := launch(c, lr); err != nil {
+		logging.WithError(err).Errorf(c, "Launch queue handler encountered errors")
+		w.WriteHeader(502)
+		return
+	}
+	logging.Infof(c, "[launcher] Successfully completed")
 }
 
-func queueHandler(c *router.Context) {
-	ctx := common.NewGAEContext(c)
-
-	// Parse launch request.
-	if err := c.Request.ParseForm(); err != nil {
-		common.ReportServerError(c, err)
-		return
-	}
-	lr, err := pipeline.ParseLaunchRequest(c.Request.Form)
-	if err != nil {
-		common.ReportServerError(c, err)
-		return
-	}
-
-	log.Infof(ctx, "[launcher] Launch request (run ID: %d)", lr.RunID)
-
+func launch(c context.Context, lr *pipeline.LaunchRequest) error {
 	// Store workflow as 'Workflow' entity, using run ID as key.
-	// TODO(emso): Get workflow config from config module.
-	wf := admin.Workflow{
+	wf, err := readWorkflowConfig(lr.Project)
+	if err != nil {
+		return err
+	}
+	m := jsonpb.Marshaler{}
+	wfs, err := m.MarshalToString(wf)
+	if err != nil {
+		return fmt.Errorf("Failed to marshal workflow: %v", err)
+	}
+	workflowKey := ds.NewKey(c, "Workflow", "", lr.RunID, nil)
+	e := new(common.Entity)
+	e.Value = []byte(wfs)
+	if err := ds.Put(c, workflowKey, e); err != nil {
+		return fmt.Errorf("Failed to store workflow: %v", err)
+	}
+
+	// Isolate initial intput.
+	inputHash, err := isolateGitFileDetails(lr.Project, lr.GitRepo, lr.GitRef, lr.Path)
+	if err != nil {
+		return fmt.Errorf("Failed to isolate git file details: %v", err)
+	}
+
+	// Track progress, enqueue track request.
+	vr, err := query.Values(&pipeline.TrackRequest{
+		Kind:  pipeline.TrackWorkflowLaunched,
+		RunID: lr.RunID,
+	})
+	if err != nil {
+		return fmt.Errorf("Failed to encode reporter request: %v", err)
+	}
+	tr := tq.NewPOSTTask("/tracker/internal/queue", vr)
+	if err := tq.Add(c, "tracker-queue", tr); err != nil {
+		return fmt.Errorf("Failed to enqueue reporter request: %v", err)
+	}
+
+	// Trigger root workers, enqueue driver requests.
+	for _, worker := range rootWorkers(wf) {
+		vd, err := query.Values(&pipeline.DriverRequest{
+			Kind:          pipeline.DriverTrigger,
+			RunID:         lr.RunID,
+			IsolatedInput: inputHash,
+			Worker:        worker,
+		})
+		if err != nil {
+			return fmt.Errorf("Failed to encode launch request: %v", err)
+		}
+		td := tq.NewPOSTTask("/driver/internal/queue", vd)
+		if err := tq.Add(c, "driver-queue", td); err != nil {
+			return fmt.Errorf("Failed to enqueue driver request: %v", err)
+		}
+	}
+	return nil
+}
+
+// rootWorkers returns a list of root workers.
+//
+// Root workers are those workers in need of the initial Tricium
+// data type, Git file details.
+func rootWorkers(wf *admin.Workflow) []string {
+	wl := []string{}
+	for _, w := range wf.Workers {
+		if w.Needs == tricium.Data_GIT_FILE_DETAILS {
+			wl = append(wl, w.Name)
+		}
+	}
+	return wl
+}
+
+func isolateGitFileDetails(project, gitRepo, gitRef string, paths []string) (string, error) {
+	// TODO(emso): Create initial Tricium data, git file details.
+	// TODO(emso): Isolate created Tricium data.
+	return "abcedfg", nil
+}
+
+func readWorkflowConfig(project string) (*admin.Workflow, error) {
+	// TODO(emso): Replace this dummy config with one read from luci-config.
+	return &admin.Workflow{
 		WorkerTopic:    "projects/tricium-dev/topics/worker-completion",
 		ServiceAccount: "emso@chromium.org",
 		Workers: []*admin.Worker{
@@ -74,61 +146,5 @@ func queueHandler(c *router.Context) {
 				Deadline: 30,
 			},
 		},
-	}
-	m := jsonpb.Marshaler{}
-	wfs, err := m.MarshalToString(&wf)
-	if err != nil {
-		common.ReportServerError(c, fmt.Errorf("Failed to marshal workflow: %v", err))
-		return
-	}
-	workflowKey := datastore.NewKey(ctx, "Workflow", "", lr.RunID, nil)
-	e := new(common.Entity)
-	e.Value = []byte(wfs)
-	if _, err := datastore.Put(ctx, workflowKey, e); err != nil {
-		common.ReportServerError(c, fmt.Errorf("Failed to store workflow: %v", err))
-		return
-	}
-
-	// TODO(emso): Create initial Tricium data, git file details.
-	// TODO(emso): Isolate created Tricium data.
-	isolatedInput := "abcdef"
-
-	// TODO(emso): Get root workers from the workflow config.
-	workers := []string{"Hello_Ubuntu14.04_x86-64"}
-
-	// Track progress, enqueue track request.
-	rr := pipeline.TrackRequest{
-		Kind:  pipeline.TrackWorkflowLaunched,
-		RunID: lr.RunID,
-	}
-	vr, err := query.Values(rr)
-	if err != nil {
-		common.ReportServerError(c, errors.New("failed to encode reporter request"))
-		return
-	}
-	tr := taskqueue.NewPOSTTask("/tracker/internal/queue", vr)
-	if _, err := taskqueue.Add(ctx, tr, "tracker-queue"); err != nil {
-		common.ReportServerError(c, err)
-		return
-	}
-
-	// Trigger root workers, enqueue driver requests.
-	for _, worker := range workers {
-		rd := pipeline.DriverRequest{}
-		rd.Kind = pipeline.DriverTrigger
-		rd.RunID = lr.RunID
-		rd.IsolatedInput = isolatedInput
-		rd.Worker = worker
-		vd, err := query.Values(rd)
-		if err != nil {
-			common.ReportServerError(c, errors.New("failed to encode launch request"))
-			return
-		}
-		td := taskqueue.NewPOSTTask("/driver/internal/queue", vd)
-		if _, err := taskqueue.Add(ctx, td, "driver-queue"); err != nil {
-			common.ReportServerError(c, err)
-			return
-		}
-	}
-
+	}, nil
 }
