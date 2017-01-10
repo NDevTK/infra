@@ -67,7 +67,7 @@ def _GetCoordinatesData(analysis):
         data_point.commit_position, data_point.pass_rate,
         data_point.task_id, data_point.build_number, data_point.git_hash,
         data_point.previous_build_commit_position,
-        data_point.previous_build_git_hash])
+        data_point.previous_build_git_hash, data_point.try_job_url])
 
   # Order by build number from earliest to latest.
   coordinates.sort(key=lambda x: x[0])

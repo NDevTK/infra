@@ -178,6 +178,7 @@
         var thisBuildGitHash = itemData[4];
         var previousBuildCommitPosition = itemData[5];
         var previousBuildGitHash = itemData[6];
+        var tryJobUrl = itemData[7];
 
         var tooltipStr = 'Pass rate: ' + passRate + '%';
 
@@ -188,12 +189,16 @@
           tooltipStr += '<br>Range: <a href="https://crrev.com/' + thisBuildGitHash + '" "target="_blank">' + thisBuildCommitPosition + '</a>';
         }
 
-        tooltipStr += '<br>Build #: <a href="https://build.chromium.org/p/' + findit.masterName + '/builders/' + findit.builderName + '/builds/' + buildNumber + '" target="_blank">' + buildNumber + '</a>';        
+        tooltipStr += '<br>Build #: <a href="https://build.chromium.org/p/' + findit.masterName + '/builders/' + findit.builderName + '/builds/' + buildNumber + '" target="_blank">' + buildNumber + '</a>';
 
         if (swarmingTaskId) {
           tooltipStr += '<br>Swarming Task: <a href="https://chromium-swarm.appspot.com/task?id=' + swarmingTaskId + '" target="_blank">' + swarmingTaskId +'</a>';
         } else {
           tooltipStr += '<br>Swarming Task: N/A';
+        }
+
+        if (tryJobUrl) {
+          tooltipStr += '<br><a href="' + tryJobUrl + '" target="_blank">' + Try Job Link +'</a>';
         }
 
         $("#tooltip").html(tooltipStr).css({top: item.pageY + 5, left: item.pageX + 5}).show();

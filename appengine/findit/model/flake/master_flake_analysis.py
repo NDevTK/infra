@@ -25,6 +25,8 @@ class DataPoint(ndb.Model):
   previous_build_commit_position = ndb.IntegerProperty(indexed=False)
   previous_build_git_hash = ndb.StringProperty(indexed=False)
   blame_list = ndb.StringProperty(repeated=True)
+  try_job_id = ndb.StringProperty(indexed=False)
+  try_job_url = ndb.StringProperty(indexed=False)
 
 
 class MasterFlakeAnalysis(
@@ -176,7 +178,7 @@ class MasterFlakeAnalysis(
   # The status of try jobs, if any. None if try jobs have not been triggered.
   # Status should be PENDING or STARTED when the first try job is triggered,
   # and COMPLETED when the last one finishes. If any try job ends in error,
-  # status will be ERROR. 
+  # status will be ERROR.
   try_job_status = ndb.IntegerProperty(indexed=False)
 
   # The data points used to plot the flakiness graph build over build.
