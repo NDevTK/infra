@@ -85,6 +85,8 @@
 
       var not_run_data = [];
       var run_data = [];
+      var build_run_data = [];
+      var revision_run_data = [];
       $.each(findit.passRates, function(index, value) {
         // Convert pass rate from [0, 1] to a percentage. Include information about each point in the format:
         // [this build commit position, pass rate, swarming task url, build number,
@@ -95,9 +97,14 @@
         if (pass_rate < 0) {
           // -1 means that the test doesn't exist or is disabled at the build.
           // We consider that a 100% pass rate.
-          not_run_data.push([value[0], 100, value[2], value[3], value[4], value[5], value[6]]);
+          not_run_data.push([value[0], 100, value[2], value[3], value[4], value[5], value[6], value[7]]);
         } else {
-          run_data.push([value[0], pass_rate, value[2], value[3], value[4], value[5], value[6]]);
+          run_data.push([value[0], pass_rate, value[2], value[3], value[4], value[5], value[6], value[7]]);
+          if (value[7] != null) {
+            build_run_data.push([value[0], pass_rate, value[2], value[3], value[4], value[5], value[6], value[7]]);
+          } else {
+            revision_run_data.push([value[0], pass_rate, value[2], value[3], value[4], value[5], value[6], value[7]]);
+          }
         }
       });
 
@@ -117,8 +124,30 @@
       data_series.push({
         data: run_data,
         points: {
+          show: false,
+        }
+      });
+      data_series.push({
+        data: build_run_data,
+        points: {
           symbol: "circle",
         },
+        color: "yellow",
+        lines: {
+          show: false,
+        },
+        label: "flake condition in a specific build",
+      });
+      data_series.push({
+        data: revision_run_data,
+        points: {
+          symbol: "circle",
+        },
+        lines: {
+          show: false,
+        },
+        color: "green",
+        label: "flake condition in a specific revision",
       });
 
       var options = {
@@ -178,6 +207,7 @@
         var thisBuildGitHash = itemData[4];
         var previousBuildCommitPosition = itemData[5];
         var previousBuildGitHash = itemData[6];
+        var tryJobUrl = itemData[7];
 
         var tooltipStr = 'Pass rate: ' + passRate + '%';
 
@@ -188,7 +218,12 @@
           tooltipStr += '<br>Range: <a href="https://crrev.com/' + thisBuildGitHash + '" "target="_blank">' + thisBuildCommitPosition + '</a>';
         }
 
-        tooltipStr += '<br>Build #: <a href="https://build.chromium.org/p/' + findit.masterName + '/builders/' + findit.builderName + '/builds/' + buildNumber + '" target="_blank">' + buildNumber + '</a>';        
+        if (buildNumber) {
+          tooltipStr += '<br>Build #: <a href="https://build.chromium.org/p/' + findit.masterName + '/builders/' + findit.builderName + '/builds/' + buildNumber + '" target="_blank">' + buildNumber + '</a>';
+        }
+        if (tryJobUrl) {
+          tooltipStr += '<br><a href="' + tryJobUrl + '" target="_blank">Try Job Link</a>';
+        }
 
         if (swarmingTaskId) {
           tooltipStr += '<br>Swarming Task: <a href="https://chromium-swarm.appspot.com/task?id=' + swarmingTaskId + '" target="_blank">' + swarmingTaskId +'</a>';
