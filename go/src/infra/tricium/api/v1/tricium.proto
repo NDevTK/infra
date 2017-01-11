@@ -44,5 +44,5 @@ message TriciumResponse {
 
   // ID of the run started for this request. This ID can be used to track
   // progress and find results.
-  string run_id = 3;
+  int64 run_id = 3;
 }
