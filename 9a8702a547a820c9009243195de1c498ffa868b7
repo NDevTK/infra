@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "4328d982_b0ed1643",
+        "filename": "go/src/infra/tricium/api/v1/tricium.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-01-11T17:11:31Z",
+      "side": 1,
+      "message": "Good point. Reverting.",
+      "parentUuid": "c3d8490b_da5e9955",
+      "revId": "9a8702a547a820c9009243195de1c498ffa868b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c3d8490b_3a31e528",
         "filename": "go/src/infra/tricium/appengine/common/pipeline/pipeline.go",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2017-01-11T16:56:29Z",
       "side": 1,
       "message": "you can make the same optimization as line 35-36?",
+      "revId": "9a8702a547a820c9009243195de1c498ffa868b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8342d14a_2fdc2926",
+        "filename": "go/src/infra/tricium/appengine/common/pipeline/pipeline.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-01-11T17:11:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c3d8490b_3a31e528",
       "revId": "9a8702a547a820c9009243195de1c498ffa868b7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
@@ -59,6 +95,24 @@
     },
     {
       "key": {
+        "uuid": "4328d982_90ea1a27",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_analyze.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-01-11T17:11:31Z",
+      "side": 1,
+      "message": "OK. Changed but made it a pointer.",
+      "parentUuid": "c3d8490b_ba3cf5fe",
+      "revId": "9a8702a547a820c9009243195de1c498ffa868b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c3d8490b_da0c5965",
         "filename": "go/src/infra/tricium/appengine/frontend/rpc_analyze.go",
         "patchSetId": 1
@@ -70,6 +124,24 @@
       "writtenOn": "2017-01-11T16:56:29Z",
       "side": 1,
       "message": "General side note: I like creating these objects before the transaction then only update the relevant members inside the transaction. I don\u0027t mind much, doing it this way is fine too. I don\u0027t do it for performance but more for documentation.\n\nI generally prefer the log to be outside the transaction, unless you really need informations when the transaction is retried multiple times. I don\u0027t have a strong opinion on this either.",
+      "revId": "9a8702a547a820c9009243195de1c498ffa868b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c365a9f6_093de9dd",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_analyze.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-01-11T17:11:31Z",
+      "side": 1,
+      "message": "Updated both.",
+      "parentUuid": "c3d8490b_da0c5965",
       "revId": "9a8702a547a820c9009243195de1c498ffa868b7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
