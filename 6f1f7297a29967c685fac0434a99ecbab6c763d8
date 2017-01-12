@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "e360ede6_aa7c8f5f",
+        "filename": "go/src/infra/tricium/appengine/frontend/handlers.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-01-12T08:29:40Z",
+      "side": 1,
+      "message": "Adding a TODO.",
+      "parentUuid": "c3d8490b_894be496",
+      "range": {
+        "startLine": 54,
+        "startChar": 12,
+        "endLine": 54,
+        "endChar": 28
+      },
+      "revId": "6f1f7297a29967c685fac0434a99ecbab6c763d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c3d8490b_e98e30c0",
         "filename": "go/src/infra/tricium/appengine/frontend/handlers.go",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2017-01-12T06:26:22Z",
       "side": 1,
       "message": "there should probably be a distinction here between fatal and retriable errors. E.g. grpc.Code(err) \u003d\u003d codes.InvalidArgument is fatal error, but grpc.Code(err) \u003d\u003d codes.Internal is not.\n\n(Can be a TODO when we now for sure all kinds of errors that can be returned).",
+      "range": {
+        "startLine": 67,
+        "startChar": 16,
+        "endLine": 67,
+        "endChar": 46
+      },
+      "revId": "6f1f7297a29967c685fac0434a99ecbab6c763d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "835bb13e_2780da1e",
+        "filename": "go/src/infra/tricium/appengine/frontend/handlers.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-01-12T08:29:40Z",
+      "side": 1,
+      "message": "Ack. Adding a TODO. This handler may also go away with a switch to Polymer.",
+      "parentUuid": "c3d8490b_e98e30c0",
       "range": {
         "startLine": 67,
         "startChar": 16,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "6354fd0e_066efaa8",
+        "filename": "go/src/infra/tricium/appengine/frontend/handlers.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-01-12T08:29:40Z",
+      "side": 1,
+      "message": "Added a TODO. Regarless of this queue, this is relevant for the admin pRPC API.",
+      "parentUuid": "c3d8490b_4955fc30",
+      "range": {
+        "startLine": 120,
+        "startChar": 38,
+        "endLine": 124,
+        "endChar": 2
+      },
+      "revId": "6f1f7297a29967c685fac0434a99ecbab6c763d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c3d8490b_695a4064",
         "filename": "go/src/infra/tricium/appengine/frontend/init.go",
         "patchSetId": 2
@@ -88,6 +160,24 @@
         "endLine": 36,
         "endChar": 58
       },
+      "revId": "6f1f7297a29967c685fac0434a99ecbab6c763d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6354fd0e_e672be8b",
+        "filename": "go/src/infra/tricium/appengine/frontend/init.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-01-12T08:29:40Z",
+      "side": 1,
+      "message": "Just punting the task, but forgot to add a TODO about it. Adding it and will review the whole auth situation in one go (or that is the plan at least). Will get back to you on the docs situation :)",
+      "parentUuid": "c3d8490b_695a4064",
       "revId": "6f1f7297a29967c685fac0434a99ecbab6c763d8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
@@ -117,6 +207,24 @@
     },
     {
       "key": {
+        "uuid": "032ee190_ee5e1f55",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_analyze.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-01-12T08:29:40Z",
+      "side": 1,
+      "message": "Yes, leaving for now, but see what you mean.",
+      "parentUuid": "c3d8490b_c9680cfb",
+      "revId": "6f1f7297a29967c685fac0434a99ecbab6c763d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c3d8490b_8932042f",
         "filename": "go/src/infra/tricium/appengine/frontend/rpc_analyze.go",
         "patchSetId": 2
@@ -140,6 +248,24 @@
     },
     {
       "key": {
+        "uuid": "a356f512_abb255d0",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_analyze.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-01-12T08:29:40Z",
+      "side": 1,
+      "message": "OK. Changing back. This was the earlier version and maruel had a comment about that. I\u0027m unsure so changing back :)",
+      "parentUuid": "c3d8490b_8932042f",
+      "revId": "6f1f7297a29967c685fac0434a99ecbab6c763d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c3d8490b_09461483",
         "filename": "go/src/infra/tricium/appengine/frontend/rpc_analyze.go",
         "patchSetId": 2
@@ -157,6 +283,24 @@
         "endLine": 79,
         "endChar": 136
       },
+      "revId": "6f1f7297a29967c685fac0434a99ecbab6c763d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "032ee190_ce5b6363",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_analyze.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-01-12T08:29:40Z",
+      "side": 1,
+      "message": "Deleted Tricium error codes and updated code to return grpc codes.",
+      "parentUuid": "c3d8490b_09461483",
       "revId": "6f1f7297a29967c685fac0434a99ecbab6c763d8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
