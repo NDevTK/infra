@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "c3d8490b_a2511e79",
+        "filename": "appengine/findit/handlers/flake/check_flake.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-01-12T19:52:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c3d8490b_695320d6",
+      "range": {
+        "startLine": 67,
+        "startChar": 8,
+        "endLine": 70,
+        "endChar": 66
+      },
+      "revId": "06ed38677556a5547471c9bd5b19c85d27a679bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c3d8490b_e927107e",
         "filename": "appengine/findit/model/flake/master_flake_analysis.py",
         "patchSetId": 2
@@ -60,6 +84,48 @@
       "side": 1,
       "message": "And why do we need it? What it is for?",
       "parentUuid": "c3d8490b_e927107e",
+      "revId": "06ed38677556a5547471c9bd5b19c85d27a679bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c3d8490b_ff9a615d",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-01-12T19:52:49Z",
+      "side": 1,
+      "message": "These are the fields in Jeff change, I just add them so I can modify UI side. Although what I really need is just try_job_url. I can remove try_job_id in this CL.",
+      "parentUuid": "c3d8490b_29451805",
+      "revId": "06ed38677556a5547471c9bd5b19c85d27a679bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c3d8490b_5faa8d76",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-01-12T19:52:49Z",
+      "side": 1,
+      "message": "Id of the try_job",
+      "parentUuid": "c3d8490b_e927107e",
+      "range": {
+        "startLine": 28,
+        "startChar": 2,
+        "endLine": 28,
+        "endChar": 12
+      },
       "revId": "06ed38677556a5547471c9bd5b19c85d27a679bc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
