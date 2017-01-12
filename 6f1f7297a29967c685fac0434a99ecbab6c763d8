@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c3d8490b_894be496",
+        "filename": "go/src/infra/tricium/appengine/frontend/handlers.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-01-12T06:26:22Z",
+      "side": 1,
+      "message": "once this is in Polymer (if ever) it can send pRPC requests directly to the pRPC server endpoint via Javascript fetch",
+      "range": {
+        "startLine": 54,
+        "startChar": 12,
+        "endLine": 54,
+        "endChar": 28
+      },
+      "revId": "6f1f7297a29967c685fac0434a99ecbab6c763d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c3d8490b_e98e30c0",
+        "filename": "go/src/infra/tricium/appengine/frontend/handlers.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-01-12T06:26:22Z",
+      "side": 1,
+      "message": "there should probably be a distinction here between fatal and retriable errors. E.g. grpc.Code(err) \u003d\u003d codes.InvalidArgument is fatal error, but grpc.Code(err) \u003d\u003d codes.Internal is not.\n\n(Can be a TODO when we now for sure all kinds of errors that can be returned).",
+      "range": {
+        "startLine": 67,
+        "startChar": 16,
+        "endLine": 67,
+        "endChar": 46
+      },
+      "revId": "6f1f7297a29967c685fac0434a99ecbab6c763d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c3d8490b_4955fc30",
+        "filename": "go/src/infra/tricium/appengine/frontend/handlers.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-01-12T06:26:22Z",
+      "side": 1,
+      "message": "I think for internal queues we should just pass this via task payload (i.e. proto-serialize it and put into task body when posting task, deserialize it when executing the task). It will be much shorter.\n\n(Can also be TODO, as another TODO mentions that we may not need this task queue at all).",
+      "range": {
+        "startLine": 120,
+        "startChar": 38,
+        "endLine": 124,
+        "endChar": 2
+      },
+      "revId": "6f1f7297a29967c685fac0434a99ecbab6c763d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c3d8490b_695a4064",
+        "filename": "go/src/infra/tricium/appengine/frontend/init.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-01-12T06:26:22Z",
+      "side": 1,
+      "message": "TODO: Enable authentication.\n\nIs there any particular reason it is not enabled now? (I sense the reason is lack of documentation...)",
+      "range": {
+        "startLine": 36,
+        "startChar": 38,
+        "endLine": 36,
+        "endChar": 58
+      },
+      "revId": "6f1f7297a29967c685fac0434a99ecbab6c763d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c3d8490b_c9680cfb",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_analyze.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-01-12T06:26:22Z",
+      "side": 1,
+      "message": "I\u0027m not sure \"frontend\" module is a good location for this kind of stuff going forward. But it can be easily by changed later if it becomes confusing, so whatever.",
+      "range": {
+        "startLine": 27,
+        "startChar": 5,
+        "endLine": 27,
+        "endChar": 18
+      },
+      "revId": "6f1f7297a29967c685fac0434a99ecbab6c763d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c3d8490b_8932042f",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_analyze.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-01-12T06:26:22Z",
+      "side": 1,
+      "message": "This is nil (but all methods will work, the receiver (r) will just be nil too). This is weird though.\n\nI think you need\n\nvar triciumServer \u003d \u0026TriciumServer{}",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 30,
+        "endChar": 32
+      },
+      "revId": "6f1f7297a29967c685fac0434a99ecbab6c763d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c3d8490b_09461483",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_analyze.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-01-12T06:26:22Z",
+      "side": 1,
+      "message": "grpc handlers MUST return either (proto, nil) or (nil, grpc.Errorf(...)). Not both.\n\nThis is actually problematic if you want to augment the error with some structured information :( I don\u0027t know yet what\u0027s the best strategy for this. The simplest approach is just to forfeit structured errors and use grpc.Errorf(...) exclusively.\n\nIn this particular case this will be:\n\nreturn nil, grpc.Errorf(codes.Internal, \"failed to track and launch request: %v\", err)\n\n(Clients will have access to this exact tuple. And they must treat the string as opaque human-readable blob. So in practice clients should rely only on errors codes in all error handling).\n\nIf grpc.Errorf(...) is enough for all cases, you may delete ErrorCode in TriciumResponse. If grpc.Errorf(...) is not enough, then we can resort to lest elegant options like returning a \"successful\" response (the error is nil) that actually indicates some deeper failure with ErrorCode.",
+      "range": {
+        "startLine": 79,
+        "startChar": 79,
+        "endLine": 79,
+        "endChar": 136
+      },
+      "revId": "6f1f7297a29967c685fac0434a99ecbab6c763d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
