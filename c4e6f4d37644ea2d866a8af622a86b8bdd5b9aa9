@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c3d8490b_086924fc",
+        "filename": "appengine/findit/handlers/flake/check_flake.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-01-13T08:01:51Z",
+      "side": 1,
+      "message": "We have the try-job-id, why not show it as text with this url as link?",
+      "range": {
+        "startLine": 75,
+        "startChar": 9,
+        "endLine": 75,
+        "endChar": 20
+      },
+      "revId": "c4e6f4d37644ea2d866a8af622a86b8bdd5b9aa9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c3d8490b_e837001e",
+        "filename": "appengine/findit/templates/flake/result.html",
+        "patchSetId": 5
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-01-13T08:01:51Z",
+      "side": 1,
+      "message": "For raw data format, it is only [x, y] according to https://github.com/flot/flot/blob/master/API.md#data-format\n\nLet\u0027s remove unneeded one, but add a function to find the data point for a given commit position. So we find the metadata at runtime instead to show as tooltip.\n\nSame for below.",
+      "range": {
+        "startLine": 100,
+        "startChar": 57,
+        "endLine": 100,
+        "endChar": 194
+      },
+      "revId": "c4e6f4d37644ea2d866a8af622a86b8bdd5b9aa9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c3d8490b_a831f829",
+        "filename": "appengine/findit/templates/flake/result.html",
+        "patchSetId": 5
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-01-13T08:01:51Z",
+      "side": 1,
+      "message": "Just \"Swarm rerun\"?",
+      "range": {
+        "startLine": 147,
+        "startChar": 18,
+        "endLine": 147,
+        "endChar": 53
+      },
+      "revId": "c4e6f4d37644ea2d866a8af622a86b8bdd5b9aa9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c3d8490b_48464c84",
+        "filename": "appengine/findit/templates/flake/result.html",
+        "patchSetId": 5
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-01-13T08:01:51Z",
+      "side": 1,
+      "message": "\"Try-job rerun\"?",
+      "range": {
+        "startLine": 162,
+        "startChar": 18,
+        "endLine": 162,
+        "endChar": 56
+      },
+      "revId": "c4e6f4d37644ea2d866a8af622a86b8bdd5b9aa9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c3d8490b_08404462",
+        "filename": "appengine/findit/templates/flake/result.html",
+        "patchSetId": 5
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-01-13T08:01:51Z",
+      "side": 1,
+      "message": "Use a function to query instead as mentioned above.",
+      "range": {
+        "startLine": 219,
+        "startChar": 8,
+        "endLine": 224,
+        "endChar": 36
+      },
+      "revId": "c4e6f4d37644ea2d866a8af622a86b8bdd5b9aa9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c3d8490b_283d08fa",
+        "filename": "appengine/findit/templates/flake/result.html",
+        "patchSetId": 5
+      },
+      "lineNbr": 239,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-01-13T08:01:51Z",
+      "side": 1,
+      "message": "Follow the format as \"Build #: ...\"?",
+      "range": {
+        "startLine": 239,
+        "startChar": 73,
+        "endLine": 239,
+        "endChar": 85
+      },
+      "revId": "c4e6f4d37644ea2d866a8af622a86b8bdd5b9aa9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
