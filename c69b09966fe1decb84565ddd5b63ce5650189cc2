@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "23c0454e_46143469",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/elements/som-extension-build-failure/som-extension-build-failure.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-01-17T17:57:35Z",
+      "side": 1,
+      "message": "aha. did clang-format do this?",
+      "range": {
+        "startLine": 33,
+        "startChar": 31,
+        "endLine": 33,
+        "endChar": 32
+      },
+      "revId": "c69b09966fe1decb84565ddd5b63ce5650189cc2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
