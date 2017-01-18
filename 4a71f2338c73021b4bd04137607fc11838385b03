@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "63915dce_e4378efc",
+        "filename": "appengine/monorail/services/features_svc.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 615,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2017-01-18T17:52:07Z",
+      "side": 1,
+      "message": "Convert to logging.info().",
+      "revId": "4a71f2338c73021b4bd04137607fc11838385b03",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
