@@ -22,6 +22,57 @@
       "revId": "63eccb59bba3646ad19f9c130600d89e8fa76403",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0847de68_289648dd",
+        "filename": "appengine/monorail/static/js/tracker/tracker-editing.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 1192,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2017-01-20T21:30:58Z",
+      "side": 1,
+      "message": "This line seems redundant with the line that sets the same innerText later.",
+      "revId": "63eccb59bba3646ad19f9c130600d89e8fa76403",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0847de68_88bc1c1b",
+        "filename": "appengine/monorail/static/js/tracker/tracker-editing.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 1193,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2017-01-20T21:30:58Z",
+      "side": 1,
+      "message": "I\u0027m not sure that this is right.  I think that an empty list is JS is considered true, so might need to use .length if the JSON response will always have a \u0027missed\u0027 element that might be [].",
+      "revId": "63eccb59bba3646ad19f9c130600d89e8fa76403",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0847de68_08626ce9",
+        "filename": "appengine/monorail/static/js/tracker/tracker-editing.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 1198,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2017-01-20T21:30:58Z",
+      "side": 1,
+      "message": "So, how does the dialog box close?",
+      "revId": "63eccb59bba3646ad19f9c130600d89e8fa76403",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
