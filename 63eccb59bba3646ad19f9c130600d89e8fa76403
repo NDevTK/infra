@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0847de68_087a6cd2",
+        "filename": "appengine/monorail/static/js/tracker/tracker-editing.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 1188,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-01-20T21:21:13Z",
+      "side": 1,
+      "message": "declare variables in JS and use camelCase:\nvar messageDisplay \u003d ...",
+      "range": {
+        "startLine": 1188,
+        "startChar": 2,
+        "endLine": 1188,
+        "endChar": 17
+      },
+      "revId": "63eccb59bba3646ad19f9c130600d89e8fa76403",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
