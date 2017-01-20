@@ -25,6 +25,24 @@
     },
     {
       "key": {
+        "uuid": "0847de68_a8b7d837",
+        "filename": "appengine/monorail/static/js/tracker/tracker-editing.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 1188,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2017-01-20T21:37:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0847de68_087a6cd2",
+      "revId": "63eccb59bba3646ad19f9c130600d89e8fa76403",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0847de68_289648dd",
         "filename": "appengine/monorail/static/js/tracker/tracker-editing.js",
         "patchSetId": 2
@@ -36,6 +54,24 @@
       "writtenOn": "2017-01-20T21:30:58Z",
       "side": 1,
       "message": "This line seems redundant with the line that sets the same innerText later.",
+      "revId": "63eccb59bba3646ad19f9c130600d89e8fa76403",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0847de68_48f4e4d8",
+        "filename": "appengine/monorail/static/js/tracker/tracker-editing.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 1192,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2017-01-20T21:37:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0847de68_289648dd",
       "revId": "63eccb59bba3646ad19f9c130600d89e8fa76403",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
@@ -59,6 +95,24 @@
     },
     {
       "key": {
+        "uuid": "0847de68_28f1a8e7",
+        "filename": "appengine/monorail/static/js/tracker/tracker-editing.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 1193,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2017-01-20T21:37:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0847de68_88bc1c1b",
+      "revId": "63eccb59bba3646ad19f9c130600d89e8fa76403",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0847de68_08626ce9",
         "filename": "appengine/monorail/static/js/tracker/tracker-editing.js",
         "patchSetId": 2
@@ -70,6 +124,24 @@
       "writtenOn": "2017-01-20T21:30:58Z",
       "side": 1,
       "message": "So, how does the dialog box close?",
+      "revId": "63eccb59bba3646ad19f9c130600d89e8fa76403",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0847de68_88689c9c",
+        "filename": "appengine/monorail/static/js/tracker/tracker-editing.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 1198,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2017-01-20T21:37:19Z",
+      "side": 1,
+      "message": "The user would have to click \u0027Cancel\u0027\nI can create a new dialog box just for the message? Or I could just put the message at the top of the main page?\nWhich do you prefer?",
+      "parentUuid": "0847de68_08626ce9",
       "revId": "63eccb59bba3646ad19f9c130600d89e8fa76403",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
