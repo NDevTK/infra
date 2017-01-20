@@ -145,6 +145,24 @@
       "revId": "63eccb59bba3646ad19f9c130600d89e8fa76403",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0847de68_034daf7b",
+        "filename": "appengine/monorail/static/js/tracker/tracker-editing.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 1198,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2017-01-20T22:36:35Z",
+      "side": 1,
+      "message": "I think the best and most consistent way to show it would be to use the elements in templates/framework/alerts.ezt.  Right now, those elements are only generated on the server side if the server is trying to present an alert message.  However, you could change it so that the \u003ctable\u003e element is always there, has an ID, and has style\u003d\"display:none\" if the server has no alert to display.  Then JS code could set the alert message and set display\u003d\u0027table\u0027.",
+      "parentUuid": "0847de68_88689c9c",
+      "revId": "63eccb59bba3646ad19f9c130600d89e8fa76403",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
