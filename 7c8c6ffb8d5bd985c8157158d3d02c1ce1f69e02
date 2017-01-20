@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0847de68_38d103dd",
+        "filename": "appengine/monorail/framework/grid_view_helpers.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2017-01-20T00:19:49Z",
+      "side": 1,
+      "message": "This raises an exception on the regular issuelist in grid mode because hotlist_context_dict is None.\nE.g., https://7529-55935c1-tainted-jojwang-dot-monorail-staging.appspot.com/p/monorail/issues/list?can\u003d2\u0026q\u003dPriority\u003d%22Medium%22\u0026colspec\u003dID+Type+Status%2FClosed+Priority+Milestone+EstDays+Owner+Summary\u0026groupby\u003d\u0026sort\u003d\u0026x\u003d\u0026y\u003d\u0026cells\u003dids\u0026mode\u003dgrid",
+      "revId": "7c8c6ffb8d5bd985c8157158d3d02c1ce1f69e02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
