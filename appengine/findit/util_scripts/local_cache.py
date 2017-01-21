@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import logging
 import os
 import pickle
 import threading
@@ -17,12 +16,13 @@ class LocalCache(Cache):
   """Cacher that uses local files to cache data."""
   lock = threading.Lock()
 
-  def __init__(self, cache_dir=CACHE_DIR):
-    self.cache_dir = cache_dir
-    try:  # pragma: no cover.
-      os.makedirs(cache_dir)
-    except Exception:
-      pass
+  def __init__(self, cache_dir=None):
+    self._cache_dir = cache_dir
+    self._initialized = False
+
+  @property
+  def cache_dir(self):
+    return self._cache_dir or CACHE_DIR
 
   def Get(self, key):
     with LocalCache.lock:
@@ -39,6 +39,12 @@ class LocalCache(Cache):
   def Set(self, key, data, expire_time=0):  # pylint: disable=W
     with LocalCache.lock:
       try:
+        if not self._initialized:  # pragma: no cover.
+          try:
+            os.makedirs(self.cache_dir)
+          except Exception:
+            pass
+          self._initialized = True
         with open(os.path.join(self.cache_dir, key), 'wb') as f:
           f.write(zlib.compress(pickle.dumps(data)))
       except Exception as e:  # pragma: no cover.
