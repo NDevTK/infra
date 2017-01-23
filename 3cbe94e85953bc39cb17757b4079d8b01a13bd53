@@ -45,6 +45,24 @@
       "revId": "3cbe94e85953bc39cb17757b4079d8b01a13bd53",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0847de68_44c6034b",
+        "filename": "appengine/findit/util_scripts/local_cache.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-01-23T22:03:54Z",
+      "side": 1,
+      "message": "I think \"except Exception\" here is meant to catch \"the directory already exists\" condition (I\u0027ve just copied this logic from __init__). If so, setting _initialized to True is fine. Should I change it to catch OSError and check errno explicitly?",
+      "parentUuid": "0847de68_66c227e9",
+      "revId": "3cbe94e85953bc39cb17757b4079d8b01a13bd53",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
