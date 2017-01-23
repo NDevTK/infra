@@ -63,6 +63,24 @@
       "revId": "3cbe94e85953bc39cb17757b4079d8b01a13bd53",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0847de68_594b8596",
+        "filename": "appengine/findit/util_scripts/local_cache.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1143925
+      },
+      "writtenOn": "2017-01-23T22:56:31Z",
+      "side": 1,
+      "message": "What I am worried about is that if another kind of exception happens, we will end up setting _initialized to True and didn\u0027t make the directory.\n\nRight, I think we can do something like:\n\n try:\n   os.makedirs(path)\n except OSError as exception:\n   if exception.errno !\u003d errno.EEXIST:\n     raise\n\n self._initialized \u003d True",
+      "parentUuid": "0847de68_44c6034b",
+      "revId": "3cbe94e85953bc39cb17757b4079d8b01a13bd53",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
