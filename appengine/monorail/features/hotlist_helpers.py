@@ -5,6 +5,8 @@
 
 """Helper functions and classes used by the hotlist pages."""
 
+import logging
+
 from features import features_constants
 from framework import framework_views
 from framework import sorting
@@ -22,7 +24,13 @@ from tracker import tablecell
 def GetSortedHotlistIssues(
     mr, hotlist_issues, issues_list, harmonized_config, profiler, services):
   with profiler.Phase('Checking issue permissions and getting ranks'):
+
     allowed_issues = FilterIssues(mr, issues_list, services)
+    # The values for issues in a hotlist are specific to the hotlist
+    # (rank, adder, added) without invalidating the keys, an issue will retain
+    # the rank value if has in one hotlist when navigating to another hotlist.
+    sorting.InvalidateArtValuesKeys(
+        mr.cnxn, [issue.issue_id for issue in allowed_issues])
     sorted_ranks = sorted(
         [hotlist_issue.rank for hotlist_issue in hotlist_issues])
     friendly_ranks = {
