@@ -127,10 +127,9 @@ def SortArtifacts(
 
     sort_key = []
     for sd, accessor in accessor_pairs:
-      if sd not in art_values:
+      if (sd not in art_values):
         art_values[sd] = accessor(art)
       sort_key.append(art_values[sd])
-
     art_values_cache.CacheItem(art.issue_id, art_values)
     return sort_key
 

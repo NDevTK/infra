@@ -5,6 +5,8 @@
 
 """Helper functions and classes used by the hotlist pages."""
 
+import logging
+
 from features import features_constants
 from framework import framework_views
 from framework import sorting
@@ -22,11 +24,19 @@ from tracker import tablecell
 def GetSortedHotlistIssues(
     mr, hotlist_issues, issues_list, harmonized_config, profiler, services):
   with profiler.Phase('Checking issue permissions and getting ranks'):
+
     allowed_issues = FilterIssues(mr, issues_list, services)
+    # The values for issues in a hotlist are specific to the hotlist
+    # (rank, adder, added) without invalidating the keys, an issue will retain
+    # the rank value if has in one hotlist when navigating to another hotlist.
+    sorting.InvalidateArtValuesKeys(
+        mr.cnxn, [issue.issue_id for issue in allowed_issues])
     sorted_ranks = sorted(
         [hotlist_issue.rank for hotlist_issue in hotlist_issues])
+    logging.info(hotlist_issues)
     friendly_ranks = {
         rank: friendly for friendly, rank in enumerate(sorted_ranks, 1)}
+    logging.info(friendly_ranks)
     issue_adders = framework_views.MakeAllUserViews(
         mr.cnxn, services.user, [hotlist_issue.adder_id for
                                  hotlist_issue in hotlist_issues])
@@ -37,6 +47,7 @@ def GetSortedHotlistIssues(
                                  'date_added': timestr.FormatRelativeDate(
                                      hotlist_issue.date_added)}
         for hotlist_issue in hotlist_issues}
+    logging.info(hotlist_issues_context)
 
   with profiler.Phase('Making user views'):
     issues_users_by_id = framework_views.MakeAllUserViews(
@@ -63,6 +74,8 @@ def GetSortedHotlistIssues(
         mr, allowed_issues, harmonized_config, sortable_fields,
         sortable_postproc,
         users_by_id=issues_users_by_id, tie_breakers=['rank', 'id'])
+    for issue in sorted_issues:
+      logging.info(issue.issue_id)
     return sorted_issues, hotlist_issues_context, issues_users_by_id
 
 
