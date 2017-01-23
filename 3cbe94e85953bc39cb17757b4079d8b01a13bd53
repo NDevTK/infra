@@ -22,6 +22,29 @@
       "revId": "3cbe94e85953bc39cb17757b4079d8b01a13bd53",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0847de68_66c227e9",
+        "filename": "appengine/findit/util_scripts/local_cache.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1143925
+      },
+      "writtenOn": "2017-01-23T19:35:38Z",
+      "side": 1,
+      "message": "Should we use:\n\nelse:\n  self._initialized \u003d True\n\nSo, if there is Exception, we won\u0027t set the _initialized to True.",
+      "range": {
+        "startLine": 47,
+        "startChar": 15,
+        "endLine": 47,
+        "endChar": 27
+      },
+      "revId": "3cbe94e85953bc39cb17757b4079d8b01a13bd53",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
