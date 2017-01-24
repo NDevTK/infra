@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0847de68_228772b3",
+        "filename": "appengine/monorail/features/hotlist_helpers.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-01-24T00:06:42Z",
+      "side": 1,
+      "message": "unused?",
+      "revId": "fd7eda39f41b4f1a3c66a6810e6b8f74310174f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0847de68_42ab8e19",
+        "filename": "appengine/monorail/features/hotlist_helpers.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-01-24T00:06:42Z",
+      "side": 1,
+      "message": "value it has",
+      "range": {
+        "startLine": 31,
+        "startChar": 15,
+        "endLine": 31,
+        "endChar": 27
+      },
+      "revId": "fd7eda39f41b4f1a3c66a6810e6b8f74310174f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
