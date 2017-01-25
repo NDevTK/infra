@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "675be7e5_74349c32",
+        "filename": "appengine/monorail/templates/tracker/field-value-multi-enum.ezt",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2017-01-25T01:02:51Z",
+      "side": 1,
+      "message": "extra space?",
+      "range": {
+        "startLine": 41,
+        "startChar": 70,
+        "endLine": 41,
+        "endChar": 71
+      },
+      "revId": "6c520f1175f884aaea0d150608c18c7248009816",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bcb49a56_4c7a5a57",
+        "filename": "appengine/monorail/templates/tracker/issue-peek-ajah.ezt",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2017-01-25T01:02:51Z",
+      "side": 1,
+      "message": "extra space?",
+      "range": {
+        "startLine": 16,
+        "startChar": 56,
+        "endLine": 16,
+        "endChar": 57
+      },
+      "revId": "6c520f1175f884aaea0d150608c18c7248009816",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
