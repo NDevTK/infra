@@ -16,6 +16,23 @@
       "revId": "0959f20a80302474319de602d6d07726e60a475d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b4ebd816_52d0a93a",
+        "filename": "appengine/monorail/features/hotlistissues.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2017-01-25T01:09:28Z",
+      "side": 1,
+      "message": "Done",
+      "revId": "0959f20a80302474319de602d6d07726e60a475d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
