@@ -42,6 +42,23 @@
     },
     {
       "key": {
+        "uuid": "c73c12ef_f868f478",
+        "filename": "appengine/monorail/templates/tracker/field-value-multi-enum.ezt",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2017-01-25T01:05:27Z",
+      "side": 1,
+      "message": "Yeah, an HTML element can have a list of classes.",
+      "revId": "6c520f1175f884aaea0d150608c18c7248009816",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bcb49a56_4c7a5a57",
         "filename": "appengine/monorail/templates/tracker/issue-peek-ajah.ezt",
         "patchSetId": 1
