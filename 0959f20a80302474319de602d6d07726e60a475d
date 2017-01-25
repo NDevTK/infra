@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2cdf7b4c_8ae503ca",
+        "filename": "appengine/monorail/features/hotlistissues.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2017-01-25T00:59:44Z",
+      "side": 1,
+      "message": "It would be more clear if the split(\u0027,\u0027) was on the original line and then the if-clause is on its own line.\nAlso, I am thinking that input \"monorail:1, \" might cause a problem because \" \" is true.\nSo, instead use:\nif pair.strip()",
+      "revId": "0959f20a80302474319de602d6d07726e60a475d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
