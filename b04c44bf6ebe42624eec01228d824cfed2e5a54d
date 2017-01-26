@@ -39,6 +39,23 @@
       "revId": "b04c44bf6ebe42624eec01228d824cfed2e5a54d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9c7beb53_fc86d066",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/elements/som-app/som-app.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2017-01-26T01:03:44Z",
+      "side": 0,
+      "message": "Actually, I just set this to 0 rather than a variable at all. The behavior with making the tabIndex\u0027s increment is confusing.",
+      "revId": "b04c44bf6ebe42624eec01228d824cfed2e5a54d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
