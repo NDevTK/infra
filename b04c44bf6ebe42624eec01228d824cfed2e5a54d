@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "87bba287_87e1b318",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/elements/som-app/som-app.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-01-26T00:38:44Z",
+      "side": 0,
+      "message": "was this intentionally removed?",
+      "range": {
+        "startLine": 255,
+        "startChar": 40,
+        "endLine": 255,
+        "endChar": 65
+      },
+      "revId": "b04c44bf6ebe42624eec01228d824cfed2e5a54d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
