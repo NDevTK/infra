@@ -22,6 +22,23 @@
       "revId": "b04c44bf6ebe42624eec01228d824cfed2e5a54d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce824c11_d5d6ac60",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/elements/som-app/som-app.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2017-01-26T00:53:11Z",
+      "side": 0,
+      "message": "Yes, I should have noted this in the description. I noticed the tabIndex variable wasn\u0027t set anywhere in the code, and it seems to be valueless. And I noticed the tabindex focusing didn\u0027t seem to be working anyways, so I deleted this. \n\nBut I just realized this is probably a desirable feature now, so I readded this and fixed it by changing [[tabIndex]] to [[index]].",
+      "revId": "b04c44bf6ebe42624eec01228d824cfed2e5a54d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
