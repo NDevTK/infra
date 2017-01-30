@@ -1,0 +1,120 @@
+)]}'
+{
+  "commit": "3c954e6fddda266a385a6ab076203eeba8290c24",
+  "tree": "6a5cf28071a87f27fca6277bee2ec22754cf6465",
+  "parents": [
+    "7fa3690e341398f681128764be6b0b14f5a79a16"
+  ],
+  "author": {
+    "name": "tomhudson",
+    "email": "tomhudson@google.com",
+    "time": "Tue Oct 20 18:12:11 2015"
+  },
+  "committer": {
+    "name": "Commit bot",
+    "email": "commit-bot@chromium.org",
+    "time": "Tue Oct 20 18:12:48 2015"
+  },
+  "message": "80% of calls to skia::GetTopDevice() were retrieving a read-only reference to the raw pixel data; this CL simplifies those call sites and migrates to a more GPU-friendly and less internals-exposing implementation.\n\nBUG\u003d543755\n\nReview URL: https://codereview.chromium.org/1399223004\n\nCr-Commit-Position: refs/heads/master@{#355104}\n",
+  "tree_diff": [
+    {
+      "type": "modify",
+      "old_id": "b1663cf28c324ce54abe655547c55f98d7d160fc",
+      "old_mode": 33188,
+      "old_path": "chrome/browser/thumbnails/content_analysis_unittest.cc",
+      "new_id": "b9bb9692eea64692ab55a49b44ce7cabeba99551",
+      "new_mode": 33188,
+      "new_path": "chrome/browser/thumbnails/content_analysis_unittest.cc"
+    },
+    {
+      "type": "modify",
+      "old_id": "3fbc8d42f6f0b5c0e345c2812450ae4b97347bb8",
+      "old_mode": 33188,
+      "old_path": "chrome/browser/thumbnails/content_based_thumbnailing_algorithm_unittest.cc",
+      "new_id": "2fa7ccd3bf377823b9c13022d159c72ace0e8212",
+      "new_mode": 33188,
+      "new_path": "chrome/browser/thumbnails/content_based_thumbnailing_algorithm_unittest.cc"
+    },
+    {
+      "type": "modify",
+      "old_id": "e7c7a2b8943ac26c526e73569293ec72d1c365ae",
+      "old_mode": 33188,
+      "old_path": "chrome/browser/thumbnails/simple_thumbnail_crop_unittest.cc",
+      "new_id": "2852ef5d630ca267893cdf338863a023f87fb634",
+      "new_mode": 33188,
+      "new_path": "chrome/browser/thumbnails/simple_thumbnail_crop_unittest.cc"
+    },
+    {
+      "type": "modify",
+      "old_id": "7dcb809c37d6cfce64a595362444f8958de53b4a",
+      "old_mode": 33188,
+      "old_path": "components/test_runner/web_test_proxy.cc",
+      "new_id": "be90a68d1c963234233fb43829a46b6cfe1a6371",
+      "new_mode": 33188,
+      "new_path": "components/test_runner/web_test_proxy.cc"
+    },
+    {
+      "type": "modify",
+      "old_id": "5986cdeae0e940a8ea0bfbc4f6c543dddf5e044b",
+      "old_mode": 33188,
+      "old_path": "content/renderer/pepper/plugin_instance_throttler_impl_unittest.cc",
+      "new_id": "57c45635b4b1ae1220df587945b565f0154a05f1",
+      "new_mode": 33188,
+      "new_path": "content/renderer/pepper/plugin_instance_throttler_impl_unittest.cc"
+    },
+    {
+      "type": "modify",
+      "old_id": "778ee0948491c203b6dd4442667627db5107ad46",
+      "old_mode": 33188,
+      "old_path": "skia/ext/platform_canvas.cc",
+      "new_id": "5e5aeb2048e1f4d556594b8e98c98bd553f40a36",
+      "new_mode": 33188,
+      "new_path": "skia/ext/platform_canvas.cc"
+    },
+    {
+      "type": "modify",
+      "old_id": "79c10fd5e8378c3d617df02454f01ae76ec2adbe",
+      "old_mode": 33188,
+      "old_path": "skia/ext/platform_canvas.h",
+      "new_id": "449904166a926786e6b24fd31b4a9e511da68a36",
+      "new_mode": 33188,
+      "new_path": "skia/ext/platform_canvas.h"
+    },
+    {
+      "type": "modify",
+      "old_id": "cb2862f9c4057057f7f7e78d7c81410ec1aaffb0",
+      "old_mode": 33188,
+      "old_path": "skia/ext/platform_canvas_unittest.cc",
+      "new_id": "a4a2ff5ec54c3d19581169184e464103ca7306d5",
+      "new_mode": 33188,
+      "new_path": "skia/ext/platform_canvas_unittest.cc"
+    },
+    {
+      "type": "modify",
+      "old_id": "4f154f965ea857ea928c65c71e65057f0a5a3cc4",
+      "old_mode": 33188,
+      "old_path": "ui/gfx/blit_unittest.cc",
+      "new_id": "fcc0ac8d6c951223f0513be181f470488f50738f",
+      "new_mode": 33188,
+      "new_path": "ui/gfx/blit_unittest.cc"
+    },
+    {
+      "type": "modify",
+      "old_id": "903161fd59e05c007da05a8a38889fae6f06815e",
+      "old_mode": 33188,
+      "old_path": "ui/gfx/color_analysis_unittest.cc",
+      "new_id": "6f53f783cecda9b42693f1724f43303b7167e936",
+      "new_mode": 33188,
+      "new_path": "ui/gfx/color_analysis_unittest.cc"
+    },
+    {
+      "type": "modify",
+      "old_id": "c49052ea684ee9970d1d7db3203ef300d7093dab",
+      "old_mode": 33188,
+      "old_path": "ui/gfx/color_utils_unittest.cc",
+      "new_id": "2993fe45a5d122e19f60b796c9bb7dfd5eec5691",
+      "new_mode": 33188,
+      "new_path": "ui/gfx/color_utils_unittest.cc"
+    }
+  ]
+}

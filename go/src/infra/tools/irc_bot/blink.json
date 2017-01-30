@@ -1,0 +1,10 @@
+{
+	"gitiles_url": "https://chromium.googlesource.com/chromium/src/",
+	"nickname": "blink-bot",
+	"announce_path": "third_party/WebKit",
+	"project_name": "blink",
+	"channel": "#blinkybot",
+	"server": "chat.freenode.net",
+	"port": 6666,
+	"use_ssl": false
+}

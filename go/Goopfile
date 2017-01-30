@@ -43,3 +43,4 @@ google.golang.org/cloud #2400193c85c3561d13880d34e0e10c4315bb02af
 google.golang.org/grpc #1f1a4999ca75ba4fd6d5c91233383a170034a1a5 !https://chromium.googlesource.com/external/github.com/grpc/grpc-go.git
 gopkg.in/fsnotify.v1 #96c060f6a6b7e0d6f75fddd10efeaca3e5d1bcb0 !https://chromium.googlesource.com/external/github.com/go-fsnotify/fsnotify.git
 gopkg.in/yaml.v2 #53feefa2559fb8dfa8d81baad31be332c97d6c77 !https://chromium.googlesource.com/external/github.com/go-yaml/yaml.git
+github.com/thoj/go-ircevent #988aaaacd937fc2748708c2a3b8ea5869be4d3a0

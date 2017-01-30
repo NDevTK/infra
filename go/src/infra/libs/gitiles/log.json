@@ -1,0 +1,1806 @@
+)]}'
+{
+  "log": [
+    {
+      "commit": "8684c62ec7738b2a1ef5a15a3c1979a9a71a24c1",
+      "tree": "1460f979da8d82cce9be91cb6f25a55c67739082",
+      "parents": [
+        "6d37a8e422e7e1f1fac5548bb6959f4de2c3782c"
+      ],
+      "author": {
+        "name": "yolandyan",
+        "email": "yolandyan@google.com",
+        "time": "Tue Oct 20 19:02:45 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 19:03:33 2015"
+      },
+      "message": "Revert of Enable page cycler to use WebViewShellTestRunner (patchset #2 id:20001 of https://codereview.chromium.org/1413663006/ )\n\nReason for revert:\nReplaced with this CL https://codereview.chromium.org/1412083005\n\nOriginal issue\u0027s description:\n\u003e Move WebViewLayoutTestRunner.java to WebViewShellTestRunner.java to\n\u003e allow both layout tests and page cycler to use this test runner\n\u003e\n\u003e This is to solve the conflict in the following 2 CLs\n\u003e https://codereview.chromium.org/1402833002\n\u003e https://codereview.chromium.org/1410023002\n\u003e\n\u003e Committed: https://crrev.com/d3825fe7fbfe780da6967c026248842d9f39b11d\n\u003e Cr-Commit-Position: refs/heads/master@{#354944}\n\nTBR\u003dmikecase@chromium.org,boliu@chromium.org,jbudorick@chromium.org,timvolodine@chromium.org\nNOPRESUBMIT\u003dtrue\nNOTREECHECKS\u003dtrue\nNOTRY\u003dtrue\n\nReview URL: https://codereview.chromium.org/1419703002\n\nCr-Commit-Position: refs/heads/master@{#355123}\n"
+    },
+    {
+      "commit": "6d37a8e422e7e1f1fac5548bb6959f4de2c3782c",
+      "tree": "4d719c21d2faf1cd214622e144d10986035aedbf",
+      "parents": [
+        "aa1dc3494905b81e33c1c7df2f09fdc492589d79"
+      ],
+      "author": {
+        "name": "nednguyen",
+        "email": "nednguyen@google.com",
+        "time": "Tue Oct 20 19:00:01 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 19:00:54 2015"
+      },
+      "message": "[Telemetry] Refactor the isolate \u0026 BUILD of telemetry test.\n\nThis patch moves the isolates that are related to telemetry \u0026 telemetry\n+ browser tests to tools/telemetry/ \u0026 tools/perf. The rationale of this is to alleviate the code review pressure on src/chrome/ OWNERS \u0026 to\ntelemetry team OWNERS.\n\nBUG\u003d541191\n\nTBR\u003dmaruel@chromium.org\n\nReview URL: https://codereview.chromium.org/1395663004\n\nCr-Commit-Position: refs/heads/master@{#355122}\n"
+    },
+    {
+      "commit": "aa1dc3494905b81e33c1c7df2f09fdc492589d79",
+      "tree": "846a0dad682c9a42f8adb4a28af9c0d0a20899ac",
+      "parents": [
+        "91962356aaecdc436a2aed5d68133041731da374"
+      ],
+      "author": {
+        "name": "sievers",
+        "email": "sievers@chromium.org",
+        "time": "Tue Oct 20 18:55:45 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 18:56:48 2015"
+      },
+      "message": "aura: Handle released widget when GPU channel gets established\n\nAllow this sequence:\nGpuProcessTransporFactory::CreateOutputSurface()\n  EstablishGpuChannel()\nCompositor::ReleaseAcceleratedWidget()\nGpuProcessTransportFactory::EstablishedGpuChannel()\n\nBUG\u003d513540\n\nReview URL: https://codereview.chromium.org/1406993003\n\nCr-Commit-Position: refs/heads/master@{#355121}\n"
+    },
+    {
+      "commit": "91962356aaecdc436a2aed5d68133041731da374",
+      "tree": "a647da3d25612040f6ebbb458ea95a10e71059d6",
+      "parents": [
+        "67b6d3880936936177eab618d3f5ee53c65709c3"
+      ],
+      "author": {
+        "name": "cpaulin",
+        "email": "cpaulin@chromium.org",
+        "time": "Tue Oct 20 18:55:14 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 18:56:47 2015"
+      },
+      "message": "Handle corrupted data in Telemetry WebRTcRendering\n\nBUG\u003dchromium:545165\n\nReview URL: https://codereview.chromium.org/1416533003\n\nCr-Commit-Position: refs/heads/master@{#355120}\n"
+    },
+    {
+      "commit": "67b6d3880936936177eab618d3f5ee53c65709c3",
+      "tree": "2481c8dc400fc189639cf7dbeb78373077d9f042",
+      "parents": [
+        "e8b9a744434124115014f37ae6066b7cd69b4eab"
+      ],
+      "author": {
+        "name": "fs",
+        "email": "fs@opera.com",
+        "time": "Tue Oct 20 18:54:25 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 18:55:31 2015"
+      },
+      "message": "Use getAttribute in path animation tests\n\nUse getAttribute(\u0027d\u0027) and exact string matching instead of using\nanimatedPathSegList. The base value checks are dropped. In some cases\nrelative close commands (\u0027z\u0027) are replaced with absolute ones (\u0027Z\u0027).\n\nBUG\u003d539385\n\nReview URL: https://codereview.chromium.org/1417593003\n\nCr-Commit-Position: refs/heads/master@{#355119}\n"
+    },
+    {
+      "commit": "e8b9a744434124115014f37ae6066b7cd69b4eab",
+      "tree": "d94ab0501747a8850e00d2742de3c98ffe0326b7",
+      "parents": [
+        "e157fa2d7147f0113ac8049ab2936b67d14c4be5"
+      ],
+      "author": {
+        "name": "lukasza",
+        "email": "lukasza@chromium.org",
+        "time": "Tue Oct 20 18:53:57 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 18:54:29 2015"
+      },
+      "message": "More accurate description of Chromoting policies.\n\nBUG\u003d538170\n\nReview URL: https://codereview.chromium.org/1384553003\n\nCr-Commit-Position: refs/heads/master@{#355118}\n"
+    },
+    {
+      "commit": "e157fa2d7147f0113ac8049ab2936b67d14c4be5",
+      "tree": "d41e66dc72469978f9b55d106c09f6b13aeccac4",
+      "parents": [
+        "332b606c4e3ab39c4faf0ebfe0630735f902ef32"
+      ],
+      "author": {
+        "name": "aurimas",
+        "email": "aurimas@chromium.org",
+        "time": "Tue Oct 20 18:46:31 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 18:48:52 2015"
+      },
+      "message": "Use correct URL for Contextual Search promotions in Svelte mode.\n\nBUG\u003d399127\n\nReview URL: https://codereview.chromium.org/1417663002\n\nCr-Commit-Position: refs/heads/master@{#355117}\n"
+    },
+    {
+      "commit": "332b606c4e3ab39c4faf0ebfe0630735f902ef32",
+      "tree": "a78555f43ed232e221c7a6203084a6255e125b8c",
+      "parents": [
+        "83e7195f4794df0549112b177429ee8b204874fd"
+      ],
+      "author": {
+        "name": "megjablon",
+        "email": "megjablon@chromium.org",
+        "time": "Tue Oct 20 18:44:33 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 18:45:13 2015"
+      },
+      "message": "Add enable-data-reduction-proxy-dev entry in LoginCustomFlags\n\nBUG\u003d445461\n\nReview URL: https://codereview.chromium.org/1416663005\n\nCr-Commit-Position: refs/heads/master@{#355116}\n"
+    },
+    {
+      "commit": "83e7195f4794df0549112b177429ee8b204874fd",
+      "tree": "f33dfd075460dcd9559d01f3c1918b02a3e3dd88",
+      "parents": [
+        "b0d839cc937b4e16a8d3c820f28c52fee158fb22"
+      ],
+      "author": {
+        "name": "sergeyu",
+        "email": "sergeyu@chromium.org",
+        "time": "Tue Oct 20 18:41:22 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 18:42:11 2015"
+      },
+      "message": "Add workaround for PPB_VideoDecoder not setting visible_rect.\n\nDepending on the decoder being used PPB_VideoDecoder API may not set\nvisible_rect in the returned pictures. Work around that problem by\ncopying frame size from VideoPacket.\n\nBUG\u003d542945\n\nReview URL: https://codereview.chromium.org/1411283003\n\nCr-Commit-Position: refs/heads/master@{#355115}\n"
+    },
+    {
+      "commit": "b0d839cc937b4e16a8d3c820f28c52fee158fb22",
+      "tree": "09a87f0642b522ab7d8d9f475b80ff7142e25043",
+      "parents": [
+        "07eb8a6e548ad0f33d8ba3d93c78aa2e6879124f"
+      ],
+      "author": {
+        "name": "bnc",
+        "email": "bnc@chromium.org",
+        "time": "Tue Oct 20 18:37:31 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 18:38:12 2015"
+      },
+      "message": "Add roundtrip tests to SpdyAltSvcWireFormat.\n\nSpdyAltSvcWireFormat performs two distinct roles: parsing and serializing.  This\nCL adds roundtrip tests to make sure that these functionalities are compatible.\n\nThis CL lands server change 105756554 by bnc.\n\nBUG\u003d488484\n\nReview URL: https://codereview.chromium.org/1416893002\n\nCr-Commit-Position: refs/heads/master@{#355114}\n"
+    },
+    {
+      "commit": "07eb8a6e548ad0f33d8ba3d93c78aa2e6879124f",
+      "tree": "1d42e8639771827043f1f9d8d152232152551593",
+      "parents": [
+        "da902e18a4d31bc1d1534f85ab6cf30b4c4bcdfc"
+      ],
+      "author": {
+        "name": "bnc",
+        "email": "bnc@chromium.org",
+        "time": "Tue Oct 20 18:36:30 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 18:38:11 2015"
+      },
+      "message": "Avoid subtracting size_t from std::string::npos.\n\nstd::string::npos is a very large number, it is a code smell to subtract a\nsize_t from it and rely on it still being longer than the string.\n\nThis CL lands server change 105757192 by bnc.\n\nBUG\u003d543751\n\nReview URL: https://codereview.chromium.org/1420453003\n\nCr-Commit-Position: refs/heads/master@{#355113}\n"
+    },
+    {
+      "commit": "da902e18a4d31bc1d1534f85ab6cf30b4c4bcdfc",
+      "tree": "d7e4440cd4ef743e4302ee7908a921be0e2b1ec2",
+      "parents": [
+        "220c73916470009f4b408fc15aa91fa5bf8d0df8"
+      ],
+      "author": {
+        "name": "mark",
+        "email": "mark@chromium.org",
+        "time": "Tue Oct 20 18:36:13 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 18:37:12 2015"
+      },
+      "message": "mac: Make Mach port scopers better ScopedGenerics\n\nPreviously, Pass() did not work correctly for ScopedMachReceiveRight,\nScopedMachSendRight, or ScopedMachPortSet. These were defined as\nsubclasses of ScopedGeneric\u003c\u003e with appropriate traits types. They did\nnot have the full range of constructors made available by\nScopedGeneric\u003c\u003e, and their Pass() methods referred to their\nScopedGeneric\u003c\u003e superclass rather than their proper class types.\n\nThis changes these scopers to work as ScopedGeneric\u003c\u003e intends, with a\n\"using\" or \"typedef\" declaration, so that names such as\nScopedMachReceiveRight actually refer to the same type as the underlying\nScopedGeneric\u003c\u003e. This allows Pass() and all other ScopedGeneric\u003c\u003e\nfunctionality to work as intended.\n\nUnfortunately, ScopedGeneric\u003c\u003e doesn\u0027t provide a type conversion\noperator to the underlying wrapped type, so many use sites need to be\ntransformed to use the get() accessor. Many existing use sites already\nused this accessor.\n\nReview URL: https://codereview.chromium.org/1411523006\n\nCr-Commit-Position: refs/heads/master@{#355112}\n"
+    },
+    {
+      "commit": "220c73916470009f4b408fc15aa91fa5bf8d0df8",
+      "tree": "7fbd948eecc6e5e2977c9f6238c2a55efb343a18",
+      "parents": [
+        "cd3db70d7039fcdffaae0d04ac92ce5dd3512d8e"
+      ],
+      "author": {
+        "name": "sebsg",
+        "email": "sebsg@chromium.org",
+        "time": "Tue Oct 20 18:31:26 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 18:31:59 2015"
+      },
+      "message": "[Autofill] Field trial to show only three profile suggestions.\n\nBUG\u003d535993\n\nReview URL: https://codereview.chromium.org/1390173003\n\nCr-Commit-Position: refs/heads/master@{#355111}\n"
+    },
+    {
+      "commit": "cd3db70d7039fcdffaae0d04ac92ce5dd3512d8e",
+      "tree": "f8d8299b17f0fc0ab7fa21186dcb0e1a1fe19e97",
+      "parents": [
+        "5979bb6a5e5a298a2625693580925868cdf24ddb"
+      ],
+      "author": {
+        "name": "hablich",
+        "email": "hablich@chromium.org",
+        "time": "Tue Oct 20 18:27:15 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 18:28:30 2015"
+      },
+      "message": "Collect separate V8 histograms for Youtube\n\nBUG\u003d\nR\u003dhpayer@chromium.org,asvitkine@chromium.org,battre@chromium.org\n\nReview URL: https://codereview.chromium.org/1418623002\n\nCr-Commit-Position: refs/heads/master@{#355110}\n"
+    },
+    {
+      "commit": "5979bb6a5e5a298a2625693580925868cdf24ddb",
+      "tree": "8dc5e178d99cf4702c821d92c0cd1dd38ad96fc7",
+      "parents": [
+        "4d8793a289cdacc4a6387a73fe51d64ea9ea0a5b"
+      ],
+      "author": {
+        "name": "skia-deps-roller",
+        "email": "skia-deps-roller@chromium.org",
+        "time": "Tue Oct 20 18:26:56 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 18:27:30 2015"
+      },
+      "message": "Roll src/third_party/skia 7d974f5:0bccd87\n\nSummary of changes available at:\nhttps://chromium.googlesource.com/skia/+log/7d974f5..0bccd87\n\nCQ_INCLUDE_TRYBOTS\u003dtryserver.blink:linux_blink_rel\nTBR\u003dcaryclark@google.com\n\nCommits in this roll:\n0bccd87 caryclark@google.com Revert of Update feSpotLight to match spec (patchset #2 id:20001 of https://codereview.chromium.org/1403403003/ )\n13ccbf8 reed@google.com use (temp) gpu-imagefilter-cache for applyFilter\n3dc6ae5 robertphillips@google.com Move GrDrawingManager methods to their own .cpp file\nc4d934f mtklein@chromium.org SkRemote: add xfermodes\n045802d bsalomon@google.com Rewrite GrTextureMaker to disentangle bitmap case from base class and give GPU object a say in what copying needs to be done.\n4beb5c1 robertphillips@google.com Add debugging helper to GrDrawTarget\n4dfdbb1 mtklein@chromium.org nanobench: Add some Valgrind failure paranoia.\n6a18665 robertphillips@google.com Add the machinery to GrDrawTarget to enable topological sorting\nc84ccb0 ericrk@chromium.org Update feSpotLight to match spec\naf96fce ericrk@chromium.org The SkArithmeticMode_gpu GL filters support clamping to valid premultiplied colors, however the flag for whether or not to do this, which is present in their parent filters, is dropped when creating the GL implementations. This change adds logic to forward the value from the parent filter to the GL implementation.\ndeb8146 mtklein@chromium.org SkRemote: fix Misc hash function.\n\nReview URL: https://codereview.chromium.org/1412403002\n\nCr-Commit-Position: refs/heads/master@{#355109}\n"
+    },
+    {
+      "commit": "4d8793a289cdacc4a6387a73fe51d64ea9ea0a5b",
+      "tree": "854a23463300094d6a8d08e47831510d5a9529aa",
+      "parents": [
+        "02b4ecf9c298962a4f7d68f3db99e564115ddd96"
+      ],
+      "author": {
+        "name": "aurimas",
+        "email": "aurimas@chromium.org",
+        "time": "Tue Oct 20 18:24:47 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 18:25:35 2015"
+      },
+      "message": "Remove CJK checks from ContextualSearchFieldTrial.\n\nWe have launched CJK to 100% of users. This CL removes finch parameters\nfor disabling these languages.\n\nBUG\u003d527621\n\nReview URL: https://codereview.chromium.org/1418503003\n\nCr-Commit-Position: refs/heads/master@{#355108}\n"
+    },
+    {
+      "commit": "02b4ecf9c298962a4f7d68f3db99e564115ddd96",
+      "tree": "9f1526a241c83fe70bc716a85f74da8d0bd0981c",
+      "parents": [
+        "40d3ad9f1201248f2eaa169c5d6b528bc42afbb4"
+      ],
+      "author": {
+        "name": "tfarina",
+        "email": "tfarina@chromium.org",
+        "time": "Tue Oct 20 18:23:24 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 18:24:25 2015"
+      },
+      "message": "chrome/browser: Remove outdated comment from DEPS file.\n\nBasically it does not apply anymore since we have refactored webkit/ and\nit is now gone.\n\nBUG\u003d146251\nR\u003dthestig@chromium.org\n\nReview URL: https://codereview.chromium.org/1414303002\n\nCr-Commit-Position: refs/heads/master@{#355107}\n"
+    },
+    {
+      "commit": "40d3ad9f1201248f2eaa169c5d6b528bc42afbb4",
+      "tree": "84b3a926a9e394652f7a4d99785a99f3595663e9",
+      "parents": [
+        "3310cf70a7eb3bdec15ca87de0969842d879de81"
+      ],
+      "author": {
+        "name": "treib",
+        "email": "treib@chromium.org",
+        "time": "Tue Oct 20 18:15:42 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 18:17:34 2015"
+      },
+      "message": "Apps\u0026Extensions for Supervised Users: send permission request on outdated re-enables\n\nAlso add a test to verify that re-enabling works as expected\n\nBUG\u003d503106\n\nReview URL: https://codereview.chromium.org/1200833004\n\nCr-Commit-Position: refs/heads/master@{#355106}\n"
+    },
+    {
+      "commit": "3310cf70a7eb3bdec15ca87de0969842d879de81",
+      "tree": "62d1e426dafd61c343bb1a14a0df27599d3fb314",
+      "parents": [
+        "3c954e6fddda266a385a6ab076203eeba8290c24"
+      ],
+      "author": {
+        "name": "Joel Ong",
+        "email": "joelo@chromium.org",
+        "time": "Tue Oct 20 18:14:40 2015"
+      },
+      "committer": {
+        "name": "Joel Ong",
+        "email": "joelo@chromium.org",
+        "time": "Tue Oct 20 18:16:05 2015"
+      },
+      "message": "Auto-rebaseline for r354970\n\nhttps://chromium.googlesource.com/chromium/src/+/a5703876c\n\nBUG\u003d543397\nTBR\u003dkojii\n\nReview URL: https://codereview.chromium.org/1411953004 .\n\nCr-Commit-Position: refs/heads/master@{#355105}\n"
+    },
+    {
+      "commit": "3c954e6fddda266a385a6ab076203eeba8290c24",
+      "tree": "6a5cf28071a87f27fca6277bee2ec22754cf6465",
+      "parents": [
+        "7fa3690e341398f681128764be6b0b14f5a79a16"
+      ],
+      "author": {
+        "name": "tomhudson",
+        "email": "tomhudson@google.com",
+        "time": "Tue Oct 20 18:12:11 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 18:12:48 2015"
+      },
+      "message": "80% of calls to skia::GetTopDevice() were retrieving a read-only reference to the raw pixel data; this CL simplifies those call sites and migrates to a more GPU-friendly and less internals-exposing implementation.\n\nBUG\u003d543755\n\nReview URL: https://codereview.chromium.org/1399223004\n\nCr-Commit-Position: refs/heads/master@{#355104}\n"
+    },
+    {
+      "commit": "7fa3690e341398f681128764be6b0b14f5a79a16",
+      "tree": "1d4dad89c6bd81b4f9252ddd6571d126a39c5a4f",
+      "parents": [
+        "9bbc0793b22c6763e92d186b0201b649fd8c3d4d"
+      ],
+      "author": {
+        "name": "sdefresne",
+        "email": "sdefresne@chromium.org",
+        "time": "Tue Oct 20 18:04:59 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 18:06:24 2015"
+      },
+      "message": "[iOS][gn] Port blink_html_tokenizer to build with gn.\n\nBUG\u003d459705\n\nReview URL: https://codereview.chromium.org/1386273006\n\nCr-Commit-Position: refs/heads/master@{#355103}\n"
+    },
+    {
+      "commit": "9bbc0793b22c6763e92d186b0201b649fd8c3d4d",
+      "tree": "5054e91817cd1cd267a15c0e357870e4a385096c",
+      "parents": [
+        "65cab2f579d704cff28c20e502bc16ded67dc2ea"
+      ],
+      "author": {
+        "name": "zea",
+        "email": "zea@chromium.org",
+        "time": "Tue Oct 20 18:04:39 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 18:05:26 2015"
+      },
+      "message": "Don\u0027t surface web history urls that shouldn\u0027t be in history\n\nSync will sync some urls that shouldn\u0027t show up in the history page (such\nas chrome-native URLs).\n\nBUG\u003d535908\n\nReview URL: https://codereview.chromium.org/1419443002\n\nCr-Commit-Position: refs/heads/master@{#355102}\n"
+    },
+    {
+      "commit": "65cab2f579d704cff28c20e502bc16ded67dc2ea",
+      "tree": "0a774993a239f0c78b92626f54c46d75d08be7e9",
+      "parents": [
+        "b6f20ed025663c5f2d23abee53015c11cbcaa5e3"
+      ],
+      "author": {
+        "name": "dgozman",
+        "email": "dgozman@chromium.org",
+        "time": "Tue Oct 20 17:56:17 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 17:57:52 2015"
+      },
+      "message": "[DevTools] Make search shortcuts declarative.\n\nBUG\u003d545023\n\nReview URL: https://codereview.chromium.org/1413503003\n\nCr-Commit-Position: refs/heads/master@{#355101}\n"
+    },
+    {
+      "commit": "b6f20ed025663c5f2d23abee53015c11cbcaa5e3",
+      "tree": "6075225688b418d70d1eae704b8f173288b33e99",
+      "parents": [
+        "2094404d35eef8efc6a35f4b4ff59fcd7ba5f057"
+      ],
+      "author": {
+        "name": "wez",
+        "email": "wez@chromium.org",
+        "time": "Tue Oct 20 17:55:57 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 17:56:53 2015"
+      },
+      "message": "Remove work-around for compiler tree-vectorization bug in P224.\n\nThis work-around was added because a compiler bug broke the P224\nimplementation in Official builds, which in turn caused Chromoting\u0027s\nSPAKE2-based key exchange to fail.\n\nBUG\u003d439566\nTEST\u003dRun Chrome Remote Desktop on an official ChromeOS build and verify that it is possible to authenticate to hosts.\n\nReview URL: https://codereview.chromium.org/1415503003\n\nCr-Commit-Position: refs/heads/master@{#355100}\n"
+    },
+    {
+      "commit": "2094404d35eef8efc6a35f4b4ff59fcd7ba5f057",
+      "tree": "a3e8a8770e8b16a32a8dcc510dbc9eacaea68bde",
+      "parents": [
+        "60a8bbef3d7b1c3e537c5b78d749cae3cf18b3b3"
+      ],
+      "author": {
+        "name": "maruel",
+        "email": "maruel@chromium.org",
+        "time": "Tue Oct 20 17:53:34 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 17:55:43 2015"
+      },
+      "message": "Roll src/tools/swarming_client/ 3db878084..84537cb7a (4 commits).\n\nhttps://chromium.googlesource.com/external/swarming.client.git/+log/3db878084b52..84537cb7a87e\n\n$ git log 3db878084..84537cb7a --date\u003dshort --no-merges --format\u003d\u0027%ad %ae %s\u0027\n2015-10-16 maruel Handle the case where rmtree() throws.\n2015-10-16 maruel Fix swarming.py run.\n2015-10-16 maruel Fix swarming.py reproduce.\n2015-10-16 maruel Change file_path_test.py to use fs.\n\nR\u003dmmeade@chromium.org\nBUG\u003d\n\nReview URL: https://codereview.chromium.org/1412283003\n\nCr-Commit-Position: refs/heads/master@{#355099}\n"
+    },
+    {
+      "commit": "60a8bbef3d7b1c3e537c5b78d749cae3cf18b3b3",
+      "tree": "4020baea6aac62180f0732e22907460d7d6ddac7",
+      "parents": [
+        "b68ac4bc1f0069b1cb00990dede6ddbccce0c8be"
+      ],
+      "author": {
+        "name": "emircan",
+        "email": "emircan@chromium.org",
+        "time": "Tue Oct 20 17:51:16 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 17:52:56 2015"
+      },
+      "message": "Change paused frame of WebMediaPlayerMS from YV12 to I420\n\nWe copy the last frame in a pause for media stream.\n- Changed the copied frame to I420 to be consistent with the general format assumption.\n- I use libyuv rather than direct memsets for copy and conversion.\n\nBUG\u003d541728\n\nReview URL: https://codereview.chromium.org/1394783004\n\nCr-Commit-Position: refs/heads/master@{#355098}\n"
+    },
+    {
+      "commit": "b68ac4bc1f0069b1cb00990dede6ddbccce0c8be",
+      "tree": "de0414d8a9db1fd9e24be1bb9cab72c3c563194d",
+      "parents": [
+        "cf94bd2b61741a95d62ec0a446920acd35fa209f"
+      ],
+      "author": {
+        "name": "mimee",
+        "email": "mimee@chromium.org",
+        "time": "Tue Oct 20 17:50:23 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 17:51:58 2015"
+      },
+      "message": "More accurate function names and javadoc within crash upload logic.\n\nBUG\u003d\nR\u003dacleung@chromium.org, dtrainor@chromium.org\n\nReview URL: https://codereview.chromium.org/1381543008\n\nCr-Commit-Position: refs/heads/master@{#355097}\n"
+    },
+    {
+      "commit": "cf94bd2b61741a95d62ec0a446920acd35fa209f",
+      "tree": "d8ca3147a769600d1f30f47775d02f1e9e68579e",
+      "parents": [
+        "a947817756bde74ed9a0e6ff5b196cfacd8009d1"
+      ],
+      "author": {
+        "name": "skym",
+        "email": "skym@chromium.org",
+        "time": "Tue Oct 20 17:47:59 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 17:48:50 2015"
+      },
+      "message": "[Sync] Adding revisit logic for bookmarks.\n\nBUG\u003d536841\n\nstanisc@ - sync/revisit changes\n\nrkaplow@ - histogram.xml changes\n\nsky@ - DEPS changes\n\nReview URL: https://codereview.chromium.org/1407663002\n\nCr-Commit-Position: refs/heads/master@{#355096}\n"
+    },
+    {
+      "commit": "a947817756bde74ed9a0e6ff5b196cfacd8009d1",
+      "tree": "3d7f9181ae9ab56590d10405858c3f907e89e210",
+      "parents": [
+        "289e006b7542ef0cc97d57e7e4b754fcb7669c9b"
+      ],
+      "author": {
+        "name": "yzshen",
+        "email": "yzshen@chromium.org",
+        "time": "Tue Oct 20 17:45:12 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 17:46:10 2015"
+      },
+      "message": "C++ bindings: fix the behavior of raising an error on a connection.\n\nThe error should trigger connection error handler at both sides. Besides, the\nmessage pipe handle should still appear to be valid at both sides.\n\nFor example:\n1) assume we have interface pointer foo_ptr and foo_binding bound to both ends\n   of a message pipe;\n2) foo_ptr receives an unrecognized message (say, from a newer version);\n3) an error is raised at the foo_ptr side by the validation logic;\n4) foo_ptr and foo_binding should both get their connection error handler (if\n   set) called;\n5) subsequent calls on foo_ptr and foo_binding shouldn\u0027t fail, although they\n   are dropped silently;\n6) foo_ptr.PassInterfacePtrInfo() and foo_binding.Unbind() should still return\n   valid message pipe handles. (Otherwise, pointer/binding validity and\n   underlying message pipe handle validity don\u0027t match anymore.)\n\nThis CL fixes (4) and (6). Prior to this CL, foo_ptr won\u0027t get its connection\nerror handler called; besides, although foo_ptr is still valid,\nfoo_ptr.PassInterfacePtrInfo() will return an invalid message pipe handle.\n\nBUG\u003d538401\nTEST\u003dnew tests.\n\nReview URL: https://codereview.chromium.org/1401113006\n\nCr-Commit-Position: refs/heads/master@{#355095}\n"
+    },
+    {
+      "commit": "289e006b7542ef0cc97d57e7e4b754fcb7669c9b",
+      "tree": "82cb82ce1e5f7021ef1ad2151ec87ca200e73f5d",
+      "parents": [
+        "6a9ad501c3588013cb435b64f6d3525a061a8f09"
+      ],
+      "author": {
+        "name": "nparker",
+        "email": "nparker@chromium.org",
+        "time": "Tue Oct 20 17:41:12 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 17:41:59 2015"
+      },
+      "message": "Only check main frame and iframe URLs on Mobile, to improve page load time.\n\nSetup a finch flag to control the resource types we check\nso we can experiment with speed-vs-protection.  It will\nalways check at least main+iframes.\n\nAlso move some of the per-platform logic down into\nDatabaseManager impls to remove a number of ifdef\u0027s (part\nof http://crbug.com/542795).\n\nBUG\u003d542795,495806\n\nReview URL: https://codereview.chromium.org/1410853003\n\nCr-Commit-Position: refs/heads/master@{#355094}\n"
+    },
+    {
+      "commit": "6a9ad501c3588013cb435b64f6d3525a061a8f09",
+      "tree": "c4b5c2b0993360459a35b470683792813b71e048",
+      "parents": [
+        "18bcd33734f3d484cae950ac752336b69b3eab4f"
+      ],
+      "author": {
+        "name": "paulmiller",
+        "email": "paulmiller@chromium.org",
+        "time": "Tue Oct 20 17:33:19 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 17:33:51 2015"
+      },
+      "message": "Support M permissions in WebViewShell\u0027s browser Activity\n\nThe Shell\u0027s policy is to grant as many permissions as possible. If the\npage requests any Webkit permissions, we will request all necessary\nAndroid permissions to provide that functionality. If we load a file://\nURL, we will request read permissions so we can read the file.\n\nBUG\u003d537819\n\nReview URL: https://codereview.chromium.org/1403763005\n\nCr-Commit-Position: refs/heads/master@{#355093}\n"
+    },
+    {
+      "commit": "18bcd33734f3d484cae950ac752336b69b3eab4f",
+      "tree": "d62d2c1cbbbc94a759e7615c95837d1996f29799",
+      "parents": [
+        "658237a93b44bca0a5a2d6c326f4a2b393a3d060"
+      ],
+      "author": {
+        "name": "mark",
+        "email": "mark@chromium.org",
+        "time": "Tue Oct 20 17:28:18 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 17:29:11 2015"
+      },
+      "message": "Update Crashpad to 6c0d42ce9dee55eaa906865191e28df35b32910d\n\n4893a9b76d68 win: Capture some CRITICAL_SECTION debugging data\n71cc0a28a496 Add flush to output to try to diagnose locks failure\nd1e49bd221d8 Fix CRITICAL_SECTION test\n7de04b02f85d win: Add Handles() to ProcessInfo\n4600643a78e8 Some plumbing for the beginning of getting handles into\n             snapshot/minidump\n30678f1e8232 Fix Mac build after\n             https://codereview.chromium.org/1407643004\n07dbc3259c56 Use an even better random number generation scheme in the\n             prune test\n1818dbbb0851 win: Fix crashpad_util_test ProcessInfo.Handles\n2adcd13fd66b Update developer documentation to recommend the “fetch”\n             tool\nd075a9eb2e05 win: Add and use GET_FUNCTION() and GET_FUNCTION_REQUIRED()\n53ccd8fc5e8a doc/developing.ad: replace removed backslash\n6c0d42ce9dee Mach port scopers should use get() instead of type\n             conversion operators\n\nReview URL: https://codereview.chromium.org/1416893003\n\nCr-Commit-Position: refs/heads/master@{#355092}\n"
+    },
+    {
+      "commit": "658237a93b44bca0a5a2d6c326f4a2b393a3d060",
+      "tree": "345b68f45d50acf3843e7082f82559bc20b67312",
+      "parents": [
+        "788a5d566809bcfd6f86a0909848a35508accace"
+      ],
+      "author": {
+        "name": "maniscalco",
+        "email": "maniscalco@chromium.org",
+        "time": "Tue Oct 20 17:27:19 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 17:28:16 2015"
+      },
+      "message": "Make blimp_engine build again by removing DeactivateContents\n\nBuild was broken by https://codereview.chromium.org/1345343003/.\n\nBUG\u003d543267\n\nReview URL: https://codereview.chromium.org/1416713003\n\nCr-Commit-Position: refs/heads/master@{#355091}\n"
+    },
+    {
+      "commit": "788a5d566809bcfd6f86a0909848a35508accace",
+      "tree": "c129f398607153150d3b2d230a840c27bd2b9998",
+      "parents": [
+        "e2eeedbfaefbdd4a7aa48733aff7ae15ce831fb6"
+      ],
+      "author": {
+        "name": "dfalcantara",
+        "email": "dfalcantara@chromium.org",
+        "time": "Tue Oct 20 17:24:36 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 17:26:03 2015"
+      },
+      "message": "More attempts at fixing Tab loss\n\n* Fixes TabPersistentStore.saveState() so that it doesn\u0027t\n  cancel its own save if a SaveListTask is currently active.\n  This is because SaveListTask saves the state of the TabModel\n  as it was when it was first created and doesn\u0027t account for\n  updates.\n\n* Exposes an asynchronous method for saving the TabList.  This\n  is a fix for a bug where the TabState for a Tab restored after\n  undoing its closure, then closing Clank, then repeating the\n  procedure would cause a bad TabState to be saved out.\n\n* Change the TabCreationType of a fallback tab created when\n  a TabState failed to load to FROM_LINK to deal with an assert\n  in ChromeTabCreator.  This is (slightlyly) more correct because\n  we aren\u0027t actually restoring a Tab -- there was no TabState to\n  restore.\n\nBUG\u003d485217,532831\n\nReview URL: https://codereview.chromium.org/1414153002\n\nCr-Commit-Position: refs/heads/master@{#355090}\n"
+    },
+    {
+      "commit": "e2eeedbfaefbdd4a7aa48733aff7ae15ce831fb6",
+      "tree": "9f9a45284998a6cce33b17f87c6dab7f79ecb48e",
+      "parents": [
+        "71054cec2355ae92482b1644b0cf76b8b836f9c1"
+      ],
+      "author": {
+        "name": "erikchen",
+        "email": "erikchen@chromium.org",
+        "time": "Tue Oct 20 17:22:59 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 17:24:02 2015"
+      },
+      "message": "Revert of ipc: Add a member to IPC::Message::Header on Windows. (patchset #1 id:1 of https://codereview.chromium.org/1400713002/ )\n\nReason for revert:\nLikely causes crashes:\nhttps://code.google.com/p/chromium/issues/detail?id\u003d527588#c57\n\nOriginal issue\u0027s description:\n\u003e ipc: Add a member to IPC::Message::Header on Windows.\n\u003e\n\u003e According to my most recent debugging experiments, the root cause of the crashes\n\u003e that happened the first time I tried to make this change have magically\n\u003e disappeared. See the bug for more details.\n\u003e\n\u003e BUG\u003d527588\n\u003e\n\u003e Committed: https://crrev.com/c32bea67c022c6c385463f0eec027f18b2915300\n\u003e Cr-Commit-Position: refs/heads/master@{#354889}\n\nTBR\u003dtsepez@chromium.org\nNOPRESUBMIT\u003dtrue\nNOTREECHECKS\u003dtrue\nNOTRY\u003dtrue\nBUG\u003d527588\n\nReview URL: https://codereview.chromium.org/1414293002\n\nCr-Commit-Position: refs/heads/master@{#355089}\n"
+    },
+    {
+      "commit": "71054cec2355ae92482b1644b0cf76b8b836f9c1",
+      "tree": "cb8706ed40bc09ad19ce5120a5b25724f9d989f7",
+      "parents": [
+        "4b42456160a0c6e596b741f555164057eef61b21"
+      ],
+      "author": {
+        "name": "cmumford",
+        "email": "cmumford@chromium.org",
+        "time": "Tue Oct 20 17:15:41 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 17:17:13 2015"
+      },
+      "message": "Notification DB: Logging two more leveldb errors.\n\nAdded 1) I/O Error, and 2) Not supported error values.\n\nReview URL: https://codereview.chromium.org/1410193004\n\nCr-Commit-Position: refs/heads/master@{#355088}\n"
+    },
+    {
+      "commit": "4b42456160a0c6e596b741f555164057eef61b21",
+      "tree": "2bbd6b36d8e34e26e382200b927e952bb9f82de2",
+      "parents": [
+        "1d51bf0c9aeaeeaf28dfadffbf58e758b3530229"
+      ],
+      "author": {
+        "name": "sky",
+        "email": "sky@chromium.org",
+        "time": "Tue Oct 20 17:15:23 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 17:16:17 2015"
+      },
+      "message": "Reenables previously flaky test\n\nI\u0027m hoping my patch to close dialogs makes this not flakey. Will\nmonitor results.\n\nBUG\u003d523255\nTEST\u003dtest only change\nR\u003dscottmg@chromium.org\nTBR\u003dscottmg@chromium.org\n\nReview URL: https://codereview.chromium.org/1403283006\n\nCr-Commit-Position: refs/heads/master@{#355087}\n"
+    },
+    {
+      "commit": "1d51bf0c9aeaeeaf28dfadffbf58e758b3530229",
+      "tree": "3a80a593ade009e195bd9e30002e69320ee1e11d",
+      "parents": [
+        "55a4658c3566a13b19fffb9d48a05e5a31a40beb"
+      ],
+      "author": {
+        "name": "qiangchen",
+        "email": "qiangchen@chromium.org",
+        "time": "Tue Oct 20 17:12:21 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 17:12:53 2015"
+      },
+      "message": "When WebMediaPlayerMS uses VideoRendererAlgorithm for frame selection, incoming a frame without REFERENCE_TIME would crash WebMediaPlayerMS.\n\nPreviously, normal frames from WebRTC have REFERENCE_TIME populated, but we failed to consider those signal frames, like end of stream signal, pausing signal.\nThis CL assigns REFERENCE_TIME for those signal frames, and then WebMediaPlayerMS can run smoothly with VideoRendererAlgorithm On.\n\nBUG\u003d542367\n\nReview URL: https://codereview.chromium.org/1401533006\n\nCr-Commit-Position: refs/heads/master@{#355086}\n"
+    },
+    {
+      "commit": "55a4658c3566a13b19fffb9d48a05e5a31a40beb",
+      "tree": "2bd155c11d4ac28b6b92e8dfa0b21b2e9e73437b",
+      "parents": [
+        "19b0246d55a5766e4e08294a3022fc757ca955eb"
+      ],
+      "author": {
+        "name": "boliu",
+        "email": "boliu@chromium.org",
+        "time": "Tue Oct 20 17:10:03 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 17:11:12 2015"
+      },
+      "message": "aw: Disable hardware for gc tests\n\nThe fake functor implementation using GLSurfaceView is causing detach to\ndeadlock on the UI thread. So just disable hardware for these tests.\n\nAlso remove debug logging.\n\nBUG\u003d544098\n\nReview URL: https://codereview.chromium.org/1413393002\n\nCr-Commit-Position: refs/heads/master@{#355085}\n"
+    },
+    {
+      "commit": "19b0246d55a5766e4e08294a3022fc757ca955eb",
+      "tree": "610edbd5b19b99faf56ae95a1b4721dbdb6b674a",
+      "parents": [
+        "d006992ee05f4d63e46e22bd890ab426c28e74fe"
+      ],
+      "author": {
+        "name": "mustaq",
+        "email": "mustaq@chromium.org",
+        "time": "Tue Oct 20 17:09:25 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 17:10:17 2015"
+      },
+      "message": "Fire pointerenter/leave/over/out events for corresponding mouse events.\n\nBUG\u003d476571\n\nReview URL: https://codereview.chromium.org/1379613002\n\nCr-Commit-Position: refs/heads/master@{#355084}\n"
+    },
+    {
+      "commit": "d006992ee05f4d63e46e22bd890ab426c28e74fe",
+      "tree": "4e979e0e259e76a42d0efbefbb4401700f8a90f2",
+      "parents": [
+        "106533b1571a76b2c23e99dff1aa060f6db01602"
+      ],
+      "author": {
+        "name": "limasdf",
+        "email": "limasdf@gmail.com",
+        "time": "Tue Oct 20 17:07:15 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 17:07:58 2015"
+      },
+      "message": "Cleanup/ Remove unused includes from permissions_updater.cc\n\nBUG\u003dNone\n\nReview URL: https://codereview.chromium.org/1410373002\n\nCr-Commit-Position: refs/heads/master@{#355083}\n"
+    },
+    {
+      "commit": "106533b1571a76b2c23e99dff1aa060f6db01602",
+      "tree": "a4c07dbee76457168667e2f5bcc70ce200ff85af",
+      "parents": [
+        "2140a5bff94f7525d556e4afd50036f661dc8389"
+      ],
+      "author": {
+        "name": "lof84",
+        "email": "lof84@yandex-team.ru",
+        "time": "Tue Oct 20 17:05:46 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 17:06:32 2015"
+      },
+      "message": "Enable Skia tracing in browser process\n\nSkia tracing works fine, but only in renderer processes.\n( https://codereview.chromium.org/153063002 )\nNow Skia tracing also works in browser process.\n\nBUG\u003d543149\n\nR\u003dnduca, bsalomon, humper, enne\n\nReview URL: https://codereview.chromium.org/1408583002\n\nCr-Commit-Position: refs/heads/master@{#355082}\n"
+    },
+    {
+      "commit": "2140a5bff94f7525d556e4afd50036f661dc8389",
+      "tree": "56a76526fb50476868737409f8c73450d56ff3f1",
+      "parents": [
+        "72d4f7cba97b48465f4c5c93ceab7f8d81dc4e3e"
+      ],
+      "author": {
+        "name": "jbroman",
+        "email": "jbroman@chromium.org",
+        "time": "Tue Oct 20 16:59:00 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 16:59:36 2015"
+      },
+      "message": "SPv2: Paint artifact using paint chunk properties.\n\nThis allows a SPv2 chunk-based paint artifact to be drawn into a SkCanvas, and\nthus into a combined SkPicture, as a stopgap measure until compositor\nintegration/layerization is implemented.\n\nAt present, since paint properties are not yet correctly associated, this breaks\nrendering of a number of pages, but will progress as paint chunk properties are\nimplemented.\n\nThis change is guarded by the SlimmingPaintV2 runtime-enabled feature.\n\nBUG\u003d537409\n\nReview URL: https://codereview.chromium.org/1408493002\n\nCr-Commit-Position: refs/heads/master@{#355081}\n"
+    },
+    {
+      "commit": "72d4f7cba97b48465f4c5c93ceab7f8d81dc4e3e",
+      "tree": "c89be4c182803a5f69814d06d5f7e06359db5c53",
+      "parents": [
+        "4c66eb0e8fc311261b973f94ab5e00686523a0e6"
+      ],
+      "author": {
+        "name": "lukasza",
+        "email": "lukasza@chromium.org",
+        "time": "Tue Oct 20 16:51:19 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 16:51:58 2015"
+      },
+      "message": "Using RunLoop rather than the deprecated, older loop running methods.\n\nBUG\u003d\n\nReview URL: https://codereview.chromium.org/1408993003\n\nCr-Commit-Position: refs/heads/master@{#355080}\n"
+    },
+    {
+      "commit": "4c66eb0e8fc311261b973f94ab5e00686523a0e6",
+      "tree": "246c3f9d04e69d32441d10c4859961963206d0fe",
+      "parents": [
+        "72de1e4c785f688ca7680fe3d3b0c1da9d44aa8a"
+      ],
+      "author": {
+        "name": "drott",
+        "email": "drott@chromium.org",
+        "time": "Tue Oct 20 16:46:18 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 16:47:15 2015"
+      },
+      "message": "Move FontDataRange to its own file for reuse in FontFallbackIterator\n\nFor only selecting a subset of glyphs for CSSSegmentedFontFaces we\nneed to pass unicode-range information to HarfBuzzShaper from\nFontFallbackIterator. I am planning to reuse FontDataRange for the\npurpose. Thus, it needs to be decoupled from SegmentedFontData.h\n\nBUG\u003d\nR\u003deae,leviw\n\nReview URL: https://codereview.chromium.org/1417463005\n\nCr-Commit-Position: refs/heads/master@{#355079}\n"
+    },
+    {
+      "commit": "72de1e4c785f688ca7680fe3d3b0c1da9d44aa8a",
+      "tree": "34514a3b44946095947924ce94f67eb44b0dbab0",
+      "parents": [
+        "f935550b4869d7ec6ab446e9898858b736c329da"
+      ],
+      "author": {
+        "name": "liberato",
+        "email": "liberato@chromium.org",
+        "time": "Tue Oct 20 16:41:30 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 16:42:11 2015"
+      },
+      "message": "Remove unreferenced media player PNGs.\n\nRemove _down and _hover variants of most media controls UI PNGs that are included in the resource bundles but not referenced anywhere i can find.  cat ... |wc -c shows about 140KB.\n\nChromePublic.apk shrinks by 138KB.\n\nBUG\u003d543173\n\nReview URL: https://codereview.chromium.org/1394963004\n\nCr-Commit-Position: refs/heads/master@{#355078}\n"
+    },
+    {
+      "commit": "f935550b4869d7ec6ab446e9898858b736c329da",
+      "tree": "cc3660b40506b184ad9896e73c4330c17f33be83",
+      "parents": [
+        "25778e5a479379a937e9405081f696d1875b73f3"
+      ],
+      "author": {
+        "name": "pauljensen",
+        "email": "pauljensen@chromium.org",
+        "time": "Tue Oct 20 16:37:32 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 16:38:09 2015"
+      },
+      "message": "[Cronet] Move UserAgent API to CronetEngine.Builder.getDefaultUserAgent\n\nThis has a few benefits:\n1) The top-level UserAgent class can be removed, making the API simpler\n   and cleaner.\n2) The CronetEngine.Builder already has a Context pointer so one does\n   not need to be passed into the new API, making the API simpler and\n   cleaner.\n3) Generally the UserAgent is queried from this API, modified, and\n   passed back into CronetEngine.Builder.setUserAgent().  By moving\n   the API to construct the default UserAgent string next to the\n   API to set the UserAgent it should be easier for embedders to\n   understand and use.\nThe old API is @deprecated and embedders should transition from it.\n\nBUG\u003d531538\n\nReview URL: https://codereview.chromium.org/1398753002\n\nCr-Commit-Position: refs/heads/master@{#355077}\n"
+    },
+    {
+      "commit": "25778e5a479379a937e9405081f696d1875b73f3",
+      "tree": "1701c4506b35c51791729f54a65b0e1237da5775",
+      "parents": [
+        "cf698aa0c8da85f780a0898a9fd62e40f3d72760"
+      ],
+      "author": {
+        "name": "srirama.m",
+        "email": "srirama.m@samsung.com",
+        "time": "Tue Oct 20 16:34:57 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 16:36:19 2015"
+      },
+      "message": "Reset readystates when webmediaplayer is cleared\n\nWebMediaPlayer is going out of sync with m_readyState which is causing\ncrashes. Reset the ready states when WebMediaPlayer is cleared.\n\nBUG\u003d537013, 541520\n\nReview URL: https://codereview.chromium.org/1406183003\n\nCr-Commit-Position: refs/heads/master@{#355076}\n"
+    },
+    {
+      "commit": "cf698aa0c8da85f780a0898a9fd62e40f3d72760",
+      "tree": "79765330bf3bf4196ca02b6a29811f5d48145a31",
+      "parents": [
+        "f86d2d35e903274237f7df803b805bdf8949c4e4"
+      ],
+      "author": {
+        "name": "tedchoc",
+        "email": "tedchoc@chromium.org",
+        "time": "Tue Oct 20 16:34:22 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 16:35:19 2015"
+      },
+      "message": "Fix crash in android update permission handling.\n\nDo not call the permission callback in the dtor as it is\nhandled elsewhere.\n\nAdds a test for the geolocation case to ensure this crash will\nnot reappear.\n\nAdded the support to mock out the permission APIs to Android that allow\ntesting of this without mucking with the actual runtime permissions.\nThis also allows testing on pre-M phones to get better coverage.\n\nBUG\u003d543801\n\nReview URL: https://codereview.chromium.org/1408293002\n\nCr-Commit-Position: refs/heads/master@{#355075}\n"
+    },
+    {
+      "commit": "f86d2d35e903274237f7df803b805bdf8949c4e4",
+      "tree": "b09a21a0c704184d8cfe68532bbd6acea61ad792",
+      "parents": [
+        "574031db19954cf7413b32de5dac5d072bc794f6"
+      ],
+      "author": {
+        "name": "Emil A Eklund",
+        "email": "eae@chromium.org",
+        "time": "Tue Oct 20 16:31:22 2015"
+      },
+      "committer": {
+        "name": "Emil A Eklund",
+        "email": "eae@chromium.org",
+        "time": "Tue Oct 20 16:32:39 2015"
+      },
+      "message": "Restore optimization in LayoutBlockFlowLine width computation\n\nThe LayoutText::computeCanUseSimpleFontCodePath method determine whether\nthe wordMeasurement cache is sufficient to satisfy width computations in\nLayoutBlockFlowLine, in addition to the more obvious role of controlling\nwhich text code path to use. By short-circuiting the text path selection\nthis inadvertently disabled the wordMeasurement text cache optimization.\n\nThis change removes the short circuit and restores the previous behavior\nwhere this optimization is decoupled from the text path selection logic.\n\nGiven its dual function the canUseSimpleFontCodePath name is missleading\nand I intend to rename it in a subsequent change.\n\nBUG\u003d545147\nR\u003ddrott@chromium.org\n\nReview URL: https://codereview.chromium.org/1420503004 .\n\nCr-Commit-Position: refs/heads/master@{#355074}\n"
+    },
+    {
+      "commit": "574031db19954cf7413b32de5dac5d072bc794f6",
+      "tree": "524955ccf1e880e4030feddcf7441eeaf411ecb2",
+      "parents": [
+        "bbc14a1bc0201520499df6f9336d583688b32d70"
+      ],
+      "author": {
+        "name": "petrcermak",
+        "email": "petrcermak@chromium.org",
+        "time": "Tue Oct 20 16:16:46 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 16:17:37 2015"
+      },
+      "message": "Roll src/third_party/catapult/ 17c9875ee..710beadee (145 commits).\n\nhttps://chromium.googlesource.com/external/github.com/catapult-project/catapult.git/+log/17c9875ee1fe..710beadeea59\n\nReview URL: https://codereview.chromium.org/1411493004\n\nCr-Commit-Position: refs/heads/master@{#355073}\n"
+    },
+    {
+      "commit": "bbc14a1bc0201520499df6f9336d583688b32d70",
+      "tree": "aae3b689128260648c630bee70d0a19ff4e648a7",
+      "parents": [
+        "16ca6b63afbb3f1c6f95c1fc3f592459b7060292"
+      ],
+      "author": {
+        "name": "jkarlin",
+        "email": "jkarlin@chromium.org",
+        "time": "Tue Oct 20 16:00:18 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 16:01:14 2015"
+      },
+      "message": "[BackgroundSync] Record whether sync finished in foreground or background\n\nThis CL replaces the boolean result histogram with an enum histogram that records both the success of an event and also whether it was in the foreground or background when it finished firing.\n\nReview URL: https://codereview.chromium.org/1400163002\n\nCr-Commit-Position: refs/heads/master@{#355072}\n"
+    },
+    {
+      "commit": "16ca6b63afbb3f1c6f95c1fc3f592459b7060292",
+      "tree": "b952b92ceee85178cffac8b4e90f65cee0fdefe4",
+      "parents": [
+        "f14473109ad5202472441457f0b8abb2527e6777"
+      ],
+      "author": {
+        "name": "ruuda",
+        "email": "ruuda@google.com",
+        "time": "Tue Oct 20 15:50:40 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 15:51:13 2015"
+      },
+      "message": "[Tracing] Disable registration of regular dump providers during tests\n\nThis adds a testing-only property to |MemoryDumpManager| which disables\nregistration of memory dump providers. This is to ensure that in tests,\nthe memory dump providers that are registered are only the providers\nwhich were registered explicitly for the test.\n\nThe motivation for doing this is https://crbug.com/522009, flakiness of\nsome of the tests that was caused by an unrelated memory dump provider\nunregistering during a dump. The flakiness has been resolved in 535f087\nby allowing unregistering while dumping, but to avoid such problems in\nthe future, this CL allows ignoring all registrations except the ones\nintended for testing.\n\nBUG\u003d522009, 522165\n\nReview URL: https://codereview.chromium.org/1308403002\n\nCr-Commit-Position: refs/heads/master@{#355071}\n"
+    },
+    {
+      "commit": "f14473109ad5202472441457f0b8abb2527e6777",
+      "tree": "5ad30d88c671e986f1f30e07eae45ca0e671f169",
+      "parents": [
+        "c5ec65bf9d33458969ab2248d41b3e39b7d8af3f"
+      ],
+      "author": {
+        "name": "mikecase",
+        "email": "mikecase@chromium.org",
+        "time": "Tue Oct 20 15:47:41 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 15:48:17 2015"
+      },
+      "message": "[Android] Remove unused uiautomator test code.\n\nWe switched our downstream uiautomator to use the unbundled uiautomator\ncode (in src/thirdparty/ub-uiautomator). These tests are run as\ninstrumentation tests. Currently, no tests use the shell-based Android\nuiautomator and so there is no sense keeping the code that\nbuilds and runs shell-based uiautomator tests. If we add new uiautomator\ntests, they will just use the ub-uiautomator.\n\nBUG\u003d\n\nReview URL: https://codereview.chromium.org/1408993004\n\nCr-Commit-Position: refs/heads/master@{#355070}\n"
+    },
+    {
+      "commit": "c5ec65bf9d33458969ab2248d41b3e39b7d8af3f",
+      "tree": "cd90c4bfeae45f29e7a50bfcb2d3c122c482ffb2",
+      "parents": [
+        "e1a2b988e070c6fbb3079a4adf2097f065f16dde"
+      ],
+      "author": {
+        "name": "drott",
+        "email": "drott@chromium.org",
+        "time": "Tue Oct 20 15:44:21 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 15:45:12 2015"
+      },
+      "message": "Explicitly select CJK font for ruby line break test\n\nWith the new shaper code, Times would be chosen for rendering\nthe parentheses, fallback font for the CJK glyphs,\ncausing this test to fail.\n\nR\u003deae,kojii\nBUG\u003d\n\nReview URL: https://codereview.chromium.org/1405093003\n\nCr-Commit-Position: refs/heads/master@{#355069}\n"
+    },
+    {
+      "commit": "e1a2b988e070c6fbb3079a4adf2097f065f16dde",
+      "tree": "bf0e2e02d8eff71dd5792a539d6bf9b25c151d24",
+      "parents": [
+        "581836e483923f6e66230109cb7297ab09cce495"
+      ],
+      "author": {
+        "name": "v8-autoroll",
+        "email": "v8-autoroll@chromium.org",
+        "time": "Tue Oct 20 15:42:15 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 15:43:01 2015"
+      },
+      "message": "Update V8 to version 4.8.115.\n\nSummary of changes available at:\nhttps://chromium.googlesource.com/v8/v8/+log/e975789c..80b25484\n\nPlease follow these instructions for assigning/CC\u0027ing issues:\nhttps://code.google.com/p/v8-wiki/wiki/TriagingIssues\n\nPlease close rolling in case of a roll revert:\nhttps://v8-roll.appspot.com/\n\nTBR\u003dhablich@chromium.org,machenbach@chromium.org,yangguo@chromium.org,vogelheim@chromium.org\n\nReview URL: https://codereview.chromium.org/1417573003\n\nCr-Commit-Position: refs/heads/master@{#355068}\n"
+    },
+    {
+      "commit": "581836e483923f6e66230109cb7297ab09cce495",
+      "tree": "7b081e7875a5c184d0709772390a28f5b71f3a45",
+      "parents": [
+        "22c9e4f49bda60e159bc64187353cf2b931decd0"
+      ],
+      "author": {
+        "name": "estade",
+        "email": "estade@chromium.org",
+        "time": "Tue Oct 20 15:36:47 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 15:37:38 2015"
+      },
+      "message": "Reland of Fix theming of bookmark bar \"other bookmarks\" button text. (patchset #1 id:1 of https://codereview.chromium.org/1412583002/ )\n\nReason for revert:\nPatch was not the cause of the test flakiness.\n\nOriginal issue\u0027s description:\n\u003e Revert of Fix theming of bookmark bar \"other bookmarks\" button text. (patchset #2 id:20001 of https://codereview.chromium.org/1406563003/ )\n\u003e\n\u003e Reason for revert:\n\u003e Speculative revert, still attempting to fix the Win7 Tests bots\n\u003e https://build.chromium.org/p/chromium.win/builders/Win7%20Tests%20(1)\n\u003e and\n\u003e https://build.chromium.org/p/chromium.win/builders/Win7%20Tests%20(dbg)(1)\n\u003e which are seeing flakey interactive_ui_tests timeouts in various BookmarkBarViewTest items.  This is one of several bookmark changes that went in somewhat before the first such failure.  We already tried reverting one, which turned out to be the wrong one.  Now trying this one.\n\u003e\n\u003e The next option (less likely) would be https://codereview.chromium.org/1399123003\n\u003e\n\u003e Original issue\u0027s description:\n\u003e \u003e Fix theming of bookmark bar \"other bookmarks\" button text.\n\u003e \u003e\n\u003e \u003e The intricate dance between label state, text color, and button\n\u003e \u003e state was broken for MenuButtons.\n\u003e \u003e\n\u003e \u003e BUG\u003d542861\n\u003e \u003e\n\u003e \u003e Committed: https://crrev.com/af3b128862b4c028171cdeabc1d323eec2b5d22b\n\u003e \u003e Cr-Commit-Position: refs/heads/master@{#354094}\n\u003e\n\u003e TBR\u003dsky@chromium.org,estade@chromium.org\n\u003e NOPRESUBMIT\u003dtrue\n\u003e NOTREECHECKS\u003dtrue\n\u003e NOTRY\u003dtrue\n\u003e BUG\u003d542861\n\u003e\n\u003e Committed: https://crrev.com/98fb1fc46a9775aaf70aafb79da8f7595c9f403d\n\u003e Cr-Commit-Position: refs/heads/master@{#354448}\n\nTBR\u003dsky@chromium.org\nBUG\u003d542861\n\nReview URL: https://codereview.chromium.org/1416693003\n\nCr-Commit-Position: refs/heads/master@{#355067}\n"
+    },
+    {
+      "commit": "22c9e4f49bda60e159bc64187353cf2b931decd0",
+      "tree": "8d18eafa5c8011e18a93193838db462b5d017f28",
+      "parents": [
+        "f655f59ca33c03031c38bec30da6e1936de8e4f9"
+      ],
+      "author": {
+        "name": "vabr",
+        "email": "vabr@chromium.org",
+        "time": "Tue Oct 20 15:34:09 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 15:34:53 2015"
+      },
+      "message": "Get rid of {Mock|Test}PasswordStoreService\n\nThese are really just the build methods. This CL moves that method to test utils, and makes it flexible to use with different PasswordStore versions, as well as prepared for use on iOS.\n\nR\u003dvasilii@chromium.org\nBUG\u003d514183\n\nReview URL: https://codereview.chromium.org/1420513002\n\nCr-Commit-Position: refs/heads/master@{#355066}\n"
+    },
+    {
+      "commit": "f655f59ca33c03031c38bec30da6e1936de8e4f9",
+      "tree": "5c59ebcb3ec0e2a841caf0ff1458ea064daa7e2d",
+      "parents": [
+        "0948a0df5937a183cf522db2b48fd4b0dce7bf35"
+      ],
+      "author": {
+        "name": "mmccoy",
+        "email": "mmccoy@chromium.org",
+        "time": "Tue Oct 20 15:27:12 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 15:28:17 2015"
+      },
+      "message": "[Devtools] Add style to Security Panel to mute/de-emphasize blocked resource explanation\n\nBUG\u003d543911\n\nTEST\u003dOpen https://mixed-script.badssl.com/, open devtools, select the Security panel tab, refresh the badssl.com tab so you can see origins in the security panel sidebar, verify on the main view (right) that all explanations have a white background (#fff), except for the bottom (blocked resources) info explanation which should have a grey background (#f9f9f9).\n\nReview URL: https://codereview.chromium.org/1409133002\n\nCr-Commit-Position: refs/heads/master@{#355065}\n"
+    },
+    {
+      "commit": "0948a0df5937a183cf522db2b48fd4b0dce7bf35",
+      "tree": "a61bf024fdf170f0db5ef7cfc94703e5eba1387c",
+      "parents": [
+        "7b466a589a8bb311d0cea291199c8cf5c7cd0ad0"
+      ],
+      "author": {
+        "name": "pkotwicz",
+        "email": "pkotwicz@chromium.org",
+        "time": "Tue Oct 20 15:26:28 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 15:27:05 2015"
+      },
+      "message": "Make components_unittests not crash on GN Android\n\nBUG\u003d510485\n\nReview URL: https://codereview.chromium.org/1419453002\n\nCr-Commit-Position: refs/heads/master@{#355064}\n"
+    },
+    {
+      "commit": "7b466a589a8bb311d0cea291199c8cf5c7cd0ad0",
+      "tree": "7843ea6293da45c2046460e09e46571a2b8beade",
+      "parents": [
+        "03591686cc8a4fdf68b4b52bf6f85d4cb4675074"
+      ],
+      "author": {
+        "name": "mef",
+        "email": "mef@chromium.org",
+        "time": "Tue Oct 20 15:23:23 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 15:23:59 2015"
+      },
+      "message": "Moved cronet_api files into api folder for clearer separation of API from implementation details.\n\nCronet package now includes separate cronet_api-src.jar and cronet-src.jar source code archives that match cronet_api.jar and cronet.jar.\n\nBUG\u003d532065\n\nReview URL: https://codereview.chromium.org/1358983002\n\nCr-Commit-Position: refs/heads/master@{#355063}\n"
+    },
+    {
+      "commit": "03591686cc8a4fdf68b4b52bf6f85d4cb4675074",
+      "tree": "a8492baf25722ae9c4452ce6bbed01da191a5ebc",
+      "parents": [
+        "4d0e4ee3c2afac67d053e25292a258c35a8ba637"
+      ],
+      "author": {
+        "name": "fsamuel",
+        "email": "fsamuel@chromium.org",
+        "time": "Tue Oct 20 15:13:37 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 15:14:19 2015"
+      },
+      "message": "mus: Fix some comments after renaming View \u003d\u003e Window\n\nBUG\u003d542848\nTBR\u003dben@chromium.org\nR\u003dben@chromium.org\n\nReview URL: https://codereview.chromium.org/1418613003\n\nCr-Commit-Position: refs/heads/master@{#355062}\n"
+    },
+    {
+      "commit": "4d0e4ee3c2afac67d053e25292a258c35a8ba637",
+      "tree": "9c078d09954c70c735ada4991964a0fe0a12f9ee",
+      "parents": [
+        "66f9eddff28b375c6a62ffd56999549a9ffd2c12"
+      ],
+      "author": {
+        "name": "petrcermak",
+        "email": "petrcermak@chromium.org",
+        "time": "Tue Oct 20 15:12:35 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 15:13:23 2015"
+      },
+      "message": "Whitelist third_party/catapult/third_party/gsutil licence\n\nThis patch adds an exception to allow files in\nthird_party/catapult/third_party/gsutil to have the\n\u0027BSD MIT/X11 (BSD like)\u0027 and \u0027UNKNOWN\u0027 licences.\n\nNote that third_party/catapult/third_party/gsutil is a copy of\ntools/telemetry/third_party/gsutil, which already has this exception.\nThe folder was added here: https://codereview.chromium.org/1377933002.\n\nReview URL: https://codereview.chromium.org/1412653004\n\nCr-Commit-Position: refs/heads/master@{#355061}\n"
+    },
+    {
+      "commit": "66f9eddff28b375c6a62ffd56999549a9ffd2c12",
+      "tree": "77de440ceec3388c788da6ebad38234727e512a9",
+      "parents": [
+        "8b533c3be70ed43cbee09a912eabdec1d3de38ea"
+      ],
+      "author": {
+        "name": "stip",
+        "email": "stip@chromium.org",
+        "time": "Tue Oct 20 15:08:59 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 15:09:48 2015"
+      },
+      "message": "Isolate chromium_commands.dex.jar for content_browsertests.\n\nBUG\u003d525873\n\nReview URL: https://codereview.chromium.org/1414563005\n\nCr-Commit-Position: refs/heads/master@{#355060}\n"
+    },
+    {
+      "commit": "8b533c3be70ed43cbee09a912eabdec1d3de38ea",
+      "tree": "bba686aa01c2ea464203f0c309d82f004bc8ddfe",
+      "parents": [
+        "9b97db48d95635e9c5d48676df8dc51c9e5eef2a"
+      ],
+      "author": {
+        "name": "tdanderson",
+        "email": "tdanderson@chromium.org",
+        "time": "Tue Oct 20 14:56:58 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 14:57:45 2015"
+      },
+      "message": "Fix layout of omnibox rows for material design\n\nGuarantee the correct height of omnibox result\nrows in material design by separating the\nconstants for the top/bottom dropdown padding and\nthe minimum text padding within a single row.\n\nFurthermore, ensure the correct layout of answers\nthat appear on separate rows by using the\ncorrect row height for the text bounds.\n\nBUG\u003d522585\nTEST\u003dmanual\n\nReview URL: https://codereview.chromium.org/1399253005\n\nCr-Commit-Position: refs/heads/master@{#355059}\n"
+    },
+    {
+      "commit": "9b97db48d95635e9c5d48676df8dc51c9e5eef2a",
+      "tree": "d5f0ad889ef68c0f9a7d56ff0aa753eb2e1a6a0f",
+      "parents": [
+        "d19e88b1f9898699ae510dc89c3f3dacdab59637"
+      ],
+      "author": {
+        "name": "davve",
+        "email": "davve@opera.com",
+        "time": "Tue Oct 20 14:50:11 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 14:51:50 2015"
+      },
+      "message": "Introduce WebMediaSession\n\nWebMediaSession is the API enabling web exposed MediaSession objects\nto control platform implementations of media session related\nfunctionality.\n\nImplementation will begin with Android and other platforms will be\nadded later.\n\nBUG\u003d497735\n\nReview URL: https://codereview.chromium.org/1370453002\n\nCr-Commit-Position: refs/heads/master@{#355058}\n"
+    },
+    {
+      "commit": "d19e88b1f9898699ae510dc89c3f3dacdab59637",
+      "tree": "79f459773b08ef9bdd0f4d5d4317292de0c85b38",
+      "parents": [
+        "02d6170c5b0ba4bfe0a09c46f9523b4a49f05a80"
+      ],
+      "author": {
+        "name": "ajuma",
+        "email": "ajuma@chromium.org",
+        "time": "Tue Oct 20 14:46:13 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 14:47:27 2015"
+      },
+      "message": "Revert of Always call LayerImpl::SetDebugInfo in debug builds. (patchset #1 id:1 of https://codereview.chromium.org/1414503005/ )\n\nReason for revert:\nThis broke ContextLost.WebGLContextLostInHiddenTab in context_lost_tests on the GPU debug bots. e.g.:\nhttp://build.chromium.org/p/chromium.gpu/builders/Linux%20Debug%20%28NVIDIA%29/builds/52223\nhttp://build.chromium.org/p/chromium.gpu/builders/Mac%20Retina%20Debug/builds/40211\nhttp://build.chromium.org/p/chromium.gpu/builders/Mac%2010.10%20Debug%20%28ATI%29/builds/5820\n\nVerified locally that reverting this fixes the test.\n\nOriginal issue\u0027s description:\n\u003e Always call LayerImpl::SetDebugInfo in debug builds.\n\u003e\n\u003e This makes debugging easier. :)\n\u003e\n\u003e Committed: https://crrev.com/b7e166f0dba00d2c9737d2ece0d7b22976506de2\n\u003e Cr-Commit-Position: refs/heads/master@{#354927}\n\nTBR\u003denne@chromium.org,skobes@chromium.org\nNOPRESUBMIT\u003dtrue\nNOTREECHECKS\u003dtrue\nNOTRY\u003dtrue\n\nReview URL: https://codereview.chromium.org/1413363002\n\nCr-Commit-Position: refs/heads/master@{#355057}\n"
+    },
+    {
+      "commit": "02d6170c5b0ba4bfe0a09c46f9523b4a49f05a80",
+      "tree": "df050a4444ffc41b01cbc3450ac4a00644b84a31",
+      "parents": [
+        "fcc76c56fdc1021790488c16e0df7b5877442ac4"
+      ],
+      "author": {
+        "name": "jkarlin",
+        "email": "jkarlin@chromium.org",
+        "time": "Tue Oct 20 14:42:31 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 14:43:23 2015"
+      },
+      "message": "[BackgroundSync] Abort the sync event if the renderer is shutting down.\n\nBUG\u003d543898\n\nReview URL: https://codereview.chromium.org/1411273002\n\nCr-Commit-Position: refs/heads/master@{#355056}\n"
+    },
+    {
+      "commit": "fcc76c56fdc1021790488c16e0df7b5877442ac4",
+      "tree": "60839b701115602a6bd802ff4f4ecc5b018d8bed",
+      "parents": [
+        "a58ea512c7a0772260f6d854dffd5e53919c4c9c"
+      ],
+      "author": {
+        "name": "dvadym",
+        "email": "dvadym@chromium.org",
+        "time": "Tue Oct 20 14:41:48 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 14:42:23 2015"
+      },
+      "message": "Show source of affiliated matches in the drop-down password suggestions list.\n\nAlso this CL addresses comments to https://codereview.chromium.org/1314903003.\n\nBUG\u003d359315,540611\n\nReview URL: https://codereview.chromium.org/1401723002\n\nCr-Commit-Position: refs/heads/master@{#355055}\n"
+    },
+    {
+      "commit": "a58ea512c7a0772260f6d854dffd5e53919c4c9c",
+      "tree": "f2e8fd392dd4c633f3f93c77015ad7fa43c011bd",
+      "parents": [
+        "05997b5dcd98ad23dbc2e381f173ad251d0505f7"
+      ],
+      "author": {
+        "name": "jbudorick",
+        "email": "jbudorick@chromium.org",
+        "time": "Tue Oct 20 14:36:58 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 14:37:36 2015"
+      },
+      "message": "[Android] Fix --test-arguments.\n\nBUG\u003dlibyuv:507\n\nReview URL: https://codereview.chromium.org/1416763003\n\nCr-Commit-Position: refs/heads/master@{#355054}\n"
+    },
+    {
+      "commit": "05997b5dcd98ad23dbc2e381f173ad251d0505f7",
+      "tree": "f8455e1fd35261d997b041ee9db45f3cd3f26a4c",
+      "parents": [
+        "78c361b7c878dffca681a3c6844b1cc581f533cb"
+      ],
+      "author": {
+        "name": "stip",
+        "email": "stip@chromium.org",
+        "time": "Tue Oct 20 14:20:07 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 14:21:01 2015"
+      },
+      "message": "Isolate chrome/test/data/ for chrome_sync_shell_test.\n\nBUG\u003d525873\nTBR\u003dyfriedman@chromium.org\n\nReview URL: https://codereview.chromium.org/1415883002\n\nCr-Commit-Position: refs/heads/master@{#355053}\n"
+    },
+    {
+      "commit": "78c361b7c878dffca681a3c6844b1cc581f533cb",
+      "tree": "6cfd55c42d555a60bb8151aa9defff6c66ea984b",
+      "parents": [
+        "0afeca5728c5594458ebb62f9018621f0a458a23"
+      ],
+      "author": {
+        "name": "msramek",
+        "email": "msramek@chromium.org",
+        "time": "Tue Oct 20 14:09:15 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 14:09:58 2015"
+      },
+      "message": "Add msramek@ into content_settings OWNERS.\n\nBUG\u003dNone\n\nReview URL: https://codereview.chromium.org/1414003002\n\nCr-Commit-Position: refs/heads/master@{#355052}\n"
+    },
+    {
+      "commit": "0afeca5728c5594458ebb62f9018621f0a458a23",
+      "tree": "a17b574278311e79e69c6f209516c35c7aa20f95",
+      "parents": [
+        "f272cc7c00097e01454be7f7f370516b52989b7f"
+      ],
+      "author": {
+        "name": "v8-autoroll",
+        "email": "v8-autoroll@chromium.org",
+        "time": "Tue Oct 20 13:57:18 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 13:58:09 2015"
+      },
+      "message": "Update V8 to version 4.8.113.\n\nSummary of changes available at:\nhttps://chromium.googlesource.com/v8/v8/+log/90a6798b..e975789c\n\nPlease follow these instructions for assigning/CC\u0027ing issues:\nhttps://code.google.com/p/v8-wiki/wiki/TriagingIssues\n\nPlease close rolling in case of a roll revert:\nhttps://v8-roll.appspot.com/\n\nTBR\u003dhablich@chromium.org,machenbach@chromium.org,yangguo@chromium.org,vogelheim@chromium.org\n\nReview URL: https://codereview.chromium.org/1419513003\n\nCr-Commit-Position: refs/heads/master@{#355051}\n"
+    },
+    {
+      "commit": "f272cc7c00097e01454be7f7f370516b52989b7f",
+      "tree": "b5a754f0393ea3be46f0749c5542bec65b37e019",
+      "parents": [
+        "ac2baf441d0c0d6d7da5133c06f2141430960bf4"
+      ],
+      "author": {
+        "name": "johnme",
+        "email": "johnme@chromium.org",
+        "time": "Tue Oct 20 13:51:40 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 13:52:40 2015"
+      },
+      "message": "Add use counter for user closing a persistent notification.\n\nAdds a Notifications.Persistent.ClosedByUser use counter.\n\nThis is a follow-up to f52d070a3cae53f27cf9490428770b64e73c16d0\n(https://codereview.chromium.org/1315193011) which added a\nNotifications.Persistent.Closed use counter that included both closing\nby user and by system.\n\nBUG\u003d530697\n\nReview URL: https://codereview.chromium.org/1401303003\n\nCr-Commit-Position: refs/heads/master@{#355050}\n"
+    },
+    {
+      "commit": "ac2baf441d0c0d6d7da5133c06f2141430960bf4",
+      "tree": "5189998184ddd75c9e1f024d766d9858e323da0c",
+      "parents": [
+        "b4c09109409ff876fd0f725fa5c55cfe0a952e92"
+      ],
+      "author": {
+        "name": "csharrison",
+        "email": "csharrison@chromium.org",
+        "time": "Tue Oct 20 13:32:57 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 13:33:57 2015"
+      },
+      "message": "RapporService longer lifetime to prevent use-after-free\n\nInitial change to make sure if WebContents or WebContentsObserver\nhold a RapporService reference, it will never be invalidated.\n\nPrerender WebContents can be held by the profile manager, so defer destroying RapporService until then.\n\nBUG\u003d542255\n\nsupplants https://codereview.chromium.org/1395643008/\n\nReview URL: https://codereview.chromium.org/1394953003\n\nCr-Commit-Position: refs/heads/master@{#355049}\n"
+    },
+    {
+      "commit": "b4c09109409ff876fd0f725fa5c55cfe0a952e92",
+      "tree": "037aeed53fdceac5d373465e2736a8e8c101ebe5",
+      "parents": [
+        "9bf5883c17f89b909ff3ffec5559217df501c30e"
+      ],
+      "author": {
+        "name": "treib",
+        "email": "treib@chromium.org",
+        "time": "Tue Oct 20 13:00:07 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 13:01:40 2015"
+      },
+      "message": "Supervised user SafeSites: don\u0027t cache results for more than one hour\n\nBUG\u003d475513\n\nReview URL: https://codereview.chromium.org/1403153004\n\nCr-Commit-Position: refs/heads/master@{#355048}\n"
+    },
+    {
+      "commit": "9bf5883c17f89b909ff3ffec5559217df501c30e",
+      "tree": "f99c2bf9bb6fbb3a1f13477f14b768677c97a597",
+      "parents": [
+        "ac65234484a68377a11dddd83eda5d5031b692ce"
+      ],
+      "author": {
+        "name": "v8-autoroll",
+        "email": "v8-autoroll@chromium.org",
+        "time": "Tue Oct 20 12:39:38 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 12:40:21 2015"
+      },
+      "message": "Update V8 to version 4.8.111.\n\nSummary of changes available at:\nhttps://chromium.googlesource.com/v8/v8/+log/2d12b2e0..90a6798b\n\nPlease follow these instructions for assigning/CC\u0027ing issues:\nhttps://code.google.com/p/v8-wiki/wiki/TriagingIssues\n\nPlease close rolling in case of a roll revert:\nhttps://v8-roll.appspot.com/\n\nTBR\u003dhablich@chromium.org,machenbach@chromium.org,yangguo@chromium.org,vogelheim@chromium.org\n\nReview URL: https://codereview.chromium.org/1413183005\n\nCr-Commit-Position: refs/heads/master@{#355047}\n"
+    },
+    {
+      "commit": "ac65234484a68377a11dddd83eda5d5031b692ce",
+      "tree": "e6db112e636f8b69eb7e3e3450d6cca61df9407c",
+      "parents": [
+        "34f0e234ed1d2f29ea8fa6ad62e46af592467a91"
+      ],
+      "author": {
+        "name": "ajith.v",
+        "email": "ajith.v@chromium.org",
+        "time": "Tue Oct 20 12:29:41 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 12:30:45 2015"
+      },
+      "message": "Removing Atomic Boolean from Test files.\n\nThis change takes care of removing Atomic Boolean\ntypes from few test files by using CriteriaHelper.\n\nBUG\u003d\n\nReview URL: https://codereview.chromium.org/1406553002\n\nCr-Commit-Position: refs/heads/master@{#355046}\n"
+    },
+    {
+      "commit": "34f0e234ed1d2f29ea8fa6ad62e46af592467a91",
+      "tree": "24f094d5bc2c98be342e018e8aed1c70fb2efa80",
+      "parents": [
+        "9d8528855a199631499709835ea99734cf5ec560"
+      ],
+      "author": {
+        "name": "pauljensen",
+        "email": "pauljensen@chromium.org",
+        "time": "Tue Oct 20 12:27:18 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 12:28:19 2015"
+      },
+      "message": "[Cronet] Add UrlRequestListener.onCancelled()\n\nLeads to a more common Java pattern where the embedder can always rely\non a callback at the end of a request (i.e. either onSucceeded, onFailed,\nor onCancelled) which is a convenient place to do cleanup.\nThis is how Guava’s ListenableFutures/FutureCallback work.\nThanks to the change from interfaces to abstract classes, we can offer a\ndefault implementation of onCancelled() so embedders aren\u0027t required to\nalways implement their own.\n\nBUG\u003d531538\n\nReview URL: https://codereview.chromium.org/1386273007\n\nCr-Commit-Position: refs/heads/master@{#355045}\n"
+    },
+    {
+      "commit": "9d8528855a199631499709835ea99734cf5ec560",
+      "tree": "2f95cd1ee1f81182fa3417873d795a7af091a2cb",
+      "parents": [
+        "49a81803253894046b874b7a31d416d983654872"
+      ],
+      "author": {
+        "name": "tkent",
+        "email": "tkent@chromium.org",
+        "time": "Tue Oct 20 12:24:25 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 12:25:33 2015"
+      },
+      "message": "HTMLOptionElement::text should not refer to |label| content attribute.\n\nhttps://html.spec.whatwg.org/multipage/forms.html#dom-option-text\n\u003e The text IDL attribute, on getting, must return the result of stripping and\n\u003e collapsing whitespace from the concatenation of data of all the Text node\n\u003e descendants of the option element, in tree order, excluding any that are\n\u003e descendants of descendants of the option element that are themselves script\n\u003e elements in the HTML namespace or script elements in the SVG namespace.\n\nNew behavior matches to the standard, IE11, and Firefox.\nAlso, we confirmed IE11 didn\u0027t refer to |label| attribute in the standard mode\nand the quirk mode.\n\nImplementation:\nThere are several internal usages of text(), and changing the text() behavior has\nrisk of regressions.  So, this CL introduces textForBinding() for |text| IDL\nattribute with the new behavior, and keeps the |text()| with the old behavior.\n\nBUG\u003d429293\n\nReview URL: https://codereview.chromium.org/1416833002\n\nCr-Commit-Position: refs/heads/master@{#355044}\n"
+    },
+    {
+      "commit": "49a81803253894046b874b7a31d416d983654872",
+      "tree": "41f86fe0be8c32316caa00c6a946692145c1c4ff",
+      "parents": [
+        "2378a605285519acc04b79ec04be08bc3fea39f5"
+      ],
+      "author": {
+        "name": "yutak",
+        "email": "yutak@chromium.org",
+        "time": "Tue Oct 20 12:24:04 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 12:24:38 2015"
+      },
+      "message": "Oilpan: Add the documentation for handles.\n\nBUG\u003d544756\nR\u003dharaken@chromium.org, keishi@chromium.org, oilpan-reviews@chromium.org\n\nReview URL: https://codereview.chromium.org/1407353004\n\nCr-Commit-Position: refs/heads/master@{#355043}\n"
+    },
+    {
+      "commit": "2378a605285519acc04b79ec04be08bc3fea39f5",
+      "tree": "0687bee9bbf7966be0e4d5be7b272517fd8be3cb",
+      "parents": [
+        "a1a508b42224a697a0a621c36bfb55fe2f8bd760"
+      ],
+      "author": {
+        "name": "sergiyb",
+        "email": "sergiyb@chromium.org",
+        "time": "Tue Oct 20 12:03:42 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 12:05:03 2015"
+      },
+      "message": "Revert of Make linux_chromium_clobber_rel_ng experimental (patchset #1 id:1 of https://codereview.chromium.org/1403443004/ )\n\nReason for revert:\nHaving a bot that mirrors clobber bot on FYI waterfall is better than having nothing.\n\nOriginal issue\u0027s description:\n\u003e Make linux_chromium_clobber_rel_ng experimental\n\u003e\n\u003e This is needed to avoid tree breakages before making it mirror Linux GN Clobber.\n\u003e Since currently, linux_chromium_clobber_rel_ng is mirroring a bot on FYI\n\u003e waterfal it is not useful in CQ anyway.\n\u003e\n\u003e R\u003dphajdan.jr@chromium.org\n\u003e BUG\u003d531296\n\u003e\n\u003e Committed: https://crrev.com/7ff7bb3be8f97dbcb1ed7e225fb7acdef15c3cc1\n\u003e Cr-Commit-Position: refs/heads/master@{#354241}\n\nTBR\u003dphajdan.jr@chromium.org\nNOPRESUBMIT\u003dtrue\nNOTREECHECKS\u003dtrue\nNOTRY\u003dtrue\nBUG\u003d531296\n\nReview URL: https://codereview.chromium.org/1420503003\n\nCr-Commit-Position: refs/heads/master@{#355042}\n"
+    },
+    {
+      "commit": "a1a508b42224a697a0a621c36bfb55fe2f8bd760",
+      "tree": "fe24e38955d86fd118b2340318fa6bfc1bc0abfc",
+      "parents": [
+        "bebd21984c49af066246fae23664dd223bf84dcd"
+      ],
+      "author": {
+        "name": "yoav",
+        "email": "yoav@yoav.ws",
+        "time": "Tue Oct 20 12:03:21 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 12:04:06 2015"
+      },
+      "message": "Call setUseMobileViewportStyle before setViewportEnabled\n\nIn order to avoid initialization of the preloadScanner with the wrong viewport dimensions, this CL moves the initialization of mobile viewport dimensions further up, so that they would happen before the viewport is initialized.\n\nBUG\u003d531820\n\nReview URL: https://codereview.chromium.org/1392213002\n\nCr-Commit-Position: refs/heads/master@{#355041}\n"
+    },
+    {
+      "commit": "bebd21984c49af066246fae23664dd223bf84dcd",
+      "tree": "e342fa4c00a77bad831c1ffdfeea9728ae84715c",
+      "parents": [
+        "bfbcbc802b436b10c7b1519521485f5e266ce0d6"
+      ],
+      "author": {
+        "name": "stip",
+        "email": "stip@chromium.org",
+        "time": "Tue Oct 20 11:54:36 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 11:55:25 2015"
+      },
+      "message": "Switch to using latest proguard path.\n\nBUG\u003d525873\nTBR\u003dyfriedman@chromium.org\nNOTRY\u003dtrue\n\nReview URL: https://codereview.chromium.org/1411663009\n\nCr-Commit-Position: refs/heads/master@{#355040}\n"
+    },
+    {
+      "commit": "bfbcbc802b436b10c7b1519521485f5e266ce0d6",
+      "tree": "8e7873901963739a82d829ea5d6e0d243a7ab853",
+      "parents": [
+        "2849ceeb85e97574807c6f8b45f44a854fc81e5e"
+      ],
+      "author": {
+        "name": "msramek",
+        "email": "msramek@chromium.org",
+        "time": "Tue Oct 20 11:42:04 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 11:42:36 2015"
+      },
+      "message": "Remove a MEDIASTREAM reference from PermissionMenuModel.\n\nPermissionMenuModel::PermissionMenuModel() recognizes media permissions as being represented by CONTENT_SETTINGS_TYPE_MEDIASTREAM.\n\nHowever, following the callsites:\nPermissionSelectorView::PermissionSelectorView()\nWebsiteSettingsPopupView::SetPermissionInfo()\nWebsiteSettings::PresentSitePermissions()\n\nit can be seen that PermissionMenuModel is only created for content setting types that are listed in kPermissionType (website_settings.cc), and CONTENT_SETTINGS_TYPE_MEDIASTREAM is not.\n\nMedia should be instead represented by CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC and CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA (which both are listed in kPermissionType[]).\n\nBUG\u003d443799\n\nReview URL: https://codereview.chromium.org/1411383002\n\nCr-Commit-Position: refs/heads/master@{#355039}\n"
+    },
+    {
+      "commit": "2849ceeb85e97574807c6f8b45f44a854fc81e5e",
+      "tree": "3f222fb6e24936e63f89780585fed6867d9b4958",
+      "parents": [
+        "7c0ae1c68a1d159d2af2d1de429298ff3b776749"
+      ],
+      "author": {
+        "name": "abhishek.a21",
+        "email": "abhishek.a21@samsung.com",
+        "time": "Tue Oct 20 11:27:29 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 11:28:27 2015"
+      },
+      "message": "Componentize ssl_config_service_manager_pref.cc\n\n. Removed not needed notifications.\n. Created new switches and prefs for ssl_config.\n. Using SingleThreadTaskRunner over BrowserThread to remove content dependencies.\n\nBUG\u003d517014\n\nTBR\u003djochen\n\nReview URL: https://codereview.chromium.org/1320533007\n\nCr-Commit-Position: refs/heads/master@{#355038}\n"
+    },
+    {
+      "commit": "7c0ae1c68a1d159d2af2d1de429298ff3b776749",
+      "tree": "fea0da2907398236d584d9bd1b000886e14a0aab",
+      "parents": [
+        "9974f332f66d482645c3ad63d733cba55cc2178b"
+      ],
+      "author": {
+        "name": "alexclarke",
+        "email": "alexclarke@chromium.org",
+        "time": "Tue Oct 20 11:25:37 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 11:26:30 2015"
+      },
+      "message": "Re-enable per-frame timer scheduling\n\nThis time we\u0027re being more careful about the lifetime of the\nWebTaskRunners by taking copies, and in particular getting\nPostMessageTimer to obtain it\u0027s task runner via the document rather than\nvia the frame.\n\nBUG\u003d510398\n\nReview URL: https://codereview.chromium.org/1376993004\n\nCr-Commit-Position: refs/heads/master@{#355037}\n"
+    },
+    {
+      "commit": "9974f332f66d482645c3ad63d733cba55cc2178b",
+      "tree": "121322468fb7c030c8e3db6e1a996dac9b778a1a",
+      "parents": [
+        "a329908b559cc0cd2f2c37c59285ef257646aa49"
+      ],
+      "author": {
+        "name": "kochi",
+        "email": "kochi@chromium.org",
+        "time": "Tue Oct 20 11:19:30 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 11:20:33 2015"
+      },
+      "message": "Remove SelectorCheckingContext::m_scopeContainsLastMatchedElement.\n\nWith the change for SelectorChecker.cpp in\nhttps://codereview.chromium.org/1245933002/\nnow we can assume that if SelectorCheckingContext has\nnon-null |scope|, the selector matching should take care\nthat the last matched element should be in the same scope\nas |scope| always.\n\nIt means that m_scopeContainsLastMatchedElement in\nSelectorCheckingContext and its derivative in\nElementRuleCollector are now redundant and can be\nremoved.\n\nTEST\u003dpass all existing tests\nBUG\u003d\n\nReview URL: https://codereview.chromium.org/1360293003\n\nCr-Commit-Position: refs/heads/master@{#355036}\n"
+    },
+    {
+      "commit": "a329908b559cc0cd2f2c37c59285ef257646aa49",
+      "tree": "6a11fda66b451cb9c94a7ece106ebde46a901068",
+      "parents": [
+        "80739bbf9f719bcf2f74f515c85d945869a779c1"
+      ],
+      "author": {
+        "name": "hta",
+        "email": "hta@chromium.org",
+        "time": "Tue Oct 20 11:18:22 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 11:19:36 2015"
+      },
+      "message": "This CL adds support for the ConstrainBoolean, ConstrainDouble, ConstrainDOMString\nand ConstrainLong parameters of MediaTrackConstraintSet.\n\nThe new components are behind the runtime flag MediaConstraints.\n\nIt also adds a new test that focuses on trying constraint behaviors\nrelated to constraint parsing (rather than the effects of constraints).\n\nBUG\u003dwebrtc:4906\n\nReview URL: https://codereview.chromium.org/1403243003\n\nCr-Commit-Position: refs/heads/master@{#355035}\n"
+    },
+    {
+      "commit": "80739bbf9f719bcf2f74f515c85d945869a779c1",
+      "tree": "81490cb0a5b4507e813cd83f45855832ff947313",
+      "parents": [
+        "3f082c0c58857aa2546c0b5fbbba68066ff76e91"
+      ],
+      "author": {
+        "name": "peter",
+        "email": "peter@chromium.org",
+        "time": "Tue Oct 20 11:17:46 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 11:18:35 2015"
+      },
+      "message": "Add logging statements to track down why notifications may not respond\n\nWe\u0027ve seen a number of reports where clicking on a notification does not\nactually result in the associated Service Worker event being executed. In\nan attampt to track down why this is happening, I\u0027m adding some log\nstatements to make Android logcat output more useful.\n\nThese logs will add four messages to the Android logcat output for every\nnotification that the user explicitly clicks on. (In addition to the\nhundreds displayed for other reasons.) We\u0027ll take them out when the\nissue has been resolved.\n\nBUG\u003d534537\n\nReview URL: https://codereview.chromium.org/1408983003\n\nCr-Commit-Position: refs/heads/master@{#355034}\n"
+    },
+    {
+      "commit": "3f082c0c58857aa2546c0b5fbbba68066ff76e91",
+      "tree": "586e6d7ebf7f34a7cd856701611a5b67e40fe535",
+      "parents": [
+        "9cceab3556c26210436911e806f6abd5aff4ee30"
+      ],
+      "author": {
+        "name": "aberent",
+        "email": "aberent@chromium.org",
+        "time": "Tue Oct 20 11:06:50 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 11:07:34 2015"
+      },
+      "message": "Add null checks for mNativeRemoteMediaPlayer\n\nThe null check in release() (which fixes the bug) became necessary\nbecause of the recent refactoring. Although the current C++ code\nshould mean that some of the other members don\u0027t need null checks\nthis could change in future, so it seems sensible to put them in\nthroughout.\n\nBUG\u003d544717\n\nReview URL: https://codereview.chromium.org/1412083003\n\nCr-Commit-Position: refs/heads/master@{#355033}\n"
+    },
+    {
+      "commit": "9cceab3556c26210436911e806f6abd5aff4ee30",
+      "tree": "57f06e35cb80ab7c2aa90107030c3ab0a736ac1a",
+      "parents": [
+        "c92ba6a7cbc1b26d1f03376a1f7197c8dc5bc1a6"
+      ],
+      "author": {
+        "name": "timloh",
+        "email": "timloh@chromium.org",
+        "time": "Tue Oct 20 11:03:04 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 11:03:58 2015"
+      },
+      "message": "Move remaining animation and transition longhands to CSSPropertyParser\n\nThis patch moves parsing for the following properties from the legacy\nproperty parser to the new one based around CSSParserTokens:\nanimation-direction\nanimation-fill-mode\nanimation-iteration-count\nanimation-play-state\ntransition-property\n\nSince transition-property has a special value of \u0027none\u0027, which is only\nallowed by itself, I\u0027ve added a isValidAnimationPropertyList function\nwhich checks this. The check for whether we\u0027re actually parsing\ntransition-property is inside this function because I think it makes\nthe shorthand code (in a subsequent patch) slightly cleaner.\n\nBUG\u003d499780\n\nReview URL: https://codereview.chromium.org/1413543003\n\nCr-Commit-Position: refs/heads/master@{#355032}\n"
+    },
+    {
+      "commit": "c92ba6a7cbc1b26d1f03376a1f7197c8dc5bc1a6",
+      "tree": "5e9006a26600e46074c090e6685277492d892145",
+      "parents": [
+        "317a0c4813d93f29244dc0c5ff5946e1e4ddc8f5"
+      ],
+      "author": {
+        "name": "stip",
+        "email": "stip@chromium.org",
+        "time": "Tue Oct 20 10:58:32 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 10:59:17 2015"
+      },
+      "message": "Fix ui_base_unittests_apk_run target.\n\nBUG\u003d525873\nTBR\u003dsky@chromium.org\nNOTRY\u003dtrue\n\nReview URL: https://codereview.chromium.org/1403343003\n\nCr-Commit-Position: refs/heads/master@{#355031}\n"
+    },
+    {
+      "commit": "317a0c4813d93f29244dc0c5ff5946e1e4ddc8f5",
+      "tree": "48ee4f0626eee6e1b4f4f16c4e203cf30b246fac",
+      "parents": [
+        "35a3532b0f4eff7abb0fdae66cdbb2d810405b19"
+      ],
+      "author": {
+        "name": "toyoshim",
+        "email": "toyoshim@chromium.org",
+        "time": "Tue Oct 20 10:40:41 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 10:42:44 2015"
+      },
+      "message": "Remove stale BrowserShutdown related lines\n\n- BrowserMainLoop has a BrowserShutdownImpl forward declaration, but\n  the class doesn\u0027t exist, and not used any more.\n- TabStripModel has a comment referring to BrowserShutdown, but it\n  should be browser_shutdown::OnShutdownStarting in the current code.\n\nBUG\u003dn/a\n\nReview URL: https://codereview.chromium.org/1414683002\n\nCr-Commit-Position: refs/heads/master@{#355030}\n"
+    },
+    {
+      "commit": "35a3532b0f4eff7abb0fdae66cdbb2d810405b19",
+      "tree": "2579ed7613ea6623e8548231b91dc819c8d18299",
+      "parents": [
+        "7eafefcbd32c3e1b0c534dc54694065926076f6b"
+      ],
+      "author": {
+        "name": "sigbjornf",
+        "email": "sigbjornf@opera.com",
+        "time": "Tue Oct 20 10:33:52 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 10:35:21 2015"
+      },
+      "message": "Plug RemoteFrame leak in WebFrameTest.SwapMainFrameWhileLoading.\n\nR\u003dharaken\nBUG\u003d526423\n\nReview URL: https://codereview.chromium.org/1414193002\n\nCr-Commit-Position: refs/heads/master@{#355029}\n"
+    },
+    {
+      "commit": "7eafefcbd32c3e1b0c534dc54694065926076f6b",
+      "tree": "17c79fcb02d7882ba74cf4265322e96f3b165b72",
+      "parents": [
+        "ad92622a9f4001e648f9cc45298e7bdd14d1a4a8"
+      ],
+      "author": {
+        "name": "svillar",
+        "email": "svillar@igalia.com",
+        "time": "Tue Oct 20 10:33:34 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 10:34:22 2015"
+      },
+      "message": "[css-grid] Fix freeSpace computation with non-zero baseSize flex tracks\n\nThe freeSpace computation was incorrect whenever the flex tracks had\na non-zero baseSize before the 1fr unit size resolution. That happened\nbecause when assigning the new base size to the flex track, we were\nunconditionally subtracting the whole base size to the freeSpace. That\u0027s\ncorrect if the track is a \"pure\" flex track, i.e. 2fr, but if the track had\na non-zero base size (like minmax(10px, 1fr)) then both the new and the old\nbase sizes were incorrectly used to compute the freeSpace.\n\nWe can test the amount of remaining freeSpace by using content distribution to align and item place on a non-zero baseSize flex track. If the freeSpace computation is correct then the alignment will be accurate.\n\nReview URL: https://codereview.chromium.org/1408403003\n\nCr-Commit-Position: refs/heads/master@{#355028}\n"
+    },
+    {
+      "commit": "ad92622a9f4001e648f9cc45298e7bdd14d1a4a8",
+      "tree": "62bbf36b9abe2292d965fee8a6b9b23adfcf3d94",
+      "parents": [
+        "094ff5f8b587cfecfd0b59cd61d8dea9920c267c"
+      ],
+      "author": {
+        "name": "tnagel",
+        "email": "tnagel@chromium.org",
+        "time": "Tue Oct 20 10:26:30 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 10:27:14 2015"
+      },
+      "message": "Add policy_definitions to WATCHLISTS.\n\nAdd myself as a watcher.\n\nBUG\u003dnone\n\nReview URL: https://codereview.chromium.org/1406523004\n\nCr-Commit-Position: refs/heads/master@{#355027}\n"
+    },
+    {
+      "commit": "094ff5f8b587cfecfd0b59cd61d8dea9920c267c",
+      "tree": "50d126ae8830663e4bbf571b639320873b90448e",
+      "parents": [
+        "01cbe8a131bb12ff6db4a201b20cf7241d2c62af"
+      ],
+      "author": {
+        "name": "nhiroki",
+        "email": "nhiroki@chromium.org",
+        "time": "Tue Oct 20 10:09:50 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 10:10:35 2015"
+      },
+      "message": "ServiceWorker: Avoid accessing null ServiceWorkerProviderContext\n\nThis CL fixes the crash due to accessing null SWProviderContext. This happens if\niframe\u0027s sandbox attribute is changed while the iframe is being loaded.\n\n\u003cDetails of the crash\u003e\n\nWebSWProviderImpl accesses SWProviderContext when creating SWContainer:\n\n  1. SWProviderContext is created in the ctor of SWNetworkProvider and it\u0027s\n     passed to WebSWProviderImpl. If the type of the network provider is\n     SERVICE_WORKER_PROVIDER_FOR_SANDBOXED_FRAME, this creation is skipped\n     in order to disable SW features in the sandboxed iframe and the context\n     is left as null.\n\n  2. SWContainer can be created while the iframe is being loaded. This creation\n     involves accessing SWProviderContext via WebSWProviderImpl. If the iframe\n     is non-sandboxed or sandboxed with \"allow-scripts allow-same-origin\", the\n     container is created as usual. If the iframe is sandboxed w/o the params,\n     SWContainer is not created.\n\nIf the sandbox attribute is changed from \"\"(empty) to\n\"allow-scripts allow-same-origin\" between (1) making the network provider and\n(2) creating the container, WebSWProviderImpl accesses the null context and the\ncrash happens.\n\nBUG\u003d532855\n\nReview URL: https://codereview.chromium.org/1388343005\n\nCr-Commit-Position: refs/heads/master@{#355026}\n"
+    },
+    {
+      "commit": "01cbe8a131bb12ff6db4a201b20cf7241d2c62af",
+      "tree": "2785b679d5383688f3433dc0edb4456af2af59b4",
+      "parents": [
+        "d5a8208083e03fcf7c97ae6e70909b77c1d0da48"
+      ],
+      "author": {
+        "name": "kinuko",
+        "email": "kinuko@chromium.org",
+        "time": "Tue Oct 20 09:59:06 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 10:01:08 2015"
+      },
+      "message": "Add loading-reviews@ to loading related WATCHLIST\n\nBUG\u003dn/a\n\nReview URL: https://codereview.chromium.org/1416613002\n\nCr-Commit-Position: refs/heads/master@{#355025}\n"
+    },
+    {
+      "commit": "d5a8208083e03fcf7c97ae6e70909b77c1d0da48",
+      "tree": "22123dc16ec4943cf16175bb6a2c0fe45e68828c",
+      "parents": [
+        "f233c7c328c0aac8f49237d3f6dc960eab4c1bd0"
+      ],
+      "author": {
+        "name": "stip",
+        "email": "stip@chromium.org",
+        "time": "Tue Oct 20 09:46:50 2015"
+      },
+      "committer": {
+        "name": "Commit bot",
+        "email": "commit-bot@chromium.org",
+        "time": "Tue Oct 20 09:48:14 2015"
+      },
+      "message": "Add trailing comma to fix typo.\n\nBUG\u003d525873\nTBR\u003dsievers@chromium.org\nNOTRY\u003dtrue\n\nReview URL: https://codereview.chromium.org/1407133006\n\nCr-Commit-Position: refs/heads/master@{#355024}\n"
+    }
+  ],
+  "next": "f233c7c328c0aac8f49237d3f6dc960eab4c1bd0"
+}

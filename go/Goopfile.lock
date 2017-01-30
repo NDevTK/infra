@@ -31,6 +31,7 @@ github.com/smartystreets/assertions #01fedaa993c0a9f9aa55111501cd7c81a49e812e !h
 github.com/smartystreets/goconvey #530dd3d2cafa09958178e8c557bc4abeea1651a5 !https://chromium.googlesource.com/external/github.com/smartystreets/goconvey.git
 github.com/steveyen/go-slab #2f82a688478741b7843a5575749f726d4b3f92b1 !https://chromium.googlesource.com/external/github.com/steveyen/go-slab.git
 github.com/texttheater/golang-levenshtein #9ab79d77423b5c17e36d1f02838fe9e788678ff0 !https://chromium.googlesource.com/external/github.com/texttheater/golang-levenshtein.git
+github.com/thoj/go-ircevent #988aaaacd937fc2748708c2a3b8ea5869be4d3a0
 github.com/yosuke-furukawa/json5 #07fdad7a3c55f2098b172ea58890470c07f7d392 !https://chromium.googlesource.com/external/github.com/yosuke-furukawa/json5.git
 golang.org/x/crypto #c8b9e6388ef638d5a8a9d865c634befdc46a6784
 golang.org/x/net #2cba614e8ff920c60240d2677bc019af32ee04e5

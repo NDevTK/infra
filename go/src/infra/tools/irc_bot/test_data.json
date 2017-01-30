@@ -1,0 +1,121 @@
+{
+	"base_data": {
+		"commit": "1234deadbeef1234",
+		"email":"authorabc@chromium.org",
+		"message_prefix": "commit test subject line"
+	},
+	"tests": [
+			{
+				"name": "Basic test",
+				"lines": [
+					"bug=654321",
+					"review url: https://codereview.chromium.org/123456",
+					"cr-commit-position: refs/heads/master@{#456789}"
+				],
+				"result": [
+								"https://crrev.com/456789 authorabc@chromium.org",
+								"committed \"commit test subject line\""
+				]
+			},
+			{
+				"name": "No Review URL",
+				"lines": [
+					"bug=654321",
+					"cr-commit-position: refs/heads/master@{#456789}"
+				],
+				"result": [
+								"https://crrev.com/456789 authorabc@chromium.org",
+								"committed \"commit test subject line\""
+				]
+			},
+			{
+				"name": "No Commit Position",
+				"lines": [
+					"bug=654321",
+					"review url: https://codereview.chromium.org/123456"
+				],
+				"result": [
+								"https://crrev.com/1234dead authorabc@chromium.org",
+								"committed \"commit test subject line\""
+				]
+			},
+			{
+				"name": "Empty Description",
+				"lines": [
+					"bug=654321"
+				],
+				"result": [
+								"https://crrev.com/1234dead authorabc@chromium.org committed",
+								"\"commit test subject line\""
+				]
+			},
+			{
+				"name": "Duplicate Commit Position",
+				"lines": [
+					"review url: https://fake.review.url",
+					"cr-commit-position: refs/heads/master@{#000000}",
+					"bug=654321",
+					"review url: https://codereview.chromium.org/123456",
+					"cr-commit-position: refs/heads/master@{#456789}"
+				],
+				"result": [
+								"https://crrev.com/456789 authorabc@chromium.org committed",
+								"\"commit test subject line\""
+				]
+			},
+			{
+				"name": "TBR",
+				"lines": [
+					"bug=654321",
+					"tbr=a@chromium.org",
+					"review url: https://codereview.chromium.org/123456",
+					"cr-commit-position: refs/heads/master@{#456789}"
+				],
+				"result": [
+								"https://crrev.com/456789 authorabc@chromium.org committed", "\"commit test subject line\" BAD tbr=a@chromium.org BAD"
+				]
+			},
+			{
+				"name": "No Try",
+				"lines": [
+					"bug=654321",
+					"notry=true",
+					"review url: https://codereview.chromium.org/123456",
+					"cr-commit-position: refs/heads/master@{#456789}"
+				],
+				"result": [
+								"https://crrev.com/456789 authorabc@chromium.org committed",
+								"\"commit test subject line\" BAD notry=true BAD"
+				]
+			},
+			{
+				"name": "TBR and No Try",
+				"lines": [
+					"bug=654321",
+					"tbr=a@chromium.org",
+					"notry=true",
+					"review url: https://codereview.chromium.org/123456",
+					"cr-commit-position: refs/heads/master@{#456789}"
+				],
+				"result": [
+								"https://crrev.com/456789 authorabc@chromium.org committed",
+								"\"commit test subject line\" BAD",
+								"tbr=a@chromium.org notry=true BAD"
+				]
+			},
+			{
+				"name": "TBR two people",
+				"lines": [
+					"bug=654321",
+					"tbr=a@chromium.org, b@chromium.org",
+					"review url: https://codereview.chromium.org/123456",
+					"cr-commit-position: refs/heads/master@{#456789}"
+				],
+				"result": [
+								"https://crrev.com/456789 authorabc@chromium.org committed",
+								"\"commit test subject line\" BAD",
+								"tbr=a@chromium.org, b@chromium.org BAD"
+				]
+			}
+		]
+}
