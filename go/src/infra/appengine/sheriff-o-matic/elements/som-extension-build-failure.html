@@ -272,7 +272,7 @@
       },
 
       _haveTests: function(tests) {
-        return tests && tests.length > 0;
+        return !!(tests && tests.length > 0);
       },
 
       _isFlaky: function(test) {

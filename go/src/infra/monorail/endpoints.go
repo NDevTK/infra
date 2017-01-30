@@ -123,6 +123,16 @@ func (c *epClient) InsertComment(ctx context.Context, req *InsertCommentRequest,
 	return &InsertCommentResponse{}, c.call(ctx, "POST", url, req.Comment, nil)
 }
 
+func (c *epClient) GetIssue(ctx context.Context, req *GetIssueRequest, options ...grpc.CallOption) (*Issue, error) {
+	if err := checkOptions(options); err != nil {
+		return nil, err
+	}
+	url := fmt.Sprintf("/projects/%s/issues/%d", req.ProjectId, req.IssueId)
+	iss := &Issue{}
+	err := c.call(ctx, "GET", url, nil, iss)
+	return iss, err
+}
+
 func (c *epClient) IssuesList(ctx context.Context, req *IssuesListRequest, options ...grpc.CallOption) (*IssuesListResponse, error) {
 	if err := checkOptions(options); err != nil {
 		return nil, err

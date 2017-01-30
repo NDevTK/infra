@@ -7,6 +7,9 @@
 <link rel="import" href="../bower_components/iron-location/iron-location.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/paper-badge/paper-badge.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-drawer-panel/paper-drawer-panel.html">
 <link rel="import" href="../bower_components/paper-header-panel/paper-header-panel.html">
@@ -209,7 +212,47 @@
                 For additional guidance, see: <a href="http://go/trooper" target="_blank">The Trooper Playbook</a>
               </div>
             </div>
-            <som-bug-queue id="bugQueue" bugs="{{_bugs}}" bug-queue-label="[[_bugQueueLabel]]" tree-display-name="[[_treeDisplayName]]"></som-bug-queue>
+            <div class="list-item">
+              <h3>
+                Filters
+              </h3>
+              <div class="layout horizontal">
+                <div>
+                  <ul>
+                  <template is="dom-repeat" items="[[excludeFilter]]">
+                    <li>
+                      [[item]]
+                      <paper-icon-button icon="close" title="Remove" id="remove[[index]]" on-tap="_removeFilter"></paper-icon-button>
+                    </li>
+                  </template>
+                  </ul>
+                  <iron-a11y-keys target="[[_excludeFilter]]" keys="enter" on-keys-pressed="_addFilter"></iron-a11y-keys>
+                  <paper-input id="excludeFilter" label="Exclude">
+                  </paper-input>
+                </div>
+                <div>
+                  <ul>
+                  <template is="dom-repeat" items="[[includeFilter]]">
+                    <li>
+                      [[item]]
+                      <paper-icon-button icon="close" title="Remove" id="remove[[index]]" on-tap="_removeFilter"></paper-icon-button>
+                    </li>
+                  </template>
+                  </ul>
+                  <iron-a11y-keys target="[[_includeFilter]]" keys="enter" on-keys-pressed="_addFilter"></iron-a11y-keys>
+                  <paper-input id="includeFilter" label="Include">
+                  </paper-input>
+                </div>
+              </div>
+            </div>
+            <som-bug-queue
+                  id="bugQueue"
+                  bugs="{{_bugs}}"
+                  bug-queue-label="[[_bugQueueLabel]]"
+                  tree-display-name="[[_treeDisplayName]]"
+                  alerts-with-bugs="{{_computeAlertsWithBugs(_alerts, annotations)}}"
+                  on-annotation-change="_handleAnnotation"
+                ></som-bug-queue>
             <template is="dom-if" if="[[_showSwarmingAlerts]]">
               <h2 class="header">Swarming Bots (<a target="_blank" href="https://chrome-internal.googlesource.com/infra/infra_internal/+/master/doc/troopers/playbook.md#Swarming">Help?</a>)</h2>
               <som-swarming-bots bots="[[_swarmingAlerts]]"></som-swarming-bots>
@@ -224,7 +267,7 @@
                   <img src="/images/jparent-jump.gif" alt="Julie Jumping" title="Julie Jumping">
                 </div>
               </template>
-              <template is="dom-repeat" items="[[_computeCategories(_alerts, _isTrooperPage)]]" as="cat">
+              <template is="dom-repeat" items="[[_computeCategories(_newAlerts, _isTrooperPage)]]" as="cat">
                 <div class="category-title layout horizontal justified">
                   <h3 class="self-center">[[_getCategoryTitle(cat, _isTrooperPage)]]:</h3>
                   <template is="dom-if" if="[[useCompactView]]">
@@ -238,7 +281,7 @@
                     </div>
                   </template>
                 </div>
-                <template is="dom-repeat" items="[[_alertsWithCategory(_alerts, cat, _isTrooperPage)]]" as="alert">
+                <template is="dom-repeat" items="[[_alertsWithCategory(_newAlerts, cat, _isTrooperPage)]]" as="alert">
                   <div class="list-item" tabindex$="[[tabIndex]]">
                     <som-alert-item
                         alert="{{alert}}"
@@ -293,6 +336,18 @@
       is: 'som-app',
       behaviors: [AnnotationManagerBehavior],
       properties: {
+        includeFilter: {
+          type: Array,
+          value: function() {
+            return [];
+          }
+        },
+        excludeFilter: {
+          type: Array,
+          value: function() {
+            return [];
+          }
+        },
         _activeRequests: {
           type: Number,
           value: 0,
@@ -300,7 +355,12 @@
         _alerts: {
           type: Array,
           value: function() { return []; },
-          computed: '_computeAlerts(_alertsData.*, annotations, showInfraFailures, _isTrooperPage)',
+          computed: '_computeAlerts(_alertsData.*, annotations, showInfraFailures, _isTrooperPage, includeFilter.*, excludeFilter.*)',
+         },
+        _newAlerts: {
+          type: Array,
+          value: function() { return []; },
+          computed: '_computeNewAlerts(_alerts, annotations)',
         },
         // Map of stream to data, timestamp of latest updated data.
         _alertsData: {
@@ -343,7 +403,7 @@
         _isTrooperPage: {
           type: Boolean,
           computed: '_computeIsTrooperPage(_tree)',
-          value: false,
+          value: function() { return false; },
         },
         logoutUrl: String,
         _pageTitleCount: {
@@ -408,7 +468,7 @@
         },
         _examinedAlert: {
           type: Object,
-          computed: '_computeExaminedAlert(_alerts, _examinedAlertKey)',
+          computed: '_computeExaminedAlert(_newAlerts, _examinedAlertKey)',
         },
         _examinedAlertKey: {
           type: String,
@@ -418,6 +478,18 @@
         useCompactView: Boolean,
         linkStyle: String,
         xsrfToken: String,
+        _includeFilter: {
+          type: Object,
+          value: function() {
+            return this.$.includeFilter;
+          },
+        },
+        _excludeFilter: {
+          type: Object,
+          value: function() {
+            return this.$.excludeFilter;
+          },
+        },
       },
 
       created: function() {
@@ -648,11 +720,44 @@
         return activeRequests !== 0;
       },
 
-      _computeAlerts: function(alertsData, annotations, showInfraFailures, isTrooperPage) {
+      _addFilter: function() {
+        let data = this.$.includeFilter.value;
+        let include = true;
+        if (data == "") {
+          data = this.$.excludeFilter.value;
+          include = false;
+        }
+        if (data == "") {
+          return;
+        }
+
+        if (include) {
+          this.push('includeFilter', data);
+          this.$.includeFilter.value = "";
+        } else {
+          this.push('excludeFilter', data);
+          this.$.excludeFilter.value = "";
+        }
+      },
+
+      _removeFilter: function(a, b, c) {
+        let index = this.includeFilter.indexOf(a.model.item);
+        if (index > -1) {
+          this.splice('includeFilter', index, 1);
+        }
+        index = this.excludeFilter.indexOf(a.model.item);
+        if (index > -1) {
+          this.splice('excludeFilter', index, 1);
+        }
+      },
+
+      _computeAlerts: function(alertsData, annotations, showInfraFailures, isTrooperPage, includeFilter, excludeFilter) {
         if (!alertsData || !alertsData.base) {
           return [];
         }
         alertsData = alertsData.base;
+        includeFilter = includeFilter.base;
+        excludeFilter = excludeFilter.base;
 
         let allAlerts = [];
         for (let tree in alertsData) {
@@ -663,6 +768,31 @@
           if (!isTrooperPage && !showInfraFailures) {
             alerts = alerts.filter(function(alert) {
               return alert.type !== 'infra-failure';
+            });
+          }
+          if (includeFilter.length > 0 || excludeFilter.length > 0) {
+            alerts = alerts.filter(function(alert) {
+              if (!(alert.extension && alert.extension.builders)) {
+                return true;
+              }
+
+              let filtered = alert.extension.builders.filter((builder) => {
+                for (let item of includeFilter) {
+                  if (!builder.name.includes(item)) {
+                    return false;
+                  }
+                }
+                if (excludeFilter.length > 0) {
+                  for (let item of excludeFilter) {
+                    if (builder.name.includes(item)) {
+                      return false;
+                    }
+                  }
+                }
+
+                return true;
+              });
+              return filtered.length == alert.extension.builders.length;
             });
           }
           allAlerts = allAlerts.concat(alerts);
@@ -710,6 +840,34 @@
           this._fetchedAlerts = true;
         }, 200);
         return allAlerts;
+      },
+
+      _computeAlertsWithBugs: function(alerts, annotations) {
+        let bugToAlert = {};
+        alerts = alerts.forEach((alr) => {
+          let ann = this.computeAnnotation(annotations, alr);
+          if (!ann.bugs) {
+            return;
+          }
+
+          ann.bugs.forEach((bug) => {
+            let num = parseInt(bug, 10);
+            if (!bugToAlert.hasOwnProperty(num)) {
+              bugToAlert[num] = [];
+            }
+
+            bugToAlert[num].push(alr);
+          });
+        });
+
+        return bugToAlert;
+      },
+
+      _computeNewAlerts: function(allAlerts, annotations) {
+        return allAlerts.filter((alr) => {
+          let ann = this.computeAnnotation(annotations, alr);
+          return !(ann && ann.bugs && ann.bugs.length > 0);
+        });
       },
 
 

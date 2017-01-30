@@ -329,7 +329,7 @@
       handleAnnotation: function(evt) {
         this.annotationError.action = "Fetching all annotations";
         this.sendAnnotation(
-          evt.target.alert.key, evt.detail.type, evt.detail.change
+          evt.detail.target, evt.detail.type, evt.detail.change
         ).then((response) => {
           this.setLocalStateKey(response.key, {
             opened: false

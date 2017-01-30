@@ -1,7 +1,9 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
 <link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 
 <dom-module id="som-bug-queue">
   <template>
@@ -50,6 +52,9 @@
         text-overflow: ellipsis;
         max-width: 90%;
       }
+      .collapse {
+        cursor: pointer;
+      }
     </style>
     <iron-ajax
         id="bugQueueAjax"
@@ -65,6 +70,16 @@
         last-error="{{_assignedBugsJsonError}}"
         last-response="{{_assignedBugsJson}}"
         debounce-duration="300"></iron-ajax>
+    <iron-ajax
+        id="issueListAjax"
+        url="/api/v1/bugqueue/issue/bulk_issue"
+        body="[[_bugsToFetch]]"
+        content-type="application/json"
+        method="POST"
+        handle-as="json"
+        last-error="{{_issueListError}}"
+        last-response="{{_issueListResponse}}"
+        debounce-duration="1000"></iron-ajax>
     <div id="main" hidden$="[[_hideBugQueue]]">
       <h2 hidden$="[[_isTrooperQueue]]">[[treeDisplayName]] Bug Queue (<a href="https://sites.google.com/a/chromium.org/dev/developers/tree-sheriffs/sheriffing-bug-queues" target="_blank">Help?</a>)</h2>
       <h2 hidden$="[[!_isTrooperQueue]]">Trooper Queue (<a href="http://go/trooper-queue" target="_blank">View in Monorail</a>)</h2>
@@ -91,7 +106,25 @@
           <template is="dom-if" if="[[_hasPriority(bug)]]">
             (Pri-[[_computePriority(bug)]])
           </template>
-        </div>
+          <template is="dom-if" if="[[bug.alerts]]">
+            <div class="layout vertical">
+              <div class="layout horizontal">
+                Alerts tied to this bug:
+                <div class="collapse layout horizontal center" on-tap="_toggleCollapse">
+                  <iron-icon icon="[[_iconName]]"></iron-icon>
+                </div>
+              </div>
+              <!--<iron-collapse id$="[[_collapseIDForBug(bug)]]" no-animation> -->
+                <ul class="layout vertical">
+                  <template is="dom-repeat" items="[[_addBug(bug, bug.alerts)]]" as="alert">
+                    <li>
+                      [[alert.title]]
+                      <paper-icon-button icon="close" title="Remove" id="remove[[index]]" on-tap="_removeBug"></paper-icon-button>
+                    </li>
+                  </template>
+                </ul>
+            </div>
+          </template>
       </template>
     </div>
   </template>
@@ -103,6 +136,12 @@
       is: 'som-bug-queue',
 
       properties: {
+        alertsWithBugs: {
+          type: Object,
+          value: function() { return {}; },
+          notify: true,
+          observer: '_alertsWithBugsChange',
+        },
         bugQueueLabel: {
           type: String,
           observer: '_changeBugQueueLabel',
@@ -118,11 +157,15 @@
         bugs: {
           type: Array,
           notify: true,
-          computed: '_computeBugs(_bugQueueJson, _assignedBugsJson)',
+          computed: '_computeBugs(_bugQueueJson.*, alertsWithBugs, _issueListResponse, _assignedBugsJson)',
+        },
+        _bugsToFetch: {
+          type: Array,
+          computed: '_computeBugsToFetch(alertsWithBugs)',
         },
         _bugQueueJson: {
           type: Object,
-          value: null,
+          value: function() { return {}; },
         },
         _bugQueueJsonError: {
           type: Object,
@@ -137,16 +180,39 @@
           value: true,
           computed: '_computeHideBugQueue(bugQueueLabel)',
         },
+        _iconName: {
+          type: String,
+          value: 'icons:unfold-more'
+        },
         _isTrooperQueue: {
           type: Boolean,
           value: false,
           computed: '_computeIsTrooperQueue(bugQueueLabel)',
+        },
+        _issueListResponse: {
+          type: Array,
+          value: function() { return {}; },
         },
         _showNoBugs: {
           type: Boolean,
           value: false,
           computed: '_computeShowNoBugs(bugs, _bugsLoaded, _bugQueueJsonError)',
         },
+      },
+
+      _collapseIDForBug: function(bug){
+        return "collapse" + bug;
+      },
+
+      _addBug: function(bug, alerts) {
+        alerts.forEach((alr) => {
+          alr['linkedBug'] = bug;
+        });
+        return alerts;
+      },
+
+      _alertsWithBugsChange: function(alertsWithBugs) {
+        this.$.issueListAjax.generateRequest();
       },
 
       refresh: function() {
@@ -164,20 +230,54 @@
         });
       },
 
-      _computeBugs: function(bugQueueJson, assignedBugsJson) {
-        let hasBugJson = bugQueueJson && bugQueueJson.items;
-        let hasAssignedJson = assignedBugsJson && assignedBugsJson.items;
-        if (!hasBugJson && !hasAssignedJson) {
-          return [];
-        } else if (!hasAssignedJson) {
-          return bugQueueJson.items;
-        } else if (!hasBugJson) {
-          return assignedBugsJson.items;
+      _computeBugsToFetch: function(alertsWithBugs) {
+        return Object.keys(alertsWithBugs).map((bug) => {
+          return parseInt(bug, 10);
+        });
+      },
+
+      isEmpty: function(obj) {
+        if (obj == null || obj == undefined) {
+          return false;
         }
-        return bugQueueJson.items.concat(assignedBugsJson.items);
+
+        return Object.keys(obj).length == 0;
+      },
+
+      _computeBugs: function(bugQueueJson, alertsWithBugs, issueListResponse, assignedBugsJson) {
+        bugQueueJson = bugQueueJson.base;
+
+        let bugs = {};
+        let items = (bugQueueJson && bugQueueJson.items) || [];
+        items = items.concat(assignedBugsJson && assignedBugsJson.items || []);
+        items.forEach((bug) => {
+          bugs[bug.id] = bug;
+        });
+
+        if (!this.isEmpty(alertsWithBugs) && !this.isEmpty(issueListResponse)) {
+          issueListResponse.forEach((bug) => {
+            if (!bug) {
+              return;
+            }
+
+            bugs[bug.id] = bug;
+          });
+
+          Object.keys(alertsWithBugs).forEach((bug) => {
+            bug = parseInt(bug, 10);
+            if (!bugs[bug]) {
+              return;
+            }
+
+            bugs[bug].alerts = alertsWithBugs[bug];
+          });
+        }
+
+        return Object.values(bugs);
       },
 
       _computeHideBugQueue: function(bugQueueLabel) {
+        return false;
         // No loading or empty message is shown unless a bug queue exists.
         return !bugQueueLabel || bugQueueLabel === ''
           || bugQueueLabel === 'Performance-Sheriff-BotHealth';
@@ -207,6 +307,10 @@
       },
 
       _changeBugQueueLabel: function() {
+        if (this.bugQueueLabel == "") {
+          return
+        }
+
         this._bugQueueJson = null;
         this._bugQueueJsonError = null;
 
@@ -244,6 +348,16 @@
         return !bugsLoaded && this._haveNoErrors(error);
       },
 
+      _removeBug: function(evt) {
+        this.fire('annotation-change', {
+          type: 'remove',
+          change: {
+            'bugs': [new String(evt.model.alert.linkedBug.id)]
+          },
+          target: evt.model.alert.key,
+        });
+      },
+
       _sortBugs: function(bugs) {
         if (bugs) {
           // Sort bugs by priority.
@@ -262,7 +376,16 @@
           });
         }
         return bugs;
-      }
+      },
+
+      _toggleCollapse: function(evt) {
+        debugger;
+        let collapseElem = this.$$('#collapse');
+        collapseElem.toggle();
+        this._iconName = collapseElem.opened ? 'icons:unfold-less' :
+            'icons:unfold-more';
+        this._collapseMessage = collapseElem.opened ? 'less' : 'more';
+      },
     });
   })();
   </script>

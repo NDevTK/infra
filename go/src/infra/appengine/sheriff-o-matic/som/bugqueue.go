@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sync"
 	"time"
 
 	"infra/monorail"
@@ -100,6 +101,52 @@ func getOwnedBugsHandler(ctx *router.Context) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(out)
+}
+
+const urlPrefix = "https://monorail-prod.appspot.com/_ah/api/monorail/v1/projects"
+
+func getBugsHandler(ctx *router.Context) {
+	c, w, r := ctx.Context, ctx.Writer, ctx.Request
+	bugs := []int32{}
+	err := json.NewDecoder(r.Body).Decode(&bugs)
+	if err != nil {
+		errStatus(c, w, http.StatusInternalServerError, "while decoding %s "+err.Error())
+		return
+	}
+	client, err := getOAuthClient(c)
+	if err != nil {
+		errStatus(c, w, http.StatusInternalServerError, "while making client: "+err.Error())
+		return
+	}
+	mr := monorail.NewEndpointsClient(client, monorailEndpoint)
+	bugsData := make([]*monorail.Issue, len(bugs))
+	wg := sync.WaitGroup{}
+	for i, bug := range bugs {
+		i := i
+		bug := bug
+		wg.Add(1)
+		go func() {
+			req := &monorail.GetIssueRequest{
+				ProjectId: "chromium",
+				IssueId:   bug,
+			}
+			res, err := mr.GetIssue(c, req)
+			/*if err != nil {
+				errStatus(w, http.StatusInternalServerError, "while getting bug: "+err.Error())
+			}*/
+			if err == nil {
+				bugsData[i] = res
+			}
+			wg.Done()
+		}()
+	}
+	wg.Wait()
+	bytes, err := json.Marshal(bugsData)
+	if err != nil {
+		errStatus(c, w, http.StatusInternalServerError, "while marshalling issues: "+err.Error())
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(bytes)
 }
 
 // Makes a request to Monorail for bugs in a label and caches the results.
