@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/timestamp.proto";
+
+message Alert {
+  string key;
+  string signature;
+  string kind;
+
+  string title;
+
+  int32 severity;
+
+  google.protobuf.Timestamp latest_time;
+
+  google.protobuf.Timestamp start_time;
+
+  bool tree_closer;
+
+  repeated Builder builders;
+
+  repeated RegressionRange regression_ranges;
+}
+
+message RegressionRange {
+  string name;
+  string url;
+
+  repeated Revision revisions;
+}
+
+message Revision {
+  string digest;
+  int32 position;
+  bool suspected;
+}
+
+message Builder {
+  string name;
+  string url;
+}
