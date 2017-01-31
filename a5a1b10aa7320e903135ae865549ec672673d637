@@ -48,6 +48,29 @@
     },
     {
       "key": {
+        "uuid": "403a04be_cb6dfc41",
+        "filename": "appengine/findit/handlers/config.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-01-31T00:39:39Z",
+      "side": 1,
+      "message": "Done",
+      "range": {
+        "startLine": 139,
+        "startChar": 33,
+        "endLine": 139,
+        "endChar": 49
+      },
+      "revId": "a5a1b10aa7320e903135ae865549ec672673d637",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0d471ada_7ce3c7ca",
         "filename": "appengine/findit/waterfall/waterfall_config.py",
         "patchSetId": 1
@@ -59,6 +82,29 @@
       "writtenOn": "2017-01-30T22:57:34Z",
       "side": 1,
       "message": "builders_to_trybots would be a dict like below, right?\n\n{\n  \"chromium\": {\n    \"Android\": {\n      \"buildername\": \"android_chromium_variable_archive\",\n      \"mastername\": \"tryserver.chromium.android\",\n      \"strict_regex\": true\n    },\n    \"Linux\": {\n      \"buildername\": \"linux_chromium_variable_32_clobber\",\n      \"mastername\": \"tryserver.chromium.linux\",\n      \"strict_regex\": true\n    },\n    \"Linux x64\": {\n      \"buildername\": \"linux_chromium_variable_clobber\",\n      \"mastername\": \"tryserver.chromium.linux\",\n      \"strict_regex\": true\n    },\n...\n}\n\nIf so, you need to iterate two levels (master then builder), right?",
+      "range": {
+        "startLine": 57,
+        "startChar": 33,
+        "endLine": 57,
+        "endChar": 52
+      },
+      "revId": "a5a1b10aa7320e903135ae865549ec672673d637",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a7c35513_aede990f",
+        "filename": "appengine/findit/waterfall/waterfall_config.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-01-31T00:39:39Z",
+      "side": 1,
+      "message": "The levels should not change, this is to rename buildername -\u003e waterfall_trybot and adds flake_trybot at the same level\n\nFor example,\n\"chromium\":{\n  \"Linux\": {\n    \"mastername\": \"tryserver.chromium.linux\",\n    \"waterfall_trybot\": \"linux_chromium_variable\",\n    \"flake_trybot\": \"linux_chromium_variable_deflake\"\n  }\n}\n\nIterating master then builder is correct. Note the for loops uses itervalues(), not iteritems() so the keys (mastername, then buildername) are not actually used",
       "range": {
         "startLine": 57,
         "startChar": 33,
@@ -94,6 +140,29 @@
     },
     {
       "key": {
+        "uuid": "12c1a176_ebea9b08",
+        "filename": "appengine/findit/waterfall/waterfall_config.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-01-31T00:39:39Z",
+      "side": 1,
+      "message": "Done",
+      "range": {
+        "startLine": 155,
+        "startChar": 5,
+        "endLine": 155,
+        "endChar": 75
+      },
+      "revId": "a5a1b10aa7320e903135ae865549ec672673d637",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9db429e5_d9d0f865",
         "filename": "appengine/findit/waterfall/waterfall_config.py",
         "patchSetId": 1
@@ -105,6 +174,29 @@
       "writtenOn": "2017-01-30T22:57:34Z",
       "side": 1,
       "message": "Returns trybot mastername and buildername for the given master/builder for reliable try jobs?",
+      "range": {
+        "startLine": 172,
+        "startChar": 5,
+        "endLine": 172,
+        "endChar": 76
+      },
+      "revId": "a5a1b10aa7320e903135ae865549ec672673d637",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ebc0e6fd_aa3656e6",
+        "filename": "appengine/findit/waterfall/waterfall_config.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-01-31T00:39:39Z",
+      "side": 1,
+      "message": "Done",
       "range": {
         "startLine": 172,
         "startChar": 5,
