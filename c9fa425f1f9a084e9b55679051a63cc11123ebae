@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "51e49797_559c5b79",
+        "filename": "appengine/monorail/services/issue_svc.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1843,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2017-02-01T23:44:07Z",
+      "side": 1,
+      "message": "Same, this needs to be InsertRow(..., replace\u003dTrue, ...)",
+      "revId": "c9fa425f1f9a084e9b55679051a63cc11123ebae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e21f4166_180437dd",
+        "filename": "appengine/monorail/services/issue_svc.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1861,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2017-02-01T23:44:07Z",
+      "side": 1,
+      "message": "Let\u0027s log something when this happens, same with spam IDs.",
+      "revId": "c9fa425f1f9a084e9b55679051a63cc11123ebae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "93dc43fd_f102a9ef",
+        "filename": "appengine/monorail/services/issue_svc.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1873,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2017-02-01T23:44:07Z",
+      "side": 1,
+      "message": "Update will not do anything if there is not already a row for that project.  I think that we need:\n    self.localidcounter_tbl.InsertRow(\n        cnxn, replace\u003dTrue,\n        used_spam_id\u003dlowest_id, project_id\u003dproject_id)",
+      "revId": "c9fa425f1f9a084e9b55679051a63cc11123ebae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
