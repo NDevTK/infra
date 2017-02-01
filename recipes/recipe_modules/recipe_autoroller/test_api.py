@@ -67,6 +67,13 @@ class RecipeAutorollerTestApi(recipe_test_api.RecipeTestApi):
                 'issue': '123456789',
                 'issue_url': 'https://codereview.chromium.org/123456789',
                 'trivial': trivial,
+                'last_roll': {
+                  'spec': 'api_version: 1\netc: "etc"\n',
+                  'trivial': trivial,
+                  'issue': '123456789',
+                  'issue_url': 'https://codereview.chromium.org/123456789',
+                  'utc_timestamp': '2016-02-01T01:23:45',
+                },
               }),
               stream='stdout'),
           self.m.raw_io.stream_output('', stream='stderr')) +
