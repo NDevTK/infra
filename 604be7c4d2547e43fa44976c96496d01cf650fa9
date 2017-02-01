@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "96b684e7_ade2c722",
+        "filename": "recipes/recipe_modules/recipe_autoroller/api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1002740
+      },
+      "writtenOn": "2017-02-01T21:52:36Z",
+      "side": 1,
+      "message": "I\u0027m not entirely happy about this, but not sure how to handle it better (i.e. provide coverage by properly mocking current time).\n\nSuggestions are welcome. Please be specific.",
+      "range": {
+        "startLine": 196,
+        "startChar": 57,
+        "endLine": 196,
+        "endChar": 75
+      },
+      "revId": "604be7c4d2547e43fa44976c96496d01cf650fa9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
