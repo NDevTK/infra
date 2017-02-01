@@ -1862,19 +1862,35 @@ class IssueService(object):
     return next_local_id
 
   def SetUsedSpamID(self, cnxn, project_id):
-    """Set the local ID counter based on existing issues.
+    """Set the spam ID counter based on existing issues.
 
     Args:
       cnxn: connection to SQL database.
       project_id: int ID of the project.
     """
-    current_id = self.localidcounter_tbl.SelectValue(
-        cnxn, 'used_spam_id', project_id=project_id)
-    current_id = current_id or 0  # Will be None if project has no issues.
-
+    lowest_id = self.GetLowestSpamID(cnxn, project_id)
+    lowest_id = abs(lowest_id)
     self.localidcounter_tbl.Update(
-        cnxn, {'used_spam_id': current_id + 1}, project_id=project_id)
-    return current_id + 1
+        cnxn, {'used_spam_id': lowest_id}, project_id=project_id)
+    return lowest_id
+
+  def GetLowestSpamID(self, cnxn, project_id):
+    """Return the lowest used spam ID in the specified project.
+
+    Args:
+      cnxn: connection to SQL database.
+      project_id: int ID of the project.
+
+    Returns:
+      The lowest local spam ID for an active or moved issues.
+    """
+    lowest = self.issue_tbl.SelectValue(
+        cnxn, 'MIN(local_id)', project_id=project_id)
+    lowest = lowest or 0  # It will be None if the project has no issues.
+    lowest_former = self.issueformerlocations_tbl.SelectValue(
+        cnxn, 'MIN(local_id)', project_id=project_id)
+    lowest_former = lowest_former or 0
+    return min(lowest, lowest_former)
 
   def AllocateNextSpamLocalID(self, cnxn, project_id):
     """Return the next available spam issue ID in the specified project.
