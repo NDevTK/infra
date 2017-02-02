@@ -48,6 +48,23 @@
     },
     {
       "key": {
+        "uuid": "bd6e4be0_7a42f0f3",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2017-02-02T20:01:54Z",
+      "side": 1,
+      "message": "buildset is effectively codereview URL, so in practice I don\u0027t think this will ever be the case.\n\nThat said, how is scoping to project going to help during search operation? AFAIU ATM search for buildset is a special op which disregards projects and filters results at the end based on what user has READER acls for. Am I confusing things?",
+      "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ffb49cb1_a7003962",
         "filename": "appengine/cr-buildbucket/model.py",
         "patchSetId": 3
