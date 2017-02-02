@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "41120e67_b1980f1f",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-02-02T19:57:59Z",
+      "side": 1,
+      "message": "should this be scoped to a project? Otherwise builds in one project can \"inject\" themselves into build sets in another project.",
+      "range": {
+        "startLine": 182,
+        "startChar": 4,
+        "endLine": 182,
+        "endChar": 43
+      },
+      "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "71008283_7f4ec6d2",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-02-02T19:57:59Z",
+      "side": 1,
+      "message": "FWIW, it is more efficient (both in time and space) to do packing yourself in this case, and store the field as Bytes.\n\nBut it makes sense only if number of items there is \u003e100.\n\nSomewhat related data structure: https://chrome-internal.googlesource.com/infra/infra_internal/+/master/appengine/chromecompute/cache.py#150",
+      "range": {
+        "startLine": 192,
+        "startChar": 34,
+        "endLine": 192,
+        "endChar": 62
+      },
+      "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "762e5c4f_107286f0",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-02-02T19:57:59Z",
+      "side": 1,
+      "message": "is this used?",
+      "range": {
+        "startLine": 5,
+        "startChar": 7,
+        "endLine": 5,
+        "endChar": 13
+      },
+      "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "270235e3_328c0433",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-02-02T19:57:59Z",
+      "side": 1,
+      "message": "nit: it may be future-friendly to include \u0027buildset:\u0027 prefix in the key too. That way we later can add some other kind of consistent index.",
+      "range": {
+        "startLine": 202,
+        "startChar": 21,
+        "endLine": 202,
+        "endChar": 41
+      },
+      "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3542731d_0ffefa88",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 919,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-02-02T19:57:59Z",
+      "side": 1,
+      "message": "this will do unnecessary datastore op (inserting empty entity)",
+      "range": {
+        "startLine": 919,
+        "startChar": 26,
+        "endLine": 919,
+        "endChar": 39
+      },
+      "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
