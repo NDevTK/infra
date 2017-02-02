@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import bisect
 import contextlib
 import datetime
 import logging
@@ -27,6 +28,7 @@ import swarming
 MAX_RETURN_BUILDS = 100
 MAX_LEASE_DURATION = datetime.timedelta(hours=2)
 DEFAULT_LEASE_DURATION = datetime.timedelta(minutes=1)
+MAX_BUILDSET_LENGTH = 1024
 
 validate_bucket_name = errors.validate_bucket_name
 
@@ -155,7 +157,7 @@ def add_async(
     raise errors.InvalidInputError('parameters must be a dict or None')
   validate_lease_expiration_date(lease_expiration_date)
   validate_tags(tags)
-  tags = add_builder_tag(tags, parameters)
+  tags = sorted(set(add_builder_tag(tags, parameters)))
 
   ctx = ndb.get_context()
   identity = auth.get_current_identity()
@@ -172,10 +174,11 @@ def add_async(
       if build:  # pragma: no branch
         raise ndb.Return(build)
 
+  build_id = model.new_build_id()
   build = model.Build(
-    id=model.new_build_id(),
+    id=build_id,
     bucket=bucket,
-    tags=sorted(set(tags)),
+    tags=tags,
     parameters=parameters,
     status=model.BuildStatus.SCHEDULED,
     created_by=identity,
@@ -193,6 +196,14 @@ def add_async(
     with _with_swarming_api_error_converter():
       yield swarming.create_task_async(build)
 
+  # Add the build to the buildset index before saving.
+  build_sets = set()
+  for t in tags:
+    if t.startswith('buildset:'):
+      build_sets.add(t[len('buildset:'):])
+  yield [_add_build_to_buildset_async(bs, build_id) for bs in build_sets]
+
+  # Save the build.
   try:
     yield build.put_async()
   except:  # pragma: no cover
@@ -201,6 +212,7 @@ def add_async(
       with _with_swarming_api_error_converter():
         yield swarming.cancel_task_async(build)
     raise
+
   logging.info(
     'Build %s was created by %s', build.key.id(), identity.to_bytes())
   metrics.increment(metrics.CREATE_COUNT, build)
@@ -901,3 +913,18 @@ def longest_pending_time(bucket, builder):
   if not result:
     return datetime.timedelta(0)
   return utils.utcnow() - result[0].create_time
+
+
+@ndb.transactional_tasklet
+def _add_build_to_buildset_async(build_set, build_id):
+  entity = model.BuildSet.get_or_insert(build_set)
+  # entity.build_ids is sorted.
+  # Build ids are monotonically decreasing, so most probably this new build_id
+  # will be inserted in the beginning.
+  insert_at = 0
+  for i, id in enumerate(entity.build_ids):
+    if id > build_id:
+      break
+    insert_at = i + 1
+  entity.build_ids.insert(insert_at, build_id)
+  entity.put()
