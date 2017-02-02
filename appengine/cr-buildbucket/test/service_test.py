@@ -183,6 +183,29 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
     with self.assertRaises(errors.InvalidInputError):
         service.add_builder_tag(tags, {'builder_name': 'bar'})
 
+  def test_add_with_buildset(self):
+    build = service.add(bucket='b', tags=['buildset:foo', 'buildset:bar'])
+    foo = model.BuildSet.get_by_id('foo')
+    self.assertIsNotNone(foo)
+    self.assertIn(build.key.id(), foo.build_ids)
+
+    bar = model.BuildSet.get_by_id('bar')
+    self.assertIsNotNone(bar)
+    self.assertIn(build.key.id(), bar.build_ids)
+
+  def test_add_with_buildset_sorted_insert(self):
+    model.BuildSet(id='foo', build_ids=[0, int(2**63-1)]).put()
+    build = service.add(bucket='b', tags=['buildset:foo'])
+    foo = model.BuildSet.get_by_id('foo')
+    self.assertIsNotNone(foo)
+    self.assertIn(build.key.id(), foo.build_ids)
+    self.assertTrue(foo.build_ids == sorted(foo.build_ids))
+
+  def test_add_with_buildset_failed(self):
+    with self.assertRaises(errors.InvalidInputError):
+      service.add(bucket='', tags=['buildset:foo'])
+    foo = model.BuildSet.get_by_id('foo')
+    self.assertIsNone(foo)
 
   ################################### RETRY ####################################
 
