@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ca01b6bb_cce0711c",
+        "filename": "appengine/monorail/services/issue_svc.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1889,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2017-02-02T21:43:04Z",
+      "side": 1,
+      "message": "I think we need an is_spam\u003dTrue condition here.  Otherwise the lowest ID number will be +1 in a project that has some issues but no spam existing issues.",
+      "revId": "3ce69b8883977f5d0fce0a422b0f4eff37de6a7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
