@@ -183,6 +183,26 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
     with self.assertRaises(errors.InvalidInputError):
         service.add_builder_tag(tags, {'builder_name': 'bar'})
 
+  def test_add_with_builds(self):
+    build = service.add(
+        bucket='chromium',
+        parameters={'builder_name': 'linux_rel'},
+        tags=['buildset:foo'],
+    )
+    bs = model.BuildSet.get_by_id('foo')
+    self.assertIsNotNone(bs)
+    self.assertIn(build.key.id(), bs.build_ids)
+
+  def test_add_with_builds_sorted_insert(self):
+    model.BuildSet(id='foo', build_ids=[0, int(2**63-1)]).put()
+    build = service.add(
+        bucket='chromium',
+        parameters={'builder_name': 'linux_rel'},
+        tags=['buildset:foo'],
+    )
+    bs = model.BuildSet.get_by_id('foo')
+    self.assertIsNotNone(bs)
+    self.assertIn(build.key.id(), bs.build_ids)
 
   ################################### RETRY ####################################
 

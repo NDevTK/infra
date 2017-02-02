@@ -173,6 +173,25 @@ class Build(ndb.Model):
     self.leasee = None
 
 
+class BuildSet(ndb.Model):
+  """Custom index of builds by buildset tag.
+
+  This index is maintained by services.add_async function.
+
+  Build key:
+    Key is a value of "buildset" build tag.
+    Build has no parent.
+  """
+
+  # builds_ids is a superset of ids of all builds that have buildset
+  # tag equal to the key of this entity.
+  # It may contain ids of non-existent builds or builds that do not
+  # actually belong to this buildset; such builds must be ignored.
+  #
+  # It is sorted.
+  build_ids = ndb.IntegerProperty(repeated=True, indexed=False)
+
+
 def new_build_id():
   """Returns a valid ndb.Key for a new Build.
 
