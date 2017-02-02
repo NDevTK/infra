@@ -16,6 +16,24 @@
       "revId": "3ce69b8883977f5d0fce0a422b0f4eff37de6a7e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1424e5e9_c3bde8f5",
+        "filename": "appengine/monorail/services/issue_svc.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1889,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-02-02T22:08:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ca01b6bb_cce0711c",
+      "revId": "3ce69b8883977f5d0fce0a422b0f4eff37de6a7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
