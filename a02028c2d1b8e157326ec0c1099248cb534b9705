@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "a5d84a6b_57c90dac",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2017-02-02T19:58:30Z",
+      "side": 1,
+      "message": "typo",
+      "range": {
+        "startLine": 11,
+        "startChar": 4,
+        "endLine": 11,
+        "endChar": 12
+      },
+      "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "41120e67_b1980f1f",
         "filename": "appengine/cr-buildbucket/model.py",
         "patchSetId": 3
@@ -18,6 +41,29 @@
         "startChar": 4,
         "endLine": 182,
         "endChar": 43
+      },
+      "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ffb49cb1_a7003962",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2017-02-02T19:58:30Z",
+      "side": 1,
+      "message": "pedantic myself wanted to point out that this is totally correct use of superset. Awesome!",
+      "range": {
+        "startLine": 186,
+        "startChar": 20,
+        "endLine": 186,
+        "endChar": 28
       },
       "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
@@ -71,6 +117,52 @@
     },
     {
       "key": {
+        "uuid": "8d39f58b_65b3af4f",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2017-02-02T19:58:30Z",
+      "side": 1,
+      "message": "were you bisecting tags? :) i think it\u0027s unused now.",
+      "range": {
+        "startLine": 5,
+        "startChar": 7,
+        "endLine": 5,
+        "endChar": 13
+      },
+      "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b46cb25a_04601d69",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2017-02-02T19:58:30Z",
+      "side": 1,
+      "message": "unused?",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 19
+      },
+      "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "270235e3_328c0433",
         "filename": "appengine/cr-buildbucket/service.py",
         "patchSetId": 3
@@ -110,6 +202,29 @@
         "startChar": 26,
         "endLine": 919,
         "endChar": 39
+      },
+      "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3d94ce6c_b95eca11",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 922,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2017-02-02T19:58:30Z",
+      "side": 1,
+      "message": "$0.01: since the sorted property is maintained by you, sort in reverse order (DESC) s.t., you\u0027d be adding at the end.\nOf course, it\u0027s still O(n) in eitter case, and given that unused constant of 1024 above, how about just this:\n\nentity.build_ids \u003d sorted([build_id] + entity.build_ids) \n\n# or sorted(entity.build_ids + [build_id]) if you sort in reverse.",
+      "range": {
+        "startLine": 920,
+        "startChar": 1,
+        "endLine": 922,
+        "endChar": 38
       },
       "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
