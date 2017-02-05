@@ -158,6 +158,10 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
     with self.assertRaises(errors.InvalidInputError):
       service.validate_tags(['tag,value'])
 
+  def test_validate_tags_no_key(self):
+    with self.assertRaises(errors.InvalidInputError):
+      service.validate_tags([':'])
+
   def test_add_builder_tag(self):
     self.assertEqual(service._add_builder_tag([], {'builder_name': 'foo'}),
                      ['builder:foo'])
