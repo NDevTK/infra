@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import collections
 import contextlib
 import datetime
 import logging
@@ -86,7 +87,47 @@ def validate_tags(tags):
       raise errors.InvalidInputError('Invalid tag "%s": does not contain ":"')
 
 
-def add_builder_tag(tags, parameters):
+# A request to add a new build.
+AddRequest = collections.namedtuple('AddRequest', [
+  # str, destination bucket. Required.
+  'bucket',
+  # list of str, build tags.
+  'tags',
+  # dict, arbitrary build parameters. Cannot be changed after
+  # build creation.
+  'parameters',
+  # datetime.datetime, if not None, the build is
+  # created as leased and its lease_key is not None.
+  'lease_expiration_date',
+  # str, client-supplied operation id. If an
+  # a build with the same client operation id was added during last minute,
+  # it will be returned instead.
+  'client_operation_id',
+  # model.PubsubCallback, callback parameters.
+  'pubsub_callback',
+  # int, value for model.Build.retry_of attribute.
+  'retry_of',
+])
+
+
+# An AddRequest with all fields set to None.
+EmptyAddRequest = AddRequest(
+  bucket=None,
+  tags=None,
+  parameters=None,
+  lease_expiration_date=None,
+  client_operation_id=None,
+  pubsub_callback=None,
+  retry_of=None,
+)
+
+
+def add_request(bucket, **kwargs):
+  """Creates an AddRequest with optional fields set to None."""
+  return EmptyAddRequest._replace(bucket=bucket, **kwargs)
+
+
+def _add_builder_tag(tags, parameters):
   """Returns the tags with an additional builder: tag if necessary.
 
   If no builder_name parameter is specified, returns the tags unchanged.
@@ -117,27 +158,39 @@ def add_builder_tag(tags, parameters):
   return tags
 
 
+def normalize_add_request(req):
+  """Validates and normalizes an AddRequest.
+
+  Raises:
+    errors.InvalidInputError if req is invalid.
+  """
+  if not req:
+    raise errors.InvalidInputError('req is falsy')
+  if req.client_operation_id is not None:
+    if not isinstance(req.client_operation_id, basestring):  # pragma: no cover
+      raise errors.InvalidInputError('client_operation_id must be string')
+    if '/' in req.client_operation_id:  # pragma: no cover
+      raise errors.InvalidInputError('client_operation_id must not contain /')
+  validate_bucket_name(req.bucket)
+  if req.parameters is not None and not isinstance(req.parameters, dict):
+    raise errors.InvalidInputError('parameters must be a dict or None')
+  validate_lease_expiration_date(req.lease_expiration_date)
+  validate_tags(req.tags)
+  return req._replace(
+      tags=sorted(set(_add_builder_tag(req.tags, req.parameters))))
+
+
+def add(add_request):
+  """Sync version of add_async."""
+  return add_async(add_request).get_result()
+
+
 @ndb.tasklet
-def add_async(
-    bucket, tags=None, parameters=None, lease_expiration_date=None,
-    client_operation_id=None, pubsub_callback=None, retry_of=None):
+def add_async(add_request):
   """Adds the build entity to the build bucket.
 
   Requires the current user to have permissions to add builds to the
   |bucket|.
-
-  Args:
-    bucket (str): destination bucket. Required.
-    tags (model.Tags): build tags.
-    parameters (dict): arbitrary build parameters. Cannot be changed after
-      build creation.
-    lease_expiration_date (datetime.datetime): if not None, the build is
-      created as leased and its lease_key is not None.
-    client_operation_id (str): client-supplied operation id. If an
-      a build with the same client operation id was added during last minute,
-      it will be returned instead.
-    pubsub_callback (model.PubsubCallback): callback parameters.
-    retry_of (int): value for model.Build.retry_of attribute.
 
   Returns:
     A new Build.
@@ -145,27 +198,16 @@ def add_async(
   Raises:
     errors.InvalidInputError: if build creation parameters are invalid.
   """
-  if client_operation_id is not None:
-    if not isinstance(client_operation_id, basestring):  # pragma: no cover
-      raise errors.InvalidInputError('client_operation_id must be string')
-    if '/' in client_operation_id:  # pragma: no cover
-      raise errors.InvalidInputError('client_operation_id must not contain /')
-  validate_bucket_name(bucket)
-  if parameters is not None and not isinstance(parameters, dict):
-    raise errors.InvalidInputError('parameters must be a dict or None')
-  validate_lease_expiration_date(lease_expiration_date)
-  validate_tags(tags)
-  tags = add_builder_tag(tags, parameters)
+  req = normalize_add_request(add_request)
+  if not (yield acl.can_add_build_async(req.bucket)):
+    raise acl.current_identity_cannot('add builds to bucket %s', req.bucket)
 
-  ctx = ndb.get_context()
   identity = auth.get_current_identity()
-  if not (yield acl.can_add_build_async(bucket)):  # pragma: no branch
-    raise acl.current_identity_cannot('add builds to bucket %s', bucket)
-
-  if client_operation_id is not None:
+  ctx = ndb.get_context()
+  if req.client_operation_id is not None:
     client_operation_cache_key = (
       'client_op/%s/%s/add_build' % (
-        identity.to_bytes(), client_operation_id))
+        identity.to_bytes(), req.client_operation_id))
     build_id = yield ctx.memcache_get(client_operation_cache_key)
     if build_id:
       build = yield model.Build.get_by_id_async(build_id)
@@ -174,17 +216,17 @@ def add_async(
 
   build = model.Build(
     id=model.new_build_id(),
-    bucket=bucket,
-    tags=sorted(set(tags)),
-    parameters=parameters,
+    bucket=req.bucket,
+    tags=req.tags,
+    parameters=req.parameters,
     status=model.BuildStatus.SCHEDULED,
     created_by=identity,
-    never_leased=lease_expiration_date is None,
-    pubsub_callback=pubsub_callback,
-    retry_of=retry_of,
+    never_leased=req.lease_expiration_date is None,
+    pubsub_callback=req.pubsub_callback,
+    retry_of=req.retry_of,
   )
-  if lease_expiration_date is not None:
-    build.lease_expiration_date = lease_expiration_date
+  if req.lease_expiration_date is not None:
+    build.lease_expiration_date = req.lease_expiration_date
     build.leasee = auth.get_current_identity()
     build.regenerate_lease_key()
 
@@ -205,7 +247,7 @@ def add_async(
     'Build %s was created by %s', build.key.id(), identity.to_bytes())
   metrics.increment(metrics.CREATE_COUNT, build)
 
-  if client_operation_id is not None:
+  if req.client_operation_id is not None:
     yield ctx.memcache_set(client_operation_cache_key, build.key.id(), 60)
   raise ndb.Return(build)
 
@@ -235,11 +277,6 @@ def _with_swarming_api_error_converter():
     raise  # pragma: no cover
 
 
-def add(*args, **kwargs):
-  """Sync version of add_async."""
-  return add_async(*args, **kwargs).get_result()
-
-
 def retry(
     build_id, lease_expiration_date=None, client_operation_id=None,
     pubsub_callback=None):
@@ -247,7 +284,7 @@ def retry(
   build = model.Build.get_by_id(build_id)
   if not build:
     raise errors.BuildNotFoundError('Build %s not found' % build_id)
-  return add(
+  return add(AddRequest(
     build.bucket,
     tags=build.tags,
     parameters=build.parameters,
@@ -255,7 +292,7 @@ def retry(
     client_operation_id=client_operation_id,
     pubsub_callback=pubsub_callback,
     retry_of=build_id,
-  )
+  ))
 
 
 def get(build_id):
