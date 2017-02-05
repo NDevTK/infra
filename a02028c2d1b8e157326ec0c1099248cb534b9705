@@ -25,6 +25,24 @@
     },
     {
       "key": {
+        "uuid": "16ec903c_2ec691d9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-02-05T18:29:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a5d84a6b_57c90dac",
+      "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "41120e67_b1980f1f",
         "filename": "appengine/cr-buildbucket/model.py",
         "patchSetId": 3
@@ -83,6 +101,24 @@
     },
     {
       "key": {
+        "uuid": "90ab4533_2c257b04",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-02-05T18:29:26Z",
+      "side": 1,
+      "message": "today search by buildset returns builds from different projects, as intended to, as long as the requester has permissions. \nExample: googlers can see builds from an internal project on public chromium CLs, the same CLs that have builds from the chromium project.\n\nStill, to make ACL checks faster, I can store (bucket, build_id) tuples instead of build_ids, so that I don\u0027t fetch builds that the requester won\u0027t see anyway. Did that, PTAL",
+      "parentUuid": "4d56380d_ca19abc0",
+      "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ffb49cb1_a7003962",
         "filename": "appengine/cr-buildbucket/model.py",
         "patchSetId": 3
@@ -106,6 +142,24 @@
     },
     {
       "key": {
+        "uuid": "45576bad_0ae9a056",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-02-05T18:29:26Z",
+      "side": 1,
+      "message": ":)",
+      "parentUuid": "ffb49cb1_a7003962",
+      "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "71008283_7f4ec6d2",
         "filename": "appengine/cr-buildbucket/model.py",
         "patchSetId": 3
@@ -126,6 +180,24 @@
       "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2f743805_890e27e9",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-02-05T18:29:26Z",
+      "side": 1,
+      "message": "typical use case is \u003c100\nwe can \"version\" field to BuildSet if we want to change index format\n\nNow I store not only build ids",
+      "parentUuid": "71008283_7f4ec6d2",
+      "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -175,6 +247,24 @@
     },
     {
       "key": {
+        "uuid": "322dd830_f7c21646",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-02-05T18:29:26Z",
+      "side": 1,
+      "message": "I was going to using bisect to do a sorted insert of a new build, but then realized that most of the time it will pushed to the beginning",
+      "parentUuid": "8d39f58b_65b3af4f",
+      "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b46cb25a_04601d69",
         "filename": "appengine/cr-buildbucket/service.py",
         "patchSetId": 3
@@ -195,6 +285,24 @@
       "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7d7368f7_b14fa3f0",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-02-05T18:29:26Z",
+      "side": 1,
+      "message": "oops, thanks. Using it now in validate_tags",
+      "parentUuid": "b46cb25a_04601d69",
+      "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -221,6 +329,24 @@
     },
     {
       "key": {
+        "uuid": "1804e2f3_5ee6c5ec",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-02-05T18:29:26Z",
+      "side": 1,
+      "message": "ugh, I just recalled that that\u0027s what discussed with dnj@ 2mo ago. I\u0027ve generalized the index model.",
+      "parentUuid": "270235e3_328c0433",
+      "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3542731d_0ffefa88",
         "filename": "appengine/cr-buildbucket/service.py",
         "patchSetId": 3
@@ -244,6 +370,24 @@
     },
     {
       "key": {
+        "uuid": "0645cf49_be21c942",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 919,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-02-05T18:29:26Z",
+      "side": 1,
+      "message": "indeed, thanks",
+      "parentUuid": "3542731d_0ffefa88",
+      "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3d94ce6c_b95eca11",
         "filename": "appengine/cr-buildbucket/service.py",
         "patchSetId": 3
@@ -264,6 +408,24 @@
       "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "30aa6566_f6bb2653",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 922,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-02-05T18:29:26Z",
+      "side": 1,
+      "message": "I\u0027ve considered sorting by desc, but then I realized that search results must be in ascending order and this penny-optimization does not matter here because we gonna make an O(N) operation when saving entries anyway.\n\nBut now that I think of this, the search results order does not matter because I load this entity entirely anyway, so I\u0027ve sorted by descending",
+      "parentUuid": "3d94ce6c_b95eca11",
+      "revId": "a02028c2d1b8e157326ec0c1099248cb534b9705",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
