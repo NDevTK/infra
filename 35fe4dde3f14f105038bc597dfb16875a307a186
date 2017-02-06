@@ -25,6 +25,24 @@
     },
     {
       "key": {
+        "uuid": "57e3fab2_aae26bf0",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-02-06T22:04:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d573339d_363032b5",
+      "revId": "35fe4dde3f14f105038bc597dfb16875a307a186",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3eedf2da_ad9f930f",
         "filename": "appengine/cr-buildbucket/service.py",
         "patchSetId": 8
@@ -42,6 +60,24 @@
         "endLine": 247,
         "endChar": 31
       },
+      "revId": "35fe4dde3f14f105038bc597dfb16875a307a186",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1dbe6fa7_a501d453",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-02-06T22:04:03Z",
+      "side": 1,
+      "message": "in this code path the build id passed by the caller (add_async or add_many_async) will never be used. It is already in the TagIndex \u003d\u003e TagIndex will contain a build id of a non-existing entity, which we tolerate.",
+      "parentUuid": "3eedf2da_ad9f930f",
       "revId": "35fe4dde3f14f105038bc597dfb16875a307a186",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -71,6 +107,24 @@
     },
     {
       "key": {
+        "uuid": "df655cce_81c70260",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 337,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-02-06T22:04:03Z",
+      "side": 1,
+      "message": "L339 won\u0027t be executed if !(req).\nreq is False if the request was \"cleaned\" which happens if req is invalid or denied (ACL check). Both cases are covered by test_add_many_invalid_input and test_add_many_auth_error respectively.",
+      "parentUuid": "373aceb6_843ab45b",
+      "revId": "35fe4dde3f14f105038bc597dfb16875a307a186",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "258b76b4_ddd28469",
         "filename": "appengine/cr-buildbucket/service.py",
         "patchSetId": 8
@@ -94,6 +148,24 @@
     },
     {
       "key": {
+        "uuid": "b09e5048_f47f79e8",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 338,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-02-06T22:04:03Z",
+      "side": 1,
+      "message": "good catch, I forgot that significant bits are reserved. Thanks.",
+      "parentUuid": "258b76b4_ddd28469",
+      "revId": "35fe4dde3f14f105038bc597dfb16875a307a186",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "817f548d_b1400081",
         "filename": "appengine/cr-buildbucket/service.py",
         "patchSetId": 8
@@ -111,6 +183,24 @@
         "endLine": 1050,
         "endChar": 65
       },
+      "revId": "35fe4dde3f14f105038bc597dfb16875a307a186",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0b7379bc_c147327a",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 1050,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-02-06T22:04:03Z",
+      "side": 1,
+      "message": "2000?",
+      "parentUuid": "817f548d_b1400081",
       "revId": "35fe4dde3f14f105038bc597dfb16875a307a186",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
