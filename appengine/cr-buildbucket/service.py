@@ -28,6 +28,7 @@ import swarming
 MAX_RETURN_BUILDS = 100
 MAX_LEASE_DURATION = datetime.timedelta(hours=2)
 DEFAULT_LEASE_DURATION = datetime.timedelta(minutes=1)
+MAX_BUILDSET_LENGTH = 1024
 
 validate_bucket_name = errors.validate_bucket_name
 
@@ -87,6 +88,8 @@ def validate_tags(tags):
       raise errors.InvalidInputError('Invalid tag "%s": does not contain ":"')
     if t[0] == ':':
       raise errors.InvalidInputError('Invalid tag "%s": starts with ":"')
+    if t.startswith('buildset:') and len(t) > MAX_BUILDSET_LENGTH:
+      raise errors.InvalidInputError('Buildset tag is too long: %s', t)
 
 
 # A request to add a new build.
@@ -187,8 +190,12 @@ def add(add_request):
   return add_async(add_request).get_result()
 
 
+def _cannot_add_build(bucket):
+  return acl.current_identity_cannot('add builds to bucket %s', bucket)
+
+
 @ndb.tasklet
-def add_async(add_request):
+def add_async(req):
   """Adds the build entity to the build bucket.
 
   Requires the current user to have permissions to add builds to the
@@ -200,12 +207,35 @@ def add_async(add_request):
   Raises:
     errors.InvalidInputError: if build creation parameters are invalid.
   """
-  req = normalize_add_request(add_request)
-  if not (yield acl.can_add_build_async(req.bucket)):
-    raise acl.current_identity_cannot('add builds to bucket %s', req.bucket)
+  req = normalize_add_request(req)
 
-  identity = auth.get_current_identity()
+  if not (yield acl.can_add_build_async(req.bucket)):
+    raise _cannot_add_build(req.bucket)
+
+  build_id = model.new_build_id()
+
+  # Update tag index.
+  index_entry = model.TagIndexEntry(build_id=build_id, bucket=req.bucket)
+  yield [
+    _add_to_tag_index_async(t, [index_entry])
+    for t in _indexed_tags(req.tags)
+  ]
+
+  build = yield _add_async(build_id, req)
+  raise ndb.Return(build)
+
+
+@ndb.tasklet
+def _add_async(build_id, req):
+  """Adds a build. Common code of add_async and add_many_async.
+
+  Does not check permissions!
+  Does not maintain tag indexes.
+  Assumes req is validated and normalized.
+  """
   ctx = ndb.get_context()
+  identity = auth.get_current_identity()
+
   if req.client_operation_id is not None:
     client_operation_cache_key = (
       'client_op/%s/%s/add_build' % (
@@ -217,7 +247,7 @@ def add_async(add_request):
         raise ndb.Return(build)
 
   build = model.Build(
-    id=model.new_build_id(),
+    id=build_id,
     bucket=req.bucket,
     tags=req.tags,
     parameters=req.parameters,
@@ -252,6 +282,68 @@ def add_async(add_request):
   if req.client_operation_id is not None:
     yield ctx.memcache_set(client_operation_cache_key, build.key.id(), 60)
   raise ndb.Return(build)
+
+
+@ndb.tasklet
+def add_many_async(add_request_list):
+  """Adds many builds in a batch, for each AddRequest.
+
+  Returns:
+    A list of (new_build, exception) tuples in the same order.
+    Exactly one item of a tuple will be non-None.
+  """
+  add_request_list = add_request_list[:]
+  results = [None] * len(add_request_list)
+
+  # Validate and normalize requests.
+  # For each invalid request, clear it and save the exception in results.
+  for i, req in enumerate(add_request_list):
+    try:
+      add_request_list[i] = normalize_add_request(req)
+    except errors.InvalidInputError as ex:
+      add_request_list[i] = None
+      results[i] = (None, ex)
+
+  # For each valid request, check ACLs. Make one ACL query per bucket.
+  can_add_to_bucket = {}
+  @ndb.tasklet
+  def set_can_add_async(bucket):
+    can_add_to_bucket[bucket] = (yield acl.can_add_build_async(bucket))
+  buckets = set(r.bucket for r in add_request_list if r is not None)
+  yield [set_can_add_async(b) for b in buckets]
+  # For each denied request, clear it and save the exception in results.
+  for i, req in enumerate(add_request_list):
+    if req and not can_add_to_bucket[req.bucket]:
+      add_request_list[i] = None
+      results[i] = (None, _cannot_add_build(req.bucket))
+
+  # For each valid allowed request, generate a build id and
+  # add an entry to tag indexes.
+  build_ids = [None] * len(add_request_list)
+  index_entries = collections.defaultdict(list)
+  for i, req in enumerate(add_request_list):
+    if not req:
+      continue
+    build_ids[i] = model.new_build_id()
+    for t in _indexed_tags(req.tags):
+      index_entries[t].append(model.TagIndexEntry(
+        build_id=build_ids[i], bucket=req.bucket))
+  yield [
+    _add_to_tag_index_async(tag, entries)
+    for tag, entries in index_entries.iteritems()
+  ]
+
+  # For each valid allowed request, add builds.
+  @ndb.tasklet
+  def add_one(i):
+    req = add_request_list[i]
+    if req:
+      assert build_ids[i] is not None
+      build = yield _add_async(build_ids[i], req)
+      results[i] = (build, None)
+  yield [add_one(i) for i in xrange(len(add_request_list))]
+  assert all(results)
+  raise ndb.Return(results)
 
 
 @contextlib.contextmanager
@@ -940,3 +1032,36 @@ def longest_pending_time(bucket, builder):
   if not result:
     return datetime.timedelta(0)
   return utils.utcnow() - result[0].create_time
+
+
+@ndb.transactional_tasklet
+def _add_to_tag_index_async(tag, new_entries):
+  """Adds index entries to the tag index."""
+  if not new_entries:  # pragma: no cover
+    return
+  index = (yield model.TagIndex.get_by_id_async(tag)) or model.TagIndex(id=tag)
+
+  # index.entries is sorted by descending.
+  # Build ids are monotonically decreasing, so most probably new entries will be
+  # added to the end.
+  new_entries.sort(key=lambda e: e.build_id, reverse=True)
+  fast_path = (
+    not index.entries or
+    new_entries[0].build_id < index.entries[-1].build_id)
+  index.entries.extend(new_entries)
+  if not fast_path:
+    # Atypical case
+    logging.warning('hitting slow path in maintaining tag index')
+    index.entries.sort(key=lambda e: e.build_id, reverse=True)
+  if len(index.entries) > 2000:  # pragma: no cover
+    logging.error(
+        'WARNING: over 200 entries in the tag index.\nTag: %s.\n'
+        'Perhaps it is time for crbug.com/688182"', tag)
+  yield index.put_async()
+
+
+def _indexed_tags(tags):
+  """Returns a list of tags that must be indexed."""
+  if not tags:
+    return []
+  return sorted(set([t for t in tags if t.startswith('buildset:')]))
