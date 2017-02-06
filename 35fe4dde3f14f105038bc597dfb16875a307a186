@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d573339d_363032b5",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-02-06T19:58:39Z",
+      "side": 1,
+      "message": "LocalStructuredProperty",
+      "range": {
+        "startLine": 200,
+        "startChar": 16,
+        "endLine": 200,
+        "endChar": 34
+      },
+      "revId": "35fe4dde3f14f105038bc597dfb16875a307a186",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3eedf2da_ad9f930f",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-02-06T19:58:39Z",
+      "side": 1,
+      "message": "how does this feature interact with tag index? Please check nothing bad happens when this code path is hit.",
+      "range": {
+        "startLine": 243,
+        "startChar": 4,
+        "endLine": 247,
+        "endChar": 31
+      },
+      "revId": "35fe4dde3f14f105038bc597dfb16875a307a186",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "373aceb6_843ab45b",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 337,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-02-06T19:58:39Z",
+      "side": 1,
+      "message": "what if it\u0027s False? It will cause an exception when trying to read \u0027build\u0027 in line 339. Do you have a unit tests for this?",
+      "range": {
+        "startLine": 337,
+        "startChar": 7,
+        "endLine": 337,
+        "endChar": 10
+      },
+      "revId": "35fe4dde3f14f105038bc597dfb16875a307a186",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "258b76b4_ddd28469",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 338,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-02-06T19:58:39Z",
+      "side": 1,
+      "message": "this doesn\u0027t  look right... Lowest bits of build ID are reserved for versioning: https://cs.chromium.org/chromium/infra/appengine/cr-buildbucket/model.py?q\u003dcr-buildbucket+model+package:%5Echromium$\u0026l\u003d176\n\nI think it\u0027s ok to call new_build_id a bunch of times. It\u0027s just a RNG call essentially.",
+      "range": {
+        "startLine": 338,
+        "startChar": 31,
+        "endLine": 338,
+        "endChar": 48
+      },
+      "revId": "35fe4dde3f14f105038bc597dfb16875a307a186",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "817f548d_b1400081",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 1050,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-02-06T19:58:39Z",
+      "side": 1,
+      "message": "for \u003c200 items it is still peanuts :)",
+      "range": {
+        "startLine": 1050,
+        "startChar": 4,
+        "endLine": 1050,
+        "endChar": 65
+      },
+      "revId": "35fe4dde3f14f105038bc597dfb16875a307a186",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
