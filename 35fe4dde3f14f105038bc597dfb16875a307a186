@@ -84,6 +84,24 @@
     },
     {
       "key": {
+        "uuid": "eefd8010_5a6af753",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-02-06T22:59:18Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "1dbe6fa7_a501d453",
+      "revId": "35fe4dde3f14f105038bc597dfb16875a307a186",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "373aceb6_843ab45b",
         "filename": "appengine/cr-buildbucket/service.py",
         "patchSetId": 8
@@ -119,6 +137,24 @@
       "side": 1,
       "message": "L339 won\u0027t be executed if !(req).\nreq is False if the request was \"cleaned\" which happens if req is invalid or denied (ACL check). Both cases are covered by test_add_many_invalid_input and test_add_many_auth_error respectively.",
       "parentUuid": "373aceb6_843ab45b",
+      "revId": "35fe4dde3f14f105038bc597dfb16875a307a186",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "66d61c70_c8c53ce2",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 337,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-02-06T22:59:18Z",
+      "side": 1,
+      "message": "Ah, sorry. Screen reading failure, didn\u0027t notice it\u0027s in the same block",
+      "parentUuid": "df655cce_81c70260",
       "revId": "35fe4dde3f14f105038bc597dfb16875a307a186",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
@@ -204,6 +240,24 @@
       "revId": "35fe4dde3f14f105038bc597dfb16875a307a186",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "056aaf9a_e8dc6c81",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 1050,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-02-06T22:59:18Z",
+      "side": 1,
+      "message": ":-/",
+      "parentUuid": "0b7379bc_c147327a",
+      "revId": "35fe4dde3f14f105038bc597dfb16875a307a186",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
