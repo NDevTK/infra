@@ -22,6 +22,24 @@
       "revId": "eea3f54a6711fd97a77858ed026dee1e46b86005",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ee4e442b_3593ba49",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 1051,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-02-07T00:32:18Z",
+      "side": 1,
+      "message": "\u003e new_entries build_ids are no longer sorted\n\nit is sorted at line 1047\n\n\u003e This all smells like a premature optimization. I can\u0027t imagine a real situation when we have more than hundred builds in the index.\n\u003e \n\u003e It\u0027ll be simpler just to do \n\u003e index.entries.extend(new_entries)\n\u003e sort(index.entries, key\u003d...)\n\u003e \n\u003e and warn if it\u0027s \u003e\u003d500 or something\n\u003e \n\u003e You can also expose the index size as a distribution metric, to keep an eye on 90th-percentile in monitoring.\n\ntalked offline. Decided to limit the number of entities.",
+      "parentUuid": "0e6044f0_c14733cc",
+      "revId": "eea3f54a6711fd97a77858ed026dee1e46b86005",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
