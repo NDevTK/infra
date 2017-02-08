@@ -102,6 +102,24 @@
     },
     {
       "key": {
+        "uuid": "f86104a2_a6632876",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-02-08T19:05:56Z",
+      "side": 1,
+      "message": "there is a bug here: build_id variable is overwritten whenever client op id is passed, do\u0027h! Fixed",
+      "parentUuid": "eefd8010_5a6af753",
+      "revId": "35fe4dde3f14f105038bc597dfb16875a307a186",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "373aceb6_843ab45b",
         "filename": "appengine/cr-buildbucket/service.py",
         "patchSetId": 8
