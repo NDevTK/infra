@@ -25,6 +25,24 @@
     },
     {
       "key": {
+        "uuid": "b5e722ad_ee9723ca",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 292,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-02-08T19:05:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0bb57266_82ea5efe",
+      "revId": "721542166427424ff5671b6d79ca97099ab3a320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fd310886_ea095358",
         "filename": "appengine/cr-buildbucket/service.py",
         "patchSetId": 12
@@ -45,6 +63,24 @@
       "revId": "721542166427424ff5671b6d79ca97099ab3a320",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "780395ea_3f6248f2",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 315,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-02-08T19:05:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fd310886_ea095358",
+      "revId": "721542166427424ff5671b6d79ca97099ab3a320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +107,24 @@
     },
     {
       "key": {
+        "uuid": "892d0845_8dda1097",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 347,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-02-08T19:05:56Z",
+      "side": 1,
+      "message": "Done. There was a bug: if one put fails, yield would raise an exception. add_many should not raise exceptions, but should return them for each build request individually",
+      "parentUuid": "e19e1237_c0ac1af8",
+      "revId": "721542166427424ff5671b6d79ca97099ab3a320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d352f703_68eb005b",
         "filename": "appengine/cr-buildbucket/service.py",
         "patchSetId": 12
@@ -94,6 +148,24 @@
     },
     {
       "key": {
+        "uuid": "b4151a46_91bcece7",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 1044,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-02-08T19:05:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d352f703_68eb005b",
+      "revId": "721542166427424ff5671b6d79ca97099ab3a320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0744e52f_fc0856e8",
         "filename": "appengine/cr-buildbucket/service.py",
         "patchSetId": 12
@@ -114,6 +186,24 @@
       "revId": "721542166427424ff5671b6d79ca97099ab3a320",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b9b951ee_4b389e89",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 1074,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-02-08T19:05:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0744e52f_fc0856e8",
+      "revId": "721542166427424ff5671b6d79ca97099ab3a320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
