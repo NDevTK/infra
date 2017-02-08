@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0bb57266_82ea5efe",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 292,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-02-08T00:58:36Z",
+      "side": 1,
+      "message": "BuildRequest",
+      "range": {
+        "startLine": 292,
+        "startChar": 43,
+        "endLine": 292,
+        "endChar": 53
+      },
+      "revId": "721542166427424ff5671b6d79ca97099ab3a320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fd310886_ea095358",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 315,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-02-08T00:58:36Z",
+      "side": 1,
+      "message": "nit: this looks like unnecessary tasklet wrapper. The body just makes one yield.\n\nIIRC, ndb tasklets are not entirely free in terms of CPU (because python is slow)",
+      "range": {
+        "startLine": 313,
+        "startChar": 2,
+        "endLine": 315,
+        "endChar": 71
+      },
+      "revId": "721542166427424ff5671b6d79ca97099ab3a320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e19e1237_c0ac1af8",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 347,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-02-08T00:58:36Z",
+      "side": 1,
+      "message": "same here",
+      "range": {
+        "startLine": 341,
+        "startChar": 2,
+        "endLine": 347,
+        "endChar": 32
+      },
+      "revId": "721542166427424ff5671b6d79ca97099ab3a320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d352f703_68eb005b",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 1044,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-02-08T00:58:36Z",
+      "side": 1,
+      "message": "do this outside the transaction, saves some RPCs (starting a transaction is an RPC)",
+      "range": {
+        "startLine": 1044,
+        "startChar": 2,
+        "endLine": 1044,
+        "endChar": 20
+      },
+      "revId": "721542166427424ff5671b6d79ca97099ab3a320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0744e52f_fc0856e8",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 1074,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-02-08T00:58:36Z",
+      "side": 1,
+      "message": "nit: not needed",
+      "range": {
+        "startLine": 1074,
+        "startChar": 20,
+        "endLine": 1074,
+        "endChar": 21
+      },
+      "revId": "721542166427424ff5671b6d79ca97099ab3a320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
