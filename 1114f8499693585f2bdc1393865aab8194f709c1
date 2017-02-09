@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9fcb4fe7_1a51c216",
+        "filename": "appengine/chromium_try_flakes/handlers/flake_issues.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2017-02-09T15:03:49Z",
+      "side": 1,
+      "message": "there is nothing wrong with http://crbug.com url in code, as well as with trailing period :P",
+      "range": {
+        "startLine": 251,
+        "startChar": 2,
+        "endLine": 251,
+        "endChar": 80
+      },
+      "revId": "1114f8499693585f2bdc1393865aab8194f709c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
