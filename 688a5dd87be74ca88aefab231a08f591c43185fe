@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "04800575_a20403d1",
+        "filename": "appengine/monorail/testing/fake.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 504,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2017-02-09T20:34:09Z",
+      "side": 1,
+      "message": "There\u0027s a type mismatch here.  The real method always returns a list of one-item tuples that contain an int, whereas this returns a single int.\n\nI suggest that the real method be changed to return a list of ints.",
+      "revId": "688a5dd87be74ca88aefab231a08f591c43185fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "99cc4750_5dbd1363",
+        "filename": "appengine/monorail/testing/fake.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 511,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2017-02-09T20:34:09Z",
+      "side": 1,
+      "message": "This statement and the for-loop could be combined to be simpler:\nself.visited_hotlists[user_id] \u003d [(hid, ts) for (hid, ts) in user_visited_tuples if hid !\u003d hotlist_id]",
+      "revId": "688a5dd87be74ca88aefab231a08f591c43185fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
