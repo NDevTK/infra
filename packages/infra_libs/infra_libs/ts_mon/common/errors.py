@@ -12,12 +12,12 @@ class MonitoringError(Exception):
 class MonitoringDecreasingValueError(MonitoringError):
   """Raised when setting a metric value that should increase but doesn't."""
 
-  def __init__(self, metric, old_value, new_value):
+  def __init__(self, metric, old_value, new_value):  # pragma: no cover
     self.metric = metric
     self.old_value = old_value
     self.new_value = new_value
 
-  def __str__(self):
+  def __str__(self):  # pragma: no cover
     return ('Monotonically increasing metric "%s" was given value "%s", which '
             'is not greater than or equal to "%s".' % (
                 self.metric, self.new_value, self.old_value))
@@ -26,10 +26,10 @@ class MonitoringDecreasingValueError(MonitoringError):
 class MonitoringDuplicateRegistrationError(MonitoringError):
   """Raised when trying to register a metric with the same name as another."""
 
-  def __init__(self, metric):
+  def __init__(self, metric):  # pragma: no cover
     self.metric = metric
 
-  def __str__(self):
+  def __str__(self):  # pragma: no cover
     return 'Different metrics with the same name "%s" were both registered.' % (
         self.metric)
 
@@ -37,10 +37,10 @@ class MonitoringDuplicateRegistrationError(MonitoringError):
 class MonitoringIncrementUnsetValueError(MonitoringError):
   """Raised when trying to increment a metric which hasn't been set."""
 
-  def __init__(self, metric):
+  def __init__(self, metric):  # pragma: no cover
     self.metric = metric
 
-  def __str__(self):
+  def __str__(self):  # pragma: no cover
     return 'Metric "%s" was incremented without first setting a value.' % (
         self.metric)
 
@@ -48,11 +48,11 @@ class MonitoringIncrementUnsetValueError(MonitoringError):
 class MonitoringInvalidValueTypeError(MonitoringError):
   """Raised when sending a metric value is not a valid type."""
 
-  def __init__(self, metric, value):
+  def __init__(self, metric, value):  # pragma: no cover
     self.metric = metric
     self.value = value
 
-  def __str__(self):
+  def __str__(self):  # pragma: no cover
     return 'Metric "%s" was given invalid value "%s" (%s).' % (
         self.metric, self.value, type(self.value))
 
@@ -60,12 +60,12 @@ class MonitoringInvalidValueTypeError(MonitoringError):
 class MonitoringInvalidFieldTypeError(MonitoringError):
   """Raised when sending a metric with a field value of an invalid type."""
 
-  def __init__(self, metric, field, value):
+  def __init__(self, metric, field, value):  # pragma: no cover
     self.metric = metric
     self.field = field
     self.value = value
 
-  def __str__(self):
+  def __str__(self):  # pragma: no cover
     return 'Metric "%s" was given field "%s" with invalid value "%s" (%s).' % (
         self.metric, self.field, self.value, type(self.value))
 
@@ -73,11 +73,11 @@ class MonitoringInvalidFieldTypeError(MonitoringError):
 class MonitoringTooManyFieldsError(MonitoringError):
   """Raised when sending a metric with more than 7 fields."""
 
-  def __init__(self, metric, fields):
+  def __init__(self, metric, fields):  # pragma: no cover
     self.metric = metric
     self.fields = fields
 
-  def __str__(self):
+  def __str__(self):  # pragma: no cover
     return 'Metric "%s" was given too many (%d > 7) fields: %s.' % (
         self.metric, len(self.fields), self.fields)
 
@@ -85,10 +85,10 @@ class MonitoringTooManyFieldsError(MonitoringError):
 class MonitoringNoConfiguredMonitorError(MonitoringError):
   """Raised when sending a metric without configuring the global Monitor."""
 
-  def __init__(self, metric):
+  def __init__(self, metric):  # pragma: no cover
     self.metric = metric
 
-  def __str__(self):
+  def __str__(self):  # pragma: no cover
     if self.metric is not None:
       return 'Metric "%s" was sent before initializing the global Monitor.' % (
           self.metric)
@@ -99,20 +99,20 @@ class MonitoringNoConfiguredMonitorError(MonitoringError):
 class MonitoringNoConfiguredTargetError(MonitoringError):
   """Raised when sending a metric with no global nor local Target."""
 
-  def __init__(self, metric):
+  def __init__(self, metric):  # pragma: no cover
     self.metric = metric
 
-  def __str__(self):
+  def __str__(self):  # pragma: no cover
     return 'Metric "%s" was sent with no Target configured.' % (self.metric)
 
 
 class MonitoringFailedToFlushAllMetricsError(MonitoringError):
   """Raised when some error is encountered in flushing specific metrics."""
 
-  def __init__(self, error_count):
+  def __init__(self, error_count):  # pragma: no cover
     self.error_count = error_count
 
-  def __str__(self):
+  def __str__(self):  # pragma: no cover
     return ('Failed to flush %d metrics. See tracebacks above' %
             (self.error_count))
 
@@ -120,8 +120,25 @@ class MonitoringFailedToFlushAllMetricsError(MonitoringError):
 class UnknownModificationTypeError(MonitoringError):
   """Raised when using a Modification with an unknown type value."""
 
-  def __init__(self, mod_type):
+  def __init__(self, mod_type):  # pragma: no cover
     self.mod_type = mod_type
 
-  def __str__(self):
+  def __str__(self):  # pragma: no cover
     return 'Unknown modification type "%s"' % self.mod_type
+
+
+class MetricDefinitionError(MonitoringError):
+  """Raised when a metric was defined incorrectly."""
+
+
+class WrongFieldsError(MonitoringError):
+  """Raised when a metric is given different fields to its definition."""
+
+  def __init__(self, metric_name, got, expected):  # pragma: no cover
+    self.metric_name = metric_name
+    self.got = got
+    self.expected = expected
+
+  def __str__(self):  # pragma: no cover
+    return 'Metric "%s" is defined with %s fields but was given %s' % (
+        self.metric_name, self.expected, self.got)
