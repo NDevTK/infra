@@ -38,13 +38,16 @@ class ServiceThread(threading.Thread):
 
   failures = ts_mon.CounterMetric('service_manager/failures',
       description='Number of times each service unexpectedly exited and was '
-                  'restarted by service manager')
+                  'restarted by service manager',
+      field_spec=[ts_mon.StringField('service')])
   reconfigs = ts_mon.CounterMetric('service_manager/reconfigs',
       description='Number of times each service was restarted because its '
-                  'configuration changed')
+                  'configuration changed',
+      field_spec=[ts_mon.StringField('service')])
   upgrades = ts_mon.CounterMetric('service_manager/upgrades',
       description='Number of times each service was restarted because its '
-                  'version changed')
+                  'version changed',
+      field_spec=[ts_mon.StringField('service')])
 
   def __init__(self, poll_interval, state_directory, service_config,
                cloudtail,

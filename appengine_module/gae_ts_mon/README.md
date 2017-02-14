@@ -76,7 +76,10 @@ for more information.
     from infra_libs import ts_mon
 
     class MyHandler(webapp2.RequestHandler):
-      goats_teleported = ts_mon.CounterMetric('goats/teleported')
+      goats_teleported = ts_mon.CounterMetric(
+          'goats/teleported',
+          'Number of goats teleported',
+          None)
 
       def get(self):
         count = goat_teleporter.teleport()
