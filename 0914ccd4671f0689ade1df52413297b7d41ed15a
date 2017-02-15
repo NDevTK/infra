@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d5ae30d8_f0d02f1e",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 17
+      },
+      "lineNbr": 305,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-02-15T00:18:55Z",
+      "side": 1,
+      "message": "it may be empty already. Maybe do an early exit?",
+      "range": {
+        "startLine": 305,
+        "startChar": 55,
+        "endLine": 305,
+        "endChar": 70
+      },
+      "revId": "0914ccd4671f0689ade1df52413297b7d41ed15a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cae4f306_f640d4ed",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 17
+      },
+      "lineNbr": 320,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-02-15T00:18:55Z",
+      "side": 1,
+      "message": "It might be better to join this into singe phase that runs a tasklet that creates a build and updates memcache. We want memcache to be updated as soon as possible after the entity is created, so in case we crash, we don\u0027t create another build.",
+      "range": {
+        "startLine": 320,
+        "startChar": 10,
+        "endLine": 320,
+        "endChar": 17
+      },
+      "revId": "0914ccd4671f0689ade1df52413297b7d41ed15a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
