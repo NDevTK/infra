@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "9ef08cec_d3c250d2",
+        "filename": "go/src/infra/monitoring/client/client.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1148599
+      },
+      "writtenOn": "2017-02-16T20:02:35Z",
+      "side": 1,
+      "message": "The package is badly named :/ it\u0027s infra/monitoring/client, but it\u0027s really the alerts dispatcher client. Not sure how that name came about really",
+      "parentUuid": "b81d6d5d_5fc3438c",
+      "revId": "55f5a25226ce35e4218e28ff72377ba7bd3d629f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f62c472f_147d52b4",
         "filename": "go/src/infra/monitoring/client/client.go",
         "patchSetId": 2
@@ -30,6 +48,30 @@
       "writtenOn": "2017-02-16T19:57:17Z",
       "side": 1,
       "message": "Why not !\u003d 200?",
+      "range": {
+        "startLine": 191,
+        "startChar": 9,
+        "endLine": 191,
+        "endChar": 14
+      },
+      "revId": "55f5a25226ce35e4218e28ff72377ba7bd3d629f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ee9edf4f_64b300c2",
+        "filename": "go/src/infra/monitoring/client/client.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1148599
+      },
+      "writtenOn": "2017-02-16T20:02:35Z",
+      "side": 1,
+      "message": "Oh, whoops, this code shouldn\u0027t be here. Bad rebase. Sorry",
+      "parentUuid": "f62c472f_147d52b4",
       "range": {
         "startLine": 191,
         "startChar": 9,
