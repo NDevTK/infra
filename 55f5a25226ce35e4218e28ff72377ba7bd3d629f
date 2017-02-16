@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b81d6d5d_5fc3438c",
+        "filename": "go/src/infra/monitoring/client/client.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2017-02-16T19:57:17Z",
+      "side": 1,
+      "message": "This file does not appear to be part of SoM code and I\u0027d rather avoid adding code specific to test-results to this file. In fact I am not sure what monitoring client has to do with test-results at all. Can this test-results specific cache be moved some place closer to SoM code?",
+      "revId": "55f5a25226ce35e4218e28ff72377ba7bd3d629f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f62c472f_147d52b4",
+        "filename": "go/src/infra/monitoring/client/client.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2017-02-16T19:57:17Z",
+      "side": 1,
+      "message": "Why not !\u003d 200?",
+      "range": {
+        "startLine": 191,
+        "startChar": 9,
+        "endLine": 191,
+        "endChar": 14
+      },
+      "revId": "55f5a25226ce35e4218e28ff72377ba7bd3d629f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
