@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "8974e2de_8dbefc1a",
+        "filename": "go/src/infra/monitoring/client/client.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2017-02-16T20:10:09Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "9ef08cec_d3c250d2",
+      "revId": "55f5a25226ce35e4218e28ff72377ba7bd3d629f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f62c472f_147d52b4",
         "filename": "go/src/infra/monitoring/client/client.go",
         "patchSetId": 2
@@ -72,6 +90,30 @@
       "side": 1,
       "message": "Oh, whoops, this code shouldn\u0027t be here. Bad rebase. Sorry",
       "parentUuid": "f62c472f_147d52b4",
+      "range": {
+        "startLine": 191,
+        "startChar": 9,
+        "endLine": 191,
+        "endChar": 14
+      },
+      "revId": "55f5a25226ce35e4218e28ff72377ba7bd3d629f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a1ab461_add5af9e",
+        "filename": "go/src/infra/monitoring/client/client.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2017-02-16T20:10:09Z",
+      "side": 1,
+      "message": "Hm. Why not? If this is alerts-dispatcher code as you describe in your comment above, then this code seems to be correctly placed.",
+      "parentUuid": "ee9edf4f_64b300c2",
       "range": {
         "startLine": 191,
         "startChar": 9,
