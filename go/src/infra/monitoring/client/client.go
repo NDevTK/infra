@@ -20,6 +20,7 @@ import (
 
 	"golang.org/x/net/context"
 
+	"infra/appengine/test-results/model"
 	"infra/monitoring/messages"
 
 	"github.com/luci/luci-go/common/logging"
@@ -76,7 +77,7 @@ func StepURL(master *messages.MasterLocation, builder, step string, buildNum int
 	return &newURL
 }
 
-// Reader provides access to read status information from various parts of chrome
+// readerType provides access to read status information from various parts of chrome
 // developer infrastructure. TODO(seanmccullough): Change all of these to start lowercase
 // now that the type isn't exported.
 type readerType interface {
@@ -156,7 +157,14 @@ type reader struct {
 	bCache map[string]*messages.Build
 	// bLock protects bCache
 	bLock sync.Mutex
+
+	trCache trCache
 }
+
+// A cache of the test results /builders endpoint. This endpoints returns JSON
+// representing what tests it knows about.
+// format is master -> test -> list of builders
+type trCache map[string]map[string][]string
 
 type writer struct {
 	hc         *trackingHTTPClient
@@ -165,13 +173,33 @@ type writer struct {
 
 // NewReader returns a new default reader implementation, which will read data from various chrome infra
 // data sources.
-func NewReader() readerType {
-	return &reader{
+func NewReader(ctx context.Context) (readerType, error) {
+	r := &reader{
 		hc: &trackingHTTPClient{
 			c: http.DefaultClient,
 		},
-		bCache: map[string]*messages.Build{},
+		bCache:  map[string]*messages.Build{},
+		trCache: map[string]map[string][]string{},
 	}
+
+	URL := "https://test-results.appspot.com/builders"
+	tmpCache := &model.BuilderData{}
+	code, err := r.hc.getJSON(ctx, URL, tmpCache)
+	if err != nil {
+		return nil, err
+	}
+	if code > 400 {
+		return nil, fmt.Errorf("test result cache request failed with code %v", code)
+	}
+
+	for _, master := range tmpCache.Masters {
+		r.trCache[master.Name] = map[string][]string{}
+		for testName, test := range master.Tests {
+			r.trCache[master.Name][testName] = test.Builders
+		}
+	}
+
+	return r, nil
 }
 
 func cacheKeyForBuild(master *messages.MasterLocation, builder string, number int64) string {
@@ -247,7 +275,34 @@ func (r *reader) LatestBuilds(ctx context.Context, master *messages.MasterLocati
 	return res.Builds, nil
 }
 
+func contains(arr []string, s string) bool {
+	for _, itm := range arr {
+		if itm == s {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (r *reader) TestResults(ctx context.Context, master *messages.MasterLocation, builderName, stepName string, buildNumber int64) (*messages.TestResults, error) {
+	masterValues := r.trCache[master.Name()]
+	if len(masterValues) == 0 {
+		logging.Debugf(ctx, "no test results for master %s", master.Name())
+		return nil, nil
+	}
+
+	testValues := masterValues[stepName]
+	if len(testValues) == 0 {
+		logging.Debugf(ctx, "no test results for master %s test %s", master.Name(), stepName)
+		return nil, nil
+	}
+
+	if !contains(testValues, builderName) {
+		logging.Debugf(ctx, "no test results for master %s test %s builder %s", master.Name(), stepName, builderName)
+		return nil, nil
+	}
+
 	v := url.Values{}
 	v.Add("name", "full_results.json")
 	v.Add("master", master.Name())
@@ -390,13 +445,13 @@ func (w *writer) PostAlerts(ctx context.Context, alerts *messages.AlertsSummary)
 		if err != nil {
 			return
 		}
+		defer resp.Body.Close()
 
 		if resp.StatusCode >= 400 {
 			err = fmt.Errorf("http status %d: %s", resp.StatusCode, w.alertsBase)
 			return
 		}
 
-		defer resp.Body.Close()
 		length = resp.ContentLength
 
 		return
