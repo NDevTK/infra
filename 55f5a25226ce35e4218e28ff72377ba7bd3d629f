@@ -147,6 +147,30 @@
       "revId": "55f5a25226ce35e4218e28ff72377ba7bd3d629f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "51eb1624_bd56aa36",
+        "filename": "go/src/infra/monitoring/client/client.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2017-02-17T22:15:01Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "75ac68fe_da0d2062",
+      "range": {
+        "startLine": 191,
+        "startChar": 9,
+        "endLine": 191,
+        "endChar": 14
+      },
+      "revId": "55f5a25226ce35e4218e28ff72377ba7bd3d629f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
