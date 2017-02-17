@@ -22,8 +22,9 @@ import sys
 import time
 
 from collections import defaultdict
-import optparse
+import matplotlib.pyplot as plt
 import numpy
+import optparse
 
 _APPENGINE_SDK_DIR = os.path.join(os.path.dirname(__file__), os.path.pardir,
                                   os.path.pardir, os.path.pardir,
@@ -76,6 +77,13 @@ class _Coalesce(object):
         test_name = dot_sep[1].split()[0]
         if test_name.endswith('tests'):
           result = result.replace(test_name, '<tests>')
+
+    # coalesce all but ends
+    if options.coalesce_middle:
+      dot_sep = result.split('.')
+      if len(dot_sep) > 2:
+        result = '.'.join([dot_sep[0], '*', dot_sep[-2], dot_sep[-1]])
+
     all_labels.add(result)
     return result
 
@@ -103,7 +111,13 @@ def _LoadFilterAndSortRecords(options):
     if options.before_date:
       cutoff = datetime.datetime(
           *time.strptime(options.before_date, '%Y-%m-%d')[:6])
-      if v['request_time'] > cutoff:
+      if v['wfa.request_time'] > cutoff:
+
+        continue
+    if options.after_date:
+      cutoff = datetime.datetime(
+          *time.strptime(options.after_date, '%Y-%m-%d')[:6])
+      if v['wfa.request_time'] < cutoff:
         continue
     sorted_record = []
     for label, t in v.iteritems():
@@ -145,7 +159,7 @@ def _AggregateTransitions(options, sorted_records, loaded_records):
         transition = tuple(map(coalesce, label_pair))
         if label_pair[1] in loaded_records[k].keys():
           start = loaded_records[k][label_pair[0]]
-          end = loaded_records[k][label_pair[1]]
+          end = loaded_records[k][label_pair[1]] or datetime.datetime.now()
           interval = (end - start).total_seconds()
           if interval > 0:
             # NB: Silently ignoring negative intervals.
@@ -179,6 +193,11 @@ def _AggregateTransitions(options, sorted_records, loaded_records):
         'total_time': totals[transition],
         'adjacent_count': adjacent[transition],
     }
+    if options.raw_values_only:
+      current = {
+          'values': t,
+          'transition': transition,
+      }
     if options.example:
       current['example'] = examples[transition]
     result.append(current)
@@ -211,8 +230,6 @@ def _MaybePrintRow(r, options):
   This display function decides whether to print a row to stdout and returns
   a bool indicating whether it displayed it."""
 
-  if not options.show_composites and not r['adjacent_count']:
-    return False
   if options.label_filter and options.label_filter not in ''.join(
       r['transition']):
     return False
@@ -223,11 +240,19 @@ def _MaybePrintRow(r, options):
     if options.paired_only:
       return False
     r['transition_text'] = '%s -> %s' % (_from, _to)
-  r['adjacent_percentage'] = r['adjacent_count'] * 100 / r['count']
-  print ('%(transition_text)s:\n'
-         '\tn: %(count)d, median: %(median)0.2fs, 90p: %(90p)0.2fs, Max: '
-         '%(max)0.2fs, Total: %(total_time)02fs, '
-         'Adj.: %(adjacent_percentage)d%%' % r)
+  if options.raw_values_only:
+    print r['transition_text'], r['values']
+    plt.hist(r['values'])
+    plt.title(r['transition_text'])
+    plt.show()
+  else:
+    if not options.show_composites and not r['adjacent_count']:
+      return False
+    r['adjacent_percentage'] = r['adjacent_count'] * 100 / r['count']
+    print ('%(transition_text)s:\n'
+           '\tn: %(count)d, median: %(median)0.2fs, 90p: %(90p)0.2fs, Max: '
+           '%(max)0.2fs, Total: %(total_time)02fs, '
+           'Adj.: %(adjacent_percentage)d%%' % r)
 
   # Show example analysis time series.
   if options.example:
@@ -262,7 +287,7 @@ and the summarized data is output as text, json or csv.
                              help='Comma-separated list of failure types from '
                              'findit/common/waterfall/failure_type.py (default:'
                              '"8,16" i.e. Reliable compile and test failures)')
-  pre_aggregation.add_option('-a', '--after_label', help='Only aggregate events'
+  pre_aggregation.add_option('--after_label', help='Only aggregate events'
                              ' that happen after this label. E.g. request_time.'
                              ' Used to exclude events occurring before findit'
                              ' is informed of the failure, for example.')
@@ -273,6 +298,11 @@ and the summarized data is output as text, json or csv.
                              ' is retrieved using a separate script with its '
                              'own set of filters, this acts in addition to'
                              ' those.')
+  pre_aggregation.add_option('-a', '--after_date', help='A date in format '
+                             'YYYY-mm-dd used to filter jobs that are too '
+                             'old. NB the data is retrieved using a separate '
+                             'script with its own set of filters, this acts in '
+                             'addition to those.')
   parser.add_option_group(pre_aggregation)
 
   # Coalescing options
@@ -289,6 +319,13 @@ and the summarized data is output as text, json or csv.
   coalesce_opts.add_option('--no_coalesce_hashes', action='store_false',
                            dest='coalesce_hashes', default=True, help='Use '
                            'this flag to separate steps by revision.')
+  coalesce_opts.add_option('--coalesce_middle', action='store_true',
+                           default=False, help='Take into account only the '
+                           'first and last parts of the label. e.g. '
+                           'try.compile.bot_update and '
+                           'try.test <hash>.bot_update both become '
+                           'try.*.bot_update')
+
   parser.add_option_group(coalesce_opts)
 
 
@@ -296,6 +333,10 @@ and the summarized data is output as text, json or csv.
   post_aggregation = optparse.OptionGroup(
       parser, 'Text mode filters', 'Apply the following after the records have'
       ' been aggregated.')
+  post_aggregation.add_option('--plot', action='store_true',
+                              dest='raw_values_only', default=False,
+                              help='Display the values of the intervals instead'
+                              ' of computed statistics.')
   post_aggregation.add_option(
       '-o', '--sort', type='str', default='-median', help='Sort the results '
       'by one of the following fields (prepend with - to reverse order): '
@@ -368,18 +409,22 @@ def main():
   aggregated_transitions = _AggregateTransitions(options,
       *_LoadFilterAndSortRecords(options))
 
-  # Filter out short transitions (< 0.1 seconds) and uncommon transitions.
-  aggregated_transitions = [
-      x for x in aggregated_transitions
-      if x['count'] >= options.min_transition_count and x['median'] > 0.1]
+  if options.raw_values_only:
+    aggregated_transitions = [x for x in aggregated_transitions
+                              if any(x['values'])]
+  else:
+    # Filter out short transitions (< 0.1 seconds) and uncommon transitions.
+    aggregated_transitions = [
+        x for x in aggregated_transitions
+        if x['count'] >= options.min_transition_count and x['median'] > 0.1]
 
-  # Sort transition aggregates
-  key = options.sort
-  reverse = False
-  if key.startswith('-'):
-    key = key[1:]
-    reverse = True
-  aggregated_transitions.sort(key=lambda x: x[key], reverse=reverse)
+    # Sort transition aggregates
+    key = options.sort
+    reverse = False
+    if key.startswith('-'):
+      key = key[1:]
+      reverse = True
+    aggregated_transitions.sort(key=lambda x: x[key], reverse=reverse)
 
   if options.output_format == 'text':
     # assemble <options.top> rows of results
