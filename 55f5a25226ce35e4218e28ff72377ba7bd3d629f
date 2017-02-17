@@ -123,6 +123,30 @@
       "revId": "55f5a25226ce35e4218e28ff72377ba7bd3d629f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "75ac68fe_da0d2062",
+        "filename": "go/src/infra/monitoring/client/client.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1148599
+      },
+      "writtenOn": "2017-02-17T20:28:24Z",
+      "side": 1,
+      "message": "It was copied from another CL. That CL has already landed.",
+      "parentUuid": "2a1ab461_add5af9e",
+      "range": {
+        "startLine": 191,
+        "startChar": 9,
+        "endLine": 191,
+        "endChar": 14
+      },
+      "revId": "55f5a25226ce35e4218e28ff72377ba7bd3d629f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
