@@ -61,8 +61,9 @@ def GetNextRunPointNumber(data_points, algorithm_settings,
   flakes_first = 0
   flaked_out = False
   next_run_point = None
+  number_of_data_points = len(data_points)
 
-  for i in xrange(len(data_points)):
+  for i in xrange(number_of_data_points):
     pass_rate = data_points[i].pass_rate
     run_point_number = data_points[i].run_point_number
 
@@ -134,6 +135,16 @@ def GetNextRunPointNumber(data_points, algorithm_settings,
         # The earliest commit_position to look back is already flaky. This is
         # the culprit.
         return None, run_point_number, None
+
+      if i < number_of_data_points - 1:
+        # Check if the test was newly added at this run point number and is
+        # already flaky.
+        next_data_point = data_points[i + 1]
+
+        if (run_point_number - next_data_point.run_point_number == 1 and
+            next_data_point.pass_rate == -1):
+          # Flakiness was introduced in this run number.
+          return None, run_point_number, None
 
       if max_dive_in_a_row:
         # Check for dives. A dive is a sudden drop in pass rate.
