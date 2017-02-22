@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "70c9ce8f_48530220",
+        "filename": "appengine/findit/waterfall/flake/lookback_algorithm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-02-22T06:23:46Z",
+      "side": 1,
+      "message": "so we can use number_of_data_points here",
+      "range": {
+        "startLine": 84,
+        "startChar": 9,
+        "endLine": 84,
+        "endChar": 25
+      },
+      "revId": "661c9015bfbb21c6a2560ffc483c36bfe764358e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "efc40236_5edc92de",
+        "filename": "appengine/findit/waterfall/flake/lookback_algorithm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-02-22T06:23:46Z",
+      "side": 1,
+      "message": "Shouldn\u0027t we call it previous_data_point?",
+      "range": {
+        "startLine": 142,
+        "startChar": 8,
+        "endLine": 142,
+        "endChar": 44
+      },
+      "revId": "661c9015bfbb21c6a2560ffc483c36bfe764358e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7b1cffff_53960913",
+        "filename": "appengine/findit/waterfall/flake/lookback_algorithm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-02-22T06:23:46Z",
+      "side": 1,
+      "message": "For data_points at revision level, this next_data_point.pass_rate \u003d\u003d -1 can not be always reached: It\u0027s actually the real cause of this bug: the test was added at the first revision of the suspected build and we reset the next_run_point to this revision because of the boundary check at line 194 and 195.\n\nThat\u0027s because we just included the result of the suspected build in data_points as the upper bound before, but for this case, we also need to include the revision of the build previous of suspected build(where no test existed) in data_points as the lower bound. And if so, we don\u0027t need to add this check at all: line 71-73 would cover it.",
+      "range": {
+        "startLine": 145,
+        "startChar": 12,
+        "endLine": 145,
+        "endChar": 27
+      },
+      "revId": "661c9015bfbb21c6a2560ffc483c36bfe764358e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
