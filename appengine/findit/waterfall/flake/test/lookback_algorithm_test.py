@@ -181,9 +181,8 @@ class LookbackAlgorithmTest(TestCase):
     next_run, result, _ = lookback_algorithm.GetNextRunPointNumber(
         data_points,
         DEFAULT_CONFIG_DATA['check_flake_settings']['swarming_rerun'], 0)
-    # This case should be handled by the caller of GetNextRunPointNumber
-    self.assertIsNone(result)
-    self.assertEqual(100, next_run)
+    self.assertIsNone(next_run)
+    self.assertEqual(100, result)
 
   def testNextBuildWhenTestNotExistingAfterStableInARow(self):
     data_points = [
