@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "2dec30f9_0b9f25bf",
+        "filename": "appengine/findit/waterfall/flake/lookback_algorithm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-02-23T07:26:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "70c9ce8f_48530220",
+      "range": {
+        "startLine": 84,
+        "startChar": 9,
+        "endLine": 84,
+        "endChar": 25
+      },
+      "revId": "661c9015bfbb21c6a2560ffc483c36bfe764358e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "efc40236_5edc92de",
         "filename": "appengine/findit/waterfall/flake/lookback_algorithm.py",
         "patchSetId": 2
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "84ebc0a9_91600a95",
+        "filename": "appengine/findit/waterfall/flake/lookback_algorithm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-02-23T07:26:53Z",
+      "side": 1,
+      "message": "Since this is being used in the context of a list, the naming is correct and consistent with previous_pass_rate below. It is confusing to us because we know these are sorted in reverse order, however this function does not need to be aware of that. Naming it the other way would only be confusing for reverse reasons (i.e. \u0027next_data_point\u0027 being i - 1 sounds wrong for the opposite reason) so keeping this as it is.",
+      "parentUuid": "efc40236_5edc92de",
+      "range": {
+        "startLine": 142,
+        "startChar": 8,
+        "endLine": 142,
+        "endChar": 44
+      },
+      "revId": "661c9015bfbb21c6a2560ffc483c36bfe764358e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "7b1cffff_53960913",
         "filename": "appengine/findit/waterfall/flake/lookback_algorithm.py",
         "patchSetId": 2
@@ -59,6 +107,30 @@
       "writtenOn": "2017-02-22T06:23:46Z",
       "side": 1,
       "message": "For data_points at revision level, this next_data_point.pass_rate \u003d\u003d -1 can not be always reached: It\u0027s actually the real cause of this bug: the test was added at the first revision of the suspected build and we reset the next_run_point to this revision because of the boundary check at line 194 and 195.\n\nThat\u0027s because we just included the result of the suspected build in data_points as the upper bound before, but for this case, we also need to include the revision of the build previous of suspected build(where no test existed) in data_points as the lower bound. And if so, we don\u0027t need to add this check at all: line 71-73 would cover it.",
+      "range": {
+        "startLine": 145,
+        "startChar": 12,
+        "endLine": 145,
+        "endChar": 27
+      },
+      "revId": "661c9015bfbb21c6a2560ffc483c36bfe764358e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "445e3d84_c1415930",
+        "filename": "appengine/findit/waterfall/flake/lookback_algorithm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-02-23T07:26:53Z",
+      "side": 1,
+      "message": "Per discussion offline this change is correct as-is. Unfortunately it is a much more difficult task to reuse 181 - 189 directly which does something similar however in a less obvious way, so leaving this part intact but moving it earlier. Refactored 181 - 189 into a separate function, since it\u0027s used in 111 - 120 too.",
+      "parentUuid": "7b1cffff_53960913",
       "range": {
         "startLine": 145,
         "startChar": 12,
