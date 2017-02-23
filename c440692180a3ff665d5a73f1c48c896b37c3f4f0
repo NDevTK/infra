@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "0efb46b3_83eab14b",
+        "filename": "appengine/findit/waterfall/flake/lookback_algorithm.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-02-23T18:49:27Z",
+      "side": 1,
+      "message": "Isn\u0027t this sequential search? Should we do\nlower_boundary_index \u003d i - stables_in_a_row\nreturn _SequentialSearch(data_points, lower_boundary_index)\n\nAnd in this way line 147-155 can be removed",
+      "range": {
+        "startLine": 104,
+        "startChar": 8,
+        "endLine": 104,
+        "endChar": 45
+      },
+      "revId": "c440692180a3ff665d5a73f1c48c896b37c3f4f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "59b0bc87_cf41b080",
         "filename": "appengine/findit/waterfall/flake/lookback_algorithm.py",
         "patchSetId": 3
