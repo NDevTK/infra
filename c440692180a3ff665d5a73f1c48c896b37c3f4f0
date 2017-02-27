@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "eedfef1a_965f2b0f",
+        "filename": "appengine/findit/waterfall/flake/lookback_algorithm.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-02-27T19:45:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0efb46b3_83eab14b",
+      "range": {
+        "startLine": 104,
+        "startChar": 8,
+        "endLine": 104,
+        "endChar": 45
+      },
+      "revId": "c440692180a3ff665d5a73f1c48c896b37c3f4f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "59b0bc87_cf41b080",
         "filename": "appengine/findit/waterfall/flake/lookback_algorithm.py",
         "patchSetId": 3
@@ -36,6 +60,30 @@
       "writtenOn": "2017-02-23T17:40:09Z",
       "side": 1,
       "message": "Nit: The parameter name has not been changed?",
+      "range": {
+        "startLine": 150,
+        "startChar": 8,
+        "endLine": 150,
+        "endChar": 23
+      },
+      "revId": "c440692180a3ff665d5a73f1c48c896b37c3f4f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2688737f_0f312013",
+        "filename": "appengine/findit/waterfall/flake/lookback_algorithm.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-02-27T19:45:16Z",
+      "side": 1,
+      "message": "Per discussion offline since this function does not know that the data points are sorted by run number in reverse, we should keep this as is for readability within the scope of this function",
+      "parentUuid": "59b0bc87_cf41b080",
       "range": {
         "startLine": 150,
         "startChar": 8,
