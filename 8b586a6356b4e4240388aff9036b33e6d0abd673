@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "2356680b_42a9cdcc",
+        "filename": "appengine/monorail/tracker/issueaddtohotlist.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2017-02-28T17:37:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "47c984e6_a799779f",
+      "revId": "8b586a6356b4e4240388aff9036b33e6d0abd673",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "49d335e4_7a4e988d",
         "filename": "appengine/monorail/tracker/issueaddtohotlist.py",
         "patchSetId": 4
@@ -33,6 +51,24 @@
       "revId": "8b586a6356b4e4240388aff9036b33e6d0abd673",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "680520ae_89ac9e88",
+        "filename": "appengine/monorail/tracker/issueaddtohotlist.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2017-02-28T17:37:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "49d335e4_7a4e988d",
+      "revId": "8b586a6356b4e4240388aff9036b33e6d0abd673",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
