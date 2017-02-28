@@ -1163,10 +1163,10 @@ function ShowAddToHotlistDialog() {
   $('add-to-hotlist').style.display = 'block';
 }
 
-function CreateNewHotlistWithIssues(opt_SelectedIssueRefs) {
+function CreateNewHotlistWithIssues(onResponse, opt_SelectedIssueRefs) {
   issueRefs = opt_SelectedIssueRefs || GetSelectedIssues();
   var data = {'issue_refs': issueRefs.join(',')}
-  CS_doPost('/hosting/addToHotlist.do', onCreateHotlistResponse, data);
+  CS_doPost('/hosting/addToHotlist.do', onResponse, data);
 }
 
 function onCreateHotlistResponse(event) {
@@ -1202,6 +1202,16 @@ function AddIssuesToHotlist(onResponse, opt_SelectedIssueRefs) {
   }
 }
 
+function createResponseMessage(response) {
+  var hotlists = response['addedHotlistNames'].join(', ');
+  var message = 'Successfully added to ' + hotlists;
+  if (response['missed'] && response['missed'].length > 0) {
+    missed = ' \n' + response['missed'].join(', ') + ' could not be added.';
+    message = message + missed;
+  }
+  return message;
+}
+
 function onResponseUpdateUI(event) {
   var xhr = event.target;
   if (xhr.readyState != 4) {
@@ -1214,6 +1224,7 @@ function onResponseUpdateUI(event) {
     return;
   }
   var response = CS_parseJSON(xhr);
+  console.log(response);
   var list = $('user-hotlists-list');
   while (list.firstChild) {
     list.removeChild(list.firstChild);
@@ -1227,8 +1238,12 @@ function onResponseUpdateUI(event) {
     list.appendChild(hotlistLink);
     list.appendChild(document.createElement('br'));
   }
+  message = createResponseMessage(response);
   $('user-hotlists').style.display = 'block';
   $('add-to-hotlist').style.display = 'none';
+  noticeText = $('notice');
+  $('notice').textContent = message;
+  $('alert-table').style.display = 'table';
 }
 
 function onAddIssuesResponse(event) {
@@ -1243,12 +1258,7 @@ function onAddIssuesResponse(event) {
     return;
   }
   var response = CS_parseJSON(xhr);
-  var hotlists = response['addedHotlistNames'].join(', ');
-  var message = 'Issues successfully added to ' + hotlists;
-  if (response['missed'] && response['missed'].length > 0) {
-    missed = ' \n' + response['missed'].join(', ') + ' could not be added.';
-    message = message + missed;
-  }
+  message = createResponseMessage(response);
   noticeText = $('notice');
   noticeText.textContent = message;
   $('add-to-hotlist').style.display = 'none';
@@ -1658,4 +1668,3 @@ function onPresubmitResponse(event) {
   $('owner_avail_state').className = 'availability_' + response.owner_avail_state;
   $('owner_availability').textContent = response.owner_availability;
 }
-
