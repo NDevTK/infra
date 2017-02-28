@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "47c984e6_a799779f",
+        "filename": "appengine/monorail/tracker/issueaddtohotlist.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2017-02-28T17:15:38Z",
+      "side": 1,
+      "message": "Need space before 1.",
+      "revId": "8b586a6356b4e4240388aff9036b33e6d0abd673",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "49d335e4_7a4e988d",
+        "filename": "appengine/monorail/tracker/issueaddtohotlist.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2017-02-28T17:15:38Z",
+      "side": 1,
+      "message": "You can use %d to avoid the call to str().",
+      "revId": "8b586a6356b4e4240388aff9036b33e6d0abd673",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
