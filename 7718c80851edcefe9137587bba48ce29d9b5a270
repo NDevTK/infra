@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "33e5f863_c389a3e1",
+        "filename": "docker/android_devices/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2017-03-01T19:26:24Z",
+      "side": 1,
+      "message": "Put that in hiera, maybe default.yaml:\n\nchrome_infra::setup::docker::android::chromium_rev: 2100af86f06ded92e913c67723bbff9af08df307\n\nThen reference it in here as \u003c%\u003d @chromium_rev %\u003e after moving this to a .erb file template.\n\nAlso in the class, validate_string($chromium_rev) and set a parameter on the class for it.\n\nStart the modifications on the class file and I\u0027ll fill it in for you in the next pass.",
+      "parentUuid": "38876d15_4444f881",
+      "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3a154681_830d2952",
         "filename": "docker/android_devices/Dockerfile",
         "patchSetId": 1
@@ -177,6 +195,24 @@
     },
     {
       "key": {
+        "uuid": "b4f8e40a_3a89478a",
+        "filename": "docker/android_devices/start_swarm_bot.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2017-03-01T19:26:24Z",
+      "side": 1,
+      "message": "Same hiera stuff as before.",
+      "parentUuid": "2e751119_04f563b5",
+      "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "43ced31d_7a84ad49",
         "filename": "docker/android_devices/start_swarm_bot.sh",
         "patchSetId": 1
@@ -209,6 +245,24 @@
       "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "452a5710_0ac89f25",
+        "filename": "docker/android_devices/start_swarm_bot.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2017-03-01T19:26:24Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c848996e_7a68d9f8",
+      "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
