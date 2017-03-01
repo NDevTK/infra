@@ -100,7 +100,7 @@ func loadRecipesCfg(repoDir string) (*recipe_engine.Package, error) {
 // run.
 func prepareRecipeRunWorkDir(workdir string) (string, error) {
 	if workdir == "" {
-		return "", errors.New("workdir is empty")
+		return "", errors.Reason("workdir is empty").Err()
 	}
 
 	abs, err := filepath.Abs(workdir)
