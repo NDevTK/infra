@@ -135,9 +135,7 @@ func (p *cookLogDogParams) setupAndValidate(mode cookMode, env environ.Env) erro
 			Err()
 	}
 	if p.annotationAddr, err = types.ParseURL(annotationURL); err != nil {
-		return errors.Annotate(err).Reason("invalid LogDog annotation URL (-logdog-annotation-url)").
-			D("value", annotationURL).
-			Err()
+		return userError("invalid LogDog annotation URL (-logdog-annotation-url) %q: %s", annotationURL, err)
 	}
 
 	return nil
