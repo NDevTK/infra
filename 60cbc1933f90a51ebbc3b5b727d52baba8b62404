@@ -22,6 +22,30 @@
       "revId": "60cbc1933f90a51ebbc3b5b727d52baba8b62404",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "990b9e70_1d2d6320",
+        "filename": "go/src/infra/tools/kitchen/recipe.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1185014
+      },
+      "writtenOn": "2017-03-01T18:08:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da64b0d0_9d925790",
+      "range": {
+        "startLine": 103,
+        "startChar": 20,
+        "endLine": 103,
+        "endChar": 27
+      },
+      "revId": "60cbc1933f90a51ebbc3b5b727d52baba8b62404",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
