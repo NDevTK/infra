@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa2e0c2_7d9df186",
+        "filename": "docker/android_devices/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2017-03-01T18:56:40Z",
+      "side": 1,
+      "message": "Where does this come from?",
+      "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3a154681_830d2952",
+        "filename": "docker/android_devices/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2017-03-01T18:56:40Z",
+      "side": 1,
+      "message": "base64 \\\n| \u003e /tmp...",
+      "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "354a0d90_4719fcb3",
+        "filename": "docker/android_devices/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2017-03-01T18:56:40Z",
+      "side": 1,
+      "message": "same",
+      "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d580dec4_ffb81b7c",
+        "filename": "docker/android_devices/start_swarm_bot.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2017-03-01T18:56:40Z",
+      "side": 1,
+      "message": "#!/bin/bash -x maybe for better debug/logging output",
+      "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "094e2bcd_d51d8bd0",
+        "filename": "docker/android_devices/start_swarm_bot.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2017-03-01T18:56:40Z",
+      "side": 1,
+      "message": "Where does this come from?",
+      "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "43ced31d_7a84ad49",
+        "filename": "docker/android_devices/start_swarm_bot.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2017-03-01T18:56:40Z",
+      "side": 1,
+      "message": "This needs a username I think...",
+      "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
