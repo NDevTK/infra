@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da64b0d0_9d925790",
+        "filename": "go/src/infra/tools/kitchen/recipe.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-03-01T16:38:18Z",
+      "side": 1,
+      "message": "nit: errors.New does this same thing, leave as-is.",
+      "range": {
+        "startLine": 103,
+        "startChar": 20,
+        "endLine": 103,
+        "endChar": 27
+      },
+      "revId": "60cbc1933f90a51ebbc3b5b727d52baba8b62404",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
