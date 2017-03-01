@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "38876d15_4444f881",
+        "filename": "docker/android_devices/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2017-03-01T19:20:40Z",
+      "side": 1,
+      "message": "Just grabbed HEAD at time of writing this CL and verified install-build-deps at that rev worked.",
+      "parentUuid": "3aa2e0c2_7d9df186",
+      "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3a154681_830d2952",
         "filename": "docker/android_devices/Dockerfile",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0e8dab45_8f229038",
+        "filename": "docker/android_devices/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2017-03-01T19:20:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3a154681_830d2952",
+      "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "a1acc680_d9d09d96",
+        "filename": "docker/android_devices/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2017-03-01T19:20:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "354a0d90_4719fcb3",
+      "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d580dec4_ffb81b7c",
         "filename": "docker/android_devices/start_swarm_bot.sh",
         "patchSetId": 1
@@ -67,6 +121,24 @@
       "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f4fbaa31_88d64fd2",
+        "filename": "docker/android_devices/start_swarm_bot.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2017-03-01T19:20:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d580dec4_ffb81b7c",
+      "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "2e751119_04f563b5",
+        "filename": "docker/android_devices/start_swarm_bot.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2017-03-01T19:20:40Z",
+      "side": 1,
+      "message": "Just grabbed HEAD at time of writing this CL. It seemed healthy.",
+      "parentUuid": "094e2bcd_d51d8bd0",
+      "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "43ced31d_7a84ad49",
         "filename": "docker/android_devices/start_swarm_bot.sh",
         "patchSetId": 1
@@ -98,6 +188,24 @@
       "writtenOn": "2017-03-01T18:56:40Z",
       "side": 1,
       "message": "This needs a username I think...",
+      "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c848996e_7a68d9f8",
+        "filename": "docker/android_devices/start_swarm_bot.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2017-03-01T19:20:40Z",
+      "side": 1,
+      "message": "whoooops. Done.",
+      "parentUuid": "43ced31d_7a84ad49",
       "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
