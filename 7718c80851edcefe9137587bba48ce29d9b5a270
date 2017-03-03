@@ -73,6 +73,24 @@
     },
     {
       "key": {
+        "uuid": "10ed9e8e_dfda08b0",
+        "filename": "docker/android_devices/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2017-03-03T20:58:27Z",
+      "side": 1,
+      "message": "Re-read my previous comment.\n\nPut: \"chrome_infra::setup::docker::android::chromium_rev: 2100af86f06ded92e913c67723bbff9af08df307\" in hiera and reference the value as @chromium_rev.",
+      "parentUuid": "b5f242e7_c938638d",
+      "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3a154681_830d2952",
         "filename": "docker/android_devices/Dockerfile",
         "patchSetId": 1
