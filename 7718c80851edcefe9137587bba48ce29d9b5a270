@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "b5f242e7_c938638d",
+        "filename": "docker/android_devices/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2017-03-03T19:54:26Z",
+      "side": 1,
+      "message": "Hmmm, this file is in infra.git, where I think it should stay. I\u0027m not sure replumbing it into puppet would be worth it/necessary.",
+      "parentUuid": "33e5f863_c389a3e1",
+      "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3a154681_830d2952",
         "filename": "docker/android_devices/Dockerfile",
         "patchSetId": 1
