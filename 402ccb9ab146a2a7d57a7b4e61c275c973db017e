@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9e9438e8_9911178a",
+        "filename": "appengine/findit/util_scripts/component_mapping_update/change_component_mapping_format.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-03-03T01:39:08Z",
+      "side": 1,
+      "message": "you can make component_dict \u003d defaultdict(lambda: defaultdict(list)).\n\nSo the 41-44 can be simplified to component_dict[component][\u0027dir\u0027].append(dir_name)",
+      "range": {
+        "startLine": 41,
+        "startChar": 38,
+        "endLine": 41,
+        "endChar": 41
+      },
+      "revId": "402ccb9ab146a2a7d57a7b4e61c275c973db017e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c10f22a3_3c6b93de",
+        "filename": "appengine/findit/util_scripts/component_mapping_update/change_component_mapping_format.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-03-03T01:39:08Z",
+      "side": 1,
+      "message": "nit： use parenthesis instead",
+      "range": {
+        "startLine": 45,
+        "startChar": 41,
+        "endLine": 45,
+        "endChar": 0
+      },
+      "revId": "402ccb9ab146a2a7d57a7b4e61c275c973db017e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "63e2ddad_cf00e0ed",
+        "filename": "appengine/findit/util_scripts/component_mapping_update/change_component_mapping_format.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-03-03T01:39:08Z",
+      "side": 1,
+      "message": "Why do we use another loop? we can directly get the component_list in one loop from mappings_file.",
+      "range": {
+        "startLine": 49,
+        "startChar": 6,
+        "endLine": 49,
+        "endChar": 15
+      },
+      "revId": "402ccb9ab146a2a7d57a7b4e61c275c973db017e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "57061154_db792cce",
+        "filename": "appengine/findit/util_scripts/component_mapping_update/change_component_mapping_format.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-03-03T01:39:08Z",
+      "side": 1,
+      "message": "There is no function anywhere in this code.",
+      "range": {
+        "startLine": 54,
+        "startChar": 31,
+        "endLine": 54,
+        "endChar": 39
+      },
+      "revId": "402ccb9ab146a2a7d57a7b4e61c275c973db017e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
