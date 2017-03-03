@@ -109,6 +109,24 @@
     },
     {
       "key": {
+        "uuid": "28c46d1c_900f6cf6",
+        "filename": "docker/android_devices/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2017-03-03T21:59:41Z",
+      "side": 1,
+      "message": "OHHHH I THOUGHT THIS WAS THE PUPPET REPO!",
+      "parentUuid": "cabc2755_b9e38323",
+      "revId": "7718c80851edcefe9137587bba48ce29d9b5a270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a154681_830d2952",
         "filename": "docker/android_devices/Dockerfile",
         "patchSetId": 1
