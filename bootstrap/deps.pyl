@@ -140,10 +140,10 @@
     # Required to run/test some appengine apps locally
   },
   'oauth2client': {
-    'version': '1.4.12',
+    'version': '4.0.0',
     'build': '0',
     'repo': 'external/github.com/google/oauth2client',
-    'rev': 'f46290a33418bd18308af27e519db95a51b0136c',
+    'rev': 'a731be362014d61630044c46495c5b750437ab88',
   },
   'pyOpenSSL': {
     'version': '0.14',
