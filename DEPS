@@ -46,7 +46,7 @@ deps = {
 
   "infra/appengine/third_party/oauth2client":
     ("https://chromium.googlesource.com/external/github.com/google/oauth2client.git"
-     "@e8b1e794d28f2117dd3e2b8feeb506b4c199c533"),
+     "@a731be362014d61630044c46495c5b750437ab88"),
 
   "infra/appengine/third_party/uritemplate":
     ("https://chromium.googlesource.com/external/github.com/uri-templates/"

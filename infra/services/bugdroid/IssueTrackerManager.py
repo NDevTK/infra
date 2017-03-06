@@ -14,7 +14,6 @@ from apiclient.errors import HttpError
 from oauth2client.client import OAuth2Credentials
 from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.file import Storage
-from oauth2client.tools import run
 
 from infra.services.bugdroid.Comment import Comment
 from infra.services.bugdroid.Issue import changelist
