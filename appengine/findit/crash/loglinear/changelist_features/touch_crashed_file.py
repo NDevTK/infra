@@ -52,10 +52,7 @@ class TouchCrashedFileFeature(Feature):
       return FeatureValue(
           name=self.name,
           value=1.0,
-          reason='Touched files - %s' % ', '.join([
-              touched_file.new_path
-              for match in matches.itervalues()
-              for touched_file in match.touched_files]),
+          reason='\n'.join([str(match) for match in matches.itervalues()]),
           changed_files=None)
 
     return FeatureValueGivenReport
