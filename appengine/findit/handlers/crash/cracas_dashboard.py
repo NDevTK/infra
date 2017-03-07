@@ -9,7 +9,7 @@ import json
 from common.base_handler import BaseHandler, Permission
 from handlers.crash.dashboard import DashBoard
 from libs import time_util
-from model.crash.fracas_crash_analysis import FracasCrashAnalysis
+from model.crash.cracas_crash_analysis import CracasCrashAnalysis
 
 
 _EQUAL_FILTER_TO_CONVERTER = {
@@ -22,13 +22,13 @@ _EQUAL_FILTER_TO_CONVERTER = {
 _DEFAULT_DISPLAY_COUNT = 500
 
 
-class FracasDashBoard(DashBoard):
+class CracasDashBoard(DashBoard):
   PERMISSION_LEVEL = Permission.ANYONE
 
   @property
   def crash_analysis_cls(self):
-    return FracasCrashAnalysis
+    return CracasCrashAnalysis
 
   @property
   def client(self):
-    return 'fracas'
+    return 'cracas'
