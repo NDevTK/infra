@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9ec0b83e_a18fe3f2",
+        "filename": "appengine/findit/util_scripts/remote_queries/analyze_bottlenecks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-07T06:58:36Z",
+      "side": 1,
+      "message": "I feel that this function is like  _AggregateTransitions, can we reuse it?",
+      "range": {
+        "startLine": 158,
+        "startChar": 4,
+        "endLine": 158,
+        "endChar": 33
+      },
+      "revId": "1464ffa4a3e679a17db5e5510459e8f420df7807",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e416c3d2_f282a1b7",
+        "filename": "appengine/findit/util_scripts/remote_queries/analyze_bottlenecks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-07T06:58:36Z",
+      "side": 1,
+      "message": "This line should be removed, right?",
+      "range": {
+        "startLine": 228,
+        "startChar": 2,
+        "endLine": 228,
+        "endChar": 12
+      },
+      "revId": "1464ffa4a3e679a17db5e5510459e8f420df7807",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
