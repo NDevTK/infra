@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "22b36fbd_67bd7fab",
+        "filename": "appengine/findit/util_scripts/component_mapping_update/change_component_mapping_format.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1184860
+      },
+      "writtenOn": "2017-03-08T00:03:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9e9438e8_9911178a",
+      "range": {
+        "startLine": 41,
+        "startChar": 38,
+        "endLine": 41,
+        "endChar": 41
+      },
+      "revId": "402ccb9ab146a2a7d57a7b4e61c275c973db017e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c10f22a3_3c6b93de",
         "filename": "appengine/findit/util_scripts/component_mapping_update/change_component_mapping_format.py",
         "patchSetId": 3
@@ -45,6 +69,30 @@
       "revId": "402ccb9ab146a2a7d57a7b4e61c275c973db017e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6609a1d9_c4f9de19",
+        "filename": "appengine/findit/util_scripts/component_mapping_update/change_component_mapping_format.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1184860
+      },
+      "writtenOn": "2017-03-08T00:03:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c10f22a3_3c6b93de",
+      "range": {
+        "startLine": 45,
+        "startChar": 41,
+        "endLine": 45,
+        "endChar": 0
+      },
+      "revId": "402ccb9ab146a2a7d57a7b4e61c275c973db017e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "dd66da22_badf3bc5",
+        "filename": "appengine/findit/util_scripts/component_mapping_update/change_component_mapping_format.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1184860
+      },
+      "writtenOn": "2017-03-08T00:03:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "63e2ddad_cf00e0ed",
+      "range": {
+        "startLine": 49,
+        "startChar": 6,
+        "endLine": 49,
+        "endChar": 15
+      },
+      "revId": "402ccb9ab146a2a7d57a7b4e61c275c973db017e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "57061154_db792cce",
         "filename": "appengine/findit/util_scripts/component_mapping_update/change_component_mapping_format.py",
         "patchSetId": 3
@@ -91,6 +163,30 @@
       "revId": "402ccb9ab146a2a7d57a7b4e61c275c973db017e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "118c12c9_204d98e0",
+        "filename": "appengine/findit/util_scripts/component_mapping_update/change_component_mapping_format.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1184860
+      },
+      "writtenOn": "2017-03-08T00:03:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "57061154_db792cce",
+      "range": {
+        "startLine": 54,
+        "startChar": 31,
+        "endLine": 54,
+        "endChar": 39
+      },
+      "revId": "402ccb9ab146a2a7d57a7b4e61c275c973db017e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
