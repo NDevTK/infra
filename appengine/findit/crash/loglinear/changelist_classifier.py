@@ -10,6 +10,8 @@ from crash.suspect import Suspect
 from crash.crash_report import CrashReport
 from crash.loglinear.model import UnnormalizedLogLinearModel
 
+_SCORE_THRESHOLD = 0
+
 
 class LogLinearChangelistClassifier(object):
   """A ``LogLinearModel``-based implementation of CL classification."""
