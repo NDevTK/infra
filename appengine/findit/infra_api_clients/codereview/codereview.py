@@ -8,6 +8,19 @@
 class CodeReview(object):  # pragma: no cover
   """An interface to interact with code review."""
 
+  def AddReviewers(self, codereview_url, reviewers, message=None):
+    """Adds a list of users to the CL of the specified url as reviewers.
+
+    Args:
+      codereview_url(str): The url to a CL codereview.
+      reviewers (list of str): The users to be added as reviewrs
+      message(str): (optional) The message to be posted to the codereview.
+
+    Returns:
+      A boolean indicating success.
+    """
+    raise NotImplemented()
+
   def PostMessage(self, codereview_url, message):
     """Posts the given message to the CL codereview of the specified url.
 
