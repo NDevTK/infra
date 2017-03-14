@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "741cc2ac_9c226399",
+        "filename": "appengine/findit/infra_api_clients/codereview/codereview.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-14T20:53:26Z",
+      "side": 1,
+      "message": "nit: change to change_id?",
+      "range": {
+        "startLine": 27,
+        "startChar": 25,
+        "endLine": 27,
+        "endChar": 39
+      },
+      "revId": "a17144c6910b3f9839643a33822fda86bd08e645",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b4e49d37_58081cdc",
+        "filename": "appengine/findit/infra_api_clients/codereview/codereview.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-14T20:53:26Z",
+      "side": 1,
+      "message": "user emails?",
+      "range": {
+        "startLine": 32,
+        "startChar": 35,
+        "endLine": 32,
+        "endChar": 40
+      },
+      "revId": "a17144c6910b3f9839643a33822fda86bd08e645",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
