@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a1e2b04_cac5950e",
+        "filename": "appengine/findit/infra_api_clients/codereview/rietveld.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-14T01:03:25Z",
+      "side": 1,
+      "message": "Please also add the API to infra_api_clients/codereview/codereview.py with docstrings for the input parameters and output.",
+      "range": {
+        "startLine": 98,
+        "startChar": 6,
+        "endLine": 98,
+        "endChar": 18
+      },
+      "revId": "535ce4326d34ab77d6d255682113932e490170ae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
