@@ -23,3 +23,16 @@ class CodeReview(object):  # pragma: no cover.
       message(str): The message to be posted to the codereview.
     """
     raise NotImplementedError()
+
+  def AddReviewers(self, codereview_url, reviewers, message=None):
+    """Adds a list of users to the CL of the specified url as reviewers.
+
+    Args:
+      codereview_url(str): The url to a CL codereview.
+      reviewers (list of str): The emails of the users to be added as reviewers.
+      message(str): (optional) The message to be posted to the codereview.
+
+    Returns:
+      A boolean indicating success.
+    """
+    raise NotImplementedError()
