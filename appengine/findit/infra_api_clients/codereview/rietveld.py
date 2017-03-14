@@ -101,3 +101,6 @@ class Rietveld(codereview.CodeReview):
     }
     status_code, content = self._SendPostRequest(url_path, form_fields)
     return status_code == 200 and content == 'OK'
+
+  def AddReviewers(self, issue_url, reviewers, message=None):
+      raise NotImplementedError()  # pragma: no cover
