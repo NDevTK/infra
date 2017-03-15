@@ -160,6 +160,52 @@
       "revId": "a40d8c76959783e3af59603fb18206da5830a2c4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e48d6aa5_1387ad13",
+        "filename": "appengine/findit/waterfall/identify_try_job_culprit_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-15T22:16:03Z",
+      "side": 1,
+      "message": "If it helps, we could move this into a separate self-contained sub-pipeline",
+      "range": {
+        "startLine": 191,
+        "startChar": 4,
+        "endLine": 191,
+        "endChar": 27
+      },
+      "revId": "a40d8c76959783e3af59603fb18206da5830a2c4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ecbc508c_490abca6",
+        "filename": "appengine/findit/waterfall/identify_try_job_culprit_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-15T22:16:03Z",
+      "side": 1,
+      "message": "Just double check: if it is already reverted, we already include the message as the revert reason. So no need to notify again.",
+      "range": {
+        "startLine": 207,
+        "startChar": 6,
+        "endLine": 209,
+        "endChar": 72
+      },
+      "revId": "a40d8c76959783e3af59603fb18206da5830a2c4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
