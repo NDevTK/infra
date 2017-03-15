@@ -19,6 +19,7 @@ from model.wf_analysis import WfAnalysis
 from model.wf_try_job import WfTryJob
 from model.wf_try_job_data import WfTryJobData
 from waterfall import suspected_cl_util
+from waterfall.create_revert_cl_pipeline import CreateRevertCLPipeline
 from waterfall.send_notification_for_culprit_pipeline import (
     SendNotificationForCulpritPipeline)
 
@@ -187,37 +188,37 @@ def _GetHeuristicSuspectedCLs(analysis):
   return []
 
 
-def _StartSendNotificationPipeline(
-    master_name, builder_name, build_number, repo_name, revision,
-    send_notification_right_now):
-  try:
-    pipeline = SendNotificationForCulpritPipeline(
-        master_name, builder_name, build_number, repo_name, revision,
-        send_notification_right_now)
-    pipeline.start()
-  except Exception:  # pragma: no cover.
-    logging.exception('Failed to notify culprit.')
-
-
-def _NotifyCulprits(master_name, builder_name, build_number, culprits,
-                    heuristic_cls, compile_suspected_cl):
-  """Sends notifications to the identified culprits."""
-
+def _RevertOrNotifyCulprits(
+    master_name, builder_name, build_number, culprits, heuristic_cls,
+    compile_suspected_cl, try_job_type):
+  """Reverts or sends notifications to the identified culprits."""
   if culprits:
-    # There is a try job result, so check if any of the culprits
-    # was also found by heuristic analysis.
-    for culprit in culprits.itervalues():
-      send_notification_right_now = False
-      send_notification_right_now = (
-          culprit['repo_name'], culprit['revision']) in heuristic_cls
-      _StartSendNotificationPipeline(
-          master_name, builder_name, build_number,
-          culprit['repo_name'], culprit['revision'],
-          send_notification_right_now)
+    # There is a try job result, checks if we can revert the culprit or send
+    # notification.
+    if try_job_type == failure_type.COMPILE:
+      # For compile, there should be only one culprit. Tries to revert it.
+      culprit = culprits.values()[0]
+      repo_name = culprit['repo_name']
+      revision = culprit['revision']
+
+      send_notification_right_now = (repo_name, revision) in heuristic_cls
+
+      revert_status = yield CreateRevertCLPipeline(repo_name, revision)
+      yield SendNotificationForCulpritPipeline(
+        master_name, builder_name, build_number, culprit['repo_name'],
+        culprit['revision'], send_notification_right_now, revert_status)
+    else:
+      # Checks if any of the culprits was also found by heuristic analysis.
+      for culprit in culprits.itervalues():
+        send_notification_right_now = (
+            culprit['repo_name'], culprit['revision']) in heuristic_cls
+        yield SendNotificationForCulpritPipeline(
+            master_name, builder_name, build_number, culprit['repo_name'],
+            culprit['revision'], send_notification_right_now)
   elif compile_suspected_cl:
     # A special case where try job didn't find any suspected cls, but
     # heuristic found a suspected_cl.
-    _StartSendNotificationPipeline(
+    yield SendNotificationForCulpritPipeline(
         master_name, builder_name, build_number,
         compile_suspected_cl['repo_name'], compile_suspected_cl['revision'],
         send_notification_right_now=True)
@@ -404,6 +405,7 @@ class IdentifyTryJobCulpritPipeline(BasePipeline):
     # Updates suspected_cl.
     UpdateSuspectedCLs()
 
-    _NotifyCulprits(master_name, builder_name, build_number, culprits,
-                    heuristic_cls, compile_suspected_cl)
+    _RevertOrNotifyCulprits(
+        master_name, builder_name, build_number, culprits, heuristic_cls,
+        compile_suspected_cl, try_job_type)
     return result.get('culprit') if result else None

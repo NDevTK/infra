@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import mock
+
 from testing_utils import testing
 
 from common.waterfall import failure_type
@@ -14,7 +16,9 @@ from model.wf_suspected_cl import WfSuspectedCL
 from model.wf_try_job import WfTryJob
 from model.wf_try_job_data import WfTryJobData
 from waterfall import build_util
+from waterfall import create_revert_cl_pipeline
 from waterfall import identify_try_job_culprit_pipeline
+from waterfall.create_revert_cl_pipeline import CreateRevertCLPipeline
 from waterfall.identify_try_job_culprit_pipeline import(
     IdentifyTryJobCulpritPipeline)
 
@@ -522,8 +526,6 @@ class IdentifyTryJobCulpritPipelineTest(testing.AppengineTestCase):
         'top_score': None
     }]
 
-    import json
-    print json.dumps(culprit, indent=2)
     self.assertEqual(expected_compile_result['culprit'], culprit)
 
     try_job = WfTryJob.Get(master_name, builder_name, build_number)
@@ -1065,7 +1067,7 @@ class IdentifyTryJobCulpritPipelineTest(testing.AppengineTestCase):
     builder_name = 'b'
     build_number = 8
 
-    try_job = WfTryJob.Create(master_name, builder_name, build_number).put()
+    WfTryJob.Create(master_name, builder_name, build_number).put()
     pipeline = IdentifyTryJobCulpritPipeline()
     culprit = pipeline.run(master_name, builder_name, build_number, ['rev1'],
                            failure_type.TEST, None, None)
@@ -1075,23 +1077,12 @@ class IdentifyTryJobCulpritPipelineTest(testing.AppengineTestCase):
     self.assertEqual(try_job.test_results, [])
     self.assertEqual(try_job.status, analysis_status.COMPLETED)
 
-  def testNotifyCulprits(self):
-    instances = []
-
-    class Mocked_SendNotificationForCulpritPipeline(object):
-
-      def __init__(self, *args):
-        self.args = args
-        self.started = False
-        instances.append(self)
-
-      def start(self):
-        self.started = True
-
-    self.mock(
-        identify_try_job_culprit_pipeline, 'SendNotificationForCulpritPipeline',
-        Mocked_SendNotificationForCulpritPipeline)
-
+  @mock.patch.object(identify_try_job_culprit_pipeline,
+                     'SendNotificationForCulpritPipeline')
+  def testNotifyCulprits(self, mock_fn):
+    master_name = 'm'
+    builder_name = 'b'
+    build_number = 1
     culprits = {
         'r1': {
             'repo_name': 'chromium',
@@ -1100,10 +1091,13 @@ class IdentifyTryJobCulpritPipelineTest(testing.AppengineTestCase):
     }
     heuristic_cls = [('chromium', 'r1')]
 
-    identify_try_job_culprit_pipeline._NotifyCulprits(
-        'm', 'b', 1, culprits, heuristic_cls, None)
-    self.assertEqual(1, len(instances))
-    self.assertTrue(instances[0].started)
+    identify_try_job_culprit_pipeline._RevertOrNotifyCulprits(
+        master_name, builder_name, build_number, culprits, heuristic_cls, None,
+        failure_type.TEST)
+
+    mock_fn.assert_called_once_with(
+        master_name, builder_name, build_number, culprits['r1']['repo_name'],
+        culprits['r1']['revision'], True)
 
   def testGetSuspectedCLFoundByHeuristicForCompile(self):
     master_name = 'm'
@@ -1171,7 +1165,9 @@ class IdentifyTryJobCulpritPipelineTest(testing.AppengineTestCase):
     self.assertIsNone(identify_try_job_culprit_pipeline.\
                       _GetSuspectedCLFoundByHeuristicForCompile(analysis))
 
-  def testNotifyCulpritsIfHeuristicFoundCulpritForCompile(self):
+  @mock.patch.object(identify_try_job_culprit_pipeline,
+                     'SendNotificationForCulpritPipeline')
+  def testNotifyCulpritsIfHeuristicFoundCulpritForCompile(self, mock_fn):
     master_name = 'm'
     builder_name = 'b'
     build_number = 9
@@ -1181,28 +1177,36 @@ class IdentifyTryJobCulpritPipelineTest(testing.AppengineTestCase):
         'revision': 'rev1'
     }
 
-    instances = []
-
-    class Mocked_SendNotificationForCulpritPipeline(object):
-
-      def __init__(self, *args):
-        self.args = args
-        self.started = False
-        instances.append(self)
-
-      def start(self):
-        self.started = True
-
-    self.mock(
-        identify_try_job_culprit_pipeline, 'SendNotificationForCulpritPipeline',
-        Mocked_SendNotificationForCulpritPipeline)
-
-    identify_try_job_culprit_pipeline._NotifyCulprits(
+    identify_try_job_culprit_pipeline._RevertOrNotifyCulprits(
         master_name, builder_name, build_number, None,
-        heuristic_cls, compile_suspected_cl)
-    self.assertEqual(1, len(instances))
-    self.assertTrue(instances[0].started)
+        heuristic_cls, compile_suspected_cl, failure_type.COMPILE)
+    mock_fn.asert_called_once_with(
+        master_name, builder_name, build_number,
+        compile_suspected_cl['repo_name'], compile_suspected_cl['revision'],
+        send_notification_right_now=True)
 
   def testGetTestFailureCausedByCLResultNone(self):
     self.assertIsNone(
         identify_try_job_culprit_pipeline._GetTestFailureCausedByCL(None))
+
+  @mock.patch.object(identify_try_job_culprit_pipeline,
+                     'SendNotificationForCulpritPipeline')
+  @mock.patch.object(CreateRevertCLPipeline, 'run',
+                     return_value=iter(
+                        [create_revert_cl_pipeline.CREATED_BY_FINDIT]))
+  def testRevertCompileCulprit(self, mock_pipeline, _):
+    master_name = 'm'
+    builder_name = 'b'
+    build_number = 9
+    heuristic_cls = [('chromium', 'r1')]
+    culprits = {
+        'r1': {
+            'repo_name': 'chromium',
+            'revision': 'r1',
+        }
+    }
+
+    identify_try_job_culprit_pipeline._RevertOrNotifyCulprits(
+        master_name, builder_name, build_number, culprits,
+        heuristic_cls, None, failure_type.COMPILE)
+    mock_pipeline.assert_not_called()

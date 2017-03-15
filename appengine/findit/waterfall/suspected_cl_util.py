@@ -5,6 +5,8 @@
 from google.appengine.ext import ndb
 
 from common.waterfall import failure_type
+from gae_libs.gitiles.cached_gitiles_repository import CachedGitilesRepository
+from gae_libs.http.http_client_appengine import HttpClientAppengine
 from libs import time_util
 from model import analysis_approach_type
 from model.wf_suspected_cl import WfSuspectedCL
@@ -141,3 +143,13 @@ def GetSuspectedCLConfidenceScoreAndApproach(
       analysis_approach_type.HEURISTIC)
 
   return confidence, approach
+
+
+def GetCulpritChangeLog(repo_name, revision):
+  """Returns commit position/time and code-review url of the given revision."""
+  # TODO(stgao): get repo url at runtime based on the given repo name.
+  # unused arg - pylint: disable=W0612,W0613
+  repo = CachedGitilesRepository(
+      HttpClientAppengine(),
+      'https://chromium.googlesource.com/chromium/src.git')
+  return repo.GetChangeLog(revision)
