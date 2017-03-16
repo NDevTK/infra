@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "bc48f295_5eea250c",
+        "filename": "appengine/findit/infra_api_clients/codereview/cl_info.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-03-16T16:30:19Z",
+      "side": 1,
+      "message": "nit: since this returns a list of reverts, name it GetRevertCLsByRevision",
+      "revId": "d2e21bb25f2a720e0091513704f89aa64fdb93f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "7670eeea_66cd9428",
         "filename": "appengine/findit/infra_api_clients/codereview/cl_info.py",
         "patchSetId": 6
@@ -19,6 +36,23 @@
         "endLine": 85,
         "endChar": 11
       },
+      "revId": "d2e21bb25f2a720e0091513704f89aa64fdb93f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "49e5b8f8_02cf2bb2",
+        "filename": "appengine/findit/model/base_suspected_cl.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-03-16T16:30:19Z",
+      "side": 1,
+      "message": "is this to be the same as revert_process_status in revertCL?",
       "revId": "d2e21bb25f2a720e0091513704f89aa64fdb93f0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
