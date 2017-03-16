@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "384f8327_08eae18b",
+        "filename": "appengine/findit/infra_api_clients/codereview/cl_info.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-16T07:12:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a6069e1_fd1d7d91",
+      "range": {
+        "startLine": 78,
+        "startChar": 9,
+        "endLine": 78,
+        "endChar": 16
+      },
+      "revId": "d34bfeb54797de5f54792d94244163607dd19e1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1b487cc9_76cd032e",
         "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
         "patchSetId": 4
@@ -36,6 +60,30 @@
       "writtenOn": "2017-03-16T06:05:00Z",
       "side": 1,
       "message": "This check won\u0027t help, because it is out of a txn. The read (check) and set should be one operation in a txn.\n\nI\u0027d suggest leaving a TODO to handle that corner case : two pipelines try to revert the same culprit. You could think more afterwards.",
+      "range": {
+        "startLine": 91,
+        "startChar": 30,
+        "endLine": 91,
+        "endChar": 69
+      },
+      "revId": "d34bfeb54797de5f54792d94244163607dd19e1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3c3225ab_39cc3dad",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-16T07:12:56Z",
+      "side": 1,
+      "message": "Added TODO",
+      "parentUuid": "1b487cc9_76cd032e",
       "range": {
         "startLine": 91,
         "startChar": 30,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "c2db066a_8bb21e7f",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-16T07:12:56Z",
+      "side": 1,
+      "message": "I think my approach only fails when #99 raise uncaught exception (if make it in a transaction).",
+      "parentUuid": "64356ee9_15672117",
+      "range": {
+        "startLine": 92,
+        "startChar": 4,
+        "endLine": 92,
+        "endChar": 69
+      },
+      "revId": "d34bfeb54797de5f54792d94244163607dd19e1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2b7e3069_b1096e66",
         "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
         "patchSetId": 4
@@ -91,6 +163,30 @@
       "revId": "d34bfeb54797de5f54792d94244163607dd19e1b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "926b883c_fb2186f6",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-16T07:12:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2b7e3069_b1096e66",
+      "range": {
+        "startLine": 109,
+        "startChar": 26,
+        "endLine": 109,
+        "endChar": 34
+      },
+      "revId": "d34bfeb54797de5f54792d94244163607dd19e1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
