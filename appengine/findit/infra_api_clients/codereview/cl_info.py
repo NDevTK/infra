@@ -74,3 +74,20 @@ class ClInfo(object):  # pragma: no cover
         'cc': self.cc,
         'reviewers': self.reviewers,
     }
+
+  def GetPatchsetIdByRevision(self, revision):
+    for commit in self.commits:
+      if commit.revision == revision:  # pragma: no branch
+        return commit.patchset_id
+    return None  # pragma: no cover
+
+  def GetRevertCLByRevision(self, revision):
+    culprit_patchset_id = self.GetPatchsetIdByRevision(revision)
+    if not culprit_patchset_id:  # pragma: no cover
+      return None
+
+    reverts_for_culprit = []
+    for revert in self.reverts:
+      if revert.patchset_id == culprit_patchset_id:  # pragma: no branch
+        reverts_for_culprit.append(revert)
+    return reverts_for_culprit
