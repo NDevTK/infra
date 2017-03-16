@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "be553967_72e8fe6b",
+        "filename": "appengine/findit/infra_api_clients/codereview/cl_info.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-16T17:08:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bc48f295_5eea250c",
+      "revId": "d2e21bb25f2a720e0091513704f89aa64fdb93f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7670eeea_66cd9428",
         "filename": "appengine/findit/infra_api_clients/codereview/cl_info.py",
         "patchSetId": 6
@@ -42,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "74d51f58_85887392",
+        "filename": "appengine/findit/infra_api_clients/codereview/cl_info.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-16T17:08:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7670eeea_66cd9428",
+      "range": {
+        "startLine": 85,
+        "startChar": 4,
+        "endLine": 85,
+        "endChar": 11
+      },
+      "revId": "d2e21bb25f2a720e0091513704f89aa64fdb93f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "49e5b8f8_02cf2bb2",
         "filename": "appengine/findit/model/base_suspected_cl.py",
         "patchSetId": 6
@@ -53,6 +95,24 @@
       "writtenOn": "2017-03-16T16:30:19Z",
       "side": 1,
       "message": "is this to be the same as revert_process_status in revertCL?",
+      "revId": "d2e21bb25f2a720e0091513704f89aa64fdb93f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0a237641_2d2e4b2b",
+        "filename": "appengine/findit/model/base_suspected_cl.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-16T17:08:55Z",
+      "side": 1,
+      "message": "I thought I have deleted revert_process_status...",
+      "parentUuid": "49e5b8f8_02cf2bb2",
       "revId": "d2e21bb25f2a720e0091513704f89aa64fdb93f0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -82,6 +142,30 @@
     },
     {
       "key": {
+        "uuid": "607db928_ae702704",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-16T17:08:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cc6631ec_8a6a8311",
+      "range": {
+        "startLine": 93,
+        "startChar": 25,
+        "endLine": 93,
+        "endChar": 69
+      },
+      "revId": "d2e21bb25f2a720e0091513704f89aa64fdb93f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a040d4de_31e31029",
         "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
         "patchSetId": 6
@@ -102,6 +186,30 @@
       "revId": "d2e21bb25f2a720e0091513704f89aa64fdb93f0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "44bc8f5c_fb12f7f5",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-16T17:08:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a040d4de_31e31029",
+      "range": {
+        "startLine": 111,
+        "startChar": 54,
+        "endLine": 111,
+        "endChar": 63
+      },
+      "revId": "d2e21bb25f2a720e0091513704f89aa64fdb93f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
