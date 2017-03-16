@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a31c9a5d_d907238e",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-16T01:20:25Z",
+      "side": 1,
+      "message": "Move to cl_info?",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 42,
+        "endChar": 28
+      },
+      "revId": "a36179ee87d9e00e1ec210719353c105a94a5f2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "18b9b949_b7aac0f7",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-16T01:20:25Z",
+      "side": 1,
+      "message": "Hopefully two analyses within Findit won\u0027t revert the same CL at the same time.",
+      "range": {
+        "startLine": 46,
+        "startChar": 4,
+        "endLine": 46,
+        "endChar": 18
+      },
+      "revId": "a36179ee87d9e00e1ec210719353c105a94a5f2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "555dc632_8ba9684b",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-16T01:20:25Z",
+      "side": 1,
+      "message": "no need as we check above already.",
+      "range": {
+        "startLine": 70,
+        "startChar": 23,
+        "endLine": 70,
+        "endChar": 68
+      },
+      "revId": "a36179ee87d9e00e1ec210719353c105a94a5f2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "35b1eb57_6faa77b2",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-16T01:20:25Z",
+      "side": 1,
+      "message": "Double check: could we do two puts for the same entity in a txn?",
+      "range": {
+        "startLine": 129,
+        "startChar": 4,
+        "endLine": 129,
+        "endChar": 17
+      },
+      "revId": "a36179ee87d9e00e1ec210719353c105a94a5f2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "531af005_95416298",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-16T01:20:25Z",
+      "side": 1,
+      "message": "sheriffs",
+      "range": {
+        "startLine": 132,
+        "startChar": 2,
+        "endLine": 132,
+        "endChar": 11
+      },
+      "revId": "a36179ee87d9e00e1ec210719353c105a94a5f2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4caac70_309d7c3a",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-16T01:20:25Z",
+      "side": 1,
+      "message": "We should add a message to clarify the action to be taken by sheriffs.",
+      "range": {
+        "startLine": 133,
+        "startChar": 23,
+        "endLine": 133,
+        "endChar": 35
+      },
+      "revId": "a36179ee87d9e00e1ec210719353c105a94a5f2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0666a4b3_8c0f9d13",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-16T01:20:25Z",
+      "side": 1,
+      "message": "Add a finalized to record aborted error.",
+      "range": {
+        "startLine": 145,
+        "startChar": 6,
+        "endLine": 145,
+        "endChar": 28
+      },
+      "revId": "a36179ee87d9e00e1ec210719353c105a94a5f2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4090b6e9_0e042a74",
+        "filename": "appengine/findit/waterfall/test/create_revert_cl_pipeline_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-16T01:20:25Z",
+      "side": 1,
+      "message": "This will pollute test data for other testcases.\nSame for others.",
+      "range": {
+        "startLine": 102,
+        "startChar": 4,
+        "endLine": 102,
+        "endChar": 24
+      },
+      "revId": "a36179ee87d9e00e1ec210719353c105a94a5f2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
