@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7670eeea_66cd9428",
+        "filename": "appengine/findit/infra_api_clients/codereview/cl_info.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-16T16:27:22Z",
+      "side": 1,
+      "message": "same here.",
+      "range": {
+        "startLine": 85,
+        "startChar": 4,
+        "endLine": 85,
+        "endChar": 11
+      },
+      "revId": "d2e21bb25f2a720e0091513704f89aa64fdb93f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cc6631ec_8a6a8311",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-16T16:27:22Z",
+      "side": 1,
+      "message": "Remove this to support retry.",
+      "range": {
+        "startLine": 93,
+        "startChar": 25,
+        "endLine": 93,
+        "endChar": 69
+      },
+      "revId": "d2e21bb25f2a720e0091513704f89aa64fdb93f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a040d4de_31e31029",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-16T16:27:22Z",
+      "side": 1,
+      "message": "For retry, we should still continue.",
+      "range": {
+        "startLine": 111,
+        "startChar": 54,
+        "endLine": 111,
+        "endChar": 63
+      },
+      "revId": "d2e21bb25f2a720e0091513704f89aa64fdb93f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
