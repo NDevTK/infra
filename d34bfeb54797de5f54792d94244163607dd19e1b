@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a6069e1_fd1d7d91",
+        "filename": "appengine/findit/infra_api_clients/codereview/cl_info.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-16T06:05:00Z",
+      "side": 1,
+      "message": "This class has no concept of culprit.\n\nSame for below.",
+      "range": {
+        "startLine": 78,
+        "startChar": 9,
+        "endLine": 78,
+        "endChar": 16
+      },
+      "revId": "d34bfeb54797de5f54792d94244163607dd19e1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1b487cc9_76cd032e",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-16T06:05:00Z",
+      "side": 1,
+      "message": "This check won\u0027t help, because it is out of a txn. The read (check) and set should be one operation in a txn.\n\nI\u0027d suggest leaving a TODO to handle that corner case : two pipelines try to revert the same culprit. You could think more afterwards.",
+      "range": {
+        "startLine": 91,
+        "startChar": 30,
+        "endLine": 91,
+        "endChar": 69
+      },
+      "revId": "d34bfeb54797de5f54792d94244163607dd19e1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "64356ee9_15672117",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-16T06:05:00Z",
+      "side": 1,
+      "message": "What if this pipeline run set it to running, but #99 or other code below raises an uncaught exception so error is not set at all, and the current pipeline retries later?\n\nThere is no other analysis.",
+      "range": {
+        "startLine": 92,
+        "startChar": 4,
+        "endLine": 92,
+        "endChar": 69
+      },
+      "revId": "d34bfeb54797de5f54792d94244163607dd19e1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2b7e3069_b1096e66",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-16T06:05:00Z",
+      "side": 1,
+      "message": "It could be the same analysis as I mentioned above.",
+      "range": {
+        "startLine": 109,
+        "startChar": 26,
+        "endLine": 109,
+        "endChar": 34
+      },
+      "revId": "d34bfeb54797de5f54792d94244163607dd19e1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
