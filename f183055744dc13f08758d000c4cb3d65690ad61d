@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c776d670_e8cc0f23",
+        "filename": "appengine/findit/waterfall/revert_and_notify_culprit_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-16T18:48:10Z",
+      "side": 1,
+      "message": "It\u0027s better to move into this sub-pipeline for logic encapsulation.",
+      "range": {
+        "startLine": 30,
+        "startChar": 31,
+        "endLine": 30,
+        "endChar": 53
+      },
+      "revId": "f183055744dc13f08758d000c4cb3d65690ad61d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
