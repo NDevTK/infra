@@ -19,6 +19,9 @@ class RevertCL(ndb.Model):
   # Time when the revert CL is committed.
   committed_time = ndb.DateTimeProperty(indexed=False)
 
+  # Status of the process of creating this revert.
+  revert_process_status = ndb.IntegerProperty(indexed=False)
+
   # Status of this revert: REVERTED, DUPLICATE or FALSE_POSITIVE.
   status = ndb.IntegerProperty(indexed=False)
 
@@ -48,7 +51,10 @@ class BaseSuspectedCL(ndb.Model):
 
   # A flag to indicate if revet is supposed to be done for this suspected CL.
   # It will be updated to True when Findit tries to revert it.
-  can_be_reverted = ndb.BooleanProperty(indexed=True, default=False)
+  should_be_reverted = ndb.BooleanProperty(indexed=True, default=False)
+
+  # Status of the process of reverting culprit.
+  revert_status = ndb.IntegerProperty(indexed=False, default=None)
 
   @property
   def revert_cl_url(self):
