@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "48f08cba_4646c90f",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-16T00:51:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b78586a3_9cf05e7a",
+      "range": {
+        "startLine": 42,
+        "startChar": 10,
+        "endLine": 42,
+        "endChar": 25
+      },
+      "revId": "a40d8c76959783e3af59603fb18206da5830a2c4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ca4e92e9_501f794d",
         "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2017-03-15T21:36:26Z",
       "side": 1,
       "message": "What if there is no code review url?",
+      "range": {
+        "startLine": 48,
+        "startChar": 2,
+        "endLine": 48,
+        "endChar": 25
+      },
+      "revId": "a40d8c76959783e3af59603fb18206da5830a2c4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "26e38636_8bc7f536",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-16T00:51:11Z",
+      "side": 1,
+      "message": "Added a check below",
+      "parentUuid": "ca4e92e9_501f794d",
       "range": {
         "startLine": 48,
         "startChar": 2,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "db08a321_4317930e",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-16T00:51:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a0ec3529_ccf6e0ac",
+      "range": {
+        "startLine": 67,
+        "startChar": 30,
+        "endLine": 67,
+        "endChar": 31
+      },
+      "revId": "a40d8c76959783e3af59603fb18206da5830a2c4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5cb6f650_092b86fc",
         "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
         "patchSetId": 1
@@ -91,6 +163,30 @@
       "revId": "a40d8c76959783e3af59603fb18206da5830a2c4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c71008e8_2c3b2a8c",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-16T00:51:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5cb6f650_092b86fc",
+      "range": {
+        "startLine": 61,
+        "startChar": 2,
+        "endLine": 72,
+        "endChar": 29
+      },
+      "revId": "a40d8c76959783e3af59603fb18206da5830a2c4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "32544582_807bd2d9",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-16T00:51:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b14699f4_09441132",
+      "range": {
+        "startLine": 76,
+        "startChar": 6,
+        "endLine": 76,
+        "endChar": 11
+      },
+      "revId": "a40d8c76959783e3af59603fb18206da5830a2c4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f7881bbf_bf38c2e1",
         "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
         "patchSetId": 1
@@ -137,6 +257,30 @@
       "revId": "a40d8c76959783e3af59603fb18206da5830a2c4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "84c28797_06fe492c",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-16T00:51:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f7881bbf_bf38c2e1",
+      "range": {
+        "startLine": 93,
+        "startChar": 10,
+        "endLine": 93,
+        "endChar": 13
+      },
+      "revId": "a40d8c76959783e3af59603fb18206da5830a2c4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -163,6 +307,30 @@
     },
     {
       "key": {
+        "uuid": "f0c4b3a4_c3ccb28e",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-16T00:51:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "be4dba5b_af4068d6",
+      "range": {
+        "startLine": 100,
+        "startChar": 23,
+        "endLine": 100,
+        "endChar": 35
+      },
+      "revId": "a40d8c76959783e3af59603fb18206da5830a2c4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e48d6aa5_1387ad13",
         "filename": "appengine/findit/waterfall/identify_try_job_culprit_pipeline.py",
         "patchSetId": 1
@@ -186,6 +354,30 @@
     },
     {
       "key": {
+        "uuid": "c1eeeecc_15ab1ab3",
+        "filename": "appengine/findit/waterfall/identify_try_job_culprit_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-16T00:51:11Z",
+      "side": 1,
+      "message": "I have limited this CL to only changes for new pipeline, will add wrapper in a new CL",
+      "parentUuid": "e48d6aa5_1387ad13",
+      "range": {
+        "startLine": 191,
+        "startChar": 4,
+        "endLine": 191,
+        "endChar": 27
+      },
+      "revId": "a40d8c76959783e3af59603fb18206da5830a2c4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ecbc508c_490abca6",
         "filename": "appengine/findit/waterfall/identify_try_job_culprit_pipeline.py",
         "patchSetId": 1
@@ -197,6 +389,30 @@
       "writtenOn": "2017-03-15T22:16:03Z",
       "side": 1,
       "message": "Just double check: if it is already reverted, we already include the message as the revert reason. So no need to notify again.",
+      "range": {
+        "startLine": 207,
+        "startChar": 6,
+        "endLine": 209,
+        "endChar": 72
+      },
+      "revId": "a40d8c76959783e3af59603fb18206da5830a2c4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "db482f3e_771100a1",
+        "filename": "appengine/findit/waterfall/identify_try_job_culprit_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-16T00:51:11Z",
+      "side": 1,
+      "message": "Yes, and the check is in send_notification_pipeline.",
+      "parentUuid": "ecbc508c_490abca6",
       "range": {
         "startLine": 207,
         "startChar": 6,
