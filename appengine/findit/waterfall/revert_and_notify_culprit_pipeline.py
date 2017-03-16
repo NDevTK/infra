@@ -7,6 +7,7 @@ from common.waterfall import failure_type
 from waterfall.create_revert_cl_pipeline import CreateRevertCLPipeline
 from waterfall.send_notification_for_culprit_pipeline import (
     SendNotificationForCulpritPipeline)
+from waterfall import waterfall_config
 
 
 class RevertAndNotifyCulpritPipeline(BasePipeline):
@@ -26,7 +27,9 @@ class RevertAndNotifyCulpritPipeline(BasePipeline):
 
         send_notification_right_now = [repo_name, revision] in heuristic_cls
 
-        revert_status = yield CreateRevertCLPipeline(repo_name, revision)
+        revert_status = (yield CreateRevertCLPipeline(repo_name, revision) if
+                         waterfall_config.GetActionSettings().get(
+                             'revert_compile_culprit', False) else None)
         yield SendNotificationForCulpritPipeline(
             master_name, builder_name, build_number, culprit['repo_name'],
             culprit['revision'], send_notification_right_now, revert_status)
