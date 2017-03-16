@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "aa60d9d1_37903f99",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-16T17:15:24Z",
+      "side": 1,
+      "message": "This is invalid now due to the change above.",
+      "range": {
+        "startLine": 111,
+        "startChar": 2,
+        "endLine": 115,
+        "endChar": 0
+      },
+      "revId": "9958c30db152feb7c6a01176be239c1032effeb8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "270b0351_ba14f6b0",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-16T17:15:24Z",
+      "side": 1,
+      "message": "Should we set it at the top?",
+      "range": {
+        "startLine": 121,
+        "startChar": 40,
+        "endLine": 121,
+        "endChar": 54
+      },
+      "revId": "9958c30db152feb7c6a01176be239c1032effeb8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
