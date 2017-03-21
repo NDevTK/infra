@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "46f4dc25_e69ffbe9",
+        "filename": "appengine/findit/util_scripts/crash_queries/crash_printer/print_crash.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1123509
+      },
+      "writtenOn": "2017-03-21T20:30:34Z",
+      "side": 1,
+      "message": "--signature will be more obvious. Even though it won\u0027t necessarily be intuitive, a shorthand will probably also be useful. Maybe -g. Anything is fine since it\u0027ll be in the help message.",
+      "range": {
+        "startLine": 60,
+        "startChar": 9,
+        "endLine": 60,
+        "endChar": 12
+      },
+      "revId": "7cc07a03cfcf58c9b187554620ea5a333fbf8676",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
