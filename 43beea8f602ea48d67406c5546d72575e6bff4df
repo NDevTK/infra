@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "61054fc1_0631f605",
+        "filename": "appengine/findit/libs/time_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-03-23T23:09:41Z",
+      "side": 1,
+      "message": "nit: it seems this should be easy to have a testcase for",
+      "revId": "43beea8f602ea48d67406c5546d72575e6bff4df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d8efcfba_bf5a2565",
         "filename": "appengine/findit/waterfall/monitor_try_job_pipeline.py",
         "patchSetId": 1
@@ -42,6 +59,23 @@
         "endLine": 308,
         "endChar": 19
       },
+      "revId": "43beea8f602ea48d67406c5546d72575e6bff4df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dc2084af_4f3c1230",
+        "filename": "appengine/findit/waterfall/monitor_try_job_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 354,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-03-23T23:09:41Z",
+      "side": 1,
+      "message": "since DatetimeFromString already does the check, why not just use start_time \u003d time_util.DatetimeFromString(callback_params[\u0027start_time\u0027])?",
       "revId": "43beea8f602ea48d67406c5546d72575e6bff4df",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
