@@ -235,7 +235,8 @@ class MonitorTryJobPipeline(BasePipeline):
 
   def __init__(self, *args, **kwargs):
     super(MonitorTryJobPipeline, self).__init__(*args, **kwargs)
-    # This attribute is meant for use by the unittest only.
+    # This dictionary needs to be serializable so that the tests can simulate
+    # callbacks to this pipeline.
     self.last_params = {}
 
   # Arguments number differs from overridden method - pylint: disable=W0221
@@ -303,7 +304,8 @@ class MonitorTryJobPipeline(BasePipeline):
         'try_job_type': try_job_type,
         'urlsafe_try_job_key': urlsafe_try_job_key,
         'deadline': deadline,
-        'start_time': start_time,
+        # datetime is not serializable.
+        'start_time': time_util.FormatDatetime(start_time),
         'already_set_started': already_set_started,
         'error_count': error_count,
         'max_error_times': max_error_times,
@@ -311,6 +313,7 @@ class MonitorTryJobPipeline(BasePipeline):
         'timeout_hours': timeout_hours,
         'backoff_time': backoff_time,
     }
+
     callback_url = self.get_callback_url(callback_params=json.dumps(
         self.last_params))
 
@@ -338,6 +341,7 @@ class MonitorTryJobPipeline(BasePipeline):
     # a URL.
     if isinstance(callback_params, basestring):
       callback_params = json.loads(callback_params)
+
     self.last_params = callback_params
 
     _ = pipeline_id  # We do nothing with this id.
@@ -345,10 +349,14 @@ class MonitorTryJobPipeline(BasePipeline):
     try_job_id = callback_params['try_job_id']
     assert try_job_id
 
+    # Start_time may have been converted to string.
+    start_time = callback_params['start_time']
+    if isinstance(start_time, basestring):
+      start_time = time_util.DatetimeFromString(start_time)
+
     urlsafe_try_job_key = callback_params['urlsafe_try_job_key']
     try_job_type = callback_params['try_job_type']
     deadline = callback_params['deadline']
-    start_time = callback_params['start_time']
     already_set_started = callback_params['already_set_started']
     error_count = callback_params['error_count']
     max_error_times = callback_params['max_error_times']
@@ -394,8 +402,8 @@ class MonitorTryJobPipeline(BasePipeline):
                                                    error.reason))
     elif build.status == BuildbucketBuild.COMPLETED:
       _UpdateTryJobMetadata(
-          try_job_data, try_job_type, time_util.DatetimeFromString(start_time),
-          build, error, False)
+          try_job_data, try_job_type, time_util.DatetimeFromString(
+              start_time), build, error, False)
       result_to_update = self._UpdateTryJobResult(
           urlsafe_try_job_key, try_job_type, try_job_id,
           build.url, BuildbucketBuild.COMPLETED, build.report)
@@ -428,7 +436,8 @@ class MonitorTryJobPipeline(BasePipeline):
                 'try_job_type': try_job_type,
                 'urlsafe_try_job_key': urlsafe_try_job_key,
                 'deadline': deadline,
-                'start_time': start_time,
+                # datetime is not serializable.
+                'start_time': time_util.FormatDatetime(start_time),
                 'already_set_started': already_set_started,
                 'error_count': error_count,
                 'max_error_times': max_error_times,

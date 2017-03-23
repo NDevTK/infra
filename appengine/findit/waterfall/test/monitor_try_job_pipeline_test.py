@@ -212,6 +212,9 @@ class MonitorTryJobPipelineTest(wf_testcase.WaterfallTestCase):
         'id': '1',
         'url': 'url',
         'status': 'COMPLETED',
+        'completed_ts': '1454367574000000',
+        'created_ts': '1454367570000000',
+        'updated_ts': '1454367574000000',
         'result_details_json': json.dumps({
             'properties': {
                 'report': {
@@ -234,6 +237,9 @@ class MonitorTryJobPipelineTest(wf_testcase.WaterfallTestCase):
     pipeline.run(try_job.key.urlsafe(), failure_type.COMPILE, try_job_id)
     pipeline.callback(json.dumps(pipeline.last_params))
 
+    second_callback_params = pipeline.last_params
+    second_callback_params['start_time'] = '2016-02-01 22:59:30 UTC'
+    pipeline.callback(json.dumps(second_callback_params))
     # Reload from ID to get all internal properties in sync.
     pipeline = MonitorTryJobPipeline.from_id(pipeline.pipeline_id)
     compile_result = pipeline.outputs.default.value
@@ -260,6 +266,7 @@ class MonitorTryJobPipelineTest(wf_testcase.WaterfallTestCase):
 
     try_job_data = WfTryJobData.Get(try_job_id)
     self.assertEqual(try_job_data.regression_range_size, regression_range_size)
+    self.assertIsInstance(try_job_data.start_time, datetime)
 
   @mock.patch.object(monitor_try_job_pipeline, 'buildbucket_client')
   def testGetTryJobsForTestMissingTryJobData(self, mock_module):
