@@ -42,6 +42,30 @@
     },
     {
       "key": {
+        "uuid": "b07a6df0_bce81472",
+        "filename": "appengine/findit/waterfall/monitor_try_job_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-03-23T23:34:46Z",
+      "side": 1,
+      "message": "This is correct. start_time was left over from when I refactored this to be asynchronous.\n\nI have removed the parameter",
+      "parentUuid": "d8efcfba_bf5a2565",
+      "range": {
+        "startLine": 298,
+        "startChar": 4,
+        "endLine": 298,
+        "endChar": 14
+      },
+      "revId": "43beea8f602ea48d67406c5546d72575e6bff4df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "02428e1c_61e4d94c",
         "filename": "appengine/findit/waterfall/monitor_try_job_pipeline.py",
         "patchSetId": 1
@@ -53,6 +77,30 @@
       "writtenOn": "2017-03-23T21:46:33Z",
       "side": 1,
       "message": "Will the Swarming one have the same problem?",
+      "range": {
+        "startLine": 308,
+        "startChar": 9,
+        "endLine": 308,
+        "endChar": 19
+      },
+      "revId": "43beea8f602ea48d67406c5546d72575e6bff4df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2607c1e4_789d802d",
+        "filename": "appengine/findit/waterfall/monitor_try_job_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 308,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-03-23T23:34:46Z",
+      "side": 1,
+      "message": "Swarming does not have any datetime param.",
+      "parentUuid": "02428e1c_61e4d94c",
       "range": {
         "startLine": 308,
         "startChar": 9,
@@ -79,6 +127,24 @@
       "revId": "43beea8f602ea48d67406c5546d72575e6bff4df",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "49991aa7_760a7815",
+        "filename": "appengine/findit/waterfall/monitor_try_job_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 354,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-03-23T23:34:46Z",
+      "side": 1,
+      "message": "Done. Actually this line is no longer necessary.",
+      "parentUuid": "dc2084af_4f3c1230",
+      "revId": "43beea8f602ea48d67406c5546d72575e6bff4df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
