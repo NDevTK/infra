@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d8efcfba_bf5a2565",
+        "filename": "appengine/findit/waterfall/monitor_try_job_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-23T21:46:33Z",
+      "side": 1,
+      "message": "As the start time is None, why we still pass it over to the callback? Shouldn\u0027t it be extracted from the message from Swarming or BuildBucket?",
+      "range": {
+        "startLine": 298,
+        "startChar": 4,
+        "endLine": 298,
+        "endChar": 14
+      },
+      "revId": "43beea8f602ea48d67406c5546d72575e6bff4df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "02428e1c_61e4d94c",
+        "filename": "appengine/findit/waterfall/monitor_try_job_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 308,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-23T21:46:33Z",
+      "side": 1,
+      "message": "Will the Swarming one have the same problem?",
+      "range": {
+        "startLine": 308,
+        "startChar": 9,
+        "endLine": 308,
+        "endChar": 19
+      },
+      "revId": "43beea8f602ea48d67406c5546d72575e6bff4df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
