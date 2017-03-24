@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "59963c01_26f39f3d",
+        "filename": "appengine/findit/handlers/crash/dashboard.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1143925
+      },
+      "writtenOn": "2017-03-24T20:11:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ebc01b5f_e31d54c9",
+      "range": {
+        "startLine": 15,
+        "startChar": 31,
+        "endLine": 15,
+        "endChar": 42
+      },
+      "revId": "7cc07a03cfcf58c9b187554620ea5a333fbf8676",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8c87be05_0e88bfb7",
         "filename": "appengine/findit/index.yaml",
         "patchSetId": 4
@@ -36,6 +60,30 @@
       "writtenOn": "2017-03-21T22:52:37Z",
       "side": 1,
       "message": "We added a lot of index here. Are they all necessary? Do we really need that many combination of query?\n\nIf not, I\u0027d suggest remove some.",
+      "range": {
+        "startLine": 213,
+        "startChar": 2,
+        "endLine": 217,
+        "endChar": 19
+      },
+      "revId": "7cc07a03cfcf58c9b187554620ea5a333fbf8676",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9fb6358f_d843439e",
+        "filename": "appengine/findit/index.yaml",
+        "patchSetId": 4
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1143925
+      },
+      "writtenOn": "2017-03-24T20:11:27Z",
+      "side": 1,
+      "message": "we need all of them, because, in dashboard, we have ``requested_time``, ``regression_range_triage_status``, ``suspected_cls_triage_status``, ``has_regression_range``, ``found_suspects`` and ``signature``, we need to have the full combination of them to enable all queries in dashboard.",
+      "parentUuid": "8c87be05_0e88bfb7",
       "range": {
         "startLine": 213,
         "startChar": 2,
@@ -68,6 +116,30 @@
       "revId": "7cc07a03cfcf58c9b187554620ea5a333fbf8676",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6c4dc3c2_151eaa25",
+        "filename": "appengine/findit/util_scripts/crash_queries/crash_printer/print_crash.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1143925
+      },
+      "writtenOn": "2017-03-24T20:11:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "46f4dc25_e69ffbe9",
+      "range": {
+        "startLine": 60,
+        "startChar": 9,
+        "endLine": 60,
+        "endChar": 12
+      },
+      "revId": "7cc07a03cfcf58c9b187554620ea5a333fbf8676",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
