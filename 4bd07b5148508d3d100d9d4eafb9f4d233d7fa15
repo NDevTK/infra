@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "add3f17c_cb93b0ad",
+        "filename": "appengine/findit/libs/time_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-03-24T07:02:40Z",
+      "side": 1,
+      "message": "No, removed it.",
+      "parentUuid": "291a4ef7_1da9b327",
+      "range": {
+        "startLine": 50,
+        "startChar": 7,
+        "endLine": 50,
+        "endChar": 17
+      },
+      "revId": "4bd07b5148508d3d100d9d4eafb9f4d233d7fa15",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "99ded291_d8f6be11",
         "filename": "appengine/findit/libs/time_util.py",
         "patchSetId": 4
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "15455826_aa6d91aa",
+        "filename": "appengine/findit/libs/time_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-03-24T07:02:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "99ded291_d8f6be11",
+      "range": {
+        "startLine": 67,
+        "startChar": 19,
+        "endLine": 67,
+        "endChar": 20
+      },
+      "revId": "4bd07b5148508d3d100d9d4eafb9f4d233d7fa15",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f9867e48_707a3d72",
         "filename": "appengine/findit/waterfall/monitor_try_job_pipeline.py",
         "patchSetId": 4
@@ -59,6 +107,30 @@
       "writtenOn": "2017-03-24T01:43:15Z",
       "side": 1,
       "message": "I\u0027m wondering how the start time of try job is collected. Would you mind helping me understand here?\nFor this change, will it be alway equal to try_job_data.request_time?",
+      "range": {
+        "startLine": 135,
+        "startChar": 4,
+        "endLine": 136,
+        "endChar": 34
+      },
+      "revId": "4bd07b5148508d3d100d9d4eafb9f4d233d7fa15",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3848597f_0a8e481b",
+        "filename": "appengine/findit/waterfall/monitor_try_job_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-03-24T07:02:40Z",
+      "side": 1,
+      "message": "The actual start_time attribute is set directly and not through this function. See line 419 in this file at this revision.\n\nThis line makes it so that start_time has a fallback. I do not know for certain why the fallback is required I just tried the preserve the behavior of the pipeline. Maybe +chanli@ can comment here?",
+      "parentUuid": "f9867e48_707a3d72",
       "range": {
         "startLine": 135,
         "startChar": 4,
