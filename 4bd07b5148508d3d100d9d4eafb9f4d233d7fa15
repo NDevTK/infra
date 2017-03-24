@@ -167,6 +167,30 @@
     },
     {
       "key": {
+        "uuid": "b32fa70e_a3e537f0",
+        "filename": "appengine/findit/waterfall/monitor_try_job_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-03-24T21:05:25Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "8d9ea058_96bed3a1",
+      "range": {
+        "startLine": 135,
+        "startChar": 4,
+        "endLine": 136,
+        "endChar": 34
+      },
+      "revId": "4bd07b5148508d3d100d9d4eafb9f4d233d7fa15",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bfb092be_7ae77d1d",
         "filename": "appengine/findit/waterfall/monitor_try_job_pipeline.py",
         "patchSetId": 4
@@ -178,6 +202,30 @@
       "writtenOn": "2017-03-24T17:59:06Z",
       "side": 1,
       "message": "Why this is needed? We already have one in ``run`` above.",
+      "range": {
+        "startLine": 371,
+        "startChar": 8,
+        "endLine": 385,
+        "endChar": 9
+      },
+      "revId": "4bd07b5148508d3d100d9d4eafb9f4d233d7fa15",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "40e0a35b_50fa2a74",
+        "filename": "appengine/findit/waterfall/monitor_try_job_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 385,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-03-24T21:05:25Z",
+      "side": 1,
+      "message": "This is exponential retry in case of error. The one in `run` is the fallback at the end of the deadline",
+      "parentUuid": "bfb092be_7ae77d1d",
       "range": {
         "startLine": 371,
         "startChar": 8,
@@ -213,6 +261,30 @@
     },
     {
       "key": {
+        "uuid": "eae73385_b2eef762",
+        "filename": "appengine/findit/waterfall/monitor_try_job_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 408,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-03-24T21:05:25Z",
+      "side": 1,
+      "message": "There is a small chance that the notification arrives before we have set the callback url on the try_job_data entity. In that case, the push endpoint will accept the notification and do nothing.",
+      "parentUuid": "5b8aede4_c8426f83",
+      "range": {
+        "startLine": 408,
+        "startChar": 8,
+        "endLine": 408,
+        "endChar": 52
+      },
+      "revId": "4bd07b5148508d3d100d9d4eafb9f4d233d7fa15",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "61da9f3f_be294994",
         "filename": "appengine/findit/waterfall/monitor_try_job_pipeline.py",
         "patchSetId": 4
@@ -224,6 +296,30 @@
       "writtenOn": "2017-03-24T17:59:06Z",
       "side": 1,
       "message": "Why we need to update the the callback url?",
+      "range": {
+        "startLine": 423,
+        "startChar": 8,
+        "endLine": 436,
+        "endChar": 9
+      },
+      "revId": "4bd07b5148508d3d100d9d4eafb9f4d233d7fa15",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a20a3b8c_fa8cff12",
+        "filename": "appengine/findit/waterfall/monitor_try_job_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 436,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-03-24T21:05:25Z",
+      "side": 1,
+      "message": "The idea is that updating the callback url is the only way we have of preserving the updated values between callbacks (specifically the error_count)",
+      "parentUuid": "61da9f3f_be294994",
       "range": {
         "startLine": 423,
         "startChar": 8,
