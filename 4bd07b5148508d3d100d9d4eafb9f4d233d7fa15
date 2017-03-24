@@ -140,6 +140,99 @@
       "revId": "4bd07b5148508d3d100d9d4eafb9f4d233d7fa15",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8d9ea058_96bed3a1",
+        "filename": "appengine/findit/waterfall/monitor_try_job_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-24T17:59:06Z",
+      "side": 1,
+      "message": "Many thanks for the explanation!\n\nWe have this default because we might miss the event that the try-job starts if it completes too soon.",
+      "parentUuid": "3848597f_0a8e481b",
+      "range": {
+        "startLine": 135,
+        "startChar": 4,
+        "endLine": 136,
+        "endChar": 34
+      },
+      "revId": "4bd07b5148508d3d100d9d4eafb9f4d233d7fa15",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bfb092be_7ae77d1d",
+        "filename": "appengine/findit/waterfall/monitor_try_job_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 385,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-24T17:59:06Z",
+      "side": 1,
+      "message": "Why this is needed? We already have one in ``run`` above.",
+      "range": {
+        "startLine": 371,
+        "startChar": 8,
+        "endLine": 385,
+        "endChar": 9
+      },
+      "revId": "4bd07b5148508d3d100d9d4eafb9f4d233d7fa15",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5b8aede4_c8426f83",
+        "filename": "appengine/findit/waterfall/monitor_try_job_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 408,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-24T17:59:06Z",
+      "side": 1,
+      "message": "As we are receive pushing notification, we won\u0027t miss the one in between anymore, right?",
+      "range": {
+        "startLine": 408,
+        "startChar": 8,
+        "endLine": 408,
+        "endChar": 52
+      },
+      "revId": "4bd07b5148508d3d100d9d4eafb9f4d233d7fa15",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "61da9f3f_be294994",
+        "filename": "appengine/findit/waterfall/monitor_try_job_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 436,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-24T17:59:06Z",
+      "side": 1,
+      "message": "Why we need to update the the callback url?",
+      "range": {
+        "startLine": 423,
+        "startChar": 8,
+        "endLine": 436,
+        "endChar": 9
+      },
+      "revId": "4bd07b5148508d3d100d9d4eafb9f4d233d7fa15",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
