@@ -5,9 +5,13 @@
 package dashboard
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 	"time"
+
+	"google.golang.org/appengine"
+	"google.golang.org/appengine/datastore"
 )
 
 const (
@@ -50,6 +54,18 @@ var templates = template.Must(template.ParseGlob("templates/*"))
 
 func init() {
 	http.HandleFunc("/", dashboard)
+	http.HandleFunc("/experiment", experiment)
+}
+
+func experiment(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
+	q := datastore.NewQuery("ChopsService").Filter("Name =", "monorail")
+	results := make([]ChopsService)
+	if _, err := q.GetAll(c, &results); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	fmt.Fprint(w, results)
 }
 
 func dashboard(w http.ResponseWriter, r *http.Request) {
@@ -116,4 +132,14 @@ func makeFakeData() (services []ChopsService, nonSLAServices []NonSLAService) {
 	}
 
 	return
+}
+
+func storeFakeEntities() {
+	s := ChopsService{Name: "monorail", SLA: "google.com", Incidents: make([]Incident, 0)}
+	key := datastore.NewKey(c, "ChopsService", "servikeymonorail", 0, nil)
+	_, err := datastore.Put(c, key, &s)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
