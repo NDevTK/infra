@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5fe15c98_2308f69c",
+        "filename": "appengine/findit/infra_api_clients/codereview/gerrit.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-27T23:21:11Z",
+      "side": 1,
+      "message": "This part is similar to _Get (except for handling body), can we move this to a separate function?",
+      "range": {
+        "startLine": 47,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 48
+      },
+      "revId": "26d02f602a9877ccff8cf7c8803dd7fba4e525e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "09849875_0d5669e6",
+        "filename": "appengine/findit/infra_api_clients/codereview/gerrit.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-27T23:21:11Z",
+      "side": 1,
+      "message": "nit: an",
+      "range": {
+        "startLine": 68,
+        "startChar": 63,
+        "endLine": 68,
+        "endChar": 64
+      },
+      "revId": "26d02f602a9877ccff8cf7c8803dd7fba4e525e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
