@@ -22,6 +22,13 @@ class DummyHttpClient(retry_http_client.RetryHttpClient):
   def SetResponse(self, url, result):
     self.responses[url] = result
 
+  def _SetPostMessageResponse(self, host, change_id, response_file):
+    with open(
+      os.path.join(os.path.dirname(__file__), 'data', response_file)) as f:
+      response = f.read()
+    url = 'https://%s/a/changes/%s/revisions/current/review' % (host, change_id)
+    self.SetResponse(url, (200, response))
+
   def _SetChangeIdResponse(self, host, change_id, response_file):
     with open(
       os.path.join(os.path.dirname(__file__), 'data', response_file)) as f:
@@ -55,6 +62,17 @@ class GerritTest(testing.AppengineTestCase):
     self.gerrit = Gerrit(self.server_hostname)
     self.gerrit.HTTP_CLIENT = self.http_client
     self.maxDiff = None
+
+  def testPostMessage(self):
+    change_id = 'I40bc1e744806f2c4aadf0ce6609aaa61b4019fa7'
+    response_file = 'post_message_response.json'
+    self.http_client._SetPostMessageResponse(
+      self.server_hostname, change_id, response_file)
+    # This message should not change when being urlencoded or jsonized
+    message = 'FinditWasHere'
+    self.assertTrue(self.gerrit.PostMessage(change_id, message))
+    _url, data, _headers = self.http_client.requests[0]
+    self.assertIn(message, data)
 
   def testGetClInfoCQCommit(self):
     change_id = 'I40bc1e744806f2c4aadf0ce6609aaa61b4019fa7'
