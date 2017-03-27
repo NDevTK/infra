@@ -45,6 +45,47 @@
       "revId": "9ebe7da7ad9fcc85f28b72fe673100f91245505b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c203c324_96eae8c4",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-03-27T19:00:32Z",
+      "side": 1,
+      "message": "or\n\nPlease confirm/lgtm \u0026 commit this reverting CL ...",
+      "parentUuid": "610ed926_def34bb2",
+      "range": {
+        "startLine": 163,
+        "startChar": 13,
+        "endLine": 163,
+        "endChar": 38
+      },
+      "revId": "9ebe7da7ad9fcc85f28b72fe673100f91245505b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4a609c5b_97cc3775",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-03-27T19:00:32Z",
+      "side": 1,
+      "message": "or\n\nIf this is a false positive, please reply with the message \"false positive\" and close this CL.",
+      "revId": "9ebe7da7ad9fcc85f28b72fe673100f91245505b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
