@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ab87b654_c1999692",
+        "filename": "appengine/findit/infra_api_clients/codereview/gerrit.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-28T22:45:44Z",
+      "side": 1,
+      "message": "From the original code, for _Get, headers \u003d kwargs.get(\u0027headers\u0027, {}) then headers[\u0027Accept\u0027] \u003d \u0027application/json\u0027.\n\nSo maybe we pass kwargs.get(\u0027headers\u0027, {}) to _AuthenticatedRequest for both _Get and _Post and in _AuthenticatedRequest to check whether we need to add \u0027Content-Type\u0027 in header?",
+      "range": {
+        "startLine": 53,
+        "startChar": 0,
+        "endLine": 54,
+        "endChar": 37
+      },
+      "revId": "66c5e17ecc19b5c3035460f3e0305f18e065b22d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
