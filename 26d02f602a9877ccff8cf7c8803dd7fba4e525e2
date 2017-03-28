@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "18d83b12_901c5c4e",
+        "filename": "appengine/findit/infra_api_clients/codereview/gerrit.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-28T23:04:56Z",
+      "side": 1,
+      "message": "If possible, not generalize the parameters.",
+      "range": {
+        "startLine": 46,
+        "startChar": 18,
+        "endLine": 46,
+        "endChar": 34
+      },
+      "revId": "26d02f602a9877ccff8cf7c8803dd7fba4e525e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5fe15c98_2308f69c",
         "filename": "appengine/findit/infra_api_clients/codereview/gerrit.py",
         "patchSetId": 2
