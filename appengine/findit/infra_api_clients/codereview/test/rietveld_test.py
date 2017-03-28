@@ -148,7 +148,8 @@ class RietveldTest(testing.AppengineTestCase):
                                  (rietveld_url, revert_change_id), response)
     cl_info = self.rietveld.GetClDetails(change_id)
     self.assertEqual(cl_info.serialize(),
-    {'url': 'https://server.host.name/123456001/',
+    {'server_hostname': 'server.host.name',
+     'change_id': '123456001',
      'commits': [
          {
              'patchset_id': '100001',
@@ -179,7 +180,8 @@ class RietveldTest(testing.AppengineTestCase):
              'reverting_cl': {
                  'cc': [u'chromium-reviews@chromium.org'],
                  'reviewers': [u'someone@chromium.org'],
-                 'url': 'https://server.host.name/2713613003/',
+                 'server_hostname': 'server.host.name',
+                 'change_id': '2713613003',
                  'commits': [
                      {
                          'patchset_id': '20001',

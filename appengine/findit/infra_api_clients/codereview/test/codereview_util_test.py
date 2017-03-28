@@ -26,15 +26,3 @@ class CodeReviewUtilTest(WaterfallTestCase):
   def testGetCodeReviewForInvalidReviewUrl(self):
     self.assertIsNone(codereview_util.GetCodeReviewForReview(None))
     self.assertIsNone(codereview_util.GetCodeReviewForReview('invalid.com'))
-
-  def testGetChangeIdForReviewOnRietveld(self):
-    review_url = 'https://codereview.chromium.org/1234'
-    codereview = codereview_util.GetCodeReviewForReview(review_url)
-    change_id = codereview.GetChangeIdForReview(review_url)
-    self.assertEqual('1234', change_id)
-
-  def testGetChangeIdForReviewOnGerrit(self):
-    review_url = 'https://chromium-review.googlesource.com/c/1234'
-    with self.assertRaises(NotImplementedError):
-      codereview = codereview_util.GetCodeReviewForReview(review_url)
-      _ = codereview.GetChangeIdForReview(review_url)
