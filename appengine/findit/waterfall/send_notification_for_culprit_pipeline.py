@@ -11,6 +11,7 @@ from common.pipeline_wrapper import BasePipeline
 from infra_api_clients.codereview import codereview_util
 from libs import time_util
 from model import analysis_status as status
+from model.wf_config import FinditConfig
 from model.wf_suspected_cl import WfSuspectedCL
 from waterfall import build_util
 from waterfall import create_revert_cl_pipeline
@@ -63,7 +64,9 @@ def _UpdateNotificationStatus(repo_name, revision, new_status):
 
 def _SendNotificationForCulprit(
     repo_name, revision, commit_position, code_review_url, revert_status):
-  codereview = codereview_util.GetCodeReviewForReview(code_review_url)
+  code_review_settings = FinditConfig().Get().code_review_settings
+  codereview = codereview_util.GetCodeReviewForReview(
+    code_review_url, code_review_settings)
   change_id = codereview.GetChangeIdForReview(
       code_review_url) if codereview else None
   sent = False
