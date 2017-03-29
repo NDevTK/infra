@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "421f3dbf_65bdbf64",
+        "filename": "appengine/findit/infra_api_clients/codereview/gerrit.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-03-29T20:51:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "18d83b12_901c5c4e",
+      "range": {
+        "startLine": 46,
+        "startChar": 18,
+        "endLine": 46,
+        "endChar": 34
+      },
+      "revId": "26d02f602a9877ccff8cf7c8803dd7fba4e525e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5fe15c98_2308f69c",
         "filename": "appengine/findit/infra_api_clients/codereview/gerrit.py",
         "patchSetId": 2
