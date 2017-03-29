@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "51a28c27_2b7d7195",
+        "filename": "appengine/findit/infra_api_clients/codereview/gerrit.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-03-29T22:16:28Z",
+      "side": 1,
+      "message": "Are both lines needed here?",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 44,
+        "endChar": 52
+      },
+      "revId": "dc0448b844b54e43a2802610d705e4d178b17a1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
