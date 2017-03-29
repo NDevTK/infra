@@ -13,6 +13,7 @@ from common.base_handler import Permission
 from infra_api_clients.codereview import codereview_util
 from libs import time_util
 from model import revert_cl_status
+from model.wf_config import FinditConfig
 from model.wf_suspected_cl import WfSuspectedCL
 from waterfall import suspected_cl_util
 
@@ -44,9 +45,9 @@ def _CheckRevertStatusOfSuspectedCL(suspected_cl):
   if not original_code_review_url:  # pragma: no cover
     # TODO(lijeffrey): Handle cases a patch was committed without review.
     return None
-
-  codereview = codereview_util.GetCodeReviewForReview(original_code_review_url)
-
+  code_review_settings = FinditConfig().Get().code_review_settings
+  codereview = codereview_util.GetCodeReviewForReview(
+    original_code_review_url, code_review_settings)
   if not codereview:
     logging.error('Could not get codereview for %s', original_code_review_url)
     return None

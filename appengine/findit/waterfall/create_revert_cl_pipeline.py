@@ -16,6 +16,7 @@ from infra_api_clients.codereview import codereview_util
 from libs import time_util
 from model import analysis_status as status
 from model.base_suspected_cl import RevertCL
+from model.wf_config import FinditConfig
 from model.wf_suspected_cl import WfSuspectedCL
 from waterfall import buildbot
 from waterfall import suspected_cl_util
@@ -84,7 +85,9 @@ def _RevertCulprit(
   culprit_commit_position, culprit_code_review_url = (
       suspected_cl_util.GetCulpritInfo(repo_name, revision))
 
-  codereview = codereview_util.GetCodeReviewForReview(culprit_code_review_url)
+  code_review_settings = FinditConfig().Get().code_review_settings
+  codereview = codereview_util.GetCodeReviewForReview(
+    culprit_code_review_url, code_review_settings)
   culprit_change_id = codereview.GetChangeIdForReview(
       culprit_code_review_url) if codereview else None
 
