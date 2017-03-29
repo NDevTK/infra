@@ -22,6 +22,29 @@
       "revId": "dc0448b844b54e43a2802610d705e4d178b17a1e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "db59ac96_d79664ba",
+        "filename": "appengine/findit/infra_api_clients/codereview/test/data/post_message_response.json",
+        "patchSetId": 7
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-03-29T22:26:38Z",
+      "side": 1,
+      "message": "Could we do that same as in the CL for GetClDetails to mock instead of a file like this?\n\nThat could make test run faster, and also easier to hack.\nWe had some test depending on test data files, but we should fix that and we\u0027d better not add more.",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 2,
+        "endChar": 2
+      },
+      "revId": "dc0448b844b54e43a2802610d705e4d178b17a1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
