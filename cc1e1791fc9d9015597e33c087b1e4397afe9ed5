@@ -1,0 +1,204 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d76c60a2_4bcebaaa",
+        "filename": "go/src/infra/monitoring/sysmon/docker/docker.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1131920
+      },
+      "writtenOn": "2017-03-29T02:53:30Z",
+      "side": 1,
+      "message": "nit: 2017",
+      "range": {
+        "startLine": 1,
+        "startChar": 17,
+        "endLine": 1,
+        "endChar": 21
+      },
+      "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b6ae1665_782a8f08",
+        "filename": "go/src/infra/monitoring/sysmon/docker/docker.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1131920
+      },
+      "writtenOn": "2017-03-29T02:53:30Z",
+      "side": 1,
+      "message": "nit: container",
+      "range": {
+        "startLine": 34,
+        "startChar": 28,
+        "endLine": 34,
+        "endChar": 37
+      },
+      "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2279a7c4_ab8fbd85",
+        "filename": "go/src/infra/monitoring/sysmon/docker/docker.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1131920
+      },
+      "writtenOn": "2017-03-29T02:53:30Z",
+      "side": 1,
+      "message": "Is there any documentation you can link to about what the other fields are?  In case someone wants to add something else later.",
+      "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1ce02b69_ccb096f8",
+        "filename": "go/src/infra/monitoring/sysmon/docker/docker.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1131920
+      },
+      "writtenOn": "2017-03-29T02:53:30Z",
+      "side": 1,
+      "message": "Conventionally Go would use shorter names for these - maybe ctx, c, ci and cs.\nBut I\u0027m undecided whether that\u0027s more or less readable.  If you want to leave it as-is that\u0027s fine.",
+      "range": {
+        "startLine": 75,
+        "startChar": 80,
+        "endLine": 75,
+        "endChar": 93
+      },
+      "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7c74a0b0_8e26e263",
+        "filename": "go/src/infra/monitoring/sysmon/docker/docker.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1131920
+      },
+      "writtenOn": "2017-03-29T02:53:30Z",
+      "side": 1,
+      "message": "I think it would be cleaner to make this function return error, then below do:\n\ngo func() {\n  channels \u003c- inspectContainer(...)\n}()",
+      "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "183bf4db_7f1e5997",
+        "filename": "go/src/infra/monitoring/sysmon/docker/docker.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1131920
+      },
+      "writtenOn": "2017-03-29T02:53:30Z",
+      "side": 1,
+      "message": "Do this in the same line as the if:\n\nif _, err :\u003d dockerClient.Ping(c); err !\u003d nil {",
+      "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bf8f3a9f_fd237524",
+        "filename": "go/src/infra/monitoring/sysmon/docker/docker.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1131920
+      },
+      "writtenOn": "2017-03-29T02:53:30Z",
+      "side": 1,
+      "message": "Since you\u0027re not doing anything with the errors other than logging them, you could make this all less complex by using a sync.WaitGroup and logging errors from the goroutine:\n\nwg :\u003d sync.WaitGroup{}\nfor _, container :\u003d range containers {\n  wg.Add()\n  go {\n    defer wg.Done()\n    inspectContainer(...)\n  }()\n}\nwg.Wait()",
+      "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7d2c03be_7ee1e06d",
+        "filename": "go/src/infra/monitoring/sysmon/docker/docker.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1131920
+      },
+      "writtenOn": "2017-03-29T02:53:30Z",
+      "side": 1,
+      "message": "List the metrics as arguments to RegisterGlobalCallback so it resets them after each flush (https://godoc.org/github.com/luci/luci-go/common/tsmon#RegisterGlobalCallback).  This way when a container goes away, you won\u0027t continue sending metrics for it.",
+      "range": {
+        "startLine": 163,
+        "startChar": 7,
+        "endLine": 163,
+        "endChar": 29
+      },
+      "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b17142f5_957865e3",
+        "filename": "go/src/infra/monitoring/sysmon/docker/docker_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1131920
+      },
+      "writtenOn": "2017-03-29T02:53:30Z",
+      "side": 1,
+      "message": "I prefer to declare this kind of thing in-line.  It makes it less verbose IMO:\n\ncontainer :\u003d dockerTypes.Container{\n  Names: []string{...},\n  State: ...,\n}\n\nDo it for the others as well if you can.",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 28
+      },
+      "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cf2546b7_9fd1b001",
+        "filename": "go/src/infra/monitoring/sysmon/docker/docker_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1131920
+      },
+      "writtenOn": "2017-03-29T02:53:30Z",
+      "side": 1,
+      "message": "containerStatsJSON :\u003d dockerTypes.ContainerStats{\n  Body: noOpCloser{bytes.NewReader([]byte(\n    `{\"name\": \"container1\"...` +\n    `...` +\n    `...`))},\n}",
+      "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
