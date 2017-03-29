@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "cb02325f_c11461ae",
+        "filename": "go/src/infra/monitoring/sysmon/docker/docker.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2017-03-29T22:25:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d76c60a2_4bcebaaa",
+      "range": {
+        "startLine": 1,
+        "startChar": 17,
+        "endLine": 1,
+        "endChar": 21
+      },
+      "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b6ae1665_782a8f08",
         "filename": "go/src/infra/monitoring/sysmon/docker/docker.go",
         "patchSetId": 3
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "c026cbc5_527ab0cf",
+        "filename": "go/src/infra/monitoring/sysmon/docker/docker.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2017-03-29T22:25:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b6ae1665_782a8f08",
+      "range": {
+        "startLine": 34,
+        "startChar": 28,
+        "endLine": 34,
+        "endChar": 37
+      },
+      "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2279a7c4_ab8fbd85",
         "filename": "go/src/infra/monitoring/sysmon/docker/docker.go",
         "patchSetId": 3
@@ -62,6 +110,24 @@
       "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b5efb188_d5dac50a",
+        "filename": "go/src/infra/monitoring/sysmon/docker/docker.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2017-03-29T22:25:41Z",
+      "side": 1,
+      "message": "Ahh, good idea; done.",
+      "parentUuid": "2279a7c4_ab8fbd85",
+      "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -88,6 +154,30 @@
     },
     {
       "key": {
+        "uuid": "2f86e253_0ee2562b",
+        "filename": "go/src/infra/monitoring/sysmon/docker/docker.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2017-03-29T22:25:41Z",
+      "side": 1,
+      "message": "Gotcha. Shortened the names a bit.",
+      "parentUuid": "1ce02b69_ccb096f8",
+      "range": {
+        "startLine": 75,
+        "startChar": 80,
+        "endLine": 75,
+        "endChar": 93
+      },
+      "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7c74a0b0_8e26e263",
         "filename": "go/src/infra/monitoring/sysmon/docker/docker.go",
         "patchSetId": 3
@@ -102,6 +192,24 @@
       "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "76684c83_243e41f8",
+        "filename": "go/src/infra/monitoring/sysmon/docker/docker.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2017-03-29T22:25:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7c74a0b0_8e26e263",
+      "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -122,6 +230,24 @@
     },
     {
       "key": {
+        "uuid": "6f23ea59_233c469c",
+        "filename": "go/src/infra/monitoring/sysmon/docker/docker.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2017-03-29T22:25:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "183bf4db_7f1e5997",
+      "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bf8f3a9f_fd237524",
         "filename": "go/src/infra/monitoring/sysmon/docker/docker.go",
         "patchSetId": 3
@@ -136,6 +262,24 @@
       "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6bcdb114_27fadd11",
+        "filename": "go/src/infra/monitoring/sysmon/docker/docker.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2017-03-29T22:25:41Z",
+      "side": 1,
+      "message": "Ahhh, that\u0027s much better. Didn\u0027t know that was a thing... I\u0027m still a go noob ^_^\n\nDone.",
+      "parentUuid": "bf8f3a9f_fd237524",
+      "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -162,6 +306,30 @@
     },
     {
       "key": {
+        "uuid": "10eed34c_fd637661",
+        "filename": "go/src/infra/monitoring/sysmon/docker/docker.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2017-03-29T22:25:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7d2c03be_7ee1e06d",
+      "range": {
+        "startLine": 163,
+        "startChar": 7,
+        "endLine": 163,
+        "endChar": 29
+      },
+      "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b17142f5_957865e3",
         "filename": "go/src/infra/monitoring/sysmon/docker/docker_test.go",
         "patchSetId": 3
@@ -185,6 +353,30 @@
     },
     {
       "key": {
+        "uuid": "d64b3f90_82c2d1de",
+        "filename": "go/src/infra/monitoring/sysmon/docker/docker_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2017-03-29T22:25:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b17142f5_957865e3",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 28
+      },
+      "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cf2546b7_9fd1b001",
         "filename": "go/src/infra/monitoring/sysmon/docker/docker_test.go",
         "patchSetId": 3
@@ -199,6 +391,24 @@
       "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e2519f7e_bfba4cd5",
+        "filename": "go/src/infra/monitoring/sysmon/docker/docker_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2017-03-29T22:25:41Z",
+      "side": 1,
+      "message": "Whoa... Done.",
+      "parentUuid": "cf2546b7_9fd1b001",
+      "revId": "cc1e1791fc9d9015597e33c087b1e4397afe9ed5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
