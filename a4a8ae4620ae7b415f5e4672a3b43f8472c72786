@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "def58bbe_b97bc709",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 783,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-03-31T18:21:49Z",
+      "side": 1,
+      "message": "this will not really work if a duplicate happens to be on a boundary between different pages for paginated query :(",
+      "range": {
+        "startLine": 781,
+        "startChar": 6,
+        "endLine": 783,
+        "endChar": 16
+      },
+      "revId": "a4a8ae4620ae7b415f5e4672a3b43f8472c72786",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c2cd49da_33de5612",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1410,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-03-31T18:21:49Z",
+      "side": 1,
+      "message": "assert this? (will take O(N), since we sort below).",
+      "range": {
+        "startLine": 1410,
+        "startChar": 2,
+        "endLine": 1410,
+        "endChar": 51
+      },
+      "revId": "a4a8ae4620ae7b415f5e4672a3b43f8472c72786",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
