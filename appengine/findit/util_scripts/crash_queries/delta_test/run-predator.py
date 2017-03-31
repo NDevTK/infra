@@ -19,7 +19,6 @@ sys.path.insert(1, _SCRIPT_DIR)
 import script_util
 script_util.SetUpSystemPaths()
 
-from common.chrome_dependency_fetcher import ChromeDependencyFetcher
 from crash.crash_pipeline import FinditForClientID
 from crash.crash_report import CrashReport
 from crash.culprit import Culprit
