@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "156d59bd_4b5d7d45",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 783,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-03-31T18:41:18Z",
+      "side": 1,
+      "message": "are you sure?\n\nentries: [1, 2, 2, 3]\nquery 1: returns  builds\u003d[1, 2], cursor \"id\u003e2\"\nquery 2:\nloop @748 skips entries [1, 2, 2] and returns [3]\n\nadded a comment to the loop",
+      "parentUuid": "def58bbe_b97bc709",
+      "range": {
+        "startLine": 781,
+        "startChar": 6,
+        "endLine": 783,
+        "endChar": 16
+      },
+      "revId": "a4a8ae4620ae7b415f5e4672a3b43f8472c72786",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c2cd49da_33de5612",
         "filename": "appengine/cr-buildbucket/service.py",
         "patchSetId": 2
@@ -45,6 +69,30 @@
       "revId": "a4a8ae4620ae7b415f5e4672a3b43f8472c72786",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "026b0c54_1d9dae5e",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1410,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-03-31T18:41:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c2cd49da_33de5612",
+      "range": {
+        "startLine": 1410,
+        "startChar": 2,
+        "endLine": 1410,
+        "endChar": 51
+      },
+      "revId": "a4a8ae4620ae7b415f5e4672a3b43f8472c72786",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
