@@ -8,7 +8,6 @@ import logging
 
 from crash import monitoring
 
-from common import pubsub_util
 from common.pipeline_wrapper import BasePipeline
 from common.pipeline_wrapper import pipeline
 from crash import findit_for_chromecrash
@@ -16,6 +15,7 @@ from crash import findit_for_clusterfuzz
 from crash.type_enums import CrashClient
 from libs import time_util
 from gae_libs import appengine_util
+from gae_libs import pubsub_util
 from gae_libs.gitiles.cached_gitiles_repository import CachedGitilesRepository
 from gae_libs.http.http_client_appengine import HttpClientAppengine
 from model import analysis_status
