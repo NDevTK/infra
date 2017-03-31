@@ -378,7 +378,7 @@ def add_many_async(build_request_list):
     """
     index_entries = collections.defaultdict(list)
     for b in new_builds.itervalues():
-      for t in _indexed_tags(b.tags):
+      for t in set(_indexed_tags(b.tags)):
         index_entries[t].append(model.TagIndexEntry(
             build_id=b.key.id(), bucket=b.bucket))
     return [
@@ -776,7 +776,11 @@ def _tag_index_search(
     while entry_index >= 0:
       e = idx.entries[entry_index]
       entry_index -= 1
+      prev = last_considered_entry
       last_considered_entry = e
+      if prev and prev.build_id == e.build_id:
+        # Tolerate duplicates.
+        continue
       # If we filter by bucket, check it here without fetching the build.
       # This is not a security check.
       if buckets and e.bucket not in buckets:
@@ -821,7 +825,8 @@ def _check_tag_index_entry_order(idx):
   """Raises errors.InvalidIndexEntryOrder if the order is incorrect."""
   # The order must be descending.
   for i in xrange(len(idx.entries) - 1):
-    if idx.entries[i].build_id <= idx.entries[i+1].build_id:
+    # Tolerate dups.
+    if idx.entries[i].build_id < idx.entries[i+1].build_id:
       raise errors.InvalidIndexEntryOrder(
           'invalid entry order in TagIndex(%r)' % idx.key.id())
 
@@ -1400,7 +1405,10 @@ def longest_pending_time(bucket, builder):
 
 
 def _add_to_tag_index_async(tag, new_entries):
-  """Adds index entries to the tag index."""
+  """Adds index entries to the tag index.
+
+  Assumes that new_entries does not have duplicates.
+  """
   if not new_entries:  # pragma: no cover
     return
   new_entries.sort(key=lambda e: e.build_id, reverse=True)
