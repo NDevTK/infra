@@ -28,7 +28,7 @@ from gae_libs import appengine_util
 from gae_libs.http import auth_util
 from libs import time_util
 from model import analysis_approach_type
-from model import analysis_status
+from libs import analysis_status
 from model.flake.flake_analysis_request import FlakeAnalysisRequest
 from model.suspected_cl_confidence import SuspectedCLConfidence
 from model.wf_analysis import WfAnalysis
