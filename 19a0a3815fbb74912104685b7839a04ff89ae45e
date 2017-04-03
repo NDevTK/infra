@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "57c00f09_3d5cc98e",
+        "filename": "appengine/findit/libs/analysis_status.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-04-03T17:12:41Z",
+      "side": 1,
+      "message": "I\u0027m thinking we should have sub directories, for example, for this file, move it to libs/model or some sort?",
+      "revId": "19a0a3815fbb74912104685b7839a04ff89ae45e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
