@@ -34,6 +34,24 @@
       "revId": "8e7e737ae103e9b6d2e043544f853a00ae346429",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "08654265_328d4840",
+        "filename": "appengine/findit/util_scripts/crash_queries/delta_test/delta_util.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1123509
+      },
+      "writtenOn": "2017-04-04T18:35:45Z",
+      "side": 1,
+      "message": "If that\u0027s the case, SGTM.",
+      "parentUuid": "98db1a7e_8f0df0c7",
+      "revId": "8e7e737ae103e9b6d2e043544f853a00ae346429",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
