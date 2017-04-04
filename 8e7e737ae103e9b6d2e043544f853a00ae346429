@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e1ffce5b_af1d798b",
+        "filename": "appengine/findit/util_scripts/crash_queries/delta_test/delta_util.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1123509
+      },
+      "writtenOn": "2017-04-04T17:29:51Z",
+      "side": 1,
+      "message": "In case it matters for correctness, is backslash escaping a thing? A string ending with backslash wouldn\u0027t work correctly in this case. It also seems like it might be cleaner to simply keep the double quotes, but escape them (replace \\ with \\\\ and \" with \\\" to avoid both issues).\n\nAlso it doesn\u0027t look like the test was added in this patch set. The current implementation feels simple enough, but if you do anyhting more complicated it would be nice to have.",
+      "revId": "8e7e737ae103e9b6d2e043544f853a00ae346429",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
