@@ -16,6 +16,24 @@
       "revId": "8e7e737ae103e9b6d2e043544f853a00ae346429",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "98db1a7e_8f0df0c7",
+        "filename": "appengine/findit/util_scripts/crash_queries/delta_test/delta_util.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1143925
+      },
+      "writtenOn": "2017-04-04T18:33:41Z",
+      "side": 1,
+      "message": "A string ending with backslash seems ok to me, because in order to stay at the end of the string, it has to be like \u0027hello \\\\\u0027, so the \u0027\\\\\u0027 won\u0027t affect anything.\n\nThe problem with double quotes is, in Excel/Google sheet, to print a csv, if a string contains \u0027\\n\u0027, the string will be separated into several cells instead of one. For example:\n\n\u0027a cat says:\\n\"one \\n two \\n three\".\u0027 will be printed as below:\n----------------------\na cat says: \n----------------------\n\"one \n----------------------\n two \n----------------------\n three\".\n----------------------\n\nOnly wrapping up it in double quotes, like this \u0027 \"a cat says:\\n\u0027one \\ntwo \\nthree\u0027. \" \u0027, it can be printed as below:\n----------------------\na cat says: \n\u0027one\n two\n three\u0027.\n----------------------\n\nBut if we keep the double quotes inside of the original string, after wrapping it up in double quotes, it will be \u0027 \"a cat says:\\n\"one \\ntwo \\nthree\". \" \u0027, it will be printed as below, because the \"one\\ntwo\\nthree\" is not in any double quotes.\n----------------------\na cat says:\none\n----------------------\ntwo\n----------------------\nthree. \n----------------------",
+      "parentUuid": "e1ffce5b_af1d798b",
+      "revId": "8e7e737ae103e9b6d2e043544f853a00ae346429",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
