@@ -16,6 +16,24 @@
       "revId": "19a0a3815fbb74912104685b7839a04ff89ae45e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dcfbb67a_191c5343",
+        "filename": "appengine/findit/libs/analysis_status.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1143925
+      },
+      "writtenOn": "2017-04-04T22:33:10Z",
+      "side": 1,
+      "message": "Indeed, there are a lot of models tracking the status of their analysis pipeline, but the ``analysis_status`` is not for model status, it\u0027s more for pipeline analysis status, so we shouldn\u0027t move it to libs/model, and since pipeline_util and wrapper_pipeline are all in libs/, so I think it\u0027s better to put it in libs/",
+      "parentUuid": "57c00f09_3d5cc98e",
+      "revId": "19a0a3815fbb74912104685b7839a04ff89ae45e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
