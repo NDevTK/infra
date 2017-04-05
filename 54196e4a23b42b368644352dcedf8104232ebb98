@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5344ca5b_5b6be470",
+        "filename": "go/src/infra/tools/git/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-04-05T16:30:15Z",
+      "side": 1,
+      "message": "Note that this doesn\u0027t currently work correctly on openbsd... but that\u0027s probably OK?",
+      "revId": "54196e4a23b42b368644352dcedf8104232ebb98",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
