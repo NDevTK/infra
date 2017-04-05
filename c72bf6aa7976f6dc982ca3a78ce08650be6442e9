@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a798854b_beac97c0",
+        "filename": "go/src/infra/tools/git/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-04-05T16:26:09Z",
+      "side": 0,
+      "message": "This was accidentally finding cwd+argv[0], which isn\u0027t quite right :/",
+      "revId": "c72bf6aa7976f6dc982ca3a78ce08650be6442e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
