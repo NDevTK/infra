@@ -14,13 +14,14 @@ import (
 
 	"golang.org/x/net/context"
 
+	"github.com/kardianos/osext"
+
 	"infra/tools/git/state"
 
 	"github.com/luci/luci-go/cipd/version"
 	"github.com/luci/luci-go/common/errors"
 	"github.com/luci/luci-go/common/retry"
 	"github.com/luci/luci-go/common/system/environ"
-	"github.com/luci/luci-go/common/system/filesystem"
 )
 
 // versionString is the version string for this wrapper.
@@ -79,8 +80,9 @@ func mainImpl(c context.Context, argv []string, env environ.Env, stdin io.Reader
 	}
 
 	// Locate the system Git.
-	self, args := argv[0], argv[1:]
-	switch err := filesystem.AbsPath(&self); {
+	args := argv[1:]
+	self, err := osext.Executable()
+	switch {
 	case err != nil:
 		// If we can't identify our own path, we can't check our cached Git path,
 		// so invalidate it.
@@ -95,7 +97,6 @@ func mainImpl(c context.Context, argv []string, env environ.Env, stdin io.Reader
 		st.SelfPath = self
 	}
 
-	var err error
 	if st.GitPath, err = gitProbe.Locate(c, self, st.GitPath, env); err != nil {
 		logError(err, "failed to locate system Git")
 		return gitWrapperErrorReturnCode
