@@ -67,6 +67,22 @@ func GetIncident(c context.Context, id string, serviceID string) (*ServiceIncide
 	}
 }
 
+// GetServiceIncidents gets all the incidents of the given service.
+//
+// It returns (incidents, nil) on success or (nil, err) on datastore errors.
+// If no incidents for the service were found, incidents will be empty.
+func GetServiceIncidents(c context.Context, serviceID string) (*[]ServiceIncident, error) {
+	serviceKey := datastore.NewKey(c, "Service", serviceID, 0, nil)
+	query := datastore.NewQuery("ServiceIncident").Ancestor(serviceKey)
+	incidents := &[]ServiceIncident{}
+	if err := datastore.GetAll(c, query, incidents); err != nil {
+		logging.Errorf(
+			c, "Got unexpected error: %v", err)
+		return nil, err
+	}
+	return incidents, nil
+}
+
 // GetService gets the specified Service from datastore.
 //
 // It returns (service, nil) on success, (nil, nil) if such service is not found
@@ -83,4 +99,19 @@ func GetService(c context.Context, serviceID string) (*Service, error) {
 		logging.Errorf(c, "Error getting Service entity: %v", err)
 		return nil, err
 	}
+}
+
+// AddIncident writes an incident to datastore.
+func AddIncident(c context.Context, id string, serviceID string, severity Severity) error {
+	incident := ServiceIncident{
+		ID:         id,
+		ServiceKey: datastore.NewKey(c, "Service", serviceID, 0, nil),
+		StartTime:  time.Now(),
+		Severity:   severity,
+	}
+	if err := datastore.Put(c, &incident); err != nil {
+		logging.Errorf(c, "Error: %v", err)
+		return err
+	}
+	return nil
 }
