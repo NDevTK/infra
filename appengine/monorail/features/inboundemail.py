@@ -154,7 +154,7 @@ class InboundEmail(webapp2.RequestHandler):
     # line hash will not match, which seems reasonable.
     try:
       auth = monorailrequest.AuthData.FromEmail(
-          cnxn, author_addr, self.services)
+          cnxn, author_addr, self.services, autocreate=is_alert)
       author_id = auth.user_id
     except user_svc.NoSuchUserException:
       author_id = None
