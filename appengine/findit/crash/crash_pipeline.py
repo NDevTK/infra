@@ -11,14 +11,14 @@ from crash import monitoring
 from crash import findit_for_chromecrash
 from crash import findit_for_clusterfuzz
 from crash.type_enums import CrashClient
+from libs import time_util
 from gae_libs import appengine_util
 from gae_libs import pubsub_util
 from gae_libs.gitiles.cached_gitiles_repository import CachedGitilesRepository
 from gae_libs.http.http_client_appengine import HttpClientAppengine
 from gae_libs.pipeline_wrapper import BasePipeline
 from gae_libs.pipeline_wrapper import pipeline
-from libs import time_util
-from model import analysis_status
+from libs import analysis_status
 from model.crash.crash_config import CrashConfig
 
 
