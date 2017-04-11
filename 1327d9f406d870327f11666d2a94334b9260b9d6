@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "84c748b3_c3f4ad1a",
+        "filename": "appengine/chromium_cq_status/handlers/test/resources/patch_flaky.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 288,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2017-04-11T16:08:55Z",
+      "side": 1,
+      "message": "I left \"timestamp\" here for testing that app can handle old patchsets as well.",
+      "revId": "1327d9f406d870327f11666d2a94334b9260b9d6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
