@@ -22,6 +22,30 @@
       "revId": "0c98e655fa90fb4780c2c8a8f15d13daf282d8b4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cf13201b_30b41463",
+        "filename": "appengine/chromium_cq_status/handlers/test/resources/patch_cq_buggy.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2017-04-11T16:10:28Z",
+      "side": 0,
+      "message": "you already did.",
+      "parentUuid": "eca4d218_2a01d299",
+      "range": {
+        "startLine": 251,
+        "startChar": 7,
+        "endLine": 251,
+        "endChar": 16
+      },
+      "revId": "0c98e655fa90fb4780c2c8a8f15d13daf282d8b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
