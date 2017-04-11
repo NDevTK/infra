@@ -46,6 +46,29 @@
       "revId": "458b194a7e3e8da153757109bac463308684cbb3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4dcfef02_ae612f63",
+        "filename": "appengine/findit/waterfall/flake/recursive_flake_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 427,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-04-11T20:23:13Z",
+      "side": 1,
+      "message": "nit: missing a docstring for this function.",
+      "range": {
+        "startLine": 427,
+        "startChar": 4,
+        "endLine": 427,
+        "endChar": 30
+      },
+      "revId": "458b194a7e3e8da153757109bac463308684cbb3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -34,6 +34,24 @@
       "revId": "50c86d87ae6825a2f71dabaace51306621481ac9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "48499471_9dd18443",
+        "filename": "appengine/findit/waterfall/flake/test/recursive_flake_pipeline_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 948,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-04-11T20:23:13Z",
+      "side": 0,
+      "message": "I agree with Jeff that a dedicated test for smaller functions like this one will help for code coverage and maintenance.",
+      "parentUuid": "79a5f8ae_57cfcc5c",
+      "revId": "50c86d87ae6825a2f71dabaace51306621481ac9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
