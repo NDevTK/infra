@@ -34,6 +34,24 @@
       "revId": "d8c96bd4960487fa6d91116f920a6d7b485f3d94",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c3dff082_5fac281c",
+        "filename": "infra/services/android_docker/usb_device.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1181690
+      },
+      "writtenOn": "2017-04-11T18:35:12Z",
+      "side": 1,
+      "message": "oh, i see what you mean.",
+      "parentUuid": "360d04a5_37306164",
+      "revId": "d8c96bd4960487fa6d91116f920a6d7b485f3d94",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
