@@ -49,7 +49,7 @@ class PatchSummaryTest(testing.AppengineTestCase):
     assert Record.query().count() == 0
     records = _load_json(filename)
     for record in records:
-      self.mock_now(datetime.utcfromtimestamp(record['timestamp']))
+      self.mock_now(datetime.utcfromtimestamp(record['created_ts']))
       Record(
         id=record['key'],
         tags=record['tags'],
