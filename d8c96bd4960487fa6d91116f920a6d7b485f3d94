@@ -16,6 +16,24 @@
       "revId": "d8c96bd4960487fa6d91116f920a6d7b485f3d94",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "360d04a5_37306164",
+        "filename": "infra/services/android_docker/usb_device.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2017-04-11T18:33:11Z",
+      "side": 1,
+      "message": "No. I only want devices that show up exactly once.",
+      "parentUuid": "01ec5264_660215a2",
+      "revId": "d8c96bd4960487fa6d91116f920a6d7b485f3d94",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
