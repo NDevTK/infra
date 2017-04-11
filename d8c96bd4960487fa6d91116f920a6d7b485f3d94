@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "01ec5264_660215a2",
+        "filename": "infra/services/android_docker/usb_device.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1181690
+      },
+      "writtenOn": "2017-04-11T17:19:00Z",
+      "side": 1,
+      "message": "This would be simpler w/ a set:\n\nunique_devices \u003d set()\nfor d in android_devices:\n  if d in unique_devices:\n    logging.error(...)\n  else:\n    unique_devices.add(d)\nandroid_devices \u003d list(unique_devices)",
+      "revId": "d8c96bd4960487fa6d91116f920a6d7b485f3d94",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
