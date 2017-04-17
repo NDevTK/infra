@@ -18,8 +18,8 @@ class WeightTest(unittest.TestCase):
 
   def testMultiply(self):
     """Tests overloading operators ``__mul__`` and ``__rmul__``"""
-    self.assertEqual((Weight(0.8) * 2.0).value, 0.8 * 2.0)
-    self.assertEqual((2.0 * Weight(0.8)).value, 2.0 * 0.8)
+    self.assertEqual((Weight(0.8) * 2.0), 0.8 * 2.0)
+    self.assertEqual((2.0 * Weight(0.8)), 2.0 * 0.8)
 
   def testEqual(self):
     """Tests ``__eq__`` and ``__ne__``."""
@@ -100,6 +100,7 @@ class MetaWeightTest(unittest.TestCase):
                               'f2': MetaWeight({'f3': Weight(0.00001),
                                                 'f4': Weight(0.0000003)})})
     meta_weight.DropZeroWeights(epsilon=0.0001)
+    print meta_weight
     expected_meta_weight = MetaWeight({'f1': Weight(0.02)})
     self.assertTrue(meta_weight == expected_meta_weight)
 

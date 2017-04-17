@@ -11,7 +11,6 @@ import scipy.optimize as spo
 from crash.loglinear.model import LogLinearModel
 from crash.loglinear.weight import MetaWeight
 from crash.loglinear.weight import Weight
-from libs.meta_dict_serializer import GetSerializer
 from libs.math.vectors import vsum
 # N.B., ``vsum`` can't take generators; you must pass explicit lists.
 
@@ -52,15 +51,14 @@ class TrainableLogLinearModel(LogLinearModel):
     """
     super(TrainableLogLinearModel, self).__init__(
         Y_given_X, meta_feature, meta_weight, epsilon)
+    self._key_to_index = {}
+    for index, leaf in enumerate(meta_feature.iterleaves()):
+      self._key_to_index[leaf[0]] = index
+
     self._training_data = training_data
-    # Use self._meta_weight instead of initialz_meta_weight,
-    # since self._meta_weight already filtered zero meta_weight in the __init__
-    # of superclass.
-    self._serializer = GetSerializer(meta_feature)
-    self._np_weight = self._MetaToNumPyArray(self.meta_weight)
-    self._observed_feature_vector = vsum([
-        self.FeaturesAsNumPyArray(x)(y)
-        for x, y in self._training_data])
+    self._np_weight = np.array(self.DictToList(self.meta_weight.leaves))
+    self._observed_feature_vector = vsum(
+        [self.FeaturesAsNumPyArray(x)(y) for x, y in self._training_data])
 
   @property
   def np_weight(self):
@@ -96,31 +94,25 @@ class TrainableLogLinearModel(LogLinearModel):
                       (new_np_weight.shape, self._np_weight.shape))
 
     self._np_weight = new_np_weight
-    self.meta_weight = self._NumPyArrayToMeta(self.np_weight)
+    self._meta_weight.UpdateLeaves(
+        self.ListToDict([Weight(w) for w in new_np_weight]))
     self.ClearWeightBasedMemos()
 
-  def _NumPyArrayToMeta(self, np_weight):
-    """Converts numpy array to dict (mapping feature name to weight).
+  def ListToDict(self, l):
+    """Converts list to dict based on ``self._key_to_index``."""
+    d = {}
+    for key, index in self._key_to_index.iteritems():
+      d[key] = l[index]
 
-    Note, this conversion is needed because model uses meta_weight dict to
-    organize meta_weight for features, however SciPy trainning (e.g. BFGS) needs
-    numpy array to do computaion.
+    return d
 
-    Args:
-      np_weight (np.ndarray): meta_weight which have the same order of
-        self._ordered_feature_to_len. Note, featuer np array should also be
-        serialized by the same order as self._ordered_feature_to_len to match.
+  def DictToList(self, d, default=0):
+    """Converts dict to list based on ``self._key_to_index``."""
+    l = [default] * len(self._key_to_index)
+    for key, index in self._key_to_index.iteritems():
+      l[index] = d.get(key, default)
 
-    Returns:
-      A dict mapping feature name to weight.
-    """
-    return self._serializer.FromList(np_weight, meta_constructor=MetaWeight,
-                                     element_constructor=Weight)
-
-  def _MetaToNumPyArray(self, meta_weight):
-    """Converts dict (mapping feature name to weight) to numpy array."""
-    return np.array([weight.value
-                     for weight in self._serializer.ToList(meta_weight)])
+    return l
 
   def FeaturesAsNumPyArray(self, x):
     """A variant of ``Features`` which returns a ``np.ndarray``.
@@ -138,7 +130,7 @@ class TrainableLogLinearModel(LogLinearModel):
     ``np.ndarray`` objects. If that turns out to be a performance
     bottleneck, we can add the extra layer of memoization to avoid that.
     """
-    return lambda y: np.array(self._serializer.ToList(self.Features(x)(y)))
+    return lambda y: np.array(self.DictToList(self.Features(x)(y).leaves))
 
   def LogLikelihood(self):
     """The conditional log-likelihood of the training data.
@@ -157,8 +149,7 @@ class TrainableLogLinearModel(LogLinearModel):
     will be the log-likelihood plus some penalty terms for regularization.
     """
     observed_zeta = math.fsum(self.LogZ(x) for x, _ in self._training_data)
-    observed_score = self.np_weight.dot(
-        self._observed_feature_vector)
+    observed_score = self.np_weight.dot(self._observed_feature_vector)
     return observed_score - observed_zeta
 
   def LogLikelihoodGradient(self):
