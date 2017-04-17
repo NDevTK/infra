@@ -58,3 +58,14 @@ class TrainableLogLinearModelTest(LoglinearTestCase):
         'Training reduced the loglikelihood from %f to %f,'
         ' when it should have increased it!'
         % (initial_loglikelihood, trained_loglikelihood))
+
+  def testDictToList(self):
+    d = {'Feature0': 'feature_value0', 'Feature1': 'feature_value1',
+         'Feature2': 'feature_value2'}
+    l = self._model.DictToList(d)
+
+    expected_l = [0] * len(self._model._key_to_index)
+    for key, index in self._model._key_to_index.iteritems():
+      expected_l[index] = d.get(key, 0)
+
+    self.assertListEqual(l, expected_l)
