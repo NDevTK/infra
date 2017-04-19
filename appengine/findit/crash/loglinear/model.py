@@ -201,7 +201,7 @@ class UnnormalizedLogLinearModel(object):
 
   def FilterReasonWithWeight(self, reason):
     """Filters reasons with zero weights."""
-    flat_weight = self._meta_weight.flat_dict
+    flat_weight = self._meta_weight.leaves
 
     filtered_reasons = []
     for feature_name in flat_weight:
