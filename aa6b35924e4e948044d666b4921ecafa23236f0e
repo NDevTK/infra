@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "affe10c5_1cdcff36",
+        "filename": "appengine/findit/crash/loglinear/model.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1123509
+      },
+      "writtenOn": "2017-04-19T23:48:17Z",
+      "side": 1,
+      "message": "I don\u0027t have a strong opinion on this, but it may be more understandable to stick to positive numbers and reverse the order later.",
+      "revId": "aa6b35924e4e948044d666b4921ecafa23236f0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c1369fba_5da032bb",
+        "filename": "appengine/findit/crash/loglinear/model.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1123509
+      },
+      "writtenOn": "2017-04-19T23:48:17Z",
+      "side": 1,
+      "message": "Nit: space here.",
+      "range": {
+        "startLine": 224,
+        "startChar": 23,
+        "endLine": 224,
+        "endChar": 25
+      },
+      "revId": "aa6b35924e4e948044d666b4921ecafa23236f0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
