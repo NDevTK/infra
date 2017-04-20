@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "ea448fb5_de62b017",
+        "filename": "appengine/findit/crash/loglinear/model.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-04-20T01:07:41Z",
+      "side": 1,
+      "message": "This is because the name is *_PRIORITY, so I think it may be better not to reverse it.",
+      "parentUuid": "affe10c5_1cdcff36",
+      "revId": "aa6b35924e4e948044d666b4921ecafa23236f0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c1369fba_5da032bb",
         "filename": "appengine/findit/crash/loglinear/model.py",
         "patchSetId": 3
@@ -39,6 +57,30 @@
       "revId": "aa6b35924e4e948044d666b4921ecafa23236f0e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "818bb279_855544d4",
+        "filename": "appengine/findit/crash/loglinear/model.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-04-20T01:07:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c1369fba_5da032bb",
+      "range": {
+        "startLine": 224,
+        "startChar": 23,
+        "endLine": 224,
+        "endChar": 25
+      },
+      "revId": "aa6b35924e4e948044d666b4921ecafa23236f0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
