@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "24fe2928_c1d7b9c5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-04-21T19:34:42Z",
+      "side": 1,
+      "message": "homedir cache?\ndefault cache?",
+      "revId": "fcbd2dfe0125994494df0792d6575dcbaca45c3b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b86661e7_46bc08bf",
         "filename": "go/src/infra/tools/vpython/pep425.go",
         "patchSetId": 1
@@ -19,6 +36,69 @@
         "endLine": 20,
         "endChar": 23
       },
+      "revId": "fcbd2dfe0125994494df0792d6575dcbaca45c3b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8e895ad1_7a0e6914",
+        "filename": "go/src/infra/tools/vpython/pep425.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-04-21T19:34:42Z",
+      "side": 1,
+      "message": "please provide docstrings about what sorts of strings this function accepts and the values it results in (for all of these)",
+      "range": {
+        "startLine": 20,
+        "startChar": 5,
+        "endLine": 20,
+        "endChar": 23
+      },
+      "revId": "fcbd2dfe0125994494df0792d6575dcbaca45c3b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bec81c28_5e3d1f9d",
+        "filename": "go/src/infra/tools/vpython/pep425.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-04-21T19:34:42Z",
+      "side": 1,
+      "message": "maybe \u0027ok\u0027?\nOr just return a nil pointer?",
+      "range": {
+        "startLine": 20,
+        "startChar": 52,
+        "endLine": 20,
+        "endChar": 54
+      },
+      "revId": "fcbd2dfe0125994494df0792d6575dcbaca45c3b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9dfd3dcb_3e0301bd",
+        "filename": "go/src/infra/tools/vpython/pep425.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-04-21T19:34:42Z",
+      "side": 1,
+      "message": "don\u0027t you have to check `other.major \u003e a.major -\u003e false`?\n\nConsider https://github.com/luci/luci-go/tree/master/common/data/sortby",
       "revId": "fcbd2dfe0125994494df0792d6575dcbaca45c3b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
