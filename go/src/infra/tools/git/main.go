@@ -10,6 +10,8 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"runtime"
+	"strings"
 	"time"
 
 	"golang.org/x/net/context"
@@ -98,6 +100,21 @@ func mainImpl(c context.Context, argv []string, env environ.Env, stdin io.Reader
 	if st.GitPath, err = gitProbe.Locate(c, self, st.GitPath, env); err != nil {
 		logError(err, "failed to locate system Git")
 		return gitWrapperErrorReturnCode
+	}
+
+	// If we are running on Windows, and our Git is a batch file, we will need to
+	// escape any carats ("^") in the command line. This is because "^" is a
+	// batch file escape character. Carats can be escaped by doubling them, so
+	// "^^" is interpreted as a single carat.
+	//
+	// When running a batch file, our Git command will be interpreted twice, once
+	// as it runs through the intiial command interpreter and once more as it is
+	// interpreted by the underlying "cmd.exe" Git execution, so we need to
+	// double-escape.
+	if runtime.GOOS == "windows" && strings.HasSuffix(strings.ToLower(st.GitPath), ".bat") {
+		for i, arg := range args {
+			args[i] = strings.Replace(arg, "^", "^^^^", -1)
+		}
 	}
 
 	// Construct and execute a managed Git command.
