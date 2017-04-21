@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d65466b5_553533bd",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1148599
+      },
+      "writtenOn": "2017-04-21T23:38:05Z",
+      "side": 1,
+      "message": "Usually you just panic here, rather than returning err. Because either you have it injected in your context, and there\u0027s no error, or it\u0027s not there, and your code can\u0027t recover at all.",
+      "revId": "b5a06a19e77931d69ff2a904d81c4c7c4bf0b29d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cb918ed5_ce7db38e",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1148599
+      },
+      "writtenOn": "2017-04-21T23:38:05Z",
+      "side": 1,
+      "message": "how does this compile? line 78 is different case..",
+      "revId": "b5a06a19e77931d69ff2a904d81c4c7c4bf0b29d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "005d75bf_2a660898",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1148599
+      },
+      "writtenOn": "2017-04-21T23:38:05Z",
+      "side": 1,
+      "message": "You probably don\u0027t need to expose these clients.",
+      "revId": "b5a06a19e77931d69ff2a904d81c4c7c4bf0b29d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
