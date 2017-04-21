@@ -104,6 +104,24 @@
       "revId": "b5a06a19e77931d69ff2a904d81c4c7c4bf0b29d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "70330fa1_4bca6f64",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1148599
+      },
+      "writtenOn": "2017-04-21T23:45:20Z",
+      "side": 1,
+      "message": "Are you returning it anywhere? You shouldn\u0027t be. You should just be giving clients a function like UseProdClient or UseMemoryClient. So actually, what\u0027s the use case for NewMockClient?",
+      "parentUuid": "b367bcb0_f0d888ac",
+      "revId": "b5a06a19e77931d69ff2a904d81c4c7c4bf0b29d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
