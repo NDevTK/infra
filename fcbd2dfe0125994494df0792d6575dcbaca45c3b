@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b86661e7_46bc08bf",
+        "filename": "go/src/infra/tools/vpython/pep425.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-04-21T14:38:55Z",
+      "side": 1,
+      "message": "Split into OS-specific components, you say? I am tempted, but I also wanted to make these testable in a sensible way.\n\nOne option would be to have subpackages:\n- .../vpython/pep425/mac\n- .../vpython/pep425/linux\n\nThen have the \"pep425\" test code import mac/linux/etc. and test against them. This would be fine, but seemed like overkill to avoid compiling a few extra bytes of logic into the main code base, so I went with this.",
+      "range": {
+        "startLine": 20,
+        "startChar": 1,
+        "endLine": 20,
+        "endChar": 23
+      },
+      "revId": "fcbd2dfe0125994494df0792d6575dcbaca45c3b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
