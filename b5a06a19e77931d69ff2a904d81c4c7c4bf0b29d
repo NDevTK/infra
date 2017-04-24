@@ -140,6 +140,24 @@
       "revId": "b5a06a19e77931d69ff2a904d81c4c7c4bf0b29d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e3bc7520_30fac0d3",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-04-24T21:49:13Z",
+      "side": 1,
+      "message": "Oh I see. That\u0027s better, thank you.",
+      "parentUuid": "70330fa1_4bca6f64",
+      "revId": "b5a06a19e77931d69ff2a904d81c4c7c4bf0b29d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
