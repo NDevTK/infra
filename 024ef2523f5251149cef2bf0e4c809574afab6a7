@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9b56562c_915ba5e2",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1115495
+      },
+      "writtenOn": "2017-04-24T17:55:20Z",
+      "side": 1,
+      "message": "why rename this?",
+      "range": {
+        "startLine": 7,
+        "startChar": 1,
+        "endLine": 7,
+        "endChar": 8
+      },
+      "revId": "024ef2523f5251149cef2bf0e4c809574afab6a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1a30b24b_aa945f0b",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1115495
+      },
+      "writtenOn": "2017-04-24T17:55:20Z",
+      "side": 1,
+      "message": "bigquery\n\nbut also, why not call this bqClient?",
+      "range": {
+        "startLine": 17,
+        "startChar": 3,
+        "endLine": 17,
+        "endChar": 10
+      },
+      "revId": "024ef2523f5251149cef2bf0e4c809574afab6a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2898e448_c0bfb7c0",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1115495
+      },
+      "writtenOn": "2017-04-24T17:55:20Z",
+      "side": 1,
+      "message": "newBQ?",
+      "range": {
+        "startLine": 28,
+        "startChar": 5,
+        "endLine": 28,
+        "endChar": 7
+      },
+      "revId": "024ef2523f5251149cef2bf0e4c809574afab6a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "30cf7d44_b9cb72da",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1115495
+      },
+      "writtenOn": "2017-04-24T17:55:20Z",
+      "side": 1,
+      "message": "https://github.com/golang/go/wiki/CodeReviewComments#error-strings",
+      "range": {
+        "startLine": 32,
+        "startChar": 25,
+        "endLine": 32,
+        "endChar": 59
+      },
+      "revId": "024ef2523f5251149cef2bf0e4c809574afab6a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "33328025_e4c00184",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1115495
+      },
+      "writtenOn": "2017-04-24T17:55:20Z",
+      "side": 1,
+      "message": "Place these in the _test.go file. The package is the same. Why make it the main package btw? Is that a requirement for infra go stuff?",
+      "range": {
+        "startLine": 116,
+        "startChar": 5,
+        "endLine": 116,
+        "endChar": 18
+      },
+      "revId": "024ef2523f5251149cef2bf0e4c809574afab6a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
