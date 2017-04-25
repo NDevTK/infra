@@ -89,8 +89,10 @@ func prepBundle(ctx context.Context, recipesPy string, overrides map[string]stri
 	}
 	args = append(args, "bundle", "--destination", retDir)
 	cmd := logCmd(ctx, "python", args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	if logging.GetLevel(ctx) < logging.Info {
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+	}
 	if err := cmdErr(cmd.Run(), "creating bundle"); err != nil {
 		os.RemoveAll(retDir)
 		return "", err
@@ -154,27 +156,20 @@ func isolateDirectory(ctx context.Context, arc *archiver.Archiver, dir string) (
 	return promise.Digest(), arc.Close()
 }
 
-func bundleAndIsolate(ctx context.Context, overrides map[string]string, isolatedFlags isolatedclient.Flags, authOpts auth.Options) error {
+func bundle(ctx context.Context, overrides map[string]string) (string, error) {
 	repoRecipesPy, err := findRecipesPy(ctx)
 	if err != nil {
-		return err
+		return "", err
 	}
+	logging.Debugf(ctx, "using recipes.py: %q", repoRecipesPy)
+	return prepBundle(ctx, repoRecipesPy, overrides)
+}
 
-	logging.Infof(ctx, "using recipes.py: %q", repoRecipesPy)
-
-	bundlePath, err := prepBundle(ctx, repoRecipesPy, overrides)
-	if err != nil {
-		return err
-	}
-	defer os.RemoveAll(bundlePath)
-
-	logging.Debugf(ctx, "bundle created at: %q", bundlePath)
-	logging.Infof(ctx, "isolating")
-
+func isolate(ctx context.Context, bundlePath string, isolatedFlags isolatedclient.Flags, authOpts auth.Options) (string, error) {
 	authenticator := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts)
 	authClient, err := authenticator.Client()
 	if err != nil {
-		return err
+		return "", err
 	}
 	isoClient := isolatedclient.New(
 		nil, authClient,
@@ -184,18 +179,12 @@ func bundleAndIsolate(ctx context.Context, overrides map[string]string, isolated
 	)
 
 	var w io.Writer
+	verbose := false
 	if logging.GetLevel(ctx) < logging.Info {
 		w = os.Stdout
+		verbose = true
 	}
-	arc := archiver.New(isoClient, w)
+	arc := archiver.New(isoClient, w, verbose)
 	hash, err := isolateDirectory(ctx, arc, bundlePath)
-	if err != nil {
-		return err
-	}
-
-	logging.Infof(ctx, "isolated: %q", hash)
-	logging.Infof(ctx, "URL: %s/browse?namespace=%s&hash=%s",
-		isolatedFlags.ServerURL, isolatedFlags.Namespace, hash)
-
-	return nil
+	return string(hash), err
 }
