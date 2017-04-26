@@ -2,6 +2,52 @@
   "comments": [
     {
       "key": {
+        "uuid": "1638d8cc_dc8bf613",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-04-26T23:33:45Z",
+      "side": 1,
+      "message": "add copyright header (in every file), see existing files",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 1
+      },
+      "revId": "da79613f5d264e58009ebf964f10369b5784f402",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "efa5670d_1d75f24d",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-04-26T23:33:45Z",
+      "side": 1,
+      "message": "nit: this shouldn\u0027t be public, because the value for this key has a non-public type (bqClient).",
+      "range": {
+        "startLine": 18,
+        "startChar": 6,
+        "endLine": 18,
+        "endChar": 17
+      },
+      "revId": "da79613f5d264e58009ebf964f10369b5784f402",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0f1e02c8_b49ff340",
         "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
         "patchSetId": 1
@@ -18,6 +64,121 @@
         "startChar": 0,
         "endLine": 22,
         "endChar": 0
+      },
+      "revId": "da79613f5d264e58009ebf964f10369b5784f402",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9d8bbdd5_a8e662b0",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-04-26T23:33:45Z",
+      "side": 1,
+      "message": "these line breaks are really weird looking. It\u0027s fine (and even more readable in this case) to keep function header on a single line.\n\nSee https://github.com/golang/go/wiki/CodeReviewComments#line-length",
+      "range": {
+        "startLine": 41,
+        "startChar": 0,
+        "endLine": 42,
+        "endChar": 43
+      },
+      "revId": "da79613f5d264e58009ebf964f10369b5784f402",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bc996e47_9cb90b08",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-04-26T23:33:45Z",
+      "side": 1,
+      "message": "nit: this is usually checked in reverse\n\nif err !\u003d nil {\n  return nil, err\n}\nreturn bq.getTable(...)\n\nSee https://github.com/golang/go/wiki/CodeReviewComments#indent-error-flow",
+      "range": {
+        "startLine": 44,
+        "startChar": 1,
+        "endLine": 44,
+        "endChar": 16
+      },
+      "revId": "da79613f5d264e58009ebf964f10369b5784f402",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "da3a943c_34613180",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-04-26T23:33:45Z",
+      "side": 1,
+      "message": "this facade is \"leaky\" :( There are two ways of doing the same thing (and one of them is wrong, which is not obvious to users of the library):\n\nThe first one:\n\nt, _ :\u003d bqhelper.GetTable(ctx, \"dataset\", \"table\")\nbqhelper.UpdateTable(ctx, md, t)\n\nThe second one:\n\nt, _ :\u003d bqhelper.GetTable(ctx, \"dataset\", \"table\")\nt.Update(ctx, md)\n\nThis is not a great API.\n\nTo fix this, *bigquery.Table should be hidden behind some other type, to make sure there\u0027s only one correct way of hanlding it.\n\nSomething like\n\ntype Table struct {\n  t *bigquery.Table\n}\n\nfunc GetTable(ctx context.Context, datasetID, tableID string) (*Table, error) {\n  ...\n}\n\nfunc (t *Table) Update(ctx context.Context, md bigquery.TableMetadataToUpdate) (*bigquery.TableMetadata, error) {\n  // call t.t.Update for prod implementation, and some mock for mocked implementation\n}\n\n--\n\nBut this is playing wack-o-mole :( All other bigquery types the library uses may have same issue. Hiding them all is not fun.\n\nIdeally, we should be using bigquery types directly, but instantiate the client in a different way, e.g. (hypothetically):\n\nclient, testData, err :\u003d bigquery.NewTestClient(ctx, \"projectID\")\nclient.Dataset(\"...\").Table(\"...\").Create(ctx, ...)\n\n// testData.Datasets[\"...\"].Tables now has the table\n\nThat way we don\u0027t need to teach users to use some custom API wrapper, they can use well-documented standard BigQuery client instead.\n\nMore over, looks like this is roughly how BigQuery library own internal tests are implemented. For example: https://github.com/GoogleCloudPlatform/google-cloud-go/blob/master/bigquery/dataset_test.go#L68 \n\nThey use bigquery.Client type there, but replace the guts by mocking \u0027service\u0027 field.\n\nUnfortunately, this machinery is not accessible outside bigquery package (because this field is not public https://github.com/GoogleCloudPlatform/google-cloud-go/blob/master/bigquery/bigquery.go#L41).\n\nI think we should investigate changing the bigquery library directly to expose some of this internal testing stuff for users of the package. I suggest you to talk to mcgreevy@ about this (since he\u0027s mentioned in some TODOs in bigquery client code). Or just open an issue with proposal here https://github.com/GoogleCloudPlatform/google-cloud-go/issues",
+      "range": {
+        "startLine": 71,
+        "startChar": 5,
+        "endLine": 72,
+        "endChar": 19
+      },
+      "revId": "da79613f5d264e58009ebf964f10369b5784f402",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "42424900_dfec01d8",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-04-26T23:33:45Z",
+      "side": 1,
+      "message": "Please pass options too, they are really important (in particular, they will be used to configure authentication). See opts in https://godoc.org/cloud.google.com/go/bigquery#NewClient",
+      "range": {
+        "startLine": 87,
+        "startChar": 20,
+        "endLine": 87,
+        "endChar": 29
+      },
+      "revId": "da79613f5d264e58009ebf964f10369b5784f402",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "100ef51c_531695b3",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-04-26T23:33:45Z",
+      "side": 1,
+      "message": "either return (new context, nil) or (nil, err), but not both.",
+      "range": {
+        "startLine": 88,
+        "startChar": 1,
+        "endLine": 88,
+        "endChar": 51
       },
       "revId": "da79613f5d264e58009ebf964f10369b5784f402",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
