@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0f1e02c8_b49ff340",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1116444
+      },
+      "writtenOn": "2017-04-26T17:51:17Z",
+      "side": 1,
+      "message": "Just curious, will this client eventually have query / write / stream data methods too? It looks like it could be a good place to abstract all our BQ API.\n\nAlso, have you looked into database/sql/driver package? https://golang.org/pkg/database/sql/driver/\nI wonder if it makes sense to use that, since it\u0027s a Go standard for any SQL-based DBs, and has a bunch of testing packages, including a couple of decent \"fakes\" implementing most of SQL: \n - https://github.com/mattn/go-sqlite3 - a cgo package implementing SQL\n - https://github.com/cznic/ql - pure Go SQL, but probably not as compliant.\n\nThis is not a blocking comment, just food for thought.",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 0
+      },
+      "revId": "da79613f5d264e58009ebf964f10369b5784f402",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b35dc49b_e08b9dbb",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1116444
+      },
+      "writtenOn": "2017-04-26T17:51:17Z",
+      "side": 1,
+      "message": "I\u0027d strongly encourage the use of goconvey for writing tests. It is de facto our golden standard, and makes tests easier to read / write / debug. Look at any of the existing *_test.go files, e.g. https://chromium.googlesource.com/infra/infra/+/master/go/src/infra/crimson/server/crimsondb/crimsondb_test.go .\n\nThen on the command line, in the appropriate subdirectory, run \u0027gocovney\u0027 on the background, and watch your tests pass every time you save a file.",
+      "range": {
+        "startLine": 92,
+        "startChar": 1,
+        "endLine": 92,
+        "endChar": 44
+      },
+      "revId": "da79613f5d264e58009ebf964f10369b5784f402",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
