@@ -140,6 +140,30 @@
     },
     {
       "key": {
+        "uuid": "5045f554_6d5d0591",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-04-26T23:44:32Z",
+      "side": 1,
+      "message": "(I believe once a consensus with owners of google-cloud-go is reached, writing the actual code will be less effort than trying to facade the entire BigQuery library via separate API wrapper. This testing goodness will also be reusable by other people that use BigQuery library).\n\n(Note, we did try to do something similar with our datastore mocks, but they are substantially more complicated and different from stock library, that cloud team didn\u0027t want to use them).",
+      "parentUuid": "da3a943c_34613180",
+      "range": {
+        "startLine": 71,
+        "startChar": 5,
+        "endLine": 72,
+        "endChar": 19
+      },
+      "revId": "da79613f5d264e58009ebf964f10369b5784f402",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "42424900_dfec01d8",
         "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
         "patchSetId": 1
