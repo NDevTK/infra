@@ -77,8 +77,7 @@ func main() {
 			// commands to launch swarming tasks. These all begin with `launch`.
 			// TODO(iannucci): `launch` does the full flow; isolate, get, edit,
 			//   launch-raw.
-			// TODO(iannucci): `launch-raw` consumes JobDescription on stdin and just
-			//   pushes it so swarming.
+			launchRawCmd(authDefaults),
 
 			authcli.SubcommandLogin(authDefaults, "auth-login", false),
 			authcli.SubcommandLogout(authDefaults, "auth-logout", false),

@@ -8,11 +8,17 @@ import (
 	"encoding/json"
 	"strings"
 
+	"golang.org/x/net/context"
+
+	"github.com/luci/luci-go/client/archiver"
 	swarming "github.com/luci/luci-go/common/api/swarming/swarming/v1"
 	"github.com/luci/luci-go/common/errors"
+	"github.com/luci/luci-go/common/isolated"
+	"github.com/luci/luci-go/common/logging"
 )
 
 const recipePropertiesJSON = "$RECIPE_PROPERTIES_JSON"
+const recipeCheckoutDir = "recipe-checkout-dir"
 
 // JobDefinition defines a 'try-recipe' job. It's like a normal Swarming
 // NewTaskRequest, but with some recipe-specific extras.
@@ -23,7 +29,7 @@ const recipePropertiesJSON = "$RECIPE_PROPERTIES_JSON"
 // Additionally, RecipeProperties will replace any args in the swarming task's
 // command which are the string $RECIPE_PROPERTIES_JSON.
 type JobDefinition struct {
-	RecipeIsolatedHash string `json:"recipe_isolated_hash"`
+	RecipeIsolatedHash isolated.HexDigest `json:"recipe_isolated_hash"`
 
 	RecipeProperties map[string]interface{} `json:"recipe_properties"`
 
@@ -37,22 +43,51 @@ type JobDefinition struct {
 func JobDefinitionFromNewTaskRequest(r *swarming.SwarmingRpcsNewTaskRequest) (*JobDefinition, error) {
 	ret := &JobDefinition{SwarmingTask: r}
 
-	for i, arg := range r.Properties.Command {
-		if arg == "-properties" {
-			if i+1 >= len(r.Properties.Command) {
-				return nil, errors.New(
-					"-properties in task definition, but no following json property data")
-			}
-
-			raw := r.Properties.Command[i+1]
-			r.Properties.Command[i+1] = recipePropertiesJSON
+	toProcess := map[string]func(nextTok string) (replace []string, err error){
+		"-properties": func(nextTok string) ([]string, error) {
 			ret.RecipeProperties = map[string]interface{}{}
-			if err := json.NewDecoder(strings.NewReader(raw)).Decode(&ret.RecipeProperties); err != nil {
+			if err := json.NewDecoder(strings.NewReader(nextTok)).Decode(&ret.RecipeProperties); err != nil {
 				return nil, errors.Annotate(err).Reason("decoding -properties JSON").Err()
 			}
-			break
+			return []string{"-properties", recipePropertiesJSON}, nil
+		},
+
+		"-repository": func(nextTok string) ([]string, error) {
+			return []string{"-checkout-dir", recipeCheckoutDir}, nil
+		},
+
+		"-revision": func(nextTok string) ([]string, error) {
+			return nil, nil
+		},
+	}
+
+	newCmd := make([]string, 0, len(r.Properties.Command))
+
+	skip := false
+	for i, arg := range r.Properties.Command {
+		if skip {
+			skip = false
+			continue
+		}
+		if fn, ok := toProcess[arg]; ok {
+			if i+1 >= len(r.Properties.Command) {
+				return nil, errors.
+					Reason("%s in task definition, but no following json property data").
+					D("arg", arg).
+					Err()
+			}
+			replace, err := fn(r.Properties.Command[i+1])
+			if err != nil {
+				return nil, err
+			}
+			skip = true
+			newCmd = append(newCmd, replace...)
+		} else {
+			newCmd = append(newCmd, arg)
 		}
 	}
+
+	ret.SwarmingTask.Properties.Command = newCmd
 
 	return ret, nil
 }
@@ -78,16 +113,16 @@ func updateMap(updates map[string]string, slc *[]*swarming.SwarmingRpcsStringPai
 	*slc = newSlice
 }
 
-func (jd *JobDefinition) Edit(dims, props, env map[string]string, recipe string) (*JobDefinition, error) {
-	if len(dims) == 0 && len(props) == 0 && len(env) == 0 && recipe == "" {
+func (jd *JobDefinition) Edit(dims, props, env map[string]string, bundleIso isolated.HexDigest) (*JobDefinition, error) {
+	if len(dims) == 0 && len(props) == 0 && len(env) == 0 && bundleIso == "" {
 		return jd, nil
 	}
 
 	ret := *jd
 	ret.SwarmingTask = &(*jd.SwarmingTask)
 
-	if recipe != "" {
-		ret.RecipeIsolatedHash = recipe
+	if bundleIso != "" {
+		ret.RecipeIsolatedHash = bundleIso
 	}
 
 	updateMap(dims, &ret.SwarmingTask.Properties.Dimensions)
@@ -113,4 +148,47 @@ func (jd *JobDefinition) Edit(dims, props, env map[string]string, recipe string)
 	}
 
 	return &ret, nil
+}
+
+func (jd *JobDefinition) GetSwarmingNewTask(ctx context.Context, arc *archiver.Archiver) (*swarming.SwarmingRpcsNewTaskRequest, error) {
+	st := *jd.SwarmingTask
+	st.Properties = &(*st.Properties)
+
+	toCombine := isolated.HexDigests{
+		jd.RecipeIsolatedHash,
+	}
+
+	if st.Properties.InputsRef != nil {
+		toCombine = append(toCombine,
+			isolated.HexDigest(st.Properties.InputsRef.Isolated))
+	}
+
+	cmd := make([]string, len(st.Properties.Command))
+	copy(cmd, st.Properties.Command)
+
+	var properties string
+	for i, arg := range cmd {
+		if arg == recipePropertiesJSON {
+			if properties == "" {
+				propertiesBytes, err := json.Marshal(jd.RecipeProperties)
+				if err != nil {
+					return nil, err
+				}
+				properties = string(propertiesBytes)
+			}
+			cmd[i] = properties
+		}
+	}
+
+	logging.Infof(ctx, "combining: %v %v", cmd, toCombine)
+	newHash, err := combineIsolates(ctx, arc, cmd, toCombine...)
+	if err != nil {
+		return nil, err
+	}
+	st.Properties.InputsRef = &swarming.SwarmingRpcsFilesRef{
+		Isolated: string(newHash),
+	}
+	st.Properties.Command = nil
+
+	return &st, nil
 }
