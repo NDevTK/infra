@@ -48,6 +48,23 @@
     },
     {
       "key": {
+        "uuid": "d8a58107_78628818",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1174915
+      },
+      "writtenOn": "2017-04-27T07:06:05Z",
+      "side": 1,
+      "message": "Is it actually necessary to pass this client around via the context?  There are a bunch of exported helper methods in here whose only purpose is to extract the client from the context and then call a particular method on it.  If you could avoid storing the client in the context in the first place, you wouldn\u0027t need these.",
+      "revId": "da79613f5d264e58009ebf964f10369b5784f402",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0f1e02c8_b49ff340",
         "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
         "patchSetId": 1
@@ -64,6 +81,53 @@
         "startChar": 0,
         "endLine": 22,
         "endChar": 0
+      },
+      "revId": "da79613f5d264e58009ebf964f10369b5784f402",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3cbee5c4_edf76f70",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1174915
+      },
+      "writtenOn": "2017-04-27T07:06:05Z",
+      "side": 1,
+      "message": "Re: \"It looks like it could be a good place to abstract all our BQ API.\": I\u0027m curious about what problem a general \"BQ API abstraction\" would solve.",
+      "parentUuid": "0f1e02c8_b49ff340",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 0
+      },
+      "revId": "da79613f5d264e58009ebf964f10369b5784f402",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "310af5ca_ffed271d",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1174915
+      },
+      "writtenOn": "2017-04-27T07:06:05Z",
+      "side": 1,
+      "message": "Since these are both strings, it\u0027s normal to just do:\n\n/* snip */ getTable(datasetID, tableID string) /* snip */",
+      "range": {
+        "startLine": 22,
+        "startChar": 10,
+        "endLine": 22,
+        "endChar": 42
       },
       "revId": "da79613f5d264e58009ebf964f10369b5784f402",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
@@ -164,6 +228,30 @@
     },
     {
       "key": {
+        "uuid": "f098a3d7_7140b9ae",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1174915
+      },
+      "writtenOn": "2017-04-27T07:06:05Z",
+      "side": 1,
+      "message": "Note: in my comments, \"bigquery\" refers to the cloud bigquery library, and bqhelper refers to this library.\n\nI agree with Vadim\u0027s point that trying to wrap the bigquery library in this way is problematic:\n\n* as Vadim points out, the user is exposed to both the underlying bigquery types, as well as the bqhelper types.\n* to wrap the entire surface of the bigquery library would require a lot of boilerplate.\n* this bqClient interface hides the structure of the bigquery library, and turns it into a flat list of methods.  This would be less pleasant to use than using the bigquery library directly, and would be very difficult to extend to cover a larger amount of the bigquery surface.  You would either need to wrap *many* bigquery types, like in Vadim\u0027s \"Table\" example above (a lot of extra work and maintenance effort), or expose them directly, at which point users are mostly using the underlying bigquery library directly anyway; they would end up going through the bqClient only when it was helpful for testing, and the code would become hard to read.\n\nSo, I agree that you should avoid trying to create a general wrapper for the bigquery library. However, I don\u0027t think that mocking out the service field in the bigquery.Client is they way to proceed either.  That field is useful for unit testing the bigquery library itself, but if you were to mock it out to test your own code, you would end up writing tests that were neither unit-tests of your own code (because they would also be exercising the bigquery library code), nor real integration tests (because you wouldn\u0027t be hitting a real server).  It would also mean that your tests would break if the bigquery library changed how it used the service object.  If the cloud-go team were to expose the service type, it would effectively mean that they have to support two APIs: the existing library surface, plus the service API (which is really intended to be an implementation detail).  I don\u0027t think that you\u0027ll get very far with them if you propose that.\n\nSo, how to proceed?  I think that the bqClient interface you have created here is a reasonable way to add a seam for testing (\"seam\" in the sense of http://www.informit.com/articles/article.aspx?p\u003d359417\u0026seqNum\u003d2 ).  The problem is that it is currently framed as a general wrapper for the bigquery library.  It\u0027s never going to able to support all of the functionality of the underlying library.  However, if you think about what it actually does at the moment, it is just something which creates, retrieves, and updates tables.  So, rather than call it \"bqClient\", I think you should rename it to \"tableStore\", and move it back into the same package as the tool that uses it.  Now relieved of the responsibility of being \"general purpose\", you can simplify it to what it actually need to provide:\n\ntype tableStore interface {\n        getTableMetadata(ctx context.Context, datasetID, tableID string) (*bigquery.TableMetadata, error)                                    \n        createTable(ctx context.Context, datasetID, tableID string, options ...bigquery.CreateTableOption) error                            \n        updateTable(ctx context.Context, datasetID, tableID string, md bigquery.TableMetadataToUpdate) error                                 \n}\n\nInstead of taking and returning bigquery.Table objects, you can stick to dataset and tableID strings, because that all you really need for this little interface.  It\u0027s reasonable to pass around TableMetadata and TableMetadataToUpdate, because they\u0027re just dumb structs.  (Note: if you are never going to pass any CreateTableOptions other than a Schema to CreateTable, then you can just replace the options parameter with a schema parameter.  That would simplify further.)\n\nYou can then unit test your code using a mock which implements tableStore, similar to what you\u0027re doing with mockBQ.\n\nOther tools (or parts of tools) will require other subsets of the bigquery functionality, and as those needs arise, you can create small interfaces, analogous to tableStore, which capture that.",
+      "parentUuid": "5045f554_6d5d0591",
+      "range": {
+        "startLine": 71,
+        "startChar": 5,
+        "endLine": 72,
+        "endChar": 19
+      },
+      "revId": "da79613f5d264e58009ebf964f10369b5784f402",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "42424900_dfec01d8",
         "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
         "patchSetId": 1
@@ -204,6 +292,40 @@
         "endLine": 88,
         "endChar": 51
       },
+      "revId": "da79613f5d264e58009ebf964f10369b5784f402",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "740b777f_d17ae0e1",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1174915
+      },
+      "writtenOn": "2017-04-27T07:06:05Z",
+      "side": 1,
+      "message": "Rather than using a concatenated string as the map key, you can use a struct, so:\n\ntype tableKey struct {\n  datasetID string\n  tableID string\n}\n\nor, more compactly:\n\ntype tableKey struct {\n  datasetID, tableID string\n}\n\nthen\n\nmap[tableKey]*bigquery.Table",
+      "revId": "da79613f5d264e58009ebf964f10369b5784f402",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "631cd0e1_e4d21994",
+        "filename": "go/src/infra/libs/bqhelper/bqhelper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1174915
+      },
+      "writtenOn": "2017-04-27T07:06:05Z",
+      "side": 1,
+      "message": "If you take my suggestion above about simplifying bqClient to tableStore, then you don\u0027t need to store Tables at all, so you only need one map.\n\nmockBQ can become:\n\ntype mockTableStore map[tableKey]*bigquery.TableMetadata\n\nmockTableStore is a new map type -- you still need to initialize it as such, e.g. \n\nmts :\u003d make(mockTableStore)\n\nor\n\nmts :\u003d mockTableStore{}\n\nand you can define methods on it in the same way as you can for structs, so:\n\nfunc (mts mockTableStore) getTableMetadata(ctx context.Context, datasetID, tableID string) (*bigquery.TableMetadata, error) {\n  // snip\n}",
       "revId": "da79613f5d264e58009ebf964f10369b5784f402",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
