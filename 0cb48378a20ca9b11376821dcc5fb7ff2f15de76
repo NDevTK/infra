@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4b513b19_0c40a46e",
+        "filename": "go/src/infra/libs/testexpectations/parser.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-04-27T23:02:53Z",
+      "side": 1,
+      "message": "is it golang style for packages to be single words like this, instead of using snake_case?",
+      "range": {
+        "startLine": 5,
+        "startChar": 8,
+        "endLine": 5,
+        "endChar": 24
+      },
+      "revId": "0cb48378a20ca9b11376821dcc5fb7ff2f15de76",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3088d634_778014ea",
+        "filename": "go/src/infra/libs/testexpectations/parser.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-04-27T23:02:53Z",
+      "side": 1,
+      "message": "You don\u0027t have this empty assignment on line 111. Not sure which is more idiomatic, but pick one.",
+      "range": {
+        "startLine": 129,
+        "startChar": 3,
+        "endLine": 129,
+        "endChar": 10
+      },
+      "revId": "0cb48378a20ca9b11376821dcc5fb7ff2f15de76",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
