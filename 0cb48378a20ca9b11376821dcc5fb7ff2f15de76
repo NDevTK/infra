@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1fc106c8_e6e1d8bb",
+        "filename": "go/src/infra/libs/testexpectations/parser.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-04-27T23:14:32Z",
+      "side": 1,
+      "message": "The dir name is the package name. I tend not to use underscores in package names, and that\u0027s idomatic: https://blog.golang.org/package-names",
+      "parentUuid": "4b513b19_0c40a46e",
+      "range": {
+        "startLine": 5,
+        "startChar": 8,
+        "endLine": 5,
+        "endChar": 24
+      },
+      "revId": "0cb48378a20ca9b11376821dcc5fb7ff2f15de76",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3088d634_778014ea",
         "filename": "go/src/infra/libs/testexpectations/parser.go",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "0cb48378a20ca9b11376821dcc5fb7ff2f15de76",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f6c97fd9_31b23066",
+        "filename": "go/src/infra/libs/testexpectations/parser.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-04-27T23:14:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3088d634_778014ea",
+      "range": {
+        "startLine": 129,
+        "startChar": 3,
+        "endLine": 129,
+        "endChar": 10
+      },
+      "revId": "0cb48378a20ca9b11376821dcc5fb7ff2f15de76",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
