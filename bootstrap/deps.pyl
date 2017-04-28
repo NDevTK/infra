@@ -83,6 +83,11 @@
     'repo': 'external/github.com/google/google-api-python-client',
     'rev': 'd83246e69b22f084d1ae92da5897572a4a4eb03d',
   },
+  'google-cloud-dataflow': {
+    'build': '0',
+    'gs': '7a02d1b6ff41c655f6bd1332c2e8fd350a1358bf.tar.gz',
+    'version': '0.6.0'
+  },
   'httplib2': {
     'version': '0.9',
     'build': '0',
