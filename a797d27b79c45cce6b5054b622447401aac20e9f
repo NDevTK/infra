@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "78d35e32_fc7278e7",
+        "filename": "go/src/infra/libs/testexpectations/parser.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1148599
+      },
+      "writtenOn": "2017-04-28T23:20:13Z",
+      "side": 1,
+      "message": "can change this to\n\nfor tok !\u003d tokWS {\n  tok, lit \u003d p.scan()\n}",
+      "revId": "a797d27b79c45cce6b5054b622447401aac20e9f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
