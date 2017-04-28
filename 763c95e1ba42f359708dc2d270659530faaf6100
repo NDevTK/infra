@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "a58c4c7d_4a0667d7",
+        "filename": "go/src/infra/libs/testexpectations/parser.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-04-28T23:10:18Z",
+      "side": 1,
+      "message": "eh, well I don\u0027t want these exported actually. Changed to keep them internal.",
+      "parentUuid": "b0d22ce5_c9b341b1",
+      "revId": "763c95e1ba42f359708dc2d270659530faaf6100",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "09b11b32_46340d59",
         "filename": "go/src/infra/libs/testexpectations/parser.go",
         "patchSetId": 4
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "febf37d9_18ca2fb7",
+        "filename": "go/src/infra/libs/testexpectations/parser.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-04-28T23:10:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "09b11b32_46340d59",
+      "revId": "763c95e1ba42f359708dc2d270659530faaf6100",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d4127e1f_a92ec95e",
         "filename": "go/src/infra/libs/testexpectations/parser.go",
         "patchSetId": 4
@@ -47,6 +83,24 @@
       "writtenOn": "2017-04-28T22:52:35Z",
       "side": 1,
       "message": "maybe have a more helpful error message if you already have a test name",
+      "revId": "763c95e1ba42f359708dc2d270659530faaf6100",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c264f4dc_9ae21f53",
+        "filename": "go/src/infra/libs/testexpectations/parser.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-04-28T23:10:18Z",
+      "side": 1,
+      "message": "TestName doesn\u0027t get set before this line. Removed the check.",
+      "parentUuid": "d4127e1f_a92ec95e",
       "revId": "763c95e1ba42f359708dc2d270659530faaf6100",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -70,6 +124,24 @@
     },
     {
       "key": {
+        "uuid": "8bd5ad5a_ee63cbc4",
+        "filename": "go/src/infra/libs/testexpectations/parser.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 233,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-04-28T23:10:18Z",
+      "side": 1,
+      "message": "That breaks on valid lines that start with \"[ Modifiers ]\" instead of a bug or test, e.g. almost everything in NeverFixTests.",
+      "parentUuid": "a26bfce1_b9753f41",
+      "revId": "763c95e1ba42f359708dc2d270659530faaf6100",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "47efa726_5c67abd3",
         "filename": "go/src/infra/libs/testexpectations/parser.go",
         "patchSetId": 4
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "7b3a8286_d973e0b8",
+        "filename": "go/src/infra/libs/testexpectations/parser.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-04-28T23:10:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "47efa726_5c67abd3",
+      "revId": "763c95e1ba42f359708dc2d270659530faaf6100",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "95ac7ec2_4f3dea7a",
         "filename": "go/src/infra/libs/testexpectations/parser.go",
         "patchSetId": 4
@@ -98,6 +188,24 @@
       "writtenOn": "2017-04-28T22:52:35Z",
       "side": 1,
       "message": "what do you mean check for? I\u0027d say like \"found a test name\"",
+      "revId": "763c95e1ba42f359708dc2d270659530faaf6100",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aeacea9c_5e436874",
+        "filename": "go/src/infra/libs/testexpectations/parser.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-04-28T23:10:18Z",
+      "side": 1,
+      "message": "comment was on the wrong line :)",
+      "parentUuid": "95ac7ec2_4f3dea7a",
       "revId": "763c95e1ba42f359708dc2d270659530faaf6100",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
