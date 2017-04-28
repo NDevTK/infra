@@ -196,6 +196,24 @@
     },
     {
       "key": {
+        "uuid": "54746bee_17f4b797",
+        "filename": "go/src/infra/libs/testexpectations/parser.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 233,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-04-28T23:40:33Z",
+      "side": 1,
+      "message": "Oh I see what you\u0027re asking. Yes I did hoist it up to the for statement, but hoisting that check to the for statement *and* removing the break here, will skip the \"tok, lit \u003d p.scanIgnoreWhitespace()\" on #230, leaving the parser in a bad state.\n\nso... removed the break and added a tok !\u003d tokRB to the else, and that seems to simplify things while not breaking them.",
+      "parentUuid": "fa8a25c1_7078e849",
+      "revId": "763c95e1ba42f359708dc2d270659530faaf6100",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "47efa726_5c67abd3",
         "filename": "go/src/infra/libs/testexpectations/parser.go",
         "patchSetId": 4
@@ -243,6 +261,24 @@
       "side": 1,
       "message": "Where is this?",
       "parentUuid": "7b3a8286_d973e0b8",
+      "revId": "763c95e1ba42f359708dc2d270659530faaf6100",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "74eff17a_8c783ce6",
+        "filename": "go/src/infra/libs/testexpectations/parser.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-04-28T23:40:33Z",
+      "side": 1,
+      "message": "Done. I\u0027d added it below in the previous patcheset, but now it\u0027s here too.",
+      "parentUuid": "e7bd76b8_6ffdabde",
       "revId": "763c95e1ba42f359708dc2d270659530faaf6100",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
