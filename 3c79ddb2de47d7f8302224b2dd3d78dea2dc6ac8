@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "481d28fe_34ecc125",
+        "filename": "appengine/findit/libs/iterator.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-04-28T15:46:58Z",
+      "side": 1,
+      "message": "Why this is still in libs/? Should it be in gae_libs/ instead? Or just move it to Predator as it is not used by Findit yet.",
+      "range": {
+        "startLine": 12,
+        "startChar": 4,
+        "endLine": 12,
+        "endChar": 11
+      },
+      "revId": "3c79ddb2de47d7f8302224b2dd3d78dea2dc6ac8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
