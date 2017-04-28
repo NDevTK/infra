@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "56a73f12_e3a68393",
+        "filename": "appengine/findit/local_libs/local_cache.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-04-28T06:35:44Z",
+      "side": 1,
+      "message": "This seems predator specific. It could be moved over to predator.",
+      "range": {
+        "startLine": 15,
+        "startChar": 41,
+        "endLine": 15,
+        "endChar": 49
+      },
+      "revId": "25355d91c7d60fb2d05c186429554a47f570c9fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "33a53250_26c46902",
+        "filename": "appengine/findit/local_libs/local_iterator.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-04-28T06:35:44Z",
+      "side": 1,
+      "message": "why it is in libs? It seems appengine specific.",
+      "range": {
+        "startLine": 7,
+        "startChar": 5,
+        "endLine": 7,
+        "endChar": 9
+      },
+      "revId": "25355d91c7d60fb2d05c186429554a47f570c9fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
