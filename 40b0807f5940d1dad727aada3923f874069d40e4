@@ -1,0 +1,164 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c5f18db0_970c896a",
+        "filename": "go/src/infra/tools/try-recipe/cmd_launch_raw.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-04-29T00:21:44Z",
+      "side": 1,
+      "message": "i think swarming supports cloud-endpoindless handlers too",
+      "range": {
+        "startLine": 99,
+        "startChar": 39,
+        "endLine": 99,
+        "endChar": 43
+      },
+      "revId": "40b0807f5940d1dad727aada3923f874069d40e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "af1d76bb_a7aa66b8",
+        "filename": "go/src/infra/tools/try-recipe/cmd_launch_raw.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-04-29T00:21:44Z",
+      "side": 1,
+      "message": "print a task url too? for nice ux",
+      "revId": "40b0807f5940d1dad727aada3923f874069d40e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0cd99570_ae56bc5d",
+        "filename": "go/src/infra/tools/try-recipe/job.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-04-29T00:21:44Z",
+      "side": 1,
+      "message": "s/nextTok/value/s if you add support for a\u003db syntax",
+      "range": {
+        "startLine": 46,
+        "startChar": 30,
+        "endLine": 46,
+        "endChar": 37
+      },
+      "revId": "40b0807f5940d1dad727aada3923f874069d40e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "99786d99_a0d9815f",
+        "filename": "go/src/infra/tools/try-recipe/job.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-04-29T00:21:44Z",
+      "side": 1,
+      "message": "this assumes checkout-dir is not present on the command line\n\nperhaps you can add\n\n    \"-checkout-dir\": func(_ string) ([]string, error) { return nil, nil },",
+      "revId": "40b0807f5940d1dad727aada3923f874069d40e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a0a60c6f_a8ce7c20",
+        "filename": "go/src/infra/tools/try-recipe/job.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-04-29T00:21:44Z",
+      "side": 1,
+      "message": "check \"\u003d\" in arg, split if it is there\n\nnit: maybe invert the condition to bring `else` close to if and unindent the processing branch",
+      "revId": "40b0807f5940d1dad727aada3923f874069d40e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "68f2da5f_06445b3d",
+        "filename": "go/src/infra/tools/try-recipe/job.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-04-29T00:21:44Z",
+      "side": 1,
+      "message": "%(arg)s\n? unless I don\u0027t know this feature",
+      "range": {
+        "startLine": 75,
+        "startChar": 13,
+        "endLine": 75,
+        "endChar": 15
+      },
+      "revId": "40b0807f5940d1dad727aada3923f874069d40e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5a032e76_5c5c5598",
+        "filename": "go/src/infra/tools/try-recipe/job.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-04-29T00:21:44Z",
+      "side": 1,
+      "message": "\"flag value\" or something",
+      "range": {
+        "startLine": 75,
+        "startChar": 53,
+        "endLine": 75,
+        "endChar": 71
+      },
+      "revId": "40b0807f5940d1dad727aada3923f874069d40e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "32701af4_f477adeb",
+        "filename": "go/src/infra/tools/try-recipe/job.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-04-29T00:21:44Z",
+      "side": 1,
+      "message": "most of the time InputsRef is not going to be there. Can we omit combination when len(toCombine) \u003d\u003d 0?\nalso I find this Infof a bit verbose",
+      "revId": "40b0807f5940d1dad727aada3923f874069d40e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
