@@ -10,7 +10,7 @@ automatic_scaling:
   max_concurrent_requests: 40
 
 handlers:
-- url: /.*
+- url: /fracas/.*
   script: backend.main.backend_app
   secure: always
 

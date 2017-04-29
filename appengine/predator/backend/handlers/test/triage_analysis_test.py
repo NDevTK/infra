@@ -13,10 +13,10 @@ from urllib import quote
 from google.appengine.api import users
 import webapp2
 
+from backend.handlers import triage_analysis
 from common.appengine_testcase import AppengineTestCase
 from common.model import triage_status
 from common.model.fracas_crash_analysis import FracasCrashAnalysis
-from frontend.handlers import triage_analysis
 from libs import analysis_status
 from libs import time_util
 

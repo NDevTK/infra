@@ -1,0 +1,15 @@
+dispatch:
+  - url: "*/robots.txt"
+    module: default
+
+  - url: "*/fracas/*"
+    module: backend-fracas
+
+  - url: "*/cracas/*"
+    module: backend-cracas
+
+  - url: "*/clusterfuzz/*"
+    module: backend-clusterfuzz
+
+  - url: "*/process/*"
+    module: backend-process
