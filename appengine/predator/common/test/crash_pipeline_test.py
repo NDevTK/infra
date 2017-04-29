@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from datetime import datetime
+from datetime import timedelta
+
 from analysis.culprit import Culprit
 from analysis.suspect import Suspect
 from analysis.type_enums import CrashClient
@@ -13,6 +16,9 @@ from gae_libs.pipeline_wrapper import pipeline_handlers
 from libs import analysis_status
 from libs.gitiles.change_log import ChangeLog
 from libs.gitiles.change_log import Contributor
+
+START_DATE = datetime.utcnow() - timedelta(days=1)
+END_DATE = datetime.utcnow()
 
 
 class CrashPipelineTest(AppengineTestCase):
@@ -77,9 +83,8 @@ class CrashPipelineTest(AppengineTestCase):
         algorithm = 'ALGORITHM',
     )
     self.mock(FinditForFracas, 'FindCulprit', lambda *_: dummy_culprit)
-    pipeline = crash_pipeline.CrashAnalysisPipeline(
-        CrashClient.FRACAS,
-        crash_identifiers)
+    pipeline = crash_pipeline.CrashAnalysisPipeline(CrashClient.FRACAS,
+                                                    crash_identifiers)
     pipeline.run()
 
     analysis = FracasCrashAnalysis.Get(crash_identifiers)

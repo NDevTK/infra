@@ -2,23 +2,32 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import copy
 import json
 import logging
 
 from analysis.type_enums import CrashClient
 from common import findit_for_chromecrash
 from common import findit_for_clusterfuzz
+from common import monitoring
+from common.model.clusterfuzz_analysis import ClusterfuzzAnalysis
+from common.model.cracas_crash_analysis import CracasCrashAnalysis
+from common.model.crash_config import CrashConfig
+from common.model.fracas_crash_analysis import FracasCrashAnalysis
 from gae_libs import appengine_util
 from gae_libs import pubsub_util
 from gae_libs.gitiles.cached_gitiles_repository import CachedGitilesRepository
 from gae_libs.http.http_client_appengine import HttpClientAppengine
+from gae_libs.iterator import Iterate
 from gae_libs.pipeline_wrapper import BasePipeline
 from gae_libs.pipeline_wrapper import pipeline
 from libs import analysis_status
 from libs import time_util
-from common import monitoring
-from common.model.crash_config import CrashConfig
+
+CLIENT_ID_TO_CRASH_ANALYSIS = {
+    CrashClient.FRACAS: FracasCrashAnalysis,
+    CrashClient.CRACAS: CracasCrashAnalysis,
+    CrashClient.CLUSTERFUZZ: ClusterfuzzAnalysis
+}
 
 
 # TODO(http://crbug.com/659346): write complete coverage tests for this.
@@ -237,3 +246,20 @@ class CrashWrapperPipeline(BasePipeline): # pragma: no cover
         self._client_id, self._crash_identifiers)
     with pipeline.After(run_analysis):
       yield PublishResultPipeline(self._client_id, self._crash_identifiers)
+
+
+class RerunPipeline(BasePipeline):  # pragma: no cover
+
+  def run(self, client_id, start_data, end_data):  # pylint: disable=W0221
+    analysis = CLIENT_ID_TO_CRASH_ANALYSIS.get(client_id)
+    if not analysis:
+      return
+
+    query = analysis.query().filter(
+        analysis.requested_time >= start_data).filter(
+            analysis.requested_time < end_data)
+    for crash in Iterate(query):
+      crash.ReInitialize()
+      crash.put()
+      logging.info('Initialize analysis for crash %s', crash.identifiers)
+      yield CrashWrapperPipeline(client_id, crash.identifiers)

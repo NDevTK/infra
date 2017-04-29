@@ -19,8 +19,8 @@ if [[ ${has_realpath} == "0" ]]; then
 fi
 APP_CFG="${GOOGLE_APP_ENGINE_DIR}/appcfg.py"
 
-DEFAULT_MODULE="${PREDATOR_DIR}/app/app.yaml"
-BACKEND_MODULES="${PREDATOR_DIR}/app/backend-clusterfuzz.yaml ${PREDATOR_DIR}/app/backend-fracas.yaml ${PREDATOR_DIR}/app/backend-cracas.yaml"
+DEFAULT_MODULE="${PREDATOR_DIR}/app.yaml"
+BACKEND_MODULES="${PREDATOR_DIR}/backend-clusterfuzz.yaml ${PREDATOR_DIR}/backend-fracas.yaml ${PREDATOR_DIR}/backend-cracas.yaml ${PREDATOR_DIR}/backend-clusterfuzz.yaml ${PREDATOR_DIR}/backend-process.yaml"
 
 
 if [[ -z "${USER}" ]]; then
@@ -43,7 +43,7 @@ print_usage() {
   echo "  test                 Run unittests"
   echo "  run                  Run Predator locally"
   echo "  deploy-prod          Deploy predator to predator-for-me for release"
-  echo "  deploy-test-prod     Deploy predator to predator-for-me for test"
+  echo "  deploy-test-prod     Deploy predator to predator-for-me-test for test"
   echo "  deploy-staging       Deploy predator to predator-for-me-staging for test"
   exit 1
 }
@@ -65,7 +65,7 @@ run_unittests() {
   local coverage_report_parent_dir="${TMP_DIR}/coverage"
   mkdir -p ${coverage_report_parent_dir}
   python ${INFRA_DIR}/test.py test ${predator} --html-report ${coverage_report_parent_dir}
-  [ $? -ne 0 ] || echo "Code coverage report file://${coverage_report_parent_dir}/${predator}/index.html"
+  echo "Code coverage report file://${coverage_report_parent_dir}/${predator}/index.html"
 }
 
 run_locally() {
@@ -81,7 +81,7 @@ deploy_for_test() {
   local app_env=$1
   if [[ -z ${app_id_to_use} ]]; then
     if [[ "${app_env}" == "prod" ]]; then
-      local app_id_to_use="predator-for-me"
+      local app_id_to_use="predator-for-me-test"
     else
       local app_id_to_use="predator-for-me-staging"
     fi

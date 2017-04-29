@@ -140,7 +140,7 @@
       }
       update_data[result + '_triage_status'] = triage_status;
 
-      $.post('triage-analysis?key={{key}}', {'update-data': JSON.stringify(update_data)}, function(data) {
+      $.post('process/triage-analysis?key={{key}}', {'update-data': JSON.stringify(update_data)}, function(data) {
         if (data['success']) {
           $('.triaged[result_property=\'' + result + '\']').addClass('triage').removeClass('triaged');
           target.addClass('triaged').removeClass('triage');
@@ -184,7 +184,7 @@
           update_data[properties[i]] = value;
         }
       }
-      $.post('triage-analysis?key={{key}}', {'update-data': JSON.stringify(update_data)}, function(data) {
+      $.post('process/triage-analysis?key={{key}}', {'update-data': JSON.stringify(update_data)}, function(data) {
           if (!data['success']) {
             alert('Failed to update datastore. Please refresh and try again.');
           }

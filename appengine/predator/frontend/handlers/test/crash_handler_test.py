@@ -27,7 +27,7 @@ from libs.gitiles import gitiles_repository
 
 class CrashHandlerTest(AppengineTestCase):
   app_module = webapp2.WSGIApplication([
-      ('/_ah/push-handlers/crash/fracas', crash_handler.CrashHandler),
+      ('/_ah/push-handlers/fracas', crash_handler.CrashHandler),
   ], debug=True)
 
   def testNeedNewAnalysisIfIsARedo(self):
@@ -70,8 +70,7 @@ class CrashHandlerTest(AppengineTestCase):
     }
 
     self.mock(crash_handler, 'NeedNewAnalysis', lambda *_: False)
-    self.test_app.post_json('/_ah/push-handlers/crash/fracas',
-                            request_json_data)
+    self.test_app.post_json('/_ah/push-handlers/fracas', request_json_data)
 
   def testHandlePostStartNewAnalysis(self):
     crash_data = self.GetDummyClusterfuzzData(redo=True)
@@ -89,5 +88,4 @@ class CrashHandlerTest(AppengineTestCase):
         CrashWrapperPipeline, None,
         (crash_data['client_id'], crash_data['crash_identifiers']))
 
-    self.test_app.post_json('/_ah/push-handlers/crash/fracas',
-                            request_json_data)
+    self.test_app.post_json('/_ah/push-handlers/fracas', request_json_data)
