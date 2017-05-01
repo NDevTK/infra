@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4ab5023e_28f92991",
+        "filename": "go/src/infra/appengine/dashboard/frontend/static/add-incidents.js",
+        "patchSetId": 8
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2017-05-01T23:36:18Z",
+      "side": 1,
+      "message": "I would prefer to use IconType here but the following format did not work:\n\nalertImgsMap[Alert.RED] \u003d {\n    IconType.CIRCLE: \u0027static/red.png\u0027,\n    IconType.LEFT: \u0027static/red_left.png\u0027,\n    ...\n}\n\nAnother option is:\nconst alertImgsMap \u003d {};\nalertImgsMap[Alert.RED][IconType.CIRCLE] \u003d \u0027static/red.png\u0027;\nalertImgsMap[Alert.RED][IconType.LEFT] \u003d \u0027static/red_left.png\u0027;\n\nbut I didn\u0027t like having \"alertImgsMap[Alert.RED]\" repeated so many times.\n\nDo you have other ideas/thoughts?",
+      "range": {
+        "startLine": 20,
+        "startChar": 2,
+        "endLine": 25,
+        "endChar": 4
+      },
+      "revId": "ee4e0010e64a59c774f1adf393e7482f54d49d49",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
