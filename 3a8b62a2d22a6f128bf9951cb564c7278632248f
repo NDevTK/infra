@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "0a58d14c_5c38aae8",
+        "filename": "go/src/infra/appengine/dashboard/frontend/static/add-incidents.js",
+        "patchSetId": 10
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2017-05-02T01:52:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0af95b0b_5dc5851b",
+      "range": {
+        "startLine": 13,
+        "startChar": 12,
+        "endLine": 13,
+        "endChar": 13
+      },
+      "revId": "3a8b62a2d22a6f128bf9951cb564c7278632248f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b6557f17_221ecbb6",
         "filename": "go/src/infra/appengine/dashboard/frontend/static/add-incidents.js",
         "patchSetId": 10
@@ -45,6 +69,30 @@
       "revId": "3a8b62a2d22a6f128bf9951cb564c7278632248f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0e4d1710_fde16f35",
+        "filename": "go/src/infra/appengine/dashboard/frontend/static/add-incidents.js",
+        "patchSetId": 10
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2017-05-02T01:52:05Z",
+      "side": 1,
+      "message": "done. i thought using let here would make startDateCell here and startDateCell in line 60 two different objects. I was wrong.",
+      "parentUuid": "b6557f17_221ecbb6",
+      "range": {
+        "startLine": 58,
+        "startChar": 4,
+        "endLine": 58,
+        "endChar": 7
+      },
+      "revId": "3a8b62a2d22a6f128bf9951cb564c7278632248f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
