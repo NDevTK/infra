@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2b721ea1_b47aa386",
+        "filename": "go/src/infra/tools/kitchen/cook_logdog.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-05-02T16:27:48Z",
+      "side": 1,
+      "message": "Let\u0027s move this up to the \"p.active()\" section at the top.",
+      "range": {
+        "startLine": 132,
+        "startChar": 21,
+        "endLine": 132,
+        "endChar": 43
+      },
+      "revId": "5021f57534929f97fe4922bea811ff9a6e9b7761",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
