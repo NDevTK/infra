@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0af95b0b_5dc5851b",
+        "filename": "go/src/infra/appengine/dashboard/frontend/static/add-incidents.js",
+        "patchSetId": 10
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1115495
+      },
+      "writtenOn": "2017-05-02T00:21:13Z",
+      "side": 1,
+      "message": "single quotes in JS",
+      "range": {
+        "startLine": 13,
+        "startChar": 12,
+        "endLine": 13,
+        "endChar": 13
+      },
+      "revId": "3a8b62a2d22a6f128bf9951cb564c7278632248f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b6557f17_221ecbb6",
+        "filename": "go/src/infra/appengine/dashboard/frontend/static/add-incidents.js",
+        "patchSetId": 10
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1115495
+      },
+      "writtenOn": "2017-05-02T00:21:13Z",
+      "side": 1,
+      "message": "let. here and everywhere else.",
+      "range": {
+        "startLine": 58,
+        "startChar": 4,
+        "endLine": 58,
+        "endChar": 7
+      },
+      "revId": "3a8b62a2d22a6f128bf9951cb564c7278632248f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
