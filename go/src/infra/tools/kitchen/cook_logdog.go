@@ -128,17 +128,18 @@ func (p *cookLogDogParams) setupAndValidate(mode cookMode, env environ.Env) erro
 		return errors.Annotate(err).Reason("failed to populate template parameters").Err()
 	}
 
-	if p.annotationURL != "" {
-		// Parse/resolve annotation URL.
-		annotationURL, err := params.Resolve(p.annotationURL)
-		if err != nil {
-			return errors.Annotate(err).Reason("failed to resolve LogDog annotation URL (-logdog-annotation-url)").
-				D("value", p.annotationURL).
-				Err()
-		}
-		if p.annotationAddr, err = types.ParseURL(annotationURL); err != nil {
-			return inputError("invalid LogDog annotation URL (-logdog-annotation-url) %q: %s", annotationURL, err)
-		}
+	if p.annotationURL == "" {
+		return inputError("-logdog-debug-out-file requires -logdog-annotation-url")
+	}
+	// Parse/resolve annotation URL.
+	annotationURL, err := params.Resolve(p.annotationURL)
+	if err != nil {
+		return errors.Annotate(err).Reason("failed to resolve LogDog annotation URL (-logdog-annotation-url)").
+			D("value", p.annotationURL).
+			Err()
+	}
+	if p.annotationAddr, err = types.ParseURL(annotationURL); err != nil {
+		return inputError("invalid LogDog annotation URL (-logdog-annotation-url) %q: %s", annotationURL, err)
 	}
 
 	return nil
