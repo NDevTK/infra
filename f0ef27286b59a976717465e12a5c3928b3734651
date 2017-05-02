@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d924f958_a8c9f813",
+        "filename": "appengine/findit/local_libs/remote_api.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-05-02T21:19:50Z",
+      "side": 0,
+      "message": "This 2 lines can not be removed. Otherwise the import for below 3 lines will report error.",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 30
+      },
+      "revId": "f0ef27286b59a976717465e12a5c3928b3734651",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
