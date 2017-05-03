@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "198a08ee_eec2db9d",
+        "filename": "appengine/findit/templates/config.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-05-03T23:23:08Z",
+      "side": 1,
+      "message": "Nit: add indentation? Same for below",
+      "revId": "0877d2bd28ba5ac0165ed92823c930b754317312",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
