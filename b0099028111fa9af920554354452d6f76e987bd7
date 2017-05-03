@@ -175,6 +175,24 @@
       "revId": "b0099028111fa9af920554354452d6f76e987bd7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "24139abd_38203215",
+        "filename": "go/src/infra/appengine/dashboard/frontend/static/icons.css",
+        "patchSetId": 14
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115495
+      },
+      "writtenOn": "2017-05-03T00:54:31Z",
+      "side": 1,
+      "message": "OK cool. That sounds good.",
+      "parentUuid": "d5f15e1f_09476004",
+      "revId": "b0099028111fa9af920554354452d6f76e987bd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
