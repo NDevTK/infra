@@ -14,6 +14,7 @@ import (
 	"github.com/luci/luci-go/common/cli"
 	"github.com/luci/luci-go/common/errors"
 	"github.com/luci/luci-go/common/flag/stringmapflag"
+	"github.com/luci/luci-go/common/isolated"
 	"github.com/luci/luci-go/common/logging"
 )
 
@@ -48,7 +49,7 @@ type cmdEdit struct {
 }
 
 type editFlags struct {
-	recipeIsolate string
+	recipeIsolate isolated.HexDigest
 	dimensions    stringmapflag.Value
 	properties    stringmapflag.Value
 	environment   stringmapflag.Value
@@ -70,8 +71,8 @@ func (e *editFlags) register(fs *flag.FlagSet) {
 		("override an environment. This takes a parameter of env_var=value. " +
 			"Providing an empty value will remove that envvar."))
 
-	fs.StringVar(&e.recipeIsolate, "r", "", "shorthand for 'recipe'")
-	fs.StringVar(&e.recipeIsolate, "recipe", "", "override the recipe isolate hash.")
+	fs.StringVar((*string)(&e.recipeIsolate), "b", "", "shorthand for 'bundle-hash'")
+	fs.StringVar((*string)(&e.recipeIsolate), "bundle-hash", "", "override the recipe bundle hash. See also `isolate` with -edit-mode.")
 }
 
 func (e *editFlags) Edit(jd *JobDefinition) (*JobDefinition, error) {
