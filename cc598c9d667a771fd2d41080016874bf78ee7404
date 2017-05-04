@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e42ac1ee_8333a2f1",
+        "filename": "appengine/findit/waterfall/create_revert_cl_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-05-04T21:10:48Z",
+      "side": 1,
+      "message": "nit: use either `Owner of the culprit change` or `Author of the culprit revision`.",
+      "range": {
+        "startLine": 33,
+        "startChar": 28,
+        "endLine": 33,
+        "endChar": 40
+      },
+      "revId": "cc598c9d667a771fd2d41080016874bf78ee7404",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
