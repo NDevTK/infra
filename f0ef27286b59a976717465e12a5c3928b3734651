@@ -22,6 +22,30 @@
       "revId": "f0ef27286b59a976717465e12a5c3928b3734651",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c8d075d7_ec751974",
+        "filename": "appengine/findit/local_libs/remote_api.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-05-04T07:40:14Z",
+      "side": 0,
+      "message": "I remove this because every script which import the ``remote_api`` must already fixed the paths.\n\nBut I agree you can add back these 2 lines just to be safe.",
+      "parentUuid": "d924f958_a8c9f813",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 30
+      },
+      "revId": "f0ef27286b59a976717465e12a5c3928b3734651",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
