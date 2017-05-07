@@ -118,7 +118,7 @@
         {% for crash in crashes %}
           <tr>
             <td>
-              <a href="./{{client}}-result-feedback?key={{crash.key}}" target="_blank">{{crash.signature}}</a>
+              <a href="./result-feedback?key={{crash.key}}" target="_blank">{{crash.signature}}</a>
             </td>
             <td>
               <a href="https://chromium.googlesource.com/chromium/src.git/+/{{crash.version}}" target="_blank">{{crash.version}}</a>

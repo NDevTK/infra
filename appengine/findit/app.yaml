@@ -47,9 +47,9 @@ handlers:
   secure: always
 
 # Endpoints handler.
-- url: /_ah/spi/.*
-  script: main.api_application
-  secure: always
+#- url: /_ah/spi/.*
+#  script: main.api_application
+#  secure: always
 
 - url: /.*
   script: main.default_web_application

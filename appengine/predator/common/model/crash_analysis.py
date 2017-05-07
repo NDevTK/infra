@@ -234,8 +234,6 @@ class CrashAnalysis(ndb.Model):
     crash_json = self.ToJson()
     crash_data = client.GetCrashData(crash_json)
 
-    print 'lala'
-    print crash_data.crashed_version
     self.Initialize(crash_data)
 
   @property
