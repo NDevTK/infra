@@ -49,9 +49,6 @@
   th {
     border: 1px solid rgb(205, 223, 250);
   }
-  td {
-    width: 120px;
-  }
   th {
     background-color: rgb(205, 223, 250);
   }
@@ -60,6 +57,7 @@
   }
 </style>
 <link rel="stylesheet" type="text/css" href="/static/icons.css">
+<script src="/static/add-incidents.js"></script>
 <div class="container">
   <header>
     <img class="logo" src="/static/chops-logo.png">
@@ -85,7 +83,7 @@
         <tr>
           <th>Current Status</th>
           {{range $dates}}
-            <th class="date-header">{{ . | fmtDate}}</th>
+            <th class="date-header js-date"></th>
           {{end}}
         </tr>
         {{range .ChopsServices}}
@@ -94,9 +92,7 @@
             <td class="js-{{$name}}">
               <a href={{.Service.SLA}}>{{.Service.Name}}</a>
             </td>
-            {{range $dates}}
-              <td class="js-{{$name}}-{{ . | fmtDate}}"></td>
-            {{end}}
+            <td class="table-body js-{{$name}}-incidents" colspan="7"></td>
           </tr>
         {{end}}
         <tr class="table-footer">
@@ -145,7 +141,7 @@
 
   </main>
 </div>
-<script src="/static/add-incidents.js"></script>
+
 <script>
   (function() {
     const RELOAD_TIME_MS = 5*60*1000;
