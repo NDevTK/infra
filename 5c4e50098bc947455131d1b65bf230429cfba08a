@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "df9071b7_c32e4d1a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-05-09T22:32:32Z",
+      "side": 1,
+      "message": "👍\n\n(beware, any uploaded CLs send emails to infra-reviews+infra@chromium.org, and some people like me are subscribed to it)\n(so don\u0027t put anything you don\u0027t want people to see in CLs)\n(I mean, its fine to fill in description later, but be careful not to put any inappropriate messages into unsent CLs).",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 6
+      },
+      "revId": "5c4e50098bc947455131d1b65bf230429cfba08a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
