@@ -141,6 +141,16 @@ func dashboard(ctx *router.Context) {
 		return
 	}
 
+	//	service := backend.Service{ID: "monorail", Name: "Monorail", SLA: "http//:www.google.com"}
+	//	incidents := []backend.ServiceIncident{
+	//		{ID: "Red", Severity: backend.SeverityRed, Open: true, StartTime: time.Now().AddDate(0, 0, -1).UTC()},
+	//		{ID: "Yellow", Severity: backend.SeverityYellow, Open: false, StartTime: time.Now().AddDate(0, 0, -2).UTC(), EndTime: time.Now().AddDate(0, 0, -1).UTC()},
+	//	}
+	//	sla := []TemplateService{
+	//		{service, incidents},
+	//	}
+	//	nonSLA := []TemplateService{}
+
 	templates.MustRender(c, w, "pages/dash.tmpl", templates.Args{
 		"ChopsServices":  sla,
 		"NonSLAServices": nonSLA,
