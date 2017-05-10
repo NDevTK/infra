@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d19137a1_73d6889b",
+        "filename": "go/src/infra/appengine/dashboard/frontend/static/add-incidents.js",
+        "patchSetId": 9
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1115495
+      },
+      "writtenOn": "2017-05-10T17:54:22Z",
+      "side": 1,
+      "message": "_PX?",
+      "range": {
+        "startLine": 24,
+        "startChar": 8,
+        "endLine": 24,
+        "endChar": 26
+      },
+      "revId": "5673b5a3bea363fcf01c4ea4dc8ab82b89dec39a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b8efcc8b_3b1f93c6",
+        "filename": "go/src/infra/appengine/dashboard/frontend/static/add-incidents.js",
+        "patchSetId": 9
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1115495
+      },
+      "writtenOn": "2017-05-10T17:54:22Z",
+      "side": 1,
+      "message": "pageData[\u0027Dates\u0027].map((d) \u003d\u003e { return fmtDate(d); });",
+      "range": {
+        "startLine": 29,
+        "startChar": 4,
+        "endLine": 32,
+        "endChar": 7
+      },
+      "revId": "5673b5a3bea363fcf01c4ea4dc8ab82b89dec39a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f5fd6fe_673e0e0a",
+        "filename": "go/src/infra/appengine/dashboard/frontend/static/add-incidents.js",
+        "patchSetId": 9
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1115495
+      },
+      "writtenOn": "2017-05-10T17:54:22Z",
+      "side": 1,
+      "message": "space after operands",
+      "range": {
+        "startLine": 64,
+        "startChar": 13,
+        "endLine": 64,
+        "endChar": 14
+      },
+      "revId": "5673b5a3bea363fcf01c4ea4dc8ab82b89dec39a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
