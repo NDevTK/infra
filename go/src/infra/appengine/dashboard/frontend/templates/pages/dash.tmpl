@@ -43,9 +43,6 @@
   th {
     border: 1px solid rgb(205, 223, 250);
   }
-  td {
-    width: 120px;
-  }
   th {
     background-color: rgb(205, 223, 250);
   }
@@ -67,7 +64,7 @@
       Check this page any time to view the current status of the services listed below.
     </p>
     <p class="subtext dash-summary">
-      Dates displayed on dashboard are using UTC timezone.
+      Dates displayed on dashboard are using the local timezone.
     </p>
     {{$dates := .Dates}}
     {{$older := .OlderDate}}
@@ -78,7 +75,7 @@
         <tr>
           <th>Current Status</th>
           {{range $dates}}
-            <th class="date-header">{{ . | fmtDate}}</th>
+            <th class="date-header js-date"></th>
           {{end}}
         </tr>
         {{range .ChopsServices}}
@@ -87,9 +84,7 @@
             <td class="js-{{$name}}">
               <a href={{.Service.SLA}}>{{.Service.Name}}</a>
             </td>
-            {{range $dates}}
-              <td class="js-{{$name}}-{{ . | fmtDate}}"></td>
-            {{end}}
+            <td class="table-body js-{{$name}}-incidents" colspan="7"></td>
           </tr>
         {{end}}
         <tr class="table-footer">
