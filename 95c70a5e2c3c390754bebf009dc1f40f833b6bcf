@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "04a12c95_9d725426",
+        "filename": "go/src/infra/appengine/dashboard/frontend/templates/pages/dash.tmpl",
+        "patchSetId": 14
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1115495
+      },
+      "writtenOn": "2017-05-11T01:39:52Z",
+      "side": 1,
+      "message": "these don\u0027t need quotes\n\nalso, put font-family in the body {} selector",
+      "range": {
+        "startLine": 8,
+        "startChar": 17,
+        "endLine": 8,
+        "endChar": 38
+      },
+      "revId": "95c70a5e2c3c390754bebf009dc1f40f833b6bcf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
