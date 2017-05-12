@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "f79022f6_18d7a052",
+        "filename": "go/src/infra/tools/try-recipe/cmd_launch_raw.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-05-12T02:04:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c5f18db0_970c896a",
+      "range": {
+        "startLine": 99,
+        "startChar": 39,
+        "endLine": 99,
+        "endChar": 43
+      },
+      "revId": "40b0807f5940d1dad727aada3923f874069d40e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "af1d76bb_a7aa66b8",
         "filename": "go/src/infra/tools/try-recipe/cmd_launch_raw.go",
         "patchSetId": 2
@@ -36,6 +60,24 @@
       "writtenOn": "2017-04-29T00:21:44Z",
       "side": 1,
       "message": "print a task url too? for nice ux",
+      "revId": "40b0807f5940d1dad727aada3923f874069d40e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8d89d087_b191a9f6",
+        "filename": "go/src/infra/tools/try-recipe/cmd_launch_raw.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-05-12T02:04:30Z",
+      "side": 1,
+      "message": "Dunno why I didn\u0027t do this originally. Done.",
+      "parentUuid": "af1d76bb_a7aa66b8",
       "revId": "40b0807f5940d1dad727aada3923f874069d40e4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -65,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "b68fd92f_53e7818c",
+        "filename": "go/src/infra/tools/try-recipe/job.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-05-12T02:04:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0cd99570_ae56bc5d",
+      "range": {
+        "startLine": 46,
+        "startChar": 30,
+        "endLine": 46,
+        "endChar": 37
+      },
+      "revId": "40b0807f5940d1dad727aada3923f874069d40e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "99786d99_a0d9815f",
         "filename": "go/src/infra/tools/try-recipe/job.go",
         "patchSetId": 2
@@ -82,6 +148,24 @@
     },
     {
       "key": {
+        "uuid": "07003420_55202c60",
+        "filename": "go/src/infra/tools/try-recipe/job.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-05-12T02:04:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "99786d99_a0d9815f",
+      "revId": "40b0807f5940d1dad727aada3923f874069d40e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a0a60c6f_a8ce7c20",
         "filename": "go/src/infra/tools/try-recipe/job.go",
         "patchSetId": 2
@@ -96,6 +180,24 @@
       "revId": "40b0807f5940d1dad727aada3923f874069d40e4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "87765d40_d5dc483e",
+        "filename": "go/src/infra/tools/try-recipe/job.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-05-12T02:04:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a0a60c6f_a8ce7c20",
+      "revId": "40b0807f5940d1dad727aada3923f874069d40e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -145,6 +247,54 @@
     },
     {
       "key": {
+        "uuid": "e5e80b67_315164a6",
+        "filename": "go/src/infra/tools/try-recipe/job.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-05-12T02:04:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5a032e76_5c5c5598",
+      "range": {
+        "startLine": 75,
+        "startChar": 53,
+        "endLine": 75,
+        "endChar": 71
+      },
+      "revId": "40b0807f5940d1dad727aada3923f874069d40e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "260d264e_a7cb80d8",
+        "filename": "go/src/infra/tools/try-recipe/job.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-05-12T02:04:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "68f2da5f_06445b3d",
+      "range": {
+        "startLine": 75,
+        "startChar": 13,
+        "endLine": 75,
+        "endChar": 15
+      },
+      "revId": "40b0807f5940d1dad727aada3923f874069d40e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "32701af4_f477adeb",
         "filename": "go/src/infra/tools/try-recipe/job.go",
         "patchSetId": 2
@@ -156,6 +306,24 @@
       "writtenOn": "2017-04-29T00:21:44Z",
       "side": 1,
       "message": "most of the time InputsRef is not going to be there. Can we omit combination when len(toCombine) \u003d\u003d 0?\nalso I find this Infof a bit verbose",
+      "revId": "40b0807f5940d1dad727aada3923f874069d40e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dd5bf61a_9148c2ad",
+        "filename": "go/src/infra/tools/try-recipe/job.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-05-12T02:04:30Z",
+      "side": 1,
+      "message": "I refactored all of this.",
+      "parentUuid": "32701af4_f477adeb",
       "revId": "40b0807f5940d1dad727aada3923f874069d40e4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
