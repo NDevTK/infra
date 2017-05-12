@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -71,7 +72,7 @@ func findRecipesPy(ctx context.Context) (string, error) {
 		repoRoot, filepath.FromSlash(rj.RecipesPath), "recipes.py"), nil
 }
 
-func prepBundle(ctx context.Context, recipesPy string, overrides map[string]string) (string, error) {
+func prepBundle(ctx context.Context, recipesPy, subdir string, overrides map[string]string) (string, error) {
 	retDir, err := ioutil.TempDir("", "try-recipe-bundle")
 	if err != nil {
 		return "", errors.Annotate(err).Reason("generating bundle tempdir").Err()
@@ -86,7 +87,7 @@ func prepBundle(ctx context.Context, recipesPy string, overrides map[string]stri
 	for projID, path := range overrides {
 		args = append(args, "-O", fmt.Sprintf("%s=%s", projID, path))
 	}
-	args = append(args, "bundle", "--destination", retDir)
+	args = append(args, "bundle", "--destination", filepath.Join(retDir, subdir))
 	cmd := logCmd(ctx, "python", args...)
 	if logging.GetLevel(ctx) < logging.Info {
 		cmd.Stdout = os.Stdout
@@ -98,6 +99,18 @@ func prepBundle(ctx context.Context, recipesPy string, overrides map[string]stri
 	}
 
 	return retDir, nil
+}
+
+func combineIsolates(ctx context.Context, arc *archiver.Archiver, isoHashes ...isolated.HexDigest) (isolated.HexDigest, error) {
+	iso := isolated.New()
+	iso.Includes = isoHashes
+	isolated, err := json.Marshal(iso)
+	if err != nil {
+		return "", errors.Annotate(err).Reason("encoding ISOLATED.json").Err()
+	}
+	promise := arc.Push("ISOLATED.json", isolatedclient.NewBytesSource(isolated), 0)
+	promise.WaitForHashed()
+	return promise.Digest(), arc.Close()
 }
 
 func isolateDirectory(ctx context.Context, arc *archiver.Archiver, dir string) (isolated.HexDigest, error) {
@@ -161,15 +174,16 @@ func bundle(ctx context.Context, overrides map[string]string) (string, error) {
 		return "", err
 	}
 	logging.Debugf(ctx, "using recipes.py: %q", repoRecipesPy)
-	return prepBundle(ctx, repoRecipesPy, overrides)
+	return prepBundle(ctx, repoRecipesPy, recipeCheckoutDir, overrides)
 }
 
-func isolate(ctx context.Context, bundlePath string, isolatedFlags isolatedclient.Flags, authOpts auth.Options) (string, error) {
+func mkAuthClient(ctx context.Context, authOpts auth.Options) (*http.Client, error) {
 	authenticator := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts)
-	authClient, err := authenticator.Client()
-	if err != nil {
-		return "", err
-	}
+	return authenticator.Client()
+}
+
+func mkArchiver(ctx context.Context, isolatedFlags isolatedclient.Flags, authClient *http.Client) *archiver.Archiver {
+	logging.Debugf(ctx, "making archiver for %s : %s", isolatedFlags.ServerURL, isolatedFlags.Namespace)
 	isoClient := isolatedclient.New(
 		nil, authClient,
 		isolatedFlags.ServerURL, isolatedFlags.Namespace,
@@ -184,7 +198,14 @@ func isolate(ctx context.Context, bundlePath string, isolatedFlags isolatedclien
 		arcCtx = ctx
 	}
 	// os.Stderr will cause the archiver to print a one-liner progress status.
-	arc := archiver.New(arcCtx, isoClient, os.Stderr)
-	hash, err := isolateDirectory(ctx, arc, bundlePath)
-	return string(hash), err
+	return archiver.New(arcCtx, isoClient, os.Stderr)
+}
+
+func isolate(ctx context.Context, bundlePath string, isolatedFlags isolatedclient.Flags, authOpts auth.Options) (isolated.HexDigest, error) {
+	authClient, err := mkAuthClient(ctx, authOpts)
+	if err != nil {
+		return "", err
+	}
+	return isolateDirectory(ctx, mkArchiver(ctx, isolatedFlags, authClient),
+		bundlePath)
 }
