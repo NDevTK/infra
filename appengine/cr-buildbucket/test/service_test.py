@@ -69,6 +69,7 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
     self.test_build = model.Build(
         id=model.new_build_id(),
         bucket='chromium',
+        create_time=self.now,
         tags=[self.INDEXED_TAG],
         parameters={
           'builder_name': 'infra',
@@ -486,6 +487,7 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
   def test_cancel_completed_build(self):
     self.test_build.status = model.BuildStatus.COMPLETED
     self.test_build.result = model.BuildResult.SUCCESS
+    self.test_build.complete_time = utils.utcnow()
     self.test_build.put()
     with self.assertRaises(errors.BuildIsCompletedError):
       service.cancel(self.test_build.key.id())
@@ -600,6 +602,8 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
         bucket=self.test_build.bucket,
         status=model.BuildStatus.COMPLETED,
         result=model.BuildResult.SUCCESS,
+        create_time=utils.utcnow(),
+        complete_time=utils.utcnow() + datetime.timedelta(seconds=1),
     )
     self.put_build(build2)
 
@@ -1001,6 +1005,7 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
     build = self.test_build
     build.status = model.BuildStatus.COMPLETED
     build.result = model.BuildResult.SUCCESS
+    build.complete_time = utils.utcnow()
     build.put()
     self.assertFalse(self.lease())
 
@@ -1025,6 +1030,7 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
   def test_reset_completed_build(self):
     self.test_build.status = model.BuildStatus.COMPLETED
     self.test_build.result = model.BuildResult.SUCCESS
+    self.test_build.complete_time = utils.utcnow()
     self.test_build.put()
 
     with self.assertRaises(errors.BuildIsCompletedError):
@@ -1085,6 +1091,7 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
   def test_start_completed_build(self):
     self.test_build.status = model.BuildStatus.COMPLETED
     self.test_build.result = model.BuildResult.SUCCESS
+    self.test_build.complete_time = utils.utcnow()
     self.test_build.put()
     with self.assertRaises(errors.BuildIsCompletedError):
       service.start(self.test_build.key.id(), 42)
@@ -1141,6 +1148,7 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
     self.test_build.result = model.BuildResult.CANCELED
     self.test_build.cancelation_reason = (
       model.CancelationReason.CANCELED_EXPLICITLY)
+    self.test_build.complete_time = utils.utcnow()
     self.test_build.put()
 
     new_expiration_date = utils.utcnow() + datetime.timedelta(minutes=1)
@@ -1202,6 +1210,7 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
     self.test_build.status = model.BuildStatus.COMPLETED
     self.test_build.result = model.BuildResult.CANCELED
     self.test_build.cancelation_reason = model.CancelationReason.TIMEOUT
+    self.test_build.complete_time = utils.utcnow()
     self.test_build.put()
     with self.assertRaises(errors.BuildIsCompletedError):
       service.succeed(self.test_build.key.id(), 42)
@@ -1274,6 +1283,7 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
   def test_completed_builds_are_not_reset(self):
     self.test_build.status = model.BuildStatus.COMPLETED
     self.test_build.result = model.BuildResult.SUCCESS
+    self.test_build.complete_time = utils.utcnow()
     self.test_build.put()
     service.reset_expired_builds()
     build = self.test_build.key.get()
@@ -1295,15 +1305,17 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
   def test_delete_many_scheduled_builds(self):
     self.test_build.put()
     completed_build = model.Build(
-      bucket=self.test_build.bucket,
-      status=model.BuildStatus.COMPLETED,
-      result=model.BuildResult.SUCCESS,
+        bucket=self.test_build.bucket,
+        status=model.BuildStatus.COMPLETED,
+        result=model.BuildResult.SUCCESS,
+        create_time=utils.utcnow(),
+        complete_time=utils.utcnow() + datetime.timedelta(seconds=1),
     )
     completed_build.put()
     self.assertIsNotNone(self.test_build.key.get())
     self.assertIsNotNone(completed_build.key.get())
     service._task_delete_many_builds(
-      self.test_build.bucket, model.BuildStatus.SCHEDULED)
+        self.test_build.bucket, model.BuildStatus.SCHEDULED)
     self.assertIsNone(self.test_build.key.get())
     self.assertIsNotNone(completed_build.key.get())
 
@@ -1311,20 +1323,24 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
     self.test_build.put()
 
     started_build = model.Build(
-      bucket=self.test_build.bucket,
-      status=model.BuildStatus.STARTED,
+        bucket=self.test_build.bucket,
+        status=model.BuildStatus.STARTED,
+        create_time=utils.utcnow(),
+        start_time=utils.utcnow(),
     )
     started_build.put()
 
     completed_build = model.Build(
-      bucket=self.test_build.bucket,
-      status=model.BuildStatus.COMPLETED,
-      result=model.BuildResult.SUCCESS,
+        bucket=self.test_build.bucket,
+        status=model.BuildStatus.COMPLETED,
+        result=model.BuildResult.SUCCESS,
+        create_time=utils.utcnow(),
+        complete_time=utils.utcnow(),
     )
     completed_build.put()
 
     service._task_delete_many_builds(
-      self.test_build.bucket, model.BuildStatus.STARTED)
+        self.test_build.bucket, model.BuildStatus.STARTED)
     self.assertIsNotNone(self.test_build.key.get())
     self.assertIsNone(started_build.key.get())
     self.assertIsNotNone(completed_build.key.get())
@@ -1334,11 +1350,11 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
     self.test_build.put()
 
     service._task_delete_many_builds(
-      self.test_build.bucket, model.BuildStatus.SCHEDULED, tags=['tag:0'])
+        self.test_build.bucket, model.BuildStatus.SCHEDULED, tags=['tag:0'])
     self.assertIsNotNone(self.test_build.key.get())
 
     service._task_delete_many_builds(
-      self.test_build.bucket, model.BuildStatus.SCHEDULED, tags=['tag:1'])
+        self.test_build.bucket, model.BuildStatus.SCHEDULED, tags=['tag:1'])
     self.assertIsNone(self.test_build.key.get())
 
   def test_delete_many_builds_created_by(self):
@@ -1348,8 +1364,8 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
     other_build.put()
 
     service._task_delete_many_builds(
-      self.test_build.bucket, model.BuildStatus.SCHEDULED,
-      created_by='nodir@google.com')
+        self.test_build.bucket, model.BuildStatus.SCHEDULED,
+        created_by='nodir@google.com')
     self.assertIsNone(self.test_build.key.get())
     self.assertIsNotNone(other_build.key.get())
 
@@ -1357,16 +1373,16 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
     self.mock_cannot(acl.Action.DELETE_SCHEDULED_BUILDS)
     with self.assertRaises(auth.AuthorizationError):
       service.delete_many_builds(
-        self.test_build.bucket, model.BuildStatus.SCHEDULED)
+          self.test_build.bucket, model.BuildStatus.SCHEDULED)
 
   def test_delete_many_builds_schedule_task(self):
     service.delete_many_builds(
-      self.test_build.bucket, model.BuildStatus.SCHEDULED)
+        self.test_build.bucket, model.BuildStatus.SCHEDULED)
 
   def test_delete_many_completed_builds(self):
     with self.assertRaises(errors.InvalidInputError):
       service.delete_many_builds(
-        self.test_build.bucket, model.BuildStatus.COMPLETED)
+          self.test_build.bucket, model.BuildStatus.COMPLETED)
 
   ###########################  LONGEST_PENDING_TIME ############################
 
