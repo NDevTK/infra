@@ -1,0 +1,112 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "26c555c7_78fd8367",
+        "filename": "appengine/predator/backend/handlers/rerun_analysis.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1123509
+      },
+      "writtenOn": "2017-05-17T23:17:25Z",
+      "side": 1,
+      "message": "It\u0027s been a while since I\u0027ve looked into this, but wouldn\u0027t this just be evaluated at instance creation time and not necessarily when each request came in? Seems brittle to compute this in advance.",
+      "revId": "9c03239644fe57ca1c0b7af1e7cef0338ebd716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d8826205_802c682e",
+        "filename": "appengine/predator/backend/handlers/rerun_analysis.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1123509
+      },
+      "writtenOn": "2017-05-17T23:17:25Z",
+      "side": 1,
+      "message": "Is anything specific complicating this, or can it just be done? Seems like a relatively simple handler.",
+      "revId": "9c03239644fe57ca1c0b7af1e7cef0338ebd716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a175710_f087d3e0",
+        "filename": "appengine/predator/backend/handlers/rerun_analysis.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1123509
+      },
+      "writtenOn": "2017-05-17T23:17:25Z",
+      "side": 1,
+      "message": "On the off chance this was the issue with testing, it\u0027s probably best to have a utility to get the current time and mock it out.",
+      "range": {
+        "startLine": 37,
+        "startChar": 52,
+        "endLine": 37,
+        "endChar": 69
+      },
+      "revId": "9c03239644fe57ca1c0b7af1e7cef0338ebd716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e9c9535d_221e5cff",
+        "filename": "appengine/predator/common/crash_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1123509
+      },
+      "writtenOn": "2017-05-17T23:17:25Z",
+      "side": 1,
+      "message": "Same question. Is there any reason this is complicated or can it just be done?",
+      "revId": "9c03239644fe57ca1c0b7af1e7cef0338ebd716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "57fd112a_2f6bfa60",
+        "filename": "appengine/predator/common/crash_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1123509
+      },
+      "writtenOn": "2017-05-17T23:17:25Z",
+      "side": 1,
+      "message": "It\u0027s not too bad as-is, but this would be more readable if the filters were assigned on individual lines after defining the query.",
+      "revId": "9c03239644fe57ca1c0b7af1e7cef0338ebd716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6e11522c_cf09c44c",
+        "filename": "appengine/predator/common/test/crash_pipeline_test.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1123509
+      },
+      "writtenOn": "2017-05-17T23:17:25Z",
+      "side": 1,
+      "message": "Are these used?",
+      "revId": "9c03239644fe57ca1c0b7af1e7cef0338ebd716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
