@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8d776b47_da005eb3",
+        "filename": "go/src/infra/appengine/luci-migration/config/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-05-21T17:00:52Z",
+      "side": 1,
+      "message": "This mechanism is a bit awkward, since \"UNSET\" is untyped. WDYT about just having a function attached to the enum type(s):\n\nfunc (v OS) IsUnset() bool { return v \u003d\u003d OS_UNSET }",
+      "range": {
+        "startLine": 11,
+        "startChar": 6,
+        "endLine": 11,
+        "endChar": 11
+      },
+      "revId": "b2226549fe84180b115f41e0fb8bed90926db71b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
