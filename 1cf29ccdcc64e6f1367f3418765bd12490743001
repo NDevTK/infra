@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9565daf0_2e10088e",
+        "filename": "appengine/findit/handlers/handlers_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-05-22T19:43:22Z",
+      "side": 1,
+      "message": "how about create a function _GetTryJobBuildNumber() that takes try_job_result and a separate function (like the one here) that handles only extracting it from a url?\n\ndef _GetTryJobBuildNumberFromUrl(url):\n  build_keys \u003d ...\n\ndef _GetTryJobBuildNumber(try_job_result):\n   url \u003d try_job_result[\u0027url\u0027]\n   return url if url else try_job_result.get(\u0027try_job_id\u0027) or \u0027Unknown\u0027\n\nand change 233 to call _GetTryJobBuildNumber(try_job_result)",
+      "range": {
+        "startLine": 153,
+        "startChar": 15,
+        "endLine": 153,
+        "endChar": 23
+      },
+      "revId": "1cf29ccdcc64e6f1367f3418765bd12490743001",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c42b7e27_daa515d1",
+        "filename": "appengine/findit/handlers/handlers_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-05-22T19:43:22Z",
+      "side": 1,
+      "message": "nit: Unknown or unknown? (if this is display purposes only, just double checking how it would look if it\u0027s upper vs lower case)",
+      "revId": "1cf29ccdcc64e6f1367f3418765bd12490743001",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
