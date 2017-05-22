@@ -22,6 +22,30 @@
       "revId": "b2226549fe84180b115f41e0fb8bed90926db71b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "88e3ba22_bacbecf3",
+        "filename": "go/src/infra/appengine/luci-migration/config/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-05-22T15:09:21Z",
+      "side": 1,
+      "message": "the point of this constant was to avoid typing config.OS_UNSET_OS which is kinda long\nI\u0027ve removed this constant to use OS_UNSET_OS directly",
+      "parentUuid": "8d776b47_da005eb3",
+      "range": {
+        "startLine": 11,
+        "startChar": 6,
+        "endLine": 11,
+        "endChar": 11
+      },
+      "revId": "b2226549fe84180b115f41e0fb8bed90926db71b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
