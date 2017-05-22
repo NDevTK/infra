@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "12d19726_8d478991",
+        "filename": "go/src/infra/tools/git/probe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-05-22T15:46:27Z",
+      "side": 1,
+      "message": "slash",
+      "range": {
+        "startLine": 28,
+        "startChar": 48,
+        "endLine": 28,
+        "endChar": 52
+      },
+      "revId": "a773406ea97427b90fb41e2f25cf43ee3b78a5b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5ea24d2e_517b41b2",
+        "filename": "go/src/infra/tools/git/probe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-05-22T15:46:27Z",
+      "side": 1,
+      "message": "the comment above says \"self is the path of the currently-running executable. It cannot be empty\"\nshould\u0027d we panic if it is empty? It would do it here, then this function would never ignore p.RelativePathOverride.\n\nif not, maybe clarify what \"cannot be empty\" means and maybe mention that p.RelativePathOverride will be ignored if self is empty (it may be not obvious)",
+      "revId": "a773406ea97427b90fb41e2f25cf43ee3b78a5b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
