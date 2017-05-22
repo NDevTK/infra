@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "a3a81d61_82dbe247",
+        "filename": "appengine/findit/handlers/handlers_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-05-22T19:52:44Z",
+      "side": 1,
+      "message": "+1 to encapsulate the logic",
+      "parentUuid": "9565daf0_2e10088e",
+      "range": {
+        "startLine": 153,
+        "startChar": 15,
+        "endLine": 153,
+        "endChar": 23
+      },
+      "revId": "1cf29ccdcc64e6f1367f3418765bd12490743001",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c42b7e27_daa515d1",
         "filename": "appengine/findit/handlers/handlers_util.py",
         "patchSetId": 1
