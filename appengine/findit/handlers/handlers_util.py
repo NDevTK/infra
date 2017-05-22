@@ -151,7 +151,7 @@ def GetSwarmingTaskInfo(master_name, builder_name, build_number):
 
 def _GetTryJobBuildNumber(url):
   build_keys = buildbot.ParseBuildUrl(url)
-  return build_keys[2]
+  return build_keys[2] if build_keys else None
 
 
 def _OrganizeTryJobResultByCulprits(try_job_culprits):
@@ -230,7 +230,8 @@ def _GetCulpritInfoForTryJobResultForTest(try_job_key, culprits_info):
         if try_job_result.get('url'):  # pragma: no cover
           try_job_info['try_job_url'] = try_job_result['url']
           try_job_info['try_job_build_number'] = (
-              _GetTryJobBuildNumber(try_job_result['url']))
+              _GetTryJobBuildNumber(try_job_result['url']) or
+              try_job_result.get('try_job_id') or 'Unknown')
 
         if (try_job_result.get('culprit') and
             try_job_result['culprit'].get(ref_name)):
@@ -423,7 +424,8 @@ def _GetTryJobResultForCompile(failure_result_map):
     if try_job_result.get('url'):
       compile_try_job['try_job_url'] = try_job_result['url']
       compile_try_job['try_job_build_number'] = (
-          _GetTryJobBuildNumber(try_job_result['url']))
+          _GetTryJobBuildNumber(try_job_result['url']) or
+          try_job_result.get('try_job_id') or 'Unknown')
     if try_job_result.get('culprit', {}).get('compile'):
       compile_try_job['culprit'] = try_job_result['culprit']['compile']
 
