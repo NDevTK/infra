@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1168ed7f_c4a43961",
+        "filename": "go/src/infra/tools/kitchen/cookflags/dump.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-05-23T22:06:10Z",
+      "side": 1,
+      "message": "this isn\u0027t a public interface, so I\u0027d recommend keeping it compiler-assertable:\n\ndumpStr(...) { dumpStrDefault(..., \"\") }\ndumpStrDefault(, dflt string)",
+      "range": {
+        "startLine": 9,
+        "startChar": 45,
+        "endLine": 9,
+        "endChar": 53
+      },
+      "revId": "a45d343a8d9c9d13132666e49bb2c620ee0189a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4934e28a_dd4eb728",
+        "filename": "go/src/infra/tools/kitchen/cookflags/dump.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-05-23T22:06:10Z",
+      "side": 1,
+      "message": "blargh. WDYT about creating an actual struct for this?\n\ntype flagDumper struct {\n  args []string\n}\n\nfunc (d *flagDumper) appendList(...) {\n ...\n d.args \u003d append(d.args, ...)\n}",
+      "range": {
+        "startLine": 9,
+        "startChar": 13,
+        "endLine": 9,
+        "endChar": 25
+      },
+      "revId": "a45d343a8d9c9d13132666e49bb2c620ee0189a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dc064ef8_d5134837",
+        "filename": "go/src/infra/tools/kitchen/cookflags/dump.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-05-23T22:06:10Z",
+      "side": 1,
+      "message": "Maybe name this \"dumpStringMapFlag\", b/c the \"%s\u003d%s\" part is a specific schema.",
+      "range": {
+        "startLine": 26,
+        "startChar": 9,
+        "endLine": 26,
+        "endChar": 12
+      },
+      "revId": "a45d343a8d9c9d13132666e49bb2c620ee0189a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0204c2f9_e121cca8",
+        "filename": "go/src/infra/tools/kitchen/cookflags/dump.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-05-23T22:06:10Z",
+      "side": 1,
+      "message": "We should make this deterministic by sorting the map keys and iterating in order.",
+      "range": {
+        "startLine": 28,
+        "startChar": 1,
+        "endLine": 28,
+        "endChar": 25
+      },
+      "revId": "a45d343a8d9c9d13132666e49bb2c620ee0189a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "29b1452f_0ff47863",
+        "filename": "go/src/infra/tools/kitchen/cookflags/flags.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-05-23T22:06:10Z",
+      "side": 1,
+      "message": "We should pull this and the actual default out into a constant.",
+      "range": {
+        "startLine": 160,
+        "startChar": 46,
+        "endLine": 160,
+        "endChar": 64
+      },
+      "revId": "a45d343a8d9c9d13132666e49bb2c620ee0189a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c9edc0c2_77dcc57d",
+        "filename": "go/src/infra/tools/kitchen/cookflags/flags.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-05-23T22:06:10Z",
+      "side": 1,
+      "message": "Use strconv.Itoa",
+      "range": {
+        "startLine": 161,
+        "startChar": 43,
+        "endLine": 161,
+        "endChar": 85
+      },
+      "revId": "a45d343a8d9c9d13132666e49bb2c620ee0189a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
