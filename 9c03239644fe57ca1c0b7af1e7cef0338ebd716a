@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "31d634e3_864beabc",
+        "filename": "appengine/predator/backend/handlers/rerun_analysis.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-05-23T05:02:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "26c555c7_78fd8367",
+      "revId": "9c03239644fe57ca1c0b7af1e7cef0338ebd716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d8826205_802c682e",
         "filename": "appengine/predator/backend/handlers/rerun_analysis.py",
         "patchSetId": 6
@@ -33,6 +51,24 @@
       "revId": "9c03239644fe57ca1c0b7af1e7cef0338ebd716a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9cc7ead6_b601c2ea",
+        "filename": "appengine/predator/backend/handlers/rerun_analysis.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-05-23T05:02:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d8826205_802c682e",
+      "revId": "9c03239644fe57ca1c0b7af1e7cef0338ebd716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -59,6 +95,30 @@
     },
     {
       "key": {
+        "uuid": "1b70a4ab_320ec76e",
+        "filename": "appengine/predator/backend/handlers/rerun_analysis.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-05-23T05:02:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2a175710_f087d3e0",
+      "range": {
+        "startLine": 37,
+        "startChar": 52,
+        "endLine": 37,
+        "endChar": 69
+      },
+      "revId": "9c03239644fe57ca1c0b7af1e7cef0338ebd716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e9c9535d_221e5cff",
         "filename": "appengine/predator/common/crash_pipeline.py",
         "patchSetId": 6
@@ -70,6 +130,24 @@
       "writtenOn": "2017-05-17T23:17:25Z",
       "side": 1,
       "message": "Same question. Is there any reason this is complicated or can it just be done?",
+      "revId": "9c03239644fe57ca1c0b7af1e7cef0338ebd716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0efc7283_9b2dc695",
+        "filename": "appengine/predator/common/crash_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-05-23T05:02:15Z",
+      "side": 1,
+      "message": "There is a left over bug with code coverage computation:\nhttp://crbug.com/659346\n\nWhich not only affects this test, but also test for PublishResultPipeline and CrashWrapperPipeline. I haven\u0027t quiet figured out the bug of code coverage yet. I\u0027d prefer to solve it in another cl.",
+      "parentUuid": "e9c9535d_221e5cff",
       "revId": "9c03239644fe57ca1c0b7af1e7cef0338ebd716a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -93,6 +171,24 @@
     },
     {
       "key": {
+        "uuid": "85454ac2_8354a435",
+        "filename": "appengine/predator/common/crash_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-05-23T05:02:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "57fd112a_2f6bfa60",
+      "revId": "9c03239644fe57ca1c0b7af1e7cef0338ebd716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6e11522c_cf09c44c",
         "filename": "appengine/predator/common/test/crash_pipeline_test.py",
         "patchSetId": 6
@@ -104,6 +200,24 @@
       "writtenOn": "2017-05-17T23:17:25Z",
       "side": 1,
       "message": "Are these used?",
+      "revId": "9c03239644fe57ca1c0b7af1e7cef0338ebd716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1a56620b_6b3111d6",
+        "filename": "appengine/predator/common/test/crash_pipeline_test.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-05-23T05:02:15Z",
+      "side": 1,
+      "message": "Oops, deleted.",
+      "parentUuid": "6e11522c_cf09c44c",
       "revId": "9c03239644fe57ca1c0b7af1e7cef0338ebd716a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
