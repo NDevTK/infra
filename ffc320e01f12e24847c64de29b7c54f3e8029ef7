@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b3af439c_7e216783",
+        "filename": "go/src/infra/tools/kitchen/cookflags/cookmode_string.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-05-23T18:38:19Z",
+      "side": 0,
+      "message": "these weren\u0027t round-trip-able with the flag parser values",
+      "revId": "ffc320e01f12e24847c64de29b7c54f3e8029ef7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
