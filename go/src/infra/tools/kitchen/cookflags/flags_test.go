@@ -107,12 +107,12 @@ var flagTestCases = []struct {
 		flags: []string{
 			"-mode", "buildbot",
 			"-repository", "meep",
+			"-temp-dir", "tmp",
 			"-recipe", "cool_recipe",
 			"-prefix-path-env", "some/dir",
 			"-prefix-path-env", "foo",
 			"-prefix-path-env", "foo",
 			"-set-env-abspath", "DORK=sup",
-			"-temp-dir", "tmp",
 		},
 		cf: CookFlags{
 			Mode:          CookBuildBot,
@@ -158,6 +158,9 @@ func TestFlags(t *testing.T) {
 					Convey(fmt.Sprintf("%v", tc.flags), func() {
 						So(fs.Parse(tc.flags), ShouldErrLike, tc.errParse)
 						if tc.errParse == nil {
+							if tc.errValidate == nil {
+								So(cf.Dump(), ShouldResemble, tc.flags)
+							}
 							So(cf.Normalize(), ShouldErrLike, tc.errValidate)
 							if tc.errValidate == nil {
 								for i, p := range cf.PrefixPathENV {
