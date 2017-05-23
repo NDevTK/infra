@@ -92,3 +92,17 @@ func (p *LogDogFlags) setupAndValidate(mode CookMode) error {
 
 	return nil
 }
+
+// Dump returns a []string command line argument which matches this LogDogFlags.
+func (p *LogDogFlags) Dump() []string {
+	ret := []string{}
+	if !p.AnnotationURL.IsZero() {
+		ret = append(ret, "-logdog-annotation-url", p.AnnotationURL.String())
+	}
+	dumpMap(&ret, "logdog-tag", p.GlobalTags)
+	dumpBool(&ret, "logdog-only", p.LogDogOnly)
+	dumpBool(&ret, "logdog-send-io-keepalives", p.LogDogSendIOKeepAlives)
+	dumpStr(&ret, "logdog-debug-out-file", p.FilePath)
+	dumpStr(&ret, "logdog-service-account-json-path", p.ServiceAccountJSONPath)
+	return ret
+}
