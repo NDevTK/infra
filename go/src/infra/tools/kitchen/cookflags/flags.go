@@ -4,10 +4,9 @@
 
 package cookflags
 
-//go:generate stringer -type CookMode
-
 import (
 	"flag"
+	"fmt"
 
 	"github.com/luci/luci-go/common/flag/stringlistflag"
 )
@@ -148,4 +147,29 @@ func (c *CookFlags) Register(fs *flag.FlagSet) {
 		"An optional URL to the build, which can be used to link to the build in LogDog.")
 
 	c.LogDogFlags.register(fs)
+}
+
+// Dump returns a []string command line argument which matches this CookFlags.
+func (c *CookFlags) Dump() []string {
+	ret := []string{}
+
+	dumpStr(&ret, "mode", c.Mode.String())
+	dumpStr(&ret, "workdir", c.WorkDir, "kitchen-workdir")
+	dumpStr(&ret, "repository", c.RepositoryURL)
+	dumpStr(&ret, "revision", c.Revision)
+	dumpStr(&ret, "checkout-dir", c.CheckoutDir, "kitchen-checkout")
+	dumpStr(&ret, "recipe-result-byte-limit", fmt.Sprintf("%d", c.RecipeResultByteLimit), "0")
+	dumpStr(&ret, "properties", c.Properties)
+	dumpStr(&ret, "properties-file", c.PropertiesFile)
+	dumpStr(&ret, "cache-dir", c.CacheDir)
+	dumpStr(&ret, "temp-dir", c.TempDir)
+	dumpStr(&ret, "build-url", c.BuildURL)
+	dumpStr(&ret, "output-result-json", c.OutputResultJSONPath)
+	dumpStr(&ret, "recipe", c.RecipeName)
+
+	dumpList(&ret, "python-path", c.PythonPaths)
+	dumpList(&ret, "prefix-path-env", c.PrefixPathENV)
+	dumpList(&ret, "set-env-abspath", c.SetEnvAbspath)
+
+	return append(ret, c.LogDogFlags.Dump()...)
 }
