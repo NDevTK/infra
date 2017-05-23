@@ -48,6 +48,54 @@
     },
     {
       "key": {
+        "uuid": "9f8dfa27_29695f2b",
+        "filename": "go/src/infra/tools/kitchen/cookflags/dump.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-05-23T23:14:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4934e28a_dd4eb728",
+      "range": {
+        "startLine": 9,
+        "startChar": 13,
+        "endLine": 9,
+        "endChar": 25
+      },
+      "revId": "a45d343a8d9c9d13132666e49bb2c620ee0189a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "236f0e23_0f1c2532",
+        "filename": "go/src/infra/tools/kitchen/cookflags/dump.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-05-23T23:14:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1168ed7f_c4a43961",
+      "range": {
+        "startLine": 9,
+        "startChar": 45,
+        "endLine": 9,
+        "endChar": 53
+      },
+      "revId": "a45d343a8d9c9d13132666e49bb2c620ee0189a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dc064ef8_d5134837",
         "filename": "go/src/infra/tools/kitchen/cookflags/dump.go",
         "patchSetId": 2
@@ -68,6 +116,30 @@
       "revId": "a45d343a8d9c9d13132666e49bb2c620ee0189a5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "123c463f_3401c0da",
+        "filename": "go/src/infra/tools/kitchen/cookflags/dump.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-05-23T23:14:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dc064ef8_d5134837",
+      "range": {
+        "startLine": 26,
+        "startChar": 9,
+        "endLine": 26,
+        "endChar": 12
+      },
+      "revId": "a45d343a8d9c9d13132666e49bb2c620ee0189a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "0dfce68c_8dbddd11",
+        "filename": "go/src/infra/tools/kitchen/cookflags/dump.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-05-23T23:14:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0204c2f9_e121cca8",
+      "range": {
+        "startLine": 28,
+        "startChar": 1,
+        "endLine": 28,
+        "endChar": 25
+      },
+      "revId": "a45d343a8d9c9d13132666e49bb2c620ee0189a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "29b1452f_0ff47863",
         "filename": "go/src/infra/tools/kitchen/cookflags/flags.go",
         "patchSetId": 2
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "541b5e5d_63a66eeb",
+        "filename": "go/src/infra/tools/kitchen/cookflags/flags.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-05-23T23:14:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "29b1452f_0ff47863",
+      "range": {
+        "startLine": 160,
+        "startChar": 46,
+        "endLine": 160,
+        "endChar": 64
+      },
+      "revId": "a45d343a8d9c9d13132666e49bb2c620ee0189a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c9edc0c2_77dcc57d",
         "filename": "go/src/infra/tools/kitchen/cookflags/flags.go",
         "patchSetId": 2
@@ -137,6 +257,30 @@
       "revId": "a45d343a8d9c9d13132666e49bb2c620ee0189a5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b1939db8_237c86aa",
+        "filename": "go/src/infra/tools/kitchen/cookflags/flags.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-05-23T23:14:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c9edc0c2_77dcc57d",
+      "range": {
+        "startLine": 161,
+        "startChar": 43,
+        "endLine": 161,
+        "endChar": 85
+      },
+      "revId": "a45d343a8d9c9d13132666e49bb2c620ee0189a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
