@@ -72,6 +72,24 @@
     },
     {
       "key": {
+        "uuid": "bae0d7c4_4ee45187",
+        "filename": "appengine/predator/backend/handlers/rerun_analysis.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1123509
+      },
+      "writtenOn": "2017-05-23T21:17:30Z",
+      "side": 1,
+      "message": "Thanks! This comment can be removed in that case.",
+      "parentUuid": "9cc7ead6_b601c2ea",
+      "revId": "9c03239644fe57ca1c0b7af1e7cef0338ebd716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2a175710_f087d3e0",
         "filename": "appengine/predator/backend/handlers/rerun_analysis.py",
         "patchSetId": 6
