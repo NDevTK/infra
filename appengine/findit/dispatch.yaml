@@ -1,7 +1,4 @@
 dispatch:
-  - url: "*/robots.txt"
-    module: default
-
   - url: "*/build-failure"
     module: waterfall-frontend
 
