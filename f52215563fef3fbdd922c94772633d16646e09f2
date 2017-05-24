@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8abc3c92_2c083969",
+        "filename": "appengine/monorail/features/notify_reasons.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 360,
+      "author": {
+        "id": 1004426
+      },
+      "writtenOn": "2017-05-24T01:00:20Z",
+      "side": 1,
+      "message": "Not part of this change, but still: doesn\u0027t this silently ignore some people who\u0027ve starred an issue and chosen to receive notifications about it?",
+      "range": {
+        "startLine": 360,
+        "startChar": 31,
+        "endLine": 360,
+        "endChar": 43
+      },
+      "revId": "f52215563fef3fbdd922c94772633d16646e09f2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
