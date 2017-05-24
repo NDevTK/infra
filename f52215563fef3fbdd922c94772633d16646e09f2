@@ -22,6 +22,30 @@
       "revId": "f52215563fef3fbdd922c94772633d16646e09f2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b68648e4_a45a1810",
+        "filename": "appengine/monorail/features/notify_reasons.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 360,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2017-05-24T16:36:08Z",
+      "side": 1,
+      "message": "Most issues never have a number of stars greater than settings.max_starrers_to_notify, because it is currently set to 4000.  The only issues that can get up that high are \"advocacy\" issues where people have used social media or fake accounts to drive up the star count.  Those same advocacy issues tend to have a lot of comments, so the number of emails sent becomes a real problem for our servers.",
+      "parentUuid": "8abc3c92_2c083969",
+      "range": {
+        "startLine": 360,
+        "startChar": 31,
+        "endLine": 360,
+        "endChar": 43
+      },
+      "revId": "f52215563fef3fbdd922c94772633d16646e09f2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
