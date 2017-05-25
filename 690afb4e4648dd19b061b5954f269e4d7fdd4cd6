@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "44cc436a_ee8c3221",
+        "filename": "go/src/infra/tools/kitchen/cookflags/dump.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-05-25T00:39:33Z",
+      "side": 1,
+      "message": "`foo\u003d` is valid too, no?",
+      "revId": "690afb4e4648dd19b061b5954f269e4d7fdd4cd6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "217386a0_726e2a96",
+        "filename": "go/src/infra/tools/kitchen/cookflags/flags.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-05-25T00:39:33Z",
+      "side": 1,
+      "message": "fwiw this code is beautiful",
+      "revId": "690afb4e4648dd19b061b5954f269e4d7fdd4cd6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
