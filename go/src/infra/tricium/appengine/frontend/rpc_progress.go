@@ -44,32 +44,39 @@ func (r *TriciumServer) Progress(c context.Context, req *tricium.ProgressRequest
 }
 
 func progress(c context.Context, runID int64) (tricium.State, []*tricium.AnalyzerProgress, error) {
-	run := &track.Run{ID: runID}
-	if err := ds.Get(c, run); err != nil {
-		return tricium.State_PENDING, nil, fmt.Errorf("failed to read run entry: %v", err)
-	}
 	runKey := ds.NewKey(c, "Run", "", runID, nil)
-	var analyzers []*track.AnalyzerInvocation
-	q := ds.NewQuery("AnalyzerInvocation").Ancestor(runKey)
-	if err := ds.GetAll(c, q, &analyzers); err != nil {
-		return tricium.State_PENDING, nil, fmt.Errorf("failed to read analyzer invocations: %v", err)
+	runRes := &track.RunResult{
+		ID:     ds.NewKey(c, "RunResult", "", 1, runKey).String(),
+		Parent: runKey,
 	}
-	var workers []*track.WorkerInvocation
-	q = ds.NewQuery("WorkerInvocation").Ancestor(runKey)
+	if err := ds.Get(c, runRes); err != nil {
+		return tricium.State_PENDING, nil, fmt.Errorf("failed to get RunResult: %v", err)
+	}
+	var workers []*track.WorkerRun
+	q := ds.NewQuery("WorkerRun").Ancestor(runKey)
 	if err := ds.GetAll(c, q, &workers); err != nil {
-		return tricium.State_PENDING, nil, fmt.Errorf("failed to read worker invocations: %v", err)
+		return tricium.State_PENDING, nil, fmt.Errorf("failed to get WorkerRun: %v", err)
 	}
 	res := []*tricium.AnalyzerProgress{}
 	for _, w := range workers {
+		workerKey := ds.KeyForObj(c, w)
+		workerResKey := ds.NewKey(c, "WorkerResult", "", 1, workerKey)
+		wr := &track.WorkerResult{
+			ID:     workerResKey.String(),
+			Parent: workerKey,
+		}
+		if err := ds.Get(c, wr); err != nil {
+			return tricium.State_PENDING, nil, fmt.Errorf("failed to get WorkerResult (WorkerRun.ID: '%s', WorkerRun key: '%s', WorkerResult key:'%s'): %v", w.ID, workerKey.String(), workerResKey.String(), err)
+		}
 		res = append(res, &tricium.AnalyzerProgress{
-			Analyzer:          extractAnalyzerName(w.Name),
-			Platform:          w.Platform,
-			State:             w.State,
-			SwarmingTaskId:    fmt.Sprintf("%s/task?id=%s", w.SwarmingURL, w.TaskID),
-			NumResultComments: int32(w.NumResultComments),
+			Analyzer:       extractAnalyzerName(w.Name),
+			Platform:       w.Platform,
+			State:          wr.State,
+			SwarmingTaskId: fmt.Sprintf("%s/task?id=%s", w.SwarmingURL, wr.TaskID),
+			NumComments:    int32(wr.NumComments),
 		})
 	}
-	return run.State, res, nil
+	return runRes.State, res, nil
 }
 
 func extractAnalyzerName(worker string) string {
