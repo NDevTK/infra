@@ -26,52 +26,68 @@ func TestResults(t *testing.T) {
 		ctx := tt.Context()
 
 		// Add run->analyzer->worker->comments
-		run := &track.Run{
-			State: tricium.State_SUCCESS,
-		}
-		err := ds.Put(ctx, run)
-		So(err, ShouldBeNil)
+		run := &track.Run{}
+		So(ds.Put(ctx, run), ShouldBeNil)
+		runKey := ds.KeyForObj(ctx, run)
+		So(ds.Put(ctx, &track.RunResult{
+			Parent: runKey,
+			State:  tricium.State_SUCCESS,
+		}), ShouldBeNil)
 		analyzerName := "Hello"
 		platform := tricium.Platform_UBUNTU
-		analyzer := &track.AnalyzerInvocation{
-			Name:  analyzerName,
-			State: tricium.State_SUCCESS,
-		}
-		analyzer.Parent = ds.KeyForObj(ctx, run)
-		err = ds.Put(ctx, analyzer)
-		So(err, ShouldBeNil)
-		worker := &track.WorkerInvocation{
-			Name:              analyzerName + "_UBUNTU",
-			State:             tricium.State_SUCCESS,
-			NumResultComments: 1,
-			Platform:          platform,
-		}
-		worker.Parent = ds.KeyForObj(ctx, analyzer)
-		err = ds.Put(ctx, worker)
-		So(err, ShouldBeNil)
+		analyzerKey := ds.NewKey(ctx, "AnalyzerRun", analyzerName, 0, runKey)
+		So(ds.Put(ctx, &track.AnalyzerRun{
+			ID:     analyzerKey.String(),
+			Parent: runKey,
+		}), ShouldBeNil)
+		So(ds.Put(ctx, &track.AnalyzerResult{
+			ID:     ds.NewKey(ctx, "AnalyzerResult", "", 1, analyzerKey).String(),
+			Parent: analyzerKey,
+			State:  tricium.State_SUCCESS,
+		}), ShouldBeNil)
+		workerKey := ds.NewKey(ctx, "WorkerRun", analyzerName+"_UBUNTU", 0, analyzerKey)
+		So(ds.Put(ctx, &track.WorkerRun{
+			ID:       workerKey.String(),
+			Parent:   analyzerKey,
+			Platform: platform,
+		}), ShouldBeNil)
+		So(ds.Put(ctx, &track.WorkerResult{
+			ID:          ds.NewKey(ctx, "WorkerResult", "", 1, workerKey).String(),
+			Parent:      workerKey,
+			State:       tricium.State_SUCCESS,
+			NumComments: 1,
+		}), ShouldBeNil)
 		json, err := json.Marshal(tricium.Data_Comment{
 			Category: analyzerName,
 			Message:  "Hello",
 		})
 		So(err, ShouldBeNil)
-		comments := []*track.ResultComment{
-			{
-				Parent:    ds.KeyForObj(ctx, worker),
-				Category:  analyzerName,
-				Comment:   string(json),
-				Platforms: 0,
-				Included:  true,
-			},
-			{
-				Parent:    ds.KeyForObj(ctx, worker),
-				Category:  analyzerName,
-				Comment:   string(json),
-				Platforms: 0,
-				Included:  false,
-			},
+		comment := &track.Comment{
+			Parent:    workerKey,
+			Category:  analyzerName,
+			Comment:   string(json),
+			Platforms: 0,
 		}
-		err = ds.Put(ctx, comments)
-		So(err, ShouldBeNil)
+		So(ds.Put(ctx, comment), ShouldBeNil)
+		commentKey := ds.KeyForObj(ctx, comment)
+		So(ds.Put(ctx, &track.CommentResult{
+			ID:       ds.NewKey(ctx, "CommentResult", "", 1, commentKey).String(),
+			Parent:   commentKey,
+			Included: true,
+		}), ShouldBeNil)
+		comment = &track.Comment{
+			Parent:    workerKey,
+			Category:  analyzerName,
+			Comment:   string(json),
+			Platforms: 0,
+		}
+		So(ds.Put(ctx, comment), ShouldBeNil)
+		commentKey = ds.KeyForObj(ctx, comment)
+		So(ds.Put(ctx, &track.CommentResult{
+			ID:       ds.NewKey(ctx, "CommentResult", "", 1, commentKey).String(),
+			Parent:   commentKey,
+			Included: false,
+		}), ShouldBeNil)
 
 		Convey("Merged results request", func() {
 			ctx = auth.WithState(ctx, &authtest.FakeState{

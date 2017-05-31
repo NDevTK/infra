@@ -116,7 +116,6 @@ func extractAnalyzerWorkerStructure(c context.Context, wf *admin.Workflow) map[s
 		}
 		aw := &track.WorkerInvocation{
 			ID:       w.Name,
-			Name:     w.Name,
 			State:    tricium.State_PENDING,
 			Platform: w.ProvidesForPlatform,
 		}
