@@ -26,29 +26,41 @@ func TestProgress(t *testing.T) {
 		ctx := tt.Context()
 
 		// Add completed run entry.
-		run := &track.Run{
-			State: tricium.State_SUCCESS,
-		}
-		err := ds.Put(ctx, run)
-		So(err, ShouldBeNil)
+		run := &track.Run{}
+		So(ds.Put(ctx, run), ShouldBeNil)
+		runKey := ds.KeyForObj(ctx, run)
+		So(ds.Put(ctx, &track.RunResult{
+			ID:     "1",
+			Parent: runKey,
+			State:  tricium.State_SUCCESS,
+		}), ShouldBeNil)
 		analyzerName := "Hello"
 		platform := tricium.Platform_UBUNTU
-		analyzer := &track.AnalyzerInvocation{
-			Name:  analyzerName,
-			State: tricium.State_SUCCESS,
+		analyzerKey := ds.NewKey(ctx, "AnalyzerRun", analyzerName, 0, runKey)
+		So(ds.Put(ctx, &track.AnalyzerRun{
+			ID:     analyzerName,
+			Parent: runKey,
+		}), ShouldBeNil)
+		So(ds.Put(ctx, &track.AnalyzerResult{
+			ID:     "1",
+			Parent: analyzerKey,
+			State:  tricium.State_SUCCESS,
+		}), ShouldBeNil)
+		workerName := analyzerName + "_UBUNTU"
+		workerKey := ds.NewKey(ctx, "WorkerRun", workerName, 0, analyzerKey)
+		worker := &track.WorkerRun{
+			ID:       workerName,
+			Parent:   analyzerKey,
+			Platform: platform,
 		}
-		analyzer.Parent = ds.KeyForObj(ctx, run)
-		err = ds.Put(ctx, analyzer)
-		So(err, ShouldBeNil)
-		worker := &track.WorkerInvocation{
-			Name:              analyzerName + "_UBUNTU",
-			State:             tricium.State_SUCCESS,
-			NumResultComments: 1,
-			Platform:          platform,
-		}
-		worker.Parent = ds.KeyForObj(ctx, analyzer)
-		err = ds.Put(ctx, worker)
-		So(err, ShouldBeNil)
+		So(ds.Put(ctx, worker), ShouldBeNil)
+		workerKey = ds.KeyForObj(ctx, worker)
+		So(ds.Put(ctx, &track.WorkerResult{
+			ID:          "1",
+			Parent:      workerKey,
+			State:       tricium.State_SUCCESS,
+			NumComments: 1,
+		}), ShouldBeNil)
 
 		Convey("Progress request", func() {
 			ctx = auth.WithState(ctx, &authtest.FakeState{
@@ -61,7 +73,7 @@ func TestProgress(t *testing.T) {
 			So(len(progress), ShouldEqual, 1)
 			So(progress[0].Analyzer, ShouldEqual, analyzerName)
 			So(progress[0].Platform, ShouldEqual, platform)
-			So(progress[0].NumResultComments, ShouldEqual, 1)
+			So(progress[0].NumComments, ShouldEqual, 1)
 			So(progress[0].State, ShouldEqual, tricium.State_SUCCESS)
 		})
 	})

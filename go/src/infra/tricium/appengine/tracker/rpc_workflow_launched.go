@@ -94,8 +94,8 @@ func workflowLaunched(c context.Context, req *admin.WorkflowLaunchedRequest, wp 
 }
 
 type analyzerToWorkers struct {
-	Analyzer *track.AnalyzerInvocation
-	Workers  []*track.WorkerInvocation
+	Analyzer *track.AnalyzerRun
+	Workers  []*track.WorkerRun
 }
 
 // extractAnalyzerWorkerStructure extracts analyzer-*worker structure from workflow config.
@@ -106,25 +106,21 @@ func extractAnalyzerWorkerStructure(c context.Context, wf *admin.Workflow) map[s
 		a, ok := m[analyzer]
 		if !ok {
 			a = &analyzerToWorkers{
-				Analyzer: &track.AnalyzerInvocation{
+				Analyzer: &track.AnalyzerRun{
 					ID:    analyzer,
-					Name:  analyzer,
-					State: tricium.State_PENDING,
 				},
 			}
 			m[analyzer] = a
 		}
-		aw := &track.WorkerInvocation{
+		aw := &track.WorkerRun{
 			ID:       w.Name,
-			Name:     w.Name,
-			State:    tricium.State_PENDING,
 			Platform: w.ProvidesForPlatform,
 		}
 		for _, n := range w.Next {
 			aw.Next = append(aw.Next, n)
 		}
 		a.Workers = append(a.Workers, aw)
-		logging.Infof(c, "Found analyzer/worker: %v", a)
+		logging.Debugf(c, "Found analyzer/worker: %v", a)
 	}
 	return m
 }
