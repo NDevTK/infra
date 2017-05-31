@@ -79,6 +79,12 @@ class BaseHandler(webapp2.RequestHandler):
         'return_code': return_code,
     }
 
+  @staticmethod
+  def CreateRedirect(url):
+    return {
+        'redirect_url': url,
+    }
+
   def HandleGet(self):  # pylint: disable=R0201
     """Handles a GET request.
 
@@ -178,9 +184,11 @@ class BaseHandler(webapp2.RequestHandler):
             'login_url': self.GetLoginUrl(),
         }
         return_code = 401
+        redirect_url = None
         cache_expiry = None
       else:
         result = handler_func() or {}
+        redirect_url = result.get('redirect_url')
 
         template = result.get('template', None)
         data = result.get('data', {})
@@ -194,7 +202,13 @@ class BaseHandler(webapp2.RequestHandler):
           'error_message': 'An internal error occurred.'
       }
       return_code = 500
+      redirect_url = None
       cache_expiry = None
+
+    if redirect_url is not None:
+      self.response.clear()
+      self.redirect(redirect_url)
+      return
 
     # Not add user login/logout info in unit tests environment to avoid updating
     # too many existing testcases.

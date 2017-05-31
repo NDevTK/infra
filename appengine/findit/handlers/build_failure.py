@@ -6,10 +6,11 @@ from collections import defaultdict
 import copy
 from datetime import datetime
 
-from google.appengine.api import users
-
+from common import acl
 from common import constants
 from common.waterfall import failure_type
+from gae_libs import token
+from gae_libs.http import auth_util
 from gae_libs.handlers.base_handler import BaseHandler, Permission
 from handlers import handlers_util
 from handlers import result_status
@@ -60,7 +61,7 @@ def _GetCLDict(analysis, cl_info):
 
 
 def _GetTriageHistory(analysis):
-  if (not users.is_current_user_admin() or
+  if (not auth_util.IsCurrentUserAdmin() or
       not analysis.completed or
       not analysis.triage_history):
     return None
@@ -335,7 +336,7 @@ def _GetAllSuspectedCLsAndCheckStatus(
   build_key = build_util.CreateBuildId(
       master_name, builder_name, build_number)
   suspected_cls = copy.deepcopy(analysis.suspected_cls)
-  if not suspected_cls:
+  if not suspected_cls:  # pragma: no cover.
     return []
 
   confidences = SuspectedCLConfidence.Get()
@@ -361,7 +362,7 @@ class BuildFailure(BaseHandler):
   PERMISSION_LEVEL = Permission.ANYONE
 
   def _ShowTriageHelpButton(self):
-    return users.is_current_user_admin()
+    return auth_util.IsCurrentUserAdmin()
 
   def _PrepareCommonDataForFailure(self, analysis):
     return {
@@ -422,39 +423,15 @@ class BuildFailure(BaseHandler):
     build_info = buildbot.ParseBuildUrl(url)
     if not build_info:
       return BaseHandler.CreateError(
-          'Url "%s" is not pointing to a build.' % url, 501)
+          'Url "%s" is not pointing to a build.' % url, 404)
     master_name, builder_name, build_number = build_info
 
-    analysis = None
-    if not (waterfall_config.MasterIsSupported(master_name) or
-            users.is_current_user_admin()):
-      # If the build failure was already analyzed, just show it to the user.
-      analysis = WfAnalysis.Get(master_name, builder_name, build_number)
-      if not analysis:
-        return BaseHandler.CreateError(
-            'Master "%s" is not supported yet.' % master_name, 501)
+    analysis = WfAnalysis.Get(master_name, builder_name, build_number)
 
     if not analysis:
-      # Only allow admin to force a re-run and set the build_completed.
-      force = (users.is_current_user_admin() and
-               self.request.get('force') == '1')
-
-      build = build_util.GetBuildInfo(master_name, builder_name, build_number)
-      if not build:
-        return BaseHandler.CreateError(
-            'Can\'t get information about build "%s/%s/%s".' % (
-              master_name, builder_name, build_number), 501)
-      build_completed = build.completed
-
-      if not build_completed and force:
-        return BaseHandler.CreateError(
-            'Can\'t rerun an incomplete build "%s/%s/%s".' % (
-                master_name, builder_name, build_number), 501)
-
-      analysis = build_failure_analysis_pipelines.ScheduleAnalysisIfNeeded(
-          master_name, builder_name, build_number,
-          build_completed=build_completed, force=force,
-          queue_name=constants.WATERFALL_ANALYSIS_QUEUE)
+      return BaseHandler.CreateError(
+          ('Schedule analyses on home page or '
+           'you do not have permission to schedule.'), 404)
 
     data = self._PrepareCommonDataForFailure(analysis)
     data['suspected_cls'] = _GetAllSuspectedCLsAndCheckStatus(
@@ -478,5 +455,50 @@ class BuildFailure(BaseHandler):
         'data': data
       }
 
-  def HandlePost(self):  # pragma: no cover
-    return self.HandleGet()
+  @token.VerifyXSRFToken()
+  def HandlePost(self):
+    """Triggers an analysis on demand and redirects to the result page."""
+    url = self.request.get('url').strip()
+
+    is_admin = auth_util.IsCurrentUserAdmin()
+    user_email = auth_util.GetUserEmail()
+    if not acl.CanTriggerNewAnalysis(user_email, is_admin):
+      # No permission to schedule a new analysis.
+      return self.CreateRedirect('/waterfall/failure?url=%s' % url)
+
+    build_info = buildbot.ParseBuildUrl(url)
+    if not build_info:  # pragma: no cover.
+      return BaseHandler.CreateError(
+          'Url "%s" is not pointing to a build.' % url, 404)
+    master_name, builder_name, build_number = build_info
+
+    analysis = None
+    if not (waterfall_config.MasterIsSupported(master_name) or
+            auth_util.IsCurrentUserAdmin()):
+      # If the build failure was already analyzed, just show it to the user.
+      analysis = WfAnalysis.Get(master_name, builder_name, build_number)
+      if not analysis:  # pragma: no cover.
+        return BaseHandler.CreateError(
+            'Master "%s" is not supported yet.' % master_name, 501)
+
+    if not analysis:
+      # Only allow admin to force a re-run and set the build_completed.
+      force = is_admin and self.request.get('force') == '1'
+
+      build = build_util.GetBuildInfo(master_name, builder_name, build_number)
+      if not build:
+        return BaseHandler.CreateError(
+            'Can\'t get information about build "%s/%s/%s".' % (
+              master_name, builder_name, build_number), 501)
+
+      if not build.completed and force:
+        return BaseHandler.CreateError(
+            'Can\'t force a rerun for an incomplete build "%s/%s/%s".' % (
+                master_name, builder_name, build_number), 501)
+
+      build_failure_analysis_pipelines.ScheduleAnalysisIfNeeded(
+          master_name, builder_name, build_number,
+          build_completed=build.completed, force=force,
+          queue_name=constants.WATERFALL_ANALYSIS_QUEUE)
+
+    return self.CreateRedirect('/waterfall/failure?url=%s' % url)

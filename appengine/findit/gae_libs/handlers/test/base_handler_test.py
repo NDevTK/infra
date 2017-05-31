@@ -271,6 +271,23 @@ class ResultTest(testing.AppengineTestCase):
     self.assertEquals(5, response.cache_control.max_age)
 
 
+class RedirectHandler(BaseHandler):
+  PERMISSION_LEVEL = Permission.ANYONE
+
+  def HandlePost(self):
+    return self.CreateRedirect('/url')
+
+
+class RedirectTest(testing.AppengineTestCase):
+  app_module = webapp2.WSGIApplication([
+      ('/redirect', RedirectHandler),
+  ], debug=True)
+
+  def testRedirect(self):
+    response = self.test_app.post('/redirect', status=302)
+    self.assertTrue(response.headers.get('Location', '').endswith('/url'))
+
+
 class ResultFormatTest(testing.AppengineTestCase):
   app_module = webapp2.WSGIApplication([
       ('/format', SetResultHandler),
