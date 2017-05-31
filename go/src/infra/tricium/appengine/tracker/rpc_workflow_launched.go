@@ -51,6 +51,7 @@ func workflowLaunched(c context.Context, req *admin.WorkflowLaunchedRequest, wp 
 		if err := ds.Get(c, run); err != nil {
 			return fmt.Errorf("failed to retrieve run entry (run ID: %d): %v", run.ID, err)
 		}
+		runKey := ds.KeyForObj(c, run)
 		ops := []func() error{
 			// Notify reporter.
 			func() error {
@@ -62,10 +63,14 @@ func workflowLaunched(c context.Context, req *admin.WorkflowLaunchedRequest, wp 
 				}
 				return nil
 			},
-			// Update Run state to launched.
+			// Update Run state to launched by setting RunResult state to running.
 			func() error {
-				run.State = tricium.State_RUNNING
-				if err := ds.Put(c, run); err != nil {
+				r := &track.RunResult{
+					ID:     "1",
+					Parent: runKey,
+					State:  tricium.State_RUNNING,
+				}
+				if err := ds.Put(c, r); err != nil {
 					return fmt.Errorf("failed to mark workflow as launched: %v", err)
 				}
 				return nil
@@ -74,13 +79,30 @@ func workflowLaunched(c context.Context, req *admin.WorkflowLaunchedRequest, wp 
 			func() error {
 				entities := make([]interface{}, 0, len(aw))
 				for _, v := range aw {
-					v.Analyzer.Parent = ds.KeyForObj(c, run)
-					entities = append(entities, v.Analyzer)
-				}
-				for _, v := range aw {
-					for _, vv := range v.Workers {
-						vv.Parent = ds.KeyForObj(c, v.Analyzer)
-						entities = append(entities, vv)
+					v.Analyzer.Parent = runKey
+					analyzerKey := ds.KeyForObj(c, v.Analyzer)
+					entities = append(entities, []interface{}{
+						v.Analyzer,
+						&track.AnalyzerResult{
+							ID:     "1",
+							Parent: analyzerKey,
+							Name:   v.Analyzer.ID,
+							State:  tricium.State_RUNNING,
+						},
+					}...)
+					for _, worker := range v.Workers {
+						worker.Parent = analyzerKey
+						entities = append(entities, worker)
+						workerKey := ds.KeyForObj(c, worker)
+						entities = append(entities, []interface{}{
+							worker,
+							&track.WorkerResult{
+								ID:     "1",
+								Name:   worker.ID,
+								Parent: workerKey,
+								State:  tricium.State_RUNNING,
+							},
+						}...)
 					}
 				}
 				if err := ds.Put(c, entities); err != nil {
@@ -94,8 +116,8 @@ func workflowLaunched(c context.Context, req *admin.WorkflowLaunchedRequest, wp 
 }
 
 type analyzerToWorkers struct {
-	Analyzer *track.AnalyzerInvocation
-	Workers  []*track.WorkerInvocation
+	Analyzer *track.AnalyzerRun
+	Workers  []*track.WorkerRun
 }
 
 // extractAnalyzerWorkerStructure extracts analyzer-*worker structure from workflow config.
@@ -106,25 +128,23 @@ func extractAnalyzerWorkerStructure(c context.Context, wf *admin.Workflow) map[s
 		a, ok := m[analyzer]
 		if !ok {
 			a = &analyzerToWorkers{
-				Analyzer: &track.AnalyzerInvocation{
-					ID:    analyzer,
-					Name:  analyzer,
-					State: tricium.State_PENDING,
+				Analyzer: &track.AnalyzerRun{
+					ID: analyzer,
 				},
 			}
 			m[analyzer] = a
 		}
-		aw := &track.WorkerInvocation{
-			ID:       w.Name,
-			Name:     w.Name,
-			State:    tricium.State_PENDING,
-			Platform: w.ProvidesForPlatform,
+		aw := &track.WorkerRun{
+			ID:                w.Name,
+			IsolateServerURL:  wf.IsolateServer,
+			SwarmingServerURL: wf.SwarmingServer,
+			Platform:          w.ProvidesForPlatform,
 		}
 		for _, n := range w.Next {
 			aw.Next = append(aw.Next, n)
 		}
 		a.Workers = append(a.Workers, aw)
-		logging.Infof(c, "Found analyzer/worker: %v", a)
+		logging.Debugf(c, "Found analyzer/worker: %v", a)
 	}
 	return m
 }
