@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "0bda0c79_bcd22a6e",
+        "filename": "appengine/findit/handlers/build_failure.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 414,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-05-31T19:33:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a95b574_2c6a382b",
+      "range": {
+        "startLine": 414,
+        "startChar": 7,
+        "endLine": 414,
+        "endChar": 24
+      },
+      "revId": "5992fb707428d58601969fa6fc0b9282df79f923",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "134ec7e5_515587d2",
         "filename": "appengine/findit/handlers/build_failure.py",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2017-05-31T17:27:19Z",
       "side": 1,
       "message": "Can we add a flag to indicate if the request is redirected from home page or directly entered by user so we can have different response?\n\nOtherwise I think maybe user will feel frustrated when they schedule analysis on home page and get redirected to an error page saying \u0027Schedule analyses on home page ...\u0027",
+      "range": {
+        "startLine": 433,
+        "startChar": 0,
+        "endLine": 434,
+        "endChar": 59
+      },
+      "revId": "5992fb707428d58601969fa6fc0b9282df79f923",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f7259010_3b281f1e",
+        "filename": "appengine/findit/handlers/build_failure.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 434,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-05-31T19:33:27Z",
+      "side": 1,
+      "message": "Good idea!\n\nDone.",
+      "parentUuid": "134ec7e5_515587d2",
       "range": {
         "startLine": 433,
         "startChar": 0,
