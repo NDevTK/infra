@@ -75,54 +75,52 @@ func analyze(c context.Context, req *tricium.AnalyzeRequest, cp config.ProviderA
 	// TODO(emso): Verify that a project has Gerrit details if a Gerrit reporter has been selected.
 	run := &track.Run{
 		Received: clock.Now(c).UTC(),
-		State:    tricium.State_PENDING,
 		Project:  req.Project,
 		Reporter: req.Reporter,
+		Paths:    req.Paths,
+		GitRepo:  repo,
+		GitRef:   req.GitRef,
 	}
-	sr := &track.ServiceRequest{
+	rr := &track.RunResult{
+		ID:    "1",
+		State: tricium.State_PENDING,
+	}
+	lr := &admin.LaunchRequest{
 		Project: req.Project,
 		Paths:   req.Paths,
 		GitRepo: repo,
 		GitRef:  req.GitRef,
-	}
-	lr := &admin.LaunchRequest{
-		Project: sr.Project,
-		Paths:   sr.Paths,
-		GitRepo: repo,
-		GitRef:  sr.GitRef,
 	}
 	// This is a cross-group transaction because first Run is stored to get the ID,
 	// and then ServiceRequest is stored, with Run key as parent.
 	err = ds.RunInTransaction(c, func(c context.Context) (err error) {
 		// Add tracking entries for run.
 		if err := ds.Put(c, run); err != nil {
-			return fmt.Errorf("failed to store run entry: %v", err)
+			return fmt.Errorf("failed to store Run entry: %v", err)
 		}
-		// Run the below operations in parallel.
-		done := make(chan error)
-		defer func() {
-			if err2 := <-done; err == nil {
-				err = err2
-			}
-		}()
-		go func() {
-			// Add tracking entry for service request.
-			sr.Parent = ds.KeyForObj(c, run)
-			if err := ds.Put(c, sr); err != nil {
-				done <- fmt.Errorf("failed to store service request: %v", err)
-				return
-			}
-			done <- nil
-		}()
-		// Launch workflow, enqueue launch request.
-		lr.RunId = run.ID
-		t := tq.NewPOSTTask("/launcher/internal/launch", nil)
-		b, err := proto.Marshal(lr)
-		if err != nil {
-			return fmt.Errorf("failed to enqueue launch request: %v", err)
+		ops := []func() error{
+			// Add RunResult entry for run status tracking.
+			func() error {
+				runKey := ds.KeyForObj(c, run)
+				rr.Parent = runKey
+				if err := ds.Put(c, rr); err != nil {
+					return fmt.Errorf("failed to store RunResult entry: %v", err)
+				}
+				return nil
+			},
+			// Launch workflow, enqueue launch request.
+			func() error {
+				lr.RunId = run.ID
+				t := tq.NewPOSTTask("/launcher/internal/launch", nil)
+				b, err := proto.Marshal(lr)
+				if err != nil {
+					return fmt.Errorf("failed to enqueue launch request: %v", err)
+				}
+				t.Payload = b
+				return tq.Add(c, common.LauncherQueue, t)
+			},
 		}
-		t.Payload = b
-		return tq.Add(c, common.LauncherQueue, t)
+		return common.RunInParallel(ops)
 	}, &ds.TransactionOptions{XG: true})
 	if err != nil {
 		return "", codes.Internal, fmt.Errorf("failed to track and launch request: %v", err)
