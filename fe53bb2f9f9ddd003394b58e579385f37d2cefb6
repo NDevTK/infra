@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5053d78d_c0c8fd5b",
+        "filename": "appengine/monorail/features/test/filterrules_helpers_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 379,
+      "author": {
+        "id": 1004426
+      },
+      "writtenOn": "2017-06-01T21:15:35Z",
+      "side": 1,
+      "message": "Trailing whitespace.",
+      "range": {
+        "startLine": 379,
+        "startChar": 15,
+        "endLine": 379,
+        "endChar": 16
+      },
+      "revId": "fe53bb2f9f9ddd003394b58e579385f37d2cefb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
