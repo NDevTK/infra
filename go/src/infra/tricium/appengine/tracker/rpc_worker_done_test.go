@@ -7,6 +7,7 @@ package tracker
 import (
 	"encoding/json"
 	"errors"
+	"strings"
 	"testing"
 
 	ds "github.com/luci/gae/service/datastore"
@@ -54,51 +55,52 @@ func TestWorkerDoneRequest(t *testing.T) {
 		ctx := tt.Context()
 
 		// Add pending run entry.
-		run := &track.Run{
-			State: tricium.State_PENDING,
-		}
-		err := ds.Put(ctx, run)
-		So(err, ShouldBeNil)
-
-		runID := run.ID
+		run := &track.Run{}
+		So(ds.Put(ctx, run), ShouldBeNil)
+		runKey := ds.KeyForObj(ctx, run)
+		So(ds.Put(ctx, &track.RunResult{
+			ID:     "1",
+			Parent: runKey,
+			State:  tricium.State_PENDING,
+		}), ShouldBeNil)
 
 		// Mark workflow as launched.
-		err = workflowLaunched(ctx, &admin.WorkflowLaunchedRequest{
-			RunId: runID,
+		err := workflowLaunched(ctx, &admin.WorkflowLaunchedRequest{
+			RunId: run.ID,
 		}, mockWorkflowProvider{})
 		So(err, ShouldBeNil)
 
 		// Mark worker as launched.
 		err = workerLaunched(ctx, &admin.WorkerLaunchedRequest{
-			RunId:  runID,
+			RunId:  run.ID,
 			Worker: fileIsolator,
 		})
 		So(err, ShouldBeNil)
 
 		// Mark worker as done.
 		err = workerDone(ctx, &admin.WorkerDoneRequest{
-			RunId:    runID,
+			RunId:    run.ID,
 			Worker:   fileIsolator,
 			ExitCode: 0,
 		}, &mockIsolator{})
 		So(err, ShouldBeNil)
 
 		Convey("Marks worker as done", func() {
-			_, analyzerKey, workerKey := createKeys(ctx, runID, fileIsolator)
-			w := &track.WorkerInvocation{
-				ID:     workerKey.StringID(),
-				Parent: workerKey.Parent(),
+			analyzerName := strings.Split(fileIsolator, "_")[0]
+			analyzerKey := ds.NewKey(ctx, "AnalyzerRun", analyzerName, 0, runKey)
+			workerKey := ds.NewKey(ctx, "WorkerRun", fileIsolator, 0, analyzerKey)
+			wr := &track.WorkerResult{
+				ID:     "1",
+				Parent: workerKey,
 			}
-			err = ds.Get(ctx, w)
-			So(err, ShouldBeNil)
-			So(w.State, ShouldEqual, tricium.State_SUCCESS)
-			a := &track.AnalyzerInvocation{
-				ID:     analyzerKey.StringID(),
-				Parent: analyzerKey.Parent(),
+			So(ds.Get(ctx, wr), ShouldBeNil)
+			So(wr.State, ShouldEqual, tricium.State_SUCCESS)
+			ar := &track.AnalyzerResult{
+				ID:     "1",
+				Parent: analyzerKey,
 			}
-			err = ds.Get(ctx, a)
-			So(err, ShouldBeNil)
-			So(a.State, ShouldEqual, tricium.State_SUCCESS)
+			So(ds.Get(ctx, ar), ShouldBeNil)
+			So(ar.State, ShouldEqual, tricium.State_SUCCESS)
 		})
 		// TODO(emso): multi-platform analyzer is half done, analyzer stays launched
 	})

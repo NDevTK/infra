@@ -41,23 +41,27 @@ func (r *TriciumServer) Results(c context.Context, req *tricium.ResultsRequest) 
 }
 
 func results(c context.Context, runID int64) (*tricium.Data_Results, bool, error) {
-	run := &track.Run{ID: runID}
-	if err := ds.Get(c, run); err != nil {
-		return nil, false, fmt.Errorf("failed to read run entry: %v", err)
-	}
 	runKey := ds.NewKey(c, "Run", "", runID, nil)
-	var comments []*track.ResultComment
-	q := ds.NewQuery("ResultComment").Ancestor(runKey)
+	var comments []*track.Comment
+	q := ds.NewQuery("Comment").Ancestor(runKey)
 	if err := ds.GetAll(c, q, &comments); err != nil {
-		return nil, false, fmt.Errorf("failed to read result comments: %v", err)
+		return nil, false, fmt.Errorf("failed to get comments: %v", err)
 	}
 	isMerged := false
 	res := &tricium.Data_Results{}
 	for _, comment := range comments {
-		if comment.Included {
+		commentKey := ds.KeyForObj(c, comment)
+		cr := &track.CommentResult{
+			ID:     "1",
+			Parent: commentKey,
+		}
+		if err := ds.Get(c, cr); err != nil {
+			return nil, false, fmt.Errorf("failed to get CommentResult: %v", err)
+		}
+		if cr.Included {
 			comm := &tricium.Data_Comment{}
 			if err := json.Unmarshal([]byte(comment.Comment), comm); err != nil {
-				return nil, false, fmt.Errorf("failed to unmarshal result comment: %v", err)
+				return nil, false, fmt.Errorf("failed to unmarshal comment: %v", err)
 			}
 			res.Comments = append(res.Comments, comm)
 		} else {
