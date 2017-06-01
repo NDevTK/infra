@@ -5,6 +5,7 @@
 package tracker
 
 import (
+	"strings"
 	"testing"
 
 	ds "github.com/luci/gae/service/datastore"
@@ -23,43 +24,46 @@ func TestWorkerLaunchedRequest(t *testing.T) {
 		ctx := tt.Context()
 
 		// Add pending run entry.
-		run := &track.Run{
-			State: tricium.State_PENDING,
-		}
-		err := ds.Put(ctx, run)
-		So(err, ShouldBeNil)
-
-		runID := run.ID
+		run := &track.Run{}
+		So(ds.Put(ctx, run), ShouldBeNil)
+		runKey := ds.KeyForObj(ctx, run)
+		So(ds.Put(ctx, &track.RunResult{
+			ID:     "1",
+			Parent: runKey,
+			State:  tricium.State_PENDING,
+		}), ShouldBeNil)
 
 		// Mark workflow as launched and add tracking entries for workers.
-		err = workflowLaunched(ctx, &admin.WorkflowLaunchedRequest{
-			RunId: runID,
+		err := workflowLaunched(ctx, &admin.WorkflowLaunchedRequest{
+			RunId: run.ID,
 		}, mockWorkflowProvider{})
 		So(err, ShouldBeNil)
 
 		// Mark worker as launched.
 		err = workerLaunched(ctx, &admin.WorkerLaunchedRequest{
-			RunId:  runID,
+			RunId:  run.ID,
 			Worker: fileIsolator,
 		})
 		So(err, ShouldBeNil)
 
 		Convey("Marks worker as launched", func() {
-			_, analyzerKey, workerKey := createKeys(ctx, runID, fileIsolator)
-			w := &track.WorkerInvocation{
-				ID:     workerKey.StringID(),
-				Parent: workerKey.Parent(),
+			analyzerName := strings.Split(fileIsolator, "_")[0]
+			analyzerKey := ds.NewKey(ctx, "AnalyzerRun", analyzerName, 0, runKey)
+			workerKey := ds.NewKey(ctx, "WorkerRun", fileIsolator, 0, analyzerKey)
+			wr := &track.WorkerResult{
+				ID:     "1",
+				Parent: workerKey,
 			}
-			err = ds.Get(ctx, w)
+			err = ds.Get(ctx, wr)
 			So(err, ShouldBeNil)
-			So(w.State, ShouldEqual, tricium.State_RUNNING)
-			a := &track.AnalyzerInvocation{
-				ID:     analyzerKey.StringID(),
-				Parent: analyzerKey.Parent(),
+			So(wr.State, ShouldEqual, tricium.State_RUNNING)
+			ar := &track.AnalyzerResult{
+				ID:     "1",
+				Parent: analyzerKey,
 			}
-			err = ds.Get(ctx, a)
+			err = ds.Get(ctx, ar)
 			So(err, ShouldBeNil)
-			So(a.State, ShouldEqual, tricium.State_RUNNING)
+			So(ar.State, ShouldEqual, tricium.State_RUNNING)
 		})
 	})
 }

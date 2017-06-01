@@ -3,6 +3,41 @@
 // found in the LICENSE file.
 
 // Package track implements shared tracking functionality for the Tricium service modules.
+//
+// Overview diagram:
+//
+// +-----------------+
+// |Run              |
+// |id=<generated_id>|
+// +-----------------+
+//     |
+//     +-----------+
+//     |           |
+// +---+-----+ +---+--------------+
+// |RunResult| |AnalyzerRun       |
+// |id=1     | |id=<analyzer_name>|
+// +---------+ +------------------+
+//                 |
+//                 +----------------+
+//                 |                |
+//             +---+----------+ +---+-----------------------+
+//             |AnalyzerResult| |WorkerRun                  |
+//             |id=1          | |id=<analyzer_name-platform>|
+//             +--------------+ +---------------------------+
+//                                   |
+//                                   +--------------+
+//                                   |              |
+//                               +---+--------+ +---+-------------+
+//                               |WorkerResult| |Comment          |
+//                               |id=1        | |id=<generated id>|
+//                               +------------+ +----+------------+
+//                                                   |
+//                                                   |
+//                                              +----+--------+
+//                                              |CommentResult|
+//                                              |id=1         |
+//                                              +-------------+
+//
 package track
 
 import (
@@ -14,118 +49,199 @@ import (
 )
 
 // Run tracks the processing of one analysis request.
+//
+// Immutable entry with no parent.
 type Run struct {
-	// LUCI datastore fields.
+
+	// LUCI datastore ID field with generated value.
 	ID int64 `gae:"$id"`
+
 	// Time when the corresponding request was received, time recorded in the reporter.
 	Received time.Time
-	// State of this run; received, launched, or done-*, with done indicating success.
-	State tricium.State
+
 	// The project of the request.
 	Project string
+
 	// Reporter to use for progress updates and results.
 	Reporter tricium.Reporter
-}
 
-// ServiceRequest lists the fields included in a request to the Tricium service.
-//
-// Stored with 'Run' as parent and is read-only.
-type ServiceRequest struct {
-	// LUCI datastore fields.
-	ID     string  `gae:"$id"`
-	Parent *ds.Key `gae:"$parent"`
-	// Tricium connected project receiving the request.
-	Project string
 	// File paths listed in the request.
 	Paths []string `gae:",noindex"`
+
 	// Git repository hosting files in the request.
 	GitRepo string `gae:",noindex"`
+
 	// Git ref to use in the Git repo.
 	GitRef string `gae:",noindex"`
 }
 
-// AnalyzerInvocation tracks the execution of an analyzer.
+// RunResult tracks the state of a run.
 //
-// This may happen in one or more worker invocations, each running on different platforms.
-// Stored with 'Run' as parent.
-type AnalyzerInvocation struct {
-	// LUCI datastore fields.
-	ID     string  `gae:"$id"`
+// Mutable entry.
+type RunResult struct {
+
+	// LUCI datastore ID field with value 1.
+	ID string `gae:"$id"`
+
+	// LUCI datastore parent field with 'Run' as parent.
 	Parent *ds.Key `gae:"$parent"`
-	// Name of the analyzer. The workflow for a run may have several
-	// workers for one analyzer, each running on different platforms.
-	Name string
-	// State of this analyzer run; running, success, or failure.
-	// This state is an aggregation of the run state of analyzer workers.
+
+	// State of the parent run; running, success, or failure.
+	//
+	// This state is an aggregation of the run state of triggered analyzers.
 	State tricium.State
 }
 
-// WorkerInvocation tracks the execution of a worker.
+// AnalyzerRun tracks the execution of an analyzer.
 //
-// Stored with 'AnalyzerInvocation' as parent.
-type WorkerInvocation struct {
-	// LUCI datastore fields.
-	ID     string  `gae:"$id"`
+// Immutable entry.
+type AnalyzerRun struct {
+
+	// LUCI datastore ID field with the name of the analyzer.
+	//
+	// The workflow for a run may have several workers for one analyzer,
+	// each running on different platforms.
+	ID string `gae:"$id"`
+
+	// LUCI datastore parent field with 'Run' as parent.
 	Parent *ds.Key `gae:"$parent"`
-	// Name of the worker. Same as that used in the workflow configuration.
+}
+
+// AnalyzerResult tracks the state of an analyzer run.
+//
+// Mutable entry.
+type AnalyzerResult struct {
+
+	// LUCI datastore ID field with value 1.
+	ID string `gae:"$id"`
+
+	// LUCI datastore parent field with 'AnalyzerRun' as parent.
+	Parent *ds.Key `gae:"$parent"`
+
+	// Name of analyzer.
 	Name string
-	// State of this worker run; running, success, or failure.
+
+	// State of the parent analyzer run; running, success, or failure.
+	//
+	// This state is an aggregation of the run state of triggered analyzer workers.
 	State tricium.State
+}
+
+// WorkerRun tracks the execution of an analyzer worker.
+//
+// Immutable entry.
+type WorkerRun struct {
+
+	// LUCI datastore ID field with the name of the worker as value.
+	//
+	// This name is the same as that used in the workflow configuration.
+	ID string `gae:"$id"`
+
+	// LUCI datastore parent field with 'AnalyzerRun' as parent.
+	Parent *ds.Key `gae:"$parent"`
+
 	// Platform this worker is producing results for.
 	Platform tricium.Platform_Name
-	// Isolate server URL.
-	IsolateServerURL string `gae:",noindex"`
-	// Hash to the isolated input provided to the corresponding swarming task.
-	IsolatedInput string `gae:",noindex"`
-	// Hash to the isolated output collected from the corresponding swarming task.
-	IsolatedOutput string `gae:",noindex"`
+
 	// Names of workers succeeding this worker in the workflow.
 	Next []string `gae:",noindex"`
-	//  Exit code of the corresponding swarming task.
-	ExitCode int
+
+	// Isolate server URL.
+	IsolateServerURL string `gae:",noindex"`
+
 	// Swarming server URL.
-	SwarmingURL string `gae:",noindex"`
-	// Swarming task ID.
-	TaskID string `gae:",noindex"`
-	// Number of result comments produced by this worker.
-	NumResultComments int
+	SwarmingServerURL string `gae:",noindex"`
 }
 
-// WorkerResult tracks the results from a worker.
+// WorkerResult tracks the state of a worker run.
 //
-// Stored with 'WorkerInvocation' as parent.
+// Mutable entry.
 type WorkerResult struct {
-	// LUCI datastore fields.
-	ID     string  `gae:"$id"`
+
+	// LUCI datastore ID field with value 1.
+	ID string `gae:"$id"`
+
+	// LUCI datastore parent field with 'WorkerRun' as parent.
 	Parent *ds.Key `gae:"$parent"`
+
+	// Name of worker.
+	Name string
+
+	// State of the parent worker run; running, success, or failure.
+	State tricium.State
+
+	// Hash to the isolated input provided to the corresponding swarming task.
+	IsolatedInput string `gae:",noindex"`
+
+	// Hash to the isolated output collected from the corresponding swarming task.
+	IsolatedOutput string `gae:",noindex"`
+
+	SwarmingTaskID string `gae:",noindex"`
+
+	// Exit code of the corresponding swarming task.
+	ExitCode int
+
+	// Number of comments produced by this worker.
+	NumComments int
+
 	// Tricium result encoded as JSON.
 	Result string `gae:",noindex"`
 }
 
-// ResultComment tracks a result comment from a worker.
+// Comment tracks a result comment from a worker.
 //
-// Stored with 'WorkerInvocation' as parent.
-type ResultComment struct {
-	// LUCI datastore fields.
-	ID     string  `gae:"$id"`
+// Immutable entry.
+type Comment struct {
+
+	// LUCI datastore ID field with generated value.
+	ID string `gae:"$id"`
+
+	// LUCI datastore parent field with 'WorkerRun' as parent.
 	Parent *ds.Key `gae:"$parent"`
+
 	// Comment encoded as JSON.
+	//
 	// The comment should follow the tricium.Data_Comment format.
 	// TODO(emso): Consider storing structured comment data.
 	Comment string `gae:",noindex"`
-	// Comment category with subcategories, including the analyzer name,
-	// e.g., clang-tidy/llvm-header-guard.
+
+	// Comment category with subcategories.
+	//
+	// This includes the analyzer name, e.g., clang-tidy/llvm-header-guard.
 	Category string
-	// Platforms this comment applies to. This is a int64 bit map using
-	// the tricium.Platform_Name number values for platforms.
+
+	// Platforms this comment applies to.
+	//
+	// This is a int64 bit map using the tricium.Platform_Name number values for platforms.
 	Platforms int64
+}
+
+// CommentResult tracks inclusion and feedback for a comment.
+//
+// If an analyzer runs workers on more than one platform, then the results
+// for the analyzer are merged, including a selection of comments via the 'Included'
+// field.
+//
+// Mutable entry.
+type CommentResult struct {
+
+	// LUCI datastore ID field with value 1.
+	ID string `gae:"$id"`
+
+	// LUCI datastore parent field with 'Comment' as parent.
+	Parent *ds.Key `gae:"$parent"`
+
 	// Whether this comments was included in the overall result of the enclosing run.
+	//
 	// All comments are included by default, but comments may need to be merged
 	// in the case when comments for a category are produced for multiple platforms.
 	Included bool
+
 	// Number of 'not useful' clicks.
 	NotUseful int
+
 	// Links to more information about why the comment was found not useful.
+	//
 	// This should typically be a link to a Monorail issue.
 	NotUsefulIssueURL []string
 }
