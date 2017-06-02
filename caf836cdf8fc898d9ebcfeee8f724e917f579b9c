@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "e0efedad_80eb5d15",
+        "filename": "appengine/cr-buildbucket/doc/index.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-06-02T19:28:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "deddf3be_2ade07d5",
+      "range": {
+        "startLine": 127,
+        "startChar": 36,
+        "endLine": 127,
+        "endChar": 37
+      },
+      "revId": "caf836cdf8fc898d9ebcfeee8f724e917f579b9c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f62cfe4e_37415581",
         "filename": "go/src/infra/appengine/luci-migration/app/devcfg/services/luci-migration-dev/config.cfg",
         "patchSetId": 1
@@ -39,6 +63,24 @@
       "revId": "caf836cdf8fc898d9ebcfeee8f724e917f579b9c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d401a7ff_90136d70",
+        "filename": "go/src/infra/appengine/luci-migration/app/devcfg/services/luci-migration-dev/config.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-06-02T19:28:49Z",
+      "side": 1,
+      "message": "no, removed, thanks",
+      "parentUuid": "f62cfe4e_37415581",
+      "revId": "caf836cdf8fc898d9ebcfeee8f724e917f579b9c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
