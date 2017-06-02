@@ -46,18 +46,18 @@ func resultsHandler(ctx *router.Context) {
 	})
 }
 
-// runs returns list of runs for projects readable to the current user.
-func runs(c context.Context, cp config.ProviderAPI) ([]*track.Run, error) {
-	// TODO(emso): This only lists the last 20 runs, when the UI is ready improve to list more.
-	var runs []*track.Run
-	q := ds.NewQuery("Run").Order("-Received").Limit(20)
+// runs returns list of workflow runs for projects readable to the current user.
+func runs(c context.Context, cp config.ProviderAPI) ([]*track.WorkflowRun, error) {
+	// TODO(emso): This only lists the last 20 requests, when the UI is ready improve to list more.
+	var runs []*track.WorkflowRun
+	q := ds.NewQuery("WorkflowRun").Order("-Received").Limit(20)
 	if err := ds.GetAll(c, q, &runs); err != nil {
-		logging.WithError(err).Errorf(c, "failed to read run entries from datastore")
+		logging.WithError(err).Errorf(c, "failed to get WorkflowRun entries: %v", err)
 		return nil, err
 	}
-	// Only include readable runs.
+	// Only include readable workflow runs.
 	checked := map[string]bool{}
-	var rs []*track.Run
+	var rs []*track.WorkflowRun
 	for _, r := range runs {
 		if _, ok := checked[r.Project]; !ok {
 			pc, err := cp.GetProjectConfig(c, r.Project)
@@ -103,7 +103,7 @@ func analyzeFormHandler(ctx *router.Context) {
 	}
 	logging.Infof(c, "Analyzer handler successfully completed, run ID: %s", res.RunId)
 	templates.MustRender(c, w, "pages/index.html", map[string]interface{}{
-		"StatusMsg": fmt.Sprintf("Analysis request sent. Run ID: %s", res.RunId),
+		"StatusMsg": fmt.Sprintf("Analysis request sent, run ID: %s", res.RunId),
 	})
 	w.WriteHeader(http.StatusOK)
 }
