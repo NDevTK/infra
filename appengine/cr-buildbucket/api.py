@@ -295,6 +295,7 @@ class BuildBucketApi(remote.Service):
   @auth.public
   def search(self, request):
     """Searches for builds."""
+    raise Exception('sdfsf')
     assert isinstance(request.tag, list)
     builds, next_cursor = service.search(
         buckets=request.bucket,
