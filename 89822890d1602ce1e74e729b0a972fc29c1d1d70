@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ab353594_97719261",
+        "filename": "appengine/findit/handlers/build_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 339,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-06-05T19:09:42Z",
+      "side": 1,
+      "message": "why is this no cover now?",
+      "revId": "89822890d1602ce1e74e729b0a972fc29c1d1d70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
