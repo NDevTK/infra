@@ -185,6 +185,10 @@ class CrashAnalysisPipeline(CrashBasePipeline):
                           'client_id': self.client_id})
 
     analysis.status = analysis_status.COMPLETED
+    logging.info('Found %s analysis result for %s: \n%s', self.client_id,
+                 repr(self._crash_identifiers),
+                 json.dumps(analysis.result, indent=2, sort_keys=True))
+    logging.info('New analysis key is %s', analysis.key.urlsafe())
     analysis.put()
 
 
@@ -261,31 +265,10 @@ class CrashWrapperPipeline(BasePipeline): # pragma: no cover
 class RerunPipeline(BasePipeline):  # pragma: no cover
   """Reruns analysis of all crash analyses in a time range."""
 
-  def run(self, client_id, start_date, end_date):
-    analysis = CLIENT_ID_TO_CRASH_ANALYSIS.get(client_id)
-    if not analysis:
-      return
-
-    query = analysis.query()
-    query = query.filter(
-        analysis.requested_time >= start_date).filter(
-            analysis.requested_time < end_date)
-
-    client = FinditForClientID(
-        client_id,
-        CachedGitilesRepository.Factory(HttpClientAppengine()),
-        CrashConfig.Get())
-    updated_crashes = []
-    logging.info('query: %s' % str(query))
-    for crash in Iterate(query):
-      logging.info('Download crash %s', str(crash))
-      crash.ReInitialize(client)
-      crash.key = analysis._CreateKey(crash.identifiers)
-      updated_crashes.append(crash)
-
-    ndb.put_multi(updated_crashes)
-
-    for crash in updated_crashes:
+  def run(self, client_id, crash_keys):
+    for key in crash_keys:
+      key = ndb.Key(urlsafe=key)
+      crash = key.get()
       logging.info('Initialize analysis for crash %s', crash.identifiers)
       try:
         yield CrashAnalysisPipeline(client_id, crash.identifiers)
