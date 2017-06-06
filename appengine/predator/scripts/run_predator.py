@@ -61,6 +61,8 @@ def StoreResults(crash, client_id, app_id, id_to_culprits, lock, config,
   while retry < max_retry:
     try:
       findit = FinditForClientID(client_id, LocalGitRepository, config)
+      crash.stack_trace = crash.stack_trace.replace('@', '')
+      crash.ReInitialize(findit)
       culprit = findit.FindCulprit(crash.ToCrashReport())
       with lock:
         id_to_culprits[crash_id] = culprit
@@ -108,8 +110,8 @@ def GetCulprits(crashes, client_id, app_id, verbose=False):  # pragma: no cover.
         'args': [crash, client_id, app_id, id_to_culprits, lock, config],
         'kwargs': {'verbose': verbose}
     })
-  script_util.RunTasks(tasks)
 
+  script_util.RunTasks(tasks)
   return id_to_culprits
 
 
