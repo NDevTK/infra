@@ -26,8 +26,8 @@ GIT_HASH_PATTERN = re.compile(r'^[0-9a-fA-F]{40}$')
 def SetAppEnginePaths(root_dir=None):
   """Inserts appengine sdk paths of infra to system paths."""
   # If no root directory is provided, default to findit root directory.
-  root_dir = root_dir or os.path.join(
-      os.path.dirname(os.path.realpath(__file__)), os.path.pardir)
+  root_dir = root_dir or os.path.realpath(os.path.join(
+      os.path.dirname(__file__), os.path.pardir))
 
   appengine_sdk_dir = os.path.join(root_dir, os.path.pardir,
                                    os.path.pardir, os.path.pardir,
@@ -42,8 +42,8 @@ def SetAppEnginePaths(root_dir=None):
 def SetUpSystemPaths(root_dir=None):  # pragma: no cover
   """Inserts root path, first_party, third_party and appengine sdk paths."""
   # If no root directory is provided, default to findit root directory.
-  root_dir = root_dir or os.path.join(
-      os.path.dirname(os.path.realpath(__file__)), os.path.pardir)
+  root_dir = root_dir or os.path.realpath(os.path.join(
+      os.path.dirname(__file__), os.path.pardir))
   SetAppEnginePaths(root_dir)
 
   first_party_dir = os.path.join(root_dir, 'first_party')
