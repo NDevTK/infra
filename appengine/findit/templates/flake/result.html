@@ -340,6 +340,21 @@
       });
     }
 
+    function rerunAnalysis() {
+      var params = {
+          'format': 'json',
+          'rerun': '1',
+          'key': findit.analysisKey,
+          'xsrf_token': findit.xsrfToken,
+      };
+      $.post('/waterfall/flake', params, function(data) {
+        location.reload();
+      }).error(function(xhr) {
+        handleLogin(xhr.status);
+      });
+    }
+    }
+
     $(document).ready(function() {
       document.getElementById('app').userInfo = {{ (user_info or {}) | tojson | safe }};
 
@@ -359,6 +374,7 @@
       });
 
       $('#analyze-regression-range-button').click(analyzeRegressionRange);
+      $('#rerun-analysis-button').click(rerunAnalysis);
     });
   </script>
 </head>
@@ -450,6 +466,10 @@
         </table>
       </div>
     {% endif %}
+  {% if show_rerun_ui %}
+    <button id="rerun-analysis-button">Rerun Analysis</button>
+  {% endif %}
+  <br>
     <br>
     <div>
       <b>Metadata:</b><br>
