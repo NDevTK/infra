@@ -365,6 +365,24 @@
     },
     {
       "key": {
+        "uuid": "9066c8d1_53993b18",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_analyze.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-07T13:17:14Z",
+      "side": 1,
+      "message": "It\u0027s just that the \u0027c\u0027 you use here it the transaction context, which disable transparent memcache (if any) among other. So yes it\u0027s potentially harmful. Anyhow this can be done later.",
+      "parentUuid": "5fa3e330_65511c95",
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "51c97107_66d13808",
         "filename": "go/src/infra/tricium/appengine/frontend/rpc_progress.go",
         "patchSetId": 11
@@ -884,6 +902,24 @@
       "side": 1,
       "message": "Trying to avoid an unnecessary Put. Is that not a good thing?",
       "parentUuid": "e0645bac_32c96c66",
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "365b2b1a_9595f244",
+        "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_done.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-07T13:17:14Z",
+      "side": 1,
+      "message": "What I mean is that the \u0027runState\u0027 value could already be stale, so you are comparing the current value in the DB with a stale value to potentially update.",
+      "parentUuid": "614fa1a0_a1cf447a",
       "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

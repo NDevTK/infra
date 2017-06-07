@@ -1,0 +1,129 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e8f68bc6_2b8cd5a3",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-07T13:17:14Z",
+      "side": 1,
+      "message": "1",
+      "range": {
+        "startLine": 46,
+        "startChar": 64,
+        "endLine": 46,
+        "endChar": 65
+      },
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d2bb993c_f74b68da",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-07T13:17:14Z",
+      "side": 1,
+      "message": "noindex?",
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5212ecdb_1f16189a",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-07T13:17:14Z",
+      "side": 1,
+      "message": "noindex?",
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d0dd406a_5274a94f",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-07T13:17:14Z",
+      "side": 1,
+      "message": "I assume this, and WorkerRunResult.Name and .Analyzer are for indexing. I\u0027d recommend a quick comment about the fact that these are duplicated from the *db.Key to enable indexing.",
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1703caca_773b4114",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-07T13:17:14Z",
+      "side": 1,
+      "message": "I\u0027m not sure there\u0027s value in indexing this?",
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cfdef041_c7a987d7",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-07T13:17:14Z",
+      "side": 1,
+      "message": "The comment must be encoded tricium.Data_Comment proto message.",
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cd7f3f4c_71d13e63",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 303,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-07T13:17:14Z",
+      "side": 1,
+      "message": "Food for thoughts;\nWould it be valuable to have also a \"Shown int\" too? Basically, counting the number of times this comment was seen, as then it can be seen as a fraction. That said, mutation on view makes it much harder and I don\u0027t think gerrit would be able to provide this information (?)",
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
