@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5cc273aa_25bd74f5",
+        "filename": "appengine/findit/templates/flake/result.html",
+        "patchSetId": 4
+      },
+      "lineNbr": 457,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-06-07T21:25:12Z",
+      "side": 1,
+      "message": "add the XSRF token as well like this?",
+      "range": {
+        "startLine": 457,
+        "startChar": 6,
+        "endLine": 457,
+        "endChar": 56
+      },
+      "revId": "4cd9e5da777b122e6703a7ff423d2bea7e935dc1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
