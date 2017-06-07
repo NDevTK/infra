@@ -76,6 +76,23 @@
     },
     {
       "key": {
+        "uuid": "93fff688_61badd4b",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-07T13:29:52Z",
+      "side": 1,
+      "message": "Why is that in the result?",
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1703caca_773b4114",
         "filename": "go/src/infra/tricium/appengine/common/track/track.go",
         "patchSetId": 15
@@ -121,6 +138,57 @@
       "writtenOn": "2017-06-07T13:17:14Z",
       "side": 1,
       "message": "Food for thoughts;\nWould it be valuable to have also a \"Shown int\" too? Basically, counting the number of times this comment was seen, as then it can be seen as a fraction. That said, mutation on view makes it much harder and I don\u0027t think gerrit would be able to provide this information (?)",
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8ffa9f53_ca86f5b2",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_progress.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-07T13:29:52Z",
+      "side": 1,
+      "message": "Not needed now but later: I recommend creating a track.GetAnalyzerRunForWorkflowRun(runID int64) []*track.AnalyzerRun {} and the likes to reduce copy paste and if you need to refactor the schema, this isolates issues like query vs get. Anyhow this is fine for now.",
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "71e0490f_a2177b57",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_results.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-07T13:29:52Z",
+      "side": 1,
+      "message": "In this case, this would be GetCommentsForWorkflowRun(runID int64, run, analyzer string) []*track.Comment {}\nand/or also for selection and the likes.",
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f11dc06_cf5adce1",
+        "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_done.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-07T13:29:52Z",
+      "side": 1,
+      "message": "this would also benefit to live in track.go or somewhere close, as this is directly related to the schema.\n\nYou\u0027d want to validate the names, like the presence of \"/\", \"_\", and length (\u003c120 chars) all at a single place.",
       "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
