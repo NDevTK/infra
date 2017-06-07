@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ea6ede42_22cc2acd",
+        "filename": "appengine/findit/handlers/flake/check_flake.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-06-07T20:40:11Z",
+      "side": 1,
+      "message": "like the other CL, let\u0027s keep these where they originally were and reserve findit-specific libraries at the bottom. This is one of the exceptions to pylint we don\u0027t adhere to, the other being the copyright formatting at the top",
+      "revId": "86a8e3fd0770adc1e0a2578722f3512d83ba2f03",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6ae6c0b9_036baae3",
+        "filename": "appengine/findit/handlers/flake/check_flake.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-06-07T20:40:11Z",
+      "side": 1,
+      "message": "this line seems to have no effect?",
+      "range": {
+        "startLine": 245,
+        "startChar": 4,
+        "endLine": 245,
+        "endChar": 13
+      },
+      "revId": "86a8e3fd0770adc1e0a2578722f3512d83ba2f03",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
