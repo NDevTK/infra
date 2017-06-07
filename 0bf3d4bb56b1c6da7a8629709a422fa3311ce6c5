@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "ddff69c4_2e46f9ef",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "Updated.",
+      "parentUuid": "fa548ecb_1d9dbbdf",
+      "range": {
+        "startLine": 52,
+        "startChar": 15,
+        "endLine": 52,
+        "endChar": 21
+      },
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a5c5b1c2_2c490454",
         "filename": "go/src/infra/tricium/appengine/common/track/track.go",
         "patchSetId": 11
@@ -42,6 +66,24 @@
     },
     {
       "key": {
+        "uuid": "b334d297_d2d61810",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a5c5b1c2_2c490454",
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "483181e8_24ddbddf",
         "filename": "go/src/infra/tricium/appengine/common/track/track.go",
         "patchSetId": 11
@@ -53,6 +95,24 @@
       "writtenOn": "2017-06-02T14:35:37Z",
       "side": 1,
       "message": "Is this entity stored? It doesn\u0027t seem like it\u0027s needed, if so, don\u0027t and make this clear in the entity description and in the schema drawing above. But maybe it\u0027d be worth it to store the name of the expected platform, albeit if it is stored in WorkflowRun this is not needed.",
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "638bcc5a_3bb7bbda",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "That was a left by mistake when I moved things around. However, I added back AnalyzeRequest as an immutable place for request info. Letting WorkflowRun be created later and including the analyzer name list in that creation.",
+      "parentUuid": "483181e8_24ddbddf",
       "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -82,6 +142,30 @@
     },
     {
       "key": {
+        "uuid": "91ebf9b4_513a2ca3",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6731a5d8_abe4ef84",
+      "range": {
+        "startLine": 131,
+        "startChar": 13,
+        "endLine": 131,
+        "endChar": 36
+      },
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aad59871_511f0db7",
         "filename": "go/src/infra/tricium/appengine/common/track/track.go",
         "patchSetId": 11
@@ -99,6 +183,24 @@
     },
     {
       "key": {
+        "uuid": "039c706c_23e4e60a",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "Possibly under AnalyzerRun, that is the level of the merge. With the separation of immutable/mutable. Merging hasn\u0027t been added yet but at the time of a merge, there will be a list of workers each with a list of comments. The merge should result in a list of comments. Having a mutable node as a child of  each comment is one way, and the result can be returned by a query. However, that may be inefficient, and it seems to be wasteful. Putting this under AnalyzerRun and adding one entry CommentSelection entry per selected comment is an alternative. The fields would need to be different, replacing Include with a CommentID field. Unless you insist, I\u0027d like to wait with that refactoring until I get to the merging.",
+      "parentUuid": "aad59871_511f0db7",
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ccffe3f5_345ed479",
         "filename": "go/src/infra/tricium/appengine/common/track/track.go",
         "patchSetId": 11
@@ -110,6 +212,30 @@
       "writtenOn": "2017-06-02T14:35:37Z",
       "side": 1,
       "message": "why not 1?",
+      "range": {
+        "startLine": 246,
+        "startChar": 39,
+        "endLine": 246,
+        "endChar": 40
+      },
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5f9ea7cf_41f51aaa",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "Yes, why not :) changing.",
+      "parentUuid": "ccffe3f5_345ed479",
       "range": {
         "startLine": 246,
         "startChar": 39,
@@ -145,6 +271,30 @@
     },
     {
       "key": {
+        "uuid": "c1d0d507_3dc8c88c",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_analyze.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "I tried a normal transaction here to start with, but ended up with an exception. This was with the previous names but the structure was the same. My understanding was that this happens because the group is added in two steps.",
+      "parentUuid": "5e0b6cc3_d9cc7261",
+      "range": {
+        "startLine": 94,
+        "startChar": 52,
+        "endLine": 94,
+        "endChar": 66
+      },
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "57c15e70_3665f7d9",
         "filename": "go/src/infra/tricium/appengine/frontend/rpc_analyze.go",
         "patchSetId": 11
@@ -156,6 +306,24 @@
       "writtenOn": "2017-06-02T14:35:37Z",
       "side": 1,
       "message": "One advantage of rolling your own IDs is that you can generate them yourself with an high degree of confidence that it will be a new ID. To assert that, you need to do a GET on the freshly generated ID to assert it doesn\u0027t exist and then store both entities simultaneously.\n\nIt\u0027s not needed right now, to be done later.",
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d569533_fed2544a",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_analyze.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "Ack. I have a TODO about this. I may pick that up as part of the next milestone (after the current Gerrit milestone).",
+      "parentUuid": "57c15e70_3665f7d9",
       "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -179,6 +347,24 @@
     },
     {
       "key": {
+        "uuid": "5fa3e330_65511c95",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_analyze.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "With operations being done in parallel, is it harmful to do it here?",
+      "parentUuid": "5d8d66ad_dc034f35",
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "51c97107_66d13808",
         "filename": "go/src/infra/tricium/appengine/frontend/rpc_progress.go",
         "patchSetId": 11
@@ -193,6 +379,24 @@
       "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce2a06fb_1c40fd3d",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_progress.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "51c97107_66d13808",
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -230,6 +434,24 @@
     },
     {
       "key": {
+        "uuid": "c79f79c4_6117063f",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_progress.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5bf4e76a_907b4239",
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "698db400_ccfe162f",
         "filename": "go/src/infra/tricium/appengine/frontend/rpc_results.go",
         "patchSetId": 11
@@ -244,6 +466,24 @@
       "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cc6c801c_444fe5c2",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_results.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "698db400_ccfe162f",
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -264,6 +504,24 @@
     },
     {
       "key": {
+        "uuid": "23d91ce2_469a9323",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_results.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "37b1be01_ad003c14",
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cdec3d8e_8f2fb545",
         "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_done.go",
         "patchSetId": 11
@@ -275,6 +533,24 @@
       "writtenOn": "2017-06-02T14:35:37Z",
       "side": 1,
       "message": "not super informative.",
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce8ee9a4_9b800c15",
+        "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_done.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "Removed.",
+      "parentUuid": "cdec3d8e_8f2fb545",
       "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -321,6 +597,30 @@
     },
     {
       "key": {
+        "uuid": "583c30ac_75b22615",
+        "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_done.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "Added Worker names in the AnalyzerRun entity and Analyzer names in the WorkflowRun entity.",
+      "parentUuid": "dca655d5_946b77ba",
+      "range": {
+        "startLine": 89,
+        "startChar": 37,
+        "endLine": 89,
+        "endChar": 52
+      },
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b24686c5_faf65012",
         "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_done.go",
         "patchSetId": 11
@@ -344,6 +644,30 @@
     },
     {
       "key": {
+        "uuid": "59aab2e4_e498db0e",
+        "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_done.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b24686c5_faf65012",
+      "range": {
+        "startLine": 119,
+        "startChar": 27,
+        "endLine": 119,
+        "endChar": 35
+      },
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1da51e19_7fb7d13a",
         "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_done.go",
         "patchSetId": 11
@@ -355,6 +679,30 @@
       "writtenOn": "2017-06-02T14:35:37Z",
       "side": 1,
       "message": "this function is already quite long, could you extract all this into a named function? In particular this would permit to better understand what variables from the closure are being used. It\u0027s hard to glance by looking at 90 lines of code.",
+      "range": {
+        "startLine": 139,
+        "startChar": 31,
+        "endLine": 139,
+        "endChar": 35
+      },
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2146c38b_c33c0de8",
+        "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_done.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "I moved the code around a little to not create the ops slice inside the transaction. Does this change your view? I used to have more separation into functions but kept getting comments about not doing that because it would be easier to see what was going on in the transaction. I assume there is a balance somewhere and maybe I went too far in this direction :)",
+      "parentUuid": "1da51e19_7fb7d13a",
       "range": {
         "startLine": 139,
         "startChar": 31,
@@ -384,6 +732,24 @@
     },
     {
       "key": {
+        "uuid": "7b802eb8_ffdd752f",
+        "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_done.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d4055a46_53a41708",
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8b9e363e_30eb6dfb",
         "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_done.go",
         "patchSetId": 11
@@ -401,6 +767,24 @@
     },
     {
       "key": {
+        "uuid": "fdb6c348_58fb5fda",
+        "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_done.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8b9e363e_30eb6dfb",
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f398326d_f7c3258a",
         "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_done.go",
         "patchSetId": 11
@@ -412,6 +796,24 @@
       "writtenOn": "2017-06-02T14:35:37Z",
       "side": 1,
       "message": "As part of the transaction? The TX is already quite intense.",
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5f24ec92_c3bbd8ec",
+        "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_done.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "Moved to after.",
+      "parentUuid": "f398326d_f7c3258a",
       "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -435,6 +837,24 @@
     },
     {
       "key": {
+        "uuid": "8fd48853_58745231",
+        "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_done.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "I want a unique comment ID as reference later for feedback collection. Do you have another recommendation for how to get that. In some earlier phase I was using a lock to generate a unique ID for requests (I think) and I was then advised to us the buildin ID generation.",
+      "parentUuid": "3dace664_5ec6b62e",
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e0645bac_32c96c66",
         "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_done.go",
         "patchSetId": 11
@@ -446,6 +866,24 @@
       "writtenOn": "2017-06-02T14:35:37Z",
       "side": 1,
       "message": "keep in mind that you calculated runState before the TX, so I don\u0027t see much value in doing this in the TX.",
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "614fa1a0_a1cf447a",
+        "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_done.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "Trying to avoid an unnecessary Put. Is that not a good thing?",
+      "parentUuid": "e0645bac_32c96c66",
       "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -469,6 +907,24 @@
     },
     {
       "key": {
+        "uuid": "957bb9b4_442baed9",
+        "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_launched.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7047b4b8_503b4a32",
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "82750e40_fac075f8",
         "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_launched.go",
         "patchSetId": 11
@@ -483,6 +939,24 @@
       "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f9d95b38_77f02f3d",
+        "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_launched.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "82750e40_fac075f8",
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -503,6 +977,24 @@
     },
     {
       "key": {
+        "uuid": "839e37bf_19e6d90f",
+        "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_launched.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9e280339_5625227a",
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "65770199_5651371b",
         "filename": "go/src/infra/tricium/appengine/tracker/rpc_workflow_launched.go",
         "patchSetId": 11
@@ -514,6 +1006,24 @@
       "writtenOn": "2017-06-02T14:35:37Z",
       "side": 1,
       "message": "Same comment here. In practice what I recommend is to make the request idempotent and adjust your guarantees accordingly:\n\n- This function can be retried multiple times and will not corrupt state.\n- It is possible that \"push notification\" happens \u003e 1 times\n- If one of the PUT puts the same data that was there, it\u0027s not an error.\n- You don\u0027t do \"early exit\", always send the push notification\n\nIn that case, this reduces the need for transactions a lot. The subtle part is to make sure you are fine with the gerrit push notification to happen possibly more than once. I don\u0027t know the API to know enough about if it is possible. If not, consider leaving an audit trail in the DB.",
+      "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "194b4fa7_1232189f",
+        "filename": "go/src/infra/tricium/appengine/tracker/rpc_workflow_launched.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-07T11:10:08Z",
+      "side": 1,
+      "message": "I\u0027ll review the Gerrit reporter impl with this in mind the upcoming changes. I\u0027m not sure the Gerrit API would handle this gracefully, so I may have to add something in between to deal with that.",
+      "parentUuid": "65770199_5651371b",
       "revId": "0bf3d4bb56b1c6da7a8629709a422fa3311ce6c5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
