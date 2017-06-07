@@ -48,6 +48,54 @@
     },
     {
       "key": {
+        "uuid": "cd80c339_baa3d2dc",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-06-07T21:01:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "62d87019_a76d621c",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 3
+      },
+      "revId": "5175ee93d63e962be0f5b628b19e82a96b78e234",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "81919d3e_f7e8a50b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-06-07T21:01:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b680a198_9379f774",
+      "range": {
+        "startLine": 7,
+        "startChar": 20,
+        "endLine": 7,
+        "endChar": 25
+      },
+      "revId": "5175ee93d63e962be0f5b628b19e82a96b78e234",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3f6758dc_4f919ebe",
         "filename": "appengine/findit/handlers/flake/check_flake.py",
         "patchSetId": 1
@@ -59,6 +107,30 @@
       "writtenOn": "2017-06-07T20:24:49Z",
       "side": 1,
       "message": "Unfortunately, we have to keep these two at the top. Coding style has some explanation on import grouping. Within the same grouping, it is alphabet order. http://google.github.io/styleguide/pyguide.html#Imports_formatting",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 38
+      },
+      "revId": "5175ee93d63e962be0f5b628b19e82a96b78e234",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9fc5f7da_d3ee8544",
+        "filename": "appengine/findit/handlers/flake/check_flake.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-06-07T21:01:54Z",
+      "side": 1,
+      "message": "This import ordering is straight from gpylint! The rules make no mention of how to order imports from different projects. My guess is that lexigraphically, gae_libs \u003c google, so that block of imports is first.\n\nI need confirmation that you want to ignore gpylint errors before I revert this. I urge you to run it for yourself against findit, there\u0027s a ton of errors. Considering that\u0027s the google-wide tool used for python styl, is there any reason not to use it?",
+      "parentUuid": "3f6758dc_4f919ebe",
       "range": {
         "startLine": 24,
         "startChar": 0,
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "014ac7f1_46a13aac",
+        "filename": "appengine/findit/handlers/flake/check_flake.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-06-07T21:01:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "265dfcdb_7058aab5",
+      "range": {
+        "startLine": 245,
+        "startChar": 4,
+        "endLine": 245,
+        "endChar": 13
+      },
+      "revId": "5175ee93d63e962be0f5b628b19e82a96b78e234",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a2c56e2a_dcd4b825",
         "filename": "appengine/findit/handlers/flake/check_flake.py",
         "patchSetId": 1
@@ -114,6 +210,30 @@
       "revId": "5175ee93d63e962be0f5b628b19e82a96b78e234",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d7aef8e3_d2f7f528",
+        "filename": "appengine/findit/handlers/flake/check_flake.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-06-07T21:01:54Z",
+      "side": 1,
+      "message": "This CL is specifically about getting the button in, and the function called. There will be a follow up CL to parse out the analysis if given the key.",
+      "parentUuid": "a2c56e2a_dcd4b825",
+      "range": {
+        "startLine": 256,
+        "startChar": 4,
+        "endLine": 256,
+        "endChar": 48
+      },
+      "revId": "5175ee93d63e962be0f5b628b19e82a96b78e234",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -140,6 +260,30 @@
     },
     {
       "key": {
+        "uuid": "3f5f21b6_e4d72026",
+        "filename": "appengine/findit/handlers/flake/check_flake.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 275,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-06-07T21:01:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "86d96b0e_f874cb3e",
+      "range": {
+        "startLine": 273,
+        "startChar": 4,
+        "endLine": 275,
+        "endChar": 18
+      },
+      "revId": "5175ee93d63e962be0f5b628b19e82a96b78e234",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ce6a3588_2da39801",
         "filename": "appengine/findit/handlers/flake/check_flake.py",
         "patchSetId": 1
@@ -160,6 +304,30 @@
       "revId": "5175ee93d63e962be0f5b628b19e82a96b78e234",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0c64ca93_243a8e3a",
+        "filename": "appengine/findit/handlers/flake/check_flake.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-06-07T21:01:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ce6a3588_2da39801",
+      "range": {
+        "startLine": 280,
+        "startChar": 4,
+        "endLine": 281,
+        "endChar": 55
+      },
+      "revId": "5175ee93d63e962be0f5b628b19e82a96b78e234",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
