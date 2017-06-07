@@ -16,6 +16,24 @@
       "revId": "f2a93a496145d19d055cd9a9b6a7c14de068c9fe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "001f922b_ab7740c0",
+        "filename": "appengine/findit/handlers/flake/check_flake.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-06-07T23:05:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0f847a15_f56c4003",
+      "revId": "f2a93a496145d19d055cd9a9b6a7c14de068c9fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
