@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "61baec2c_85634791",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1002120
+      },
+      "writtenOn": "2017-06-07T22:08:29Z",
+      "side": 1,
+      "message": "This character should be removed.",
+      "range": {
+        "startLine": 15,
+        "startChar": 5,
+        "endLine": 15,
+        "endChar": 6
+      },
+      "revId": "d3c5e690c8dc3aa55b7e4629d41b004d5cca1c5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
