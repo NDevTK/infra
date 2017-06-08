@@ -71,6 +71,30 @@
     },
     {
       "key": {
+        "uuid": "885cc94c_b8035f2e",
+        "filename": "appengine/predator/common/predator_for_uma_sampling_profiler.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1002120
+      },
+      "writtenOn": "2017-06-08T17:03:30Z",
+      "side": 1,
+      "message": "Out of curiosity, does this line actually trigger pylint? The coding style has an explicit exception for long imports so it should be OK: http://google.github.io/styleguide/pyguide.html#Line_length",
+      "parentUuid": "b51fa6e2_043ecf8e",
+      "range": {
+        "startLine": 8,
+        "startChar": 85,
+        "endLine": 8,
+        "endChar": 116
+      },
+      "revId": "c5abcbd93dba9400640d162adeaa8e56bbba61df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b8086607_178fa7d9",
         "filename": "appengine/predator/common/predator_for_uma_sampling_profiler.py",
         "patchSetId": 3
