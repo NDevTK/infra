@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7cd3c1b2_088c08b2",
+        "filename": "appengine/findit/waterfall/flake/flake_analysis_service.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-06-08T19:40:43Z",
+      "side": 1,
+      "message": "If rerun and the step existed already, it seems no need to add again?",
+      "range": {
+        "startLine": 85,
+        "startChar": 6,
+        "endLine": 85,
+        "endChar": 47
+      },
+      "revId": "607391bbf25415d0df613d3f59927773c9e9a7eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "92ebca63_ca7bc508",
+        "filename": "appengine/findit/waterfall/flake/flake_analysis_service.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-06-08T19:40:43Z",
+      "side": 1,
+      "message": "We can\u0027t rerun with a step-level flake.",
+      "range": {
+        "startLine": 120,
+        "startChar": 59,
+        "endLine": 120,
+        "endChar": 72
+      },
+      "revId": "607391bbf25415d0df613d3f59927773c9e9a7eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bb599886_c0072250",
+        "filename": "appengine/findit/waterfall/flake/flake_analysis_service.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-06-08T19:40:43Z",
+      "side": 1,
+      "message": "I will comment on the 3nd CL regarding verification of requirements for a rerun.",
+      "range": {
+        "startLine": 198,
+        "startChar": 29,
+        "endLine": 198,
+        "endChar": 34
+      },
+      "revId": "607391bbf25415d0df613d3f59927773c9e9a7eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
