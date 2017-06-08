@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "fe4856eb_9aee816c",
+        "filename": "appengine/findit/waterfall/flake/flake_analysis_service.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-06-08T21:21:18Z",
+      "side": 1,
+      "message": "This seems won\u0027t be executed, so we will always hit #89 below to pick a random existing step to trigger an analysis instead of the one being requested.\n\nSorry, I made the logic here too tricky when I wrote the code.",
+      "range": {
+        "startLine": 87,
+        "startChar": 8,
+        "endLine": 87,
+        "endChar": 33
+      },
+      "revId": "567c0891895086f8158182b0306ba8f8d222fc14",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "fbcc2569_ad928e99",
         "filename": "appengine/findit/waterfall/flake/flake_analysis_service.py",
         "patchSetId": 3
