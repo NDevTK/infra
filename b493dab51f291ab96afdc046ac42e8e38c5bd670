@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c6fd12dd_17bbdf48",
+        "filename": "appengine/predator/backend-process.yaml",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1123509
+      },
+      "writtenOn": "2017-06-08T23:30:55Z",
+      "side": 1,
+      "message": "Deferring to someone else on the review of this file.",
+      "revId": "b493dab51f291ab96afdc046ac42e8e38c5bd670",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "80a2227f_10e45e66",
+        "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1123509
+      },
+      "writtenOn": "2017-06-08T23:30:55Z",
+      "side": 1,
+      "message": "I assume the 7 day timeframe was intentional, but \"yesterday\" is a bit confusing in that case. Could you rename this to last_week (or change days if that was the unintended part)? Just noticed this along with the move.",
+      "revId": "b493dab51f291ab96afdc046ac42e8e38c5bd670",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
