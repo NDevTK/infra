@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "55671025_74f82160",
+        "filename": "appengine/predator/backend-process.yaml",
+        "patchSetId": 9
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-06-09T17:22:00Z",
+      "side": 1,
+      "message": "How do we come to this number? Are there some data for this estimation?\nIf latency is acceptable, I\u0027d suggest going with a lower number first.",
+      "range": {
+        "startLine": 9,
+        "startChar": 17,
+        "endLine": 9,
+        "endChar": 19
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f047e13c_f9dbdf22",
         "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
         "patchSetId": 9
@@ -42,6 +65,75 @@
     },
     {
       "key": {
+        "uuid": "1e7c6512_1fb9b65e",
+        "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-06-09T17:22:00Z",
+      "side": 1,
+      "message": "this is a dict in python not a json, so append a \u0027,\u0027 here so that the list could grow without touching existing lines.",
+      "range": {
+        "startLine": 35,
+        "startChar": 46,
+        "endLine": 35,
+        "endChar": 48
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cbe07fce_74e9387a",
+        "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-06-09T17:22:00Z",
+      "side": 1,
+      "message": "This is a state-changing endpoint. So I\u0027d suggest protect it with XSRF token. You may refer to my recent CLs on Findit side.\nAnd you may do the same later for other endpoints in Predator.",
+      "range": {
+        "startLine": 67,
+        "startChar": 2,
+        "endLine": 67,
+        "endChar": 22
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a27256aa_9eba0207",
+        "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-06-09T17:22:00Z",
+      "side": 1,
+      "message": "self.request.get(\u0027name\u0027, default_value_here)",
+      "range": {
+        "startLine": 68,
+        "startChar": 16,
+        "endLine": 68,
+        "endChar": 67
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2fead260_a8506f1f",
         "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
         "patchSetId": 9
@@ -58,6 +150,98 @@
         "startChar": 8,
         "endLine": 82,
         "endChar": 18
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "80efccb4_6b02bf93",
+        "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-06-09T17:22:00Z",
+      "side": 1,
+      "message": "merge these two by \"pipeline(s)\"?",
+      "range": {
+        "startLine": 91,
+        "startChar": 4,
+        "endLine": 94,
+        "endChar": 56
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d0f68048_92f5f1e1",
+        "filename": "appengine/predator/backend/handlers/test/rerun_analyses_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-06-09T17:22:00Z",
+      "side": 1,
+      "message": "one more line above",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 11
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5732bdd3_7f85aa2b",
+        "filename": "appengine/predator/common/crash_pipeline.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 290,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-06-09T17:22:00Z",
+      "side": 1,
+      "message": "add a test with mocking instead.",
+      "range": {
+        "startLine": 290,
+        "startChar": 23,
+        "endLine": 290,
+        "endChar": 43
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "13279539_53bd04dd",
+        "filename": "appengine/predator/queue.yaml",
+        "patchSetId": 9
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-06-09T17:22:00Z",
+      "side": 1,
+      "message": "I\u0027m not quite sure about the Git blame quota\u0027s impact on this. But you may give it a try.\n\nSome estimation will be helpful though.",
+      "range": {
+        "startLine": 39,
+        "startChar": 27,
+        "endLine": 39,
+        "endChar": 29
       },
       "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
