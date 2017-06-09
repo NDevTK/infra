@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "1167e93e_bf9d7860",
+        "filename": "appengine/findit/waterfall/flake/flake_analysis_service.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-06-09T00:34:26Z",
+      "side": 1,
+      "message": "This might not work as expected, because the ``existing_request`` was already read to memory.\n\nFor transaction, we have to read and write within the same transaction scope.",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 18
+      },
+      "revId": "567c0891895086f8158182b0306ba8f8d222fc14",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "fe4856eb_9aee816c",
         "filename": "appengine/findit/waterfall/flake/flake_analysis_service.py",
         "patchSetId": 3
