@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f047e13c_f9dbdf22",
+        "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-06-09T17:04:24Z",
+      "side": 1,
+      "message": "nit: 2017",
+      "range": {
+        "startLine": 1,
+        "startChar": 12,
+        "endLine": 1,
+        "endChar": 16
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "42244fb2_e2eb45bd",
+        "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-06-09T17:04:24Z",
+      "side": 1,
+      "message": "nit: add one more empty line",
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2fead260_a8506f1f",
+        "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-06-09T17:04:24Z",
+      "side": 1,
+      "message": "nit: crash_key?",
+      "range": {
+        "startLine": 82,
+        "startChar": 8,
+        "endLine": 82,
+        "endChar": 18
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
