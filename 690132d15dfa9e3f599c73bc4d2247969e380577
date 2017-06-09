@@ -134,6 +134,29 @@
     },
     {
       "key": {
+        "uuid": "1f55dbf5_3ad7a2d3",
+        "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-06-09T18:15:27Z",
+      "side": 1,
+      "message": "move this to a separate function to make this testable. Alternatively (though not a big deal) you can refactor time_util\u0027s GetStartEndDates to take n_days as an input parameter and use that if it\u0027s close enough to what you need here",
+      "range": {
+        "startLine": 70,
+        "startChar": 4,
+        "endLine": 79,
+        "endChar": 55
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2fead260_a8506f1f",
         "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
         "patchSetId": 9
@@ -168,6 +191,30 @@
       "writtenOn": "2017-06-09T17:22:00Z",
       "side": 1,
       "message": "merge these two by \"pipeline(s)\"?",
+      "range": {
+        "startLine": 91,
+        "startChar": 4,
+        "endLine": 94,
+        "endChar": 56
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "19ab92b8_2cd6964f",
+        "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-06-09T18:15:27Z",
+      "side": 1,
+      "message": "+1. That way it\u0027s just a single if-else",
+      "parentUuid": "80efccb4_6b02bf93",
       "range": {
         "startLine": 91,
         "startChar": 4,
