@@ -225,6 +225,30 @@
     },
     {
       "key": {
+        "uuid": "ff1c5d8c_d810b5b1",
+        "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-06-12T22:19:24Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "96a75f07_4f7fa45a",
+      "range": {
+        "startLine": 67,
+        "startChar": 2,
+        "endLine": 67,
+        "endChar": 22
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a27256aa_9eba0207",
         "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
         "patchSetId": 9
@@ -519,6 +543,30 @@
       "side": 1,
       "message": "Actually I don\u0027t know what\u0027s the correct way to unittest this.\nThe Exception can be random exceptions like out of memory, so I think \"# pragma: no nover\" makes sense here.",
       "parentUuid": "5732bdd3_7f85aa2b",
+      "range": {
+        "startLine": 290,
+        "startChar": 23,
+        "endLine": 290,
+        "endChar": 43
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "edb1c870_1f727194",
+        "filename": "appengine/predator/common/crash_pipeline.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 290,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-06-12T22:19:24Z",
+      "side": 1,
+      "message": "You could find way to test it by mocking CrashAnalysisPipeline to raise an exception.\n\nIf it is out of memory, it seems even not worth to continue running the for loop.",
+      "parentUuid": "4ca69879_aff819dd",
       "range": {
         "startLine": 290,
         "startChar": 23,

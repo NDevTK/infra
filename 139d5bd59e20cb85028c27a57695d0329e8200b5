@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5edab387_92cf5a7b",
+        "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-06-12T22:19:24Z",
+      "side": 1,
+      "message": "not used yet?",
+      "range": {
+        "startLine": 20,
+        "startChar": 21,
+        "endLine": 20,
+        "endChar": 26
+      },
+      "revId": "139d5bd59e20cb85028c27a57695d0329e8200b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
