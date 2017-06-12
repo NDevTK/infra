@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "0d08d7d5_b54a8c0f",
+        "filename": "appengine/predator/backend-process.yaml",
+        "patchSetId": 9
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-06-12T21:01:50Z",
+      "side": 1,
+      "message": "From the observation, I saw at most 12-13 instances. So I set it to 30 to be safe. I can change it to 20.",
+      "parentUuid": "55671025_74f82160",
+      "range": {
+        "startLine": 9,
+        "startChar": 17,
+        "endLine": 9,
+        "endChar": 19
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f047e13c_f9dbdf22",
         "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
         "patchSetId": 9
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "29f00f9a_9ab6cf79",
+        "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-06-12T21:01:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f047e13c_f9dbdf22",
+      "range": {
+        "startLine": 1,
+        "startChar": 12,
+        "endLine": 1,
+        "endChar": 16
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "42244fb2_e2eb45bd",
         "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
         "patchSetId": 9
@@ -62,6 +110,24 @@
       "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "14e6334c_a47affb3",
+        "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-06-12T21:01:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "42244fb2_e2eb45bd",
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -88,6 +154,30 @@
     },
     {
       "key": {
+        "uuid": "5b36ac77_14417d3e",
+        "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-06-12T21:01:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1e7c6512_1fb9b65e",
+      "range": {
+        "startLine": 35,
+        "startChar": 46,
+        "endLine": 35,
+        "endChar": 48
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cbe07fce_74e9387a",
         "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
         "patchSetId": 9
@@ -108,6 +198,30 @@
       "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "96a75f07_4f7fa45a",
+        "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-06-12T21:01:50Z",
+      "side": 1,
+      "message": "Ack, for now, I manually put in url to rerun all analyses, which means at that time I won\u0027t have XSRF token at that time. \n\nWill add an button to do this, so I can add the token by javascript. Will do this in another cl. Added a todo.",
+      "parentUuid": "cbe07fce_74e9387a",
+      "range": {
+        "startLine": 67,
+        "startChar": 2,
+        "endLine": 67,
+        "endChar": 22
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -134,6 +248,30 @@
     },
     {
       "key": {
+        "uuid": "9f14b3ae_59f7461b",
+        "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-06-12T21:01:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a27256aa_9eba0207",
+      "range": {
+        "startLine": 68,
+        "startChar": 16,
+        "endLine": 68,
+        "endChar": 67
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1f55dbf5_3ad7a2d3",
         "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
         "patchSetId": 9
@@ -157,6 +295,30 @@
     },
     {
       "key": {
+        "uuid": "a0c0bdc3_8055c420",
+        "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-06-12T21:01:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1f55dbf5_3ad7a2d3",
+      "range": {
+        "startLine": 70,
+        "startChar": 4,
+        "endLine": 79,
+        "endChar": 55
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2fead260_a8506f1f",
         "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
         "patchSetId": 9
@@ -168,6 +330,30 @@
       "writtenOn": "2017-06-09T17:04:24Z",
       "side": 1,
       "message": "nit: crash_key?",
+      "range": {
+        "startLine": 82,
+        "startChar": 8,
+        "endLine": 82,
+        "endChar": 18
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e9ca8a5d_57cddd59",
+        "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-06-12T21:01:50Z",
+      "side": 1,
+      "message": "It should be keys, since this is a batch of crashes.",
+      "parentUuid": "2fead260_a8506f1f",
       "range": {
         "startLine": 82,
         "startChar": 8,
@@ -227,6 +413,30 @@
     },
     {
       "key": {
+        "uuid": "215ac274_4e418128",
+        "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-06-12T21:01:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "80efccb4_6b02bf93",
+      "range": {
+        "startLine": 91,
+        "startChar": 4,
+        "endLine": 94,
+        "endChar": 56
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d0f68048_92f5f1e1",
         "filename": "appengine/predator/backend/handlers/test/rerun_analyses_test.py",
         "patchSetId": 9
@@ -247,6 +457,30 @@
       "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6e737835_e85cba06",
+        "filename": "appengine/predator/backend/handlers/test/rerun_analyses_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-06-12T21:01:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d0f68048_92f5f1e1",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 11
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -273,6 +507,30 @@
     },
     {
       "key": {
+        "uuid": "4ca69879_aff819dd",
+        "filename": "appengine/predator/common/crash_pipeline.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 290,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-06-12T21:01:50Z",
+      "side": 1,
+      "message": "Actually I don\u0027t know what\u0027s the correct way to unittest this.\nThe Exception can be random exceptions like out of memory, so I think \"# pragma: no nover\" makes sense here.",
+      "parentUuid": "5732bdd3_7f85aa2b",
+      "range": {
+        "startLine": 290,
+        "startChar": 23,
+        "endLine": 290,
+        "endChar": 43
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "13279539_53bd04dd",
         "filename": "appengine/predator/queue.yaml",
         "patchSetId": 9
@@ -284,6 +542,30 @@
       "writtenOn": "2017-06-09T17:22:00Z",
       "side": 1,
       "message": "I\u0027m not quite sure about the Git blame quota\u0027s impact on this. But you may give it a try.\n\nSome estimation will be helpful though.",
+      "range": {
+        "startLine": 39,
+        "startChar": 27,
+        "endLine": 39,
+        "endChar": 29
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b69396ca_ef757306",
+        "filename": "appengine/predator/queue.yaml",
+        "patchSetId": 9
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-06-12T21:01:50Z",
+      "side": 1,
+      "message": "It\u0027s hard to do estimation other than just experiments.\n\nI use 15 max_concurrent_requests to do the experiments on large amount of data(several months) and I didn\u0027t see any errors of running out of git blame quota. So I think this 10 should work even more safely.",
+      "parentUuid": "13279539_53bd04dd",
       "range": {
         "startLine": 39,
         "startChar": 27,
