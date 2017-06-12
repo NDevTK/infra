@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "8e76324f_1a60a196",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-12T08:01:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e8f68bc6_2b8cd5a3",
+      "range": {
+        "startLine": 46,
+        "startChar": 64,
+        "endLine": 46,
+        "endChar": 65
+      },
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d2bb993c_f74b68da",
         "filename": "go/src/infra/tricium/appengine/common/track/track.go",
         "patchSetId": 15
@@ -39,6 +63,24 @@
       "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "89dba6f2_a87a687f",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-12T08:01:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d2bb993c_f74b68da",
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -59,6 +101,24 @@
     },
     {
       "key": {
+        "uuid": "d9eb2a5d_0f62c420",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-12T08:01:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5212ecdb_1f16189a",
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d0dd406a_5274a94f",
         "filename": "go/src/infra/tricium/appengine/common/track/track.go",
         "patchSetId": 15
@@ -70,6 +130,24 @@
       "writtenOn": "2017-06-07T13:17:14Z",
       "side": 1,
       "message": "I assume this, and WorkerRunResult.Name and .Analyzer are for indexing. I\u0027d recommend a quick comment about the fact that these are duplicated from the *db.Key to enable indexing.",
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cdef0989_094e4ff9",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-12T08:01:08Z",
+      "side": 1,
+      "message": "Yes, and for convenience, see checks in rpc_worker_done.go. Extending comments.",
+      "parentUuid": "d0dd406a_5274a94f",
       "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -93,6 +171,24 @@
     },
     {
       "key": {
+        "uuid": "b54425b0_6d3c99b6",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-12T08:01:08Z",
+      "side": 1,
+      "message": "The information is available first at launch of the worker and the WorkeRun entry is added in PENDING state at launch of the workflow.",
+      "parentUuid": "93fff688_61badd4b",
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1703caca_773b4114",
         "filename": "go/src/infra/tricium/appengine/common/track/track.go",
         "patchSetId": 15
@@ -104,6 +200,24 @@
       "writtenOn": "2017-06-07T13:17:14Z",
       "side": 1,
       "message": "I\u0027m not sure there\u0027s value in indexing this?",
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "befc5766_31ebcccd",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-12T08:01:08Z",
+      "side": 1,
+      "message": "Probably not. Updated.",
+      "parentUuid": "1703caca_773b4114",
       "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -127,6 +241,24 @@
     },
     {
       "key": {
+        "uuid": "9b3e94a3_65192ff5",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-12T08:01:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cfdef041_c7a987d7",
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cd7f3f4c_71d13e63",
         "filename": "go/src/infra/tricium/appengine/common/track/track.go",
         "patchSetId": 15
@@ -138,6 +270,24 @@
       "writtenOn": "2017-06-07T13:17:14Z",
       "side": 1,
       "message": "Food for thoughts;\nWould it be valuable to have also a \"Shown int\" too? Basically, counting the number of times this comment was seen, as then it can be seen as a fraction. That said, mutation on view makes it much harder and I don\u0027t think gerrit would be able to provide this information (?)",
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8a9d8c2a_bbab3340",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 303,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-12T08:01:08Z",
+      "side": 1,
+      "message": "Yes, food for thought. Adding a TODO for now.",
+      "parentUuid": "cd7f3f4c_71d13e63",
       "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -161,6 +311,24 @@
     },
     {
       "key": {
+        "uuid": "0ce620b4_45cc0886",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_progress.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-12T08:01:08Z",
+      "side": 1,
+      "message": "OK, adding a TODO.",
+      "parentUuid": "8ffa9f53_ca86f5b2",
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "71e0490f_a2177b57",
         "filename": "go/src/infra/tricium/appengine/frontend/rpc_results.go",
         "patchSetId": 15
@@ -172,6 +340,24 @@
       "writtenOn": "2017-06-07T13:29:52Z",
       "side": 1,
       "message": "In this case, this would be GetCommentsForWorkflowRun(runID int64, run, analyzer string) []*track.Comment {}\nand/or also for selection and the likes.",
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a385b7a8_6020084e",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_results.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-12T08:01:08Z",
+      "side": 1,
+      "message": "OK, adding a TODO.",
+      "parentUuid": "71e0490f_a2177b57",
       "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -192,6 +378,24 @@
       "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8421226c_ce8e58c6",
+        "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_done.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2017-06-12T08:01:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7f11dc06_cf5adce1",
+      "revId": "3b3cf82f6b7fb3cd298df2fb8021df6a8b51adcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
