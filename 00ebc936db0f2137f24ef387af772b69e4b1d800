@@ -1,0 +1,348 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fe8d83df_f24ce93a",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-12T13:47:06Z",
+      "side": 1,
+      "message": "I\u0027d prefer \"tricium.Analyze\" to make this clearer to the reader.",
+      "range": {
+        "startLine": 88,
+        "startChar": 47,
+        "endLine": 88,
+        "endChar": 54
+      },
+      "revId": "00ebc936db0f2137f24ef387af772b69e4b1d800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6dc411b6_650774a5",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-12T13:47:06Z",
+      "side": 1,
+      "message": "FTR, I\u0027d personally put the parent and ID description in the struct doc in a single liner and would just pack these two entries at the top with no doc, which would save around 2 lines total. But that\u0027s just my early source lines count optimizer opinion. :)",
+      "revId": "00ebc936db0f2137f24ef387af772b69e4b1d800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1e389092_01027a61",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-12T13:47:06Z",
+      "side": 1,
+      "message": "int64",
+      "range": {
+        "startLine": 94,
+        "startChar": 4,
+        "endLine": 94,
+        "endChar": 10
+      },
+      "revId": "00ebc936db0f2137f24ef387af772b69e4b1d800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5c5c6fbb_05bf755a",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-12T13:47:06Z",
+      "side": 1,
+      "message": "int64",
+      "range": {
+        "startLine": 109,
+        "startChar": 4,
+        "endLine": 109,
+        "endChar": 10
+      },
+      "revId": "00ebc936db0f2137f24ef387af772b69e4b1d800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d2246575_eb5344fa",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-12T13:47:06Z",
+      "side": 1,
+      "message": "int64",
+      "range": {
+        "startLine": 132,
+        "startChar": 4,
+        "endLine": 132,
+        "endChar": 10
+      },
+      "revId": "00ebc936db0f2137f24ef387af772b69e4b1d800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cad50447_6323ddec",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-12T13:47:06Z",
+      "side": 1,
+      "message": "here",
+      "range": {
+        "startLine": 159,
+        "startChar": 13,
+        "endLine": 159,
+        "endChar": 16
+      },
+      "revId": "00ebc936db0f2137f24ef387af772b69e4b1d800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "335391f7_f7c40adf",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-12T13:47:06Z",
+      "side": 1,
+      "message": "int64",
+      "range": {
+        "startLine": 169,
+        "startChar": 4,
+        "endLine": 169,
+        "endChar": 10
+      },
+      "revId": "00ebc936db0f2137f24ef387af772b69e4b1d800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fe2619f0_9a9ada90",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-12T13:47:06Z",
+      "side": 1,
+      "message": "int64",
+      "range": {
+        "startLine": 211,
+        "startChar": 4,
+        "endLine": 211,
+        "endChar": 10
+      },
+      "revId": "00ebc936db0f2137f24ef387af772b69e4b1d800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f5d1c0e2_21bef01f",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-12T13:47:06Z",
+      "side": 1,
+      "message": "int64",
+      "range": {
+        "startLine": 258,
+        "startChar": 4,
+        "endLine": 258,
+        "endChar": 10
+      },
+      "revId": "00ebc936db0f2137f24ef387af772b69e4b1d800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "073f5b3b_9442b279",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-12T13:47:06Z",
+      "side": 1,
+      "message": "Put example in quotes \"\" ?",
+      "range": {
+        "startLine": 271,
+        "startChar": 43,
+        "endLine": 271,
+        "endChar": 71
+      },
+      "revId": "00ebc936db0f2137f24ef387af772b69e4b1d800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "68cdf879_c2f39f5a",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-12T13:47:06Z",
+      "side": 1,
+      "message": "int64",
+      "range": {
+        "startLine": 289,
+        "startChar": 4,
+        "endLine": 289,
+        "endChar": 10
+      },
+      "revId": "00ebc936db0f2137f24ef387af772b69e4b1d800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ef8f4c27_ae07a305",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 307,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-12T13:47:06Z",
+      "side": 1,
+      "message": "int64",
+      "range": {
+        "startLine": 307,
+        "startChar": 4,
+        "endLine": 307,
+        "endChar": 10
+      },
+      "revId": "00ebc936db0f2137f24ef387af772b69e4b1d800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a078091f_9b2671ac",
+        "filename": "go/src/infra/tricium/appengine/common/track/track.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-12T13:47:06Z",
+      "side": 1,
+      "message": "so the platform cannot contain \"_\" either? I generally use SplitN(a, b, 2). I\u0027d still recommend SplitN() because it\u0027ll return earlier, saving at least 0.05ns on average. :P",
+      "revId": "00ebc936db0f2137f24ef387af772b69e4b1d800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9956c1fc_a2d066a6",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_progress.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-12T13:47:06Z",
+      "side": 1,
+      "message": "I think it\u0027s better to use the \"var\" form to not do the initial 0 length array allocation",
+      "revId": "00ebc936db0f2137f24ef387af772b69e4b1d800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ffc3be22_c9e7815c",
+        "filename": "go/src/infra/tricium/appengine/frontend/rpc_progress.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-12T13:47:06Z",
+      "side": 1,
+      "message": "will this fail if len(workerResults) \u003d\u003d 0 ?",
+      "revId": "00ebc936db0f2137f24ef387af772b69e4b1d800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "deace2b7_b6045665",
+        "filename": "go/src/infra/tricium/appengine/tracker/rpc_worker_launched.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-06-12T13:47:06Z",
+      "side": 1,
+      "message": "TODO",
+      "range": {
+        "startLine": 106,
+        "startChar": 5,
+        "endLine": 106,
+        "endChar": 9
+      },
+      "revId": "00ebc936db0f2137f24ef387af772b69e4b1d800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
