@@ -579,6 +579,30 @@
     },
     {
       "key": {
+        "uuid": "bd3e261e_56739563",
+        "filename": "appengine/predator/common/crash_pipeline.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 290,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-06-15T21:02:56Z",
+      "side": 1,
+      "message": "Found out it cannot catch OOM kind of exceptions at all, because ``yield pipeline`` just returns futures. In this case, might just let it fail loudly, removed the expect clause.",
+      "parentUuid": "edb1c870_1f727194",
+      "range": {
+        "startLine": 290,
+        "startChar": 23,
+        "endLine": 290,
+        "endChar": 43
+      },
+      "revId": "690132d15dfa9e3f599c73bc4d2247969e380577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "13279539_53bd04dd",
         "filename": "appengine/predator/queue.yaml",
         "patchSetId": 9

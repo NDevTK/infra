@@ -22,6 +22,30 @@
       "revId": "139d5bd59e20cb85028c27a57695d0329e8200b5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a6f92085_953407e5",
+        "filename": "appengine/predator/backend/handlers/rerun_analyses.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-06-15T21:02:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5edab387_92cf5a7b",
+      "range": {
+        "startLine": 20,
+        "startChar": 21,
+        "endLine": 20,
+        "endChar": 26
+      },
+      "revId": "139d5bd59e20cb85028c27a57695d0329e8200b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
