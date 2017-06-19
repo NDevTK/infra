@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "63f461c8_8e82b278",
+        "filename": "infra/tools/bot_setup/start/swarming.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1002080
+      },
+      "writtenOn": "2017-06-19T20:21:20Z",
+      "side": 1,
+      "message": "ignore_errors\u003dTrue",
+      "revId": "bab1513de1bdb384182bc4aced88c8820bac765a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "92c8e0af_d2735550",
+        "filename": "infra/tools/rmtree/__main__.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1002080
+      },
+      "writtenOn": "2017-06-19T20:21:20Z",
+      "side": 1,
+      "message": "nit: sys.platform preferred due to convention",
+      "revId": "bab1513de1bdb384182bc4aced88c8820bac765a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1b9d208d_b5e13d91",
+        "filename": "infra/tools/rmtree/__main__.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1002080
+      },
+      "writtenOn": "2017-06-19T20:21:20Z",
+      "side": 1,
+      "message": "nit: targets",
+      "range": {
+        "startLine": 54,
+        "startChar": 23,
+        "endLine": 54,
+        "endChar": 29
+      },
+      "revId": "bab1513de1bdb384182bc4aced88c8820bac765a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1a590324_dfc41afd",
+        "filename": "infra/tools/rmtree/__main__.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1002080
+      },
+      "writtenOn": "2017-06-19T20:21:20Z",
+      "side": 1,
+      "message": "This should be info if we think not setting passwordless sudo is okay.  Avoid someone coming in and seeing \"WARNING: Everything is okay\" in the logs",
+      "range": {
+        "startLine": 74,
+        "startChar": 11,
+        "endLine": 74,
+        "endChar": 18
+      },
+      "revId": "bab1513de1bdb384182bc4aced88c8820bac765a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
