@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8046cd06_d06aeb1f",
+        "filename": "doc/users/event_pipeline.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1174915
+      },
+      "writtenOn": "2017-06-20T02:42:31Z",
+      "side": 1,
+      "message": "Can you add an introductory paragraph that describes what the event pipeline is?",
+      "revId": "82e34bc6ad3430c67a0c0f81486108fbbe7a7ac1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2cd9bdf7_0b8ffe83",
+        "filename": "doc/users/event_pipeline.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1174915
+      },
+      "writtenOn": "2017-06-20T02:42:31Z",
+      "side": 1,
+      "message": "It took me a moment to understand that \"If you don\u0027t see: `Project ...\" referred to the output of the gcloud info command above, because the comment about the Cloud SDK was interspersed between those lines. If you state some more things up front, you can order them in a way that connects better:\n\n\n\nYou need to be authenticated in the chrome-infra-events project. To check your authentication status, ensure that you have the Cloud SDK [installed](https://cloud.google.com/sdk/docs/quickstarts), then run:\n\n```\ngcloud info\n```\n\nIf you don\u0027t see: `Project: [chrome-infra-events]`, reach out to an\n[editor](https://pantheon.corp.google.com/iam-admin/iam/project?project\u003dchrome-infra-events\u0026organizationId\u003d433637338589)\nto request access.",
+      "range": {
+        "startLine": 6,
+        "startChar": 61,
+        "endLine": 18,
+        "endChar": 18
+      },
+      "revId": "82e34bc6ad3430c67a0c0f81486108fbbe7a7ac1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "52b539ba_ad1db48d",
+        "filename": "doc/users/event_pipeline.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1174915
+      },
+      "writtenOn": "2017-06-20T02:42:31Z",
+      "side": 1,
+      "message": "Shouldn\u0027t this be txt?",
+      "range": {
+        "startLine": 24,
+        "startChar": 27,
+        "endLine": 24,
+        "endChar": 31
+      },
+      "revId": "82e34bc6ad3430c67a0c0f81486108fbbe7a7ac1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
