@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "c0245389_f1331bea",
+        "filename": "doc/users/event_pipeline.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-06-27T21:42:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8046cd06_d06aeb1f",
+      "revId": "82e34bc6ad3430c67a0c0f81486108fbbe7a7ac1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2cd9bdf7_0b8ffe83",
         "filename": "doc/users/event_pipeline.md",
         "patchSetId": 1
@@ -42,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "79c2f849_c780a4e9",
+        "filename": "doc/users/event_pipeline.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-06-27T21:42:31Z",
+      "side": 1,
+      "message": "Thanks!",
+      "parentUuid": "2cd9bdf7_0b8ffe83",
+      "range": {
+        "startLine": 6,
+        "startChar": 61,
+        "endLine": 18,
+        "endChar": 18
+      },
+      "revId": "82e34bc6ad3430c67a0c0f81486108fbbe7a7ac1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "52b539ba_ad1db48d",
         "filename": "doc/users/event_pipeline.md",
         "patchSetId": 1
@@ -53,6 +95,30 @@
       "writtenOn": "2017-06-20T02:42:31Z",
       "side": 1,
       "message": "Shouldn\u0027t this be txt?",
+      "range": {
+        "startLine": 24,
+        "startChar": 27,
+        "endLine": 24,
+        "endChar": 31
+      },
+      "revId": "82e34bc6ad3430c67a0c0f81486108fbbe7a7ac1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "22f67411_b631014c",
+        "filename": "doc/users/event_pipeline.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-06-27T21:42:31Z",
+      "side": 1,
+      "message": "It was .txt, but I it to JSON in https://chromium-review.googlesource.com/c/544618/ to be more consistent with rest of the infra.",
+      "parentUuid": "52b539ba_ad1db48d",
       "range": {
         "startLine": 24,
         "startChar": 27,
