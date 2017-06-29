@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a531301e_e7576747",
+        "filename": "infra/dataflow/events/cq_attempts.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-06-29T22:34:30Z",
+      "side": 1,
+      "message": "At some point we\u0027ll have to consider if these class definitions should be shared and imported, or defined in their pipeline files. It depends on how many different pipelines will be writing the same objects to the same tables, and whether anything will be reading objects from those tables. I\u0027m not sure what that\u0027s going to look like, but think about it.",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 24
+      },
+      "revId": "2d992634d17690631c78821f1059d5fee064544a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c8dda8d9_4a818051",
+        "filename": "infra/dataflow/events/cq_attempts.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-06-29T22:34:30Z",
+      "side": 1,
+      "message": "This is a case where a library might help a little. If we had a \"InfraBigtableObject\" class that CQAttempt and everything like it inherited from, then those classes could all implement their own extract_output function. Might one of those classes ever want to store data fields on itself that shouldn\u0027t get written to the table? Then we wouldn\u0027t want to use __dict__ in that case.",
+      "range": {
+        "startLine": 61,
+        "startChar": 0,
+        "endLine": 62,
+        "endChar": 21
+      },
+      "revId": "2d992634d17690631c78821f1059d5fee064544a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "885aa204_bea094e3",
+        "filename": "infra/dataflow/events/cq_attempts.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-06-29T22:34:30Z",
+      "side": 1,
+      "message": "This whole stanza is straightforward and simple -- huzzah for just using the beam api and not requiring chrome infra folks from knowing another library -- but it is also *flexible*. There\u0027s an argument to be made that the way to keep these dataflow pipelines \"simple\" is not to simply expose the beam API, but rather to expose a *very narrow subset* of the beam API.\n\nFor example, this could be my_dataflow_lib.Transform(p, q, CombineEventsToAttempt, \u0027cq_attempts\u0027). All dataflows take a single query, a single pipeline, a single CombineFn, and a single output, and then just run them. Or something like that.\n\nOf course, that requirement may not last very long. It\u0027ll be hard to know until we have two or three real pipelines and see what commonalities there are. If we enforce a very strict subset right now, those other useful pipelines might be harder to create. If we don\u0027t enforce a very strict subset right now, those other pipelines might do crazy stuff. It\u0027s up to you to decide which way to go, but it should be a carefully considered decision.",
+      "range": {
+        "startLine": 70,
+        "startChar": 2,
+        "endLine": 79,
+        "endChar": 72
+      },
+      "revId": "2d992634d17690631c78821f1059d5fee064544a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
