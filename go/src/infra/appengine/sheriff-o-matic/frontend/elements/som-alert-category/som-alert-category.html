@@ -35,21 +35,24 @@
     <h2 class="category-title">
       <span>
         <input type="checkbox" id="checkAll" on-tap="checkAll" class="category-checkbox" />
-        <span class="category-title-text">
+        <span class="category-title-text" title$="[[tooltip]]">
           [[categoryTitle]] ([[alerts.length]] total)
         </span>
         (<a href="/help-som" target="_blank">Help?</a>)
       </span>
       <div class="header-buttons">
-        <span class="collapse-button" on-tap="_collapseAll">
+        <span class="collapse-button" on-tap="_collapseAll"
+          title="Collapse all the alerts in this category.">
           <iron-icon icon="remove"></iron-icon> Collapse all
         </span>
         /
-        <span class="collapse-button" on-tap="_expandAll">
+        <span class="collapse-button" on-tap="_expandAll"
+          title="Expand all the alerts in this category.">
           <iron-icon icon="add"></iron-icon> Expand all
         </span>
         /
-        <span class="collapse-button" on-tap="_toggleCategory">
+        <span class="collapse-button" on-tap="_toggleCategory"
+          title="Collapse or expand this whole category section.">
           <iron-icon id="categoryToggleIcon" icon="[[_toggleIcon]]"></iron-icon>
         </span>
       </div>

@@ -1,26 +1,26 @@
 (function() {
-  'use strict';
+'use strict';
 
-  Polymer({
-    is: 'som-settings',
+Polymer({
+  is: 'som-settings',
 
-    properties: {
-      collapseByDefault: {
-        type: Boolean,
-        notify: true,
-      },
-      defaultTree: {
-        type: String,
-        notify: true,
-      },
-      linkStyle: {
-        type: String,
-        notify: true,
-      },
+  properties: {
+    collapseByDefault: {
+      type: Boolean,
+      notify: true,
     },
-
-    _initializeUber: function(evt) {
-      evt.target.value = 'uber';
+    defaultTree: {
+      type: String,
+      notify: true,
     },
-  });
+    linkStyle: {
+      type: String,
+      notify: true,
+    },
+  },
+
+  _initializeUber: function(evt) {
+    evt.target.value = 'uber';
+  },
+});
 })();

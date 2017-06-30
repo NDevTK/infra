@@ -1,198 +1,197 @@
 (function() {
-  'use strict';
+'use strict';
 
-  const codeSearchURL = 'https://cs.chromium.org/';
-  const testResultsURL = 'https://test-results.appspot.com/';
+const codeSearchURL = 'https://cs.chromium.org/';
+const testResultsURL = 'https://test-results.appspot.com/';
 
-  Polymer({
-    is: 'som-extension-build-failure',
-    behaviors: [LinkifyBehavior],
+Polymer({
+  is: 'som-extension-build-failure',
+  behaviors: [LinkifyBehavior],
 
-    properties: {
-      extension: {
-        type: Object,
-        value: function() {
-          return {};
-        },
-      },
-      type: {type: String, value: ''},
-      _suspectedCls: {
-        type: Array,
-        computed: '_computeSuspectedCls(extension)',
+  properties: {
+    extension: {
+      type: Object,
+      value: function() {
+        return {};
       },
     },
-
-    _isCrosFailure: function(type) {
-      return type == 'cros-failure';
+    type: {type: String, value: ''},
+    _suspectedCls: {
+      type: Array,
+      computed: '_computeSuspectedCls(extension)',
     },
+  },
 
-    _haveBuilders: function(extension) {
-      return extension && extension.builders && extension.builders.length > 0;
-    },
+  _isCrosFailure: function(type) {
+    return type == 'cros-failure';
+  },
 
-    _failureCount: function(builder) {
-      // The build number range is inclusive.
-      return builder.latest_failure - builder.first_failure + 1;
-    },
+  _haveBuilders: function(extension) {
+    return extension && extension.builders && extension.builders.length > 0;
+  },
 
-    _failureCountText: function(builder) {
-      let numBuilds = this._failureCount(builder);
-      if (numBuilds == 1) {
-        return '';
-      }
+  _failureCount: function(builder) {
+    // The build number range is inclusive.
+    return builder.latest_failure - builder.first_failure + 1;
+  },
 
-      if (builder.count) {
-        return `[${builder.count} out of the last ${
-                                                    numBuilds
-                                                  } builds have failed]`;
-      }
+  _failureCountText: function(builder) {
+    let numBuilds = this._failureCount(builder);
+    if (numBuilds == 1) {
+      return '';
+    }
 
-      if (numBuilds > 1) {
-        return `[${numBuilds} since first detection]`;
-      }
-    },
+    if (builder.count) {
+      return `[${builder.count} out of the last ${
+                                                  numBuilds
+                                                } builds have failed]`;
+    }
 
-    _classForBuilder: function(builder) {
-      let classes = ['builder'];
-      if (this._failureCount(builder) > 1) {
-        classes.push('multiple-failures');
-      }
-      if (this.type == 'infra-failure') {
-        classes.push('infra-failure');
-      }
-      return classes.join(' ');
-    },
+    if (numBuilds > 1) {
+      return `[${numBuilds} since first detection]`;
+    }
+  },
 
-    // This is necessary because FindIt sometimes returns duplicate results
-    _computeSuspectedCls: function(extension) {
-      if (!this._haveSuspectCLs(extension)) {
-        return [];
-      }
-      let revisions = {};
-      for (var i in extension.suspected_cls) {
-        revisions[extension.suspected_cls[i].revision] =
-            extension.suspected_cls[i];
-      }
-      return Object.values(revisions);
-    },
+  _classForBuilder: function(builder) {
+    let classes = ['builder'];
+    if (this._failureCount(builder) > 1) {
+      classes.push('multiple-failures');
+    }
+    if (this.type == 'infra-failure') {
+      classes.push('infra-failure');
+    }
+    return classes.join(' ');
+  },
 
-    _finditIsRunning: function(extension) {
-      return extension && !extension.suspected_cls && !extension.is_finished &&
-             !extension.has_findings && extension.is_supported;
-    },
+  // This is necessary because FindIt sometimes returns duplicate results
+  _computeSuspectedCls: function(extension) {
+    if (!this._haveSuspectCLs(extension)) {
+      return [];
+    }
+    let revisions = {};
+    for (var i in extension.suspected_cls) {
+      revisions[extension.suspected_cls[i].revision] =
+          extension.suspected_cls[i];
+    }
+    return Object.values(revisions);
+  },
 
-    _finditHasNoResult: function(extension) {
-      return extension && !extension.suspected_cls && extension.is_finished &&
-             !extension.has_findings;
-    },
+  _finditIsRunning: function(extension) {
+    return extension && !extension.suspected_cls && !extension.is_finished &&
+           !extension.has_findings && extension.is_supported;
+  },
 
-    _finditFoundNoResult: function(extension) {
-      return this._finditHasNoResult(extension) && extension.is_supported;
-    },
+  _finditHasNoResult: function(extension) {
+    return extension && !extension.suspected_cls && extension.is_finished &&
+           !extension.has_findings;
+  },
 
-    _finditNotSupport: function(extension) {
-      return this._finditHasNoResult(extension) && !extension.is_supported;
-    },
+  _finditFoundNoResult: function(extension) {
+    return this._finditHasNoResult(extension) && extension.is_supported;
+  },
 
-    _finditHasUrl: function(extension) {
-      return extension && extension.findit_url;
-    },
+  _finditNotSupport: function(extension) {
+    return this._finditHasNoResult(extension) && !extension.is_supported;
+  },
 
-    _finditApproach: function(cl) {
-      if (cl.analysis_approach == 'HEURISTIC') {
-        return ' suspects CL ';
+  _finditHasUrl: function(extension) {
+    return extension && extension.findit_url;
+  },
+
+  _finditApproach: function(cl) {
+    if (cl.analysis_approach == 'HEURISTIC') {
+      return ' suspects CL ';
+    } else {
+      return ' found culprit ';
+    }
+  },
+
+  _finditConfidence: function(cl) {
+    return cl.confidence.toString();
+  },
+
+  _haveSuspectCLs: function(extension) {
+    return extension && extension.suspected_cls;
+  },
+
+  _haveRevertCL: function(cl) {
+    return cl && cl.revert_cl_url;
+  },
+
+  _haveRegressionRanges: function(regression_ranges) {
+    return regression_ranges && regression_ranges.length > 0;
+  },
+
+  _haveTests: function(tests) {
+    return tests && tests.length > 0;
+  },
+
+  _isFlaky: function(test) {
+    return test && test.is_flaky;
+  },
+
+  _linkForTest: function(reason, testName) {
+    return testResultsURL + 'dashboards/' +
+           'flakiness_dashboard.html#' +
+           'tests=' + encodeURIComponent(testName) +
+           '&testType=' + encodeURIComponent(reason.step);
+  },
+
+  _linkToCSForTest: function(testName) {
+    let url = codeSearchURL + 'search/?q=';
+    let query = testName;
+    if (testName.includes('#')) {
+      // Guessing that it's a java test; the format expected is
+      // test.package.TestClass#testMethod. For now, just split around the #
+      let split = testName.split('#');
+
+      if (split.length > 2) {
+        console.error('invalid java test name', testName);
       } else {
-        return ' found culprit ';
+        query = split[0] + ' function:' + split[1];
       }
-    },
+    }
+    return url + encodeURIComponent(query);
+  },
 
-    _finditConfidence: function(cl) {
-      return cl.confidence.toString();
-    },
+  _linkForCL: function(cl) {
+    return 'https://crrev.com/' + cl;
+  },
 
-    _haveSuspectCLs: function(extension) {
-      return extension && extension.suspected_cls;
-    },
+  _showRegressionRange: function(range) {
+    return range.positions && range.positions.length > 0 && range.repo != 'v8';
+  },
 
-    _haveRevertCL: function(cl) {
-      return cl && cl.revert_cl_url;
-    },
+  _sortTests: function(a, b) {
+    return a.test_name.localeCompare(b.test_name);
+  },
 
-    _haveRegressionRanges: function(regression_ranges) {
-      return regression_ranges && regression_ranges.length > 0;
-    },
+  _testText: function(tests) {
+    // NOTE: This really shouldn't happen; we should only be calling this
+    // function
+    // when tests is actually defined. We are though, for some reason, and it
+    // looks
+    // like it might be some weird dom-repeat/Polymer bug. So check that tests
+    // is
+    // ok here anyways.
+    if (tests == null) {
+      return '';
+    }
 
-    _haveTests: function(tests) {
-      return tests && tests.length > 0;
-    },
+    let len = tests.length;
 
-    _isFlaky: function(test) {
-      return test && test.is_flaky;
-    },
+    if (len == 1) {
+      return '1 test failed';
+    }
+    return len.toString() + ' tests failed';
+  },
 
-    _linkForTest: function(reason, testName) {
-      return testResultsURL + 'dashboards/' +
-             'flakiness_dashboard.html#' +
-             'tests=' + encodeURIComponent(testName) +
-             '&testType=' + encodeURIComponent(reason.step);
-    },
+  _textForCL: function(cl) {
+    return cl.substring(0, 7);
+  },
 
-    _linkToCSForTest: function(testName) {
-      let url = codeSearchURL + 'search/?q=';
-      let query = testName;
-      if (testName.includes('#')) {
-        // Guessing that it's a java test; the format expected is
-        // test.package.TestClass#testMethod. For now, just split around the #
-        let split = testName.split('#');
-
-        if (split.length > 2) {
-          console.error('invalid java test name', testName);
-        } else {
-          query = split[0] + ' function:' + split[1];
-        }
-      }
-      return url + encodeURIComponent(query);
-    },
-
-    _linkForCL: function(cl) {
-      return 'https://crrev.com/' + cl;
-    },
-
-    _showRegressionRange: function(range) {
-      return range.positions && range.positions.length > 0 &&
-             range.repo != 'v8';
-    },
-
-    _sortTests: function(a, b) {
-      return a.test_name.localeCompare(b.test_name);
-    },
-
-    _testText: function(tests) {
-      // NOTE: This really shouldn't happen; we should only be calling this
-      // function
-      // when tests is actually defined. We are though, for some reason, and it
-      // looks
-      // like it might be some weird dom-repeat/Polymer bug. So check that tests
-      // is
-      // ok here anyways.
-      if (tests == null) {
-        return '';
-      }
-
-      let len = tests.length;
-
-      if (len == 1) {
-        return '1 test failed';
-      }
-      return len.toString() + ' tests failed';
-    },
-
-    _textForCL: function(cl) {
-      return cl.substring(0, 7);
-    },
-
-    _hasSuspect: function(test) {
-      return test && test.suspected_cls;
-    },
-  });
+  _hasSuspect: function(test) {
+    return test && test.suspected_cls;
+  },
+});
 })();
