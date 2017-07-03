@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "652f6c59_28354138",
+        "filename": "infra/dataflow/events/cq_attempts.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2017-07-03T14:32:51Z",
+      "side": 1,
+      "message": "nit: Why is this necessary? Although BigQuery makes it easier to make changes to proto and rename enum values, I\u0027d not expect the value of this constant to change all that frequently, thus would suggest using it directly.",
+      "range": {
+        "startLine": 6,
+        "startChar": 0,
+        "endLine": 6,
+        "endChar": 34
+      },
+      "revId": "2d992634d17690631c78821f1059d5fee064544a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a531301e_e7576747",
         "filename": "infra/dataflow/events/cq_attempts.py",
         "patchSetId": 1
@@ -18,6 +41,52 @@
         "startChar": 0,
         "endLine": 8,
         "endChar": 24
+      },
+      "revId": "2d992634d17690631c78821f1059d5fee064544a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c4052c9f_4915b787",
+        "filename": "infra/dataflow/events/cq_attempts.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2017-07-03T14:32:51Z",
+      "side": 1,
+      "message": "nit: s/i/input_rows/",
+      "range": {
+        "startLine": 30,
+        "startChar": 35,
+        "endLine": 30,
+        "endChar": 36
+      },
+      "revId": "2d992634d17690631c78821f1059d5fee064544a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "357a0499_59559632",
+        "filename": "infra/dataflow/events/cq_attempts.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2017-07-03T14:32:51Z",
+      "side": 1,
+      "message": "Why is this check needed? We can just override attempt_start_msec since they supposed to be the same for all rows. Perhaps also add an assert\n\n  assert (accumulator.attempt_start_msec is None or\n          accumulator.attempt_start_msec \u003d\u003d attempt_start_msec)",
+      "range": {
+        "startLine": 42,
+        "startChar": 6,
+        "endLine": 42,
+        "endChar": 48
       },
       "revId": "2d992634d17690631c78821f1059d5fee064544a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
@@ -64,6 +133,69 @@
         "startChar": 2,
         "endLine": 79,
         "endChar": 72
+      },
+      "revId": "2d992634d17690631c78821f1059d5fee064544a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ae119373_d4c79573",
+        "filename": "infra/dataflow/events/cq_attempts_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2017-07-03T14:32:51Z",
+      "side": 1,
+      "message": "Hooray! Tests!",
+      "revId": "2d992634d17690631c78821f1059d5fee064544a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7f981dcf_f7330a26",
+        "filename": "infra/dataflow/events/cq_attempts_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2017-07-03T14:32:51Z",
+      "side": 1,
+      "message": "nit: Why not just use self.basic_accumulator below? It\u0027s not that much longer...",
+      "range": {
+        "startLine": 30,
+        "startChar": 4,
+        "endLine": 30,
+        "endChar": 40
+      },
+      "revId": "2d992634d17690631c78821f1059d5fee064544a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "22b87ca5_f2126fc0",
+        "filename": "infra/dataflow/events/cq_attempts_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2017-07-03T14:32:51Z",
+      "side": 1,
+      "message": "Wouldn\u0027t this copy by reference and modify the original object that is also referenced by `accumulator`? Ditto in next test.",
+      "range": {
+        "startLine": 73,
+        "startChar": 4,
+        "endLine": 73,
+        "endChar": 36
       },
       "revId": "2d992634d17690631c78821f1059d5fee064544a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
