@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "8a098e4a_3a0310ad",
+        "filename": "infra/dataflow/events/cq_attempts.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-07-06T15:14:38Z",
+      "side": 1,
+      "message": "I think it makes it easier to prevent ourselves from making typos.",
+      "parentUuid": "652f6c59_28354138",
+      "range": {
+        "startLine": 6,
+        "startChar": 0,
+        "endLine": 6,
+        "endChar": 34
+      },
+      "revId": "2d992634d17690631c78821f1059d5fee064544a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a531301e_e7576747",
         "filename": "infra/dataflow/events/cq_attempts.py",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2017-06-29T22:34:30Z",
       "side": 1,
       "message": "At some point we\u0027ll have to consider if these class definitions should be shared and imported, or defined in their pipeline files. It depends on how many different pipelines will be writing the same objects to the same tables, and whether anything will be reading objects from those tables. I\u0027m not sure what that\u0027s going to look like, but think about it.",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 24
+      },
+      "revId": "2d992634d17690631c78821f1059d5fee064544a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aea46740_8ac12e1f",
+        "filename": "infra/dataflow/events/cq_attempts.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-07-06T15:14:38Z",
+      "side": 1,
+      "message": "Good point!",
+      "parentUuid": "a531301e_e7576747",
       "range": {
         "startLine": 8,
         "startChar": 0,
@@ -80,6 +128,30 @@
         "id": 1153089
       },
       "writtenOn": "2017-07-06T08:14:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c4052c9f_4915b787",
+      "range": {
+        "startLine": 30,
+        "startChar": 35,
+        "endLine": 30,
+        "endChar": 36
+      },
+      "revId": "2d992634d17690631c78821f1059d5fee064544a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ad475895_66ab24be",
+        "filename": "infra/dataflow/events/cq_attempts.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-07-06T15:14:38Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "c4052c9f_4915b787",
@@ -142,6 +214,30 @@
     },
     {
       "key": {
+        "uuid": "56929870_73b8c9a1",
+        "filename": "infra/dataflow/events/cq_attempts.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-07-06T15:14:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "357a0499_59559632",
+      "range": {
+        "startLine": 42,
+        "startChar": 6,
+        "endLine": 42,
+        "endChar": 48
+      },
+      "revId": "2d992634d17690631c78821f1059d5fee064544a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c8dda8d9_4a818051",
         "filename": "infra/dataflow/events/cq_attempts.py",
         "patchSetId": 1
@@ -153,6 +249,30 @@
       "writtenOn": "2017-06-29T22:34:30Z",
       "side": 1,
       "message": "This is a case where a library might help a little. If we had a \"InfraBigtableObject\" class that CQAttempt and everything like it inherited from, then those classes could all implement their own extract_output function. Might one of those classes ever want to store data fields on itself that shouldn\u0027t get written to the table? Then we wouldn\u0027t want to use __dict__ in that case.",
+      "range": {
+        "startLine": 61,
+        "startChar": 0,
+        "endLine": 62,
+        "endChar": 21
+      },
+      "revId": "2d992634d17690631c78821f1059d5fee064544a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e19c259c_056c0c82",
+        "filename": "infra/dataflow/events/cq_attempts.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-07-06T15:14:38Z",
+      "side": 1,
+      "message": "Right. In fact, that will likely be the case for CQAttempt. I was thinking that those are modifications I would make as I go along and it becomes more readily apparent what abstractions would be helpful. Does that seem like a good path forward?",
+      "parentUuid": "c8dda8d9_4a818051",
       "range": {
         "startLine": 61,
         "startChar": 0,
@@ -205,6 +325,24 @@
     },
     {
       "key": {
+        "uuid": "b36f18d0_be5418c1",
+        "filename": "infra/dataflow/events/cq_attempts_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-07-06T15:14:38Z",
+      "side": 1,
+      "message": ":)",
+      "parentUuid": "ae119373_d4c79573",
+      "revId": "2d992634d17690631c78821f1059d5fee064544a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7f981dcf_f7330a26",
         "filename": "infra/dataflow/events/cq_attempts_test.py",
         "patchSetId": 1
@@ -237,6 +375,30 @@
         "id": 1153089
       },
       "writtenOn": "2017-07-06T08:14:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7f981dcf_f7330a26",
+      "range": {
+        "startLine": 30,
+        "startChar": 4,
+        "endLine": 30,
+        "endChar": 40
+      },
+      "revId": "2d992634d17690631c78821f1059d5fee064544a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9d528c21_1488160e",
+        "filename": "infra/dataflow/events/cq_attempts_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-07-06T15:14:38Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "7f981dcf_f7330a26",
@@ -296,6 +458,30 @@
       "revId": "2d992634d17690631c78821f1059d5fee064544a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f6ae2d24_c80b7f99",
+        "filename": "infra/dataflow/events/cq_attempts_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-07-06T15:14:38Z",
+      "side": 1,
+      "message": "Oh, yup. Fixed.",
+      "parentUuid": "22b87ca5_f2126fc0",
+      "range": {
+        "startLine": 73,
+        "startChar": 4,
+        "endLine": 73,
+        "endChar": 36
+      },
+      "revId": "2d992634d17690631c78821f1059d5fee064544a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
