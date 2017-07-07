@@ -2,6 +2,57 @@
   "comments": [
     {
       "key": {
+        "uuid": "cfa6d756_24cff78d",
+        "filename": "infra/dataflow/events/aggregate_objects.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-07-07T18:14:40Z",
+      "side": 1,
+      "message": "nit: license header, here and in all other files",
+      "revId": "9462fe49ca3da8398563fe7242a36f271b8f0429",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d8600024_9367e64a",
+        "filename": "infra/dataflow/events/aggregate_objects.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-07-07T18:14:40Z",
+      "side": 1,
+      "message": "nit: docstrings on classes and methods would be great",
+      "revId": "9462fe49ca3da8398563fe7242a36f271b8f0429",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "922a83f4_12ee4dc4",
+        "filename": "infra/dataflow/events/aggregate_objects.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-07-07T18:14:40Z",
+      "side": 1,
+      "message": "Since this is an interface that children of this class will have to inherit, please provide a docstring documenting the expected behavior and required return type",
+      "revId": "9462fe49ca3da8398563fe7242a36f271b8f0429",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "7696b46d_d2ef9d95",
         "filename": "infra/dataflow/events/aggregate_objects.py",
         "patchSetId": 5
@@ -25,6 +76,114 @@
     },
     {
       "key": {
+        "uuid": "efabef88_518cc23a",
+        "filename": "infra/dataflow/events/aggregate_objects.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-07-07T18:14:40Z",
+      "side": 1,
+      "message": "This could be done as:\n\n    return {attr: self.__dict__.get(attr) for attr in self.get_bigquery_attributes()}",
+      "range": {
+        "startLine": 6,
+        "startChar": 4,
+        "endLine": 9,
+        "endChar": 14
+      },
+      "revId": "9462fe49ca3da8398563fe7242a36f271b8f0429",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d1058d3d_b61a7d2f",
+        "filename": "infra/dataflow/events/aggregate_objects.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-07-07T18:14:40Z",
+      "side": 1,
+      "message": "nit: two empty lines between top-level stanzas, here and in other files",
+      "revId": "9462fe49ca3da8398563fe7242a36f271b8f0429",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8cb6c3cc_ce339002",
+        "filename": "infra/dataflow/events/aggregate_objects.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-07-07T18:14:40Z",
+      "side": 1,
+      "message": "nit: this method doesn\u0027t use the argument \u0027self\u0027, so this should be decorated with @staticmethod",
+      "revId": "9462fe49ca3da8398563fe7242a36f271b8f0429",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eedd0be0_f67781cf",
+        "filename": "infra/dataflow/events/chops_beam.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-07-07T18:14:40Z",
+      "side": 1,
+      "message": "and isinstance(additional_argv, list):",
+      "revId": "9462fe49ca3da8398563fe7242a36f271b8f0429",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d4ff732e_0a45f364",
+        "filename": "infra/dataflow/events/chops_beam.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-07-07T18:14:40Z",
+      "side": 1,
+      "message": "nit: we try to keep the first sentence of our docstrings on a single line, and without a leading space.",
+      "revId": "9462fe49ca3da8398563fe7242a36f271b8f0429",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d81e78b9_43b02a9a",
+        "filename": "infra/dataflow/events/cq_attempts.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-07-07T18:14:40Z",
+      "side": 1,
+      "message": "what if accumulators is the empty list?",
+      "revId": "9462fe49ca3da8398563fe7242a36f271b8f0429",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ac256820_4e5b374f",
         "filename": "infra/dataflow/events/cq_attempts.py",
         "patchSetId": 5
@@ -42,6 +201,64 @@
         "endLine": 52,
         "endChar": 60
       },
+      "revId": "9462fe49ca3da8398563fe7242a36f271b8f0429",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4605457c_6ac8cf35",
+        "filename": "infra/dataflow/events/cq_attempts.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-07-07T18:14:40Z",
+      "side": 1,
+      "message": "Or the infra-preferred method is\n\n    q \u003d (\u0027SELECT blah \u0027\n         \u0027more stuff\u0027\n         \u0027WHERE whatever\u0027)",
+      "parentUuid": "ac256820_4e5b374f",
+      "range": {
+        "startLine": 52,
+        "startChar": 59,
+        "endLine": 52,
+        "endChar": 60
+      },
+      "revId": "9462fe49ca3da8398563fe7242a36f271b8f0429",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9d02fca3_665d43ed",
+        "filename": "infra/dataflow/events/cq_attempts.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-07-07T18:14:40Z",
+      "side": 1,
+      "message": "Nice, this is great",
+      "revId": "9462fe49ca3da8398563fe7242a36f271b8f0429",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6d2c74e5_1e6ff5d8",
+        "filename": "infra/dataflow/events/cq_attempts_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-07-07T18:14:40Z",
+      "side": 1,
+      "message": "It doesn\u0027t look like these tests are integrated into expect_tests. They don\u0027t seem to run with just \"./test.py test infra/dataflow\", and there\u0027s no .coveragerc file in here. Make sure these tests work in the same framework as all the other tests in infra/",
       "revId": "9462fe49ca3da8398563fe7242a36f271b8f0429",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
