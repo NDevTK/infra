@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7696b46d_d2ef9d95",
+        "filename": "infra/dataflow/events/aggregate_objects.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2017-07-07T16:12:03Z",
+      "side": 1,
+      "message": "Please instantiate the class - add () afterwards, otherwise this would throw the type object, which is not inherited from Exception.",
+      "range": {
+        "startLine": 3,
+        "startChar": 10,
+        "endLine": 3,
+        "endChar": 29
+      },
+      "revId": "9462fe49ca3da8398563fe7242a36f271b8f0429",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ac256820_4e5b374f",
+        "filename": "infra/dataflow/events/cq_attempts.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2017-07-07T16:12:03Z",
+      "side": 1,
+      "message": "You can use \"\"\"SELECT ...\"\"\" to place a multiline query and avoid continuation-slashes",
+      "range": {
+        "startLine": 52,
+        "startChar": 59,
+        "endLine": 52,
+        "endChar": 60
+      },
+      "revId": "9462fe49ca3da8398563fe7242a36f271b8f0429",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
