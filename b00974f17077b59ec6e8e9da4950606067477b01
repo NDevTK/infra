@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e465be43_ec50b1f8",
+        "filename": "cr-buildbucket.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2017-07-10T13:12:24Z",
+      "side": 1,
+      "message": "copy this into new bucket for consistency. And then please change cq.fg of depot_tools, and then remove this block from this file (sorry for the dance)",
+      "range": {
+        "startLine": 146,
+        "startChar": 3,
+        "endLine": 155,
+        "endChar": 5
+      },
+      "revId": "b00974f17077b59ec6e8e9da4950606067477b01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
