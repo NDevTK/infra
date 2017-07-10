@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "69a0970f_9ec07530",
+        "filename": "infra/dataflow/events/.coveragerc",
+        "patchSetId": 8
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-07-10T18:09:50Z",
+      "side": 1,
+      "message": "And it isn\u0027t getting picked up by \"./test.py test infra\". I can force one of the tests to fail, but the infra tests still pass just fine:\n\n± git diff\ndiff --git a/infra/dataflow/events/test/cq_attempts_test.py b/infra/dataflow/events/test/cq_attempts_test.py\nindex 6796bb426..3b7e9e515 100644\n--- a/infra/dataflow/events/test/cq_attempts_test.py\n+++ b/infra/dataflow/events/test/cq_attempts_test.py\n@@ -24,6 +24,7 @@ class TestCQAttemptAccumulator(unittest.TestCase):\n     return basic_accumulator\n \n   def test_add_first_start(self):\n+    self.assertTrue(false)\n     accumulator \u003d aggregate_objects.CQAttempt()\n     rows \u003d [{\n         \u0027attempt_start_usec\u0027: self.attempt_start_usec,\n\n\n± ./test.py test infra\nRunning infra...\nWARNING:root:/work/infra/infra/infra/services/android_docker/test is missing __init__.py, skipping tests from this folder.\n.................S..........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................\n----------------------------------------------------------------------\nRan 524 tests in 5.869s (actual tests runtime: 135.613s)\n\nOK\nCode coverage is 100.0%, target is 100%.\nAll tests passed.",
+      "parentUuid": "b5e39d34_28f2261b",
+      "range": {
+        "startLine": 5,
+        "startChar": 24,
+        "endLine": 5,
+        "endChar": 25
+      },
+      "revId": "88eeea06101c917e5e918e74f6ca7673b81cc0c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "dc7b53a2_f3377216",
         "filename": "infra/dataflow/events/aggregate_objects.py",
         "patchSetId": 8
