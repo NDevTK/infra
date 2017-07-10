@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "19de4f75_e72ed10a",
+        "filename": "appengine/monorail/static/js/tracker/tracker-editing.js",
+        "patchSetId": 4
+      },
+      "lineNbr": 1745,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2017-07-10T23:28:11Z",
+      "side": 1,
+      "message": "check if user is: \nnot viewing the hotlist in default form\nincluding\nwhether or not the user has hidden any columns.",
+      "range": {
+        "startLine": 1745,
+        "startChar": 2,
+        "endLine": 1745,
+        "endChar": 63
+      },
+      "revId": "be503b26de9a5ceef55d68e1252ebe8931ecb62f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
