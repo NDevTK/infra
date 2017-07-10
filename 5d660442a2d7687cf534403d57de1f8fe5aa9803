@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b68e68b2_019da254",
+        "filename": "infra/dataflow/events/cq_attempts.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-07-10T18:55:08Z",
+      "side": 1,
+      "message": "nit: this should come above the \"from infra....\" imports, since our import order is 1) builtins, 2) libraries that are on PATH, 3) relative imports from this package.",
+      "revId": "5d660442a2d7687cf534403d57de1f8fe5aa9803",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6fd5a046_aae8d762",
+        "filename": "infra/dataflow/events/cq_attempts.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-07-10T18:55:08Z",
+      "side": 1,
+      "message": "nit: two empty lines",
+      "revId": "5d660442a2d7687cf534403d57de1f8fe5aa9803",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "221b1cc3_78cf4182",
+        "filename": "infra/dataflow/events/test/cq_attempts_test.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-07-10T18:55:08Z",
+      "side": 1,
+      "message": "nit: we put \"from\" imports below other ones.",
+      "revId": "5d660442a2d7687cf534403d57de1f8fe5aa9803",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ba248812_b9dabfaa",
+        "filename": "infra/dataflow/events/test/cq_attempts_test.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-07-10T18:55:08Z",
+      "side": 1,
+      "message": "nit: two empty lines",
+      "revId": "5d660442a2d7687cf534403d57de1f8fe5aa9803",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "edc238d2_32b2f040",
+        "filename": "infra/dataflow/events/test/cq_attempts_test.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2017-07-10T18:55:08Z",
+      "side": 1,
+      "message": "nit: two empty lines",
+      "revId": "5d660442a2d7687cf534403d57de1f8fe5aa9803",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
