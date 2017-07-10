@@ -22,6 +22,52 @@
       "revId": "b00974f17077b59ec6e8e9da4950606067477b01",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dbbee303_e1fa859e",
+        "filename": "cr-buildbucket.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 403,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2017-07-10T13:17:37Z",
+      "side": 1,
+      "message": "This duplicates the name of the builder on line 352. Would this cause any issues?",
+      "range": {
+        "startLine": 403,
+        "startChar": 13,
+        "endLine": 403,
+        "endChar": 30
+      },
+      "revId": "b00974f17077b59ec6e8e9da4950606067477b01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c9b593fb_a596759a",
+        "filename": "cr-buildbucket.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 405,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2017-07-10T13:17:37Z",
+      "side": 1,
+      "message": "On line 352 we roll recipe_engine into build and on line 345 into depot_tools. Here we roll depot_tools into build. Wouldn\u0027t it create duplicate rolls or is recipe roller smart enough to figure this out?",
+      "range": {
+        "startLine": 405,
+        "startChar": 21,
+        "endLine": 405,
+        "endChar": 45
+      },
+      "revId": "b00974f17077b59ec6e8e9da4950606067477b01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
