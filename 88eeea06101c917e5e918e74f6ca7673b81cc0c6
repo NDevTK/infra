@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "057c868d_179f415a",
+        "filename": "infra/dataflow/events/.coveragerc",
+        "patchSetId": 8
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-07-10T17:56:17Z",
+      "side": 1,
+      "message": "I thought it was integrated at this point. Is there something more I need to do?",
+      "parentUuid": "920d7597_de3dd47a",
+      "range": {
+        "startLine": 5,
+        "startChar": 24,
+        "endLine": 5,
+        "endChar": 25
+      },
+      "revId": "88eeea06101c917e5e918e74f6ca7673b81cc0c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "dc7b53a2_f3377216",
         "filename": "infra/dataflow/events/aggregate_objects.py",
         "patchSetId": 8
@@ -45,6 +69,30 @@
       "revId": "88eeea06101c917e5e918e74f6ca7673b81cc0c6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "70e55fa6_69fc40a6",
+        "filename": "infra/dataflow/events/aggregate_objects.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-07-10T17:56:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dc7b53a2_f3377216",
+      "range": {
+        "startLine": 1,
+        "startChar": 12,
+        "endLine": 1,
+        "endChar": 16
+      },
+      "revId": "88eeea06101c917e5e918e74f6ca7673b81cc0c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
