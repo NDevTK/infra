@@ -22,6 +22,30 @@
       "revId": "c9c6d77437be37c07528519c8abb3699bc457c6b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d1b40658_b9939f84",
+        "filename": "recipes/recipes/recipe_roll_tryjob.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1002740
+      },
+      "writtenOn": "2017-07-13T16:00:15Z",
+      "side": 1,
+      "message": "Seems like more than one way to do the same thing. I just picked one of them (mostly based on existing code like bot_update.deapply_patch).\n\nIf there\u0027s a meaningful difference, just let me know. Happy to improve the patch.",
+      "parentUuid": "d7ea3d38_6da16c0f",
+      "range": {
+        "startLine": 57,
+        "startChar": 36,
+        "endLine": 58,
+        "endChar": 51
+      },
+      "revId": "c9c6d77437be37c07528519c8abb3699bc457c6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
