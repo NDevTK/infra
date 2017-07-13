@@ -16,7 +16,8 @@ import (
 	"testing"
 	"time"
 
-	client "infra/monitoring/client/test"
+	"infra/monitoring/client"
+	testclient "infra/monitoring/client/test"
 	"infra/monitoring/messages"
 	"infra/monorail"
 
@@ -919,7 +920,7 @@ func TestMain(t *testing.T) {
 					return giMock{dummy.Info(), "", time.Now(), nil}
 				})
 
-				c = urlfetch.Set(c, &client.MockGitilesTransport{
+				c = urlfetch.Set(c, &testclient.MockGitilesTransport{
 					Responses: map[string]string{
 						gkTreesInternalURL: `{    "chromium": {
         "build-db": "waterfall_build_db.json",
@@ -1366,15 +1367,27 @@ func makeParams(items ...string) httprouter.Params {
 }
 
 func TestRevRangeHandler(t *testing.T) {
-	t.Parallel()
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		data, err := json.Marshal(map[string]string{"a": "b"})
+		if err != nil {
+			t.Errorf("couldn't marshal json data")
+		}
+		w.Write(data)
+	})
+
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	c := gaetesting.TestingContext()
+	c = gologger.StdConfig.Use(c)
 
 	Convey("get rev range", t, func() {
 		// crbug.com/725595 - This test does real network access.
-		SkipConvey("ok", func() {
-			c := gaetesting.TestingContext()
+		Convey("ok", func() {
 			c = authtest.MockAuthConfig(c)
+			c = client.WithCrRev(c, server.URL)
 			w := httptest.NewRecorder()
-
 			GetRevRangeHandler(&router.Context{
 				Context: c,
 				Writer:  w,
@@ -1386,24 +1399,20 @@ func TestRevRangeHandler(t *testing.T) {
 		})
 		Convey("bad oauth", func() {
 			c := gaetesting.TestingContext()
-			c = authtest.MockAuthConfig(c)
+			c = client.WithCrRev(c, server.URL)
 			w := httptest.NewRecorder()
-			oldOAuth := getOAuthClient
-			getOAuthClient = func(ctx context.Context) (*http.Client, error) {
-				return nil, fmt.Errorf("not today")
-			}
 			GetRevRangeHandler(&router.Context{
 				Context: c,
 				Writer:  w,
 				Request: makeGetRequest(),
 				Params:  makeParams("start", "123", "end", "456"),
 			})
-			getOAuthClient = oldOAuth
 			So(w.Code, ShouldEqual, http.StatusInternalServerError)
 		})
 		Convey("bad request", func() {
 			c := gaetesting.TestingContext()
 			c = authtest.MockAuthConfig(c)
+			c = client.WithCrRev(c, server.URL)
 			w := httptest.NewRecorder()
 
 			GetRevRangeHandler(&router.Context{

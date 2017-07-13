@@ -114,7 +114,7 @@ func getSwarmingAlerts(c context.Context) *swarmingAlerts {
 
 	oauthClient, err := getOAuthClient(c)
 	if err != nil {
-		logging.Errorf(c, "getting oauth client: %v", err)
+		logging.Errorf(c, "asdasdgetting oauth client: %v", err)
 		ret.Error = append(ret.Error, err.Error())
 		return ret
 	}

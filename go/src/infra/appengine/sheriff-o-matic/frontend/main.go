@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"infra/appengine/sheriff-o-matic/som"
+	"infra/monitoring/client"
 
 	"golang.org/x/net/context"
 
@@ -136,7 +137,29 @@ func base(includeCookie bool) router.MiddlewareChain {
 	if includeCookie {
 		a.Methods = append(a.Methods, server.CookieAuth)
 	}
-	return gaemiddleware.BaseProd().Extend(a.GetMiddleware())
+	return gaemiddleware.BaseProd().Extend(a.GetMiddleware()).Extend(prodServiceClients)
+}
+
+func prodServiceClients(ctx *router.Context, next router.Handler) {
+	// Register prod clients with the context.
+	// Buildbot:
+	ctx.Context = client.WithBuildBot(ctx.Context, "https://build.chromium.org")
+	// FindIt:
+	ctx.Context = client.WithFindIt(ctx.Context, "https://findit-for-me.appspot.com")
+	// Gerrit:
+	ctx.Context = client.WithGerrit(ctx.Context, "https://chromium-review.googlesource.com")
+	// Gitiles is weird tho. Might not be necessary.
+
+	// Milo:
+	ctx.Context = client.WithMilo(ctx.Context, "https://luci-milo.appspot.com")
+	// Monorail:
+	ctx.Context = client.WithMonorail(ctx.Context, "https://monorail.appspot.com")
+	// Swarming:
+	ctx.Context = client.WithSwarming(ctx.Context, "https://chromium-swarm.appspot.com")
+	// Test-Results:
+	ctx.Context = client.WithTestResults(ctx.Context, "https://test-results.appspot.com/testfile")
+
+	next(ctx)
 }
 
 func requireGoogler(c *router.Context, next router.Handler) {

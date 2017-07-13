@@ -23,7 +23,9 @@ import (
 	"infra/appengine/test-results/model"
 	"infra/monitoring/messages"
 
+	"github.com/luci/luci-go/common/api/swarming/swarming/v1"
 	"github.com/luci/luci-go/common/logging"
+	"github.com/luci/luci-go/server/auth"
 )
 
 type contextKey string
@@ -35,6 +37,15 @@ const (
 	timeout = 5 * time.Second
 
 	clientReaderKey = contextKey("infra-client-reader")
+
+	crRevKey       = contextKey("infra-client-crrev")
+	buildBotKey    = contextKey("infra-client-buildbot")
+	findItKey      = contextKey("infra-client-findit")
+	gerritKey      = contextKey("infra-client-gerrit")
+	miloKey        = contextKey("infra-client-milo")
+	monorailKey    = contextKey("infra-client-monorail")
+	swarmingKey    = contextKey("infra-client-swarming")
+	testResultsKey = contextKey("infra-client-testrestults")
 )
 
 var (
@@ -565,4 +576,61 @@ func (hc *trackingHTTPClient) getText(ctx context.Context, url string) (ret stri
 		return length, err
 	})
 	return ret, status, nil
+}
+
+// getAsSelfOAuthClient returns a client capable of making HTTP requests authenticated
+// with OAuth access token for userinfo.email scope.
+func getAsSelfOAuthClient(c context.Context) (*http.Client, error) {
+	// Note: "https://www.googleapis.com/auth/userinfo.email" is the default
+	// scope used by GetRPCTransport(AsSelf). Use auth.WithScopes(...) option to
+	// override.
+	t, err := auth.GetRPCTransport(c, auth.AsSelf)
+	if err != nil {
+		return nil, err
+	}
+	return &http.Client{Transport: t}, nil
+}
+
+func WithBuildBot(c context.Context, baseURL string) context.Context {
+	return c
+}
+
+type simpleClient struct {
+	Host   string
+	Client *http.Client
+}
+
+func WithFindIt(c context.Context, baseURL string) context.Context {
+	return c
+}
+
+func WithGerrit(c context.Context, baseURL string) context.Context {
+	return c
+}
+
+func WithMilo(c context.Context, baseURL string) context.Context {
+	return c
+}
+
+func WithMonorail(c context.Context, baseURL string) context.Context {
+	return c
+}
+
+func WithSwarming(c context.Context, baseURL string) context.Context {
+	oauthClient, err := getAsSelfOAuthClient(c)
+	if err != nil {
+		panic("No OAuth client in context")
+	}
+
+	swarmingClient, err := swarming.New(oauthClient)
+	if err != nil {
+		panic("Couldn't construct swarming client")
+	}
+
+	swarmingClient.BasePath = baseURL + "/_ah/api/swarming/v1"
+	return context.WithValue(c, swarmingKey, swarmingClient)
+}
+
+func WithTestResults(c context.Context, baseURL string) context.Context {
+	return c
 }
