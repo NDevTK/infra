@@ -46,6 +46,30 @@
       "revId": "c9c6d77437be37c07528519c8abb3699bc457c6b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5522e2a9_57aef2e6",
+        "filename": "recipes/recipes/recipe_roll_tryjob.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2017-07-13T16:01:25Z",
+      "side": 1,
+      "message": "i guess i prefer yours as it looks simpler to me, but I don\u0027t understand bot_update codepaths well.",
+      "parentUuid": "d1b40658_b9939f84",
+      "range": {
+        "startLine": 57,
+        "startChar": 36,
+        "endLine": 58,
+        "endChar": 51
+      },
+      "revId": "c9c6d77437be37c07528519c8abb3699bc457c6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
