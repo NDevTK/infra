@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d7ea3d38_6da16c0f",
+        "filename": "recipes/recipes/recipe_roll_tryjob.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2017-07-13T15:57:27Z",
+      "side": 1,
+      "message": "for my own learning: I recall fixed_revision was used in order for bot_update to correctly deapply patch in chromium trybots. What\u0027s the difference between your approach and that of fixed_reivisons?",
+      "range": {
+        "startLine": 57,
+        "startChar": 36,
+        "endLine": 58,
+        "endChar": 51
+      },
+      "revId": "c9c6d77437be37c07528519c8abb3699bc457c6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
