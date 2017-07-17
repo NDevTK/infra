@@ -175,6 +175,8 @@ class MastersTest(wf_testcase.WaterfallTestCase):
   def testGetWaterfallTrybot(self):
     self.assertEqual(('tryserver1', 'trybot1'),
                      waterfall_config.GetWaterfallTrybot('master1', 'builder1'))
+    self.assertEqual(('swarming_tryserver2', 'swarming_trybot2'),
+                     waterfall_config.GetWaterfallTrybot('master2', 'builder4'))
     self.assertEqual((None, None),
                      waterfall_config.GetWaterfallTrybot('master3', 'builder3'))
 
