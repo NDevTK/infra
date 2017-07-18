@@ -31,21 +31,26 @@ type miloReader struct {
 	host string
 }
 
-// NewMiloReader returns a new reader implementation, which will read data from Milo.
-func NewMiloReader(ctx context.Context, host string) (readerType, error) {
-	if host == "" {
-		host = miloHost
-	}
-	r, err := newReader(ctx, &http.Client{Transport: urlfetch.Get(ctx)})
+// WithMilo adds a milo reader instance to the context.
+func WithMilo(c context.Context, baseURL string) context.Context {
+	r, err := newReader(c, &http.Client{Transport: urlfetch.Get(c)})
 	if err != nil {
-		return nil, err
+		panic("error registering milo service dependency")
 	}
 	mr := &miloReader{
-		host:   host,
+		host:   baseURL,
 		reader: *r,
 	}
+	return context.WithValue(c, miloKey, mr)
+}
 
-	return mr, nil
+func GetMilo(c context.Context) *miloReader {
+	v := c.Value(miloKey)
+	ret, ok := v.(*miloReader)
+	if !ok {
+		panic("error reading milo service dependency")
+	}
+	return ret
 }
 
 func (r *miloReader) Build(ctx context.Context, master *messages.MasterLocation, builder string, buildNum int64) (*messages.Build, error) {

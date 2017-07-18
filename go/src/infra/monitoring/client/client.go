@@ -23,6 +23,7 @@ import (
 	"infra/appengine/test-results/model"
 	"infra/monitoring/messages"
 
+	"github.com/luci/luci-go/common/api/swarming/swarming/v1"
 	"github.com/luci/luci-go/common/logging"
 	"github.com/luci/luci-go/server/auth"
 )
@@ -593,4 +594,54 @@ func getAsSelfOAuthClient(c context.Context) (*http.Client, error) {
 type simpleClient struct {
 	Host   string
 	Client *http.Client
+}
+
+func WithBuildBot(c context.Context, baseURL string) context.Context {
+	return c
+}
+
+func WithFindIt(c context.Context, baseURL string) context.Context {
+	return c
+}
+
+func WithGerrit(c context.Context, baseURL string) context.Context {
+	return c
+}
+
+func WithMonorail(c context.Context, baseURL string) context.Context {
+	return c
+}
+
+func WithSwarming(c context.Context, baseURL string) context.Context {
+	oauthClient, err := getAsSelfOAuthClient(c)
+	if err != nil {
+		panic("No OAuth client in context")
+	}
+
+	swarmingClient, err := swarming.New(oauthClient)
+	if err != nil {
+		panic("Couldn't construct swarming client")
+	}
+
+	swarmingClient.BasePath = baseURL + "/_ah/api/swarming/v1"
+	return context.WithValue(c, swarmingKey, swarmingClient)
+}
+
+func WithTestResults(c context.Context, baseURL string) context.Context {
+	return c
+}
+
+func WithProdClients(ctx context.Context) context.Context {
+	ctx = WithBuildBot(ctx, "https://build.chromium.org")
+	ctx = WithCrRev(ctx, "https://cr-rev.appspot.com")
+	ctx = WithFindIt(ctx, "https://findit-for-me.appspot.com")
+	ctx = WithGerrit(ctx, "https://chromium-review.googlesource.com")
+	// Gitiles is weird tho. Might not be necessary.
+	// TODO: see if this will work with http:// prefix.
+	ctx = WithMilo(ctx, "luci-milo.appspot.com")
+	ctx = WithMonorail(ctx, "https://monorail.appspot.com")
+	ctx = WithSwarming(ctx, "https://chromium-swarm.appspot.com")
+	ctx = WithTestResults(ctx, "https://test-results.appspot.com/testfile")
+
+	return ctx
 }
