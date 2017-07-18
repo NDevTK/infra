@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "fea5d779_a24f2223",
+        "filename": "appengine/findit/handlers/rerun_for_compare.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-07-18T21:48:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2d5f52b0_04f5656d",
+      "revId": "002164042af1322e3fe5296b0dfc25e2273aa5b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "85584ec1_4a3f990b",
         "filename": "appengine/findit/handlers/rerun_for_compare.py",
         "patchSetId": 1
@@ -39,6 +57,30 @@
       "revId": "002164042af1322e3fe5296b0dfc25e2273aa5b3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c724c68d_8f723d2e",
+        "filename": "appengine/findit/handlers/rerun_for_compare.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-07-18T21:48:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "85584ec1_4a3f990b",
+      "range": {
+        "startLine": 30,
+        "startChar": 6,
+        "endLine": 30,
+        "endChar": 49
+      },
+      "revId": "002164042af1322e3fe5296b0dfc25e2273aa5b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -65,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "15286eea_2cec5dd0",
+        "filename": "appengine/findit/handlers/rerun_for_compare.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-07-18T21:48:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "52452dec_91162c8e",
+      "range": {
+        "startLine": 59,
+        "startChar": 0,
+        "endLine": 62,
+        "endChar": 75
+      },
+      "revId": "002164042af1322e3fe5296b0dfc25e2273aa5b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "68ab49a1_98fc3bf7",
         "filename": "appengine/findit/waterfall/test/waterfall_config_test.py",
         "patchSetId": 1
@@ -82,6 +148,24 @@
     },
     {
       "key": {
+        "uuid": "714040ea_f337102b",
+        "filename": "appengine/findit/waterfall/test/waterfall_config_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-07-18T21:48:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "68ab49a1_98fc3bf7",
+      "revId": "002164042af1322e3fe5296b0dfc25e2273aa5b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "827bcd48_d8d497bd",
         "filename": "appengine/findit/waterfall/test/wf_testcase.py",
         "patchSetId": 1
@@ -93,6 +177,30 @@
       "writtenOn": "2017-07-17T21:55:51Z",
       "side": 1,
       "message": "Why add this?",
+      "range": {
+        "startLine": 69,
+        "startChar": 0,
+        "endLine": 76,
+        "endChar": 10
+      },
+      "revId": "002164042af1322e3fe5296b0dfc25e2273aa5b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "22e5cf94_c5add673",
+        "filename": "appengine/findit/waterfall/test/wf_testcase.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-07-18T21:48:31Z",
+      "side": 1,
+      "message": "Code coverage. We want to test the codepath where we get swarmbucket master and trybot, ideally on a builder that also has the buildbot data.",
+      "parentUuid": "827bcd48_d8d497bd",
       "range": {
         "startLine": 69,
         "startChar": 0,
