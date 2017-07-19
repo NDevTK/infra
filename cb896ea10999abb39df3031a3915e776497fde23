@@ -16,6 +16,24 @@
       "revId": "cb896ea10999abb39df3031a3915e776497fde23",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "414489cb_8bbfffe1",
+        "filename": "appengine/findit/waterfall/waterfall_config.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-07-19T20:47:50Z",
+      "side": 1,
+      "message": "Good point. I have changed the code to make this impossible, TAL",
+      "parentUuid": "598d9160_71186231",
+      "revId": "cb896ea10999abb39df3031a3915e776497fde23",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
