@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "598d9160_71186231",
+        "filename": "appengine/findit/waterfall/waterfall_config.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-07-19T18:44:11Z",
+      "side": 1,
+      "message": "Should we add a check to make sure we don\u0027t get swarmbucket master and waterfall trybot; or waterfall master and swarmbucket trybot just in case we setup the wrong config? This can be handle in a separate CL.",
+      "revId": "cb896ea10999abb39df3031a3915e776497fde23",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
