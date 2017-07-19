@@ -22,6 +22,30 @@
       "revId": "3624016adad89a25b5e5b16bf8bd2c14cd3debcd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "feb502c9_4e3c1c07",
+        "filename": "appengine/findit/handlers/rerun_for_compare.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-07-19T17:41:57Z",
+      "side": 1,
+      "message": "Nice catch! I was looking at the raw buildbucket response as reference (as from https://cr-buildbucket.appspot.com/_ah/api/buildbucket/v1/builds/8981018186399725664), but it seems then that we already unwrap the contents of \u0027build\u0027 in common.waterfall.buildbucket_client._ConvertFuturesToResults\n\nDone.",
+      "parentUuid": "7cb6cdfd_72b1c57f",
+      "range": {
+        "startLine": 22,
+        "startChar": 2,
+        "endLine": 22,
+        "endChar": 51
+      },
+      "revId": "3624016adad89a25b5e5b16bf8bd2c14cd3debcd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
