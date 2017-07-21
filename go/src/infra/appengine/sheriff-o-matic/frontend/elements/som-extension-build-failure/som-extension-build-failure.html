@@ -80,23 +80,26 @@
         </template>
       </div>
       <div class="section">
-        <template is="dom-if" if="[[!_haveTests(extension.reason.tests)]]">
+        <template is="dom-if" if="[[!_haveTests(extension.reason.test_names)]]">
           No test result data available.
         </template>
-        <template is="dom-if" if="[[_haveTests(extension.reason.tests)]]">
+        <template is="dom-if" if="[[_haveTests(extension.reason.test_names)]]">
           <div class="header">
-            [[_testText(extension.reason.tests)]]:
+            [[_testText(extension.reason.test_names)]]:
           </div>
           <div id="reasons" class="build-failures">
             <ul>
-              <template is="dom-repeat" items="[[extension.reason.tests]]" as="test" sort="_sortTests">
+              <template is="dom-repeat" items="[[extension.reason.test_names]]" as="test_name" sort="_sortTests">
                 <li id="test_results">
-                  <a target="_blank" href$=[[_linkForTest(extension.reason,test.test_name)]]>
-                    [[test.test_name]]
+                  <a target="_blank" href$="[[_linkForTest(extension.reason,test_name)]]">
+                    [[test_name]]
                   </a>
                   (
-                  <a target="_blank" href$=[[_linkToCSForTest(test.test_name)]]>
+                  <a target="_blank" href$="[[_linkToCSForTest(test_name)]]">
                     Code Search
+                  </a>,
+                  <a target="_blank" href$="[[_linkToEditForTest(test_name)]]">
+                    Edit expectations
                   </a>
                   )
                   <template is="dom-if" if="[[_hasSuspect(test)]]">
