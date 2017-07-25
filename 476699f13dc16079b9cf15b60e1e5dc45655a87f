@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "96ba8f80_91559147",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/frontend/elements/som-log-diff/som-log-diff.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-07-25T22:11:19Z",
+      "side": 1,
+      "message": "why aren\u0027t both builds\u0027s hrefs linkified? and target\u003d\"_new\"?",
+      "revId": "476699f13dc16079b9cf15b60e1e5dc45655a87f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dd1d0ea4_831ed40b",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/frontend/elements/som-log-diff/som-log-diff.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-07-25T22:11:19Z",
+      "side": 1,
+      "message": "behaviors :)",
+      "range": {
+        "startLine": 6,
+        "startChar": 3,
+        "endLine": 6,
+        "endChar": 12
+      },
+      "revId": "476699f13dc16079b9cf15b60e1e5dc45655a87f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
