@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d5ac7f68_26fb7113",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/frontend/elements/som-log-diff/som-log-diff.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-07-25T22:27:06Z",
+      "side": 1,
+      "message": "80 cols (can wrap this to next line pretty easily and it\u0027s still readable)",
+      "range": {
+        "startLine": 53,
+        "startChar": 89,
+        "endLine": 53,
+        "endChar": 100
+      },
+      "revId": "b5f2da2305e257c568ec7588e8d12f6882fd0fd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
