@@ -453,7 +453,7 @@ class RecursiveFlakePipeline(BasePipeline):
           # for the current iteration loops
           timeout_per_test = CalculateFlakeTaskTimeout(analysis)
           iterations_this_loop = _CalculateNumberOfIterations(
-              analysis, iterations, timeout_per_test)
+              analysis, remaining_iterations, timeout_per_test)
 
           task_id = yield TriggerFlakeSwarmingTaskPipeline(
               self.master_name,
