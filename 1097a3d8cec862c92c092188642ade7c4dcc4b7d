@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5c5542ef_16069260",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/frontend/elements/som-test-expectations/som-test-expectations.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2017-07-26T23:02:46Z",
+      "side": 1,
+      "message": "without this, the assignment in line 171 wouldn\u0027t be a change and the observer wouldn\u0027t be called.",
+      "range": {
+        "startLine": 166,
+        "startChar": 6,
+        "endLine": 166,
+        "endChar": 31
+      },
+      "revId": "1097a3d8cec862c92c092188642ade7c4dcc4b7d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
