@@ -449,11 +449,11 @@ class RecursiveFlakePipeline(BasePipeline):
       # TODO (wylieb): Sample the pass/fail percent and decide how to continue.
       with pipeline.InOrder():
         while remaining_iterations > 0:
-          # Calculate the timeout per test, and use that to set the timeout
-          # for the current iteration loops
+          # Calculate the timeout per test, and use that to set the iterations
+          # and timeout.
           timeout_per_test = CalculateFlakeTaskTimeout(analysis)
           iterations_this_loop = _CalculateNumberOfIterations(
-              analysis, iterations, timeout_per_test)
+              analysis, remaining_iterations, timeout_per_test)
 
           task_id = yield TriggerFlakeSwarmingTaskPipeline(
               self.master_name,
