@@ -107,9 +107,14 @@ class ScheduleFlakeTryJobPipelineTest(wf_testcase.WaterfallTestCase):
                        git_hash).put()
 
     try_job_pipeline = ScheduleFlakeTryJobPipeline()
-    try_job_id = try_job_pipeline.run(master_name, builder_name, step_name,
-                                      test_name, git_hash,
-                                      analysis_key.urlsafe(), None, None)
+    try_job_pipeline.start_test()
+    try_job_pipeline.run(master_name, builder_name, step_name, test_name,
+                         git_hash, analysis_key.urlsafe(), None, None)
+    try_job_pipeline.finalized()
+    # Reload from ID to get all internal properties in sync.
+    try_job_pipeline = ScheduleFlakeTryJobPipeline.from_id(
+        try_job_pipeline.pipeline_id)
+    try_job_id = try_job_pipeline.outputs.default.value
 
     try_job = FlakeTryJob.Get(master_name, builder_name, step_name, test_name,
                               git_hash)
