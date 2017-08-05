@@ -80,7 +80,8 @@ _DEFAULT_TRY_BOT_MAPPING = {
             'mastername': 'tryserver.master',
             'waterfall_trybot': 'tryserver.builder',
             'flake_trybot': 'tryserver.flake_builder',
-            'dimensions': ['os:Mac-10.9', 'cpu:x86-64']
+            'dimensions': ['os:Mac-10.9', 'cpu:x86-64'],
+            'reserved_swarmbucket_bots': 5
         },
     },
 }
