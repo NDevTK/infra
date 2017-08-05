@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import datetime
 import mock
 
 from google.appengine.ext import ndb
@@ -14,6 +15,7 @@ from model.wf_build import WfBuild
 from waterfall import schedule_try_job_pipeline
 from waterfall.flake.schedule_flake_try_job_pipeline import (
     ScheduleFlakeTryJobPipeline)
+from waterfall import swarming_util
 from waterfall.test import wf_testcase
 
 
@@ -74,8 +76,12 @@ class ScheduleFlakeTryJobPipelineTest(wf_testcase.WaterfallTestCase):
 
     self.assertEqual(try_job_data.try_job_key, try_job.key)
 
+  @mock.patch.object(
+      swarming_util,
+      'GetETAToStartAnalysis',
+      return_value=datetime.datetime(1, 1, 1))
   @mock.patch.object(schedule_try_job_pipeline, 'buildbucket_client')
-  def testScheduleFlakeTryJob(self, mock_module):
+  def testScheduleFlakeTryJob(self, mock_module, *_):
     master_name = 'm'
     builder_name = 'b'
     build_number = 1
@@ -107,9 +113,14 @@ class ScheduleFlakeTryJobPipelineTest(wf_testcase.WaterfallTestCase):
                        git_hash).put()
 
     try_job_pipeline = ScheduleFlakeTryJobPipeline()
-    try_job_id = try_job_pipeline.run(master_name, builder_name, step_name,
-                                      test_name, git_hash,
-                                      analysis_key.urlsafe(), None, None)
+    try_job_pipeline.start_test()
+    try_job_pipeline.run(master_name, builder_name, step_name, test_name,
+                         git_hash, analysis_key.urlsafe(), None, None)
+    try_job_pipeline.finalized()
+    # Reload from ID to get all internal properties in sync.
+    try_job_pipeline = ScheduleFlakeTryJobPipeline.from_id(
+        try_job_pipeline.pipeline_id)
+    try_job_id = try_job_pipeline.outputs.default.value
 
     try_job = FlakeTryJob.Get(master_name, builder_name, step_name, test_name,
                               git_hash)
@@ -150,3 +161,72 @@ class ScheduleFlakeTryJobPipelineTest(wf_testcase.WaterfallTestCase):
         None, None)
 
     self.assertEqual(build_id, '1')
+
+  @mock.patch.object(
+      buildbucket_client, 'IsSwarmbucketMaster', return_value=True)
+  @mock.patch.object(
+      swarming_util,
+      'GetSwarmingBotCounts',
+      side_effect=[{
+          'available': 1
+      }, {
+          'available': 3
+      }])
+  @mock.patch.object(
+      swarming_util,
+      'GetETAToStartAnalysis',
+      side_effect=[datetime.datetime(2100, 1, 1),
+                   datetime.datetime(1, 1, 1)])
+  @mock.patch.object(schedule_try_job_pipeline, 'buildbucket_client')
+  def testDelayedScheduleFlakeTryJob(self, mock_module, *_):
+    master_name = 'm'
+    builder_name = 'b'
+    build_number = 1
+    step_name = 's'
+    test_name = 't'
+    git_hash = 'a1b2c3d4'
+    build_id = '1'
+    url = 'url'
+    analysis_key = ndb.Key('key', 1)
+    build = WfBuild.Create(master_name, builder_name, build_number)
+    build.data = {
+        'properties': {
+            'parent_mastername': 'pm',
+            'parent_buildername': 'pb'
+        }
+    }
+    build.put()
+    response = {
+        'build': {
+            'id': build_id,
+            'url': url,
+            'status': 'SCHEDULED',
+        }
+    }
+    results = [(None, buildbucket_client.BuildbucketBuild(response['build']))]
+    mock_module.TriggerTryJobs.return_value = results
+
+    FlakeTryJob.Create(master_name, builder_name, step_name, test_name,
+                       git_hash).put()
+
+    try_job_pipeline = ScheduleFlakeTryJobPipeline()
+    try_job_pipeline.start_test()
+    try_job_pipeline.run(master_name, builder_name, step_name, test_name,
+                         git_hash, analysis_key.urlsafe(), None, None)
+    try_job_pipeline.callback(master_name, builder_name, step_name, test_name,
+                              git_hash, analysis_key.urlsafe(), None, None, 120)
+    try_job_pipeline.finalized()
+    # Reload from ID to get all internal properties in sync.
+    try_job_pipeline = ScheduleFlakeTryJobPipeline.from_id(
+        try_job_pipeline.pipeline_id)
+    try_job_id = try_job_pipeline.outputs.default.value
+
+    try_job = FlakeTryJob.Get(master_name, builder_name, step_name, test_name,
+                              git_hash)
+    try_job_data = FlakeTryJobData.Get(build_id)
+
+    self.assertEqual(build_id, try_job_id)
+    self.assertEqual(build_id, try_job.flake_results[-1]['try_job_id'])
+    self.assertTrue(build_id in try_job.try_job_ids)
+    self.assertEqual(try_job_data.try_job_key, try_job.key)
+    self.assertEqual(analysis_key, try_job_data.analysis_key)

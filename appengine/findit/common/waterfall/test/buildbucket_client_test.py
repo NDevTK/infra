@@ -12,7 +12,6 @@ from gae_libs.http import auth_util
 from gae_libs.http import http_client_appengine
 from common.waterfall import buildbucket_client
 
-
 _Result = collections.namedtuple('Result',
                                  ['content', 'status_code', 'headers'])
 
@@ -33,7 +32,7 @@ class BuildBucketClientTest(testing.AppengineTestCase):
     }
     for master_name, expected_full_master_name in mapping.iteritems():
       self.assertEqual(expected_full_master_name,
-                       buildbucket_client._GetBucketName(master_name))
+                       buildbucket_client.GetBucketName(master_name))
 
   def testTryJobToBuildbucketRequestWithTests(self):
     try_job = buildbucket_client.TryJob('m', 'b', 'r', {'a': '1'}, ['a'], {
@@ -205,8 +204,8 @@ class BuildBucketClientTest(testing.AppengineTestCase):
     parameters = json.loads(request_json['parameters_json'])
     self.assertEqual(expceted_parameters, parameters)
 
-  @mock.patch.object(buildbucket_client.auth_util, 'GetAuthToken',
-                     return_value='token')
+  @mock.patch.object(
+      buildbucket_client.auth_util, 'GetAuthToken', return_value='token')
   @mock.patch.object(http_client_appengine.urlfetch, 'fetch')
   def testTriggerTryJobsSuccess(self, mocked_fetch, _):
     response = {
@@ -228,8 +227,8 @@ class BuildBucketClientTest(testing.AppengineTestCase):
     self.assertEqual('url', build.url)
     self.assertEqual('SCHEDULED', build.status)
 
-  @mock.patch.object(buildbucket_client.auth_util, 'GetAuthToken',
-                     return_value='token')
+  @mock.patch.object(
+      buildbucket_client.auth_util, 'GetAuthToken', return_value='token')
   @mock.patch.object(http_client_appengine.urlfetch, 'fetch')
   def testTriggerTryJobsFailure(self, mocked_fetch, _):
     response = {
@@ -249,8 +248,8 @@ class BuildBucketClientTest(testing.AppengineTestCase):
     self.assertEqual('message', error.message)
     self.assertIsNone(build)
 
-  @mock.patch.object(buildbucket_client.auth_util, 'GetAuthToken',
-                     return_value='token')
+  @mock.patch.object(
+      buildbucket_client.auth_util, 'GetAuthToken', return_value='token')
   @mock.patch.object(http_client_appengine.urlfetch, 'fetch')
   def testTriggerTryJobsRequestFailure(self, mocked_fetch, _):
     response = 'Not Found'
@@ -265,8 +264,8 @@ class BuildBucketClientTest(testing.AppengineTestCase):
     self.assertEqual('Not Found', error.message)
     self.assertIsNone(build)
 
-  @mock.patch.object(buildbucket_client.auth_util, 'GetAuthToken',
-                     return_value='token')
+  @mock.patch.object(
+      buildbucket_client.auth_util, 'GetAuthToken', return_value='token')
   @mock.patch.object(http_client_appengine.urlfetch, 'fetch')
   def testGetTryJobsSuccess(self, mocked_fetch, _):
     response = {'build': {'id': '1', 'url': 'url', 'status': 'STARTED'}}
@@ -281,8 +280,8 @@ class BuildBucketClientTest(testing.AppengineTestCase):
     self.assertEqual('url', build.url)
     self.assertEqual('STARTED', build.status)
 
-  @mock.patch.object(buildbucket_client.auth_util, 'GetAuthToken',
-                     return_value='token')
+  @mock.patch.object(
+      buildbucket_client.auth_util, 'GetAuthToken', return_value='token')
   @mock.patch.object(http_client_appengine.urlfetch, 'fetch')
   def testGetTryJobsFailure(self, mocked_fetch, _):
     response = {
@@ -301,8 +300,8 @@ class BuildBucketClientTest(testing.AppengineTestCase):
     self.assertEqual('message', error.message)
     self.assertIsNone(build)
 
-  @mock.patch.object(buildbucket_client.auth_util, 'GetAuthToken',
-                     return_value='token')
+  @mock.patch.object(
+      buildbucket_client.auth_util, 'GetAuthToken', return_value='token')
   @mock.patch.object(http_client_appengine.urlfetch, 'fetch')
   def testGetTryJobsRequestFailure(self, mocked_fetch, _):
     response = 'Not Found'
