@@ -287,3 +287,9 @@ class MastersTest(wf_testcase.WaterfallTestCase):
                      waterfall_config.GetTrybotDimensions('m', 'b'))
     self.assertIsNone(
         waterfall_config.GetTrybotDimensions('master1', 'builder1'))
+
+  def testGetReservedSwarmbucketBots(self):
+    self.assertEqual(5, waterfall_config.GetReservedSwarmbucketBots('m', 'b'))
+    self.assertEqual(2,
+                     waterfall_config.GetReservedSwarmbucketBots(
+                         'master1', 'builder1'))

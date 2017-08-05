@@ -173,6 +173,11 @@ def _GetTrybotConfig(master, builder):
   return trybot_config.get(master, {}).get(builder, {})
 
 
+def GetReservedSwarmbucketBots(wf_mastername, wf_buildername):
+  bot_config = _GetTrybotConfig(wf_mastername, wf_buildername)
+  return int(bot_config.get('reserved_swarmbucket_bots', 2))
+
+
 def GetTrybotDimensions(wf_mastername, wf_buildername):
   """Returns dimensions for a tryjob via swarmbucket.
 
