@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "84dd42ff_d152a42f",
+        "filename": "appengine/findit/waterfall/flake/schedule_flake_try_job_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-08-07T19:29:12Z",
+      "side": 1,
+      "message": "nit: Move this out into a separate appropriately-named variable to make it easier to understand what this will end up being",
+      "range": {
+        "startLine": 118,
+        "startChar": 8,
+        "endLine": 118,
+        "endChar": 53
+      },
+      "revId": "160bc86627d63c6d8c977db7c9ecd0be3dc1e061",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8712b240_17ad1633",
+        "filename": "appengine/findit/waterfall/test/wf_testcase.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-08-07T19:29:12Z",
+      "side": 1,
+      "message": "just to check, this is an optional config parameter?",
+      "revId": "160bc86627d63c6d8c977db7c9ecd0be3dc1e061",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fa83a1e5_3557e997",
+        "filename": "appengine/findit/waterfall/waterfall_config.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-08-07T19:29:12Z",
+      "side": 1,
+      "message": "nit: Move this 2 to a default constant?",
+      "range": {
+        "startLine": 178,
+        "startChar": 57,
+        "endLine": 178,
+        "endChar": 58
+      },
+      "revId": "160bc86627d63c6d8c977db7c9ecd0be3dc1e061",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7fe609e8_32003b15",
+        "filename": "appengine/findit/waterfall/waterfall_config.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-08-07T19:29:12Z",
+      "side": 1,
+      "message": "why is it necessary to convert to int?",
+      "range": {
+        "startLine": 178,
+        "startChar": 9,
+        "endLine": 178,
+        "endChar": 12
+      },
+      "revId": "160bc86627d63c6d8c977db7c9ecd0be3dc1e061",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
