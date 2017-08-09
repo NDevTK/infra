@@ -21,7 +21,12 @@ _BUILDBUCKET_PUT_GET_ENDPOINT = (
 _LUCI_PREFIX = 'luci.'
 
 
-def _GetBucketName(master_name):
+def IsSwarmbucketMaster(master_name):
+  bucket = GetBucketName(master_name)
+  return bucket.startswith(_LUCI_PREFIX)
+
+
+def GetBucketName(master_name):
   """Converts shortened master name to full master name.
 
   Buildbucket uses full master name (master.tryserver.chromium.linux) as bucket
@@ -87,7 +92,7 @@ class TryJob(
       self._AddSwarmbucketOverrides(parameters_json)
 
     return {
-        'bucket': _GetBucketName(self.master_name),
+        'bucket': GetBucketName(self.master_name),
         'parameters_json': json.dumps(parameters_json),
         'tags': tags,
         'pubsub_callback': MakeTryJobPubsubCallback(notification_id),
@@ -95,8 +100,7 @@ class TryJob(
 
   @property
   def is_swarmbucket_build(self):
-    bucket = _GetBucketName(self.master_name)
-    return bucket.startswith(_LUCI_PREFIX)
+    return IsSwarmbucketMaster(self.master_name)
 
 
 # Make the last two members optional.

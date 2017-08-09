@@ -616,6 +616,26 @@ class ConfigTest(testing.AppengineTestCase):
                 }
             }
         }))
+    self.assertFalse(
+        config._ValidateTrybotMapping({
+            'master1': {
+                'builder1': {
+                    'mastername': 'tryserver1',
+                    'waterfall_trybot': 'trybot1',
+                    'reserved_swarmbucket_bots': '1',  # Should be an int.
+                }
+            }
+        }))
+    self.assertTrue(
+        config._ValidateTrybotMapping({
+            'master1': {
+                'builder1': {
+                    'mastername': 'tryserver1',
+                    'waterfall_trybot': 'trybot1',
+                    'reserved_swarmbucket_bots': 1,  # Should be an int.
+                }
+            }
+        }))
     self.assertFalse(config._ValidateTrybotMapping(['a']))
     self.assertFalse(config._ValidateTrybotMapping({'a': ['b']}))
     self.assertFalse(config._ValidateTrybotMapping({'a': {'b': ['1']}}))

@@ -139,6 +139,10 @@ def _ValidateTrybotMapping(builders_to_trybots):
     for trybot_config in builders.values():
       if not isinstance(trybot_config, dict):
         return False
+      reserved_swarmbucket_bots = trybot_config.get('reserved_swarmbucket_bots')
+      if (reserved_swarmbucket_bots and not isinstance(
+          reserved_swarmbucket_bots, int)):
+        return False
       if xor(
           trybot_config.get('swarmbucket_mastername'),
           trybot_config.get('swarmbucket_trybot')):

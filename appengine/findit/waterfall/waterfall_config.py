@@ -16,6 +16,7 @@ _UNSUPPORTED_MASTERS = [
 ]
 
 _DEFAULT_DIMENSIONS = ['pool:Chrome.Findit']
+_DEFAULT_RESERVED_BOTS = 2
 
 
 def _ConvertOldMastersFormatToNew(masters_to_blacklisted_steps):
@@ -171,6 +172,11 @@ def _GetTrybotConfig(master, builder):
   trybot_config = _ConvertOldTrybotFormatToNew(
       FinditConfig.Get().builders_to_trybots)
   return trybot_config.get(master, {}).get(builder, {})
+
+
+def GetReservedSwarmbucketBots(wf_mastername, wf_buildername):
+  bot_config = _GetTrybotConfig(wf_mastername, wf_buildername)
+  return bot_config.get('reserved_swarmbucket_bots', _DEFAULT_RESERVED_BOTS)
 
 
 def GetTrybotDimensions(wf_mastername, wf_buildername):
