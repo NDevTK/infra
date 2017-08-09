@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "28b78a37_35f02e35",
+        "filename": "appengine/findit/waterfall/flake/schedule_flake_try_job_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-08-09T19:25:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8dec737f_55b06599",
+      "revId": "160bc86627d63c6d8c977db7c9ecd0be3dc1e061",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "84dd42ff_d152a42f",
         "filename": "appengine/findit/waterfall/flake/schedule_flake_try_job_pipeline.py",
         "patchSetId": 4
@@ -53,6 +71,24 @@
       "writtenOn": "2017-08-07T19:29:12Z",
       "side": 1,
       "message": "just to check, this is an optional config parameter?",
+      "revId": "160bc86627d63c6d8c977db7c9ecd0be3dc1e061",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5f4c479d_6841fc50",
+        "filename": "appengine/findit/waterfall/test/wf_testcase.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-08-09T19:25:28Z",
+      "side": 1,
+      "message": "Yes, added the validation for it in the latest patchset PTAL",
+      "parentUuid": "8712b240_17ad1633",
       "revId": "160bc86627d63c6d8c977db7c9ecd0be3dc1e061",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -116,6 +152,78 @@
       "writtenOn": "2017-08-07T20:47:16Z",
       "side": 1,
       "message": "it looks like this is a new config? Do you have another CL to add it?",
+      "range": {
+        "startLine": 178,
+        "startChar": 29,
+        "endLine": 178,
+        "endChar": 54
+      },
+      "revId": "160bc86627d63c6d8c977db7c9ecd0be3dc1e061",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1e272c58_93be34cc",
+        "filename": "appengine/findit/waterfall/waterfall_config.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-08-09T19:25:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fa83a1e5_3557e997",
+      "range": {
+        "startLine": 178,
+        "startChar": 57,
+        "endLine": 178,
+        "endChar": 58
+      },
+      "revId": "160bc86627d63c6d8c977db7c9ecd0be3dc1e061",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "93af123e_7436ce6c",
+        "filename": "appengine/findit/waterfall/waterfall_config.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-08-09T19:25:28Z",
+      "side": 1,
+      "message": "It shouldn\u0027t be. I\u0027ll add the correct validation to the setting and remove it from here.",
+      "parentUuid": "7fe609e8_32003b15",
+      "range": {
+        "startLine": 178,
+        "startChar": 9,
+        "endLine": 178,
+        "endChar": 12
+      },
+      "revId": "160bc86627d63c6d8c977db7c9ecd0be3dc1e061",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6c193e05_0724f77f",
+        "filename": "appengine/findit/waterfall/waterfall_config.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-08-09T19:25:28Z",
+      "side": 1,
+      "message": "I have merged that into this CL.",
+      "parentUuid": "18f78b97_7a783353",
       "range": {
         "startLine": 178,
         "startChar": 29,
