@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "977daa59_23fee077",
+        "filename": "infra/services/android_docker/__main__.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 1181690
+      },
+      "writtenOn": "2017-08-11T23:44:59Z",
+      "side": 1,
+      "message": "note that this won\u0027t lock if an exception is thrown beforehand, though the lock will be released.",
+      "revId": "c5fd7ddf5b5748dff005bbde09422e8891c464a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
