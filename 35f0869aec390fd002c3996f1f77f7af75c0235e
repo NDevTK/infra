@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1f5e4b2a_14606c01",
+        "filename": "bootstrap/deps.pyl",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1153089
+      },
+      "writtenOn": "2017-08-11T09:42:13Z",
+      "side": 1,
+      "message": "Please add\n\n  \u0027implicit\u0027: True,  # Required by apache_beam.\n\nto all apache_beam\u0027s deps unless they are imported in the apps explicitly. For transient dependencies, the comment should have name of the dependent project, e.g.\n\n  \u0027futures\u0027: {\n    ...\n    \u0027implicit\u0027: True,  # Required by grpcio.\n  },",
+      "revId": "35f0869aec390fd002c3996f1f77f7af75c0235e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
