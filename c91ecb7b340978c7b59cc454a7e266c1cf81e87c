@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0fa1ef27_c0a1c0b9",
+        "filename": "appengine/predator/app/queue.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-08-12T00:11:29Z",
+      "side": 1,
+      "message": "Can we add a comment here what the default queue is used for?",
+      "range": {
+        "startLine": 3,
+        "startChar": 8,
+        "endLine": 3,
+        "endChar": 11
+      },
+      "revId": "c91ecb7b340978c7b59cc454a7e266c1cf81e87c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
