@@ -376,7 +376,15 @@ class RecursiveFlakePipeline(BasePipeline):
       A dict of lists for reliable/flaky tests.
     """
     # We've exauhsted our search. Complete the build analysis.
-    if preferred_run_build_number is None:
+    if preferred_run_build_number:
+      logging.info('Flake analysis completed because the next build is None.')
+      yield FinishBuildAnalysisPipeline(
+          analysis_urlsafe_key, lower_bound_build_number,
+          upper_bound_build_number, user_specified_iterations)
+      return
+    if preferred_run_build_number == previous_build_number:
+      logging.info('Flake analysis completed because the previous and'
+                   'next build match.')
       yield FinishBuildAnalysisPipeline(
           analysis_urlsafe_key, lower_bound_build_number,
           upper_bound_build_number, user_specified_iterations)
@@ -463,18 +471,18 @@ class RecursiveFlakePipeline(BasePipeline):
             lower_bound_build_number, upper_bound_build_number,
             user_specified_iterations)
 
-      yield RecursiveFlakePipeline(
-          analysis_urlsafe_key,
-          next_build_number,
-          lower_bound_build_number,
-          upper_bound_build_number,
-          user_specified_iterations,
-          step_metadata=step_metadata,
-          manually_triggered=manually_triggered,
-          use_nearby_neighbor=use_nearby_neighbor,
-          previous_build_number=actual_run_build_number,
-          retries=retries,
-          force=force)
+        yield RecursiveFlakePipeline(
+            analysis_urlsafe_key,
+            next_build_number,
+            lower_bound_build_number,
+            upper_bound_build_number,
+            user_specified_iterations,
+            step_metadata=step_metadata,
+            manually_triggered=manually_triggered,
+            use_nearby_neighbor=use_nearby_neighbor,
+            previous_build_number=actual_run_build_number,
+            retries=retries,
+            force=force)
     else:  # Can't start analysis, reschedule.
       retries += 1
       pipeline_job = RecursiveFlakePipeline(
