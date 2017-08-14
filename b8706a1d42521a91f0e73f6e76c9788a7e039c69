@@ -22,6 +22,30 @@
       "revId": "b8706a1d42521a91f0e73f6e76c9788a7e039c69",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4da95033_f731522c",
+        "filename": "appengine/findit/waterfall/flake/recursive_flake_pipeline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 379,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-08-14T23:25:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cf3a1a64_12daf3c3",
+      "range": {
+        "startLine": 379,
+        "startChar": 33,
+        "endLine": 379,
+        "endChar": 34
+      },
+      "revId": "b8706a1d42521a91f0e73f6e76c9788a7e039c69",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
