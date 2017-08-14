@@ -263,7 +263,7 @@ class RecursiveFlakePipelineTest(wf_testcase.WaterfallTestCase):
   @mock.patch.object(swarming_util, 'BotsAvailableForTask', return_value=True)
   @mock.patch.object(
       recursive_flake_pipeline, '_IsFinished', side_effect=[False, True])
-  def testRecursiveFlakePipelineWithForceFlag(self, *_):
+  def testRecursiveFlakePipelineWithRerunFlag(self, *_):
     master_name = 'm'
     builder_name = 'b'
     master_build_number = 100
@@ -330,7 +330,7 @@ class RecursiveFlakePipelineTest(wf_testcase.WaterfallTestCase):
         lower_bound_build_number,
         upper_bound_build_number,
         None,
-        force=True)
+        rerun=True)
     pipeline_job.start(queue_name=queue_name)
     self.execute_queued_tasks()
 
@@ -513,7 +513,7 @@ class RecursiveFlakePipelineTest(wf_testcase.WaterfallTestCase):
         FinishBuildAnalysisPipeline,
         '',
         expected_args=[
-            analysis.key.urlsafe(), lower_bound, upper_bound, iterations
+            analysis.key.urlsafe(), lower_bound, upper_bound, iterations, False
         ])
 
     pipeline = RecursiveFlakePipeline(analysis.key.urlsafe(), build_number,
@@ -547,7 +547,7 @@ class RecursiveFlakePipelineTest(wf_testcase.WaterfallTestCase):
         FinishBuildAnalysisPipeline,
         '',
         expected_args=[
-            analysis.key.urlsafe(), lower_bound, upper_bound, iterations
+            analysis.key.urlsafe(), lower_bound, upper_bound, iterations, False
         ])
 
     pipeline = RecursiveFlakePipeline(analysis.key.urlsafe(), None, lower_bound,
