@@ -22,6 +22,30 @@
       "revId": "79f86fc1684fc7cf38027a2d3af34c1a45501b56",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5aa68efd_7da14a44",
+        "filename": "go/src/infra/appengine/dashboard/frontend/elements/status-table.html",
+        "patchSetId": 5
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2017-08-14T21:41:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5a852ac1_48ac324b",
+      "range": {
+        "startLine": 198,
+        "startChar": 15,
+        "endLine": 198,
+        "endChar": 46
+      },
+      "revId": "79f86fc1684fc7cf38027a2d3af34c1a45501b56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
