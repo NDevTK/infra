@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cf3a1a64_12daf3c3",
+        "filename": "appengine/findit/waterfall/flake/recursive_flake_pipeline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 379,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-08-14T23:23:09Z",
+      "side": 1,
+      "message": "add \"is None\" here?",
+      "range": {
+        "startLine": 379,
+        "startChar": 33,
+        "endLine": 379,
+        "endChar": 34
+      },
+      "revId": "b8706a1d42521a91f0e73f6e76c9788a7e039c69",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
