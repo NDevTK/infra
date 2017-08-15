@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6287544b_b0f3bbb2",
+        "filename": "appengine/findit/waterfall/flake/finish_build_analysis_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-08-15T17:44:13Z",
+      "side": 1,
+      "message": "Since it\u0027s easy to drop these in calling code, how about make this a non-optional parameter? We can do another CL later to make rerun explicit for recursive_flake_pipeline as well. I think originally it was a keyword argument defaulting to False was basically an in-code TODO to get it working but still have a marker for an entry point (not the cleanest solution looking back).\n\nThis isn\u0027t the first time rerun got dropped somewhere through multiple pipelines (trigger swarming task, recursive flake pipeline, etc.) so let\u0027s make it non-optional and explicitly pass True or False in the calling code.",
+      "range": {
+        "startLine": 123,
+        "startChar": 10,
+        "endLine": 123,
+        "endChar": 21
+      },
+      "revId": "0b5dec033e12409ec56bf5c2a97a22b60de1d38c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
