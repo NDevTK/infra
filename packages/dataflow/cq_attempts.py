@@ -133,7 +133,7 @@ class CombineEventsToAttempt(beam.CombineFn):
 class ComputeAttempts(beam.PTransform):
   @staticmethod
   def key(event):
-    parts = [event.get('attempt_start_msec'), event.get('cq_name'),
+    parts = [event.get('attempt_start_usec'), event.get('cq_name'),
              event.get('issue'), event.get('patchset')]
     return ':'.join([part or '' for part in parts])
 
