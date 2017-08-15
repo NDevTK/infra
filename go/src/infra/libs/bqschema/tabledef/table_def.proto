@@ -3,9 +3,14 @@ syntax = "proto3";
 package tabledef;
 
 message TableDef {
+  // dataset_id should be `raw_events` and `aggregated` to differentiate
+  // between events sent directly from code and events aggregated by Dataflow.
   string dataset_id = 1;
+  // Name of the table.
   string table_id = 2;
+  // Human-readable name of the table.
   string name = 3;
+  // Human-readable description of the table.
   string description = 4;
   repeated FieldSchema fields = 5;
   // Whether to partition the table by day.
@@ -29,7 +34,9 @@ enum Type {
 }
 
 message FieldSchema {
+  // Name of the field/column.
   string name = 1;
+  // Human-readable description of the field.
   string description = 2;
   bool is_repeated = 3;
   bool is_required = 4;
