@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "82fd52f5_ead33ee9",
+        "filename": "appengine/predator/app/frontend/handlers/dashboard.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-08-15T19:01:38Z",
+      "side": 1,
+      "message": "Why do you pass in query when you\u0027re actually generating and returning the query in this method?",
+      "range": {
+        "startLine": 41,
+        "startChar": 19,
+        "endLine": 41,
+        "endChar": 24
+      },
+      "revId": "29f563ff6e31190346f76d9cea1e0b3717d1846f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6ab01a5b_cf3441d5",
+        "filename": "appengine/predator/app/frontend/handlers/dashboard.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-08-15T19:01:38Z",
+      "side": 1,
+      "message": "do you need to handle exceptions here?",
+      "range": {
+        "startLine": 93,
+        "startChar": 55,
+        "endLine": 93,
+        "endChar": 69
+      },
+      "revId": "29f563ff6e31190346f76d9cea1e0b3717d1846f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b06e68fe_1cb294e5",
+        "filename": "appengine/predator/app/frontend/templates/clusterfuzz_dashboard.html",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-08-15T19:01:38Z",
+      "side": 1,
+      "message": "In Findit currently we are trying to avoid such kind of URL creation, rather we want to use form instead. Not sure if this apply to Predator, you may check with stgao@.",
+      "range": {
+        "startLine": 8,
+        "startChar": 13,
+        "endLine": 8,
+        "endChar": 22
+      },
+      "revId": "29f563ff6e31190346f76d9cea1e0b3717d1846f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
