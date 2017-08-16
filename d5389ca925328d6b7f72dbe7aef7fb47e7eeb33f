@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "da4e334d_f36016f9",
+        "filename": "doc/users/event_pipeline.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-08-16T19:59:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0691ed7b_5ab02479",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 6
+      },
+      "revId": "d5389ca925328d6b7f72dbe7aef7fb47e7eeb33f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "800c1528_ffcbb838",
         "filename": "doc/users/event_pipeline.md",
         "patchSetId": 3
@@ -45,6 +69,30 @@
       "revId": "d5389ca925328d6b7f72dbe7aef7fb47e7eeb33f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5e6f5f52_a93e188d",
+        "filename": "doc/users/event_pipeline.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-08-16T19:59:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "800c1528_ffcbb838",
+      "range": {
+        "startLine": 37,
+        "startChar": 48,
+        "endLine": 37,
+        "endChar": 54
+      },
+      "revId": "d5389ca925328d6b7f72dbe7aef7fb47e7eeb33f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "a55d298e_781d72c3",
+        "filename": "go/src/infra/libs/bqschema/tabledef/table_def.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-08-16T19:59:52Z",
+      "side": 1,
+      "message": "Oh yeah, that\u0027s a good idea. I\u0027ll do that in a separate CL.",
+      "parentUuid": "a7164954_9f93c614",
+      "range": {
+        "startLine": 6,
+        "startChar": 2,
+        "endLine": 8,
+        "endChar": 24
+      },
+      "revId": "d5389ca925328d6b7f72dbe7aef7fb47e7eeb33f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ce6cc539_782ecbae",
         "filename": "go/src/infra/libs/bqschema/tabledef/table_def.proto",
         "patchSetId": 3
@@ -85,6 +157,24 @@
       "revId": "d5389ca925328d6b7f72dbe7aef7fb47e7eeb33f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b8252e2f_3b03b065",
+        "filename": "go/src/infra/libs/bqschema/tabledef/table_def.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-08-16T19:59:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ce6cc539_782ecbae",
+      "revId": "d5389ca925328d6b7f72dbe7aef7fb47e7eeb33f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
