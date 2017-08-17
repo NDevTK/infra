@@ -84,7 +84,7 @@ class InitializeFlakeTryJobPipeline(BasePipeline):
 
   # Arguments number differs from overridden method - pylint: disable=W0221
   def run(self, analysis_urlsafe_key, user_specified_iterations,
-          user_specified_range):
+          user_specified_range, rerun):
     """Pipeline to trigger try jobs on a suspected build range.
 
     Args:
@@ -96,6 +96,7 @@ class InitializeFlakeTryJobPipeline(BasePipeline):
       user_specified_range (bool): Whether or not the user had specified a
           range to run analysis on, used for overriding confidence score when
           triggering try jobs.
+      rerun (boolean): Manually triggered run, force everything to happen.
     """
     analysis = ndb.Key(urlsafe=analysis_urlsafe_key).get()
     assert analysis
@@ -145,7 +146,7 @@ class InitializeFlakeTryJobPipeline(BasePipeline):
           yield RecursiveFlakeTryJobPipeline(
               analysis.key.urlsafe(), start_commit_position, start_revision,
               lower_bound_commit_position, upper_bound_commit_position,
-              user_specified_iterations, cache_name, dimensions)
+              user_specified_iterations, cache_name, dimensions, rerun)
         else:
           logging.info('Single commit in the blame list of suspected build')
           culprit_confidence_score = confidence.SteppinessForCommitPosition(

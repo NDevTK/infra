@@ -242,7 +242,7 @@ class RecursiveFlakePipeline(BasePipeline):
                use_nearby_neighbor=False,
                previous_build_number=None,
                retries=0,
-               force=False):
+               rerun=False):
     """Pipeline to determine and analyze the regression range of a flaky test.
 
     Args:
@@ -271,7 +271,7 @@ class RecursiveFlakePipeline(BasePipeline):
           analyzed. This is used to determine the step size.
       retries (int): Number of retries of this pipeline. If reties exceeds the
           MAX_RETRY_TIMES, start this pipeline off peak hours.
-
+      rerun (boolean): Manually triggered run, force everything to happen.
     Returns:
       A dict of lists for reliable/flaky tests.
     """
@@ -279,7 +279,7 @@ class RecursiveFlakePipeline(BasePipeline):
         analysis_urlsafe_key, preferred_run_build_number,
         lower_bound_build_number, upper_bound_build_number,
         user_specified_iterations, step_metadata, manually_triggered,
-        use_nearby_neighbor, previous_build_number, retries, force)
+        use_nearby_neighbor, previous_build_number, retries, rerun)
     self.analysis_urlsafe_key = ndb.Key(urlsafe=analysis_urlsafe_key)
     analysis = self.analysis_urlsafe_key.get()
     assert analysis
@@ -298,7 +298,7 @@ class RecursiveFlakePipeline(BasePipeline):
     self.use_nearby_neighbor = use_nearby_neighbor
     self.previous_build_number = previous_build_number
     self.retries = retries
-    self.force = force
+    self.rerun = rerun
 
   def _StartOffPSTPeakHours(self, *args, **kwargs):
     """Starts the pipeline off PST peak hours if not triggered manually."""
@@ -335,12 +335,12 @@ class RecursiveFlakePipeline(BasePipeline):
           lower_bound_build_number,
           upper_bound_build_number,
           user_specified_iterations,
+          rerun,
           step_metadata=None,
           manually_triggered=False,
           use_nearby_neighbor=False,
           previous_build_number=None,
-          retries=0,
-          force=False):
+          retries=0):
     """Pipeline to determine and analyze the regression range of a flaky test.
 
     Args:
@@ -358,6 +358,7 @@ class RecursiveFlakePipeline(BasePipeline):
       user_specified_iterations (int): The number of iterations each swarming
           task should run, as supplied by the user. If None is specified,
           Findit will decide how many iterations to rerun.
+      rerun (boolean): Manually triggered run, force everything to happen.
       step_metadata (dict): Step_metadata for the test.
       manually_triggered (bool): True if the analysis is from manual request,
           like by a Chromium sheriff.
@@ -369,8 +370,6 @@ class RecursiveFlakePipeline(BasePipeline):
           analyzed. This is used to determine the step size.
       retries (int): Number of retries of this pipeline. If reties exceeds the
           MAX_RETRY_TIMES, start this pipeline off peak hours.
-      force (bool): Force this build to run from scratch,
-          a rerun by an admin will trigger this.
 
     Returns:
       A dict of lists for reliable/flaky tests.
@@ -379,7 +378,7 @@ class RecursiveFlakePipeline(BasePipeline):
     if preferred_run_build_number is None:
       yield FinishBuildAnalysisPipeline(
           analysis_urlsafe_key, lower_bound_build_number,
-          upper_bound_build_number, user_specified_iterations)
+          upper_bound_build_number, user_specified_iterations, rerun)
       return
 
     if previous_build_number is None:
@@ -419,7 +418,7 @@ class RecursiveFlakePipeline(BasePipeline):
                    latest_build_number, iterations):
       yield FinishBuildAnalysisPipeline(
           analysis.key.urlsafe(), lower_bound_build_number,
-          upper_bound_build_number, user_specified_iterations)
+          upper_bound_build_number, user_specified_iterations, rerun)
       return
 
     # Not finished, continue analysis.
@@ -444,7 +443,7 @@ class RecursiveFlakePipeline(BasePipeline):
           self.step_name, [self.test_name],
           iterations,
           hard_timeout_seconds,
-          force=force)
+          force=rerun)
 
       with pipeline.InOrder():
         yield SaveLastAttemptedSwarmingTaskIdPipeline(
@@ -464,31 +463,17 @@ class RecursiveFlakePipeline(BasePipeline):
             user_specified_iterations)
 
       yield RecursiveFlakePipeline(
-          analysis_urlsafe_key,
-          next_build_number,
-          lower_bound_build_number,
-          upper_bound_build_number,
-          user_specified_iterations,
-          step_metadata=step_metadata,
-          manually_triggered=manually_triggered,
-          use_nearby_neighbor=use_nearby_neighbor,
-          previous_build_number=actual_run_build_number,
-          retries=retries,
-          force=force)
+          analysis_urlsafe_key, next_build_number, lower_bound_build_number,
+          upper_bound_build_number, user_specified_iterations, rerun,
+          step_metadata, manually_triggered, use_nearby_neighbor,
+          actual_run_build_number, retries)
     else:  # Can't start analysis, reschedule.
       retries += 1
       pipeline_job = RecursiveFlakePipeline(
-          analysis_urlsafe_key,
-          preferred_run_build_number,
-          lower_bound_build_number,
-          upper_bound_build_number,
-          user_specified_iterations,
-          step_metadata=step_metadata,
-          manually_triggered=manually_triggered,
-          use_nearby_neighbor=use_nearby_neighbor,
-          previous_build_number=previous_build_number,
-          retries=retries,
-          force=force)
+          analysis_urlsafe_key, preferred_run_build_number,
+          lower_bound_build_number, upper_bound_build_number,
+          user_specified_iterations, rerun, step_metadata, manually_triggered,
+          use_nearby_neighbor, previous_build_number, retries)
 
       # Disable attribute 'target' defined outside __init__ pylint warning,
       # because pipeline generates its own __init__ based on run function.

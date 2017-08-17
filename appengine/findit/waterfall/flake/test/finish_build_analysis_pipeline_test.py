@@ -59,7 +59,7 @@ class FinishBuildAnalysisPipelineTest(wf_testcase.WaterfallTestCase):
     self.MockPipeline(
         InitializeFlakeTryJobPipeline,
         '',
-        expected_args=[analysis.key.urlsafe(), iterations, user_range],
+        expected_args=[analysis.key.urlsafe(), iterations, user_range, False],
         expected_kwargs={})
 
     pipeline = FinishBuildAnalysisPipeline(analysis.key.urlsafe(), lower_bound,
