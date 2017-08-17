@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "dfd4e808_256dfa30",
+        "filename": "appengine/predator/app/frontend/handlers/dashboard.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-08-17T00:07:45Z",
+      "side": 1,
+      "message": "Good catch.",
+      "parentUuid": "82fd52f5_ead33ee9",
+      "range": {
+        "startLine": 41,
+        "startChar": 19,
+        "endLine": 41,
+        "endChar": 24
+      },
+      "revId": "29f563ff6e31190346f76d9cea1e0b3717d1846f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6ab01a5b_cf3441d5",
         "filename": "appengine/predator/app/frontend/handlers/dashboard.py",
         "patchSetId": 4
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "f4e9d8d1_bd8f7c12",
+        "filename": "appengine/predator/app/frontend/handlers/dashboard.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-08-17T00:07:45Z",
+      "side": 1,
+      "message": "Good catch, handled above.",
+      "parentUuid": "6ab01a5b_cf3441d5",
+      "range": {
+        "startLine": 93,
+        "startChar": 55,
+        "endLine": 93,
+        "endChar": 69
+      },
+      "revId": "29f563ff6e31190346f76d9cea1e0b3717d1846f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b06e68fe_1cb294e5",
         "filename": "appengine/predator/app/frontend/templates/clusterfuzz_dashboard.html",
         "patchSetId": 4
@@ -59,6 +107,30 @@
       "writtenOn": "2017-08-15T19:01:38Z",
       "side": 1,
       "message": "In Findit currently we are trying to avoid such kind of URL creation, rather we want to use form instead. Not sure if this apply to Predator, you may check with stgao@.",
+      "range": {
+        "startLine": 8,
+        "startChar": 13,
+        "endLine": 8,
+        "endChar": 22
+      },
+      "revId": "29f563ff6e31190346f76d9cea1e0b3717d1846f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8dbccbb1_b4bbb8bd",
+        "filename": "appengine/predator/app/frontend/templates/clusterfuzz_dashboard.html",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-08-17T00:07:45Z",
+      "side": 1,
+      "message": "filed a bug, will change it if this is a big security concern.",
+      "parentUuid": "b06e68fe_1cb294e5",
       "range": {
         "startLine": 8,
         "startChar": 13,
