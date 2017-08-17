@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "49125c3d_5aff6c6f",
+        "filename": "appengine/findit/waterfall/flake/schedule_flake_try_job_pipeline.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-08-17T05:43:56Z",
+      "side": 1,
+      "message": "IIUC, we will keep try until either there are enough bots or it\u0027s off peak?",
+      "range": {
+        "startLine": 176,
+        "startChar": 16,
+        "endLine": 176,
+        "endChar": 33
+      },
+      "revId": "90d8a09b4bf54c12aeacd11e45d834211851f46d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a73205d3_99f86540",
+        "filename": "appengine/findit/waterfall/flake/test/schedule_flake_try_job_pipeline_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-08-17T05:43:56Z",
+      "side": 1,
+      "message": "This should not introduce flaky since the dates are extremely far. But how about mock GetUTCNow to be certain?",
+      "range": {
+        "startLine": 174,
+        "startChar": 0,
+        "endLine": 175,
+        "endChar": 47
+      },
+      "revId": "90d8a09b4bf54c12aeacd11e45d834211851f46d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
