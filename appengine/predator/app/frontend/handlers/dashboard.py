@@ -34,7 +34,11 @@ class DashBoard(BaseHandler):
   def client(self):
     raise NotImplementedError()
 
-  def Filter(self, query, start_date=None, end_date=None):
+  @property
+  def template(self):
+    return 'dashboard.html'
+
+  def Filter(self, start_date=None, end_date=None):
     """Filters crash analysis by both unequal and equal filters."""
     query = self.crash_analysis_cls.query(
         self.crash_analysis_cls.requested_time >= start_date,
@@ -50,20 +54,13 @@ class DashBoard(BaseHandler):
 
     return query
 
-  def HandleGet(self):
-    """Shows crash analysis results in an HTML page."""
-    start_date, end_date = dashboard_util.GetStartAndEndDates(
-        self.request.get('start_date'), self.request.get('end_date'))
-
-    query = self.Filter(self.crash_analysis_cls.query(), start_date, end_date)
-
-    page_size = self.request.get('n') or _PAGE_SIZE
-    # TODO(katesonia): Add pagination here.
-    crash_list = query.order(
-        -self.crash_analysis_cls.requested_time).fetch(int(page_size))
+  def CrashDataToDisplay(self, crash_analyses):
+    """Gets the crash data to display."""
+    if not crash_analyses:
+      return []
 
     crashes = []
-    for crash in crash_list:
+    for crash in crash_analyses:
       display_data = {
           'signature': crash.signature,
           'version': crash.crashed_version,
@@ -81,6 +78,24 @@ class DashBoard(BaseHandler):
       }
       crashes.append(display_data)
 
+    return crashes
+
+  def HandleGet(self):
+    """Shows crash analysis results in an HTML page."""
+    start_date, end_date = dashboard_util.GetStartAndEndDates(
+        self.request.get('start_date'), self.request.get('end_date'))
+
+    query = self.Filter(start_date, end_date)
+
+    try:
+      page_size = int(self.request.get('n'))
+    except (ValueError, TypeError):
+      page_size = _PAGE_SIZE
+
+    # TODO(katesonia): Add pagination here.
+    crash_analyses = query.order(
+        -self.crash_analysis_cls.requested_time).fetch(int(page_size))
+
     data = {
         'start_date': time_util.FormatDatetime(start_date),
         'end_date': time_util.FormatDatetime(end_date),
@@ -91,11 +106,11 @@ class DashBoard(BaseHandler):
         'regression_range_triage_status': self.request.get(
             'regression_range_triage_status', '-1'),
         'client': self.client,
-        'crashes': crashes,
+        'crashes': self.CrashDataToDisplay(crash_analyses),
         'signature': self.request.get('signature')
     }
 
     return {
-        'template': 'dashboard.html',
+        'template': self.template,
         'data': data
     }
