@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "fb2b3170_c01b38cc",
+        "filename": "appengine/predator/app/frontend/handlers/clusterfuzz_dashboard.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-08-18T00:10:57Z",
+      "side": 1,
+      "message": "They are quite different and the function is basically a simple return statement, so I think just overwriting the function of the superclass is the easiest way.",
+      "parentUuid": "8c6de921_9aefd816",
+      "revId": "df4a473408fe9cb28677b1391292381a5bbd5458",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "83ef8296_cfa0291f",
         "filename": "appengine/predator/app/frontend/handlers/dashboard.py",
         "patchSetId": 7
@@ -39,6 +57,30 @@
       "revId": "df4a473408fe9cb28677b1391292381a5bbd5458",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f48be226_fbf64393",
+        "filename": "appengine/predator/app/frontend/handlers/dashboard.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-08-18T00:10:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "83ef8296_cfa0291f",
+      "range": {
+        "startLine": 97,
+        "startChar": 55,
+        "endLine": 97,
+        "endChar": 69
+      },
+      "revId": "df4a473408fe9cb28677b1391292381a5bbd5458",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
