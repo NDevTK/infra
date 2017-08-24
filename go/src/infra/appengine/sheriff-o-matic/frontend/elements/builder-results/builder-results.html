@@ -1,0 +1,56 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<dom-module id="builder-results">
+  <template>
+    <style>
+      .gray {
+        background: #E7E7E7
+      }
+      .green {
+        background: #6AFF3F
+      }
+      .red {
+        background: #FF6C6C
+      }
+      .square {
+        width: 20px;
+        height: 20px
+      }
+    </style>
+    <p>[[builderResults.builder_name]]</p>
+    <div>
+      <template is="dom-repeat" items="[[builderResults.results]]" as="result">
+         <div class="square [[_getColorClass(result)]]"</div>
+      </template>
+    </div>
+  </template>
+  <script>
+    'use strict';
+
+    class BuilderResults extends Polymer.Element {
+      static get is() {return 'builder-results'; }
+
+      ready() {
+        supder.ready();
+      }
+
+      static get properties() {
+        return {
+          builderResults: {
+            type: Object,
+            value: () => {
+              return {builder_name:"", total_failures:0, results:[]};
+            },
+          },
+        }
+      }
+
+      _getColorClass(result) {
+         return result.test_actual == '[PASS]' ? 'greed': 'red'
+      }
+
+    }
+
+    customElements.define(BuilderResults.is, BuilderResults)
+  </script>
+</dom-module>
