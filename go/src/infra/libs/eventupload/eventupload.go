@@ -92,12 +92,7 @@ func NewUploader(ctx context.Context, c *bigquery.Client, td *tabledef.TableDef,
 		return nil, errors.New("error initializing prefix for insertID")
 	}
 
-	t := c.Dataset(td.GetDataset().ID()).Table(td.TableId)
-	md, err := t.Metadata(ctx)
-	if err != nil {
-		return nil, err
-	}
-	u := t.Uploader()
+	u := c.Dataset(td.GetDataset().ID()).Table(td.TableId).Uploader()
 	u.SkipInvalidRows = cfg.SkipInvalid
 	u.IgnoreUnknownValues = cfg.IgnoreUnknown
 
@@ -114,12 +109,14 @@ func NewUploader(ctx context.Context, c *bigquery.Client, td *tabledef.TableDef,
 		uploadCounter = metric.NewCounterIn(ctx, name, desc, nil, field)
 	}
 
+	s := tabledef.BQSchema(td.Fields)
+
 	return &Uploader{
 		ctx,
 		td.GetDataset().ID(),
 		td.TableId,
 		u,
-		md.Schema,
+		s,
 		timeout,
 		uploadCounter,
 	}, nil

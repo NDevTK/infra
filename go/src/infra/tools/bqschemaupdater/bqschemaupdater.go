@@ -21,28 +21,6 @@ import (
 	pb "infra/libs/bqschema/tabledef"
 )
 
-func bqSchema(fields []*pb.FieldSchema) bigquery.Schema {
-	var s bigquery.Schema
-	for _, f := range fields {
-		s = append(s, bqField(f))
-	}
-	return s
-}
-
-func bqField(f *pb.FieldSchema) *bigquery.FieldSchema {
-	fs := &bigquery.FieldSchema{
-		Name:        f.Name,
-		Description: f.Description,
-		Type:        bigquery.FieldType(f.Type.String()),
-		Repeated:    f.IsRepeated,
-		Required:    f.IsRequired,
-	}
-	if fs.Type == bigquery.RecordFieldType {
-		fs.Schema = bqSchema(f.Schema)
-	}
-	return fs
-}
-
 func tableDef(r io.Reader) *pb.TableDef {
 	td := &pb.TableDef{}
 	err := jsonpb.Unmarshal(r, td)
@@ -73,7 +51,7 @@ func updateFromTableDef(ctx context.Context, ts tableStore, td *pb.TableDef) err
 	md := bigquery.TableMetadataToUpdate{
 		Name:        td.Name,
 		Description: td.Description,
-		Schema:      bqSchema(td.Fields),
+		Schema:      pb.BQSchema(td.Fields),
 	}
 	err = ts.updateTable(ctx, td.Dataset.ID(), td.TableId, md)
 	return err
