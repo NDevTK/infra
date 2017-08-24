@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a5f56dcc_ad0fc625",
+        "filename": "go/src/infra/appengine/luci-migration/app/index.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-08-24T18:33:10Z",
+      "side": 1,
+      "message": "nit: you could flip these and use \"fallthrough\" from StatusMigrated. Just a thought, up to you.",
+      "range": {
+        "startLine": 59,
+        "startChar": 2,
+        "endLine": 59,
+        "endChar": 30
+      },
+      "revId": "4c40f1a320a923cd505edab6f3a543297a7936fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
