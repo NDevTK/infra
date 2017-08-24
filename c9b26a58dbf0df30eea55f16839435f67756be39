@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3b2c11cb_677006be",
+        "filename": "go/src/infra/libs/bqschema/tabledef/bqschema.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-08-24T17:11:40Z",
+      "side": 1,
+      "message": "nit: consider making this public, seems generically useful?",
+      "range": {
+        "startLine": 22,
+        "startChar": 5,
+        "endLine": 22,
+        "endChar": 12
+      },
+      "revId": "c9b26a58dbf0df30eea55f16839435f67756be39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "50c0fb97_75d8223c",
+        "filename": "go/src/infra/libs/bqschema/tabledef/bqschema.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-08-24T17:11:40Z",
+      "side": 1,
+      "message": "nit: consider making this public, seems generically useful?",
+      "range": {
+        "startLine": 36,
+        "startChar": 5,
+        "endLine": 36,
+        "endChar": 19
+      },
+      "revId": "c9b26a58dbf0df30eea55f16839435f67756be39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
