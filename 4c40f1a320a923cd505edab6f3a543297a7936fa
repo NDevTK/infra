@@ -22,6 +22,30 @@
       "revId": "4c40f1a320a923cd505edab6f3a543297a7936fa",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7ecc89fa_7958d000",
+        "filename": "go/src/infra/appengine/luci-migration/app/index.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-08-24T18:36:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a5f56dcc_ad0fc625",
+      "range": {
+        "startLine": 59,
+        "startChar": 2,
+        "endLine": 59,
+        "endChar": 30
+      },
+      "revId": "4c40f1a320a923cd505edab6f3a543297a7936fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
