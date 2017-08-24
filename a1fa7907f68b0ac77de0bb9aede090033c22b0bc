@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a1e09de_6c43a046",
+        "filename": "go/src/infra/libs/bqschema/tabledef/bqschema.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-08-24T00:52:51Z",
+      "side": 1,
+      "message": "Pre-allocate this to size len(fields).",
+      "range": {
+        "startLine": 13,
+        "startChar": 1,
+        "endLine": 13,
+        "endChar": 22
+      },
+      "revId": "a1fa7907f68b0ac77de0bb9aede090033c22b0bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "18cfa5aa_a560b6ba",
+        "filename": "go/src/infra/libs/bqschema/tabledef/bqschema.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-08-24T00:52:51Z",
+      "side": 1,
+      "message": "I know this isn\u0027t new code, and that this *works*, but it\u0027s a bit unnerving expecting 1:1 parity between the constant values of enumerations in one library and the string names of those enumerations in another.\n\nI would recommend doing something like:\n\nhttps://chromium-review.googlesource.com/c/infra/infra/+/630499/7/go/src/infra/cmd/bqexport/testing/schema.go#88\n\nGranted, it\u0027s pretty verbose and redundant, but this means:\n1) Changing the names of types in protobuf will cause a compile error.\n2) If third-party \"bigquery\" package changes its enumeration values, things will continue to work here without any code changes.\n\nWDYT?\n\n(Also if you just want to move that function here, I can call it directly from the place I linked from.)",
+      "range": {
+        "startLine": 24,
+        "startChar": 15,
+        "endLine": 24,
+        "endChar": 51
+      },
+      "revId": "a1fa7907f68b0ac77de0bb9aede090033c22b0bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
