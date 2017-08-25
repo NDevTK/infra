@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "80b7c9f5_c169efb6",
+        "filename": "go/src/infra/libs/eventupload/eventupload.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-08-25T05:51:50Z",
+      "side": 1,
+      "message": "i am not sure Uploader will play nicely with nil schema.\n\nUploader.Put calls prepareStruct without check if schema is nil\nprepareStruct will create StructSavers with nil schema\nStructSaver.Save does not check if schema is nil or len\u003d0\nhttps://github.com/GoogleCloudPlatform/google-cloud-go/blob/master/bigquery/value.go#L460\nbut just enumerates it",
+      "revId": "d6c57f0298fd1a8f44a17e1a10bebdac03faa8ff",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
