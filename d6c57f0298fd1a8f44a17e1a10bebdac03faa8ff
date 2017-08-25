@@ -16,6 +16,24 @@
       "revId": "d6c57f0298fd1a8f44a17e1a10bebdac03faa8ff",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5abe7f5f_28db210a",
+        "filename": "go/src/infra/libs/eventupload/eventupload.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-08-25T05:52:54Z",
+      "side": 1,
+      "message": "\"StructSaver\" is skipped entirely and struct/insertID are extracted if schema is nil: https://github.com/GoogleCloudPlatform/google-cloud-go/blob/master/bigquery/uploader.go#L123",
+      "parentUuid": "80b7c9f5_c169efb6",
+      "revId": "d6c57f0298fd1a8f44a17e1a10bebdac03faa8ff",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
