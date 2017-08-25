@@ -137,6 +137,29 @@
       "revId": "a4a5880337b720ba20cbfb945bbf31eef3014bc3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2cdb0aa8_20a58a11",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/smoke.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-08-25T21:43:02Z",
+      "side": 1,
+      "message": "Is this host backed by Milo now? If not, should we use Milo\u0027s appspot hostname?",
+      "range": {
+        "startLine": 46,
+        "startChar": 11,
+        "endLine": 46,
+        "endChar": 29
+      },
+      "revId": "a4a5880337b720ba20cbfb945bbf31eef3014bc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
