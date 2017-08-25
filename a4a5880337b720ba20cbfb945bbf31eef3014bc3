@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "627c3c6b_72c5ee8a",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/app.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-08-25T15:20:46Z",
+      "side": 1,
+      "message": "Call this once and re-use it.",
+      "range": {
+        "startLine": 22,
+        "startChar": 16,
+        "endLine": 22,
+        "endChar": 40
+      },
+      "revId": "a4a5880337b720ba20cbfb945bbf31eef3014bc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "40702508_e83923f3",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/app.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-08-25T15:20:46Z",
+      "side": 1,
+      "message": "FWIW, I like to inline this at the cron endpoint definition. Makes it more clear where it\u0027s being applied.",
+      "range": {
+        "startLine": 23,
+        "startChar": 1,
+        "endLine": 24,
+        "endChar": 69
+      },
+      "revId": "a4a5880337b720ba20cbfb945bbf31eef3014bc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "08c193ce_a993218e",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/app.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-08-25T15:20:46Z",
+      "side": 1,
+      "message": "Do you need \"authmw\" here? Your service isn\u0027t going to be authenticating users or applying any auth assertions on user identity, since it\u0027s admin-only via \"app.yaml\".",
+      "range": {
+        "startLine": 32,
+        "startChar": 27,
+        "endLine": 32,
+        "endChar": 33
+      },
+      "revId": "a4a5880337b720ba20cbfb945bbf31eef3014bc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "015f7f46_e381815c",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/app.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-08-25T15:20:46Z",
+      "side": 1,
+      "message": "Please note that this *must* remain in the \"/admin/\" namespace, since it is not meant for user consumption and is capable of returning sensitive information via direct error response.",
+      "range": {
+        "startLine": 32,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 45
+      },
+      "revId": "a4a5880337b720ba20cbfb945bbf31eef3014bc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "45d9bf36_31b99484",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/app.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-08-25T15:20:46Z",
+      "side": 1,
+      "message": "Middleware is meant to be chained. You should append this to the \"BaseProd\" instance from \"init()\" rather than building a new chain here.",
+      "range": {
+        "startLine": 43,
+        "startChar": 6,
+        "endLine": 43,
+        "endChar": 16
+      },
+      "revId": "a4a5880337b720ba20cbfb945bbf31eef3014bc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "76bd7cf2_80d1ca53",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/smoke.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-08-25T15:20:46Z",
+      "side": 1,
+      "message": "Use \"logging.Infof\" etc.",
+      "range": {
+        "startLine": 37,
+        "startChar": 1,
+        "endLine": 37,
+        "endChar": 4
+      },
+      "revId": "a4a5880337b720ba20cbfb945bbf31eef3014bc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
