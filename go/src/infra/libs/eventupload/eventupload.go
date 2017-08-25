@@ -73,13 +73,18 @@ func NewUploader(ctx context.Context, c *bigquery.Client, td *tabledef.TableDef,
 		uploadCounter = metric.NewCounterIn(ctx, name, desc, nil, field)
 	}
 
-	s := tabledef.BQSchema(td.Fields)
+	// If a schema is provided, load it directly. Otherwise, we will infer the
+	// schema from the input events.
+	var schema bigquery.Schema
+	if len(td.Fields) > 0 {
+		schema = tabledef.BQSchema(td.Fields)
+	}
 
 	return &Uploader{
 		td.GetDataset().ID(),
 		td.TableId,
 		u,
-		s,
+		schema,
 		uploadCounter,
 	}
 }
