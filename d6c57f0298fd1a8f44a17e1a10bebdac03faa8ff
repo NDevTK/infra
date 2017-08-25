@@ -52,6 +52,24 @@
       "revId": "d6c57f0298fd1a8f44a17e1a10bebdac03faa8ff",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "070da560_3fbf5cd5",
+        "filename": "go/src/infra/libs/eventupload/eventupload.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-08-25T05:56:11Z",
+      "side": 1,
+      "message": "yeah, I see now. thanks",
+      "parentUuid": "c1c82921_754e61f4",
+      "revId": "d6c57f0298fd1a8f44a17e1a10bebdac03faa8ff",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
