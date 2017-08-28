@@ -61,8 +61,10 @@ func GetBuildbotClient(ctx context.Context, authKind auth.RPCAuthorityKind) (mil
 	}), nil
 }
 
-var pathRX = regexp.MustCompile(
+var bbPathRX = regexp.MustCompile(
 	`/p/(?P<master>[^/]+)/builders/(?P<builder>[^/]+)/builds/(?P<buildNum>\d+)/?`)
+var miloPathRX = regexp.MustCompile(
+	`/buildbot/(?P<master>[^/]+)/(?P<builder>[^/]+)/(?P<buildNum>\d+)/?`)
 
 // parseBuildURL obtains master, builder and build number from the build url.
 func parseBuildURL(rawURL string) (master string, builder string, buildNum int64, err error) {
@@ -70,9 +72,18 @@ func parseBuildURL(rawURL string) (master string, builder string, buildNum int64
 	if err != nil {
 		return
 	}
-	m := pathRX.FindStringSubmatch(u.Path)
+	m := bbPathRX.FindStringSubmatch(u.Path)
+	names := bbPathRX.SubexpNames()
+	if m == nil {
+		m = miloPathRX.FindStringSubmatch(u.Path)
+		names = miloPathRX.SubexpNames()
+	}
+	if m == nil {
+		err = errors.Reason("The path given does not match the expected format. %s", u.Path).Err()
+		return
+	}
 	parts := make(map[string]string)
-	for i, name := range pathRX.SubexpNames() {
+	for i, name := range names {
 		if i != 0 {
 			parts[name] = m[i]
 		}
