@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "03d64a19_8f58bdf3",
+        "filename": "go/src/infra/appengine/cr-audit-commits/buildstatus/milo.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-08-29T00:10:17Z",
+      "side": 1,
+      "message": "I think we could just support milo url and ignore buildbot url since Findit always use milo url now except for try-job url responded from buildbucket which is not used in commit message of the revert CL.",
+      "range": {
+        "startLine": 64,
+        "startChar": 0,
+        "endLine": 67,
+        "endChar": 70
+      },
+      "revId": "b7926e64db1e4d9bf1e3eb08471af3760fad10a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
