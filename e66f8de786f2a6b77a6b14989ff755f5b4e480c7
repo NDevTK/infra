@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "13fa326c_d194387f",
+        "filename": "appengine/findit/waterfall/extract_deps_info_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-08-29T17:21:05Z",
+      "side": 0,
+      "message": "Keep this docstring will be helpful.",
+      "range": {
+        "startLine": 18,
+        "startChar": 4,
+        "endLine": 44,
+        "endChar": 7
+      },
+      "revId": "e66f8de786f2a6b77a6b14989ff755f5b4e480c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b16de59a_f960a819",
+        "filename": "appengine/findit/waterfall/pull_changelog_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-08-29T17:21:05Z",
+      "side": 0,
+      "message": "Same here.",
+      "range": {
+        "startLine": 22,
+        "startChar": 4,
+        "endLine": 32,
+        "endChar": 7
+      },
+      "revId": "e66f8de786f2a6b77a6b14989ff755f5b4e480c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
