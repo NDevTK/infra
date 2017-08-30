@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "24bba44f_2e1a83a2",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/smoke.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-08-30T07:34:08Z",
+      "side": 1,
+      "message": "for ease of use, I would consider writing the diagnostic information to the router.Context (i.e. 1 line per status check), and continue running all the checks. Then you can load /admin/smoketest and get a full diagnostic.\n\nI would also maybe organize this into a list of small smoketest functions, each which take ctx and return errors, something like:\n\n  checks :\u003d []struct{\n    name string,\n    check func(context.Context) error\n  }{\n    {\"Gitiles\", func(context.Context) error {\n      // check gitiles connectivity\n    }},\n  }\n\n  failures :\u003d 0\n  for _, check :\u003d checks {\n     // print check.name\n     // run check. if error, write error text in red, otherwise \"OK\" in green\n  }\n  // print \"XX / YY PASS\"\n  if failures !\u003d 0 { return 500 } else { return 200 } \n\nIn fact, this is a cool enough idea that I think we should make a smoketest library out of it, and then have \u0027admin/smoketest\u0027 be the convention for all of our appengine apps :)",
+      "range": {
+        "startLine": 40,
+        "startChar": 1,
+        "endLine": 40,
+        "endChar": 14
+      },
+      "revId": "804d7397adc575acf39666602971a256e1f75baa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
