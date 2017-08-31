@@ -22,6 +22,30 @@
       "revId": "804d7397adc575acf39666602971a256e1f75baa",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "248a997d_a90d3fe7",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/smoke.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-08-31T00:16:09Z",
+      "side": 1,
+      "message": "Refactored as proposed. I\u0027d like to explore the idea of the lib later on.",
+      "parentUuid": "24bba44f_2e1a83a2",
+      "range": {
+        "startLine": 40,
+        "startChar": 1,
+        "endLine": 40,
+        "endChar": 14
+      },
+      "revId": "804d7397adc575acf39666602971a256e1f75baa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
