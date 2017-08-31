@@ -46,6 +46,30 @@
       "revId": "2df15f0d3160f15eb2b665854efe89eb38c209b5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "881fae2d_6ed8774a",
+        "filename": "appengine/cr-buildbucket/swarming/swarmingcfg.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-08-31T19:01:42Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ac520e2d_f6e91789",
+      "range": {
+        "startLine": 33,
+        "startChar": 34,
+        "endLine": 33,
+        "endChar": 37
+      },
+      "revId": "2df15f0d3160f15eb2b665854efe89eb38c209b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
