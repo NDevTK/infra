@@ -41,16 +41,16 @@ solutions = [
 """
 
 
-# TODO(hinoka): Make this an infra virtualenv.  crbug.com/426099.
-# Because of various issues (eg. pywin32 not installed in the infra virtualenv)
-# We can't use the virtualenv for running buildbot :(.
 if IS_WINDOWS:
+  # TODO(hinoka): Make this an infra virtualenv.  crbug.com/426099.
+  # Because of various issues (ie pywin32 not installed in the infra virtualenv)
+  # We can't use the virtualenv for running buildbot :(.
   PYTHON = 'c:\\setup\\depot_tools\\python.bat'
   GIT = 'C:\\setup\\depot_tools\\git.exe'
   GCLIENT_BIN = 'gclient.bat'
   TEMP_DEPOT_TOOLS = 'C:\\tmp\\depot_tools'
 else:
-  PYTHON = '/usr/bin/python'
+  PYTHON = sys.executable
   GIT = '/usr/bin/git'
   GCLIENT_BIN = 'gclient'
   TEMP_DEPOT_TOOLS = '/tmp/depot_tools'
