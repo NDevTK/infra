@@ -22,6 +22,30 @@
       "revId": "baf1b597ca4c411dde38014b5cd2620d5f9fe7fc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eaa598f2_fa2ee390",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/commit_scanner.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-01T06:43:12Z",
+      "side": 1,
+      "message": "Yes. I do it in a later patch.",
+      "parentUuid": "25cd9ffb_f3018bff",
+      "range": {
+        "startLine": 123,
+        "startChar": 0,
+        "endLine": 139,
+        "endChar": 1
+      },
+      "revId": "baf1b597ca4c411dde38014b5cd2620d5f9fe7fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
