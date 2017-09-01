@@ -1,0 +1,245 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0479640a_1e102541",
+        "filename": "appengine/findit/gae_libs/base_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-09-01T21:36:58Z",
+      "side": 1,
+      "message": "nit: incomplete comment?",
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8df18a18_4e5bc485",
+        "filename": "appengine/findit/gae_libs/base_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-09-01T21:36:58Z",
+      "side": 1,
+      "message": "nit: add . after )",
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a18e7cf6_34ab13a2",
+        "filename": "appengine/findit/gae_libs/base_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-09-01T21:36:58Z",
+      "side": 1,
+      "message": "nit: how about something more informative than \u0027v\u0027 for what \u0027v\u0027 is?",
+      "range": {
+        "startLine": 62,
+        "startChar": 8,
+        "endLine": 62,
+        "endChar": 9
+      },
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f50f635c_80d9db1f",
+        "filename": "appengine/findit/gae_libs/base_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-09-01T21:36:58Z",
+      "side": 1,
+      "message": "How about \"\"Override send_result_email not to send email upon pipeline completion.\"\"\"?",
+      "range": {
+        "startLine": 66,
+        "startChar": 7,
+        "endLine": 66,
+        "endChar": 58
+      },
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "65481abe_2310ce80",
+        "filename": "appengine/findit/gae_libs/pipeline_wrapper.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-09-01T21:36:58Z",
+      "side": 1,
+      "message": "Is there a reason for not just deleting this file?",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 56
+      },
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "83c7537c_4cfeeb93",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-09-01T21:36:58Z",
+      "side": 1,
+      "message": "and they -\u003e which",
+      "range": {
+        "startLine": 7,
+        "startChar": 2,
+        "endLine": 7,
+        "endChar": 10
+      },
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "47892f2f_fa04977d",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-09-01T21:36:58Z",
+      "side": 1,
+      "message": "nit: add \"The\" before constructor",
+      "range": {
+        "startLine": 7,
+        "startChar": 69,
+        "endLine": 7,
+        "endChar": 80
+      },
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ad0f0885_7564c160",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-09-01T21:36:58Z",
+      "side": 1,
+      "message": "nit: move \"constructor\" onto the same line as ,",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 1
+      },
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1a0701b6_17b92b1b",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-09-01T21:36:58Z",
+      "side": 1,
+      "message": "what do you mean by uninterpreted key-value ones?",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 23
+      },
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8af1470c_a4bd82b1",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-09-01T21:36:58Z",
+      "side": 1,
+      "message": "nit: no need for . here",
+      "range": {
+        "startLine": 89,
+        "startChar": 28,
+        "endLine": 89,
+        "endChar": 29
+      },
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "73b672ba_38e0c627",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-09-01T21:36:58Z",
+      "side": 1,
+      "message": "nit: remove of",
+      "range": {
+        "startLine": 92,
+        "startChar": 58,
+        "endLine": 92,
+        "endChar": 60
+      },
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
