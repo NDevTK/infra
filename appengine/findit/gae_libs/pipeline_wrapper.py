@@ -2,17 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from pipeline_utils import pipelines
-from pipeline_utils.appengine_third_party_pipeline_python_src_pipeline \
-    import handlers as pipeline_handlers
-from pipeline_utils.appengine_third_party_pipeline_python_src_pipeline \
-    import pipeline as pipeline
-from pipeline_utils.appengine_third_party_pipeline_python_src_pipeline \
-    import status_ui as pipeline_status_ui
+"""Deprecated. Please use gae_libs/pipelines.py instead."""
+
+import pipeline as pipeline
+from pipeline import handlers as pipeline_handlers
+from pipeline import status_ui as pipeline_status_ui
 
 
 # TODO(stgao): remove BasePipeline after http://crrev.com/810193002 is landed.
-class BasePipeline(pipelines.AppenginePipeline):  # pragma: no cover
+class BasePipeline(pipeline.Pipeline):  # pragma: no cover
+
+  def send_result_email(self):
+    """We override this so it doesn't email on completion."""
+    pass
 
   def run_test(self, *args, **kwargs):
     pass
