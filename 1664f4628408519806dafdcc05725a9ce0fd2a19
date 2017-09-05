@@ -22,6 +22,30 @@
       "revId": "1664f4628408519806dafdcc05725a9ce0fd2a19",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f6417eb0_07ba2612",
+        "filename": "go/src/infra/cmd/bqexport/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-09-05T21:44:49Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "db445b3d_62bcfa50",
+      "range": {
+        "startLine": 16,
+        "startChar": 4,
+        "endLine": 19,
+        "endChar": 7
+      },
+      "revId": "1664f4628408519806dafdcc05725a9ce0fd2a19",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
