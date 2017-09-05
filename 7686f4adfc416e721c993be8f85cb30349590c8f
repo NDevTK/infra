@@ -45,6 +45,30 @@
       "revId": "7686f4adfc416e721c993be8f85cb30349590c8f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d49f4450_3dcd4411",
+        "filename": "go/src/infra/appengine/luci-migration/analysis/group.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-09-05T23:00:09Z",
+      "side": 1,
+      "message": "Done in https://chromium-review.googlesource.com/651343",
+      "parentUuid": "80172b0f_1c9e1f84",
+      "range": {
+        "startLine": 76,
+        "startChar": 42,
+        "endLine": 76,
+        "endChar": 46
+      },
+      "revId": "7686f4adfc416e721c993be8f85cb30349590c8f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
