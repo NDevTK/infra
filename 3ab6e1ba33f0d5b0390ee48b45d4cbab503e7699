@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "30f07343_22a66c82",
+        "filename": "appengine/findit/gae_libs/base_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-06T15:24:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0479640a_1e102541",
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8df18a18_4e5bc485",
         "filename": "appengine/findit/gae_libs/base_pipeline.py",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "614e284f_99fe15b4",
+        "filename": "appengine/findit/gae_libs/base_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-06T15:24:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8df18a18_4e5bc485",
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -59,6 +95,30 @@
     },
     {
       "key": {
+        "uuid": "f4d60ad4_54092cd7",
+        "filename": "appengine/findit/gae_libs/base_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-06T15:24:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a18e7cf6_34ab13a2",
+      "range": {
+        "startLine": 62,
+        "startChar": 8,
+        "endLine": 62,
+        "endChar": 9
+      },
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f50f635c_80d9db1f",
         "filename": "appengine/findit/gae_libs/base_pipeline.py",
         "patchSetId": 1
@@ -82,6 +142,30 @@
     },
     {
       "key": {
+        "uuid": "af21d054_8b8daf37",
+        "filename": "appengine/findit/gae_libs/base_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-06T15:24:02Z",
+      "side": 1,
+      "message": "This was removed now as it is not needed any more.",
+      "parentUuid": "f50f635c_80d9db1f",
+      "range": {
+        "startLine": 66,
+        "startChar": 7,
+        "endLine": 66,
+        "endChar": 58
+      },
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "65481abe_2310ce80",
         "filename": "appengine/findit/gae_libs/pipeline_wrapper.py",
         "patchSetId": 1
@@ -93,6 +177,30 @@
       "writtenOn": "2017-09-01T21:36:58Z",
       "side": 1,
       "message": "Is there a reason for not just deleting this file?",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 56
+      },
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0860ff72_24b7824d",
+        "filename": "appengine/findit/gae_libs/pipeline_wrapper.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-06T15:24:02Z",
+      "side": 1,
+      "message": "All existing pipelines in Findit/Predator use this one, and the new pipelines will break them.",
+      "parentUuid": "65481abe_2310ce80",
       "range": {
         "startLine": 5,
         "startChar": 0,
@@ -174,6 +282,78 @@
     },
     {
       "key": {
+        "uuid": "85922e68_50d40df4",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-06T15:24:02Z",
+      "side": 1,
+      "message": "Reworded.",
+      "parentUuid": "83c7537c_4cfeeb93",
+      "range": {
+        "startLine": 7,
+        "startChar": 2,
+        "endLine": 7,
+        "endChar": 10
+      },
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6b382a9c_22033634",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-06T15:24:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "47892f2f_fa04977d",
+      "range": {
+        "startLine": 7,
+        "startChar": 69,
+        "endLine": 7,
+        "endChar": 80
+      },
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0125d4e4_f61defb6",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-06T15:24:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ad0f0885_7564c160",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 1
+      },
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a0701b6_17b92b1b",
         "filename": "appengine/findit/libs/serializable_object.py",
         "patchSetId": 1
@@ -194,6 +374,30 @@
       "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8dab0bc3_93110ab0",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-06T15:24:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a0701b6_17b92b1b",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 23
+      },
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -220,6 +424,30 @@
     },
     {
       "key": {
+        "uuid": "959e4b8e_2352d61d",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-06T15:24:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8af1470c_a4bd82b1",
+      "range": {
+        "startLine": 89,
+        "startChar": 28,
+        "endLine": 89,
+        "endChar": 29
+      },
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "73b672ba_38e0c627",
         "filename": "appengine/findit/libs/serializable_object.py",
         "patchSetId": 1
@@ -240,6 +468,30 @@
       "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c138eef1_12a06250",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-06T15:24:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "73b672ba_38e0c627",
+      "range": {
+        "startLine": 92,
+        "startChar": 58,
+        "endLine": 92,
+        "endChar": 60
+      },
+      "revId": "3ab6e1ba33f0d5b0390ee48b45d4cbab503e7699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
