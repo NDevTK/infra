@@ -48,6 +48,46 @@
     },
     {
       "key": {
+        "uuid": "ce56a4b1_d32fdf06",
+        "filename": "appengine/findit/gae_libs/pipelines.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-09-06T23:29:16Z",
+      "side": 1,
+      "message": "Provide examples on how to subclasses each pipeline.",
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "da2836ed_0e18ac1b",
+        "filename": "appengine/findit/gae_libs/pipelines.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-09-06T23:29:16Z",
+      "side": 1,
+      "message": "Be more specific here.",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 44
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a881f988_49a76b6e",
         "filename": "appengine/findit/gae_libs/pipelines.py",
         "patchSetId": 3
@@ -110,6 +150,29 @@
         "startChar": 27,
         "endLine": 20,
         "endChar": 60
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0b91406f_b36d6196",
+        "filename": "appengine/findit/gae_libs/pipelines.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-09-06T23:29:16Z",
+      "side": 1,
+      "message": "args section",
+      "range": {
+        "startLine": 24,
+        "startChar": 5,
+        "endLine": 24,
+        "endChar": 41
       },
       "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
@@ -221,6 +284,121 @@
     },
     {
       "key": {
+        "uuid": "95a1930b_ae8440a7",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-09-06T23:29:16Z",
+      "side": 1,
+      "message": "We should make sure this is forward-compatible in case we decide to move to python 3 (which we probably should eventually).",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 28
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "64e71be4_77cb5381",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-09-06T23:29:16Z",
+      "side": 1,
+      "message": "I would change this so it\u0027s a minimal example of class composition, and have an example before it to show how to store properties in the class itself. Not sure exactly how to use this serializable class based on this example.",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 61
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c3d431c4_67bb21e9",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-09-06T23:29:16Z",
+      "side": 1,
+      "message": "What if I have multiple types going into the class?",
+      "range": {
+        "startLine": 44,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 56
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3be767b5_f0eef25b",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-09-06T23:29:16Z",
+      "side": 1,
+      "message": "Can you add detailed docstrings to each of these methods?",
+      "range": {
+        "startLine": 62,
+        "startChar": 6,
+        "endLine": 62,
+        "endChar": 24
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "72831351_1bf7a734",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-09-06T23:29:16Z",
+      "side": 1,
+      "message": "Was this meant to be a docstring?",
+      "range": {
+        "startLine": 87,
+        "startChar": 4,
+        "endLine": 96,
+        "endChar": 49
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "bb25b55b_e15941d6",
         "filename": "appengine/findit/libs/serializable_object.py",
         "patchSetId": 3
@@ -260,6 +438,29 @@
         "startChar": 67,
         "endLine": 126,
         "endChar": 54
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2fa9d843_81437ca8",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-09-06T23:29:16Z",
+      "side": 1,
+      "message": "and not (cond1 and cond2)",
+      "range": {
+        "startLine": 124,
+        "startChar": 67,
+        "endLine": 126,
+        "endChar": 56
       },
       "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
