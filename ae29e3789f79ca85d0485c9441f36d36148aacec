@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0778ace8_aa8df658",
+        "filename": "appengine/findit/gae_libs/pipelines.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-06T20:53:02Z",
+      "side": 1,
+      "message": "This looks obscure, could you add a comment explaining its significance?",
+      "range": {
+        "startLine": 20,
+        "startChar": 27,
+        "endLine": 20,
+        "endChar": 60
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "07ef0c23_fe29d899",
+        "filename": "appengine/findit/gae_libs/pipelines.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-06T20:53:02Z",
+      "side": 1,
+      "message": "keyword arguments (or keyword parameters)",
+      "range": {
+        "startLine": 43,
+        "startChar": 48,
+        "endLine": 43,
+        "endChar": 68
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3496eb93_b8ab7186",
+        "filename": "appengine/findit/gae_libs/pipelines.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-06T20:53:02Z",
+      "side": 1,
+      "message": "It\u0027s not clear if the subclasses should implement callback or Callback, and whether it should worry about converting parameters to input object.\nAlso, what is the expected behavior of get_callback_url and get_callback_task?",
+      "range": {
+        "startLine": 181,
+        "startChar": 2,
+        "endLine": 181,
+        "endChar": 10
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "899ae796_758ceda4",
+        "filename": "appengine/findit/gae_libs/test/pipelines_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-06T20:53:02Z",
+      "side": 1,
+      "message": "What to do when the arg is a custom type? Will it get correctly encoded if it extends SerializableObject?",
+      "range": {
+        "startLine": 116,
+        "startChar": 23,
+        "endLine": 116,
+        "endChar": 26
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ed1ec763_4208610c",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-06T20:53:02Z",
+      "side": 1,
+      "message": "Maybe this should be available as a library external to findit.\n\nAlso maybe you could call it something more descriptive.\n\nMore than being objects that can be serialized, these are:\n - Type-validated, // Type-safe and/or custom-validatable.\n - Compositable, // Can contain other objects derived from the class.\n - Dict-representable // Which implies they are serializable.\n - Data-transfer data structures // Meaning they are intended to transfer structured data between parts of a system.\n\nI would call these \"PyStructs\", \"DictStructs\" or something similar because they feel a lot like go structs.",
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
