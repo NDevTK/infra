@@ -2,6 +2,75 @@
   "comments": [
     {
       "key": {
+        "uuid": "74c6ca64_bc7813c8",
+        "filename": "appengine/findit/gae_libs/pipeline_wrapper.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-09-06T22:57:52Z",
+      "side": 1,
+      "message": "Will you have a follow up CL to eventually remove this module?",
+      "range": {
+        "startLine": 5,
+        "startChar": 3,
+        "endLine": 5,
+        "endChar": 13
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c6fcc8be_d0cd889f",
+        "filename": "appengine/findit/gae_libs/pipeline_wrapper.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-09-06T22:57:52Z",
+      "side": 1,
+      "message": "Is this TODO still needed?",
+      "range": {
+        "startLine": 12,
+        "startChar": 2,
+        "endLine": 12,
+        "endChar": 6
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a881f988_49a76b6e",
+        "filename": "appengine/findit/gae_libs/pipelines.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-09-06T22:57:52Z",
+      "side": 1,
+      "message": "So we will not support datetime?",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 16
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0778ace8_aa8df658",
         "filename": "appengine/findit/gae_libs/pipelines.py",
         "patchSetId": 3
@@ -146,6 +215,52 @@
       "side": 1,
       "message": "Now if you wanted to be creative, these could be called\n\nDict-Representable Type-Asserting Compositable Objects\n\nWhich happens to have the awesome acronym DRTACO  (Read as Doctor Taco).",
       "parentUuid": "ed1ec763_4208610c",
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bb25b55b_e15941d6",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-09-06T22:57:52Z",
+      "side": 1,
+      "message": "Can this be simplified to:\n    if name in self._GetDefinedAttributes():\n      return self._data[name]\n    return object.__getattribute__(self, name)",
+      "range": {
+        "startLine": 97,
+        "startChar": 0,
+        "endLine": 101,
+        "endChar": 46
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a9773577_19750475",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-09-06T22:57:52Z",
+      "side": 1,
+      "message": "what\u0027are these conditions for?",
+      "range": {
+        "startLine": 124,
+        "startChar": 67,
+        "endLine": 126,
+        "endChar": 54
+      },
       "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
