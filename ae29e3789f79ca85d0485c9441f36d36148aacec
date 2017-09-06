@@ -131,6 +131,24 @@
       "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2c523816_927dc76f",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-06T21:50:08Z",
+      "side": 1,
+      "message": "Now if you wanted to be creative, these could be called\n\nDict-Representable Type-Asserting Compositable Objects\n\nWhich happens to have the awesome acronym DRTACO  (Read as Doctor Taco).",
+      "parentUuid": "ed1ec763_4208610c",
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
