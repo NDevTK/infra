@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f9c2da4e_080ac3db",
+        "filename": "go/src/infra/libs/eventupload/eventupload.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-09-07T20:43:49Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "704801fb_665b8d2d",
+      "revId": "63165a071a9062555de5d6529d481c3e6af997a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "110331dc_c8fd976c",
         "filename": "go/src/infra/libs/eventupload/eventupload.go",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "63165a071a9062555de5d6529d481c3e6af997a4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9bece2a9_96cc79a5",
+        "filename": "go/src/infra/libs/eventupload/eventupload.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 307,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-09-07T20:43:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "110331dc_c8fd976c",
+      "revId": "63165a071a9062555de5d6529d481c3e6af997a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
