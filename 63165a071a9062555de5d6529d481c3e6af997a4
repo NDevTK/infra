@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "704801fb_665b8d2d",
+        "filename": "go/src/infra/libs/eventupload/eventupload.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-09-07T19:08:10Z",
+      "side": 1,
+      "message": "for another time: fwiw, this is a serious limitation. A typical usage for BatchUploader that I imagine is BatchUploader is created, passed down to other functions that stage their events, and when they are done, the batchUploader is closed. With this limitation, the functions cannot may not use the context they have because it may have a deadline (entirely unrelated to this batch uploader).\n\nConsider adding a function Start(ctx) that explicitly starts the BatchUploader. It would be called in the same context as BatchUploader creation. Then the functions that emit events do not have to bother with the context they use with Stage. In fact, Stage wouldn\u0027t need ctx param",
+      "revId": "63165a071a9062555de5d6529d481c3e6af997a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "110331dc_c8fd976c",
+        "filename": "go/src/infra/libs/eventupload/eventupload.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 307,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-09-07T19:08:10Z",
+      "side": 1,
+      "message": "should it check if it is already closed?",
+      "revId": "63165a071a9062555de5d6529d481c3e6af997a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
