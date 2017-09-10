@@ -57,8 +57,7 @@ class PredatorForChromeCrash(PredatorApp):  # pylint: disable=W0223
         'TouchCrashedFileMeta': MetaWeight({
             'MinDistance': Weight(2.),
             'TopFrameIndex': Weight(1.),
-            'TouchCrashedFile': Weight(1.),
-            'FilePathIdf': Weight(1.)
+            'FilePathIdf': Weight(0.)
         }),
         'TouchCrashedDirectory': Weight(1.),
         'NumberOfTouchedFiles': Weight(0.5)
@@ -67,13 +66,11 @@ class PredatorForChromeCrash(PredatorApp):  # pylint: disable=W0223
     min_distance_feature = MinDistanceFeature(get_repository)
     top_frame_index_feature = TopFrameIndexFeature()
     touch_crashed_file_feature = TouchCrashedFileFeature()
-    file_path_idf_feature = FilePathIdfFeature(ChromeCrashInvertedIndex)
 
     meta_feature = WrapperMetaFeature(
         [TouchCrashedFileMetaFeature([min_distance_feature,
                                       top_frame_index_feature,
-                                      touch_crashed_file_feature,
-                                      file_path_idf_feature]),
+                                      touch_crashed_file_feature]),
          TouchCrashedDirectoryFeature(),
          TouchCrashedComponentFeature(self._component_classifier),
          NumberOfTouchedFilesFeature()])
