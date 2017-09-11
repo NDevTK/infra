@@ -62,7 +62,7 @@ class ChangelistClassifier(object):
 
     if len(suspects) == 1:
       suspect = suspects[0]
-      suspect.confidence = 1.0
+      suspect.confidence = 50.0
       suspect.reasons = ['The suspect is the only cl in the regression range.']
       return [suspect]
 
