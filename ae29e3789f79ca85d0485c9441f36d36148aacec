@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1d13f1f0_a69ccc13",
+        "filename": "appengine/findit/gae_libs/pipeline_wrapper.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-12T00:21:09Z",
+      "side": 1,
+      "message": "That will be after you folks and Predator switch all existing pipelines to use the few base pipelines added in this CL. When that is done, I will remove this one.",
+      "parentUuid": "74c6ca64_bc7813c8",
+      "range": {
+        "startLine": 5,
+        "startChar": 3,
+        "endLine": 5,
+        "endChar": 13
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c6fcc8be_d0cd889f",
         "filename": "appengine/findit/gae_libs/pipeline_wrapper.py",
         "patchSetId": 3
@@ -36,6 +60,30 @@
       "writtenOn": "2017-09-06T22:57:52Z",
       "side": 1,
       "message": "Is this TODO still needed?",
+      "range": {
+        "startLine": 12,
+        "startChar": 2,
+        "endLine": 12,
+        "endChar": 6
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "40667ced_e80f535b",
+        "filename": "appengine/findit/gae_libs/pipeline_wrapper.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-12T00:21:09Z",
+      "side": 1,
+      "message": "Good catch. Removed.",
+      "parentUuid": "c6fcc8be_d0cd889f",
       "range": {
         "startLine": 12,
         "startChar": 2,
@@ -65,6 +113,24 @@
     },
     {
       "key": {
+        "uuid": "c5549c4b_3a760671",
+        "filename": "appengine/findit/gae_libs/pipelines.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-12T00:21:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ce56a4b1_d32fdf06",
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2836ed_0e18ac1b",
         "filename": "appengine/findit/gae_libs/pipelines.py",
         "patchSetId": 3
@@ -88,6 +154,30 @@
     },
     {
       "key": {
+        "uuid": "69297dd0_0d5868ab",
+        "filename": "appengine/findit/gae_libs/pipelines.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-12T00:21:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da2836ed_0e18ac1b",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 44
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a881f988_49a76b6e",
         "filename": "appengine/findit/gae_libs/pipelines.py",
         "patchSetId": 3
@@ -99,6 +189,30 @@
       "writtenOn": "2017-09-06T22:57:52Z",
       "side": 1,
       "message": "So we will not support datetime?",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 16
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8c60ca79_1ccbf7ad",
+        "filename": "appengine/findit/gae_libs/pipelines.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-12T00:21:09Z",
+      "side": 1,
+      "message": "Nope, just like current pipeline framework.\nIf a datetime should be passed between pipelines, it could be convert to a utc timestamp first.",
+      "parentUuid": "a881f988_49a76b6e",
       "range": {
         "startLine": 17,
         "startChar": 0,
@@ -157,6 +271,30 @@
     },
     {
       "key": {
+        "uuid": "04be64b5_d406fb08",
+        "filename": "appengine/findit/gae_libs/pipelines.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-12T00:21:09Z",
+      "side": 1,
+      "message": "It is a randomly-generated string to avoid collision.",
+      "parentUuid": "13127446_9909d76a",
+      "range": {
+        "startLine": 20,
+        "startChar": 27,
+        "endLine": 20,
+        "endChar": 60
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0b91406f_b36d6196",
         "filename": "appengine/findit/gae_libs/pipelines.py",
         "patchSetId": 3
@@ -177,6 +315,30 @@
       "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ede685cb_07459d5b",
+        "filename": "appengine/findit/gae_libs/pipelines.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-12T00:21:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0b91406f_b36d6196",
+      "range": {
+        "startLine": 24,
+        "startChar": 5,
+        "endLine": 24,
+        "endChar": 41
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -203,6 +365,30 @@
     },
     {
       "key": {
+        "uuid": "c7c1e131_70a6fbd4",
+        "filename": "appengine/findit/gae_libs/pipelines.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-12T00:21:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "07ef0c23_fe29d899",
+      "range": {
+        "startLine": 43,
+        "startChar": 48,
+        "endLine": 43,
+        "endChar": 68
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3496eb93_b8ab7186",
         "filename": "appengine/findit/gae_libs/pipelines.py",
         "patchSetId": 3
@@ -226,6 +412,30 @@
     },
     {
       "key": {
+        "uuid": "65638516_919bfe17",
+        "filename": "appengine/findit/gae_libs/pipelines.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-12T00:21:09Z",
+      "side": 1,
+      "message": "Added CallbackImpl to make it more clear.\nFor get_callback_url and get_callback_task, I\u0027d leave it out of this CL for now because this CL is growing big, and I\u0027d prefer a follow-up CL dedicated for that in the context of Swarming/BuildBucket push.",
+      "parentUuid": "3496eb93_b8ab7186",
+      "range": {
+        "startLine": 181,
+        "startChar": 2,
+        "endLine": 181,
+        "endChar": 10
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "899ae796_758ceda4",
         "filename": "appengine/findit/gae_libs/test/pipelines_test.py",
         "patchSetId": 3
@@ -237,6 +447,30 @@
       "writtenOn": "2017-09-06T20:53:02Z",
       "side": 1,
       "message": "What to do when the arg is a custom type? Will it get correctly encoded if it extends SerializableObject?",
+      "range": {
+        "startLine": 116,
+        "startChar": 23,
+        "endLine": 116,
+        "endChar": 26
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d77cf0c2_592f32e6",
+        "filename": "appengine/findit/gae_libs/test/pipelines_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-12T00:21:09Z",
+      "side": 1,
+      "message": "Plan to deal with it in a follow-up CL. But not sure whether to support it or not yet.",
+      "parentUuid": "899ae796_758ceda4",
       "range": {
         "startLine": 116,
         "startChar": 23,
@@ -284,6 +518,24 @@
     },
     {
       "key": {
+        "uuid": "9d951ad1_c9e0b729",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-12T00:21:09Z",
+      "side": 1,
+      "message": "All are good points! It is possible to make it in luci python components, but we had difficulty in some unexpected errors of pipeline class lookup if luci components is used. Let\u0027s revisit later.\n\nI\u0027ve updated the description of this module to make it more comprehensive.\nAs discussed, I went with StructuredObject as the name because DRTACO is not obvious enough for what it does.",
+      "parentUuid": "2c523816_927dc76f",
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "95a1930b_ae8440a7",
         "filename": "appengine/findit/libs/serializable_object.py",
         "patchSetId": 3
@@ -295,6 +547,30 @@
       "writtenOn": "2017-09-06T23:29:16Z",
       "side": 1,
       "message": "We should make sure this is forward-compatible in case we decide to move to python 3 (which we probably should eventually).",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 28
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "64c89ad5_ff093e3c",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-12T00:21:09Z",
+      "side": 1,
+      "message": "According to https://docs.python.org/3/reference/datamodel.html#customizing-attribute-access, this should still work in python3.\nDo you have other thought on python3 compatibility?",
+      "parentUuid": "95a1930b_ae8440a7",
       "range": {
         "startLine": 1,
         "startChar": 0,
@@ -330,6 +606,30 @@
     },
     {
       "key": {
+        "uuid": "2e31ca99_de61f62a",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-12T00:21:09Z",
+      "side": 1,
+      "message": "Good idea. Done.\n\nFor usage, I added one description for it.",
+      "parentUuid": "64e71be4_77cb5381",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 61
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c3d431c4_67bb21e9",
         "filename": "appengine/findit/libs/serializable_object.py",
         "patchSetId": 3
@@ -341,6 +641,30 @@
       "writtenOn": "2017-09-06T23:29:16Z",
       "side": 1,
       "message": "What if I have multiple types going into the class?",
+      "range": {
+        "startLine": 44,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 56
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "73457c27_fcab4570",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-12T00:21:09Z",
+      "side": 1,
+      "message": "Make the example more comprehensive for the case you mentioned.",
+      "parentUuid": "c3d431c4_67bb21e9",
       "range": {
         "startLine": 44,
         "startChar": 0,
@@ -376,6 +700,30 @@
     },
     {
       "key": {
+        "uuid": "8c3bddec_7720d7cb",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-12T00:21:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3be767b5_f0eef25b",
+      "range": {
+        "startLine": 62,
+        "startChar": 6,
+        "endLine": 62,
+        "endChar": 24
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "72831351_1bf7a734",
         "filename": "appengine/findit/libs/serializable_object.py",
         "patchSetId": 3
@@ -399,6 +747,30 @@
     },
     {
       "key": {
+        "uuid": "3f901632_45f5d83c",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-12T00:21:09Z",
+      "side": 1,
+      "message": "hm, I\u0027d prefer it to be a comment instead of a docstring, because it is to explain why we first handle attributes with prefix \"_\".",
+      "parentUuid": "72831351_1bf7a734",
+      "range": {
+        "startLine": 87,
+        "startChar": 4,
+        "endLine": 96,
+        "endChar": 49
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "bb25b55b_e15941d6",
         "filename": "appengine/findit/libs/serializable_object.py",
         "patchSetId": 3
@@ -410,6 +782,30 @@
       "writtenOn": "2017-09-06T22:57:52Z",
       "side": 1,
       "message": "Can this be simplified to:\n    if name in self._GetDefinedAttributes():\n      return self._data[name]\n    return object.__getattribute__(self, name)",
+      "range": {
+        "startLine": 97,
+        "startChar": 0,
+        "endLine": 101,
+        "endChar": 46
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f19223fe_762bf586",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-12T00:21:09Z",
+      "side": 1,
+      "message": "Nope, we can\u0027t. That\u0027s the tricky part. See the long comment above on why.",
+      "parentUuid": "bb25b55b_e15941d6",
       "range": {
         "startLine": 97,
         "startChar": 0,
@@ -465,6 +861,54 @@
       "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "220198ab_5afbdaed",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-12T00:21:09Z",
+      "side": 1,
+      "message": "Added an explanation. One example of this is to allow setting a pipeline Future to an attribute, and later expand it to be parameters for pipelines.",
+      "parentUuid": "a9773577_19750475",
+      "range": {
+        "startLine": 124,
+        "startChar": 67,
+        "endLine": 126,
+        "endChar": 54
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d40087f3_c9c4c325",
+        "filename": "appengine/findit/libs/serializable_object.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-12T00:21:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2fa9d843_81437ca8",
+      "range": {
+        "startLine": 124,
+        "startChar": 67,
+        "endLine": 126,
+        "endChar": 56
+      },
+      "revId": "ae29e3789f79ca85d0485c9441f36d36148aacec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
