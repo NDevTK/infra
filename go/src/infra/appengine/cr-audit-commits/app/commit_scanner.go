@@ -62,6 +62,9 @@ func CommitScanner(rc *router.Context) {
 		http.Error(resp, err.Error(), 500)
 		return
 	}
+
+	// Make sure we are not reusing this client outside this request.
+	defer func() { repoConfig.gitilesClient = nil }()
 	// Tests would have put a mock client in repoConfig.gitilesClient.
 	if repoConfig.gitilesClient == nil {
 		giC, err := getGitilesClient(ctx)

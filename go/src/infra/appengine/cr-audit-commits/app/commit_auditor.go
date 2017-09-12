@@ -75,6 +75,13 @@ func CommitAuditor(rc *router.Context) {
 
 	cfgk := ds.KeyForObj(ctx, repoConfig.State)
 
+	// Ensure these clients do not exist beyond the life of the current
+	// request.
+	defer func() {
+		repoConfig.gitilesClient = nil
+		repoConfig.gerritClient = nil
+		repoConfig.miloClient = nil
+	}()
 	// Tests would have put a mock client in repoConfig.gitilesClient.
 	if repoConfig.gitilesClient == nil {
 		giC, err := getGitilesClient(ctx)
