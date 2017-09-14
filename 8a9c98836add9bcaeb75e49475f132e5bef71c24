@@ -22,6 +22,30 @@
       "revId": "8a9c98836add9bcaeb75e49475f132e5bef71c24",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c87ad3d5_9c9f7f79",
+        "filename": "appengine/predator/scripts/grade_model.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-09-14T22:34:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d7297497_3d7a1e5d",
+      "range": {
+        "startLine": 203,
+        "startChar": 5,
+        "endLine": 206,
+        "endChar": 70
+      },
+      "revId": "8a9c98836add9bcaeb75e49475f132e5bef71c24",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
