@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6210b2bd_a26c8ec7",
+        "filename": "go/src/infra/tools/vpython/main_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-09-18T14:34:45Z",
+      "side": 1,
+      "message": "This is for JSON-ability, plus leaves room for more params if needed in the future.",
+      "revId": "83fc8cf5be1e50ef58ef2249641def88f57d0b62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "25b9b9e9_d34bd0fa",
+        "filename": "go/src/infra/tools/vpython/main_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1109829
+      },
+      "writtenOn": "2017-09-18T14:34:45Z",
+      "side": 1,
+      "message": "Mirrors \"*exec.Cmd\" interface, but is test-friendly.",
+      "range": {
+        "startLine": 81,
+        "startChar": 32,
+        "endLine": 81,
+        "endChar": 37
+      },
+      "revId": "83fc8cf5be1e50ef58ef2249641def88f57d0b62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
