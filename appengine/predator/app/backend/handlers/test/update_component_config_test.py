@@ -86,7 +86,11 @@ class UpdateComponentConfigTest(TestCase):
   def testGetComponentClassifierConfig(self):
     component_classifier_config = GetComponentClassifierConfig(
         _MOCK_CURRENT_CONFIG, DummyHttpClient({'owner_mapping_url': 'url'}))
-    self.assertDictEqual(_MOCK_CONFIG, component_classifier_config)
+    expected_components = _MOCK_CONFIG['component_info']
+    expected_components.sort()
+    components = component_classifier_config['component_info']
+    components.sort()
+    self.assertListEqual(components, expected_components)
 
   def testGetComponentClassifierConfigNoOWNERS(self):
     component_classifier_config = GetComponentClassifierConfig(

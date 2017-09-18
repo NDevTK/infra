@@ -44,6 +44,14 @@ class ComponentClassifierTest(AnalysisTestCase):
     # time we call a method on it.
     self.classifier = ComponentClassifier(components, COMPONENT_CONFIG['top_n'])
 
+  def testClassifyStackFrameEmptyFrame(self):
+    """Tests that ``ClassifyStackFrame`` returns None for empty frame."""
+    frame = StackFrame(0, None, 'func', 'comp1/a.cc', 'src/comp1/a.cc', [2])
+    self.assertIsNone(self.classifier.ClassifyStackFrame(frame))
+
+    frame = StackFrame(0, 'src/', 'func', None, 'src/comp1/a.cc', [2])
+    self.assertIsNone(self.classifier.ClassifyStackFrame(frame))
+
   def testClassifyCallStack(self):
     """Tests ``ClassifyCallStack`` method."""
     callstack = CallStack(
