@@ -163,18 +163,20 @@ func issueFromID(ctx context.Context, cfg *RepoConfig, ID int32, cs *Clients) (*
 }
 
 func resultText(cfg *RepoConfig, rc *RelevantCommit, issueExists bool) string {
+	passRows := []string{}
+	failRows := []string{}
+	skipRows := []string{}
 	rows := []string{}
 	for _, rr := range rc.Result {
-		row := ""
 		switch rr.RuleResultStatus {
 		case rulePassed:
-			row = fmt.Sprintf("%s PASSED", rr.RuleName)
+			passRows = append(passRows, fmt.Sprintf(" - %s: PASSED", rr.RuleName))
 		case ruleFailed:
-			row = fmt.Sprintf("%s FAILED (%s)", rr.RuleName, rr.Message)
+			failRows = append(failRows, fmt.Sprintf(" - %s: FAILED (%s)", rr.RuleName, rr.Message))
 		case ruleSkipped:
-			row = fmt.Sprintf("%s was SKIPPED", rr.RuleName)
+			skipRows = append(skipRows, fmt.Sprintf(" - %s: was SKIPPED", rr.RuleName))
 		}
-		rows = append(rows, row)
+		rows = append(failRows, append(passRows, skipRows...)...)
 	}
 
 	results := fmt.Sprintf("Here's a summary of the rules that were executed: \n%s",
@@ -187,7 +189,7 @@ func resultText(cfg *RepoConfig, rc *RelevantCommit, issueExists bool) string {
 	description := "An audit of the git repository at %q found at least one violation when auditing" +
 		" commit %s created by %s and committed by %s.\n\n%s"
 
-	return fmt.Sprintf(description, cfg.RepoURL, rc.CommitHash, rc.AuthorAccount, rc.CommitterAccount, results)
+	return fmt.Sprintf(description, cfg.RepoURL(), rc.CommitHash, rc.AuthorAccount, rc.CommitterAccount, results)
 
 }
 
