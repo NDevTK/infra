@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "cc3b5417_44843bf8",
+        "filename": "appengine/predator/analysis/component_classifier.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-09-19T18:28:19Z",
+      "side": 1,
+      "message": "May I ask why list is better than a dict?",
+      "parentUuid": "7eb31547_79faaa00",
+      "range": {
+        "startLine": 60,
+        "startChar": 4,
+        "endLine": 60,
+        "endChar": 19
+      },
+      "revId": "3066a5f8cf1b3bfbaf50a45398c7c43b85457e8a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6dc06858_0cea9262",
         "filename": "appengine/predator/app/backend/handlers/test/update_component_config_test.py",
         "patchSetId": 2
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "fe2318a1_d23e4da5",
+        "filename": "appengine/predator/app/backend/handlers/test/update_component_config_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-09-19T18:28:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6dc06858_0cea9262",
+      "range": {
+        "startLine": 90,
+        "startChar": 4,
+        "endLine": 90,
+        "endChar": 30
+      },
+      "revId": "3066a5f8cf1b3bfbaf50a45398c7c43b85457e8a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1107b942_ffb27133",
         "filename": "appengine/predator/app/backend/handlers/test/update_component_config_test.py",
         "patchSetId": 2
@@ -68,6 +116,30 @@
       "revId": "3066a5f8cf1b3bfbaf50a45398c7c43b85457e8a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "74d598a0_a6bc5014",
+        "filename": "appengine/predator/app/backend/handlers/test/update_component_config_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-09-19T18:28:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1107b942_ffb27133",
+      "range": {
+        "startLine": 92,
+        "startChar": 4,
+        "endLine": 92,
+        "endChar": 21
+      },
+      "revId": "3066a5f8cf1b3bfbaf50a45398c7c43b85457e8a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
