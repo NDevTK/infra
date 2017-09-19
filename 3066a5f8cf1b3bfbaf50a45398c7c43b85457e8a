@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7eb31547_79faaa00",
+        "filename": "appengine/predator/analysis/component_classifier.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-19T06:03:20Z",
+      "side": 1,
+      "message": "you may use a list instead of a dict.",
+      "range": {
+        "startLine": 60,
+        "startChar": 4,
+        "endLine": 60,
+        "endChar": 19
+      },
+      "revId": "3066a5f8cf1b3bfbaf50a45398c7c43b85457e8a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6dc06858_0cea9262",
+        "filename": "appengine/predator/app/backend/handlers/test/update_component_config_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-19T06:03:20Z",
+      "side": 1,
+      "message": "This has side effect as it sort the hard-coded list in place. A copy should resolve it, or just use sorted(l) instead.",
+      "range": {
+        "startLine": 90,
+        "startChar": 4,
+        "endLine": 90,
+        "endChar": 30
+      },
+      "revId": "3066a5f8cf1b3bfbaf50a45398c7c43b85457e8a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1107b942_ffb27133",
+        "filename": "appengine/predator/app/backend/handlers/test/update_component_config_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-19T06:03:20Z",
+      "side": 1,
+      "message": "Same here if the component list is hard-coded somewhere.",
+      "range": {
+        "startLine": 92,
+        "startChar": 4,
+        "endLine": 92,
+        "endChar": 21
+      },
+      "revId": "3066a5f8cf1b3bfbaf50a45398c7c43b85457e8a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
