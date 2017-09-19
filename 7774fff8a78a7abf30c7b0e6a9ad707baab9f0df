@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7258c03b_cd1f243a",
+        "filename": "go/src/infra/tricium/analyzers/hello/hello.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-09-19T16:20:38Z",
+      "side": 1,
+      "message": "uuUUUu? :)",
+      "range": {
+        "startLine": 25,
+        "startChar": 14,
+        "endLine": 25,
+        "endChar": 25
+      },
+      "revId": "7774fff8a78a7abf30c7b0e6a9ad707baab9f0df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5a41f936_9af07b22",
+        "filename": "go/src/infra/tricium/analyzers/hello/test/src/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2017-09-19T16:20:38Z",
+      "side": 1,
+      "message": "This whole file can be reduced to:\n\n  package main\n\n  func main() {\n    println(\"This is a go test program\")\n  }\n\n\nIn particular, you forgot the \\n but it\u0027s not needed with println().",
+      "revId": "7774fff8a78a7abf30c7b0e6a9ad707baab9f0df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
