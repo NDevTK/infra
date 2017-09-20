@@ -48,6 +48,54 @@
     },
     {
       "key": {
+        "uuid": "5650494e_3b6e5cbe",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/utils.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-20T21:57:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c221bea6_ee45cc7f",
+      "range": {
+        "startLine": 171,
+        "startChar": 2,
+        "endLine": 177,
+        "endChar": 78
+      },
+      "revId": "4f1f8214a6a03225ca5e1cbd53ca85d31ba7067d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a10012cd_875c7f85",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/utils.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-20T21:57:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bebe11a3_8d509a94",
+      "range": {
+        "startLine": 177,
+        "startChar": 51,
+        "endLine": 177,
+        "endChar": 54
+      },
+      "revId": "4f1f8214a6a03225ca5e1cbd53ca85d31ba7067d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dc7609b0_ad8c846c",
         "filename": "go/src/infra/appengine/cr-audit-commits/app/utils.go",
         "patchSetId": 2
@@ -68,6 +116,30 @@
       "revId": "4f1f8214a6a03225ca5e1cbd53ca85d31ba7067d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a71acccf_6ea6df7e",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/utils.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-20T21:57:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dc7609b0_ad8c846c",
+      "range": {
+        "startLine": 180,
+        "startChar": 1,
+        "endLine": 181,
+        "endChar": 0
+      },
+      "revId": "4f1f8214a6a03225ca5e1cbd53ca85d31ba7067d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
