@@ -46,6 +46,30 @@
       "revId": "bc4409958e26125fa58dfaa5465225f6bb4b83ec",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cb3f1ce7_9849350c",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/utils.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-20T04:12:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3edbc036_3c19202f",
+      "range": {
+        "startLine": 179,
+        "startChar": 2,
+        "endLine": 179,
+        "endChar": 55
+      },
+      "revId": "bc4409958e26125fa58dfaa5465225f6bb4b83ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
