@@ -1,6 +1,6 @@
-// Copyright 2017 The LUCI Authors. All rights reserved.
-// Use of this source code is governed under the Apache License, Version 2.0
-// that can be found in the LICENSE file.
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package main
 
@@ -57,7 +57,7 @@ var defaultConfig = application.Config{
 	MaxScriptPathLen:  127, // Maximum POSIX shebang length.
 }
 
-func mainImpl(c context.Context) int {
+func mainImpl(c context.Context, argv []string) int {
 	// Initialize our CIPD package loader from the environment.
 	//
 	// If we don't have an environment-specific CIPD cache directory, use one
@@ -77,11 +77,11 @@ func mainImpl(c context.Context) int {
 	}
 
 	defaultConfig.WithVerificationConfig = withVerificationConfig
-	return defaultConfig.Main(c)
+	return defaultConfig.Main(c, argv)
 }
 
 func main() {
 	c := context.Background()
 	c = gologger.StdConfig.Use(logging.SetLevel(c, logging.Warning))
-	os.Exit(mainImpl(c))
+	os.Exit(mainImpl(c, os.Args))
 }
