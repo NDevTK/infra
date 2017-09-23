@@ -4,7 +4,6 @@
 
 from collections import defaultdict
 from datetime import datetime
-import logging
 import mock
 
 from common.waterfall import failure_type
@@ -1282,3 +1281,25 @@ class BuildFailureAnalysisTest(wf_testcase.WaterfallTestCase):
         build_number, {}, {}, {})
     self.assertIsNone(result)
     self.assertIsNone(max_score)
+
+  def testGetHeuristicSuspectedCLs(self):
+    analysis = WfAnalysis.Create('m', 'b', 123)
+    analysis.suspected_cls = [{
+        'repo_name': 'chromium',
+        'revision': 'r123_2',
+        'commit_position': None,
+        'url': None,
+        'failures': {
+            'b': ['Unittest2.Subtest1', 'Unittest3.Subtest2']
+        },
+        'top_score': 4
+    }]
+    analysis.put()
+
+    suspected_cls = [['chromium', 'r123_2']]
+
+    self.assertEqual(suspected_cls,
+                     build_failure_analysis.GetHeuristicSuspectedCLs(analysis))
+
+  def testGetHeuristicSuspectedCLsNoAnalysis(self):
+    self.assertEqual([], build_failure_analysis.GetHeuristicSuspectedCLs(None))
