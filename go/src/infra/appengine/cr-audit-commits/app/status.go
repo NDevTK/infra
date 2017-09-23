@@ -69,11 +69,15 @@ func Status(rctx *router.Context) {
 		}
 	}
 	args := templates.Args{
-		"Commits":      commits,
-		"LastRelevant": repoState.LastRelevantCommit,
-		"LastScanned":  repoState.LastKnownCommit,
-		"BaseRepoURL":  cfg.BaseRepoURL,
-		"RepoName":     repoName,
+		"Commits":          commits,
+		"LastRelevant":     repoState.LastRelevantCommit,
+		"LastRelevantTime": repoState.LastRelevantCommitTime,
+		"LastScanned":      repoState.LastKnownCommit,
+		"LastScannedTime":  repoState.LastKnownCommitTime,
+		"BaseRepoURL":      cfg.BaseRepoURL,
+		"RepoName":         repoName,
+		"RepoURL":          cfg.RepoURL(),
+		"RuleMap":          RuleMap,
 	}
 	templates.MustRender(ctx, resp, "pages/status.html", args)
 }

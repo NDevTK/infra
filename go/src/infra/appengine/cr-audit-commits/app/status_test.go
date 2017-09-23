@@ -35,7 +35,8 @@ func TestStatusPage(t *testing.T) {
 		}
 		templatesmw := router.NewMiddlewareChain(withTestingContext).Extend(
 			templates.WithTemplates(&templates.Bundle{
-				Loader: templates.FileSystemLoader("templates"),
+				Loader:  templates.FileSystemLoader("templates"),
+				FuncMap: templateFuncs,
 			}))
 
 		r := router.New()
