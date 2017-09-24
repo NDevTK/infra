@@ -1,0 +1,170 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ea8ce9f5_2d31e7c6",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/status.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-09-24T00:00:13Z",
+      "side": 1,
+      "message": "A suggestion: since now the status page will display monitored repositories, maybe if !hasConfig we just show the status page the monitored repo section and Add a message like \u0027Requested repo xxx Not Found\u0027 or something?",
+      "range": {
+        "startLine": 30,
+        "startChar": 5,
+        "endLine": 30,
+        "endChar": 14
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6886e23c_8713119a",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-09-24T00:00:13Z",
+      "side": 1,
+      "message": "Indent?",
+      "range": {
+        "startLine": 6,
+        "startChar": 0,
+        "endLine": 6,
+        "endChar": 6
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e0d66b58_13168903",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-09-24T00:00:13Z",
+      "side": 1,
+      "message": "Question: what\u0027s this for?",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 11
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5fecf1ac_b2572ffc",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-09-24T00:00:13Z",
+      "side": 1,
+      "message": "remove empty line.",
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "264b2d02_9c0c9d79",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-09-24T00:00:13Z",
+      "side": 1,
+      "message": "What do you think about add a link to the status of that repo here?",
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "061d47f5_36d9f6c2",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-09-24T00:00:13Z",
+      "side": 1,
+      "message": "nit: remove tailing spaces here and below.",
+      "range": {
+        "startLine": 81,
+        "startChar": 37,
+        "endLine": 81,
+        "endChar": 38
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c7704de4_c1e29b61",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-09-24T00:00:13Z",
+      "side": 1,
+      "message": "Just double check, both LastRelevantTime and LastScannedTime are not on the demo page. Are they both zero?",
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ec0fa08e_6c5efb8f",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-09-24T00:00:13Z",
+      "side": 1,
+      "message": "Question, commitSubject is the function in templateFuncs, right? It seems to me that commitSubject and timeAgo are used differently?",
+      "range": {
+        "startLine": 112,
+        "startChar": 12,
+        "endLine": 112,
+        "endChar": 40
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
