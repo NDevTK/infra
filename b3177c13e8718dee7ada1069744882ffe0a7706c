@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d1c8f559_884d1cb9",
+        "filename": "appengine/findit/waterfall/test/build_failure_analysis_pipelines_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-25T16:41:05Z",
+      "side": 1,
+      "message": "nit: use () to make is an explicit tuple?",
+      "range": {
+        "startLine": 192,
+        "startChar": 29,
+        "endLine": 192,
+        "endChar": 47
+      },
+      "revId": "b3177c13e8718dee7ada1069744882ffe0a7706c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
