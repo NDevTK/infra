@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0eed5248_be11cb0a",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-25T15:17:23Z",
+      "side": 1,
+      "message": "I feel no need to show the url, better to put the repo name here instead.",
+      "range": {
+        "startLine": 74,
+        "startChar": 47,
+        "endLine": 74,
+        "endChar": 61
+      },
+      "revId": "6e69f8903955710214538cad1741b61401b8146e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
