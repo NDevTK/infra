@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "4bf3f522_1be2fd43",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/rules_config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-25T06:45:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "05cb069a_110c8ef2",
+      "range": {
+        "startLine": 45,
+        "startChar": 93,
+        "endLine": 45,
+        "endChar": 96
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ea8ce9f5_2d31e7c6",
         "filename": "go/src/infra/appengine/cr-audit-commits/app/status.go",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cb6297ff_f4707bdf",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/status.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-25T06:45:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ea8ce9f5_2d31e7c6",
+      "range": {
+        "startLine": 30,
+        "startChar": 5,
+        "endLine": 30,
+        "endChar": 14
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "68eb1320_51464c8d",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-25T06:45:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6886e23c_8713119a",
+      "range": {
+        "startLine": 6,
+        "startChar": 0,
+        "endLine": 6,
+        "endChar": 6
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e0d66b58_13168903",
         "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
         "patchSetId": 1
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "11b4d5aa_ffd60c2e",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-25T06:45:01Z",
+      "side": 1,
+      "message": "To avoid centering the nested table that contains the rule results.",
+      "parentUuid": "e0d66b58_13168903",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 11
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5fecf1ac_b2572ffc",
         "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
         "patchSetId": 1
@@ -108,6 +204,24 @@
       "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "93d85efa_579f644c",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-25T06:45:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5fecf1ac_b2572ffc",
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -134,6 +248,30 @@
     },
     {
       "key": {
+        "uuid": "0e7d4bb0_a1957d96",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-25T06:45:01Z",
+      "side": 1,
+      "message": "This section will show all repos defined, I just added a link to the status of each repo.",
+      "parentUuid": "825c83cb_4c207d62",
+      "range": {
+        "startLine": 59,
+        "startChar": 14,
+        "endLine": 59,
+        "endChar": 26
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a71a10c_9ca914f3",
         "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
         "patchSetId": 1
@@ -154,6 +292,30 @@
       "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "00a95ff6_ff4467eb",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-25T06:45:01Z",
+      "side": 1,
+      "message": "As above.",
+      "parentUuid": "1a71a10c_9ca914f3",
+      "range": {
+        "startLine": 60,
+        "startChar": 1,
+        "endLine": 60,
+        "endChar": 6
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -180,6 +342,30 @@
     },
     {
       "key": {
+        "uuid": "7adcdcd2_1077e070",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-25T06:45:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cc365d43_c5b7448d",
+      "range": {
+        "startLine": 64,
+        "startChar": 5,
+        "endLine": 64,
+        "endChar": 11
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "264b2d02_9c0c9d79",
         "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
         "patchSetId": 1
@@ -194,6 +380,24 @@
       "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "73c11fe9_63a4c6cb",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-25T06:45:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "264b2d02_9c0c9d79",
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -220,6 +424,30 @@
     },
     {
       "key": {
+        "uuid": "2623572f_256d4cf6",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-25T06:45:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "39a43951_c08b5fd9",
+      "range": {
+        "startLine": 68,
+        "startChar": 4,
+        "endLine": 68,
+        "endChar": 47
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7d52db1c_88a18422",
         "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
         "patchSetId": 1
@@ -240,6 +468,30 @@
       "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "695b5a87_ee7df0b3",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-25T06:45:01Z",
+      "side": 1,
+      "message": "Actually the one above should include all repos, merging with the one below.",
+      "parentUuid": "7d52db1c_88a18422",
+      "range": {
+        "startLine": 76,
+        "startChar": 0,
+        "endLine": 76,
+        "endChar": 33
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -266,6 +518,30 @@
     },
     {
       "key": {
+        "uuid": "18b6c373_4cc6be17",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-25T06:45:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f100db12_4fb95f3e",
+      "range": {
+        "startLine": 79,
+        "startChar": 10,
+        "endLine": 79,
+        "endChar": 21
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "061d47f5_36d9f6c2",
         "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
         "patchSetId": 1
@@ -289,6 +565,30 @@
     },
     {
       "key": {
+        "uuid": "0abca1b3_ef9ce303",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-25T06:45:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "061d47f5_36d9f6c2",
+      "range": {
+        "startLine": 81,
+        "startChar": 37,
+        "endLine": 81,
+        "endChar": 38
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c7704de4_c1e29b61",
         "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
         "patchSetId": 1
@@ -303,6 +603,24 @@
       "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "86ef1cad_ca838b63",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-25T06:45:01Z",
+      "side": 1,
+      "message": "Yes, because this change is the one that captures the commit time and it hasn\u0027t be made default.",
+      "parentUuid": "c7704de4_c1e29b61",
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -326,6 +644,30 @@
       "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "73a042d6_26a883a9",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-25T06:45:01Z",
+      "side": 1,
+      "message": "Because they haven\u0027t been recorded (this CL adds two new fields to RepoState) and they will not be recorded until this change is made deployed and made default.",
+      "parentUuid": "8098f9fb_dfcb2478",
+      "range": {
+        "startLine": 89,
+        "startChar": 2,
+        "endLine": 91,
+        "endChar": 9
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -375,6 +717,30 @@
     },
     {
       "key": {
+        "uuid": "644f2df3_6489ceaa",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-25T06:45:01Z",
+      "side": 1,
+      "message": "Both are valid, but I am making them the same for consistency.",
+      "parentUuid": "ec0fa08e_6c5efb8f",
+      "range": {
+        "startLine": 112,
+        "startChar": 12,
+        "endLine": 112,
+        "endChar": 40
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "303a0216_535ea1e5",
         "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
         "patchSetId": 1
@@ -395,6 +761,30 @@
       "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1b7f3660_c76abe75",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-25T06:45:01Z",
+      "side": 1,
+      "message": "Yeah, sorry, still getting the hang of indenting html in my editor, it seems I have to do all of it by hand. I think I got it right this time.",
+      "parentUuid": "303a0216_535ea1e5",
+      "range": {
+        "startLine": 122,
+        "startChar": 12,
+        "endLine": 122,
+        "endChar": 16
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -441,6 +831,54 @@
       "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e15270d9_289015ea",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-25T06:45:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4958c465_8e0a6bee",
+      "range": {
+        "startLine": 140,
+        "startChar": 2,
+        "endLine": 140,
+        "endChar": 9
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b705b937_34ad2fec",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-25T06:45:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d03d574a_163d2534",
+      "range": {
+        "startLine": 139,
+        "startChar": 0,
+        "endLine": 140,
+        "endChar": 9
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
