@@ -22,6 +22,30 @@
       "revId": "6e69f8903955710214538cad1741b61401b8146e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "76d4118b_fd0eda0e",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-09-25T17:00:48Z",
+      "side": 1,
+      "message": "So My suggestion is actually add link to the status page(e.g. https://cr-audit-commits.appspot.com/admin/status?repo\u003dchromium-src-master) of the repo.\n\nSo later if we support multiple repos we can click the links to check status of different repos.",
+      "parentUuid": "0eed5248_be11cb0a",
+      "range": {
+        "startLine": 74,
+        "startChar": 47,
+        "endLine": 74,
+        "endChar": 61
+      },
+      "revId": "6e69f8903955710214538cad1741b61401b8146e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
