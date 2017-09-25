@@ -134,6 +134,29 @@
     },
     {
       "key": {
+        "uuid": "1a71a10c_9ca914f3",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-25T00:44:58Z",
+      "side": 1,
+      "message": "As only one repo is shown, should we make each info in a row instead of in a column of the single row?",
+      "range": {
+        "startLine": 60,
+        "startChar": 1,
+        "endLine": 60,
+        "endChar": 6
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "cc365d43_c5b7448d",
         "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
         "patchSetId": 1
