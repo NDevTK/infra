@@ -46,6 +46,30 @@
       "revId": "6e69f8903955710214538cad1741b61401b8146e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8237b9b6_efe59bcb",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-09-25T18:36:32Z",
+      "side": 1,
+      "message": "Done, url removed from link text. \n\nThe suggestion was applied in line 76, just below",
+      "parentUuid": "76d4118b_fd0eda0e",
+      "range": {
+        "startLine": 74,
+        "startChar": 47,
+        "endLine": 74,
+        "endChar": 61
+      },
+      "revId": "6e69f8903955710214538cad1741b61401b8146e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
