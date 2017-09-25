@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "05cb069a_110c8ef2",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/rules_config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-25T00:42:04Z",
+      "side": 1,
+      "message": "For labels, should we use \"label:LABEL\" instead?",
+      "range": {
+        "startLine": 45,
+        "startChar": 93,
+        "endLine": 45,
+        "endChar": 96
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ea8ce9f5_2d31e7c6",
         "filename": "go/src/infra/appengine/cr-audit-commits/app/status.go",
         "patchSetId": 1
@@ -88,6 +111,52 @@
     },
     {
       "key": {
+        "uuid": "825c83cb_4c207d62",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-25T00:42:04Z",
+      "side": 1,
+      "message": "Only one repo is shown, right?",
+      "range": {
+        "startLine": 59,
+        "startChar": 14,
+        "endLine": 59,
+        "endChar": 26
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cc365d43_c5b7448d",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-25T00:42:04Z",
+      "side": 1,
+      "message": "Previous Alerts",
+      "range": {
+        "startLine": 64,
+        "startChar": 5,
+        "endLine": 64,
+        "endChar": 11
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "264b2d02_9c0c9d79",
         "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
         "patchSetId": 1
@@ -99,6 +168,75 @@
       "writtenOn": "2017-09-24T00:00:13Z",
       "side": 1,
       "message": "What do you think about add a link to the status of that repo here?",
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "39a43951_c08b5fd9",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-25T00:42:04Z",
+      "side": 1,
+      "message": "Merge into the repo name?",
+      "range": {
+        "startLine": 68,
+        "startChar": 4,
+        "endLine": 68,
+        "endChar": 47
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7d52db1c_88a18422",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-25T00:42:04Z",
+      "side": 1,
+      "message": "Can this table merge into the one above since both are repo-level info?",
+      "range": {
+        "startLine": 76,
+        "startChar": 0,
+        "endLine": 76,
+        "endChar": 33
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f100db12_4fb95f3e",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-25T00:42:04Z",
+      "side": 1,
+      "message": "Relevant?",
+      "range": {
+        "startLine": 79,
+        "startChar": 10,
+        "endLine": 79,
+        "endChar": 21
+      },
       "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -145,6 +283,52 @@
     },
     {
       "key": {
+        "uuid": "8098f9fb_dfcb2478",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-25T00:42:04Z",
+      "side": 1,
+      "message": "These two timestamps are not shown on UI.",
+      "range": {
+        "startLine": 89,
+        "startChar": 2,
+        "endLine": 91,
+        "endChar": 9
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "91ea5af3_4dc35443",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-25T00:42:04Z",
+      "side": 1,
+      "message": "Have a separator between commit hash and the subject. \"()\" or the like.",
+      "range": {
+        "startLine": 111,
+        "startChar": 10,
+        "endLine": 111,
+        "endChar": 39
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ec0fa08e_6c5efb8f",
         "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
         "patchSetId": 1
@@ -161,6 +345,75 @@
         "startChar": 12,
         "endLine": 112,
         "endChar": 40
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "303a0216_535ea1e5",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-25T00:42:04Z",
+      "side": 1,
+      "message": "These are not aligned. Please check for other tags too.\nAligned and indented tags make it easier to understand the html structure and bug fixing.",
+      "range": {
+        "startLine": 122,
+        "startChar": 12,
+        "endLine": 122,
+        "endChar": 16
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d03d574a_163d2534",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-25T00:42:04Z",
+      "side": 1,
+      "message": "Seems not indented correctly.",
+      "range": {
+        "startLine": 139,
+        "startChar": 0,
+        "endLine": 140,
+        "endChar": 9
+      },
+      "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4958c465_8e0a6bee",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/templates/pages/status.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-09-25T00:42:04Z",
+      "side": 1,
+      "message": "Actually no \"\u003chtml\u003e\" at all.",
+      "range": {
+        "startLine": 140,
+        "startChar": 2,
+        "endLine": 140,
+        "endChar": 9
       },
       "revId": "9d81f0fb672fff1561e79adc48db8e66b4537094",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
