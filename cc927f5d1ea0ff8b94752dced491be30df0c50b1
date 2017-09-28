@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "516f0697_b8dfed02",
+        "filename": "appengine/predator/analysis/callstack_filters.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1123509
+      },
+      "writtenOn": "2017-09-28T01:29:05Z",
+      "side": 1,
+      "message": "This has a similar problem to the issue we discussed for MSan yesterday. If the crash state has the information you need, it will work. If we would have wanted to ignore something under it, it won\u0027t. I still don\u0027t have a good idea for a general solution there, and we tend to put more of a stake in the first few frames so this will help, but it might be worth leaving a TODO describing the general problem.",
+      "revId": "cc927f5d1ea0ff8b94752dced491be30df0c50b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
