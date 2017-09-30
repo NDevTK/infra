@@ -16,6 +16,24 @@
       "revId": "cc927f5d1ea0ff8b94752dced491be30df0c50b1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce9b93b8_11744b31",
+        "filename": "appengine/predator/analysis/callstack_filters.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-09-30T01:10:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "516f0697_b8dfed02",
+      "revId": "cc927f5d1ea0ff8b94752dced491be30df0c50b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
