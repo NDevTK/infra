@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4de9d767_bdb5c4ac",
+        "filename": "appengine/predator/analysis/callstack_filters.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-10-03T19:45:55Z",
+      "side": 1,
+      "message": "no need to add the prefix \"_\" for scoped functions defined within another.",
+      "range": {
+        "startLine": 258,
+        "startChar": 8,
+        "endLine": 258,
+        "endChar": 33
+      },
+      "revId": "6c16620a7992db9a7a1884ce54064658fd9f73e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
