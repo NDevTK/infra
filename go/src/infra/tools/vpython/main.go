@@ -64,6 +64,7 @@ var defaultConfig = application.Config{
 		Name:    "infra/python/virtualenv",
 		Version: "version:15.1.0",
 	},
+	BaseWheels:        baseWheels,
 	PruneThreshold:    7 * 24 * time.Hour, // One week.
 	MaxPrunesPerSweep: 3,
 	MaxScriptPathLen:  127, // Maximum POSIX shebang length.
