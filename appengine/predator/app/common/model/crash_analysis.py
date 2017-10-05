@@ -19,7 +19,7 @@ from libs import time_util
 
 _FEEDBACK_URL_TEMPLATE = 'https://%s/%s/result-feedback?key=%s'
 _CLOUD_STORAGE_MARKER = 'Google storage stacktrace:'
-_PROPERTY_MAXIMUM_SIZE = 1048487
+_PROPERTY_MAXIMUM_SIZE = 108487
 _STORAGE_PATH = '/big_stacktrace'
 _BACKOFF_FACTOR = 1.1
 
