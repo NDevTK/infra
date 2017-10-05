@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b06d4343_7620ee3c",
+        "filename": "appengine/predator/app/common/model/crash_analysis.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-10-05T23:14:28Z",
+      "side": 1,
+      "message": "I randomly picked a smaller number.",
+      "range": {
+        "startLine": 22,
+        "startChar": 25,
+        "endLine": 22,
+        "endChar": 6
+      },
+      "revId": "adf54fad21a1c76f553210805677d3f1baf79774",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
