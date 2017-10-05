@@ -22,6 +22,30 @@
       "revId": "6983d9a6f045cd077cd5d23303ddd75aebd1390e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9788b293_307ecacb",
+        "filename": "appengine/predator/app/common/model/crash_analysis.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-10-05T23:58:02Z",
+      "side": 1,
+      "message": "The StringProperty or TextProperty don\u0027t have compressed option.",
+      "parentUuid": "875083a3_6ac6d01a",
+      "range": {
+        "startLine": 24,
+        "startChar": 25,
+        "endLine": 24,
+        "endChar": 31
+      },
+      "revId": "6983d9a6f045cd077cd5d23303ddd75aebd1390e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
