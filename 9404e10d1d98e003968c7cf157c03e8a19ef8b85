@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c8777b78_4b60349d",
+        "filename": "appengine/predator/app/common/model/crash_analysis.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1123509
+      },
+      "writtenOn": "2017-10-05T23:25:56Z",
+      "side": 1,
+      "message": "Nit: something like \"If the entity size is greater than ~1MB, we\u0027ll hit an exception. Some fields can be very large, so we limit them to this size.\" would be a bit clearer to someone unfamiliar with the issue.",
+      "revId": "9404e10d1d98e003968c7cf157c03e8a19ef8b85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1e192a42_48468400",
+        "filename": "appengine/predator/app/common/model/crash_analysis.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1123509
+      },
+      "writtenOn": "2017-10-05T23:25:56Z",
+      "side": 1,
+      "message": "Another 0 should be safe unless we except multiple fields to be very large. Some limit under half of the entity size like 400000 could also make sense. I\u0027ll leave it up to you, but this seems very small as-is.",
+      "revId": "9404e10d1d98e003968c7cf157c03e8a19ef8b85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
