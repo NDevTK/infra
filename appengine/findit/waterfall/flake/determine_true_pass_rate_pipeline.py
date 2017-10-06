@@ -219,8 +219,11 @@ class DetermineTruePassRatePipeline(BasePipeline):
         analysis.master_name, analysis.builder_name, build_number,
         analysis.step_name, analysis.test_name)
 
-    swarming_error_code = _GetSwarmingTaskErrorCode(analysis,
-                                                    flake_swarming_task)
+    # Only get the error code if looking at tasks this pipeline has executed.
+    swarming_error_code = _GetSwarmingTaskErrorCode(
+        analysis, flake_swarming_task
+    ) if previous_pass_rate is not None else swarming_util.UNKNOWN
+    print 'swarming task error should be error, it is: ', swarming_error_code
 
     # If there are too many swarming tasks that fail for a certain build_number
     # bail out completely.
@@ -239,6 +242,12 @@ class DetermineTruePassRatePipeline(BasePipeline):
       analysis.LogError('Swarming task %s ended in error after %d attempts.' %
                         (flake_swarming_task,
                          analysis.swarming_task_attempts_for_build))
+      analysis.Update(swarming_task_attempts_for_build=0)
+
+      # Delete the swarming task so it won't affect reruns of this analysis.
+      assert flake_swarming_task
+      flake_swarming_task.key.delete()
+
       raise pipeline.Abort()
 
     analysis.LogInfo(
