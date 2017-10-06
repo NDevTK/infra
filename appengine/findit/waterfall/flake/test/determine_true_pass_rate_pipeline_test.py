@@ -272,14 +272,19 @@ class DetermineTruePassRatePipelineTest(wf_testcase.WaterfallTestCase):
             analysis.key.urlsafe(), build_number, iterations, timeout, rerun
         ])
 
-    pipeline_job = DetermineTruePassRatePipeline(analysis.key.urlsafe(),
-                                                 build_number, rerun)
+    pipeline_job = DetermineTruePassRatePipeline(
+        analysis.key.urlsafe(),
+        build_number,
+        rerun,
+        previous_pass_rate=1.0,
+        previous_iterations_completed=100)
 
     pipeline_job.start(queue_name=constants.DEFAULT_QUEUE)
     self.execute_queued_tasks()
 
-    self.assertEqual(flake_constants.MAX_SWARMING_TASK_RETRIES_PER_BUILD,
-                     analysis.swarming_task_attempts_for_build)
+    # analysis.swarming_task_attempts_for_build should have been reset on
+    # abort.
+    self.assertEqual(0, analysis.swarming_task_attempts_for_build)
 
   @mock.patch.object(
       determine_true_pass_rate_pipeline,
@@ -325,8 +330,12 @@ class DetermineTruePassRatePipelineTest(wf_testcase.WaterfallTestCase):
             analysis.key.urlsafe(), build_number, iterations, timeout, rerun
         ])
 
-    pipeline_job = DetermineTruePassRatePipeline(analysis.key.urlsafe(),
-                                                 build_number, rerun)
+    pipeline_job = DetermineTruePassRatePipeline(
+        analysis.key.urlsafe(),
+        build_number,
+        rerun,
+        previous_pass_rate=1.0,
+        previous_iterations_completed=100)
 
     pipeline_job.start(queue_name=constants.DEFAULT_QUEUE)
     self.execute_queued_tasks()
