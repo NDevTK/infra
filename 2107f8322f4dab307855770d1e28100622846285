@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7c9906e0_ab1f546a",
+        "filename": "appengine/findit/waterfall/flake/determine_true_pass_rate_pipeline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-10-06T21:27:54Z",
+      "side": 1,
+      "message": "how about make _GetSwarmingTaskErrorCode be responsible for checking previous_pass_rate and return appropriately? Let\u0027s try to keep the code within the pipelines as simple as possible and delegate if-else logic to functions",
+      "range": {
+        "startLine": 222,
+        "startChar": 4,
+        "endLine": 225,
+        "endChar": 66
+      },
+      "revId": "2107f8322f4dab307855770d1e28100622846285",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
