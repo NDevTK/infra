@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a2fad83_110acdd3",
+        "filename": "appengine/predator/app/common/model/crash_analysis.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-10-09T22:15:40Z",
+      "side": 1,
+      "message": "it is not obvious to tell it is ~800K.",
+      "range": {
+        "startLine": 23,
+        "startChar": 58,
+        "endLine": 23,
+        "endChar": 62
+      },
+      "revId": "b74ed3157353f6d2b0f3da65c36e5ff71bf0ca5b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
