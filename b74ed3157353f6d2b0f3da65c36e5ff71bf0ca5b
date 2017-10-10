@@ -22,6 +22,30 @@
       "revId": "b74ed3157353f6d2b0f3da65c36e5ff71bf0ca5b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "24aa4c13_6aa1185d",
+        "filename": "appengine/predator/app/common/model/crash_analysis.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-10-10T17:30:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3a2fad83_110acdd3",
+      "range": {
+        "startLine": 23,
+        "startChar": 58,
+        "endLine": 23,
+        "endChar": 62
+      },
+      "revId": "b74ed3157353f6d2b0f3da65c36e5ff71bf0ca5b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
