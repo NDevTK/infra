@@ -7,7 +7,7 @@ import collections
 
 from testing_utils import testing
 
-from gae_libs.http.http_client_appengine import HttpClientAppengine
+from common.findit_http_client import FinditHttpClient
 from libs.deps import deps_parser
 from libs.deps.dependency import Dependency
 from libs.deps.dependency import DependencyRoll
@@ -136,9 +136,9 @@ class ChromiumDEPSTest(testing.AppengineTestCase):
     def _MockGet(*_):
       return 200, base64.b64encode('Dummy DEPS content')
 
-    self.mock(HttpClientAppengine, '_Get', _MockGet)
+    self.mock(FinditHttpClient, '_Get', _MockGet)
     deps_downloader = chrome_dependency_fetcher.DEPSDownloader(
-        gitiles_repository.GitilesRepository.Factory(HttpClientAppengine()))
+        gitiles_repository.GitilesRepository.Factory(FinditHttpClient()))
     content = deps_downloader.Load('http://chrome-internal', '50.0.1234.0',
                                    'DEPS')
     self.assertEqual(content, 'Dummy DEPS content')
