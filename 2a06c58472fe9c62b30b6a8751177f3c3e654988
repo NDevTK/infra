@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8b54021c_d784d453",
+        "filename": "appengine/findit/common/findit_http_client.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-10-11T06:53:46Z",
+      "side": 1,
+      "message": "exception.__class__.__name__ ? Not sure which one is better though.",
+      "range": {
+        "startLine": 17,
+        "startChar": 25,
+        "endLine": 17,
+        "endChar": 40
+      },
+      "revId": "2a06c58472fe9c62b30b6a8751177f3c3e654988",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c99420b4_b50148c9",
+        "filename": "appengine/findit/common/findit_http_client.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-10-11T06:53:46Z",
+      "side": 1,
+      "message": "Do we need to pass this one over? If not used here, should we leave it in kwargs \u0026 add a docstring instead?",
+      "range": {
+        "startLine": 40,
+        "startChar": 15,
+        "endLine": 40,
+        "endChar": 37
+      },
+      "revId": "2a06c58472fe9c62b30b6a8751177f3c3e654988",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "01204a1f_60f3ad34",
+        "filename": "appengine/findit/common/test/findit_http_client_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-10-11T06:53:46Z",
+      "side": 1,
+      "message": "Is it possible to just set it as \"NotImplementedError\"? If prefixed with module like\"exceptions.NotImplementedError\", that is perfect.",
+      "range": {
+        "startLine": 56,
+        "startChar": 22,
+        "endLine": 56,
+        "endChar": 63
+      },
+      "revId": "2a06c58472fe9c62b30b6a8751177f3c3e654988",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e2c4709e_977bf9fc",
+        "filename": "appengine/findit/libs/deps/test/chrome_dependency_fetcher_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-10-11T06:53:46Z",
+      "side": 1,
+      "message": "libs/ should not depend on anything else other than python built-in libs.",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 54
+      },
+      "revId": "2a06c58472fe9c62b30b6a8751177f3c3e654988",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0398be70_f087337d",
+        "filename": "appengine/findit/services/build_failure_analysis.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-10-11T06:53:46Z",
+      "side": 1,
+      "message": "nit: order.",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 29
+      },
+      "revId": "2a06c58472fe9c62b30b6a8751177f3c3e654988",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
