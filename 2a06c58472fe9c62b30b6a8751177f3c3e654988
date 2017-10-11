@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "4a178dc6_93aea8d9",
+        "filename": "appengine/findit/common/findit_http_client.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-10-11T18:00:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8b54021c_d784d453",
+      "range": {
+        "startLine": 17,
+        "startChar": 25,
+        "endLine": 17,
+        "endChar": 40
+      },
+      "revId": "2a06c58472fe9c62b30b6a8751177f3c3e654988",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c99420b4_b50148c9",
         "filename": "appengine/findit/common/findit_http_client.py",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "2a06c58472fe9c62b30b6a8751177f3c3e654988",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b41d540f_968fe49f",
+        "filename": "appengine/findit/common/findit_http_client.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-10-11T18:00:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c99420b4_b50148c9",
+      "range": {
+        "startLine": 40,
+        "startChar": 15,
+        "endLine": 40,
+        "endChar": 37
+      },
+      "revId": "2a06c58472fe9c62b30b6a8751177f3c3e654988",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -94,6 +142,30 @@
     },
     {
       "key": {
+        "uuid": "e0860c03_eee83f9a",
+        "filename": "appengine/findit/libs/deps/test/chrome_dependency_fetcher_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-10-11T18:00:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e2c4709e_977bf9fc",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 54
+      },
+      "revId": "2a06c58472fe9c62b30b6a8751177f3c3e654988",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0398be70_f087337d",
         "filename": "appengine/findit/services/build_failure_analysis.py",
         "patchSetId": 1
@@ -105,6 +177,30 @@
       "writtenOn": "2017-10-11T06:53:46Z",
       "side": 1,
       "message": "nit: order.",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 29
+      },
+      "revId": "2a06c58472fe9c62b30b6a8751177f3c3e654988",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d7859700_27574f2b",
+        "filename": "appengine/findit/services/build_failure_analysis.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-10-11T18:00:47Z",
+      "side": 1,
+      "message": "I thought we sorted based on the full name of the module or name being imported\ncommon.findit_http_client.FinditHttpClient \u003c common.monitoring \u003c common.waterfall.failure_type",
+      "parentUuid": "0398be70_f087337d",
       "range": {
         "startLine": 19,
         "startChar": 0,
