@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5c9f8ca6_08c0f1ea",
+        "filename": "appengine/findit/services/flake_failure/issue_tracking_service.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-10-13T21:22:30Z",
+      "side": 1,
+      "message": "nit: isn\u0027t high enough to file a bug?",
+      "range": {
+        "startLine": 35,
+        "startChar": 61,
+        "endLine": 35,
+        "endChar": 71
+      },
+      "revId": "5a13e1ce1acd3c95c2daa52a954e675bf6f7c2bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "627073cb_40d60b0b",
+        "filename": "appengine/findit/services/flake_failure/issue_tracking_service.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-10-13T21:22:30Z",
+      "side": 1,
+      "message": "nit: remove \u0027this\u0027 since master/builder/etc are included in analysis.LogInfo",
+      "revId": "5a13e1ce1acd3c95c2daa52a954e675bf6f7c2bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b4273468_5718991a",
+        "filename": "appengine/findit/services/flake_failure/issue_tracking_service.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-10-13T21:22:30Z",
+      "side": 1,
+      "message": "nit: high enough",
+      "range": {
+        "startLine": 135,
+        "startChar": 29,
+        "endLine": 135,
+        "endChar": 35
+      },
+      "revId": "5a13e1ce1acd3c95c2daa52a954e675bf6f7c2bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
