@@ -13,6 +13,41 @@ from libs import time_util
 from monorail_api import IssueTrackerAPI
 from monorail_api import Issue
 
+from waterfall.flake import flake_constants
+
+
+def ShouldFileBugForAnalysis(analysis):
+  """Returns true if a bug should be filed for this analysis.
+
+  Ths requirements for a bug to be filed.
+    - The pipeline hasn't been attempted before (see above).
+    - The analysis has sufficient confidence (1.0).
+    - The analysis doesn't already have a bug associated with it.
+    - A bug isn't open for the same test.
+  """
+  if _HasPreviousAttempt(analysis):
+    analysis.LogWarning(
+        'There has already been an attempt at filing a bug, aborting.')
+    return False
+
+  if not _HasSufficientConfidenceInCulprit(analysis):
+    analysis.LogInfo('Bailing out because %d isn\'t high enough confidence' %
+                     analysis.confidence_in_culprit)
+    return False
+
+  # Check if there's already a bug attached to this issue.
+  if BugAlreadyExistsForId(analysis.bug_id):
+    analysis.LogInfo(
+        'Bailing out because bug with id %d already exists' % analysis.bug_id)
+    return False
+
+  if BugAlreadyExistsForLabel(analysis.test_name):
+    analysis.LogInfo('Bailing out because bug already exists for label %s' %
+                     analysis.test_name)
+    return False
+
+  return True
+
 
 def TraverseMergedIssues(bug_id, issue_tracker):
   """Finds an issue with the given id.
@@ -89,3 +124,16 @@ def CreateBugForTest(test_name, subject, description):
   issue_tracker_api = IssueTrackerAPI('chromium', use_staging=True)
   issue_tracker_api.create(issue)
   return issue.id
+
+
+def _HasPreviousAttempt(analysis):
+  """Returns true if filing a bug has been attempted before."""
+  return analysis.has_attempted_filing
+
+
+def _HasSufficientConfidenceInCulprit(analysis):
+  """Returns true is there's enough confidence in the culprit."""
+  if not analysis.confidence_in_culprit:
+    return False
+  return (abs(analysis.confidence_in_culprit -
+              flake_constants.MINIMUM_CONFIDENCE_TO_CREATE_BUG) <= 0.001)
