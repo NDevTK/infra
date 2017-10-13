@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d1ded57e_1d4f62e3",
+        "filename": "appengine/findit/services/flake_failure/issue_tracking_service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-10-13T19:37:53Z",
+      "side": 1,
+      "message": "nit: \u0027Bailing out\u0027 seems slightly misleading here, since this function is now separated from the calling code so the context from which it\u0027s bailing out from is no longer preserved. How about just \u0027Insufficient confidence to file bug\u0027 or \u0027A bug with id already exists\u0027 etc?",
+      "range": {
+        "startLine": 34,
+        "startChar": 22,
+        "endLine": 34,
+        "endChar": 29
+      },
+      "revId": "040896fbbe42d8edda433769820d2bc236ce5c74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "406b19e4_8102f15c",
+        "filename": "appengine/findit/services/flake_failure/issue_tracking_service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-10-13T19:37:53Z",
+      "side": 1,
+      "message": "nit: how about \"Returns True if an analysis has already attempted to file a bug\" to be more clear what the attempt is associated with?",
+      "range": {
+        "startLine": 130,
+        "startChar": 5,
+        "endLine": 130,
+        "endChar": 12
+      },
+      "revId": "040896fbbe42d8edda433769820d2bc236ce5c74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6b8e3f37_177722b2",
+        "filename": "appengine/findit/services/flake_failure/issue_tracking_service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-10-13T19:37:53Z",
+      "side": 1,
+      "message": "nit: this value seems to get used more often nowadays with the floating point comparisons, how about also moving it to a constant like flake_constants.EPSILON \u003d 0.001? in common/ there\u0027s also a constants.py but not sure if that\u0027s the right home for it given what else is in there, but I\u0027m ok with it being in flake_constants.py for now",
+      "range": {
+        "startLine": 139,
+        "startChar": 67,
+        "endLine": 139,
+        "endChar": 72
+      },
+      "revId": "040896fbbe42d8edda433769820d2bc236ce5c74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9ad20ee5_cec94537",
+        "filename": "appengine/findit/services/flake_failure/test/issue_tracking_service_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-10-13T19:37:53Z",
+      "side": 1,
+      "message": "nit: remove empty line, same with between the other self.assert* calls",
+      "revId": "040896fbbe42d8edda433769820d2bc236ce5c74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
