@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7d739598_3ae98a66",
+        "filename": "appengine/findit/services/flake_failure/issue_tracking_service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-10-13T20:41:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d1ded57e_1d4f62e3",
+      "range": {
+        "startLine": 34,
+        "startChar": 22,
+        "endLine": 34,
+        "endChar": 29
+      },
+      "revId": "040896fbbe42d8edda433769820d2bc236ce5c74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "406b19e4_8102f15c",
         "filename": "appengine/findit/services/flake_failure/issue_tracking_service.py",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "040896fbbe42d8edda433769820d2bc236ce5c74",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "43f6850d_9245a09b",
+        "filename": "appengine/findit/services/flake_failure/issue_tracking_service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-10-13T20:41:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "406b19e4_8102f15c",
+      "range": {
+        "startLine": 130,
+        "startChar": 5,
+        "endLine": 130,
+        "endChar": 12
+      },
+      "revId": "040896fbbe42d8edda433769820d2bc236ce5c74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "77a2052e_b04285a5",
+        "filename": "appengine/findit/services/flake_failure/issue_tracking_service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-10-13T20:41:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6b8e3f37_177722b2",
+      "range": {
+        "startLine": 139,
+        "startChar": 67,
+        "endLine": 139,
+        "endChar": 72
+      },
+      "revId": "040896fbbe42d8edda433769820d2bc236ce5c74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9ad20ee5_cec94537",
         "filename": "appengine/findit/services/flake_failure/test/issue_tracking_service_test.py",
         "patchSetId": 1
@@ -85,6 +157,24 @@
       "revId": "040896fbbe42d8edda433769820d2bc236ce5c74",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fb644042_a4144279",
+        "filename": "appengine/findit/services/flake_failure/test/issue_tracking_service_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-10-13T20:41:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9ad20ee5_cec94537",
+      "revId": "040896fbbe42d8edda433769820d2bc236ce5c74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
