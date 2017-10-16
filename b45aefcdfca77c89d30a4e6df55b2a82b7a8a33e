@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bb985a75_21e1473b",
+        "filename": "go/src/infra/appengine/shared/elements/user-input.html",
+        "patchSetId": 5
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2017-10-16T22:01:25Z",
+      "side": 1,
+      "message": "This could be simplified to \n\nthis._inputDisabled \u003d !this.multiple \u0026\u0026 length;",
+      "range": {
+        "startLine": 112,
+        "startChar": 0,
+        "endLine": 116,
+        "endChar": 9
+      },
+      "revId": "b45aefcdfca77c89d30a4e6df55b2a82b7a8a33e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
