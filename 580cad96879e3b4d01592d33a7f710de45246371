@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4a583059_661b2f8f",
+        "filename": "go/src/infra/appengine/shared/elements/user-input.html",
+        "patchSetId": 4
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2017-10-16T19:38:19Z",
+      "side": 1,
+      "message": "Originally: when removing a user from an input that only allows one selection, the user would have to un-focus and re-focus before the dropdown re-opens.",
+      "revId": "580cad96879e3b4d01592d33a7f710de45246371",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
