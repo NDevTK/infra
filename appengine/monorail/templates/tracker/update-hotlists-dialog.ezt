@@ -1,0 +1,87 @@
+<style>
+  .hidden {
+    display: none;
+  }
+</style>
+<div id="update-hotlist" style="display: none">
+  [# TODO(jojwang): Rename user_hotlists; separate user_hotlists into user_hotlists & remaining_hotlists]
+  [# TODO(jojwang): Refine which buttons are shown when there are no issue_hotlists/remaining_hotlists etc.]
+  <div id="update-hotlist-dialog">
+    <div id="issue_hotlists" class="[if-any user_issue_hotlists][else]hidden[end]">
+      Issue found in:
+      <table id="issue_hotlists_table">
+        [for user_issue_hotlists]
+        <tr class="hotlist_rows">
+          <td>
+            <input type="checkbox" id="cb_issue_hotlist_[user_issue_hotlists.hotlist_id]" class="checkRangeSelect">
+          <td>
+          <td class="hotlistname">
+          <label for="cb_issue_hotlist_[user_issue_hotlists.hotlist_id]">[user_issue_hotlists.name]</label>
+          </td>
+        </tr>
+        [end]
+      </table>
+
+      <menu>
+        <button id="remove-issues">Remove issue</button>
+      </menu>
+      <p id="remaining_p" class=[if-any user_hotlists][else]"hidden"[end]>Issue not found in:</p>
+    </div>
+
+    <div id="remaining_hotlists" class=[if-any user_hotlists][else]"hidden"[end]>
+      <table id="remaining_hotlists_table">
+        [if-any user_hotlists]
+        [for user_hotlists]
+          <tr class="hotlist_rows">
+            <td>
+              <input type="checkbox" id="cb_remaining_hotlist_[user_hotlists.hotlist_id]" class="checkRangeSelect">
+            <td>
+            <td class="hotlistname">
+              <label for="cb_remaining_hotlist_[user_hotlists.hotlist_id]">[user_hotlists.name]</label>
+            </td>
+          </tr>
+        [end]
+        [end]
+        </table>
+
+      <menu>
+        <button id="add-issues">Add issue</button>
+        <button id="create-new-hotlist">New hotlist</button>
+      </menu>
+    </div>
+    <menu>
+      <button id="cancel-add-hotlist" type="reset">Cancel</button>
+    </menu>
+  </div>
+</div>
+
+<script type="text/javascript" nonce="[nonce]">
+
+  [if-any user_issue_hotlists]
+  window.userIssueHotlists = [[]
+    [for user_issue_hotlists]
+    [user_issue_hotlists.hotlist_id]
+    [if-index user_issue_hotlists last][else],[end]
+    [end]
+  ];
+  [else]
+  window.userIssueHotlists = [[]]
+  [end]
+
+
+  [if-any user_hotlists]
+  window.userRemainingHotlists = [[]
+    [for user_hotlists]
+    [user_hotlists.hotlist_id]
+    [if-index user_hotlists last][else],[end]
+    [end]
+  ];
+ [else]
+ window.userRemainingHotlists = [[]]
+ [end]
+
+ $('cancel-add-hotlist').addEventListener('click', function() {
+    $('update-hotlist').style.display = 'none';
+  });
+
+</script>
