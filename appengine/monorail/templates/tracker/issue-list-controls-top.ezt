@@ -5,7 +5,7 @@
   </div>
 
    [include "../framework/artifact-list-pagination-part.ezt"]
-   [include "add-to-hotlist-dialog.ezt"]
+   [include "update-hotlists-dialog.ezt"]
 
    [if-any page_perms.EditIssue]
      [if-any is_cross_project][else]
@@ -112,7 +112,7 @@ runOnLoad(function() {
       _showID('addissuesspec');
     }
   }
-  $('add-issues').addEventListener('click', function () {
+  $('update-issues-in-hotlists').addEventListener('click', function () {
     AddIssuesToHotlist(onAddIssuesResponse);
   });
   $('create-new-hotlist').addEventListener('click', function () {
