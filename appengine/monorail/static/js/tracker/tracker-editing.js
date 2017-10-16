@@ -1127,7 +1127,7 @@ function TKR_flagSpam(isSpam) {
 function TKR_addToHotlist() {
   var selectedIssueRefs = GetSelectedIssues();
   if (selectedIssueRefs.length > 0) {
-    ShowAddToHotlistDialog();
+    UpdateHotlistsDialog();
   } else {
     alert('Please select some issues to add to a hotlist')
   }
@@ -1159,41 +1159,69 @@ function GetSelectedIssues() {
   return selectedIssues;
 }
 
-function GetSelectedHotlists() {
-  var selectedHotlistIDs = [];
-  for (var i = 0; i < usersHotlists.length; i++) {
-    var checkbox = document.getElementById('cb_hotlist_' + usersHotlists[i]);
+function GetSelectedHotlists(prefix, hotlists) {
+  let selectedHotlistIDs = [];
+  hotlists.forEach((hotlist) => {
+    let checkbox = document.getElementById(prefix + hotlist);
     if (checkbox && checkbox.checked) {
-      selectedHotlistIDs.push(usersHotlists[i]);
+      selectedHotlistIDs.push(hotlist);
     }
-  }
+  });
   return selectedHotlistIDs;
 }
 
+function GetUnSelectedHotlists(prefix, hotlists) {
+  let unselectedHotlistIDs = [];
+  hotlists.forEach((hotlist) => {
+    let checkbox = document.getElementById(prefix + hotlist);
+    if (checkbox && !checkbox.checked) {
+      selectedHotlistIDs.push(hotlist);
+    }
+  });
+  return unSelectedHotlistIDs;
+}
 
-function ShowAddToHotlistDialog() {
-  $('add-to-hotlist').style.display = 'block';
+
+function ShowUpdateHotlistsDialog() {
+  $('update-hotlists-box').style.display = 'block';
 }
 
 function CreateNewHotlistWithIssues(onResponse, opt_SelectedIssueRefs) {
   var selectedIssueRefs = opt_SelectedIssueRefs || GetSelectedIssues();
   var data = {'issue_refs': selectedIssueRefs.join(',')}
-  CS_doPost('/hosting/addToHotlist.do', onResponse, data);
+  CS_doPost('/hosting/updateHotlist.do', onResponse, data);
 }
 
-function AddIssuesToHotlist(onResponse, opt_SelectedIssueRefs) {
+function AddIssuesToHotlists(onResponse, opt_SelectedIssueRefs) {
   var selectedIssueRefs = opt_SelectedIssueRefs || GetSelectedIssues();
-  selectedHotlistIDs = GetSelectedHotlists();
+  selectedHotlistIDs = GetSelectedHotlists('cb_remaining_hotlist_', userRemainingHotlists);
   if (selectedHotlistIDs.length > 0) {
     var data = {
       hotlist_ids: selectedHotlistIDs.join(','),
       issue_refs: selectedIssueRefs.join(','),
     }
-    CS_doPost('/hosting/addToHotlist.do', onResponse, data);
+    CS_doPost('/hosting/updateHotlist.do', onResponse, data);
   } else {
     alert('Please select some hotlists');
   }
 }
+
+function UpdateIssuesToHotlists(onResponse) {
+  let hotlistIdsRemove = GetUnSelectedHotlists('cb_issue_hotlist_', userIssueHotlists);
+  let hotlistIdsAdd = GetSelectedHotlists('cb_remaining_hotlist_', userRemainingHotlists);
+
+  if (selectedHotlistIDs.length > 0) {
+    let data = {
+      hotlist_ids_add: hotlistIdsAdds.join(', '),
+      hotlist_ids_remove: hotlistIdsRemove.joint(','),
+      issue_refs: issueRef,
+    }
+    CS_doPost('/hosting/updateHotlist.do', onResponse, data);
+  } else {
+    alert('Please select some hotlists');
+  }
+}
+
 
 function createResponseMessage(response) {
   let message;
