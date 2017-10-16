@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "2ba7fb62_83d0449c",
+        "filename": "appengine/findit/services/flake_failure/issue_tracking_service.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-10-16T19:50:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5c9f8ca6_08c0f1ea",
+      "range": {
+        "startLine": 35,
+        "startChar": 61,
+        "endLine": 35,
+        "endChar": 71
+      },
+      "revId": "5a13e1ce1acd3c95c2daa52a954e675bf6f7c2bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "627073cb_40d60b0b",
         "filename": "appengine/findit/services/flake_failure/issue_tracking_service.py",
         "patchSetId": 2
@@ -39,6 +63,24 @@
       "revId": "5a13e1ce1acd3c95c2daa52a954e675bf6f7c2bc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5868d3c3_904acaa5",
+        "filename": "appengine/findit/services/flake_failure/issue_tracking_service.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-10-16T19:50:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "627073cb_40d60b0b",
+      "revId": "5a13e1ce1acd3c95c2daa52a954e675bf6f7c2bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -62,6 +104,30 @@
       "revId": "5a13e1ce1acd3c95c2daa52a954e675bf6f7c2bc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e8837657_cc552ef5",
+        "filename": "appengine/findit/services/flake_failure/issue_tracking_service.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-10-16T19:50:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b4273468_5718991a",
+      "range": {
+        "startLine": 135,
+        "startChar": 29,
+        "endLine": 135,
+        "endChar": 35
+      },
+      "revId": "5a13e1ce1acd3c95c2daa52a954e675bf6f7c2bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
