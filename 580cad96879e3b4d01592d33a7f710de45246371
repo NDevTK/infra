@@ -16,6 +16,52 @@
       "revId": "580cad96879e3b4d01592d33a7f710de45246371",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2429e487_fac169d3",
+        "filename": "go/src/infra/appengine/shared/elements/user-input.html",
+        "patchSetId": 4
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-10-16T19:43:20Z",
+      "side": 1,
+      "message": "nit: property.",
+      "range": {
+        "startLine": 142,
+        "startChar": 55,
+        "endLine": 142,
+        "endChar": 63
+      },
+      "revId": "580cad96879e3b4d01592d33a7f710de45246371",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "055bcfbd_793c8c91",
+        "filename": "go/src/infra/appengine/shared/elements/user-input.html",
+        "patchSetId": 4
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-10-16T19:43:20Z",
+      "side": 1,
+      "message": "? remove?",
+      "range": {
+        "startLine": 148,
+        "startChar": 50,
+        "endLine": 148,
+        "endChar": 99
+      },
+      "revId": "580cad96879e3b4d01592d33a7f710de45246371",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
