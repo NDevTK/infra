@@ -33,6 +33,24 @@
       "revId": "7f210bc8c907ccf3620ce80a27e68899896e2e9c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8eedf3af_852324a3",
+        "filename": "recipes/recipes/goma_hello_world.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-10-16T18:25:02Z",
+      "side": 1,
+      "message": "Yes. I\u0027ve fixed that in https://chromium-review.googlesource.com/c/infra/infra/+/720064 which seems to work: https://luci-scheduler-dev.appspot.com/jobs/infra/goma-hello-world-trusty-64",
+      "parentUuid": "87f9129f_3d9de8d8",
+      "revId": "7f210bc8c907ccf3620ce80a27e68899896e2e9c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
