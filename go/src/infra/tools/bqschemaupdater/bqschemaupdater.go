@@ -15,6 +15,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
+	protobuf "github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 
@@ -24,6 +26,21 @@ import (
 	pb "infra/libs/bqschema/tabledef"
 	"infra/libs/infraenv"
 )
+
+func loadProtoDescriptor(path string) (*descriptor.FileDescriptorSet, error) {
+	descFileBytes, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	var desc descriptor.FileDescriptorSet
+	err = protobuf.Unmarshal(descFileBytes, &desc)
+	if err != nil {
+		return nil, err
+	}
+
+	return &desc, nil
+}
 
 func loadTableDef(path string) (*pb.TableDef, error) {
 	content, err := ioutil.ReadFile(path)
@@ -66,12 +83,18 @@ func main() {
 
 	dry := flag.Bool("dry-run", false, "Only performs non-mutating operations; logs what would happen otherwise")
 	project := flag.String("project", infraenv.ChromeInfraEventsProject, "Cloud project that the table belongs to.")
+	useDescriptor := flag.Bool("use-descriptor", false, "Read input file as proto descriptor instead of text proto.")
 
 	flag.Parse()
 	file := flag.Arg(0)
 	if file == "" {
 		log.Fatal("Missing arg: file path for schema to add/update")
 	}
+
+	if *useDescriptor {
+		desc, err := loadProtoDescriptor(file)
+		log.Fatalf("desc, err: %v, %v", desc, err)
+	} // else {
 	td, err := loadTableDef(file)
 	if err != nil {
 		log.Fatalf("Failed to load TableDef from %q: %s", file, err)
