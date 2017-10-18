@@ -14,13 +14,13 @@
           <label for="cb_issue_hotlist_[user_issue_hotlists.hotlist_id]">[user_issue_hotlists.name]</label>
         </td>
     [end]
-    [for user_hotlists]
+    [for user_remaining_hotlists]
       <tr class="hotlist_rows">
         <td>
-          <input type="checkbox" id="cb_hotlist_[user_hotlists.hotlist_id]" class="checkRangeSelect">
+          <input type="checkbox" id="cb_remaining_hotlist_[user_remaining_hotlists.hotlist_id]" class="checkRangeSelect">
         </td>
         <td class="hotlistname">
-          <label for="cb_hotlist_[user_hotlists.hotlist_id]">[user_hotlists.name]</label>
+          <label for="cb_hotlist_[user_remaining_hotlists.hotlist_id]">[user_remaining_hotlists.name]</label>
         </td>
       </tr>
     [end]
@@ -35,11 +35,11 @@
 
 <script type="text/javascript" nonce="[nonce]">
 
-  [if-any user_hotlists]
+  [if-any user_remaining_hotlists]
   window.usersHotlists = [[]
-    [for user_hotlists]
-    [user_hotlists.hotlist_id]
-    [if-index user_hotlists last][else],[end]
+    [for user_remaining_hotlists]
+    [user_remaining_hotlists.hotlist_id]
+    [if-index user_remaining_hotlists last][else],[end]
     [end]
   ];
   [else]

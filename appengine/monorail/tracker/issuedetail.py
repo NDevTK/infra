@@ -409,7 +409,7 @@ class IssueDetail(issuepeek.IssuePeek):
         'spam_verdict_history': spam_verdict_history,
 
         # For adding issue to user's hotlists
-        'user_hotlists': user_hotlists,
+        'user_remaining_hotlists': user_hotlists,
         # For showing hotlists that contain this issue
         'user_issue_hotlists': user_issue_hotlist_views,
         'involved_users_issue_hotlists': involved_users_issue_hotlist_views,
