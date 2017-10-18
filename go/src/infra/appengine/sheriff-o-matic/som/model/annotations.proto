@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package model;
+
+import "infra/libs/bqschema/tabledef/table_def.proto";
+import "google/protobuf/timestamp.proto";
+
+message Comment {
+	string text = 1;
+	string user = 2;
+	google.protobuf.Timestamp time = 3;
+}
+
+message SOMAnnotationEvent {
+	option(tabledef.dataset_id) = "events";
+	option(tabledef.table_id) = "annotations";
+  option(tabledef.table_name) = "User Annotations";
+  option(tabledef.table_description) = "Annotations added to Alerts by Users";
+
+	// Timestamp is the time the annotation was created.
+	google.protobuf.Timestamp timestamp = 1;
+
+	// AlertKeyDigest is the key digest for the alert.
+	string alert_key_digest = 2;
+
+	// AlertKey is the alert key.
+	string alert_key = 3;
+
+	// RequestId is the protoPayload.requestId of the http request that generated
+	// this annotation.
+	string requesst_id = 4;
+
+	// Operation is either "ADD" or "DELETE" depending on the user action.
+	string operation = 5;
+
+	// Bugs is a list of bugs linked to the alert.
+	repeated string bugs = 6;
+
+	// Comments are user-generated comments on the alert.
+	repeated Comment comments = 7;
+
+	// SnoozeTime is the time set to snooze until.
+	google.protobuf.Timestamp snooze_time = 8;
+
+	// GroupId is the id of the group (if any) the alert belongs to.
+	string group_id = 9;
+
+	// ModificationTime is the time of the most recent modification to the annotation.
+	google.protobuf.Timestamp modification_time = 10;
+}
+
+

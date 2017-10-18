@@ -6,6 +6,8 @@ syntax = "proto3";
 
 package tabledef;
 
+import "google/protobuf/descriptor.proto";
+
 message TableDef {
   // Name of the dataset.
   string dataset_id = 1;
@@ -46,3 +48,12 @@ message FieldSchema {
   Type type = 5;
   repeated FieldSchema schema = 6;
 }
+
+// Options to specify tabledefs as proto message types.
+extend google.protobuf.MessageOptions {
+  string dataset_id = 50001;
+  string table_id = 50002;
+  string table_name = 50003;
+  string table_description = 50004;
+}
+
