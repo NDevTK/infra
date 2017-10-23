@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "de450613_c536c1a7",
+        "filename": "go/src/infra/tools/led/cmd_edit_cr_cl.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-10-23T20:04:55Z",
+      "side": 1,
+      "message": "the code in another file does not handle fragments of this format",
+      "range": {
+        "startLine": 34,
+        "startChar": 23,
+        "endLine": 34,
+        "endChar": 25
+      },
+      "revId": "bfef62f4d23867d4bc62a93306c89fa3ea219f38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "914bd846_c961241a",
+        "filename": "go/src/infra/tools/led/cmd_edit_cr_cl.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-10-23T20:04:55Z",
+      "side": 1,
+      "message": "add \u003e in the end\nsame below",
+      "range": {
+        "startLine": 34,
+        "startChar": 27,
+        "endLine": 34,
+        "endChar": 43
+      },
+      "revId": "bfef62f4d23867d4bc62a93306c89fa3ea219f38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
