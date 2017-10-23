@@ -45,6 +45,54 @@
       "revId": "bfef62f4d23867d4bc62a93306c89fa3ea219f38",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8926aa8e_58f46432",
+        "filename": "go/src/infra/tools/led/cmd_edit_cr_cl.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-10-23T20:07:25Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "de450613_c536c1a7",
+      "range": {
+        "startLine": 34,
+        "startChar": 23,
+        "endLine": 34,
+        "endChar": 25
+      },
+      "revId": "bfef62f4d23867d4bc62a93306c89fa3ea219f38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "953ff381_d9030283",
+        "filename": "go/src/infra/tools/led/cmd_edit_cr_cl.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-10-23T20:07:25Z",
+      "side": 1,
+      "message": "oops",
+      "parentUuid": "914bd846_c961241a",
+      "range": {
+        "startLine": 34,
+        "startChar": 27,
+        "endLine": 34,
+        "endChar": 43
+      },
+      "revId": "bfef62f4d23867d4bc62a93306c89fa3ea219f38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
