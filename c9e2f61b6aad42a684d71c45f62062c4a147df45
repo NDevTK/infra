@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "d0ea984a_e5b54f10",
+        "filename": "appengine/cr-buildbucket/swarming/test/swarming_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-10-24T17:57:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c0afee0f_3e7d8548",
+      "range": {
+        "startLine": 174,
+        "startChar": 0,
+        "endLine": 179,
+        "endChar": 69
+      },
+      "revId": "c9e2f61b6aad42a684d71c45f62062c4a147df45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c0d4a39c_94f1bc29",
         "filename": "appengine/cr-buildbucket/swarming/test/swarming_test.py",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "55a54b46_bbebda2e",
+        "filename": "appengine/cr-buildbucket/swarming/test/swarming_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 275,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-10-24T17:57:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c0d4a39c_94f1bc29",
+      "range": {
+        "startLine": 275,
+        "startChar": 8,
+        "endLine": 275,
+        "endChar": 28
+      },
+      "revId": "c9e2f61b6aad42a684d71c45f62062c4a147df45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4abab4b7_5a8f96e8",
         "filename": "appengine/cr-buildbucket/swarming/test/swarming_test.py",
         "patchSetId": 1
@@ -68,6 +116,30 @@
       "revId": "c9e2f61b6aad42a684d71c45f62062c4a147df45",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c77683d1_f6acda4e",
+        "filename": "appengine/cr-buildbucket/swarming/test/swarming_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 437,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-10-24T17:57:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4abab4b7_5a8f96e8",
+      "range": {
+        "startLine": 437,
+        "startChar": 4,
+        "endLine": 437,
+        "endChar": 46
+      },
+      "revId": "c9e2f61b6aad42a684d71c45f62062c4a147df45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
