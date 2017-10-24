@@ -171,8 +171,13 @@ class SwarmingTest(BaseTest):
         'components.config.get_self_config_async',
         side_effect=get_self_config_async)
 
+    self.delegate_async_calls = []
+    def delegate_async(**kwargs):
+      self.delegate_async_calls.append(kwargs)
+      return future('blah')
     self.patch(
-        'components.auth.delegate_async', return_value=future('blah'))
+        'components.auth.delegate_async', side_effect=delegate_async)
+
     self.patch(
         'google.appengine.api.app_identity.get_default_version_hostname',
         return_value='cr-buildbucket.appspot.com')
@@ -265,6 +270,10 @@ class SwarmingTest(BaseTest):
         task_def['properties']['execution_timeout_secs'], '60')
 
   def test_create_task_async(self):
+    self.patch(
+        'components.auth.get_current_identity', autospec=True,
+        side_effect=lambda: auth.Identity('user', 'john@example.com'))
+
     build = model.Build(
         id=1,
         bucket='bucket',
@@ -423,6 +432,14 @@ class SwarmingTest(BaseTest):
         build.url,
         ('https://milo.example.com/swarming/task/deadbeef?'
          'server=chromium-swarm.appspot.com'))
+
+    # Test delegation token params.
+    self.assertEqual(self.delegate_async_calls, [{
+      'services': [u'https://chromium-swarm.appspot.com'],
+      'audience': [auth.Identity('user', 'test@localhost')],
+      'impersonate': auth.Identity('user', 'john@example.com'),
+      'tags': ['buildbucket:bucket'],
+    }])
 
   def test_create_task_async_for_non_swarming_bucket(self):
     self.bucket_cfg.ClearField('swarming')
