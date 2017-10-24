@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c0afee0f_3e7d8548",
+        "filename": "appengine/cr-buildbucket/swarming/test/swarming_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-10-24T17:07:40Z",
+      "side": 1,
+      "message": "unnecessary",
+      "range": {
+        "startLine": 174,
+        "startChar": 0,
+        "endLine": 179,
+        "endChar": 69
+      },
+      "revId": "c9e2f61b6aad42a684d71c45f62062c4a147df45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c0d4a39c_94f1bc29",
+        "filename": "appengine/cr-buildbucket/swarming/test/swarming_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 275,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-10-24T17:07:40Z",
+      "side": 1,
+      "message": "identity is immutable, there is no side effect\n\n  return_value\u003dauth.Identity(...)",
+      "range": {
+        "startLine": 275,
+        "startChar": 8,
+        "endLine": 275,
+        "endChar": 28
+      },
+      "revId": "c9e2f61b6aad42a684d71c45f62062c4a147df45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4abab4b7_5a8f96e8",
+        "filename": "appengine/cr-buildbucket/swarming/test/swarming_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 437,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-10-24T17:07:40Z",
+      "side": 1,
+      "message": "self.assetEqual(auth.delegate_async.mock_calls, [mock.call({\n   ....\n}])",
+      "range": {
+        "startLine": 437,
+        "startChar": 4,
+        "endLine": 437,
+        "endChar": 46
+      },
+      "revId": "c9e2f61b6aad42a684d71c45f62062c4a147df45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
