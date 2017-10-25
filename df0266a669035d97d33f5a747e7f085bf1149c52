@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0bcb43aa_3f30d788",
+        "filename": "go/src/infra/appengine/who/js/actions.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2017-10-25T00:49:42Z",
+      "side": 1,
+      "message": "idk why this is highlighted but I didn\u0027t touch this",
+      "range": {
+        "startLine": 12,
+        "startChar": 28,
+        "endLine": 12,
+        "endChar": 70
+      },
+      "revId": "df0266a669035d97d33f5a747e7f085bf1149c52",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
