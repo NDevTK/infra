@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "441eb4c2_cb9939af",
+        "filename": "go/src/infra/appengine/who/elements/day-details.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2017-10-25T00:38:10Z",
+      "side": 1,
+      "message": "LOL Tabs! Spaces! LGTM!",
+      "range": {
+        "startLine": 83,
+        "startChar": 5,
+        "endLine": 83,
+        "endChar": 6
+      },
+      "revId": "2deef3c0fe6c66a8770d5933bf74558abe6b8b38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
