@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "54b03703_f074948b",
+        "filename": "appengine/findit/pipelines/flake_failure/get_sha_for_commit_position_pipeline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-10-27T20:51:42Z",
+      "side": 1,
+      "message": "How we arrive at this assumption? Are there cases that defeat this assumption?",
+      "range": {
+        "startLine": 27,
+        "startChar": 52,
+        "endLine": 29,
+        "endChar": 39
+      },
+      "revId": "1e803293a9173b06e21d1ec4fce58e58f188e2f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2fbdeac5_91912ce6",
+        "filename": "appengine/findit/pipelines/flake_failure/get_sha_for_commit_position_pipeline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-10-27T20:51:42Z",
+      "side": 1,
+      "message": "Do we plan to get rid of this assumption or not? If so, a TODO is helpful.\n\nDoes this pipeline only work after a regression range is identified, or it also works from the every beginning of an analysis?",
+      "range": {
+        "startLine": 32,
+        "startChar": 4,
+        "endLine": 32,
+        "endChar": 75
+      },
+      "revId": "1e803293a9173b06e21d1ec4fce58e58f188e2f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ae33b4fc_ba37ef6b",
+        "filename": "appengine/findit/pipelines/flake_failure/get_sha_for_commit_position_pipeline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-10-27T20:51:42Z",
+      "side": 1,
+      "message": "What if the build includes commits [100, 200], last tested commit is 190, and the current commit to be tested is 150?",
+      "range": {
+        "startLine": 53,
+        "startChar": 35,
+        "endLine": 55,
+        "endChar": 18
+      },
+      "revId": "1e803293a9173b06e21d1ec4fce58e58f188e2f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "99b3490e_68a299b2",
+        "filename": "appengine/findit/waterfall/build_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-10-27T20:51:42Z",
+      "side": 1,
+      "message": "You could use \"git reparent-branch\" to set this CL depend on the other so that such change won\u0027t show up as a diff in this CL. That would help code-review a lot.\n\nYou may check the \"git reparent-branch -h\" on how-to.",
+      "range": {
+        "startLine": 87,
+        "startChar": 0,
+        "endLine": 98,
+        "endChar": 25
+      },
+      "revId": "1e803293a9173b06e21d1ec4fce58e58f188e2f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
