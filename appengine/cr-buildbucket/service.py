@@ -244,9 +244,11 @@ class BuildRequest(_BuildRequestBase):
 
   def create_build(self, build_id, created_by, now):
     """Converts the request to a build."""
+    bucket = config.Bucket.get_by_id(self.bucket)
     build = model.Build(
         id=build_id,
         bucket=self.bucket,
+        luci_project=bucket.project_id if bucket is not None else None,
         initial_tags=self.tags,
         tags=self.tags,
         parameters=self.parameters,
