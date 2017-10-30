@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1744e612_3adc7cf4",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2017-10-30T16:44:05Z",
+      "side": 1,
+      "message": "I chose here to store the project with the Build. Alternatively, I can do the RPC call on each request that gets the build, and only make it part of BuildMessage. WDYT?",
+      "range": {
+        "startLine": 117,
+        "startChar": 2,
+        "endLine": 117,
+        "endChar": 37
+      },
+      "revId": "2e45bd890905bd267be4fe251e4a5e8a46ec99d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f69bfe58_0b048284",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2017-10-30T16:44:05Z",
+      "side": 1,
+      "message": "Based on the comment in config.py, this datastore call is necessary (in order to retrieve the mapping), right?",
+      "range": {
+        "startLine": 247,
+        "startChar": 4,
+        "endLine": 247,
+        "endChar": 49
+      },
+      "revId": "2e45bd890905bd267be4fe251e4a5e8a46ec99d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bc885dde_4b8f0ec9",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2017-10-30T16:44:05Z",
+      "side": 1,
+      "message": "I\u0027m guessing I should raise an error in this case? Though I\u0027m not sure, if the ACL is there then the bucket should also be there, right? Perhaps just logging the case should be sufficient?",
+      "range": {
+        "startLine": 251,
+        "startChar": 39,
+        "endLine": 251,
+        "endChar": 70
+      },
+      "revId": "2e45bd890905bd267be4fe251e4a5e8a46ec99d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
