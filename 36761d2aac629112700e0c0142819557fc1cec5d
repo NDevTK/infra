@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "4ed20eba_71142fd7",
+        "filename": "appengine/cr-buildbucket/api.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2017-10-30T22:17:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4c3f942d_323cf587",
+      "range": {
+        "startLine": 116,
+        "startChar": 20,
+        "endLine": 116,
+        "endChar": 21
+      },
+      "revId": "36761d2aac629112700e0c0142819557fc1cec5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e7a2a070_030f2dae",
         "filename": "appengine/cr-buildbucket/api.py",
         "patchSetId": 4
@@ -45,6 +69,30 @@
       "revId": "36761d2aac629112700e0c0142819557fc1cec5d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c34b2458_ee29f3a3",
+        "filename": "appengine/cr-buildbucket/api.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2017-10-30T22:17:57Z",
+      "side": 1,
+      "message": "Oops, yeah I totally forgot about get_multi. And it\u0027s been a while, my Python is weak. :(\n\nDone.",
+      "parentUuid": "e7a2a070_030f2dae",
+      "range": {
+        "startLine": 122,
+        "startChar": 8,
+        "endLine": 122,
+        "endChar": 16
+      },
+      "revId": "36761d2aac629112700e0c0142819557fc1cec5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "2e0271da_cebf287b",
+        "filename": "appengine/cr-buildbucket/api.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 257,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2017-10-30T22:17:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "68f5ef31_3b0f3ba3",
+      "range": {
+        "startLine": 257,
+        "startChar": 4,
+        "endLine": 257,
+        "endChar": 6
+      },
+      "revId": "36761d2aac629112700e0c0142819557fc1cec5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "32204446_cf65d767",
         "filename": "appengine/cr-buildbucket/service.py",
         "patchSetId": 4
@@ -85,6 +157,24 @@
       "revId": "36761d2aac629112700e0c0142819557fc1cec5d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "704ced4f_c5d8b69b",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2017-10-30T22:17:57Z",
+      "side": 1,
+      "message": "np :)",
+      "parentUuid": "32204446_cf65d767",
+      "revId": "36761d2aac629112700e0c0142819557fc1cec5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -123,6 +213,30 @@
       "side": 1,
       "message": "i don\u0027t understand why do we need this if statement, or why this part of code needed to change",
       "parentUuid": "c2eac9c4_c26a7399",
+      "range": {
+        "startLine": 356,
+        "startChar": 8,
+        "endLine": 358,
+        "endChar": 36
+      },
+      "revId": "36761d2aac629112700e0c0142819557fc1cec5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eaafd391_178bae49",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 358,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2017-10-30T22:17:57Z",
+      "side": 1,
+      "message": "this isn\u0027t strictly necessary; I included it because if the bucket doesn\u0027t exist, project\u003dNone in the BuildRequest gets propagated to here. The ACL check does a datastore get, but this short-circuits that and just adds a Future containing False. I figured semantically this was the best place to do this check (i.e. check_access).",
+      "parentUuid": "4d98fb86_7716a665",
       "range": {
         "startLine": 356,
         "startChar": 8,
