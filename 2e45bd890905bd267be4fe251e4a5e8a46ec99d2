@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "58778042_5a45aebd",
+        "filename": "appengine/cr-buildbucket/api_common.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-10-30T17:31:46Z",
+      "side": 1,
+      "message": "just \"project\"",
+      "range": {
+        "startLine": 38,
+        "startChar": 2,
+        "endLine": 38,
+        "endChar": 14
+      },
+      "revId": "2e45bd890905bd267be4fe251e4a5e8a46ec99d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1744e612_3adc7cf4",
         "filename": "appengine/cr-buildbucket/model.py",
         "patchSetId": 1
@@ -13,6 +36,30 @@
       "writtenOn": "2017-10-30T16:44:05Z",
       "side": 1,
       "message": "I chose here to store the project with the Build. Alternatively, I can do the RPC call on each request that gets the build, and only make it part of BuildMessage. WDYT?",
+      "range": {
+        "startLine": 117,
+        "startChar": 2,
+        "endLine": 117,
+        "endChar": 37
+      },
+      "revId": "2e45bd890905bd267be4fe251e4a5e8a46ec99d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "800f7813_cf1b24c1",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-10-30T17:31:46Z",
+      "side": 1,
+      "message": "i think it is better to store it like this\n\nmy only concern is that some builds won\u0027t have it. We could backfill it, but I don\u0027t know if it is worth it. Robbie, how bad would it be if some builds do not have project? I think Milo replicates project in its own state? Also, we are not GA yet, so I think we are allowed to break old builds",
+      "parentUuid": "1744e612_3adc7cf4",
       "range": {
         "startLine": 117,
         "startChar": 2,
@@ -48,6 +95,30 @@
     },
     {
       "key": {
+        "uuid": "ba06f391_d165b92c",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-10-30T17:31:46Z",
+      "side": 1,
+      "message": "typically one HTTP request creates many builds, and in ~100% of cases they are for the same bucket. Here we make O(builds) ndb RPC although we could make O(buckets). We need to find a better place for finding the config and project.\n\nLong term, we don\u0027t want bucket namespace to be global, but rather scoped to a bucket, so ideally a bucket name alone is insufficient for identifying a bucket: a project id is required too. It is hard to make such change at the API level yet (because it is a breaking change), but we can start making these changes in buildbucket code. Let\u0027s determine project id as early in the code path as possible, perhaps at the API level.",
+      "parentUuid": "f69bfe58_0b048284",
+      "range": {
+        "startLine": 247,
+        "startChar": 4,
+        "endLine": 247,
+        "endChar": 49
+      },
+      "revId": "2e45bd890905bd267be4fe251e4a5e8a46ec99d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "bc885dde_4b8f0ec9",
         "filename": "appengine/cr-buildbucket/service.py",
         "patchSetId": 1
@@ -59,6 +130,30 @@
       "writtenOn": "2017-10-30T16:44:05Z",
       "side": 1,
       "message": "I\u0027m guessing I should raise an error in this case? Though I\u0027m not sure, if the ACL is there then the bucket should also be there, right? Perhaps just logging the case should be sufficient?",
+      "range": {
+        "startLine": 251,
+        "startChar": 39,
+        "endLine": 251,
+        "endChar": 70
+      },
+      "revId": "2e45bd890905bd267be4fe251e4a5e8a46ec99d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cb9a6179_b643926b",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-10-30T17:31:46Z",
+      "side": 1,
+      "message": "see above",
+      "parentUuid": "bc885dde_4b8f0ec9",
       "range": {
         "startLine": 251,
         "startChar": 39,
