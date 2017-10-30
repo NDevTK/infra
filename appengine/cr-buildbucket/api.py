@@ -96,7 +96,12 @@ class BucketMessage(messages.Message):
 
 
 def put_request_message_to_build_request(request):
-  return service.BuildRequest(
+  return put_request_messages_to_build_requests([request])[0]
+
+
+def put_request_messages_to_build_requests(requests):
+  make_request = lambda request, project: service.BuildRequest(
+      project=project,
       bucket=request.bucket,
       tags=request.tags,
       parameters=parse_json_object(request.parameters_json, 'parameters_json'),
@@ -106,6 +111,18 @@ def put_request_message_to_build_request(request):
       canary_preference=(
           request.canary_preference or model.CanaryPreference.AUTO),
   )
+  bucket_to_project = {}
+  build_requests = []
+  for r in requests: # pragma: no cover
+    # Get and cache bucket information.
+    if r.bucket not in bucket_to_project:
+      bucket = config.Bucket.get_by_id(r.bucket)
+      if bucket is None:
+        build_requests.append(make_request(r, None))
+        continue
+      bucket_to_project[r.bucket] = bucket.project_id
+    build_requests.append(make_request(r, bucket_to_project[r.bucket]))
+  return build_requests
 
 
 def build_to_response_message(build, include_lease_key=False):
@@ -236,10 +253,9 @@ class BuildBucketApi(remote.Service):
   @auth.public
   def put_batch(self, request):
     """Creates builds."""
-    results = service.add_many_async([
-      put_request_message_to_build_request(r)
-      for r in request.builds
-    ]).get_result()
+    results = service.add_many_async(
+      put_request_messages_to_build_requests(request.builds)
+    ).get_result()
 
     res = self.PutBatchResponseMessage()
     for req, (build, ex) in zip(request.builds, results):
