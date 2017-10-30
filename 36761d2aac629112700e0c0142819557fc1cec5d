@@ -2,6 +2,92 @@
   "comments": [
     {
       "key": {
+        "uuid": "4c3f942d_323cf587",
+        "filename": "appengine/cr-buildbucket/api.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-10-30T21:53:15Z",
+      "side": 1,
+      "message": "trailing space",
+      "range": {
+        "startLine": 116,
+        "startChar": 20,
+        "endLine": 116,
+        "endChar": 21
+      },
+      "revId": "36761d2aac629112700e0c0142819557fc1cec5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e7a2a070_030f2dae",
+        "filename": "appengine/cr-buildbucket/api.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-10-30T21:53:15Z",
+      "side": 1,
+      "message": "this causes O(requests) of config.Bucket.get_by_id RPCs for buckets that do not exist\n\ni think\n\n  buckets \u003d set(r.bucket for r in requests if r.bucket)\n  bucket_keys \u003d [ndb.Key(Bucket, b) for b in buckets]\n  bucket_entities \u003d dict(zip(buckets, ndb.get_multi(bucket_keys))\n\nwould be simpler/shorter and do exactly 1 datastore RPC",
+      "range": {
+        "startLine": 122,
+        "startChar": 8,
+        "endLine": 122,
+        "endChar": 16
+      },
+      "revId": "36761d2aac629112700e0c0142819557fc1cec5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "68f5ef31_3b0f3ba3",
+        "filename": "appengine/cr-buildbucket/api.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 257,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-10-30T21:53:15Z",
+      "side": 1,
+      "message": "nit: +2 space indent\nbefore it was a list, now a parameter",
+      "range": {
+        "startLine": 257,
+        "startChar": 4,
+        "endLine": 257,
+        "endChar": 6
+      },
+      "revId": "36761d2aac629112700e0c0142819557fc1cec5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "32204446_cf65d767",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-10-30T21:53:15Z",
+      "side": 1,
+      "message": "thank you!",
+      "revId": "36761d2aac629112700e0c0142819557fc1cec5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c2eac9c4_c26a7399",
         "filename": "appengine/cr-buildbucket/service.py",
         "patchSetId": 4
@@ -13,6 +99,30 @@
       "writtenOn": "2017-10-30T21:32:25Z",
       "side": 1,
       "message": "This could probably cleaner. The best thing would be to propagate it down into the ACL check, but right now this is what the ACL check would amount to (i.e. if project is None: return False).",
+      "range": {
+        "startLine": 356,
+        "startChar": 8,
+        "endLine": 358,
+        "endChar": 36
+      },
+      "revId": "36761d2aac629112700e0c0142819557fc1cec5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4d98fb86_7716a665",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 358,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-10-30T21:53:15Z",
+      "side": 1,
+      "message": "i don\u0027t understand why do we need this if statement, or why this part of code needed to change",
+      "parentUuid": "c2eac9c4_c26a7399",
       "range": {
         "startLine": 356,
         "startChar": 8,
