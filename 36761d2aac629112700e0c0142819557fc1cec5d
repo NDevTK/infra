@@ -246,6 +246,30 @@
       "revId": "36761d2aac629112700e0c0142819557fc1cec5d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "11aa6dcf_e3c5d9bf",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 358,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-10-30T23:07:56Z",
+      "side": 1,
+      "message": "\u003e this isn\u0027t strictly necessary; I included it because if the bucket doesn\u0027t exist, project\u003dNone in the BuildRequest gets propagated to here. \n\nr.project is not used here, so why this code is concerned about it?\n\n\u003e The ACL check does a datastore get, but this short-circuits that and just adds a Future containing False. I figured semantically this was the best place to do this check (i.e. check_access).\n\noh, I see, it is an optimization. I think it is not worth it because it optimizes a very rare case when someone tries to create a build in a non-existent bucket.",
+      "parentUuid": "eaafd391_178bae49",
+      "range": {
+        "startLine": 356,
+        "startChar": 8,
+        "endLine": 358,
+        "endChar": 36
+      },
+      "revId": "36761d2aac629112700e0c0142819557fc1cec5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

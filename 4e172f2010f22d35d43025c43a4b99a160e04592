@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "727781c8_270b4e5e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-10-30T23:07:56Z",
+      "side": 1,
+      "message": "please update",
+      "range": {
+        "startLine": 7,
+        "startChar": 18,
+        "endLine": 7,
+        "endChar": 29
+      },
+      "revId": "4e172f2010f22d35d43025c43a4b99a160e04592",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9d7e00de_1f4c3194",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-10-30T23:07:56Z",
+      "side": 1,
+      "message": "other attributes are documented. Please document this one too.",
+      "revId": "4e172f2010f22d35d43025c43a4b99a160e04592",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bba7d9ab_d8a1d67c",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-10-30T23:07:56Z",
+      "side": 1,
+      "message": "not used",
+      "revId": "4e172f2010f22d35d43025c43a4b99a160e04592",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
