@@ -114,6 +114,7 @@ class Build(ndb.Model):
   # a generic way to distinguish builds.
   # Different buckets have different permissions.
   bucket = ndb.StringProperty(required=True)
+  project = ndb.StringProperty()
   # a list of tags, where each tag is a string
   # with ":" symbol. The first occurrence of ":" splits tag name and tag
   # value. Contains only tags specified by the build request. Old Build
