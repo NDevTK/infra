@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "e894d8ae_982092e0",
+        "filename": "appengine/cr-buildbucket/api_common.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2017-10-30T21:32:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "58778042_5a45aebd",
+      "range": {
+        "startLine": 38,
+        "startChar": 2,
+        "endLine": 38,
+        "endChar": 14
+      },
+      "revId": "2e45bd890905bd267be4fe251e4a5e8a46ec99d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1744e612_3adc7cf4",
         "filename": "appengine/cr-buildbucket/model.py",
         "patchSetId": 1
@@ -119,6 +143,30 @@
     },
     {
       "key": {
+        "uuid": "ab9a0b08_015408a7",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2017-10-30T21:32:25Z",
+      "side": 1,
+      "message": "Done, I propagate the project name from the API level (where I make batch calls to get the project IDs from buckets, which will then be replaced with the project IDs being grabbed from the request) down to the BuildRequest and ultimately the Build. I had the opportunity to propagate it all the way down to the ACL checks, but that seemed like overkill for a single CL (since, technically, buckets will now be insufficient).",
+      "parentUuid": "ba06f391_d165b92c",
+      "range": {
+        "startLine": 247,
+        "startChar": 4,
+        "endLine": 247,
+        "endChar": 49
+      },
+      "revId": "2e45bd890905bd267be4fe251e4a5e8a46ec99d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bc885dde_4b8f0ec9",
         "filename": "appengine/cr-buildbucket/service.py",
         "patchSetId": 1
@@ -163,6 +211,30 @@
       "revId": "2e45bd890905bd267be4fe251e4a5e8a46ec99d2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2ab3a344_317a0a6b",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2017-10-30T21:32:25Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "cb9a6179_b643926b",
+      "range": {
+        "startLine": 251,
+        "startChar": 39,
+        "endLine": 251,
+        "endChar": 70
+      },
+      "revId": "2e45bd890905bd267be4fe251e4a5e8a46ec99d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
