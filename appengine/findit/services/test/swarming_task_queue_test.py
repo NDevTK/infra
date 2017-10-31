@@ -1,15 +1,114 @@
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import json
+import datetime
 import mock
 import datetime
 
 from gae_libs.pipeline_wrapper import pipeline_handlers
 from libs import time_util
+from libs import analysis_status
 
 from model import swarming_task_queue_request
+from model.flake import master_flake_analysis
+from model.flake import flake_swarming_task
 from services import swarming_task_queue
+from services import process_swarming_results
+from waterfall import swarming_util
 from waterfall.test import wf_testcase
+
+MOCK_RESULT_DATA_COMPLETE = {
+    'task_id': 'task_id',
+    'name': 'name',
+    'tags': ['cpu:x86-64', 'findit:1'],
+    'outputs_ref': {
+        'isolatedserver': 'https://isolateserver.appspot.com',
+        'namespace': 'default-gzip',
+        'isolated': 'eebfbfe99b391ad869871868369602e561ab9b52'
+    },
+    'duration': 50.1,
+    'completed_ts': '2017-10-24T22:20:32.361620',
+    'started_ts': '2017-10-24T22:19:20.104240',
+    'created_ts': '2017-10-24T22:19:17.794970',
+    'state': 'COMPLETED'
+}
+
+
+MOCK_LOG_DATA_COMPLETE = {
+    'disabled_tests': [
+        'AdbClientSocketTest.TestFlushWithData',
+        'AdbClientSocketTest.TestFlushWithSize',
+        'AdbClientSocketTest.TestFlushWithoutSize'
+    ],
+    'global_tags': ['CPU_64_BITS', 'MODE_RELEASE', 'OS_MACOSX', 'OS_POSIX'],
+    'all_tests': [
+        'AcceleratorsCocoaBrowserTest.MainMenuAcceleratorsInMapping',
+        'AcceleratorsCocoaBrowserTest.MappingAcceleratorsInMainMenu',
+        'ActivityLogApiTest.TriggerEvent',
+        'ActivityLogPrerenderTest.TestScriptInjected',
+        'AdbClientSocketTest.TestFlushWithData'
+    ],
+    'per_iteration_data': [{
+        'TestSuite1.test1': [{
+            'status': 'SUCCESS',
+            'other_info': 'N/A'
+        }],
+        'TestSuite1.test2': [{
+            'status': 'FAILURE',
+            'other_info': 'N/A'
+        }, {
+            'status': 'FAILURE',
+            'other_info': 'N/A'
+        }, {
+            'status': 'SUCCESS',
+            'other_info': 'N/A'
+        }],
+        'TestSuite1.test3': [{
+            'status': 'FAILURE',
+            'other_info': 'N/A'
+        }, {
+            'status': 'FAILURE',
+            'other_info': 'N/A'
+        }, {
+            'status': 'FAILURE',
+            'other_info': 'N/A'
+        }]
+    }, {
+        'TestSuite1.test1': [{
+            'status': 'SUCCESS',
+            'other_info': 'N/A'
+        }],
+        'TestSuite1.test2': [{
+            'status': 'SUCCESS',
+            'other_info': 'N/A'
+        }],
+        'TestSuite1.test3': [{
+            'status': 'FAILURE',
+            'other_info': 'N/A'
+        }, {
+            'status': 'FAILURE',
+            'other_info': 'N/A'
+        }, {
+            'status': 'FAILURE',
+            'other_info': 'N/A'
+        }]
+    }],
+    'test_locations': {
+        'PolicyToolUITest.Editing': {
+            'line':
+                271,
+            'file':
+                '../../chrome/browser/ui/webui/policy_tool_ui_browsertest.cc'
+        }
+    },
+    'error':
+        None,
+    'step_name_no_platform':
+        'browser_tests',
+    'task_state':
+        'COMPLETED'
+}
 
 
 class SwarmingTaskQueueTest(wf_testcase.WaterfallTestCase):
@@ -237,3 +336,111 @@ class SwarmingTaskQueueTest(wf_testcase.WaterfallTestCase):
     task.taskqueue_request_time = datetime.datetime(2017, 1, 1)
     swarming_task_queue.EnqueueTask(
         task, swarming_task_queue_request.SwarmingTaskQueuePriority.FAILURE)
+
+  def testGetTaskRequest(self):
+    task_id = 'task_id'
+    task = swarming_task_queue_request.SwarmingTaskQueueRequest.Create(
+        taskqueue_state=swarming_task_queue_request.SwarmingTaskQueueState.
+        PENDING,
+        taskqueue_dimensions="{'dim3': 'dim3'}",
+        swarming_task_id=task_id)
+    task.put()
+    swarming_task_queue._InitializeTaskQueue()
+    self.assertEqual(task, swarming_task_queue.GetTaskRequest(task_id))
+
+  def testGetTaskRequestNoneFound(self):
+    task_id = 'task_id'
+    task = swarming_task_queue_request.SwarmingTaskQueueRequest.Create(
+        taskqueue_state=swarming_task_queue_request.SwarmingTaskQueueState.
+        PENDING,
+        taskqueue_dimensions="{'dim3': 'dim3'}",
+        swarming_task_id='not my task id')
+    task.put()
+    swarming_task_queue._InitializeTaskQueue()
+    self.assertEqual(None, swarming_task_queue.GetTaskRequest(task_id))
+
+  @mock.patch.object(swarming_util, 'GetSwarmingTaskFailureLog')
+  @mock.patch.object(swarming_util, 'GetSwarmingTaskResultById')
+  @mock.patch.object(swarming_task_queue, 'GetTaskRequest')
+  def testCompleteTask(self, get_task_fn, result_fn, log_fn):
+    master_name = 'm'
+    builder_name = 'b'
+    build_number = 100
+    step_name = 's'
+    test_name = 't'
+    task_id = 'task_id'
+
+    result_fn.return_value = (MOCK_RESULT_DATA_COMPLETE, None)
+    log_fn.return_value = (MOCK_LOG_DATA_COMPLETE, None)
+
+    analysis = master_flake_analysis.MasterFlakeAnalysis.Create(
+        master_name, builder_name, build_number, step_name, test_name)
+    analysis.put()
+
+    task = flake_swarming_task.FlakeSwarmingTask.Create(
+        master_name, builder_name, build_number, step_name, test_name)
+    task.put()
+
+    task_queue_request = (
+        swarming_task_queue_request.SwarmingTaskQueueRequest.Create(
+            taskqueue_state=(
+                swarming_task_queue_request.SwarmingTaskQueueState.SCHEDULED),
+            taskqueue_priority=(
+                swarming_task_queue_request.SwarmingTaskQueuePriority.FORCE),
+            taskqueue_analysis_urlsafe_key=analysis.key.urlsafe(),
+            swarming_task_id=task_id))
+    task_queue_request.put()
+
+    get_task_fn.return_value = task_queue_request
+
+    swarming_task_queue.CompleteTask(task_id)
+
+  @mock.patch.object(swarming_util, 'GetSwarmingTaskFailureLog')
+  @mock.patch.object(swarming_util, 'GetSwarmingTaskResultById')
+  @mock.patch.object(swarming_task_queue, 'GetTaskRequest')
+  @mock.patch.object(process_swarming_results, 'GetSwarmingTaskError')
+  def testCompleteTaskWithError(self, error_fn, get_task_fn, result_fn, log_fn):
+    master_name = 'm'
+    builder_name = 'b'
+    build_number = 100
+    step_name = 's'
+    test_name = 't'
+    task_id = 'task_id'
+
+    result_fn.return_value = (MOCK_RESULT_DATA_COMPLETE, None)
+    log_fn.return_value = (MOCK_LOG_DATA_COMPLETE, None)
+    error_fn.return_value = {'error': 'error!'}
+
+    analysis = master_flake_analysis.MasterFlakeAnalysis.Create(
+        master_name, builder_name, build_number, step_name, test_name)
+    analysis.put()
+
+    task = flake_swarming_task.FlakeSwarmingTask.Create(
+        master_name, builder_name, build_number, step_name, test_name)
+    task.put()
+
+    task_queue_request = (
+        swarming_task_queue_request.SwarmingTaskQueueRequest.Create(
+            taskqueue_state=(
+                swarming_task_queue_request.SwarmingTaskQueueState.SCHEDULED),
+            taskqueue_priority=(
+                swarming_task_queue_request.SwarmingTaskQueuePriority.FORCE),
+            taskqueue_analysis_urlsafe_key=analysis.key.urlsafe(),
+            swarming_task_id=task_id))
+    task_queue_request.put()
+
+    get_task_fn.return_value = task_queue_request
+
+    swarming_task_queue.CompleteTask(task_id)
+
+  @mock.patch.object(
+      process_swarming_results, 'IsTaskComplete', return_value=False)
+  @mock.patch.object(swarming_util, 'GetSwarmingTaskFailureLog')
+  @mock.patch.object(swarming_util, 'GetSwarmingTaskResultById')
+  def testCompleteTaskIncomplete(self, result_fn, log_fn, _):
+    task_id = 'task_id'
+
+    result_fn.return_value = (MOCK_RESULT_DATA_COMPLETE, None)
+    log_fn.return_value = (MOCK_LOG_DATA_COMPLETE, None)
+
+    swarming_task_queue.CompleteTask(task_id)
