@@ -2,6 +2,52 @@
   "comments": [
     {
       "key": {
+        "uuid": "209a8f34_42c6fe41",
+        "filename": "appengine/findit/pipelines/flake_failure/get_sha_for_commit_position_pipeline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-10-31T00:44:10Z",
+      "side": 1,
+      "message": "Why does this need to be a pipeline? Seems like we could do this synchronously with a service.",
+      "range": {
+        "startLine": 19,
+        "startChar": 6,
+        "endLine": 19,
+        "endChar": 37
+      },
+      "revId": "1e803293a9173b06e21d1ec4fce58e58f188e2f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "86097d8d_20362404",
+        "filename": "appengine/findit/pipelines/flake_failure/get_sha_for_commit_position_pipeline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-10-31T00:44:10Z",
+      "side": 1,
+      "message": "IMHO the assumptions in this pipeline are a bit troubling. Doesn\u0027t seem like this pipeline should care about the context in which it\u0027s being called. It should just take a commit position, and return the sha for the nearest build number. All the other logic should happen in the calling layers.",
+      "range": {
+        "startLine": 23,
+        "startChar": 6,
+        "endLine": 23,
+        "endChar": 13
+      },
+      "revId": "1e803293a9173b06e21d1ec4fce58e58f188e2f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "54b03703_f074948b",
         "filename": "appengine/findit/pipelines/flake_failure/get_sha_for_commit_position_pipeline.py",
         "patchSetId": 2
@@ -41,6 +87,52 @@
         "startChar": 4,
         "endLine": 32,
         "endChar": 75
+      },
+      "revId": "1e803293a9173b06e21d1ec4fce58e58f188e2f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d5893409_977171ff",
+        "filename": "appengine/findit/pipelines/flake_failure/get_sha_for_commit_position_pipeline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-10-31T00:44:10Z",
+      "side": 1,
+      "message": "master_name",
+      "range": {
+        "startLine": 37,
+        "startChar": 27,
+        "endLine": 37,
+        "endChar": 47
+      },
+      "revId": "1e803293a9173b06e21d1ec4fce58e58f188e2f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1fe223f0_ed56c0d0",
+        "filename": "appengine/findit/pipelines/flake_failure/get_sha_for_commit_position_pipeline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-10-31T00:44:10Z",
+      "side": 1,
+      "message": "builder_name\n\nthese \u0027original\u0027 fields aren\u0027t used afaik.",
+      "range": {
+        "startLine": 38,
+        "startChar": 28,
+        "endLine": 38,
+        "endChar": 49
       },
       "revId": "1e803293a9173b06e21d1ec4fce58e58f188e2f8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
