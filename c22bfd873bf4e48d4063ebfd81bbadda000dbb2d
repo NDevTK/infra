@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "7de80169_fb90bbd2",
+        "filename": "appengine/findit/services/swarming_task_queue.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-10-31T17:36:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "554eda8f_dc61c240",
+      "revId": "c22bfd873bf4e48d4063ebfd81bbadda000dbb2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "52b3485c_7882c383",
         "filename": "appengine/findit/services/swarming_task_queue.py",
         "patchSetId": 6
@@ -39,6 +57,30 @@
       "revId": "c22bfd873bf4e48d4063ebfd81bbadda000dbb2d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "edbede72_d3feb2ca",
+        "filename": "appengine/findit/services/swarming_task_queue.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-10-31T17:36:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "52b3485c_7882c383",
+      "range": {
+        "startLine": 214,
+        "startChar": 0,
+        "endLine": 251,
+        "endChar": 13
+      },
+      "revId": "c22bfd873bf4e48d4063ebfd81bbadda000dbb2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -65,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "b2303e4f_cccb1aa6",
+        "filename": "appengine/findit/services/swarming_task_queue.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-10-31T17:36:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "90c821f7_e0e29061",
+      "range": {
+        "startLine": 254,
+        "startChar": 0,
+        "endLine": 258,
+        "endChar": 57
+      },
+      "revId": "c22bfd873bf4e48d4063ebfd81bbadda000dbb2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "86cb779b_773b41ae",
         "filename": "appengine/findit/services/swarming_task_queue.py",
         "patchSetId": 6
@@ -88,6 +154,30 @@
     },
     {
       "key": {
+        "uuid": "1e723016_076a8b3e",
+        "filename": "appengine/findit/services/swarming_task_queue.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-10-31T17:36:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "86cb779b_773b41ae",
+      "range": {
+        "startLine": 261,
+        "startChar": 0,
+        "endLine": 271,
+        "endChar": 74
+      },
+      "revId": "c22bfd873bf4e48d4063ebfd81bbadda000dbb2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "eb6679fa_38507a16",
         "filename": "appengine/findit/services/swarming_task_queue.py",
         "patchSetId": 6
@@ -108,6 +198,30 @@
       "revId": "c22bfd873bf4e48d4063ebfd81bbadda000dbb2d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5a2f4489_3de8c47b",
+        "filename": "appengine/findit/services/swarming_task_queue.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-10-31T17:36:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "eb6679fa_38507a16",
+      "range": {
+        "startLine": 274,
+        "startChar": 0,
+        "endLine": 294,
+        "endChar": 23
+      },
+      "revId": "c22bfd873bf4e48d4063ebfd81bbadda000dbb2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
