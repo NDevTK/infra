@@ -183,6 +183,30 @@
       "revId": "1e803293a9173b06e21d1ec4fce58e58f188e2f8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "220b6b88_bf901ed1",
+        "filename": "appengine/findit/waterfall/build_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-10-31T17:07:47Z",
+      "side": 1,
+      "message": "you can also set the upstream w git branch --set-upstream-to \u003csome local branch\u003e which is what I had to do. git reparent-branch didn\u0027t work.",
+      "parentUuid": "99b3490e_68a299b2",
+      "range": {
+        "startLine": 87,
+        "startChar": 0,
+        "endLine": 98,
+        "endChar": 25
+      },
+      "revId": "1e803293a9173b06e21d1ec4fce58e58f188e2f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
