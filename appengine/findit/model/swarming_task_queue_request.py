@@ -49,16 +49,32 @@ class SwarmingTaskQueueRequest(ndb.Model):
   # The actual request from waterfall/swarming_task_request's Serialize method.
   swarming_task_request = ndb.TextProperty()
 
+  # Used to callback the pipeline back when swarming task is complete.
+  taskqueue_callback_url = ndb.StringProperty()
+
+  # The analysis that requested this swarming task.
+  taskqueue_analysis_urlsafe_key = ndb.StringProperty()
+
+  # Task id of a swarming task.
+  swarming_task_id = ndb.StringProperty()
+
   @staticmethod
   def Create(taskqueue_state=SwarmingTaskQueueState.SCHEDULED,
              taskqueue_priority=SwarmingTaskQueuePriority.FORCE,
              taskqueue_request_time=time_util.GetUTCNow(),
              taskqueue_dimensions=None,
+             taskqueue_callback_url=None,
+             taskqueue_analysis_urlsafe_key=None,
+             swarming_task_id=None,
              swarming_task_request=None):
     swarming_task_queue_request = SwarmingTaskQueueRequest()
     swarming_task_queue_request.taskqueue_state = taskqueue_state
     swarming_task_queue_request.taskqueue_priority = taskqueue_priority
     swarming_task_queue_request.taskqueue_request_time = taskqueue_request_time
     swarming_task_queue_request.taskqueue_dimensions = taskqueue_dimensions
+    swarming_task_queue_request.taskqueue_callback_url = taskqueue_callback_url
+    swarming_task_queue_request.taskqueue_analysis_urlsafe_key = (
+        taskqueue_analysis_urlsafe_key)
+    swarming_task_queue_request.swarming_task_id = swarming_task_id
     swarming_task_queue_request.swarming_task_request = swarming_task_request
     return swarming_task_queue_request
