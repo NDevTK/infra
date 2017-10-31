@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1834bdd8_dc65b2cd",
+        "filename": "luci-milo.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-10-31T00:08:25Z",
+      "side": 1,
+      "message": "-2 blank lines",
+      "revId": "bf079a748b3f63f7f66fc49f672184acf1ad42ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "37d571b3_ed6da12d",
+        "filename": "luci-milo.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-10-31T00:08:25Z",
+      "side": 1,
+      "message": "same",
+      "revId": "bf079a748b3f63f7f66fc49f672184acf1ad42ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
