@@ -16,6 +16,24 @@
       "revId": "a710e484deaaa0d39255567ba5eb3adaa3abf99a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "37eb3188_01e8434c",
+        "filename": "appengine/predator/app/frontend/handlers/crash_config.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 324,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-10-31T23:06:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dbde9069_8c498fad",
+      "revId": "a710e484deaaa0d39255567ba5eb3adaa3abf99a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
