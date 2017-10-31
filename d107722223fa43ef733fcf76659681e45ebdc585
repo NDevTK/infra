@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "77a72a43_6d5d6182",
+        "filename": "appengine/predator/app/frontend/handlers/crash_config.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 324,
+      "author": {
+        "id": 1123509
+      },
+      "writtenOn": "2017-10-31T23:08:09Z",
+      "side": 1,
+      "message": "As a general note, it feels like a helper function could be used to simplify some of this.",
+      "revId": "d107722223fa43ef733fcf76659681e45ebdc585",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
