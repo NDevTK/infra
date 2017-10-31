@@ -76,6 +76,9 @@ _MOCK_FEATURES_CONFIG = {
     'TouchCrashedComponent': {
         'blacklist': ['Internals>Core'],
     },
+    'TouchCrashedDirectory': {
+        'blacklist': ['base'],
+    }
 }
 
 _MOCK_CONFIG = {
@@ -340,7 +343,21 @@ class CrashConfigTest(TestCase):
   def testValidateFeatureOptions(self):
     """Tests ``_ValidateFeatureOptions`` function."""
     self.assertFalse(crash_config._ValidateFeatureOptions(None))
-    self.assertTrue(crash_config._ValidateFeatureOptions({}))
+    self.assertFalse(crash_config._ValidateFeatureOptions({}))
+    self.assertFalse(crash_config._ValidateFeatureOptions({
+        'TouchCrashedDirectory': []
+    }))
+    self.assertFalse(crash_config._ValidateFeatureOptions({
+        'TouchCrashedDirectory': {}
+    }))
+    self.assertFalse(crash_config._ValidateFeatureOptions({
+        'TouchCrashedDirectory': {},
+        'TouchCrashedComponent': []
+    }))
+    self.assertTrue(crash_config._ValidateFeatureOptions({
+        'TouchCrashedDirectory': {},
+        'TouchCrashedComponent': {}
+    }))
 
   def testConfigurationDictIsValid(self):
     """Tests ``_ConfigurationDictIsValid`` function."""
