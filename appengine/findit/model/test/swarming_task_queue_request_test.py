@@ -23,6 +23,9 @@ class SwarmingTaskQueueRequestTest(unittest.TestCase):
     self.assertTrue(type(request.taskqueue_request_time) is datetime.datetime)
     self.assertEqual(request.taskqueue_dimensions, None)
     self.assertEqual(request.swarming_task_request, None)
+    self.assertEqual(request.taskqueue_callback_url, None)
+    self.assertEqual(request.taskqueue_analysis_urlsafe_key, None)
+    self.assertEqual(request.swarming_task_id, None)
 
   def testCreate(self):
     request = swarming_task_queue_request.SwarmingTaskQueueRequest.Create(
@@ -32,6 +35,9 @@ class SwarmingTaskQueueRequestTest(unittest.TestCase):
         SwarmingTaskQueuePriority.FLAKE,
         taskqueue_request_time=datetime.datetime(2017, 1, 2),
         taskqueue_dimensions='dim',
+        taskqueue_callback_url='http://what.com',
+        taskqueue_analysis_urlsafe_key='foobar',
+        swarming_task_id='task123',
         swarming_task_request='request')
     self.assertEqual(request.taskqueue_state,
                      swarming_task_queue_request.SwarmingTaskQueueState.READY)
@@ -41,4 +47,7 @@ class SwarmingTaskQueueRequestTest(unittest.TestCase):
     self.assertEqual(request.taskqueue_request_time,
                      datetime.datetime(2017, 1, 2))
     self.assertEqual(request.taskqueue_dimensions, 'dim')
+    self.assertEqual(request.taskqueue_callback_url, 'http://what.com')
+    self.assertEqual(request.taskqueue_analysis_urlsafe_key, 'foobar')
+    self.assertEqual(request.swarming_task_id, 'task123')
     self.assertEqual(request.swarming_task_request, 'request')

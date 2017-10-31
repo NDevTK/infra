@@ -11,6 +11,7 @@ from protorpc import messages
 from google.appengine.ext import ndb
 
 from common import constants
+from common.findit_http_client import FinditHttpClient
 from libs import time_util
 from libs import analysis_status
 from model import swarming_task_queue_request
@@ -20,6 +21,8 @@ from model.flake.flake_swarming_task import FlakeSwarmingTask
 from waterfall import swarming_util
 
 _TASKQUEUE_UPDATE_DELAY_SECONDS = 120
+
+HTTP_CLIENT = FinditHttpClient()
 
 
 class TaskPriorityQueueItem(object):
@@ -206,3 +209,151 @@ def Update():  # pragma: no cover
 
   time.sleep(_TASKQUEUE_UPDATE_DELAY_SECONDS)
   Update()
+
+
+def GetSwarmingTaskError(task_id, result_data, result_error, log_data,
+                         log_error):
+  """Checks for error, and returns the error if any."""
+  if result_error:
+    return result_error
+
+  if not result_data:
+    logging.error(
+        'No data was found for task_id %d even through task was completed.',
+        task_id)
+    return {
+        'code': swarming_util.NO_OUTPUT_JSON,
+        'message': 'No data was found even though task was completed.'
+    }
+
+  outputs_ref = result_data['outputs_ref']
+  if not outputs_ref:
+    logging.error('outputs_ref for task %s is None', task_id)
+    return {
+        'code': swarming_util.NO_TASK_OUTPUTS,
+        'message': 'outputs_ref is None'
+    }
+
+  if log_error or not log_data:
+    logging.error('output_json for task %s is None', task_id)
+    return log_error or {
+        'code': swarming_util.NO_OUTPUT_JSON,
+        'message': 'output_json is None',
+    }
+
+  if not log_data.get('per_iteration_data'):
+    logging.error('outputs_ref.per_iteration_data for task %s is None', task_id)
+    return {
+        'code': swarming_util.NO_PER_ITERATION_DATA,
+        'message': 'per_iteration_data is empty or missing'
+    }
+
+  return None
+
+
+def IsTaskComplete(data):
+  """Returns True if the task is done running on swarming."""
+  task_state = data['state']
+  return (task_state is swarming_util.STATE_COMPLETED or
+          task_state in swarming_util.STATES_NOT_RUNNING)
+
+
+def _ConvertDateTime(time_string):
+  """Convert UTC time string to datetime.datetime."""
+  if not time_string:
+    return None
+  for fmt in ('%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S'):
+    # When microseconds are 0, the '.123456' suffix is elided.
+    try:
+      return datetime.datetime.strptime(time_string, fmt)
+    except ValueError:
+      pass
+  raise ValueError('Failed to parse %s' % time_string)  # pragma: no cover
+
+
+def _CheckTestsRunStatuses(output_json, *_):
+  """Checks result status for each test run and saves the numbers accordingly.
+
+  Args:
+    output_json (dict): A dict of all test results in the swarming task.
+
+  Returns:
+    tests_statuses (dict): A dict of different statuses for each test.
+
+  Currently for each test, we are saving number of total runs,
+  number of succeeded runs and number of failed runs.
+  """
+  tests_statuses = defaultdict(lambda: defaultdict(int))
+  if output_json:
+    for iteration in output_json.get('per_iteration_data'):
+      for test_name, tests in iteration.iteritems():
+        tests_statuses[test_name]['total_run'] += len(tests)
+        for test in tests:
+          tests_statuses[test_name][test['status']] += 1
+
+  return tests_statuses
+
+
+def GetTaskRequest(task_id):
+  for task_request in pending_tasks:
+    if task_request.swarming_task_id == task_id:
+      return task_request
+  return None
+
+
+def CompleteTask(task_id):
+  """Called by pubsub push endpoint once this task is complete."""
+
+  result_data, result_error = swarming_util.GetSwarmingTaskResultById(
+      task_id, HTTP_CLIENT)
+  log_data, log_error = swarming_util.GetSwarmingTaskFailureLog(
+      result_data['outputs_ref'],
+      HTTP_CLIENT) if result_data['outputs_ref'] else (None, None)
+
+  if not IsTaskComplete(result_data):
+    logging.info('Callback notified for %s, but task is incomplete' % task_id)
+    return
+
+  assert result_data
+  assert log_data
+
+  taskqueue_task = GetTaskRequest(task_id)
+  analysis = ndb.Key(
+      urlsafe=taskqueue_task.taskqueue_analysis_urlsafe_key).get()
+  assert analysis
+
+  task = FlakeSwarmingTask.Get(analysis.master_name, analysis.builder_name,
+                               analysis.build_number, analysis.step_name,
+                               analysis.test_name)
+  assert task
+
+  task.task_id = task_id
+  task.created_time = _ConvertDateTime(result_data.get('created_ts'))
+  task.started_time = _ConvertDateTime(result_data.get('started_ts'))
+  task.completed_time = _ConvertDateTime(result_data.get('completed_ts'))
+
+  error = GetSwarmingTaskError(task_id, result_data, result_error, log_data,
+                               log_error)
+  if error:
+    task.status = analysis_status.ERROR
+    task.error = error
+    task.put()
+    # TODO (wylieb): Callback pipeline.
+    return
+
+  step_name_no_platform = swarming_util.GetTagValue(
+      result_data.get('tags', {}), 'ref_name')
+  task.status = analysis_status.COMPLETED
+  task.tests_statuses = _CheckTestsRunStatuses(log_data)
+  task.canonical_step_name = step_name_no_platform
+
+  tries = task.tests_statuses.get(analysis.test_name, {}).get('total_run', 0)
+  successes = task.tests_statuses.get(analysis.test_name, {}).get('SUCCESS', 0)
+
+  task.tries = tries
+  task.successes = successes
+  task.put()
+
+  # We've found all the results, callback the pipeline.
+  # TODO (wylieb): Callback pipeline.
+  return
