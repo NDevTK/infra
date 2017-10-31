@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dbde9069_8c498fad",
+        "filename": "appengine/predator/app/frontend/handlers/crash_config.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 324,
+      "author": {
+        "id": 1123509
+      },
+      "writtenOn": "2017-10-31T20:20:11Z",
+      "side": 1,
+      "message": "When either of these are set, we should also validate that they have only expected values. Similarly, we should validate that we don\u0027t contain any unexpected keys here. This is too error-prone as-is, and it will fail somewhat silently in the event of, for example, a misspelling.",
+      "revId": "a710e484deaaa0d39255567ba5eb3adaa3abf99a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
