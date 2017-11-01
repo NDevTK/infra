@@ -2,6 +2,75 @@
   "comments": [
     {
       "key": {
+        "uuid": "49448d24_ea8d4952",
+        "filename": "appengine/findit/model/swarming_task_queue_request.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-11-01T18:12:40Z",
+      "side": 1,
+      "message": "nit: no need to mention it is a queue.",
+      "range": {
+        "startLine": 36,
+        "startChar": 18,
+        "endLine": 36,
+        "endChar": 23
+      },
+      "revId": "c22bfd873bf4e48d4063ebfd81bbadda000dbb2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "96784986_755ae49e",
+        "filename": "appengine/findit/model/swarming_task_queue_request.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-11-01T18:12:40Z",
+      "side": 1,
+      "message": "nit: I feel we could strip these prefixes.",
+      "range": {
+        "startLine": 38,
+        "startChar": 2,
+        "endLine": 38,
+        "endChar": 12
+      },
+      "revId": "c22bfd873bf4e48d4063ebfd81bbadda000dbb2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "53b92a3a_e26f8181",
+        "filename": "appengine/findit/model/swarming_task_queue_request.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2017-11-01T18:12:40Z",
+      "side": 1,
+      "message": "As commented in the other CL, have we considered JsonProperty?",
+      "range": {
+        "startLine": 50,
+        "startChar": 30,
+        "endLine": 50,
+        "endChar": 42
+      },
+      "revId": "c22bfd873bf4e48d4063ebfd81bbadda000dbb2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "554eda8f_dc61c240",
         "filename": "appengine/findit/services/swarming_task_queue.py",
         "patchSetId": 6
