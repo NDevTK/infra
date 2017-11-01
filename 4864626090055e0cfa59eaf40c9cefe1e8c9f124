@@ -1,0 +1,211 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ab7850c9_52db0a22",
+        "filename": "appengine/findit/model/test/swarming_task_queue_request_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-11-01T21:40:40Z",
+      "side": 1,
+      "message": "I would avoid using potentially real urls here and just go with a generic string like \u0027url\u0027 if possible for test cases",
+      "range": {
+        "startLine": 38,
+        "startChar": 22,
+        "endLine": 38,
+        "endChar": 37
+      },
+      "revId": "4864626090055e0cfa59eaf40c9cefe1e8c9f124",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8d4208c8_a346251e",
+        "filename": "appengine/findit/services/process_swarming_results.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-11-01T21:40:40Z",
+      "side": 1,
+      "message": "what\u0027s this for now that this function has been moved here?",
+      "range": {
+        "startLine": 9,
+        "startChar": 39,
+        "endLine": 9,
+        "endChar": 41
+      },
+      "revId": "4864626090055e0cfa59eaf40c9cefe1e8c9f124",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7ea7e1aa_1f9e403a",
+        "filename": "appengine/findit/services/process_swarming_results.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-11-01T21:40:40Z",
+      "side": 1,
+      "message": "these variable names should all be renamed, since they no longer have context to where they were being used. output_json is too generic and doesn\u0027t hint at what data is contained here or where it came from. I suggest \u0027swarming_task_failure_log_output_json\u0027 or something",
+      "range": {
+        "startLine": 9,
+        "startChar": 26,
+        "endLine": 9,
+        "endChar": 37
+      },
+      "revId": "4864626090055e0cfa59eaf40c9cefe1e8c9f124",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "da05808a_d90a7269",
+        "filename": "appengine/findit/services/process_swarming_results.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-11-01T21:40:40Z",
+      "side": 1,
+      "message": "result_error and log_error are out of place, since they\u0027re errors reported from the network being unreachable and not based on the actual data of the swarming task. This function should be for parsing the swarming task data itself and deducing an error occurred due to missing fields or other unexpected content",
+      "range": {
+        "startLine": 32,
+        "startChar": 47,
+        "endLine": 32,
+        "endChar": 59
+      },
+      "revId": "4864626090055e0cfa59eaf40c9cefe1e8c9f124",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "217b65e6_ca1b4b76",
+        "filename": "appengine/findit/services/process_swarming_results.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-11-01T21:40:40Z",
+      "side": 1,
+      "message": "Since this is in a service module I\u0027d lean away from adding logging statements here, since this function may be used in different contexts thus logs can get confusing. since the logging is all similar to the error message just have the calling function do the logging of  error[\u0027message\u0027]",
+      "range": {
+        "startLine": 63,
+        "startChar": 4,
+        "endLine": 63,
+        "endChar": 80
+      },
+      "revId": "4864626090055e0cfa59eaf40c9cefe1e8c9f124",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cb1fb1f2_7225abf5",
+        "filename": "appengine/findit/services/process_swarming_results.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-11-01T21:40:40Z",
+      "side": 1,
+      "message": "Docstring should be updated to account for this module having no context of \"the task\", and update \"data\" to be more informative of what\u0027s in there.",
+      "range": {
+        "startLine": 73,
+        "startChar": 21,
+        "endLine": 73,
+        "endChar": 24
+      },
+      "revId": "4864626090055e0cfa59eaf40c9cefe1e8c9f124",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a6f27d4f_7fef0a8a",
+        "filename": "appengine/findit/services/swarming_task_queue.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 304,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-11-01T21:40:40Z",
+      "side": 1,
+      "message": "check for result_error immediately",
+      "range": {
+        "startLine": 303,
+        "startChar": 2,
+        "endLine": 304,
+        "endChar": 28
+      },
+      "revId": "4864626090055e0cfa59eaf40c9cefe1e8c9f124",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0c29dbbd_438b735c",
+        "filename": "appengine/findit/services/swarming_task_queue.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 307,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-11-01T21:40:40Z",
+      "side": 1,
+      "message": "check for log_error immediately",
+      "range": {
+        "startLine": 305,
+        "startChar": 2,
+        "endLine": 307,
+        "endChar": 67
+      },
+      "revId": "4864626090055e0cfa59eaf40c9cefe1e8c9f124",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dfdeca7b_ed01a475",
+        "filename": "appengine/findit/services/swarming_task_queue.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 336,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-11-01T21:40:40Z",
+      "side": 1,
+      "message": "as mentioned in the GetSwarmingTaskError log_error and result_error should be handled separately, since they\u0027re usually network related errors wheras GetSwarmingTaskError is actually to crack open the swarming task data and deduce an error based on teh return values of log_data/result_data/etc.",
+      "range": {
+        "startLine": 336,
+        "startChar": 52,
+        "endLine": 336,
+        "endChar": 61
+      },
+      "revId": "4864626090055e0cfa59eaf40c9cefe1e8c9f124",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
