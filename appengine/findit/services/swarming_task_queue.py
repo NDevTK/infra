@@ -11,13 +11,18 @@ from protorpc import messages
 from google.appengine.ext import ndb
 
 from common import constants
+from common.findit_http_client import FinditHttpClient
 from libs import time_util
 from libs import analysis_status
 from model import swarming_task_queue_request
 from model import base_swarming_task
 from model.flake import master_flake_analysis
 from model.flake.flake_swarming_task import FlakeSwarmingTask
+from services import datetime_util
+from services import process_swarming_results
 from waterfall import swarming_util
+
+_HTTP_CLIENT = FinditHttpClient()
 
 
 class TaskPriorityQueueItem(object):
@@ -218,6 +223,75 @@ def EnqueueTask(request, priority):
   request.taskqueue_priority = priority
   request.taskqueue_request_time = time_util.GetUTCNow()
   request.put()
+
+
+def GetTaskRequest(task_id):
+  _, pending_tasks = _InitializeTaskQueue()
+  for task_request in pending_tasks:
+    if task_request.swarming_task_id == task_id:
+      return task_request
+  return None
+
+
+def CompleteTask(task_id):
+  """Called by pubsub push endpoint once this task is complete."""
+
+  result_data, result_error = swarming_util.GetSwarmingTaskResultById(
+      task_id, _HTTP_CLIENT)
+  log_data, log_error = swarming_util.GetSwarmingTaskFailureLog(
+      result_data['outputs_ref'],
+      _HTTP_CLIENT) if result_data['outputs_ref'] else (None, None)
+
+  if not process_swarming_results.IsTaskComplete(result_data):
+    logging.info('Callback notified for %s, but task is incomplete' % task_id)
+    return
+
+  assert result_data
+  assert log_data
+
+  taskqueue_task = GetTaskRequest(task_id)
+  analysis = ndb.Key(
+      urlsafe=taskqueue_task.taskqueue_analysis_urlsafe_key).get()
+  assert analysis
+
+  task = FlakeSwarmingTask.Get(analysis.master_name, analysis.builder_name,
+                               analysis.build_number, analysis.step_name,
+                               analysis.test_name)
+  assert task
+
+  task.task_id = task_id
+  task.created_time = datetime_util.ConvertDateTime(
+      result_data.get('created_ts'))
+  task.started_time = datetime_util.ConvertDateTime(
+      result_data.get('started_ts'))
+  task.completed_time = datetime_util.ConvertDateTime(
+      result_data.get('completed_ts'))
+
+  error = process_swarming_results.GetSwarmingTaskError(
+      task_id, result_data, result_error, log_data, log_error)
+  if error:
+    task.status = analysis_status.ERROR
+    task.error = error
+    task.put()
+    # TODO(crbug.com/779643): Callback pipeline.
+    return
+
+  step_name_no_platform = swarming_util.GetTagValue(
+      result_data.get('tags', {}), 'ref_name')
+  task.status = analysis_status.COMPLETED
+  task.tests_statuses = process_swarming_results.CheckTestsRunStatuses(log_data)
+  task.canonical_step_name = step_name_no_platform
+
+  tries = task.tests_statuses.get(analysis.test_name, {}).get('total_run', 0)
+  successes = task.tests_statuses.get(analysis.test_name, {}).get('SUCCESS', 0)
+
+  task.tries = tries
+  task.successes = successes
+  task.put()
+
+  # We've found all the results, callback the pipeline.
+  # TODO(crbug.com/779643): Callback pipeline.
+  return
 
 
 # TODO(crbug.com/776440): Dispatch requests to swarming.
