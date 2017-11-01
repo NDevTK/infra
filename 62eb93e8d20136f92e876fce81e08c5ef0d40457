@@ -1,0 +1,159 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fe3c050e_ac02c5f3",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-11-01T00:10:51Z",
+      "side": 1,
+      "message": "let\u0027s omit this. There is only one Build message. It is in api_common.py only because it is also used in swarmbucket API",
+      "range": {
+        "startLine": 7,
+        "startChar": 29,
+        "endLine": 7,
+        "endChar": 36
+      },
+      "revId": "62eb93e8d20136f92e876fce81e08c5ef0d40457",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bd240356_332688ed",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-11-01T00:10:51Z",
+      "side": 1,
+      "message": "same here",
+      "range": {
+        "startLine": 9,
+        "startChar": 41,
+        "endLine": 9,
+        "endChar": 48
+      },
+      "revId": "62eb93e8d20136f92e876fce81e08c5ef0d40457",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f9d3f4aa_47d09634",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-11-01T00:10:51Z",
+      "side": 1,
+      "message": "Bug: 776300",
+      "revId": "62eb93e8d20136f92e876fce81e08c5ef0d40457",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "88aa108c_82658f49",
+        "filename": "appengine/cr-buildbucket/api.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-11-01T00:10:51Z",
+      "side": 1,
+      "message": "inline",
+      "range": {
+        "startLine": 103,
+        "startChar": 2,
+        "endLine": 103,
+        "endChar": 14
+      },
+      "revId": "62eb93e8d20136f92e876fce81e08c5ef0d40457",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3b7849ee_55739f06",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-11-01T00:10:51Z",
+      "side": 1,
+      "message": "let\u0027s omit this because from this point on we always want to have it\nbut mention that older builds may not have it",
+      "range": {
+        "startLine": 117,
+        "startChar": 4,
+        "endLine": 117,
+        "endChar": 13
+      },
+      "revId": "62eb93e8d20136f92e876fce81e08c5ef0d40457",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b5d1bc3c_3bedaf9a",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-11-01T00:10:51Z",
+      "side": 1,
+      "message": "id",
+      "range": {
+        "startLine": 117,
+        "startChar": 37,
+        "endLine": 117,
+        "endChar": 41
+      },
+      "revId": "62eb93e8d20136f92e876fce81e08c5ef0d40457",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "da99de3d_f5301cc5",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-11-01T00:10:51Z",
+      "side": 1,
+      "message": "period",
+      "range": {
+        "startLine": 118,
+        "startChar": 18,
+        "endLine": 118,
+        "endChar": 20
+      },
+      "revId": "62eb93e8d20136f92e876fce81e08c5ef0d40457",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
