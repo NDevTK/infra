@@ -16,6 +16,24 @@
       "revId": "d107722223fa43ef733fcf76659681e45ebdc585",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a7f9f5c5_4d7b9faa",
+        "filename": "appengine/predator/app/frontend/handlers/crash_config.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 324,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-11-01T19:17:48Z",
+      "side": 1,
+      "message": "Tried to add a helper function, but it seems it doesn\u0027t shorten the lines a lot, since we need to store \"touch_crashed_directory_options\" anyway here.",
+      "parentUuid": "77a72a43_6d5d6182",
+      "revId": "d107722223fa43ef733fcf76659681e45ebdc585",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
