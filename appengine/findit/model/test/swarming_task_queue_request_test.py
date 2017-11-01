@@ -15,31 +15,40 @@ class SwarmingTaskQueueRequestTest(unittest.TestCase):
   def testCreateDefault(self):
     request = swarming_task_queue_request.SwarmingTaskQueueRequest.Create()
     self.assertEqual(
-        request.taskqueue_state,
+        request.state,
         swarming_task_queue_request.SwarmingTaskQueueState.SCHEDULED)
     self.assertEqual(
-        request.taskqueue_priority,
+        request.priority,
         swarming_task_queue_request.SwarmingTaskQueuePriority.FORCE)
-    self.assertTrue(type(request.taskqueue_request_time) is datetime.datetime)
-    self.assertEqual(request.taskqueue_dimensions, None)
+    self.assertTrue(type(request.request_time) is datetime.datetime)
+    self.assertEqual(request.dimensions, None)
     self.assertEqual(request.swarming_task_request, None)
+    self.assertEqual(request.callback_url, None)
+    self.assertEqual(request.analysis_urlsafe_key, None)
+    self.assertEqual(request.swarming_task_id, None)
 
   def testCreate(self):
     request = swarming_task_queue_request.SwarmingTaskQueueRequest.Create(
-        taskqueue_state=(
+        state=(
             swarming_task_queue_request.SwarmingTaskQueueState.COMPLETED),
-        taskqueue_priority=swarming_task_queue_request.
+        priority=swarming_task_queue_request.
         SwarmingTaskQueuePriority.FLAKE,
-        taskqueue_request_time=datetime.datetime(2017, 1, 2),
-        taskqueue_dimensions='dim',
+        request_time=datetime.datetime(2017, 1, 2),
+        dimensions='dim',
+        callback_url='http://what.com',
+        analysis_urlsafe_key='foobar',
+        swarming_task_id='task123',
         swarming_task_request='request')
     self.assertEqual(
-        request.taskqueue_state,
+        request.state,
         swarming_task_queue_request.SwarmingTaskQueueState.COMPLETED)
     self.assertEqual(
-        request.taskqueue_priority,
+        request.priority,
         swarming_task_queue_request.SwarmingTaskQueuePriority.FLAKE)
-    self.assertEqual(request.taskqueue_request_time,
+    self.assertEqual(request.request_time,
                      datetime.datetime(2017, 1, 2))
-    self.assertEqual(request.taskqueue_dimensions, 'dim')
+    self.assertEqual(request.dimensions, 'dim')
+    self.assertEqual(request.callback_url, 'http://what.com')
+    self.assertEqual(request.analysis_urlsafe_key, 'foobar')
+    self.assertEqual(request.swarming_task_id, 'task123')
     self.assertEqual(request.swarming_task_request, 'request')
