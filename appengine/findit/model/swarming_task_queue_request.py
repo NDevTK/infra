@@ -12,9 +12,11 @@ from libs import time_util
 
 class SwarmingTaskQueuePriority():
   # Forced a rerun of a failure or flake.
-  FORCE = 100
-  FAILURE = 50
-  FLAKE = 25
+  FORCE = 1
+  # Compile or test failure.
+  FAILURE = 2
+  # Test flake.
+  FLAKE = 5
   # A request made through findit api.
   API_CALL = 10
 
@@ -29,16 +31,13 @@ class SwarmingTaskQueueState(messages.Enum):
   # Task has been complete, but results haven't been requested.
   COMPLETED = 750
 
-  # Task is complete, and results have been requested and recieved.
-  READY = 1000
-
 
 class SwarmingTaskQueueRequest(ndb.Model):
   # State of the request, see SwarmingTaskQueueState for details.
   taskqueue_state = msgprop.EnumProperty(SwarmingTaskQueueState, indexed=True)
 
   # Priority of the request, see SwarmingTaskQueuePriority for details.
-  taskqueue_priority = ndb.IntegerProperty()
+  taskqueue_priority = ndb.FloatProperty()
 
   # Timestamp to order things in the Taskqueue.
   taskqueue_request_time = ndb.DateTimeProperty()

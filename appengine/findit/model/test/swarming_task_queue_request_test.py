@@ -26,15 +26,16 @@ class SwarmingTaskQueueRequestTest(unittest.TestCase):
 
   def testCreate(self):
     request = swarming_task_queue_request.SwarmingTaskQueueRequest.Create(
-        taskqueue_state=swarming_task_queue_request.SwarmingTaskQueueState.
-        READY,
+        taskqueue_state=(
+            swarming_task_queue_request.SwarmingTaskQueueState.COMPLETED),
         taskqueue_priority=swarming_task_queue_request.
         SwarmingTaskQueuePriority.FLAKE,
         taskqueue_request_time=datetime.datetime(2017, 1, 2),
         taskqueue_dimensions='dim',
         swarming_task_request='request')
-    self.assertEqual(request.taskqueue_state,
-                     swarming_task_queue_request.SwarmingTaskQueueState.READY)
+    self.assertEqual(
+        request.taskqueue_state,
+        swarming_task_queue_request.SwarmingTaskQueueState.COMPLETED)
     self.assertEqual(
         request.taskqueue_priority,
         swarming_task_queue_request.SwarmingTaskQueuePriority.FLAKE)
