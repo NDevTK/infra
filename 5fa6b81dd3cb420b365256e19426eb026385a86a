@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9f4684bc_740b0795",
+        "filename": "appengine/cr-buildbucket/api.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-11-01T01:04:00Z",
+      "side": 1,
+      "message": "does this work? i think we need ( here",
+      "range": {
+        "startLine": 107,
+        "startChar": 13,
+        "endLine": 107,
+        "endChar": 15
+      },
+      "revId": "5fa6b81dd3cb420b365256e19426eb026385a86a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8c75559b_b8915ae1",
+        "filename": "appengine/cr-buildbucket/api.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-11-01T01:04:00Z",
+      "side": 1,
+      "message": "nit: please break line after [, s\n\nreturn [ \n  service.BuildRequest(\n      project\u003d...\n      ...\n  )\n  for ...\n]",
+      "range": {
+        "startLine": 106,
+        "startChar": 9,
+        "endLine": 107,
+        "endChar": 12
+      },
+      "revId": "5fa6b81dd3cb420b365256e19426eb026385a86a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4cf80e49_8b4f6e44",
+        "filename": "appengine/cr-buildbucket/test/service_test.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-11-01T01:04:00Z",
+      "side": 1,
+      "message": "+2 space indent",
+      "revId": "5fa6b81dd3cb420b365256e19426eb026385a86a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e1d9157e_b7546eac",
+        "filename": "appengine/cr-buildbucket/test/service_test.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 386,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-11-01T01:04:00Z",
+      "side": 1,
+      "message": "same here and below",
+      "revId": "5fa6b81dd3cb420b365256e19426eb026385a86a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
