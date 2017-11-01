@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "03ed8773_22839883",
+        "filename": "appengine/findit/model/swarming_task_queue_request.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-11-01T18:50:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9534bc1e_38831af6",
+      "range": {
+        "startLine": 53,
+        "startChar": 2,
+        "endLine": 53,
+        "endChar": 12
+      },
+      "revId": "e5e511cd309c1996eaab90a5d68edbfd23006ca4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a82e73a4_eef33296",
         "filename": "appengine/findit/services/datetime_util.py",
         "patchSetId": 8
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "a04cc1ca_cb8dd9a9",
+        "filename": "appengine/findit/services/datetime_util.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-11-01T18:50:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a82e73a4_eef33296",
+      "range": {
+        "startLine": 7,
+        "startChar": 4,
+        "endLine": 7,
+        "endChar": 19
+      },
+      "revId": "e5e511cd309c1996eaab90a5d68edbfd23006ca4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9e3964fa_88c62613",
         "filename": "appengine/findit/services/process_swarming_results.py",
         "patchSetId": 8
@@ -59,6 +107,30 @@
       "writtenOn": "2017-11-01T18:12:40Z",
       "side": 1,
       "message": "There is similar code in waterfall/swarming_util.py. Let\u0027s merge if possible.\n\nIdeally, all code related to swarming lives together.",
+      "range": {
+        "startLine": 9,
+        "startChar": 4,
+        "endLine": 9,
+        "endChar": 25
+      },
+      "revId": "e5e511cd309c1996eaab90a5d68edbfd23006ca4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0fcd3d69_4ba989d0",
+        "filename": "appengine/findit/services/process_swarming_results.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-11-01T18:50:57Z",
+      "side": 1,
+      "message": "The idea behind this would be that swarming_util.py manages network connections to swarming and process_swarming_results contains functions to verify the results. \n\nWe should probably rename swarming_util to reflect that at some point. wdyt?",
+      "parentUuid": "9e3964fa_88c62613",
       "range": {
         "startLine": 9,
         "startChar": 4,
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "a209b37d_e9cf18da",
+        "filename": "appengine/findit/services/swarming_task_queue.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 233,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-11-01T18:50:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "813a89a0_f86c7542",
+      "range": {
+        "startLine": 229,
+        "startChar": 2,
+        "endLine": 233,
+        "endChar": 13
+      },
+      "revId": "e5e511cd309c1996eaab90a5d68edbfd23006ca4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4fce1289_532e8bf5",
         "filename": "appengine/findit/services/swarming_task_queue.py",
         "patchSetId": 8
@@ -114,6 +210,30 @@
       "revId": "e5e511cd309c1996eaab90a5d68edbfd23006ca4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4a37db9_4eaae2a8",
+        "filename": "appengine/findit/services/swarming_task_queue.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 257,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-11-01T18:50:57Z",
+      "side": 1,
+      "message": "We talked about this a bit in the weekly yesterday. Seems like we\u0027ll change this around a bit so that the base swarming task has more information, until then I\u0027ll use flakeswarmingtask. TODO added for this.",
+      "parentUuid": "4fce1289_532e8bf5",
+      "range": {
+        "startLine": 257,
+        "startChar": 9,
+        "endLine": 257,
+        "endChar": 26
+      },
+      "revId": "e5e511cd309c1996eaab90a5d68edbfd23006ca4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
