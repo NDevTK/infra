@@ -16,6 +16,24 @@
       "revId": "f8a1c8a1d0bc60fcfb8c05c7db155ab75583c789",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ca5aa3e4_624d08dd",
+        "filename": "crdx/shared/app.yaml",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1167775
+      },
+      "writtenOn": "2017-11-02T23:52:24Z",
+      "side": 1,
+      "message": "chopsui-gallery also lives in shared.\nI just moved everything.\nOnce the repo is created I\u0027m bringing everything chopsui-gallery related back to go/src/shared/infra/appengine/ or wherever.",
+      "parentUuid": "00b16361_c16a96bf",
+      "revId": "f8a1c8a1d0bc60fcfb8c05c7db155ab75583c789",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
