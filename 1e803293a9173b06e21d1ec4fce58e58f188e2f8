@@ -207,6 +207,121 @@
       "revId": "1e803293a9173b06e21d1ec4fce58e58f188e2f8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7d5f9589_80a23889",
+        "filename": "appengine/findit/waterfall/build_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-11-02T16:49:42Z",
+      "side": 1,
+      "message": "GetEarliestBuildWithCommitPosition",
+      "range": {
+        "startLine": 101,
+        "startChar": 4,
+        "endLine": 101,
+        "endChar": 30
+      },
+      "revId": "1e803293a9173b06e21d1ec4fce58e58f188e2f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b375a395_d9f2ecb0",
+        "filename": "appengine/findit/waterfall/build_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-11-02T16:49:42Z",
+      "side": 1,
+      "message": "Create a structured object BuildNumberRange? This will prevent cases where the caller accidentally flips the inputs, and it allows someone to express [x, infinity] etc. This function would look cleaner if you created a BuildNumberRange (or just Range) Structured object and the function header would be\n\ndef ...(master_name, builder_name, commit_position, build_range\u003dNone):\n  if not build_range:\n    build_range \u003d BuildRange(0, GetLatestBuildNumber(master_name, builder_name))\n\n  lower \u003d build_range.lo\n  higher \u003d build_range.hi\n  Bisect()",
+      "range": {
+        "startLine": 102,
+        "startChar": 31,
+        "endLine": 103,
+        "endChar": 29
+      },
+      "revId": "1e803293a9173b06e21d1ec4fce58e58f188e2f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c3c153fe_01b28ade",
+        "filename": "appengine/findit/waterfall/build_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-11-02T16:49:42Z",
+      "side": 1,
+      "message": "This is a good spot to return None and handle it in the calling code.",
+      "range": {
+        "startLine": 134,
+        "startChar": 6,
+        "endLine": 134,
+        "endChar": 32
+      },
+      "revId": "1e803293a9173b06e21d1ec4fce58e58f188e2f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "19c2ce49_eaeee627",
+        "filename": "appengine/findit/waterfall/build_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-11-02T16:49:42Z",
+      "side": 1,
+      "message": "Same as above, I think this is a good spot to return None. I think it\u0027s fair for this function to assume given range of build numbers is within bounds. I think this is likely to hide some bugs.",
+      "range": {
+        "startLine": 145,
+        "startChar": 5,
+        "endLine": 145,
+        "endChar": 30
+      },
+      "revId": "1e803293a9173b06e21d1ec4fce58e58f188e2f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7cc346cf_cc4bf322",
+        "filename": "appengine/findit/waterfall/build_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-11-02T16:49:42Z",
+      "side": 1,
+      "message": "nit: I think binary search looks better in recursive form, but up to you.",
+      "range": {
+        "startLine": 149,
+        "startChar": 0,
+        "endLine": 165,
+        "endChar": 42
+      },
+      "revId": "1e803293a9173b06e21d1ec4fce58e58f188e2f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
