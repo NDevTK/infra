@@ -79,10 +79,20 @@ class IRCClient(object):
       receiver(str): Nick of receiver. None if the target is the channel.
     """
     assert self._joined, 'Not joined yet!'
-    receiver = receiver or self._channel_name
-    self._irc.sendall('PRIVMSG {receiver} :{message}\r\n'.format(
-        receiver=receiver, message=message))
-    logging.info('Message sent to %s: %s', receiver, message)
+    retries_left = 3
+    while True:
+      try:
+        receiver = receiver or self._channel_name
+        self._irc.sendall('PRIVMSG {receiver} :{message}\r\n'.format(
+            receiver=receiver, message=message))
+        logging.info('Message sent to %s: %s', receiver, message)
+        return
+      except (socket.timeout, IOError) as e:
+        retries_left -= 1
+        if retries_left:
+          logging.warning('Failed to send messsage due to %s, retrying', e)
+        else:
+          raise
 
   def Disconnect(self):
     """Leaves the channel if needed, then closes connection to server."""
@@ -99,7 +109,7 @@ class IRCClient(object):
       try:
         self.Connect()
         return self
-      except socket.timeout:
+      except (socket.timeout, IOError):
         logging.debug(
             'Did not get irc join confirmation message, connecting again.')
         self._retries_left -= 1
