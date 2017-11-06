@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9e5f0802_8edb9bc6",
+        "filename": "appengine/findit/libs/irc_client.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-11-06T18:52:26Z",
+      "side": 1,
+      "message": "To double check: you\u0027ll have a separate CL later if retrying 3 times doesn\u0027t work?",
+      "revId": "687e999fa639818b24b3b5d26cade797e79e7b5a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
