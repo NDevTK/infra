@@ -23,8 +23,6 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/router"
 	"go.chromium.org/luci/server/templates"
-
-	"infra/appengine/test-results/model"
 )
 
 const (
@@ -64,8 +62,7 @@ func init() {
 	r.GET("/revision_range", frontendMW, revisionHandler)
 
 	// POST endpoints.
-	uh := &uploadHandler{}
-	r.POST("/testfile/upload", authMW.Extend(withParsedUploadForm, uploadHandlerMW(uh)), uh.Serve)
+	r.POST("/testfile/upload", authMW.Extend(withParsedUploadForm), uploadHandler)
 
 	r.POST(
 		deleteKeysPath,
@@ -88,18 +85,6 @@ func init() {
 
 func isStagingEnv(ctx context.Context) bool {
 	return info.AppID(ctx) == "test-results-test-hrd"
-}
-
-func uploadHandlerMW(uh *uploadHandler) func(*router.Context, router.Handler) {
-	return func(c *router.Context, next router.Handler) {
-		if info.IsDevAppServer(c.Context) || isStagingEnv(c.Context) {
-			uh.sendEvent = func(c context.Context, tre *model.TestResultEvent) error {
-				logging.Infof(c, "Would have sent TestResultEvent: %+v", tre)
-				return nil
-			}
-		}
-		next(c)
-	}
 }
 
 func timeoutMiddleware(timeoutMs time.Duration) func(*router.Context, router.Handler) {
