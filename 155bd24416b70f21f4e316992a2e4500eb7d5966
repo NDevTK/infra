@@ -22,6 +22,52 @@
       "revId": "155bd24416b70f21f4e316992a2e4500eb7d5966",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6dade575_8d5ccc22",
+        "filename": "appengine/findit/libs/irc_client.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-11-08T18:20:13Z",
+      "side": 1,
+      "message": "We should consider handling the most specific error as possible here so we don\u0027t hide some other issues that we might run into over the network.",
+      "range": {
+        "startLine": 97,
+        "startChar": 30,
+        "endLine": 97,
+        "endChar": 37
+      },
+      "revId": "155bd24416b70f21f4e316992a2e4500eb7d5966",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a601fe8c_f8693643",
+        "filename": "appengine/findit/libs/irc_client.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-11-08T18:20:13Z",
+      "side": 1,
+      "message": "Same as above, if we\u0027re expecting something specific we might want to put that here. Catching IOError as a whole might hide some legit exceptions?",
+      "range": {
+        "startLine": 124,
+        "startChar": 30,
+        "endLine": 124,
+        "endChar": 37
+      },
+      "revId": "155bd24416b70f21f4e316992a2e4500eb7d5966",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
