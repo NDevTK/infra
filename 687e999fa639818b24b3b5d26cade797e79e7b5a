@@ -16,6 +16,24 @@
       "revId": "687e999fa639818b24b3b5d26cade797e79e7b5a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "62ac64fe_856cd586",
+        "filename": "appengine/findit/libs/irc_client.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-11-08T00:50:01Z",
+      "side": 1,
+      "message": "Yes, but I have also added exponential backoff to make sure that a few retries is enough.\n\nPTAL",
+      "parentUuid": "9e5f0802_8edb9bc6",
+      "revId": "687e999fa639818b24b3b5d26cade797e79e7b5a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
