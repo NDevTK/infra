@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "578a9e28_3df67c64",
+        "filename": "appengine/findit/libs/irc_client.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-11-08T02:54:20Z",
+      "side": 1,
+      "message": "Nit: rename this to tries_left?",
+      "range": {
+        "startLine": 89,
+        "startChar": 4,
+        "endLine": 89,
+        "endChar": 16
+      },
+      "revId": "155bd24416b70f21f4e316992a2e4500eb7d5966",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
