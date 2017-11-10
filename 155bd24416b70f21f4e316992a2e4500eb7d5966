@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "09eeec4d_949927b6",
+        "filename": "appengine/findit/libs/irc_client.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-11-10T19:23:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "578a9e28_3df67c64",
+      "range": {
+        "startLine": 89,
+        "startChar": 4,
+        "endLine": 89,
+        "endChar": 16
+      },
+      "revId": "155bd24416b70f21f4e316992a2e4500eb7d5966",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6dade575_8d5ccc22",
         "filename": "appengine/findit/libs/irc_client.py",
         "patchSetId": 4
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "0ebb40c0_c85f067c",
+        "filename": "appengine/findit/libs/irc_client.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-11-10T19:23:41Z",
+      "side": 1,
+      "message": "I agree in principle, but we want to retry in all those cases because the issue may be transient.\n\nNote that we log the exception, and if it persists after retrying, it will be raised instead of hidden.",
+      "parentUuid": "6dade575_8d5ccc22",
+      "range": {
+        "startLine": 97,
+        "startChar": 30,
+        "endLine": 97,
+        "endChar": 37
+      },
+      "revId": "155bd24416b70f21f4e316992a2e4500eb7d5966",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a601fe8c_f8693643",
         "filename": "appengine/findit/libs/irc_client.py",
         "patchSetId": 4
@@ -59,6 +107,30 @@
       "writtenOn": "2017-11-08T18:20:13Z",
       "side": 1,
       "message": "Same as above, if we\u0027re expecting something specific we might want to put that here. Catching IOError as a whole might hide some legit exceptions?",
+      "range": {
+        "startLine": 124,
+        "startChar": 30,
+        "endLine": 124,
+        "endChar": 37
+      },
+      "revId": "155bd24416b70f21f4e316992a2e4500eb7d5966",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "67da2064_309f962c",
+        "filename": "appengine/findit/libs/irc_client.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-11-10T19:23:41Z",
+      "side": 1,
+      "message": "As above, if the issue is transient, we want to retry, if it persists, it will be raised.",
+      "parentUuid": "a601fe8c_f8693643",
       "range": {
         "startLine": 124,
         "startChar": 30,
