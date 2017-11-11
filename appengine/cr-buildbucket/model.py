@@ -239,3 +239,4 @@ def new_build_id():
   inverted_now = ~now & ((1 << 43) - 1)
   suffix = random.getrandbits(16)
   return int((inverted_now << 20) | (suffix << 4))
+x

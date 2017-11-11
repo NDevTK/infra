@@ -6,3 +6,4 @@ cron:
 - description: Update configs
   url: /admin/config/cache/manager
   schedule: every 10 minutes
+x
