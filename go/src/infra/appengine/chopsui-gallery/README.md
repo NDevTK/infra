@@ -1,7 +1,7 @@
 # chopsui-gallery
 
 chopsui-gallery.appspot.com, an app containing documentation
-and demos for polymer elements in the chops-ui package.
+and demos for polymer elements in the chops-ui package
 
 ## Prerequisites
 
