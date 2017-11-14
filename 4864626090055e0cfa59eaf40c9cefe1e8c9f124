@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "62ee35d6_42c0c4bd",
+        "filename": "appengine/findit/model/test/swarming_task_queue_request_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-11-14T19:35:24Z",
+      "side": 1,
+      "message": "ProTip:\nhttp://www.example.com/random/path?any\u003darguments\n\nThis will always return 200 if hit in the real world (example.com is owned by IANA)",
+      "parentUuid": "ab7850c9_52db0a22",
+      "range": {
+        "startLine": 38,
+        "startChar": 22,
+        "endLine": 38,
+        "endChar": 37
+      },
+      "revId": "4864626090055e0cfa59eaf40c9cefe1e8c9f124",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8d4208c8_a346251e",
         "filename": "appengine/findit/services/process_swarming_results.py",
         "patchSetId": 9
@@ -71,6 +95,29 @@
     },
     {
       "key": {
+        "uuid": "a07e56f9_1bc56f51",
+        "filename": "appengine/findit/services/process_swarming_results.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-11-14T19:35:24Z",
+      "side": 1,
+      "message": "CountTestsRunStatuses?",
+      "range": {
+        "startLine": 9,
+        "startChar": 4,
+        "endLine": 9,
+        "endChar": 25
+      },
+      "revId": "4864626090055e0cfa59eaf40c9cefe1e8c9f124",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "da05808a_d90a7269",
         "filename": "appengine/findit/services/process_swarming_results.py",
         "patchSetId": 9
@@ -87,6 +134,52 @@
         "startChar": 47,
         "endLine": 32,
         "endChar": 59
+      },
+      "revId": "4864626090055e0cfa59eaf40c9cefe1e8c9f124",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e73284dd_46081104",
+        "filename": "appengine/findit/services/process_swarming_results.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-11-14T19:35:24Z",
+      "side": 1,
+      "message": "Checks for error in the swarming task result and log data, logs error details and returns the error (if any) details as a dict, including an error code and a human-readable description of the error.",
+      "range": {
+        "startLine": 34,
+        "startChar": 5,
+        "endLine": 34,
+        "endChar": 52
+      },
+      "revId": "4864626090055e0cfa59eaf40c9cefe1e8c9f124",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e1b786e9_aa049905",
+        "filename": "appengine/findit/services/process_swarming_results.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2017-11-14T19:35:24Z",
+      "side": 1,
+      "message": "The caller should be doing this trivial check.",
+      "range": {
+        "startLine": 35,
+        "startChar": 0,
+        "endLine": 36,
+        "endChar": 23
       },
       "revId": "4864626090055e0cfa59eaf40c9cefe1e8c9f124",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
