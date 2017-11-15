@@ -371,9 +371,9 @@ class ConfigTwoLevelCache(caches.AbstractTwoLevelCache):
 
     for fv_row in template2fieldvalue_rows:
       (template_id, field_id, int_value, str_value, user_id,
-       date_value) = fv_row
+       date_value, url_value) = fv_row
       fv = tracker_bizobj.MakeFieldValue(
-          field_id, int_value, str_value, user_id, date_value, False)
+          field_id, int_value, str_value, user_id, date_value, url_value, False)
       template = template_dict.get(template_id)
       if template:
         template.field_values.append(fv)
@@ -396,7 +396,9 @@ class ConfigTwoLevelCache(caches.AbstractTwoLevelCache):
         result_dict[project_id].well_known_labels.append(wkl)
 
     for fd_row in fielddef_rows:
+      print fd_row
       fd = self._UnpackFieldDef(fd_row)
+      print fd
       result_dict[fd.project_id].field_defs.append(fd)
       fielddef_dict[fd.field_id] = fd
 
