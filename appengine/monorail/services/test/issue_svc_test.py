@@ -721,11 +721,11 @@ class IssueServiceTest(unittest.TestCase):
         local_id=1, issue_id=78901, owner_id=111L, summary='sum', status='New',
         project_id=789)
     issue_shard = issue.issue_id % settings.num_logical_shards
-    fv1 = tracker_bizobj.MakeFieldValue(345, 679, '', 0L, None, False)
+    fv1 = tracker_bizobj.MakeFieldValue(345, 679, '', 0L, None, None, False)
     issue.field_values.append(fv1)
-    fv2 = tracker_bizobj.MakeFieldValue(346, 0, 'Blue', 0L, None, True)
+    fv2 = tracker_bizobj.MakeFieldValue(346, 0, 'Blue', 0L, None, None, True)
     issue.field_values.append(fv2)
-    fv3 = tracker_bizobj.MakeFieldValue(347, 0, '', 0L, 1234567890, True)
+    fv3 = tracker_bizobj.MakeFieldValue(347, 0, '', 0L, 1234567890, None, True)
     issue.field_values.append(fv3)
     self.SetUpUpdateIssuesFields(issue2fieldvalue_rows=[
         (issue.issue_id, fv1.field_id, fv1.int_value, fv1.str_value,
