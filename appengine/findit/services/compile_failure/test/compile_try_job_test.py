@@ -832,7 +832,7 @@ class TryJobUtilTest(wf_testcase.WaterfallTestCase):
     try_job = WfTryJob.Get(master_name, builder_name, build_number)
     self.assertEqual(analysis_status.COMPLETED, try_job.status)
 
-  def testUpdateTryJobResultUpdat(self):
+  def testUpdateTryJobResultUpdate(self):
     master_name = 'm'
     builder_name = 'b'
     build_number = 123
@@ -879,7 +879,7 @@ class TryJobUtilTest(wf_testcase.WaterfallTestCase):
       'GetResultAnalysisStatus',
       return_value=result_status.FOUND_UNTRIAGED)
   @mock.patch.object(
-      compile_failure_analysis, 'GetUpdatedSuspectedCLs', return_value=[])
+      compile_try_job, '_GetUpdatedSuspectedCLs', return_value=[])
   def testUpdateWfAnalysisWithTryJobResult(self, *_):
     master_name = 'm'
     builder_name = 'b'
@@ -902,7 +902,7 @@ class TryJobUtilTest(wf_testcase.WaterfallTestCase):
   @mock.patch.object(
       try_job_service, 'GetResultAnalysisStatus', return_value=None)
   @mock.patch.object(
-      compile_failure_analysis, 'GetUpdatedSuspectedCLs', return_value=None)
+      compile_try_job, '_GetUpdatedSuspectedCLs', return_value=None)
   def testNoNeedToUpdateWfAnalysisWithTryJobResult(self, *_):
     master_name = 'm'
     builder_name = 'b'
@@ -982,3 +982,56 @@ class TryJobUtilTest(wf_testcase.WaterfallTestCase):
                                                     build_number, 1, 2, None)
 
     self.assertEqual(properties, expected_properties)
+
+  def testGetUpdatedSuspectedCLs(self):
+    analysis = WfAnalysis.Create('m', 'b', 123)
+    analysis.suspected_cls = [{
+        'repo_name': 'chromium',
+        'revision': 'r123_2',
+        'commit_position': 1232,
+        'url': 'url_2',
+        'failures': {
+            'compile': []
+        },
+        'top_score': 4
+    }]
+    analysis.put()
+
+    culprits = {
+        'r123_1': {
+            'revision': 'r123_1',
+            'commit_position': 1231,
+            'url': 'url_1',
+            'repo_name': 'chromium'
+        },
+        'r123_2': {
+            'revision': 'r123_2',
+            'commit_position': 1232,
+            'url': 'url_2',
+            'repo_name': 'chromium'
+        }
+    }
+
+    expected_cls = [{
+        'repo_name': 'chromium',
+        'revision': 'r123_2',
+        'commit_position': 1232,
+        'url': 'url_2',
+        'failures': {
+            'compile': []
+        },
+        'top_score': 4
+    }, {
+        'revision': 'r123_1',
+        'commit_position': 1231,
+        'url': 'url_1',
+        'repo_name': 'chromium',
+        'failures': {
+            'compile': []
+        },
+        'top_score': None
+    }]
+
+    self.assertListEqual(expected_cls,
+                         compile_try_job._GetUpdatedSuspectedCLs(
+                             analysis, culprits))

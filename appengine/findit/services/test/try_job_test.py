@@ -578,3 +578,47 @@ class TryJobUtilTest(wf_testcase.WaterfallTestCase):
                                            failure_type.COMPILE)
     self.assertEqual(try_job.try_job_ids[0], build_id)
     self.assertIsNotNone(try_job.compile_results)
+
+  def testUpdateTryJobResultWithCulpritAppendNewResult(self):
+    try_job_result = [{'try_job_id': '111'}]
+    try_job_service.UpdateTryJobResultWithCulprit(
+        try_job_result, {'try_job_id': '123'}, '123', ['rev1'])
+    self.assertEqual([{
+        'try_job_id': '111'
+    }, {
+        'try_job_id': '123'
+    }], try_job_result)
+
+  def testUpdateTryJobResultWithCulprit(self):
+    try_job_result = [{'try_job_id': '111'}, {'try_job_id': '123'}]
+    new_result = {'try_job_id': '123', 'url': 'url'}
+
+    expected_updated_result = [{
+        'try_job_id': '111'
+    }, {
+        'try_job_id': '123',
+        'url': 'url'
+    }]
+    try_job_service.UpdateTryJobResultWithCulprit(try_job_result, new_result,
+                                                  '123', ['rev1'])
+    self.assertEqual(expected_updated_result, try_job_result)
+
+  def testUpdateTryJobResultNoCulprit(self):
+    try_job_result = [{'try_job_id': '111'}, {'try_job_id': '123'}]
+    new_result = [{'try_job_id': '123', 'url': 'url'}]
+
+    expected_updated_result = [{'try_job_id': '111'}, {'try_job_id': '123'}]
+    try_job_service.UpdateTryJobResultWithCulprit(try_job_result, new_result,
+                                                  '123', [])
+    self.assertEqual(expected_updated_result, try_job_result)
+
+  def testUpdateWfAnalysisWithTryJobResult(self):
+    master_name = 'm1'
+    builder_name = 'b'
+    build_number = 1
+    analysis = WfAnalysis.Create(master_name, builder_name, build_number)
+    analysis.put()
+    try_job_service.UpdateWfAnalysisWithTryJobResult(
+        analysis, result_status.FOUND_CORRECT, None, None)
+    analysis = WfAnalysis.Get(master_name, builder_name, build_number)
+    self.assertEqual(analysis.result_status, result_status.FOUND_CORRECT)

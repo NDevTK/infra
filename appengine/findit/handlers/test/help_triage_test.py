@@ -9,13 +9,12 @@ import webapp2
 
 from testing_utils import testing
 
+from gae_libs.gitiles.cached_gitiles_repository import CachedGitilesRepository
 from handlers import help_triage
-from libs.gitiles.gitiles_repository import GitilesRepository
 from model.wf_analysis import WfAnalysis
 from model.wf_build import WfBuild
 from waterfall import buildbot
 from waterfall import build_util
-from waterfall.build_info import BuildInfo
 
 EXPECTED_RESULTS_120 = [
     {
@@ -112,6 +111,7 @@ EXPECTED_RESULTS_121 = [{
 
 
 def _MockGetChangeLog(repo, revision):
+  print 'using mock'
   file_name = os.path.join(
       os.path.dirname(__file__), 'data', 'help_triage_test_data',
       'change_log_' + revision)
@@ -151,7 +151,7 @@ class HelpTriageTest(testing.AppengineTestCase):
     self.builder_name = 'b'
     self.mock_current_user(user_email='test@chromium.org', is_admin=True)
     self.mock(build_util, 'DownloadBuildData', self._MockDownloadBuildData)
-    self.mock(GitilesRepository, 'GetChangeLog', _MockGetChangeLog)
+    self.mock(CachedGitilesRepository, 'GetChangeLog', _MockGetChangeLog)
 
   def _CreateAnalysis(self, build_number, first_failure, last_pass=None):
     analysis = WfAnalysis.Create(self.master_name, self.builder_name,

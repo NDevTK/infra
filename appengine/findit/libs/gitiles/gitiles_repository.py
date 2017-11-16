@@ -130,6 +130,7 @@ class GitilesRepository(GitRepository):
 
   def GetChangeLog(self, revision):
     """Returns the change log of the given revision."""
+    print 'real'
     url = '%s/+/%s' % (self.repo_url, revision)
     data = self._SendRequestForJsonResponse(url)
     if not data:

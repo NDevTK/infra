@@ -339,3 +339,31 @@ def UpdateTryJob(master_name, builder_name, build_number, build_id,
   try_job.try_job_ids.append(build_id)
   try_job.put()
   return try_job
+
+
+def UpdateTryJobResultWithCulprit(try_job_result, new_result, try_job_id,
+                                  culprits):
+  if culprits:
+    updated = False
+    for result_to_update in try_job_result:
+      if try_job_id == result_to_update['try_job_id']:
+        print result_to_update
+        print new_result
+        result_to_update.update(new_result)
+        print result_to_update
+        updated = True
+        break
+
+    if not updated:
+      try_job_result.append(new_result)
+
+
+def UpdateWfAnalysisWithTryJobResult(analysis, updated_result_status,
+                                     updated_suspected_cls, updated_result):
+  if (analysis.result_status != updated_result_status or
+      analysis.suspected_cls != updated_suspected_cls or
+      analysis.result != updated_result):  # pragma: no branch.
+    analysis.result_status = updated_result_status
+    analysis.suspected_cls = updated_suspected_cls
+    analysis.result = updated_result
+    analysis.put()
