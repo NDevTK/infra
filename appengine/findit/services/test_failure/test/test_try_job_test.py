@@ -6,13 +6,15 @@ import mock
 
 from common.waterfall import failure_type
 from libs import analysis_status
+from model import analysis_approach_type
+from model import result_status
 from model.wf_analysis import WfAnalysis
 from model.wf_failure_group import WfFailureGroup
 from model.wf_swarming_task import WfSwarmingTask
 from model.wf_try_job import WfTryJob
-from model.wf_try_job_data import WfTryJobData
 from services import try_job as try_job_service
 from services.test_failure import test_try_job
+from waterfall import suspected_cl_util
 from waterfall import swarming_util
 from waterfall.test import wf_testcase
 
@@ -987,3 +989,306 @@ class TryJobUtilTest(wf_testcase.WaterfallTestCase):
                                                  build_number, 1, 2, None)
 
     self.assertEqual(properties, expected_properties)
+
+  def testGetResultAnalysisStatusAllFlake(self):
+    self.assertEqual(result_status.FLAKY,
+                     test_try_job._GetResultAnalysisStatus(None, None, True))
+
+  @mock.patch.object(
+      try_job_service,
+      'GetResultAnalysisStatus',
+      return_value=result_status.FOUND_UNTRIAGED)
+  def testGetResultAnalysisStatus(self, _):
+    self.assertEqual(result_status.FOUND_UNTRIAGED,
+                     test_try_job._GetResultAnalysisStatus(None, None))
+
+  def testGetTestFailureCausedByCL(self):
+    self.assertIsNone(test_try_job._GetTestFailureCausedByCL(None))
+
+  def testGetTestFailureCausedByCLPassed(self):
+    result = {
+        'a_test': {
+            'status': 'passed',
+            'valid': True,
+        },
+        'b_test': {
+            'status': 'failed',
+            'valid': True,
+            'failures': ['b_test1']
+        }
+    }
+
+    expected_failures = {'b_test': ['b_test1']}
+
+    self.assertEqual(expected_failures,
+                     test_try_job._GetTestFailureCausedByCL(result))
+
+  def testGetSuspectedCLsForTestTryJobAndHeuristicResultsSame(self):
+    suspected_cl = {
+        'revision': 'rev1',
+        'commit_position': 1,
+        'url': 'url_1',
+        'repo_name': 'chromium'
+    }
+
+    analysis = WfAnalysis.Create('m', 'b', 1)
+    analysis.suspected_cls = [suspected_cl]
+    analysis.put()
+
+    try_job_suspected_cls = {'rev1': suspected_cl}
+
+    updated_cls = test_try_job._GetUpdatedSuspectedCLs(analysis, None,
+                                                       try_job_suspected_cls)
+
+    self.assertEqual(updated_cls, [suspected_cl])
+
+  def testGetSuspectedCLsForTestTryJob(self):
+    suspected_cl1 = {
+        'revision': 'rev1',
+        'commit_position': 1,
+        'url': 'url_1',
+        'repo_name': 'chromium'
+    }
+    suspected_cl2 = {
+        'revision': 'rev2',
+        'commit_position': 2,
+        'url': 'url_2',
+        'repo_name': 'chromium'
+    }
+    suspected_cl3 = {
+        'revision': 'rev3',
+        'commit_position': 3,
+        'url': 'url_3',
+        'repo_name': 'chromium'
+    }
+
+    analysis = WfAnalysis.Create('m', 'b', 1)
+    analysis.suspected_cls = [suspected_cl3]
+    analysis.put()
+
+    try_job_suspected_cls = {'rev1': suspected_cl1, 'rev2': suspected_cl2}
+
+    result = {
+        'report': {
+            'result': {
+                'rev1': {
+                    'step1': {
+                        'status': 'failed',
+                        'valid': True,
+                        'failures': ['test1']
+                    }
+                },
+                'rev2': {
+                    'step1': {
+                        'status': 'failed',
+                        'valid': True,
+                        'failures': ['test2']
+                    }
+                }
+            }
+        }
+    }
+
+    expected_cls = [
+        suspected_cl3, {
+            'revision': 'rev1',
+            'commit_position': 1,
+            'url': 'url_1',
+            'repo_name': 'chromium',
+            'failures': {
+                'step1': ['test1']
+            },
+            'top_score': None
+        }, {
+            'revision': 'rev2',
+            'commit_position': 2,
+            'url': 'url_2',
+            'repo_name': 'chromium',
+            'failures': {
+                'step1': ['test2']
+            },
+            'top_score': None
+        }
+    ]
+
+    cl_result = test_try_job._GetUpdatedSuspectedCLs(analysis, result,
+                                                     try_job_suspected_cls)
+    self.assertEqual(cl_result, expected_cls)
+
+  def testGetSuspectedCLsForTestTryJobWithHeuristicResult(self):
+    suspected_cl = {
+        'revision': 'rev1',
+        'commit_position': 1,
+        'url': 'url_1',
+        'repo_name': 'chromium',
+        'failures': {
+            'step1': ['test1']
+        },
+        'top_score': 2
+    }
+
+    analysis = WfAnalysis.Create('m', 'b', 1)
+    analysis.suspected_cls = [suspected_cl]
+    analysis.put()
+
+    result = {
+        'report': {
+            'result': {
+                'rev1': {
+                    'step1': {
+                        'status': 'failed',
+                        'valid': True,
+                        'failures': ['test1']
+                    }
+                }
+            }
+        }
+    }
+
+    self.assertEqual(
+        test_try_job._GetUpdatedSuspectedCLs(analysis, result, {}),
+        [suspected_cl])
+
+  def testFindCulpritForEachTestFailureRevisionNotRun(self):
+    result = {'report': {'result': {'rev2': 'passed'}}}
+
+    culprit_map, failed_revisions = test_try_job.FindCulpritForEachTestFailure(
+        result)
+    self.assertEqual(culprit_map, {})
+    self.assertEqual(failed_revisions, [])
+
+  def testFindCulpritForEachTestFailureCulpritsReturned(self):
+    result = {'report': {'culprits': {'a_tests': {'Test1': 'rev1'}}}}
+
+    culprit_map, failed_revisions = test_try_job.FindCulpritForEachTestFailure(
+        result)
+
+    expected_culprit_map = {
+        'a_tests': {
+            'tests': {
+                'Test1': {
+                    'revision': 'rev1'
+                }
+            }
+        }
+    }
+
+    self.assertEqual(culprit_map, expected_culprit_map)
+    self.assertEqual(failed_revisions, ['rev1'])
+
+  def testUpdateTryJobResult(self):
+    master_name = 'm'
+    builder_name = 'b'
+    build_number = 123
+    WfTryJob.Create(master_name, builder_name, build_number).put()
+    test_try_job.UpdateTryJobResult(master_name, builder_name, build_number,
+                                    None, '123', None)
+    try_job = WfTryJob.Get(master_name, builder_name, build_number)
+    self.assertEqual(try_job.status, analysis_status.COMPLETED)
+
+  def testGetUpdatedAnalysisResultNoAnalysis(self):
+    self.assertEqual(([], False),
+                     test_try_job._GetUpdatedAnalysisResult(None, {}))
+
+  @mock.patch.object(swarming_util, 'UpdateAnalysisResult', return_value=True)
+  def testGetUpdatedAnalysisResult(self, _):
+    result = {'failures': [{'step_name': 'step1'}]}
+
+    analysis = WfAnalysis.Create('m', 'b', 123)
+    analysis.result = result
+    analysis.put()
+
+    self.assertEqual((result, True),
+                     test_try_job._GetUpdatedAnalysisResult(analysis, {}))
+
+  def testUpdateCulpritMapWithCulpritInfo(self):
+    culprit_map = {'a_tests': {'tests': {'Test1': {'revision': 'rev1'}}}}
+    culprits = {'rev1': {'revision': 'rev1', 'repo_name': 'chromium'}}
+
+    expected_culprit_map = {
+        'a_tests': {
+            'tests': {
+                'Test1': {
+                    'revision': 'rev1',
+                    'repo_name': 'chromium'
+                }
+            }
+        }
+    }
+
+    test_try_job.UpdateCulpritMapWithCulpritInfo(culprit_map, culprits)
+    self.assertEqual(expected_culprit_map, culprit_map)
+
+  def testGetCulpritDataForTest(self):
+    culprit_map = {
+        'a_tests': {
+            'tests': {
+                'Test1': {
+                    'revision': 'rev1',
+                    'repo_name': 'chromium'
+                }
+            }
+        }
+    }
+
+    expected_culprit_data = {'a_tests': {'Test1': 'rev1'}}
+
+    self.assertEqual(expected_culprit_data,
+                     test_try_job.GetCulpritDataForTest(culprit_map))
+
+  @mock.patch.object(test_try_job, '_GetUpdatedAnalysisResult')
+  def testUpdateWfAnalysisWithTryJobResultNoUpdate(self, mock_fn):
+    test_try_job.UpdateWfAnalysisWithTryJobResult('m', 'n', 1, None, None, None)
+    mock_fn.assert_not_called()
+
+  @mock.patch.object(
+      test_try_job, '_GetUpdatedAnalysisResult', return_value=({}, True))
+  @mock.patch.object(
+      test_try_job,
+      '_GetResultAnalysisStatus',
+      return_value=result_status.FOUND_UNTRIAGED)
+  @mock.patch.object(test_try_job, '_GetUpdatedSuspectedCLs', return_value=[])
+  def testUpdateWfAnalysisWithTryJobResult(self, *_):
+    master_name = 'm'
+    builder_name = 'b'
+    build_number = 1
+    WfAnalysis.Create(master_name, builder_name, build_number).put()
+    test_try_job.UpdateWfAnalysisWithTryJobResult(
+        master_name, builder_name, build_number, {}, ['rev1'], {})
+    analysis = WfAnalysis.Get(master_name, builder_name, build_number)
+    self.assertEqual(analysis.result_status, result_status.FOUND_UNTRIAGED)
+
+  @mock.patch.object(suspected_cl_util, 'UpdateSuspectedCL')
+  def testUpdateSuspectedCLsNoCulprit(self, mock_fn):
+    test_try_job.UpdateSuspectedCLs('m', 'b', 1, None, None)
+    mock_fn.assert_not_called()
+
+  @mock.patch.object(suspected_cl_util, 'UpdateSuspectedCL')
+  def testUpdateSuspectedCLs(self, mock_fn):
+    master_name = 'm'
+    builder_name = 'b'
+    build_number = 123
+    result = {
+        'report': {
+            'result': {
+                'rev': {
+                    'a_test': {
+                        'status': 'passed',
+                        'valid': True,
+                    },
+                    'b_test': {
+                        'status': 'failed',
+                        'valid': True,
+                        'failures': ['b_test1']
+                    }
+                }
+            }
+        }
+    }
+    culprits = {'rev': {'revision': 'rev', 'repo_name': 'chromium'}}
+    test_try_job.UpdateSuspectedCLs(master_name, builder_name, build_number,
+                                    culprits, result)
+    mock_fn.assert_called_with('chromium', 'rev', None,
+                               analysis_approach_type.TRY_JOB, master_name,
+                               builder_name, build_number, failure_type.TEST,
+                               {'b_test': ['b_test1']}, None)
