@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6b850357_bb57f0d1",
+        "filename": "infra/libs/bigquery/helper.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-11-17T19:19:54Z",
+      "side": 1,
+      "message": "without insert ids, what\u0027s the value BigQueryHelper provides besides locking? If the user of the library doesn\u0027t have many threads, BigQueryHelper does not help. If there is a lot of threads sending events, send_rows will block all those threads because of the globalish lock. I guess that\u0027s why CQ has AsyncPush that sends events using BigQueryHelper in a separate thread and does benefit from the locking. Looks like CQ is the only user of BQH and nobody takes advantage of the only feature that BQH provides.\n\nmessage_to_row (or row_from_message) would be a very valuable feature of this package.",
+      "revId": "d349537f136e8037545fe7a8640ee75fddbb24e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
