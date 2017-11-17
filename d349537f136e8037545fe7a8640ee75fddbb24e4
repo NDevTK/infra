@@ -34,6 +34,24 @@
       "revId": "d349537f136e8037545fe7a8640ee75fddbb24e4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce8669d3_215c5024",
+        "filename": "infra/libs/bigquery/helper.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-11-17T19:30:48Z",
+      "side": 1,
+      "message": "Actually from the API documentation it looks like the implementation may be using `concurrent` anyhow under the hood: https://googlecloudplatform.github.io/google-cloud-python/latest/bigquery/reference.html\n\nThis would lead me to believe that the client doesn\u0027t actually require the caller to lock.",
+      "parentUuid": "3cc4ec42_34780bdb",
+      "revId": "d349537f136e8037545fe7a8640ee75fddbb24e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
