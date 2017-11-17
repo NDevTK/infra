@@ -52,6 +52,24 @@
       "revId": "d349537f136e8037545fe7a8640ee75fddbb24e4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f3b3bca9_a82232f3",
+        "filename": "infra/libs/bigquery/helper.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2017-11-17T23:17:32Z",
+      "side": 1,
+      "message": "What value does BQH provide besides locking? None, right now. But, it will do the proto translation, and I need to add row limits as well. It will prove useful. \n\nI added the lock because the bigquery client uses httplib2, which can cause SSL errors when multiple threads use the same connection. This was happening on CQ. Looks like it uses requests instead of httplib2 as of 0.26.0, so the lock is no longer needed! I\u0027ll remove that in a separate CL, if you don\u0027t mind.",
+      "parentUuid": "ce8669d3_215c5024",
+      "revId": "d349537f136e8037545fe7a8640ee75fddbb24e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
