@@ -155,8 +155,8 @@
   },
   'google_cloud_bigquery': {
     'build': '0',
-    'gs': 'f4ce6bee14b8291886b7f0c8d7fdf92c17ef658b.tar.gz',
-    'version': '0.24.0'
+    'gs': 'ac648d5063ae7ed6e09597bb087d59be45be0eab.tar.gz',
+    'version': '0.28.0'
   },
   'google_cloud_core': {
     'build': '0',
