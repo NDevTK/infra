@@ -16,6 +16,24 @@
       "revId": "d349537f136e8037545fe7a8640ee75fddbb24e4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3cc4ec42_34780bdb",
+        "filename": "infra/libs/bigquery/helper.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2017-11-17T19:29:16Z",
+      "side": 1,
+      "message": "On that note... are we 100% that the bigquery client isn\u0027t threadsafe anyway? That would be a very strange choice on google\u0027s part.",
+      "parentUuid": "6b850357_bb57f0d1",
+      "revId": "d349537f136e8037545fe7a8640ee75fddbb24e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
