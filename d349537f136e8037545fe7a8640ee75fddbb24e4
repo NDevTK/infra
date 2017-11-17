@@ -70,6 +70,24 @@
       "revId": "d349537f136e8037545fe7a8640ee75fddbb24e4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3dac1b8a_2c419fe1",
+        "filename": "infra/libs/bigquery/helper.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-11-17T23:19:25Z",
+      "side": 1,
+      "message": "please elaborate \"row limits\". is this splitting rows into batches?",
+      "parentUuid": "f3b3bca9_a82232f3",
+      "revId": "d349537f136e8037545fe7a8640ee75fddbb24e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
