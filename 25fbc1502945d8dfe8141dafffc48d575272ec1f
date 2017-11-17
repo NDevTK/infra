@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8e57e30e_168b7eba",
+        "filename": "appengine/predator/app/common/model/test/log_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2017-11-17T23:23:31Z",
+      "side": 1,
+      "message": "this is OK, but as you add more tests here, it might be hard to maintain. Maybe use smth like \u003ctestName\u003e? ie \u0027id\u0027: \u0027testGet\u0027 here and \u0027id\u0027: \u0027testLog\u0027 below",
+      "range": {
+        "startLine": 14,
+        "startChar": 18,
+        "endLine": 14,
+        "endChar": 31
+      },
+      "revId": "25fbc1502945d8dfe8141dafffc48d575272ec1f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
