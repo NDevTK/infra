@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "f1b5f148_45de7a5d",
+        "filename": "appengine/findit/pipelines/test_failure/test/identify_test_try_job_culprit_pipeline_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-11-17T01:49:32Z",
+      "side": 1,
+      "message": "I didn\u0027t. I\u0027ll use it next time.",
+      "parentUuid": "dd8c7cc7_07758ef5",
+      "range": {
+        "startLine": 1,
+        "startChar": 12,
+        "endLine": 1,
+        "endChar": 16
+      },
+      "revId": "9e90b94a6b80a679912cec60526ec0a62a8ec3a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e4934416_5382c68b",
         "filename": "appengine/findit/services/test_failure/test/test_try_job_test.py",
         "patchSetId": 5
@@ -65,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "448f03c9_b41ee88a",
+        "filename": "appengine/findit/services/test_failure/test/test_try_job_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 1014,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-11-17T01:49:32Z",
+      "side": 1,
+      "message": "They are tests for the moved functions. I may add some tests to cover corner cases, most of them are copied (maybe slightly modified) tests from pipeline tests.",
+      "parentUuid": "e4934416_5382c68b",
+      "revId": "9e90b94a6b80a679912cec60526ec0a62a8ec3a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b4cb99bb_8285a3d8",
         "filename": "appengine/findit/services/test_failure/test_try_job.py",
         "patchSetId": 5
@@ -76,6 +118,30 @@
       "writtenOn": "2017-11-17T00:29:22Z",
       "side": 1,
       "message": "I can\u0027t tell if there are any changes or if these were copied over from other file.",
+      "range": {
+        "startLine": 282,
+        "startChar": 0,
+        "endLine": 471,
+        "endChar": 32
+      },
+      "revId": "9e90b94a6b80a679912cec60526ec0a62a8ec3a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "90bf2b26_b4f8e335",
+        "filename": "appengine/findit/services/test_failure/test_try_job.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 471,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-11-17T01:49:32Z",
+      "side": 1,
+      "message": "These functions are copied from the pipeline, not new changes.",
+      "parentUuid": "b4cb99bb_8285a3d8",
       "range": {
         "startLine": 282,
         "startChar": 0,
@@ -108,6 +174,30 @@
       "revId": "9e90b94a6b80a679912cec60526ec0a62a8ec3a5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5e28c4e8_9269b324",
+        "filename": "appengine/findit/services/try_job.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 357,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2017-11-17T01:49:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4aafa725_086d24a7",
+      "range": {
+        "startLine": 357,
+        "startChar": 4,
+        "endLine": 357,
+        "endChar": 36
+      },
+      "revId": "9e90b94a6b80a679912cec60526ec0a62a8ec3a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
