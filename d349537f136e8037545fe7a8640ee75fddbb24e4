@@ -106,6 +106,24 @@
       "revId": "d349537f136e8037545fe7a8640ee75fddbb24e4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d4e7a97_a2559953",
+        "filename": "infra/libs/bigquery/helper.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-11-18T00:18:36Z",
+      "side": 1,
+      "message": "ok, batching sg\n\nwithout a lock, there will be only one attribute in BQH, so maybe it should be just a function that uploads events.",
+      "parentUuid": "d2c1a6a1_042e463e",
+      "revId": "d349537f136e8037545fe7a8640ee75fddbb24e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
