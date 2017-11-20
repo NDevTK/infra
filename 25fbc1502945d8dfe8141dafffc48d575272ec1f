@@ -22,6 +22,30 @@
       "revId": "25fbc1502945d8dfe8141dafffc48d575272ec1f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "94b4afd8_152b38e9",
+        "filename": "appengine/predator/app/common/model/test/log_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2017-11-20T19:40:46Z",
+      "side": 1,
+      "message": "There are many ``testGet`` across different tests. I will use ``log_test_get`` then.",
+      "parentUuid": "8e57e30e_168b7eba",
+      "range": {
+        "startLine": 14,
+        "startChar": 18,
+        "endLine": 14,
+        "endChar": 31
+      },
+      "revId": "25fbc1502945d8dfe8141dafffc48d575272ec1f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
