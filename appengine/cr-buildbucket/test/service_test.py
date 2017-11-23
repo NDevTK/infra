@@ -207,14 +207,16 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
 
     def create_task_async(b):
       if b.parameters['i'] == 1:
-        raise net.Error('', status_code=400, response='bad request')
+        f = ndb.Future()
+        f.set_exception(net.Error('', status_code=400, response='bad request'))
+        return f
       b.swarming_hostname = self.chromium_bucket.swarming.hostname
       b.swarming_task_id = 'deadbeef'
+      return future(None)
 
     swarming.create_task_async.side_effect = create_task_async
 
-    with self.assertRaises(errors.InvalidInputError):
-      service.add_many_async([
+    (b0, ex0), (b1, ex1) = service.add_many_async([
         service.BuildRequest(
             project=self.chromium_project_id,
             bucket=self.chromium_bucket.name,
@@ -226,8 +228,12 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
             parameters={'builder_name': 'infra', 'i': 1},
         )
       ]).get_result()
-    swarming.cancel_task_async.assert_called_with(
-        self.chromium_bucket.swarming.hostname, 'deadbeef')
+
+    self.assertIsNone(ex0)
+    self.assertEqual(b0.bucket, self.chromium_bucket.name)
+
+    self.assertIsNotNone(ex1)
+    self.assertIsNone(b1)
 
   def test_add_with_swarming_403(self):
     self.chromium_bucket.swarming.MergeFrom(self.chromium_swarming)
