@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "ce487f4e_bf2c329a",
+        "filename": "appengine/cr-buildbucket/metrics.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-11-27T20:05:54Z",
+      "side": 1,
+      "message": "done in https://chromium-review.googlesource.com/c/infra/infra/+/791516",
+      "parentUuid": "0105e8ce_9242f4f7",
+      "range": {
+        "startLine": 95,
+        "startChar": 12,
+        "endLine": 95,
+        "endChar": 17
+      },
+      "revId": "e8461368e42f67d8ac2e359f57e9593b7c055e42",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5ea90e1e_d1ca4a6f",
         "filename": "appengine/cr-buildbucket/test/metrics_test.py",
         "patchSetId": 2
@@ -45,6 +69,30 @@
       "revId": "e8461368e42f67d8ac2e359f57e9593b7c055e42",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ea34d780_1d465462",
+        "filename": "appengine/cr-buildbucket/test/metrics_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-11-27T20:05:54Z",
+      "side": 1,
+      "message": "done in https://chromium-review.googlesource.com/c/infra/infra/+/791518",
+      "parentUuid": "5ea90e1e_d1ca4a6f",
+      "range": {
+        "startLine": 54,
+        "startChar": 10,
+        "endLine": 55,
+        "endChar": 29
+      },
+      "revId": "e8461368e42f67d8ac2e359f57e9593b7c055e42",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
