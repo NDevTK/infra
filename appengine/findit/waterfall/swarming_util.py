@@ -425,7 +425,6 @@ def GetIsolatedShaForStep(master_name, builder_name, build_number, step_name,
     logging.error('Failed to get swarming task data for %s/%s/%s/%s',
                   master_name, builder_name, build_number, step_name)
     return None
-
   # Each task should have the same sha, so only need to read from the first one.
   tags = data[0]['tags']
   sha = GetTagValue(tags, 'data')

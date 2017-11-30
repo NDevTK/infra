@@ -19,6 +19,7 @@ class RunFlakeTryJobPipeline(SynchronousPipeline):
 
   def RunImpl(self, pipeline_input):
     try:
+      # TODO(crbug.com/778382): Return the corresponding isolated sha.
       return flake_try_job.ScheduleFlakeTryJob(pipeline_input, self.pipeline_id)
     except exceptions.RetryException as e:
       raise pipeline.Retry('Error "%s" occurred: "%s"' % (e.error_reason,

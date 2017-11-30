@@ -236,7 +236,6 @@ class BuildUtilTest(wf_testcase.WaterfallTestCase):
     self.assertEqual(5,
                      build_util.GetEarliestContainingBuild('m', 'b', 0, 10,
                                                            60).build_number)
-
     self.assertEqual(11,
                      build_util.GetEarliestContainingBuild(
                          'm', 'b', 0, None, 1000).build_number)
