@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1b66b9ee_973cc5a8",
+        "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-11-30T23:15:59Z",
+      "side": 1,
+      "message": "Wdyt of just adding these docs at the top of the class rather than on the method since the parameters are self-documenting now?",
+      "range": {
+        "startLine": 60,
+        "startChar": 0,
+        "endLine": 65,
+        "endChar": 7
+      },
+      "revId": "e6f24bffb0bba94e742fc05b4e29d42b9f92d77f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "17ad0d13_a5a50bd7",
+        "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-11-30T23:15:59Z",
+      "side": 1,
+      "message": "This one is my fault. I added a module-level CreateInputObjectInstance as a patch so old-style pipleines could call into new level pipelines. You should use the instance version here, as you have access to it. When the old-pipelines are gone this method will be deprecated.",
+      "range": {
+        "startLine": 82,
+        "startChar": 5,
+        "endLine": 87,
+        "endChar": 30
+      },
+      "revId": "e6f24bffb0bba94e742fc05b4e29d42b9f92d77f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3dca3200_ad8692f8",
+        "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-11-30T23:15:59Z",
+      "side": 1,
+      "message": "Same as above, use instance version.",
+      "range": {
+        "startLine": 91,
+        "startChar": 6,
+        "endLine": 96,
+        "endChar": 24
+      },
+      "revId": "e6f24bffb0bba94e742fc05b4e29d42b9f92d77f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "f1d640bf_e8dc3d7a",
+        "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-11-30T23:15:59Z",
+      "side": 1,
+      "message": "Right, I\u0027ve encountered that before. I think you might be able to yield it. On the other hand, you have some pretty good looking code here so I\u0027m good with this as-is.",
+      "parentUuid": "2a9c3d8b_25ce501f",
+      "range": {
+        "startLine": 30,
+        "startChar": 11,
+        "endLine": 32,
+        "endChar": 74
+      },
+      "revId": "7bd6cd83e27fc28f604373afd37ec1b9324f86a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2daf329d_19aac169",
         "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
         "patchSetId": 5
