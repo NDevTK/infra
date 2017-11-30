@@ -169,3 +169,9 @@ class RunFlakeTryJobParameters(StructuredObject):
   revision = basestring
   flake_cache_name = basestring
   dimensions = list
+
+
+class GetIsolateShaForCommitPositionParameters(StructuredObject):
+  analysis_urlsafe_key = basestring
+  commit_position = int
+  revision = basestring
