@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "ab350508_7e3a32e7",
+        "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-11-30T23:49:21Z",
+      "side": 1,
+      "message": "I think it\u0027s better practice to keep it in the method that does the actual logic for the docstrings, this way it\u0027s easier to find where in the code\u0027s actually responsible for handling the logic in case these files get long.",
+      "parentUuid": "1b66b9ee_973cc5a8",
+      "range": {
+        "startLine": 60,
+        "startChar": 0,
+        "endLine": 65,
+        "endChar": 7
+      },
+      "revId": "e6f24bffb0bba94e742fc05b4e29d42b9f92d77f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "17ad0d13_a5a50bd7",
         "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
         "patchSetId": 7
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "63dbf94e_5acd55e9",
+        "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-11-30T23:49:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "17ad0d13_a5a50bd7",
+      "range": {
+        "startLine": 82,
+        "startChar": 5,
+        "endLine": 87,
+        "endChar": 30
+      },
+      "revId": "e6f24bffb0bba94e742fc05b4e29d42b9f92d77f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3dca3200_ad8692f8",
         "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
         "patchSetId": 7
@@ -68,6 +116,30 @@
       "revId": "e6f24bffb0bba94e742fc05b4e29d42b9f92d77f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "763a641a_265a825b",
+        "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-11-30T23:49:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3dca3200_ad8692f8",
+      "range": {
+        "startLine": 91,
+        "startChar": 6,
+        "endLine": 96,
+        "endChar": 24
+      },
+      "revId": "e6f24bffb0bba94e742fc05b4e29d42b9f92d77f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
