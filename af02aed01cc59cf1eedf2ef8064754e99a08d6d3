@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cd5cbdc8_7e7bc155",
+        "filename": "appengine/findit/services/parameters.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-11-30T21:08:33Z",
+      "side": 1,
+      "message": "Comment a bit so if I have to use this input object I know what commit position you\u0027re expecting.",
+      "range": {
+        "startLine": 176,
+        "startChar": 2,
+        "endLine": 176,
+        "endChar": 17
+      },
+      "revId": "af02aed01cc59cf1eedf2ef8064754e99a08d6d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4f8730c1_b9810035",
+        "filename": "appengine/findit/services/parameters.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-11-30T21:08:33Z",
+      "side": 1,
+      "message": "Personally I think this should be next to the pipeline which it belongs to. Looking back/forth to this file full of StructuredObjects seems like an unnecessary hassle when we could just bundle relevant classes in the same file.\n\nFor pipelines that I create, I would include the structured object and pipeline in the same file.\n\nwdyt?",
+      "range": {
+        "startLine": 174,
+        "startChar": 0,
+        "endLine": 177,
+        "endChar": 23
+      },
+      "revId": "af02aed01cc59cf1eedf2ef8064754e99a08d6d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

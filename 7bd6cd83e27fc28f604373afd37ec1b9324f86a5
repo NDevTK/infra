@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d1957365_f4759990",
+        "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-11-30T21:08:33Z",
+      "side": 1,
+      "message": "You could probably just call this function from GetIsolateShaForCommitPositionPipeline to eliminate 30 lines here.",
+      "range": {
+        "startLine": 30,
+        "startChar": 11,
+        "endLine": 32,
+        "endChar": 74
+      },
+      "revId": "7bd6cd83e27fc28f604373afd37ec1b9324f86a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2daf329d_19aac169",
+        "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2017-11-30T21:08:33Z",
+      "side": 1,
+      "message": "Is this the build-level analysis case?\n\nHow are you ensuring this remains true, are you doing some calculations prior to calling into this pipeline?\n\nI\u0027m assuming lookback is spitting out some random commit position along the exponential search route, but that\u0027s not necessarily the last commit position in the build.",
+      "range": {
+        "startLine": 61,
+        "startChar": 4,
+        "endLine": 61,
+        "endChar": 68
+      },
+      "revId": "7bd6cd83e27fc28f604373afd37ec1b9324f86a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
