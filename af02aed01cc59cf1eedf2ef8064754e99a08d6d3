@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "8e9e52e4_62ca46d1",
+        "filename": "appengine/findit/services/parameters.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-11-30T22:59:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cd5cbdc8_7e7bc155",
+      "range": {
+        "startLine": 176,
+        "startChar": 2,
+        "endLine": 176,
+        "endChar": 17
+      },
+      "revId": "af02aed01cc59cf1eedf2ef8064754e99a08d6d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4f8730c1_b9810035",
         "filename": "appengine/findit/services/parameters.py",
         "patchSetId": 4
@@ -45,6 +69,30 @@
       "revId": "af02aed01cc59cf1eedf2ef8064754e99a08d6d3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "077fcc2d_ace15d1a",
+        "filename": "appengine/findit/services/parameters.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-11-30T22:59:27Z",
+      "side": 1,
+      "message": "We can go this route for now, but I think we should discuss with the rest of the team at our next meeting a bit for how we want to organize these. In case pipelines can be called from multiple places the location of the definition for input objects can get lost if we don\u0027t standardize.\n\nFor now though I\u0027ll move these to their direct pipelines, since it\u0027s easy for parameters.py to blow up",
+      "parentUuid": "4f8730c1_b9810035",
+      "range": {
+        "startLine": 174,
+        "startChar": 0,
+        "endLine": 177,
+        "endChar": 23
+      },
+      "revId": "af02aed01cc59cf1eedf2ef8064754e99a08d6d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

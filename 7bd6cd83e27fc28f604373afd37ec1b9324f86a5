@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "2a9c3d8b_25ce501f",
+        "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-11-30T22:59:27Z",
+      "side": 1,
+      "message": "originally i had it just return swarming_util.GetIsolatedShaForStep inside GetIsolateShaForCommitPositionPipeline, but based on how pipelines work apparently it would complain at me, something about calling return from within a generator, or yielding a thing that\u0027s not a generator etc. This was the only way I could do it to appease it unless you have another idea",
+      "parentUuid": "d1957365_f4759990",
+      "range": {
+        "startLine": 30,
+        "startChar": 11,
+        "endLine": 32,
+        "endChar": 74
+      },
+      "revId": "7bd6cd83e27fc28f604373afd37ec1b9324f86a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2daf329d_19aac169",
         "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
         "patchSetId": 5
@@ -45,6 +69,30 @@
       "revId": "7bd6cd83e27fc28f604373afd37ec1b9324f86a5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7a03db6f_024b09df",
+        "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2017-11-30T22:59:27Z",
+      "side": 1,
+      "message": "With how this pipeline will be used, there won\u0027t be a \"build-level\" analysis (any build-level analysis is a disguised optimization of commit level analysis). Based on the new design in the doc this pipeline shouldn\u0027t have to worry about doing any of those checks. NextCommitPositionPipeline will be the driver of exactly what to do at each step, this pipeline should be just a mindless slave to do exactly as it\u0027s asked and nothing more: commit position --\u003e sha.",
+      "parentUuid": "2daf329d_19aac169",
+      "range": {
+        "startLine": 61,
+        "startChar": 4,
+        "endLine": 61,
+        "endChar": 68
+      },
+      "revId": "7bd6cd83e27fc28f604373afd37ec1b9324f86a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
