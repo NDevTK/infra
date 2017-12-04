@@ -16,6 +16,24 @@
       "revId": "e1dd1a14c8715e7bc383674eb2a11ebfdfcc1b5f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c62f25ba_2861e025",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/frontend/elements/som-annotations/som-file-bug.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2017-12-04T18:08:05Z",
+      "side": 1,
+      "message": "LOL. It\u0027s okay haha. An argument for better bug hygiene. :) Or maybe for having Bugdriod update Monorail when a CL has been uploaded rather tha just submitted.",
+      "parentUuid": "19408a6f_6c62ca89",
+      "revId": "e1dd1a14c8715e7bc383674eb2a11ebfdfcc1b5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
