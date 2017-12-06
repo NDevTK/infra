@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "85d5ad53_33c5ecf3",
+        "filename": "cr-buildbucket.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 334,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2017-12-06T23:14:14Z",
+      "side": 1,
+      "message": "does your recipe need any special permissions or creds to access restricted resource?",
+      "range": {
+        "startLine": 334,
+        "startChar": 7,
+        "endLine": 334,
+        "endChar": 26
+      },
+      "revId": "3a0844c1cb9d480bc17b2bdf89081f1dd9e2104e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a218adc_296f6feb",
+        "filename": "luci-scheduler.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 393,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2017-12-06T23:14:14Z",
+      "side": 1,
+      "message": "non DST 8amk MTV\n\nbecause schedule is UTC which doesn\u0027t have DST. \nFor real fancy \"~8am\" maybe do \"30 15 * * *\" so it\u0027s either 7:30 or 8:30 AM MTV time :P",
+      "range": {
+        "startLine": 393,
+        "startChar": 24,
+        "endLine": 393,
+        "endChar": 27
+      },
+      "revId": "3a0844c1cb9d480bc17b2bdf89081f1dd9e2104e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
