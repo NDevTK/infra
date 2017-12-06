@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "e159b9cb_cbd7ef14",
+        "filename": "cr-buildbucket.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 334,
+      "author": {
+        "id": 1002080
+      },
+      "writtenOn": "2017-12-06T23:21:55Z",
+      "side": 1,
+      "message": "Nope, public resources only.",
+      "parentUuid": "85d5ad53_33c5ecf3",
+      "range": {
+        "startLine": 334,
+        "startChar": 7,
+        "endLine": 334,
+        "endChar": 26
+      },
+      "revId": "3a0844c1cb9d480bc17b2bdf89081f1dd9e2104e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2a218adc_296f6feb",
         "filename": "luci-scheduler.cfg",
         "patchSetId": 2
@@ -45,6 +69,30 @@
       "revId": "3a0844c1cb9d480bc17b2bdf89081f1dd9e2104e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a09b437b_e0f2f617",
+        "filename": "luci-scheduler.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 393,
+      "author": {
+        "id": 1002080
+      },
+      "writtenOn": "2017-12-06T23:21:55Z",
+      "side": 1,
+      "message": "It doesn\u0027t have to be super precise, I should probably just say \"Morning MTV time\"",
+      "parentUuid": "2a218adc_296f6feb",
+      "range": {
+        "startLine": 393,
+        "startChar": 24,
+        "endLine": 393,
+        "endChar": 27
+      },
+      "revId": "3a0844c1cb9d480bc17b2bdf89081f1dd9e2104e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
