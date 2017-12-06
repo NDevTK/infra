@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a68323c_57dc6da1",
+        "filename": "appengine/chromium_build_stats/gopath/src/ninjalog/ninjalog.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 443,
+      "author": {
+        "id": 1116017
+      },
+      "writtenOn": "2017-12-06T07:47:01Z",
+      "side": 1,
+      "message": "Let me confirm of go semantics.\n\nWhen we append something into stats, realloc for stats might happen.\nThen, m[t] (in the previous array) will have a pointer of the previous Stat (\u003d Stat before the realloc)?",
+      "range": {
+        "startLine": 437,
+        "startChar": 2,
+        "endLine": 443,
+        "endChar": 29
+      },
+      "revId": "33805a136cfbea6514ba82bfde46b8800dc9d242",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
