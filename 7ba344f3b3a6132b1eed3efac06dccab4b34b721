@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e8c9f7c4_6a2b9150",
+        "filename": "cr-buildbucket.cfg",
+        "patchSetId": 4
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-12-07T00:00:10Z",
+      "side": 1,
+      "message": "unnecessary, because of L115\nno other builder does that",
+      "revId": "7ba344f3b3a6132b1eed3efac06dccab4b34b721",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "338705b2_8015d951",
+        "filename": "cr-buildbucket.cfg",
+        "patchSetId": 4
+      },
+      "lineNbr": 333,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2017-12-07T00:00:10Z",
+      "side": 1,
+      "message": "this is the default, see L115 and L45",
+      "revId": "7ba344f3b3a6132b1eed3efac06dccab4b34b721",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
