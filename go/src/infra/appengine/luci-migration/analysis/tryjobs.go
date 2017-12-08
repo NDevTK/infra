@@ -229,8 +229,15 @@ func (f *fetcher) fetchBuildSets(c context.Context, buildSets chan buildbucket.B
 		psAbsent = patchSetAbsent // real one
 	}
 
+	buildCount := 0
 	seen := stringset.New(DefaultMaxGroups + groupFetchWorkers)
+
+	defer func() {
+		logging.Infof(c, "fetchBuildSets: seen %d builds and %d unique buildsets", buildCount, seen.Len())
+	}()
+
 	for msg := range foundBuilds {
+		buildCount++
 		var b buildbucket.Build
 		if err := b.ParseMessage(msg); err != nil {
 			return errors.Annotate(err, "parsing build %d", msg.Id).Err()
