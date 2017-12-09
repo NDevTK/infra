@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d36560ba_a635bf84",
+        "filename": "go/src/infra/appengine/luci-migration/app/builder.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 253,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2017-12-09T07:23:10Z",
+      "side": 1,
+      "message": "unused.",
+      "range": {
+        "startLine": 253,
+        "startChar": 5,
+        "endLine": 253,
+        "endChar": 25
+      },
+      "revId": "33cee69356d807b4e0f5f40813baca14e6616435",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "75ad1c9d_b068d64b",
+        "filename": "go/src/infra/appengine/luci-migration/app/templates/pages/builder.html",
+        "patchSetId": 2
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2017-12-09T07:23:10Z",
+      "side": 1,
+      "message": "once pressed, this will have no feedback. Perhaps just comment here that analysis will be scheduled and it takes ~X minutes.",
+      "range": {
+        "startLine": 103,
+        "startChar": 54,
+        "endLine": 103,
+        "endChar": 72
+      },
+      "revId": "33cee69356d807b4e0f5f40813baca14e6616435",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
