@@ -32,6 +32,8 @@ import (
 
 	"infra/appengine/luci-migration/storage"
 
+	"infra/appengine/luci-migration/config"
+
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/common/clock"
 )
@@ -110,16 +112,20 @@ func TestBuilder(t *testing.T) {
 			model, err := handle(c)
 			So(err, ShouldBeNil)
 			So(model, ShouldResemble, &builderViewModel{
-				Builder:                builder,
-				StatusKnown:            true,
-				StatusClassSuffix:      "danger",
-				StatusAge:              time.Hour,
-				Details:                "almost",
-				ShowLUCIIsProdCheckbox: true,
+				Builder:           builder,
+				StatusKnown:       true,
+				StatusClassSuffix: "danger",
+				StatusAge:         time.Hour,
+				Details:           "almost",
+				TryBuilder:        false,
 			})
 		})
+
 		Convey("set experiment percentage", func() {
-			builder := &storage.Builder{ID: id}
+			builder := &storage.Builder{
+				ID:             id,
+				SchedulingType: config.SchedulingType_TRYJOBS,
+			}
 			err := datastore.Put(c, builder)
 			So(err, ShouldBeNil)
 
@@ -168,6 +174,20 @@ func TestBuilder(t *testing.T) {
 				So(err, ShouldBeNil)
 				res := rec.Result()
 				So(res.StatusCode, ShouldEqual, http.StatusForbidden)
+			})
+			Convey("set experiment percentage: not a try builder", func() {
+				rc.Context = auth.WithState(rc.Context, &authtest.FakeState{
+					Identity:       "user:user@example.com",
+					IdentityGroups: []string{changeBuilderSettingsGroup},
+				})
+				builder := &storage.Builder{ID: id, SchedulingType: config.SchedulingType_CONTINUOUS}
+				err := datastore.Put(c, builder)
+				So(err, ShouldBeNil)
+
+				err = handleBuilderPagePost(rc)
+				So(err, ShouldBeNil)
+				res := rec.Result()
+				So(res.StatusCode, ShouldEqual, http.StatusBadRequest)
 			})
 		})
 	})
