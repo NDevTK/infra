@@ -22,6 +22,30 @@
       "revId": "33805a136cfbea6514ba82bfde46b8800dc9d242",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "04e9ee86_4bc23ce5",
+        "filename": "appengine/chromium_build_stats/gopath/src/ninjalog/ninjalog.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 443,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2017-12-11T02:19:20Z",
+      "side": 1,
+      "message": "fixed",
+      "parentUuid": "9a68323c_57dc6da1",
+      "range": {
+        "startLine": 437,
+        "startChar": 2,
+        "endLine": 443,
+        "endChar": 29
+      },
+      "revId": "33805a136cfbea6514ba82bfde46b8800dc9d242",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
