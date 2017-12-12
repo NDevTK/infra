@@ -18,7 +18,7 @@ deps = {
 
   "infra/luci":
    ("https://chromium.googlesource.com/infra/luci/luci-py"
-     "@e6fa13578262f3f71abd9511ce88ae6af1696fad"),
+     "@f3f573aa7ddc74d81a6d96da6357faffa6208123"),
 
   # This unpinned dependency is present because it is used by the trybots for
   # the recipes-py repo; They check out infra with this at HEAD, and then apply
@@ -31,7 +31,7 @@ deps = {
 
   "infra/go/src/go.chromium.org/luci":
     ("https://chromium.googlesource.com/infra/luci/luci-go"
-     "@9fe9988df59aa2ae0d83861aa733bf5f1e20f3f4"),
+     "@9ca3bb9d58fdfbe2d36e8a0906b5c8d4b7ebc454"),
 
   "infra/go/src/go.chromium.org/gae":
     ("https://chromium.googlesource.com/infra/luci/gae"
