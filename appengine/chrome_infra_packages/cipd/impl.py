@@ -718,6 +718,44 @@ class RepoService(object):
 
     raise AssertionError('Impossible state')
 
+  def list_instances(self, package_name, limit=100, cursor=None):
+    """Enumerates all instance of a package, most recent first.
+
+    Filters out not-yet processed instances, returning only instances that can
+    be fetched.
+
+    Args:
+      package_name: name of the package, e.g. 'infra/tools/cipd'.
+      limit: maximum number of instances to return (i.e. page size).
+      cursor: a cursor string from previous list_instances call, for pagination.
+
+    Returns:
+      Tuple (list of PackageInstance entities, next cursor as str or None).
+
+    Raises:
+      ValueError if the cursor is not valid.
+    """
+    assert limit > 0, limit
+
+    q = PackageInstance.query(ancestor=package_key(package_name))
+    q = q.order(-PackageInstance.registered_ts)
+
+    out = []
+
+    try:
+      cursor = ndb.Cursor(urlsafe=cursor) if cursor else None
+      while True:
+        page, cursor, more = q.fetch_page(limit - len(out), start_cursor=cursor)
+        assert len(page) + len(out) <= limit, (len(page), len(out), limit)
+        out.extend(i for i in page if i.ready)
+        if len(out) == limit or not more:
+          return out, cursor.urlsafe() if more else None
+    except (
+        datastore_errors.BadArgumentError,
+        datastore_errors.BadRequestError,
+        datastore_errors.BadValueError) as exc:
+      raise ValueError(str(exc))
+
   def process_instance(self, package_name, instance_id, processors):
     """Performs the post processing step creating ProcessingResult entities.
 
@@ -954,6 +992,11 @@ class PackageInstance(ndb.Model):
   def instance_id(self):
     """Package instance ID (SHA1 of package file content)."""
     return self.key.string_id()
+
+  @property
+  def ready(self):
+    """True if all processors have successfully processed the instance."""
+    return not self.processors_pending and not self.processors_failure
 
 
 def package_key(package_name):
