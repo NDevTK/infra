@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "f0198fc9_8e94fb8d",
+        "filename": "appengine/chrome_infra_packages/cipd/impl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 722,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-12-18T23:19:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fe20f81b_57c6dc56",
+      "range": {
+        "startLine": 722,
+        "startChar": 22,
+        "endLine": 722,
+        "endChar": 30
+      },
+      "revId": "e77268de0f2bc72316e50d6f004859ff3d9188f9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "973be640_c813951c",
         "filename": "appengine/chrome_infra_packages/cipd/impl.py",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "e77268de0f2bc72316e50d6f004859ff3d9188f9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2344f936_c58bc56f",
+        "filename": "appengine/chrome_infra_packages/cipd/impl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 728,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-12-18T23:19:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "973be640_c813951c",
+      "range": {
+        "startLine": 728,
+        "startChar": 46,
+        "endLine": 728,
+        "endChar": 64
+      },
+      "revId": "e77268de0f2bc72316e50d6f004859ff3d9188f9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
