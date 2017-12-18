@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dc83202d_08b0e655",
+        "filename": "appengine/chrome_infra_packages/Makefile",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2017-12-18T02:29:03Z",
+      "side": 0,
+      "message": "this is from https://chromium.googlesource.com/infra/infra/+/19ff035a7c9b42afaee5edd0ec5d3c05f8cc09ba\n\nIt doesn\u0027t work for me. IIUC ../../../node_modules is outside infra.git. I\u0027m not sure where it comes from.\n\n\u0027${APP_DIR}/node_modules\u0027 is being built by \"make setup\". At least on my machine...",
+      "range": {
+        "startLine": 18,
+        "startChar": 31,
+        "endLine": 18,
+        "endChar": 41
+      },
+      "revId": "51b0a0aa9ffcc7599486c16b8dfb7064b2dca009",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
