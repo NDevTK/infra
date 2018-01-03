@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "10e312c2_84d39a37",
+        "filename": "appengine/findit/services/ci_failure.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-01-03T06:35:27Z",
+      "side": 1,
+      "message": "nit: Add return docstring above.",
+      "range": {
+        "startLine": 114,
+        "startChar": 6,
+        "endLine": 114,
+        "endChar": 25
+      },
+      "revId": "2e58d5df5c43696f4d31c79ba77cf592f1f651d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
