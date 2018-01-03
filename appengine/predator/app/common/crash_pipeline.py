@@ -175,6 +175,13 @@ class CrashAnalysisPipeline(CrashBasePipeline):
     result, tags = culprit.ToDicts()
     if success:
       analysis.status = analysis_status.COMPLETED
+      # Only monitor those reports without errors.
+      monitoring.reports_processed.increment({
+          'found_suspects': tags['found_suspects'],
+          'found_components': tags['found_components'],
+          'has_regression_range': tags['has_regression_range'],
+          'client_id': self.client_id,
+      })
     else:
       analysis.status = analysis_status.ERROR
 
@@ -188,10 +195,6 @@ class CrashAnalysisPipeline(CrashBasePipeline):
       if hasattr(analysis, tag_name):  # pragma: no cover
         setattr(analysis, tag_name, tag_value)
 
-      if hasattr(monitoring, tag_name):
-        metric = getattr(monitoring, tag_name)
-        metric.increment({tag_name: tag_value,
-                          'client_id': self.client_id})
     analysis.put()
 
     logging.info('Found %s analysis result for %s: \n%s', self.client_id,
