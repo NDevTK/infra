@@ -22,6 +22,30 @@
       "revId": "4f4f6b30f3cf9c038d89172e217aaa27cd68f163",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e288165a_480fe657",
+        "filename": "appengine/predator/app/common/crash_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1136109
+      },
+      "writtenOn": "2018-01-03T18:28:01Z",
+      "side": 1,
+      "message": "Because I want to distinguish the reports with error and without error.\nBut right, adding a success field might be a better solution.",
+      "parentUuid": "fef8de0d_27f1a34c",
+      "range": {
+        "startLine": 186,
+        "startChar": 6,
+        "endLine": 186,
+        "endChar": 45
+      },
+      "revId": "4f4f6b30f3cf9c038d89172e217aaa27cd68f163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
