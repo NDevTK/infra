@@ -1130,3 +1130,50 @@ ALTER TABLE Issue2FieldValue ADD INDEX (field_id, url_value);
 2017-11-22: Add url_value column to Template2FieldValue table.
 
 ALTER TABLE Template2FieldValue ADD COLUMN url_value VARCHAR(1024);
+
+================================================================
+2018-01-08: Add IssueSnapshot table and join tables
+
+CREATE TABLE IssueSnapshot (
+  id INT NOT NULL AUTO_INCREMENT,
+  issue_id INT NOT NULL,
+  shard INT NOT NULL,
+  project_id INT NOT NULL,
+  local_id INT NOT NULL,
+  reporter_id INT NOT NULL,
+  owner_id INT NOT NULL,
+  status INT NOT NULL,
+  start INT NOT NULL,
+  end INT NOT NULL,
+  is_open BOOLEAN DEFAULT TRUE,
+
+  PRIMARY KEY (TODO),
+  FOREIGN KEY (TODO) REFERENCES Todo(TODO),
+) ENGINE=INNODB;
+
+CREATE TABLE IssueSnapshot2Component (
+  issuesnapshot_id INT NOT NULL,
+  component_id INT NOT NULL,
+
+  PRIMARY KEY (issuesnapshot_id, component_id),
+  FOREIGN KEY (issuesnapshot_id) REFERENCES IssueSnapshot(id),
+  FOREIGN KEY (component_id) REFERENCES ComponentDef(id)
+) ENGINE=INNODB;
+
+CREATE TABLE IssueSnapshot2Label(
+  issuesnapshot_id INT NOT NULL,
+  label_id INT NOT NULL,
+
+  PRIMARY KEY (issuesnapshot_id, label_id),
+  FOREIGN KEY (issuesnapshot_id) REFERENCES IssueSnapshot(id),
+  FOREIGN KEY (label_id) REFERENCES LabelDef(id)
+) ENGINE=INNODB;
+
+CREATE TABLE IssueSnapshot2Cc(
+  issuesnapshot_id INT NOT NULL,
+  cc_id INT NOT NULL,
+
+  PRIMARY KEY (issuesnapshot_id, cc_id),
+  FOREIGN KEY (issuesnapshot_id) REFERENCES IssueSnapshot(id),
+  FOREIGN KEY (cc_id) REFERENCES User(id)
+) ENGINE=INNODB;
