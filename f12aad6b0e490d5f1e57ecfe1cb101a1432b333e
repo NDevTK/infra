@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "332c8ce1_f1683e91",
+        "filename": "go/src/infra/tools/led/cmd_get_builder.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-01-10T23:42:48Z",
+      "side": 1,
+      "message": "use \nhttps://cs.chromium.org/chromium/infra/go/src/go.chromium.org/luci/buildbucket/canary.go?q\u003dCanaryPreference\u0026sq\u003dpackage:chromium\u0026l\u003d23",
+      "range": {
+        "startLine": 113,
+        "startChar": 1,
+        "endLine": 116,
+        "endChar": 2
+      },
+      "revId": "f12aad6b0e490d5f1e57ecfe1cb101a1432b333e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
