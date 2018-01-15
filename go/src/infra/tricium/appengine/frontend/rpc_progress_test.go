@@ -97,7 +97,7 @@ func TestProgress(t *testing.T) {
 			ctx = auth.WithState(ctx, &authtest.FakeState{
 				Identity: identity.Identity(okACLUser),
 			})
-			state, progress, err := progress(ctx, runID)
+			state, progress, _, err := progress(ctx, runID)
 			So(err, ShouldBeNil)
 			So(state, ShouldEqual, tricium.State_SUCCESS)
 			So(len(progress), ShouldEqual, 1)
@@ -111,7 +111,7 @@ func TestProgress(t *testing.T) {
 			request := &tricium.ProgressRequest{
 				RunId: "12345",
 			}
-			id, err := validateProgressRequest(ctx, request)
+			_, id, err := validateProgressRequest(ctx, request)
 			So(id, ShouldEqual, 12345)
 			So(err, ShouldBeNil)
 		})
@@ -120,13 +120,13 @@ func TestProgress(t *testing.T) {
 			request := &tricium.ProgressRequest{
 				RunId: "invalid, not a number",
 			}
-			_, err := validateProgressRequest(ctx, request)
+			_, _, err := validateProgressRequest(ctx, request)
 			So(err, ShouldNotBeNil)
 		})
 
 		Convey("Validate request with no contents", func() {
 			request := &tricium.ProgressRequest{}
-			_, err := validateProgressRequest(ctx, request)
+			_, _, err := validateProgressRequest(ctx, request)
 			So(err, ShouldNotBeNil)
 		})
 
@@ -140,7 +140,7 @@ func TestProgress(t *testing.T) {
 					Revision: revision,
 				},
 			}
-			id, err := validateProgressRequest(ctx, request)
+			_, id, err := validateProgressRequest(ctx, request)
 			So(id, ShouldEqual, runID)
 			So(err, ShouldBeNil)
 		})
@@ -154,7 +154,7 @@ func TestProgress(t *testing.T) {
 					Revision: revision,
 				},
 			}
-			_, err := validateProgressRequest(ctx, request)
+			_, _, err := validateProgressRequest(ctx, request)
 			So(err, ShouldNotBeNil)
 		})
 
@@ -169,8 +169,20 @@ func TestProgress(t *testing.T) {
 					Revision: revision,
 				},
 			}
-			_, err := validateProgressRequest(ctx, request)
+			_, _, err := validateProgressRequest(ctx, request)
 			So(err, ShouldNotBeNil)
+		})
+
+		Convey("Validate request with project and run ID", func() {
+			project := "test"
+			request := &tricium.ProgressRequest{
+				Project: project,
+				RunId:   "12345",
+			}
+			p, id, err := validateProgressRequest(ctx, request)
+			So(p, ShouldEqual, project)
+			So(id, ShouldEqual, 0)
+			So(err, ShouldBeNil)
 		})
 	})
 }

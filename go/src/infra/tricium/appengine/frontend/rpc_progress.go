@@ -17,19 +17,33 @@ import (
 	"google.golang.org/grpc/codes"
 
 	"infra/tricium/api/v1"
+	"infra/tricium/appengine/common/config"
 	"infra/tricium/appengine/common/track"
 )
 
 // Progress implements Tricium.Progress.
 func (r *TriciumServer) Progress(c context.Context, req *tricium.ProgressRequest) (*tricium.ProgressResponse, error) {
-	runID, err := validateProgressRequest(c, req)
+	project, runID, err := validateProgressRequest(c, req)
 	if err != nil {
 		return nil, err
 	}
-	runState, functionProgress, err := progress(c, runID)
+	// Run progress for a project.
+	if project != "" {
+		runProgress, errCode, err := projectProgress(c, project, config.LuciConfigServer)
+		if err != nil {
+			logging.WithError(err).Errorf(c, "project progress failed: %v, project: %s", err, project)
+			return nil, grpc.Errorf(errCode, "failed to execute progress request")
+		}
+		logging.Infof(c, "[frontend] Project progress: %v", runProgress)
+		return &tricium.ProgressResponse{
+			RunProgress: runProgress,
+		}, nil
+	}
+	// Function progress for a run.
+	runState, functionProgress, errCode, err := progress(c, runID)
 	if err != nil {
 		logging.WithError(err).Errorf(c, "progress failed: %v, run ID: %d", err, runID)
-		return nil, grpc.Errorf(codes.Internal, "failed to execute progress request")
+		return nil, grpc.Errorf(errCode, "failed to execute progress request")
 	}
 	logging.Infof(c, "[frontend] Function progress: %v", functionProgress)
 	return &tricium.ProgressResponse{
@@ -39,29 +53,32 @@ func (r *TriciumServer) Progress(c context.Context, req *tricium.ProgressRequest
 	}, nil
 }
 
-func validateProgressRequest(c context.Context, req *tricium.ProgressRequest) (int64, error) {
+func validateProgressRequest(c context.Context, req *tricium.ProgressRequest) (string, int64, error) {
+	if req.Project != "" {
+		return req.Project, 0, nil
+	}
 	if req.Consumer == tricium.Consumer_GERRIT {
 		// Either Gerrit details or run ID should be given; if both are
 		// given then they may be conflicting; if the run ID is given
 		// then there should be no need to specify Gerrit details.
 		if req.RunId != "" {
-			return 0, grpc.Errorf(codes.InvalidArgument, "both Gerrit details and run ID given")
+			return "", 0, grpc.Errorf(codes.InvalidArgument, "both Gerrit details and run ID given")
 		}
 		gd := req.GetGerritDetails()
 		if gd == nil {
-			return 0, grpc.Errorf(codes.InvalidArgument, "missing Gerrit details")
+			return "", 0, grpc.Errorf(codes.InvalidArgument, "missing Gerrit details")
 		}
 		if gd.Host == "" {
-			return 0, grpc.Errorf(codes.InvalidArgument, "missing Gerrit host")
+			return "", 0, grpc.Errorf(codes.InvalidArgument, "missing Gerrit host")
 		}
 		if gd.Project == "" {
-			return 0, grpc.Errorf(codes.InvalidArgument, "missing Gerrit project")
+			return "", 0, grpc.Errorf(codes.InvalidArgument, "missing Gerrit project")
 		}
 		if gd.Change == "" {
-			return 0, grpc.Errorf(codes.InvalidArgument, "missing Gerrit change ID")
+			return "", 0, grpc.Errorf(codes.InvalidArgument, "missing Gerrit change ID")
 		}
 		if gd.Revision == "" {
-			return 0, grpc.Errorf(codes.InvalidArgument, "missing Gerrit revision")
+			return "", 0, grpc.Errorf(codes.InvalidArgument, "missing Gerrit revision")
 		}
 		// Look up the run ID with the provided Gerrit change details.
 		g := &GerritChangeToRunID{
@@ -69,30 +86,67 @@ func validateProgressRequest(c context.Context, req *tricium.ProgressRequest) (i
 		}
 		if err := ds.Get(c, g); err != nil {
 			logging.WithError(err).Errorf(c, "failed to get GerritChangeToRunID entity: %v", err)
-			return 0, grpc.Errorf(codes.InvalidArgument, "failed to find run ID for Gerrit change")
+			return "", 0, grpc.Errorf(codes.InvalidArgument, "failed to find run ID for Gerrit change")
 		}
-		return g.RunID, nil
+		return "", g.RunID, nil
 	}
 	if req.RunId == "" {
-		return 0, grpc.Errorf(codes.InvalidArgument, "missing run ID")
+		return "", 0, grpc.Errorf(codes.InvalidArgument, "missing run ID")
 	}
 	runID, err := strconv.ParseInt(req.RunId, 10, 64)
 	if err != nil {
 		logging.WithError(err).Errorf(c, "failed to parse run ID: %s", req.RunId)
-		return 0, grpc.Errorf(codes.InvalidArgument, "invalid run ID")
+		return "", 0, grpc.Errorf(codes.InvalidArgument, "invalid run ID")
 	}
-	return runID, nil
+	return "", runID, nil
 }
 
-func progress(c context.Context, runID int64) (tricium.State, []*tricium.FunctionProgress, error) {
+func projectProgress(c context.Context, project string, cp config.ProviderAPI) ([]*tricium.RunProgress, codes.Code, error) {
+	sc, err := cp.GetServiceConfig(c)
+	if err != nil {
+		return nil, codes.Internal, fmt.Errorf("failed to get service config: %v", err)
+	}
+	pd := tricium.LookupProjectDetails(sc, project)
+	if pd == nil {
+		return nil, codes.InvalidArgument, fmt.Errorf("unknown project")
+	}
+	var runProgress []*tricium.RunProgress
+	var requests []*track.AnalyzeRequest
+	if err := ds.GetAll(c, ds.NewQuery("AnalyzeRequest").Eq("Project", project), &requests); err != nil {
+		return nil, codes.Internal, fmt.Errorf("failed to retrieve AnalyzeRequest entities: %v", err)
+	}
+	for _, r := range requests {
+		key := ds.KeyForObj(c, r)
+		res := &track.AnalyzeRequestResult{ID: 1, Parent: key}
+		if err := ds.Get(c, res); err != nil {
+			return nil, codes.Internal, fmt.Errorf("failed to retrieve AnalyzerRequestResult: %v", err)
+		}
+		var analyzerResults []*track.AnalyzerRunResult
+		if err := ds.GetAll(c, ds.NewQuery("AnalyzerRunResult").Ancestor(key), &analyzerResults); err != nil {
+			return nil, codes.Internal, fmt.Errorf("failed to retrieve AnalyzerRunResult: %v", err)
+		}
+		numComments := 0
+		for _, ar := range analyzerResults {
+			numComments += ar.NumComments
+		}
+		runProgress = append(runProgress, &tricium.RunProgress{
+			RunId:       strconv.FormatInt(r.ID, 10),
+			State:       res.State,
+			NumComments: int32(numComments),
+		})
+	}
+	return runProgress, codes.OK, nil
+}
+
+func progress(c context.Context, runID int64) (tricium.State, []*tricium.FunctionProgress, codes.Code, error) {
 	requestKey := ds.NewKey(c, "AnalyzeRequest", "", runID, nil)
 	requestRes := &track.AnalyzeRequestResult{ID: 1, Parent: requestKey}
 	if err := ds.Get(c, requestRes); err != nil {
-		return tricium.State_PENDING, nil, fmt.Errorf("failed to get AnalyzeRequestResult: %v", err)
+		return tricium.State_PENDING, nil, codes.InvalidArgument, fmt.Errorf("failed to get AnalyzeRequestResult: %v", err)
 	}
 	run := &track.WorkflowRun{ID: 1, Parent: requestKey}
 	if err := ds.Get(c, run); err != nil {
-		return tricium.State_PENDING, nil, fmt.Errorf("failed to get AnalyzeRequestResult: %v", err)
+		return tricium.State_PENDING, nil, codes.Internal, fmt.Errorf("failed to get AnalyzeRequestResult: %v", err)
 	}
 	runKey := ds.KeyForObj(c, run)
 	// TODO(emso): extract a common GetAnalyzerRunsForWorkflowRun function
@@ -102,7 +156,7 @@ func progress(c context.Context, runID int64) (tricium.State, []*tricium.Functio
 	}
 	logging.Debugf(c, "Reading results for analyzers: %v, run: %v", analyzers, run)
 	if err := ds.Get(c, analyzers); err != nil {
-		return tricium.State_PENDING, nil, fmt.Errorf("failed to get AnalyzerRun entities: %v", err)
+		return tricium.State_PENDING, nil, codes.Internal, fmt.Errorf("failed to get AnalyzerRun entities: %v", err)
 	}
 	var workerResults []*track.WorkerRunResult
 	for _, analyzer := range analyzers {
@@ -114,7 +168,7 @@ func progress(c context.Context, runID int64) (tricium.State, []*tricium.Functio
 	}
 	logging.Debugf(c, "Reading worker results for %v", workerResults)
 	if err := ds.Get(c, workerResults); err != nil && err != ds.ErrNoSuchEntity {
-		return tricium.State_PENDING, nil, fmt.Errorf("failed to get WorkerRunResult entities: %v", err)
+		return tricium.State_PENDING, nil, codes.Internal, fmt.Errorf("failed to get WorkerRunResult entities: %v", err)
 	}
 	res := []*tricium.FunctionProgress{}
 	for _, wr := range workerResults {
@@ -133,8 +187,8 @@ func progress(c context.Context, runID int64) (tricium.State, []*tricium.Functio
 	// Monitor progress requests per project and run ID.
 	request := &track.AnalyzeRequest{ID: runID}
 	if err := ds.Get(c, request); err != nil {
-		return requestRes.State, res, fmt.Errorf("failed to get AnalyzeRequest: %v", err)
+		return requestRes.State, res, codes.Internal, fmt.Errorf("failed to get AnalyzeRequest: %v", err)
 	}
 	progressRequestCount.Add(c, 1, request.Project, strconv.FormatInt(runID, 10))
-	return requestRes.State, res, nil
+	return requestRes.State, res, codes.OK, nil
 }
