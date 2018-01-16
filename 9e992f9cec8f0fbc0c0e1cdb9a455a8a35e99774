@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "44b90611_cc5a0e15",
+        "filename": "go/src/infra/tricium/api/v1/tricium.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2018-01-16T13:49:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "30fc1daf_38a26e45",
+      "range": {
+        "startLine": 26,
+        "startChar": 62,
+        "endLine": 26,
+        "endChar": 63
+      },
+      "revId": "9e992f9cec8f0fbc0c0e1cdb9a455a8a35e99774",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "487e9235_642b7ca4",
         "filename": "go/src/infra/tricium/api/v1/tricium.proto",
         "patchSetId": 2
@@ -36,6 +60,24 @@
       "writtenOn": "2018-01-16T04:05:00Z",
       "side": 1,
       "message": "Is it the case that if this field is present, then the other fields will all be absent?",
+      "revId": "9e992f9cec8f0fbc0c0e1cdb9a455a8a35e99774",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8af1182c_9c559f28",
+        "filename": "go/src/infra/tricium/api/v1/tricium.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1159394
+      },
+      "writtenOn": "2018-01-16T13:49:52Z",
+      "side": 1,
+      "message": "This has been refactored.",
+      "parentUuid": "487e9235_642b7ca4",
       "revId": "9e992f9cec8f0fbc0c0e1cdb9a455a8a35e99774",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
