@@ -97,7 +97,7 @@ func TestProgress(t *testing.T) {
 			ctx = auth.WithState(ctx, &authtest.FakeState{
 				Identity: identity.Identity(okACLUser),
 			})
-			state, progress, err := progress(ctx, runID)
+			state, progress, _, err := progress(ctx, runID)
 			So(err, ShouldBeNil)
 			So(state, ShouldEqual, tricium.State_SUCCESS)
 			So(len(progress), ShouldEqual, 1)
@@ -135,7 +135,6 @@ func TestProgress(t *testing.T) {
 				Consumer: tricium.Consumer_GERRIT,
 				GerritDetails: &tricium.GerritConsumerDetails{
 					Host:     host,
-					Project:  project,
 					Change:   fmt.Sprintf("%s~master~%s", project, changeIDFooter),
 					Revision: revision,
 				},
@@ -150,7 +149,6 @@ func TestProgress(t *testing.T) {
 				Consumer: tricium.Consumer_GERRIT,
 				GerritDetails: &tricium.GerritConsumerDetails{
 					Host:     host,
-					Project:  project,
 					Revision: revision,
 				},
 			}
@@ -164,13 +162,21 @@ func TestProgress(t *testing.T) {
 				Consumer: tricium.Consumer_GERRIT,
 				GerritDetails: &tricium.GerritConsumerDetails{
 					Host:     host,
-					Project:  project,
 					Change:   fmt.Sprintf("%s~master~%s", project, changeIDFooter),
 					Revision: revision,
 				},
 			}
 			_, err := validateProgressRequest(ctx, request)
 			So(err, ShouldNotBeNil)
+		})
+
+		Convey("Validate request with project and run ID", func() {
+			request := &tricium.ProgressRequest{
+				RunId: "12345",
+			}
+			id, err := validateProgressRequest(ctx, request)
+			So(id, ShouldEqual, 0)
+			So(err, ShouldBeNil)
 		})
 	})
 }
