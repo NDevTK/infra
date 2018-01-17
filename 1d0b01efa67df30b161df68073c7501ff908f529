@@ -34,6 +34,24 @@
       "revId": "1d0b01efa67df30b161df68073c7501ff908f529",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4ee8269e_c8d98262",
+        "filename": "go/src/infra/tricium/api/v1/tricium.proto",
+        "patchSetId": 5
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2018-01-17T14:07:33Z",
+      "side": 1,
+      "message": "But isn\u0027t it essentially \u0027Results\u0027, and that partial results can be returned?",
+      "parentUuid": "396d42fd_7b8ca78f",
+      "revId": "1d0b01efa67df30b161df68073c7501ff908f529",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
