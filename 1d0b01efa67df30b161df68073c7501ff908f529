@@ -70,6 +70,24 @@
       "revId": "1d0b01efa67df30b161df68073c7501ff908f529",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3094a0ef_b4c68dcf",
+        "filename": "go/src/infra/tricium/api/v1/tricium.proto",
+        "patchSetId": 5
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2018-01-18T12:23:13Z",
+      "side": 1,
+      "message": "Fair enough.",
+      "parentUuid": "93c561c1_fbe5cfa7",
+      "revId": "1d0b01efa67df30b161df68073c7501ff908f529",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
