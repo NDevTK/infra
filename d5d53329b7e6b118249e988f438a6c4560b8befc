@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a9438fc8_d664d0c6",
+        "filename": "appengine/monorail/schema/tracker.sql",
+        "patchSetId": 2
+      },
+      "lineNbr": 772,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-01-19T23:11:29Z",
+      "side": 1,
+      "message": "Shard should probably be a smallint.  Using less bits for it allows for more entries to be in an index that has shard as one part of the key.  And, we will never have a huge number of shards.",
+      "revId": "d5d53329b7e6b118249e988f438a6c4560b8befc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6d441c44_077d7744",
+        "filename": "appengine/monorail/schema/tracker.sql",
+        "patchSetId": 2
+      },
+      "lineNbr": 779,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-01-19T23:11:29Z",
+      "side": 1,
+      "message": "Let\u0027s avoid using the name \"end\" because there is a SQL keyword \"end\".  Obviously you\u0027re not seeing syntax errors now, but we might hit surprising syntax errors in some future version of MySQL or if we need to use this column name in some other context.\nhttps://dev.mysql.com/doc/refman/5.6/en/begin-end.html",
+      "revId": "d5d53329b7e6b118249e988f438a6c4560b8befc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "59dab50c_d9466b55",
+        "filename": "appengine/monorail/schema/tracker.sql",
+        "patchSetId": 2
+      },
+      "lineNbr": 780,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-01-19T23:11:29Z",
+      "side": 1,
+      "message": "Add a TODO for hotlist information too.",
+      "revId": "d5d53329b7e6b118249e988f438a6c4560b8befc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "db82880b_8b70b303",
+        "filename": "appengine/monorail/schema/tracker.sql",
+        "patchSetId": 2
+      },
+      "lineNbr": 783,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-01-19T23:11:29Z",
+      "side": 1,
+      "message": "I was expecting that you would also need to define some INDEX clauses on these tables to make the queries efficient.  E.g., INDEX (shard, project_id, start, end).",
+      "revId": "d5d53329b7e6b118249e988f438a6c4560b8befc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b5661b5a_b7e79631",
+        "filename": "appengine/monorail/schema/tracker.sql",
+        "patchSetId": 2
+      },
+      "lineNbr": 795,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-01-19T23:11:29Z",
+      "side": 1,
+      "message": "Have you tried deleting components, labels, statuses, etc.?",
+      "revId": "d5d53329b7e6b118249e988f438a6c4560b8befc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
