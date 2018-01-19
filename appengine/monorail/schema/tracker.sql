@@ -765,3 +765,50 @@ CREATE TABLE HotlistVisitHistory (
   FOREIGN KEY (hotlist_id) REFERENCES Hotlist(id),
   FOREIGN KEY (user_id) REFERENCES User(user_id)
 ) ENGINE=INNODB;
+
+CREATE TABLE IssueSnapshot (
+  id INT NOT NULL AUTO_INCREMENT,
+  issue_id INT NOT NULL,
+  shard INT NOT NULL,
+  project_id SMALLINT UNSIGNED NOT NULL,
+  local_id INT NOT NULL,
+  reporter_id INT UNSIGNED NOT NULL,
+  owner_id INT UNSIGNED NOT NULL,
+  status_id INT NOT NULL,
+  start INT NOT NULL,
+  end INT NOT NULL,
+  is_open BOOLEAN DEFAULT TRUE,
+
+  PRIMARY KEY (id),
+  FOREIGN KEY (project_id) REFERENCES Project(project_id),
+  FOREIGN KEY (reporter_id) REFERENCES User(user_id),
+  FOREIGN KEY (owner_id) REFERENCES User(user_id),
+  FOREIGN KEY (status_id) REFERENCES StatusDef(id)
+) ENGINE=INNODB;
+
+CREATE TABLE IssueSnapshot2Component (
+  issuesnapshot_id INT NOT NULL,
+  component_id INT NOT NULL,
+
+  PRIMARY KEY (issuesnapshot_id, component_id),
+  FOREIGN KEY (issuesnapshot_id) REFERENCES IssueSnapshot(id),
+  FOREIGN KEY (component_id) REFERENCES ComponentDef(id)
+) ENGINE=INNODB;
+
+CREATE TABLE IssueSnapshot2Label(
+  issuesnapshot_id INT NOT NULL,
+  label_id INT NOT NULL,
+
+  PRIMARY KEY (issuesnapshot_id, label_id),
+  FOREIGN KEY (issuesnapshot_id) REFERENCES IssueSnapshot(id),
+  FOREIGN KEY (label_id) REFERENCES LabelDef(id)
+) ENGINE=INNODB;
+
+CREATE TABLE IssueSnapshot2Cc(
+  issuesnapshot_id INT NOT NULL,
+  cc_id INT UNSIGNED NOT NULL,
+
+  PRIMARY KEY (issuesnapshot_id, cc_id),
+  FOREIGN KEY (issuesnapshot_id) REFERENCES IssueSnapshot(id),
+  FOREIGN KEY (cc_id) REFERENCES User(user_id)
+) ENGINE=INNODB;
