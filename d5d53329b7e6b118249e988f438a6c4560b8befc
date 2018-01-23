@@ -264,6 +264,24 @@
       "revId": "d5d53329b7e6b118249e988f438a6c4560b8befc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "be3654c7_2939660a",
+        "filename": "appengine/monorail/schema/tracker.sql",
+        "patchSetId": 2
+      },
+      "lineNbr": 795,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-01-23T19:14:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9b844370_c04a7a26",
+      "revId": "d5d53329b7e6b118249e988f438a6c4560b8befc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
