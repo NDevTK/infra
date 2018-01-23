@@ -246,6 +246,24 @@
       "revId": "d5d53329b7e6b118249e988f438a6c4560b8befc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9b844370_c04a7a26",
+        "filename": "appengine/monorail/schema/tracker.sql",
+        "patchSetId": 2
+      },
+      "lineNbr": 795,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-01-23T00:29:15Z",
+      "side": 1,
+      "message": "Labels and custom fields are soft-deleted by setting the label rank value to NULL or setting the FieldDef.is_deleted to TRUE.  So, those rows are never actually deleted.   For components, we went with actually deleting the rows.  I think that we could change that decision to add an is_deleted column to ComponentDef and removing the UNIQUE (project_id, path) constraint since there could be some deleted components with the same name.\n\nIf you want to take that as a TODO, you could just remove the FOREIGN KEY constraint here for now.",
+      "parentUuid": "6faf5602_737a472b",
+      "revId": "d5d53329b7e6b118249e988f438a6c4560b8befc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
