@@ -523,6 +523,8 @@ class SwarmingTest(BaseTest):
         ('https://milo.example.com'
          '/p/chromium/builders/luci.chromium.try/linux_chromium_rel_ng/1'))
 
+    self.assertEqual(build.service_account, 'robot@example.com')
+
     # Test delegation token params.
     self.assertEqual(auth.delegate_async.mock_calls, [mock.call(
         services=[u'https://chromium-swarm.appspot.com'],
