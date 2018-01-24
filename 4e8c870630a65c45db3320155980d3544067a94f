@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1bd00e16_576bc14f",
+        "filename": "appengine/cr-buildbucket/swarming/swarming.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 715,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-01-24T01:14:24Z",
+      "side": 1,
+      "message": "ideally we use task_req here, which is what swarming told us",
+      "range": {
+        "startLine": 715,
+        "startChar": 26,
+        "endLine": 715,
+        "endChar": 34
+      },
+      "revId": "4e8c870630a65c45db3320155980d3544067a94f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
