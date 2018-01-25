@@ -15,7 +15,8 @@
         'Android Tests (dbg) (K Nexus5)',
         'Android Tests (dbg) (L Nexus5)',
         'Android Tests (dbg) (L Nexus6)',
-        'Android Tests (dbg) (L Nexus7.2)',
+        # Disabled because of problems. Investigation ongoing: crbug.com/805410.
+        # 'Android Tests (dbg) (L Nexus7.2)',
         'Android Tests (dbg) (L Nexus9)',
         'Linux Builder (dbg)',
         'Linux Builder',
