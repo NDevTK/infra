@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3160e483_01dbc94d",
+        "filename": "appengine/monorail/schema/alter-table-log.txt",
+        "patchSetId": 7
+      },
+      "lineNbr": 1156,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-01-29T22:15:36Z",
+      "side": 1,
+      "message": "What\u0027s the purpose for this UNIQUE KEY?  Data integrity or speeding up queries?  If data integrity, I think it could be two indexes (issue_id, period_start) and (issue_id, period_end).  But, even so, there are many ways for the start and end ranges to go wrong, so I don\u0027t know how much help this would be.",
+      "revId": "ec28e6b77a46c3599a55be13e4ef3f35eacc594c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c420beb3_838801f9",
+        "filename": "appengine/monorail/schema/tracker.sql",
+        "patchSetId": 7
+      },
+      "lineNbr": 798,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-01-29T22:15:36Z",
+      "side": 1,
+      "message": "Remember to remove this once your other CL lands.",
+      "revId": "ec28e6b77a46c3599a55be13e4ef3f35eacc594c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
