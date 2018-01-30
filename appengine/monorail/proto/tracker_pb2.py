@@ -339,6 +339,9 @@ class FieldDef(messages.Message):
   # semantics for date_type fields
   date_action = messages.EnumField(DateAction, 20)
 
+  # not NULL for approval fields' 'sub-fields'
+  approval_id = messages.IntegerField(21)
+
 
 class ComponentDef(messages.Message):
   """This stores info about a component in a project."""

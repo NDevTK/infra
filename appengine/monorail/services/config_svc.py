@@ -66,7 +66,8 @@ FIELDDEF_COLS = [
     'id', 'project_id', 'rank', 'field_name', 'field_type', 'applicable_type',
     'applicable_predicate', 'is_required', 'is_niche', 'is_multivalued',
     'min_value', 'max_value', 'regex', 'needs_member', 'needs_perm',
-    'grants_perm', 'notify_on', 'date_action', 'docstring', 'is_deleted']
+    'grants_perm', 'notify_on', 'date_action', 'docstring', 'is_deleted',
+    'approval_id']
 FIELDDEF2ADMIN_COLS = ['field_id', 'admin_id']
 COMPONENTDEF_COLS = ['id', 'project_id', 'path', 'docstring', 'deprecated',
                      'created', 'creator_id', 'modified', 'modifier_id']
@@ -294,7 +295,7 @@ class ConfigTwoLevelCache(caches.AbstractTwoLevelCache):
      applic_type, applic_pred, is_required, is_niche, is_multivalued,
      min_value, max_value, regex, needs_member, needs_perm,
      grants_perm, notify_on_str, date_action_str, docstring,
-     is_deleted) = fielddef_row
+     is_deleted, _approval_id) = fielddef_row
     if notify_on_str == 'any_comment':
       notify_on = tracker_pb2.NotifyTriggers.ANY_COMMENT
     else:
