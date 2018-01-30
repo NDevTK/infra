@@ -66,7 +66,8 @@ FIELDDEF_COLS = [
     'id', 'project_id', 'rank', 'field_name', 'field_type', 'applicable_type',
     'applicable_predicate', 'is_required', 'is_niche', 'is_multivalued',
     'min_value', 'max_value', 'regex', 'needs_member', 'needs_perm',
-    'grants_perm', 'notify_on', 'date_action', 'docstring', 'is_deleted']
+    'grants_perm', 'notify_on', 'date_action', 'docstring', 'is_deleted',
+    'approval_id']
 FIELDDEF2ADMIN_COLS = ['field_id', 'admin_id']
 COMPONENTDEF_COLS = ['id', 'project_id', 'path', 'docstring', 'deprecated',
                      'created', 'creator_id', 'modified', 'modifier_id']
@@ -228,6 +229,7 @@ class FieldRowTwoLevelCache(caches.AbstractTwoLevelCache):
     """On RAM and memcache miss, hit the database."""
     field_def_rows = self.config_service.fielddef_tbl.Select(
         cnxn, cols=FIELDDEF_COLS, project_id=keys,
+        where=[('approval_id IS NULL', [])],
         order_by=[('rank DESC', []), ('field_name DESC', [])])
     field_rows_dict = self._DeserializeFieldRows(field_def_rows)
 
@@ -294,7 +296,7 @@ class ConfigTwoLevelCache(caches.AbstractTwoLevelCache):
      applic_type, applic_pred, is_required, is_niche, is_multivalued,
      min_value, max_value, regex, needs_member, needs_perm,
      grants_perm, notify_on_str, date_action_str, docstring,
-     is_deleted) = fielddef_row
+     is_deleted, _approval_id) = fielddef_row
     if notify_on_str == 'any_comment':
       notify_on = tracker_pb2.NotifyTriggers.ANY_COMMENT
     else:
@@ -440,7 +442,7 @@ class ConfigTwoLevelCache(caches.AbstractTwoLevelCache):
     # to adjust the rank to group and order field definitions logically.
     fielddef_rows = self.config_service.fielddef_tbl.Select(
         cnxn, cols=FIELDDEF_COLS, project_id=project_ids,
-        order_by=[('field_name', [])])
+        where=[('approval_id IS NULL', [])], order_by=[('field_name', [])])
     field_ids = [row[0] for row in fielddef_rows]
     fielddef2admin_rows = self.config_service.fielddef2admin_tbl.Select(
         cnxn, cols=FIELDDEF2ADMIN_COLS, field_id=field_ids)

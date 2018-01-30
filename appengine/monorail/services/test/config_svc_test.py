@@ -186,7 +186,7 @@ class ConfigRowTwoLevelCacheTest(unittest.TestCase):
     self.fielddef_rows = [(1, 789, None, 'Field', 'INT_TYPE',
                            'Defect', '', False, False, False,
                            1, 99, None, '', '',
-                           None, 'NEVER', 'no_action', 'doc', False)]
+                           None, 'NEVER', 'no_action', 'doc', False, None)]
     self.fielddef2admin_rows = []
     self.componentdef_rows = []
     self.component2admin_rows = []
@@ -250,6 +250,7 @@ class ConfigRowTwoLevelCacheTest(unittest.TestCase):
             self.labeldef_rows)
     self.config_service.fielddef_tbl.Select(
         self.cnxn, cols=config_svc.FIELDDEF_COLS, project_id=project_ids,
+        where=[('approval_id IS NULL', [])],
         order_by=[('field_name', [])]).AndReturn(self.fielddef_rows)
     field_ids = [row[0] for row in self.fielddef_rows]
     self.config_service.fielddef2admin_tbl.Select(
@@ -642,7 +643,8 @@ class ConfigServiceTest(unittest.TestCase):
         order_by=[('rank', [])]).AndReturn([])
     self.config_service.fielddef_tbl.Select(
         self.cnxn, cols=config_svc.FIELDDEF_COLS,
-        project_id=project_ids, order_by=[('field_name', [])]).AndReturn([])
+        project_id=project_ids, where=[('approval_id IS NULL', [])],
+        order_by=[('field_name', [])]).AndReturn([])
     self.config_service.fielddef2admin_tbl.Select(
         self.cnxn, cols=config_svc.FIELDDEF2ADMIN_COLS,
         field_id=[]).AndReturn([])
