@@ -1180,3 +1180,8 @@ CREATE TABLE Approval2Approvers (
   FOREIGN KEY (approver_id) REFERENCES User(user_id),
   FOREIGN KEY (issue_id) REFERENCES Issue(id)
 ) ENGINE=INNODB;
+
+================================================================
+2018-01-29: Add approval_id column to FieldDef table
+
+ALTER TABLE FieldDef ADD COLUMN approval_id INT;
