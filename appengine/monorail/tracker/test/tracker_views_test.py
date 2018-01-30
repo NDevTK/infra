@@ -503,7 +503,9 @@ class ConvertLabelsToFieldValuesTest(unittest.TestCase):
 
 
 class FieldDefViewTest(unittest.TestCase):
-  pass  # TODO(jrobbins): write tests
+
+  def testIsApprovalSubField(self):
+    pass
 
 
 class IssueTemplateViewTest(unittest.TestCase):
