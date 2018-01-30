@@ -66,7 +66,8 @@ FIELDDEF_COLS = [
     'id', 'project_id', 'rank', 'field_name', 'field_type', 'applicable_type',
     'applicable_predicate', 'is_required', 'is_niche', 'is_multivalued',
     'min_value', 'max_value', 'regex', 'needs_member', 'needs_perm',
-    'grants_perm', 'notify_on', 'date_action', 'docstring', 'is_deleted']
+    'grants_perm', 'notify_on', 'date_action', 'docstring', 'is_deleted',
+    'approval_id']
 FIELDDEF2ADMIN_COLS = ['field_id', 'admin_id']
 COMPONENTDEF_COLS = ['id', 'project_id', 'path', 'docstring', 'deprecated',
                      'created', 'creator_id', 'modified', 'modifier_id']
@@ -218,7 +219,7 @@ class FieldRowTwoLevelCache(caches.AbstractTwoLevelCache):
          _applicable_predicate, _is_required, _is_niche, _is_multivalued,
          _min_value, _max_value, _regex, _needs_member, _needs_perm,
          _grants_perm, _notify_on, _date_action, docstring,
-         _is_deleted) in field_def_rows:
+         _is_deleted, _approval_id) in field_def_rows:
       result_dict[project_id].append(
           (field_id, project_id, rank, field_name, docstring))
 
@@ -294,7 +295,7 @@ class ConfigTwoLevelCache(caches.AbstractTwoLevelCache):
      applic_type, applic_pred, is_required, is_niche, is_multivalued,
      min_value, max_value, regex, needs_member, needs_perm,
      grants_perm, notify_on_str, date_action_str, docstring,
-     is_deleted) = fielddef_row
+     is_deleted, approval_id) = fielddef_row
     if notify_on_str == 'any_comment':
       notify_on = tracker_pb2.NotifyTriggers.ANY_COMMENT
     else:
@@ -309,7 +310,7 @@ class ConfigTwoLevelCache(caches.AbstractTwoLevelCache):
         tracker_pb2.FieldTypes(field_type.upper()), applic_type, applic_pred,
         is_required, is_niche, is_multivalued, min_value, max_value, regex,
         needs_member, needs_perm, grants_perm, notify_on, date_action,
-        docstring, is_deleted)
+        docstring, is_deleted, approval_id)
 
   def _UnpackComponentDef(
       self, cd_row, component2admin_rows, component2cc_rows,
