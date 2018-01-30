@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "22262f32_a0edb9fd",
+        "filename": "appengine/monorail/schema/alter-table-log.txt",
+        "patchSetId": 7
+      },
+      "lineNbr": 1156,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-01-30T00:44:52Z",
+      "side": 1,
+      "message": "It\u0027s to protect from inserting duplicate entries when backfilling data. Is there a better way to accomplish that?",
+      "parentUuid": "3160e483_01dbc94d",
+      "revId": "ec28e6b77a46c3599a55be13e4ef3f35eacc594c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c420beb3_838801f9",
         "filename": "appengine/monorail/schema/tracker.sql",
         "patchSetId": 7
