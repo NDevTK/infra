@@ -228,6 +228,7 @@ class FieldRowTwoLevelCache(caches.AbstractTwoLevelCache):
     """On RAM and memcache miss, hit the database."""
     field_def_rows = self.config_service.fielddef_tbl.Select(
         cnxn, cols=FIELDDEF_COLS, project_id=keys,
+        where=[('approval_id IS NULL', [])],
         order_by=[('rank DESC', []), ('field_name DESC', [])])
     field_rows_dict = self._DeserializeFieldRows(field_def_rows)
 
@@ -440,7 +441,7 @@ class ConfigTwoLevelCache(caches.AbstractTwoLevelCache):
     # to adjust the rank to group and order field definitions logically.
     fielddef_rows = self.config_service.fielddef_tbl.Select(
         cnxn, cols=FIELDDEF_COLS, project_id=project_ids,
-        order_by=[('field_name', [])])
+        where=[('approval_id IS NULL', [])], order_by=[('field_name', [])])
     field_ids = [row[0] for row in fielddef_rows]
     fielddef2admin_rows = self.config_service.fielddef2admin_tbl.Select(
         cnxn, cols=FIELDDEF2ADMIN_COLS, field_id=field_ids)
