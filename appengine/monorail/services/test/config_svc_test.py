@@ -186,7 +186,7 @@ class ConfigRowTwoLevelCacheTest(unittest.TestCase):
     self.fielddef_rows = [(1, 789, None, 'Field', 'INT_TYPE',
                            'Defect', '', False, False, False,
                            1, 99, None, '', '',
-                           None, 'NEVER', 'no_action', 'doc', False)]
+                           None, 'NEVER', 'no_action', 'doc', False, None)]
     self.fielddef2admin_rows = []
     self.componentdef_rows = []
     self.component2admin_rows = []
