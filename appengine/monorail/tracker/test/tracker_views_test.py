@@ -503,7 +503,16 @@ class ConvertLabelsToFieldValuesTest(unittest.TestCase):
 
 
 class FieldDefViewTest(unittest.TestCase):
-  pass  # TODO(jrobbins): write tests
+
+  def testIsApprovalSubField(self):
+    config = _MakeConfig()
+    fielddef = tracker_bizobj.MakeFieldDef(
+        2, 789, 'AffectedUsers', tracker_pb2.FieldTypes.INT_TYPE, None,
+        None, False, False, False, None, None, None, False, None, None,
+        None, 'no_action', 'descriptive docstring', False, 1)
+    view = tracker_views.FieldDefView(fielddef, config)
+    self.assertEqual(view.approval_id, 1)
+    self.assertEqual(view.is_approval_sub_field, ezt.boolean(True))
 
 
 class IssueTemplateViewTest(unittest.TestCase):
