@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "01eaabbc_2db5b055",
+        "filename": "docker/docker_devices/cros/start_swarm_bot.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2018-02-01T23:55:40Z",
+      "side": 1,
+      "message": "Prob cleaner. Done.",
+      "parentUuid": "e43eb139_b987326c",
+      "revId": "e313422b0b3f36816c20e8962368e665199758fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "de31b65b_bb513a56",
         "filename": "docker/docker_devices/cros/start_swarm_bot.sh",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "e313422b0b3f36816c20e8962368e665199758fc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4f436e4a_6d604b27",
+        "filename": "docker/docker_devices/cros/start_swarm_bot.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2018-02-01T23:55:40Z",
+      "side": 1,
+      "message": "ed25519 seems to work. Done.",
+      "parentUuid": "de31b65b_bb513a56",
+      "revId": "e313422b0b3f36816c20e8962368e665199758fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
