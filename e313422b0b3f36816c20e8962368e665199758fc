@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e43eb139_b987326c",
+        "filename": "docker/docker_devices/cros/start_swarm_bot.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2018-02-01T23:10:26Z",
+      "side": 1,
+      "message": "i like ; then but that\u0027s up to you.  This works so I don\u0027t care either way.",
+      "revId": "e313422b0b3f36816c20e8962368e665199758fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "de31b65b_bb513a56",
+        "filename": "docker/docker_devices/cros/start_swarm_bot.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2018-02-01T23:10:26Z",
+      "side": 1,
+      "message": "Let\u0027s beef this up a bit while we\u0027re here...\n\nsu -c \"/usr/bin/ssh-keygen -f $CROS_SSH_ID_FILE_PATH -N \u0027\u0027 -t ed25519\" chrome-bot\n\nhttps://wiki.archlinux.org/index.php/SSH_keys#Choosing_the_authentication_key_type\n\nMake sure ed25519 keys work first though... otherwise degrade according to the linked rubric.",
+      "revId": "e313422b0b3f36816c20e8962368e665199758fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
