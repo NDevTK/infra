@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ca035982_e4060308",
+        "filename": "docker/docker_devices/cros/start_swarm_bot.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2018-02-02T00:58:34Z",
+      "side": 1,
+      "message": "Why not just default to a standardized location?",
+      "revId": "11b0ee848f83cc09e1dabcf669b5d765c52bdf9a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
