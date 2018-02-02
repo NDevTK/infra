@@ -16,6 +16,24 @@
       "revId": "11b0ee848f83cc09e1dabcf669b5d765c52bdf9a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ef2d5e84_fe242e71",
+        "filename": "docker/docker_devices/cros/start_swarm_bot.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2018-02-02T01:18:15Z",
+      "side": 1,
+      "message": "Because I want each docker container to have its own ssh key, and the home dir is mounted across all containers :(\n\nMounting it maybe wasn\u0027t such a good idea in retrospect, but at this point it\u0027d be too much work to unmount them.",
+      "parentUuid": "ca035982_e4060308",
+      "revId": "11b0ee848f83cc09e1dabcf669b5d765c52bdf9a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
