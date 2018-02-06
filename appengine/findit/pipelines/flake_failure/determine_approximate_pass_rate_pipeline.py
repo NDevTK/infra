@@ -26,6 +26,9 @@ class UpdateFlakeAnalysisDataPointsInput(StructuredObject):
   # The data point with matching commit position to update.
   commit_position = int
 
+  # The revision corresponding to the data point.
+  revision = basestring
+
   # The results of the flake swarming task to update data points with.
   swarming_task_output = RunFlakeSwarmingTaskOutput
 
@@ -34,10 +37,11 @@ class UpdateFlakeAnalysisDataPointsPipeline(GeneratorPipeline):
 
   input_type = UpdateFlakeAnalysisDataPointsInput
 
-  def RunImpl(self, parameters):  # pragma: no cover
-    # TODO(crbug.com/799574): Create services module for updating flake data
-    # points and call into it directly here.
-    pass
+  def RunImpl(self, parameters):
+    """Updates a MasterFlakeAnalysis' data points with swarming task results."""
+    data_point_util.UpdateAnalysisDataPoints(
+        parameters.analysis_urlsafe_key, parameters.commit_position,
+        parameters.revision, parameters.swarming_task_output)
 
 
 class DetermineApproximatePassRateInput(StructuredObject):
@@ -52,6 +56,9 @@ class DetermineApproximatePassRateInput(StructuredObject):
 
   # The output of the last swarming task that was run.
   previous_swarming_task_output = RunFlakeSwarmingTaskOutput
+
+  # The revision corresponding to the commit position.
+  revision = basestring
 
 
 class DetermineApproximatePassRatePipeline(GeneratorPipeline):
@@ -153,6 +160,7 @@ class DetermineApproximatePassRatePipeline(GeneratorPipeline):
           UpdateFlakeAnalysisDataPointsInput,
           analysis_urlsafe_key=analysis_urlsafe_key,
           commit_position=commit_position,
+          revision=parameters.revision,
           swarming_task_output=swarming_task_output)
 
       yield UpdateFlakeAnalysisDataPointsPipeline(
@@ -163,7 +171,8 @@ class DetermineApproximatePassRatePipeline(GeneratorPipeline):
           analysis_urlsafe_key=analysis_urlsafe_key,
           commit_position=commit_position,
           isolate_sha=isolate_sha,
-          previous_swarming_task_output=swarming_task_output)
+          previous_swarming_task_output=swarming_task_output,
+          revision=parameters.revision)
 
       yield DetermineApproximatePassRatePipelineWrapper(
           determine_approximate_pass_rate_input)
