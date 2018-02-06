@@ -7,6 +7,43 @@ from waterfall import waterfall_config
 from waterfall.flake import flake_constants
 
 
+def CalculateNewPassRate(existing_pass_rate, existing_iterations,
+                         incoming_pass_rate, incoming_iterations):
+  """Incorporates a new pass rate into an exsting one.
+
+  Args:
+    existing_pass_rate (float): The pass rate to merge into.
+    exisitng_iterations (int): The number of iterations used to calculate the
+        existing pass rate.
+    incoming_pass_rate (float): The new pass rate to incorporate.
+    incoming_iterations (int): The number of iterations used to calculate the
+        incoming pass rate.
+
+  Returns:
+    (float): The new combined pass rate.
+  """
+  return float(existing_pass_rate * existing_iterations +
+               incoming_pass_rate * incoming_iterations) / (
+                   existing_iterations + incoming_iterations)
+
+
+def GetPassRate(swarming_task_output):
+  """Determines a pass rate based on a swarming task's output."""
+  assert swarming_task_output
+
+  if swarming_task_output.error:
+    # TODO (crbug.com/808947): A failed swarming task's partial data can
+    # sometimes still be salvaged.
+    return None
+
+  if swarming_task_output.iterations > 0:
+    return (float(swarming_task_output.pass_count) /
+            swarming_task_output.iterations)
+
+  # If there are no errors and no iterations ran, the test does not exist.
+  return flake_constants.PASS_RATE_TEST_NOT_FOUND
+
+
 def HasPassRateConverged(overall_pass_rate,
                          total_iterations,
                          partial_pass_rate,
