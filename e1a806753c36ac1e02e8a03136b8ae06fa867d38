@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "63f152bb_545b53ac",
+        "filename": "appengine/findit/util_scripts/remote_queries/backfill_bq_events.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-02-07T07:54:12Z",
+      "side": 1,
+      "message": "is there a reason for using \" instead of \u0027 all of a sudden?",
+      "range": {
+        "startLine": 138,
+        "startChar": 8,
+        "endLine": 138,
+        "endChar": 9
+      },
+      "revId": "e1a806753c36ac1e02e8a03136b8ae06fa867d38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
