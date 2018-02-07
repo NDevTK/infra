@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "71be265a_7c20ae5e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-02-07T22:57:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "76f4be1f_7d745cc6",
+      "revId": "cf0a3692aa497c4037baf906f0237c7ddac95b87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7b918332_6a1cee58",
         "filename": "appengine/findit/model/flake/master_flake_analysis.py",
         "patchSetId": 4
@@ -30,6 +48,30 @@
       "writtenOn": "2018-02-07T21:13:33Z",
       "side": 1,
       "message": "Do you have plans to translate between master/builder/build_number --\u003e bbucket_id when this happens?",
+      "range": {
+        "startLine": 24,
+        "startChar": 2,
+        "endLine": 24,
+        "endChar": 67
+      },
+      "revId": "cf0a3692aa497c4037baf906f0237c7ddac95b87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c697588f_cc104104",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-02-07T22:57:19Z",
+      "side": 1,
+      "message": "No, I don\u0027t think that\u0027s related to the changes here, what I\u0027m referring to here is cleaning up data points. If translation is needed that should be a function in build_util.py",
+      "parentUuid": "7b918332_6a1cee58",
       "range": {
         "startLine": 24,
         "startChar": 2,
@@ -65,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "d7e42b39_8b416b58",
+        "filename": "appengine/findit/pipelines/flake_failure/determine_approximate_pass_rate_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-02-07T22:57:19Z",
+      "side": 1,
+      "message": "Unfortunately this has to be in a pipeline, based on where it\u0027s being called the actual information that goes into a data point is yielded from a GeneratorPipeline so\n\nswarming_task_output \u003d yield RunFlakeSwarmingTaskPipeline(...)\ndata_point_util.UpdateAnalysisDataPoints(swarming_task_output)\n\ndoesn\u0027t work as-is, it has to be wrapped in\n\nswarming_task_output \u003d yield RunFlakeSwarmingTaskPipeline()\nyield UpdateFlakeAnalysisDataPointsPipeline()",
+      "parentUuid": "b1d4f419_6b30f0c3",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 0
+      },
+      "revId": "cf0a3692aa497c4037baf906f0237c7ddac95b87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "958a41a8_6d61e6f5",
         "filename": "appengine/findit/pipelines/flake_failure/run_flake_swarming_task_pipeline.py",
         "patchSetId": 4
@@ -76,6 +142,30 @@
       "writtenOn": "2018-02-07T21:13:33Z",
       "side": 1,
       "message": "I think moving forward, we should commit to setting start/end times for everything. Even in case of error, these values can still be populated.",
+      "range": {
+        "startLine": 50,
+        "startChar": 2,
+        "endLine": 54,
+        "endChar": 73
+      },
+      "revId": "cf0a3692aa497c4037baf906f0237c7ddac95b87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5b86cce4_033f2f57",
+        "filename": "appengine/findit/pipelines/flake_failure/run_flake_swarming_task_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-02-07T22:57:19Z",
+      "side": 1,
+      "message": "That\u0027s a good idea however I think requires some more thought, it\u0027s possible for a task to fail outright without ever being triggered, e.g. no task id. in that case started time and completed times aren\u0027t from the swarming tasks themselves, but would then have to be populted by Findit. This will then throw off the calculations for how many tasks can run, so for now I think it\u0027s better we discard the results that had error altogether. There\u0027s already a TODO (marked in several appropriate places) that some task data can still be salvaged, but this is a whole different can of worms and should be addressed when the time comes should we even choose to go that route.",
+      "parentUuid": "958a41a8_6d61e6f5",
       "range": {
         "startLine": 50,
         "startChar": 2,
@@ -108,6 +198,30 @@
       "revId": "cf0a3692aa497c4037baf906f0237c7ddac95b87",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "91e54d9a_ba0690d0",
+        "filename": "appengine/findit/services/flake_failure/pass_rate_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-02-07T22:57:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ddf726a6_4b8cb3d1",
+      "range": {
+        "startLine": 25,
+        "startChar": 8,
+        "endLine": 27,
+        "endChar": 61
+      },
+      "revId": "cf0a3692aa497c4037baf906f0237c7ddac95b87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
