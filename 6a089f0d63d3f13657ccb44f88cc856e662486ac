@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3c8c3da1_fcb9e713",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/frontend/Makefile",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-02-07T01:25:11Z",
+      "side": 1,
+      "message": "How do we make sure the machine has chromedriver installed in this location before running this?",
+      "range": {
+        "startLine": 30,
+        "startChar": 1,
+        "endLine": 30,
+        "endChar": 117
+      },
+      "revId": "6a089f0d63d3f13657ccb44f88cc856e662486ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8b63cebb_136f17f4",
+        "filename": "go/src/infra/tools/wct/monkeypatch.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-02-07T01:25:11Z",
+      "side": 1,
+      "message": "Nit: Remove?",
+      "revId": "6a089f0d63d3f13657ccb44f88cc856e662486ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
