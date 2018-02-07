@@ -27,4 +27,4 @@ test: deps
 	xvfb-run -a $(WCT_PATH)
 
 wct: deps
-	xvfb-run go run ../../../tools/wct/wct.go -base=.
+	xvfb-run go run ../../../tools/wct/wct.go -base=. -chromedriver=/usr/local/google/home/$$USER/Downloads/chromedriver

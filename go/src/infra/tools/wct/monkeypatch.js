@@ -1,3 +1,4 @@
+debugger;
 // The following two functions are sort of a hack to work around WCT's
 // current lack of event listening hooks for things like "test finished" and
 // "suite finished". They exist in order to report test results back to
