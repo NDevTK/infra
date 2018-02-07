@@ -22,6 +22,30 @@
       "revId": "e1a806753c36ac1e02e8a03136b8ae06fa867d38",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "311d960c_5b945e5c",
+        "filename": "appengine/findit/util_scripts/remote_queries/backfill_bq_events.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2018-02-07T21:09:05Z",
+      "side": 1,
+      "message": "No reason, just habit. Since this isn\u0027t part of the codebase, mind if I just leave it?",
+      "parentUuid": "63f152bb_545b53ac",
+      "range": {
+        "startLine": 138,
+        "startChar": 8,
+        "endLine": 138,
+        "endChar": 9
+      },
+      "revId": "e1a806753c36ac1e02e8a03136b8ae06fa867d38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
