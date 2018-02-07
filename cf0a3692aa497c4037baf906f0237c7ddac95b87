@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "76f4be1f_7d745cc6",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2018-02-07T21:13:33Z",
+      "side": 1,
+      "message": "nit: remove empty line",
+      "revId": "cf0a3692aa497c4037baf906f0237c7ddac95b87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7b918332_6a1cee58",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2018-02-07T21:13:33Z",
+      "side": 1,
+      "message": "Do you have plans to translate between master/builder/build_number --\u003e bbucket_id when this happens?",
+      "range": {
+        "startLine": 24,
+        "startChar": 2,
+        "endLine": 24,
+        "endChar": 67
+      },
+      "revId": "cf0a3692aa497c4037baf906f0237c7ddac95b87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b1d4f419_6b30f0c3",
+        "filename": "appengine/findit/pipelines/flake_failure/determine_approximate_pass_rate_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2018-02-07T21:13:33Z",
+      "side": 1,
+      "message": "Does this need to be a pipeline? Makes more sense as just a call.\n\nAlso if it does, mind moving to it\u0027s own file?",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 0
+      },
+      "revId": "cf0a3692aa497c4037baf906f0237c7ddac95b87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "958a41a8_6d61e6f5",
+        "filename": "appengine/findit/pipelines/flake_failure/run_flake_swarming_task_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2018-02-07T21:13:33Z",
+      "side": 1,
+      "message": "I think moving forward, we should commit to setting start/end times for everything. Even in case of error, these values can still be populated.",
+      "range": {
+        "startLine": 50,
+        "startChar": 2,
+        "endLine": 54,
+        "endChar": 73
+      },
+      "revId": "cf0a3692aa497c4037baf906f0237c7ddac95b87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ddf726a6_4b8cb3d1",
+        "filename": "appengine/findit/services/flake_failure/pass_rate_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2018-02-07T21:13:33Z",
+      "side": 1,
+      "message": "nit: split these into variables so this code is readable.",
+      "range": {
+        "startLine": 25,
+        "startChar": 8,
+        "endLine": 27,
+        "endChar": 61
+      },
+      "revId": "cf0a3692aa497c4037baf906f0237c7ddac95b87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
