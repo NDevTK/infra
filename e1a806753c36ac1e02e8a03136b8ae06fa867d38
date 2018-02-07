@@ -2,6 +2,121 @@
   "comments": [
     {
       "key": {
+        "uuid": "b016bbc9_24352684",
+        "filename": "appengine/findit/util_scripts/remote_queries/backfill_bq_events.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-02-07T21:18:20Z",
+      "side": 1,
+      "message": "move up",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 15
+      },
+      "revId": "e1a806753c36ac1e02e8a03136b8ae06fa867d38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c47c77d8_b6f0b598",
+        "filename": "appengine/findit/util_scripts/remote_queries/backfill_bq_events.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-02-07T21:18:20Z",
+      "side": 1,
+      "message": "order",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 40
+      },
+      "revId": "e1a806753c36ac1e02e8a03136b8ae06fa867d38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c247ad3f_008ae06e",
+        "filename": "appengine/findit/util_scripts/remote_queries/backfill_bq_events.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-02-07T21:18:20Z",
+      "side": 1,
+      "message": "nit: reports\nsame for others below.",
+      "range": {
+        "startLine": 55,
+        "startChar": 5,
+        "endLine": 55,
+        "endChar": 11
+      },
+      "revId": "e1a806753c36ac1e02e8a03136b8ae06fa867d38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "adf0bd21_977f7ffa",
+        "filename": "appengine/findit/util_scripts/remote_queries/backfill_bq_events.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-02-07T21:18:20Z",
+      "side": 1,
+      "message": "test flake events?\n\nSame for other messages below.",
+      "range": {
+        "startLine": 68,
+        "startChar": 19,
+        "endLine": 68,
+        "endChar": 25
+      },
+      "revId": "e1a806753c36ac1e02e8a03136b8ae06fa867d38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3fafc211_f0b546c6",
+        "filename": "appengine/findit/util_scripts/remote_queries/backfill_bq_events.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-02-07T21:18:20Z",
+      "side": 1,
+      "message": "nit: \" -\u003e \u0027\nsame for below.",
+      "range": {
+        "startLine": 68,
+        "startChar": 8,
+        "endLine": 68,
+        "endChar": 9
+      },
+      "revId": "e1a806753c36ac1e02e8a03136b8ae06fa867d38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "63f152bb_545b53ac",
         "filename": "appengine/findit/util_scripts/remote_queries/backfill_bq_events.py",
         "patchSetId": 3
@@ -37,6 +152,30 @@
       "side": 1,
       "message": "No reason, just habit. Since this isn\u0027t part of the codebase, mind if I just leave it?",
       "parentUuid": "63f152bb_545b53ac",
+      "range": {
+        "startLine": 138,
+        "startChar": 8,
+        "endLine": 138,
+        "endChar": 9
+      },
+      "revId": "e1a806753c36ac1e02e8a03136b8ae06fa867d38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7ddc8321_97e1709b",
+        "filename": "appengine/findit/util_scripts/remote_queries/backfill_bq_events.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-02-07T21:18:20Z",
+      "side": 1,
+      "message": "Better to be consistent even it is not functional code.",
+      "parentUuid": "311d960c_5b945e5c",
       "range": {
         "startLine": 138,
         "startChar": 8,
