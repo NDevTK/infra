@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "50ace197_b7e997cc",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/frontend/Makefile",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-02-07T18:30:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3c8c3da1_fcb9e713",
+      "range": {
+        "startLine": 30,
+        "startChar": 1,
+        "endLine": 30,
+        "endChar": 117
+      },
+      "revId": "6a089f0d63d3f13657ccb44f88cc856e662486ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8b63cebb_136f17f4",
         "filename": "go/src/infra/tools/wct/monkeypatch.js",
         "patchSetId": 1
@@ -42,6 +66,24 @@
     },
     {
       "key": {
+        "uuid": "4725f14d_0db589b3",
+        "filename": "go/src/infra/tools/wct/monkeypatch.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-02-07T18:30:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8b63cebb_136f17f4",
+      "revId": "6a089f0d63d3f13657ccb44f88cc856e662486ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1dd9c81d_5a47e5d8",
         "filename": "go/src/infra/tools/wct/monkeypatch.js",
         "patchSetId": 1
@@ -53,6 +95,24 @@
       "writtenOn": "2018-02-07T01:38:13Z",
       "side": 1,
       "message": "If the script that links to this file is being removed from frontend/test/index.html, is the file still necessary?",
+      "revId": "6a089f0d63d3f13657ccb44f88cc856e662486ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e721e2ca_40feea32",
+        "filename": "go/src/infra/tools/wct/monkeypatch.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-02-07T18:30:02Z",
+      "side": 1,
+      "message": "It\u0027s in frontend/test/index.html for the time being, but ultimately this code should just be compiled into wct.go so we all use the same version. Added a TODO in index.html",
+      "parentUuid": "1dd9c81d_5a47e5d8",
       "revId": "6a089f0d63d3f13657ccb44f88cc856e662486ac",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
