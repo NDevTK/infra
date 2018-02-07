@@ -39,6 +39,23 @@
       "revId": "6a089f0d63d3f13657ccb44f88cc856e662486ac",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1dd9c81d_5a47e5d8",
+        "filename": "go/src/infra/tools/wct/monkeypatch.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-02-07T01:38:13Z",
+      "side": 1,
+      "message": "If the script that links to this file is being removed from frontend/test/index.html, is the file still necessary?",
+      "revId": "6a089f0d63d3f13657ccb44f88cc856e662486ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
