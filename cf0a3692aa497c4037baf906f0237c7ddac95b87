@@ -108,6 +108,30 @@
     },
     {
       "key": {
+        "uuid": "d55f4403_e085a925",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-02-08T06:37:12Z",
+      "side": 1,
+      "message": "I don\u0027t think it\u0027s necessary at this stage, as build_number is display only and doesn\u0027t need to be converted once build_id is in place since it doesn\u0027t map to a new build id. I also don\u0027t know once the switch to build ids is made if old links to buildbucket builds would even still work?",
+      "parentUuid": "23a24e65_a1fd404d",
+      "range": {
+        "startLine": 24,
+        "startChar": 2,
+        "endLine": 24,
+        "endChar": 67
+      },
+      "revId": "cf0a3692aa497c4037baf906f0237c7ddac95b87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b1d4f419_6b30f0c3",
         "filename": "appengine/findit/pipelines/flake_failure/determine_approximate_pass_rate_pipeline.py",
         "patchSetId": 4
@@ -214,6 +238,30 @@
       "side": 1,
       "message": "end_time can be set on our end in the case of error? Might throw off the calculation a bit, but in the correct direction (worst-case our calculation is over). In the case where this happens, it\u0027s not a big deal since the swarming task will return on completion.",
       "parentUuid": "5b86cce4_033f2f57",
+      "range": {
+        "startLine": 50,
+        "startChar": 2,
+        "endLine": 54,
+        "endChar": 73
+      },
+      "revId": "cf0a3692aa497c4037baf906f0237c7ddac95b87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "159ad818_d122135e",
+        "filename": "appengine/findit/pipelines/flake_failure/run_flake_swarming_task_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-02-08T06:37:12Z",
+      "side": 1,
+      "message": "In this context I don\u0027t think it\u0027s possible have started_time but not ended_time and vice versa. By the time this RunFlakeSwarmingTaskOutput is created, swarming has already done it\u0027s part and returned to us everything in the callback when the task completes, which includes both started_time and completed_time in the json response. They are not supposed to be managed by Findit. If there were problems even getting the response from swarming, this object would never even be created.\n\nThe check for started_time and end_time both being populated is more of a defensive check, if the code made it here I don\u0027t know of a way for them not to both be populated unless there\u0027s a bug in swarming or they change the response structure on us.\n\nIn general if something\u0027s missing here there\u0027s a chance other things have gone quite wrong as well and we shouldn\u0027t try too hard to self-repair as that may lead to other false signals later down the line too, bailing out with retry as we already have seems the safer way to go.",
+      "parentUuid": "032d5f2a_95756f46",
       "range": {
         "startLine": 50,
         "startChar": 2,
