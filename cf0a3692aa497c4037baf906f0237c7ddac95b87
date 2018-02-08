@@ -84,6 +84,30 @@
     },
     {
       "key": {
+        "uuid": "23a24e65_a1fd404d",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2018-02-08T02:28:14Z",
+      "side": 1,
+      "message": "I\u0027m asking when this change actually goes live, will you do that data migration?",
+      "parentUuid": "c697588f_cc104104",
+      "range": {
+        "startLine": 24,
+        "startChar": 2,
+        "endLine": 24,
+        "endChar": 67
+      },
+      "revId": "cf0a3692aa497c4037baf906f0237c7ddac95b87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b1d4f419_6b30f0c3",
         "filename": "appengine/findit/pipelines/flake_failure/determine_approximate_pass_rate_pipeline.py",
         "patchSetId": 4
@@ -166,6 +190,30 @@
       "side": 1,
       "message": "That\u0027s a good idea however I think requires some more thought, it\u0027s possible for a task to fail outright without ever being triggered, e.g. no task id. in that case started time and completed times aren\u0027t from the swarming tasks themselves, but would then have to be populted by Findit. This will then throw off the calculations for how many tasks can run, so for now I think it\u0027s better we discard the results that had error altogether. There\u0027s already a TODO (marked in several appropriate places) that some task data can still be salvaged, but this is a whole different can of worms and should be addressed when the time comes should we even choose to go that route.",
       "parentUuid": "958a41a8_6d61e6f5",
+      "range": {
+        "startLine": 50,
+        "startChar": 2,
+        "endLine": 54,
+        "endChar": 73
+      },
+      "revId": "cf0a3692aa497c4037baf906f0237c7ddac95b87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "032d5f2a_95756f46",
+        "filename": "appengine/findit/pipelines/flake_failure/run_flake_swarming_task_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2018-02-08T02:28:14Z",
+      "side": 1,
+      "message": "end_time can be set on our end in the case of error? Might throw off the calculation a bit, but in the correct direction (worst-case our calculation is over). In the case where this happens, it\u0027s not a big deal since the swarming task will return on completion.",
+      "parentUuid": "5b86cce4_033f2f57",
       "range": {
         "startLine": 50,
         "startChar": 2,
