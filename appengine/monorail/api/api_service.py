@@ -39,6 +39,17 @@ class UsersServicer(object):
     return ret
 
 
+class IssuesServicer(object):
+
+  DESCRIPTION = monorail_prpc_pb2.IssuesServiceDescription
+
+  def ComponentBurndown(self, request, _context):
+    res = monorail_pb2.ComponentBurndownResponse()
+    res.project = request.project
+    res.component_path = request.component_path
+    return res
+
+
 def RegisterApiHandlers(registry):
   server = prpc.Server()
   server.add_service(UsersServicer())

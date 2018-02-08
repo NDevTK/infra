@@ -65,6 +65,7 @@ message Label {
 service Issues {
   rpc CreateIssue (CreateIssueRequest) returns (Issue) {}
   rpc DeleteIssueComment (DeleteIssueCommentRequest) returns (Comment) {}
+  rpc ComponentBurndown (ComponentBurndownRequest) returns (Comment) {}
 }
 
 message CreateIssueRequest {
@@ -88,4 +89,20 @@ message DeleteIssueCommentRequest {
 message Comment {
   string content = 1;
   bool deleted = 2;
+}
+
+message ComponentBurndownRequest {
+  string project = 1;
+  string component_path = 2;
+}
+
+message IssueCount {
+  string datetime = 1;
+  int64 count = 2;
+}
+
+message ComponentBurndownResponse {
+  string project = 1;
+  string component_path = 2;
+  repeated IssueCount issue_counts = 3;
 }
