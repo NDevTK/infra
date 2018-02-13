@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e031c011_0c03fe59",
+        "filename": "appengine/monorail/tracker/issueattachment.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-02-13T23:03:09Z",
+      "side": 1,
+      "message": "This would be for a case like an issue page that I left open for a long time and later clicked on an attachment URL? \n\nI wonder if just 302ing them to the issue page would be a better experience?",
+      "revId": "69d7b07322d17fa636fdb9c19911e70d37911032",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5a0b73e8_12da3cfe",
+        "filename": "appengine/monorail/tracker/tracker_helpers.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 761,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-02-13T23:03:09Z",
+      "side": 1,
+      "message": "extra blank line?",
+      "revId": "69d7b07322d17fa636fdb9c19911e70d37911032",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
