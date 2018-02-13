@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "dda00ca1_17b7fe27",
+        "filename": "appengine/monorail/tracker/issueattachment.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-02-13T23:09:49Z",
+      "side": 1,
+      "message": "Yeah, it is for issue detail pages that are currently open in tabs on peoples\u0027 workstations.\n\nI think it would be confusing if you click an attachment and in response you get another browser tab with the issue page instead of an attachment.  And, it would be intermittent from the perspective of a user who does not know about this change.  With the error message, the error is interrupting the user, but at least it is clear what the user needs to do and does not invite people to try to repro mysterious behavior.",
+      "parentUuid": "e031c011_0c03fe59",
+      "revId": "69d7b07322d17fa636fdb9c19911e70d37911032",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5a0b73e8_12da3cfe",
         "filename": "appengine/monorail/tracker/tracker_helpers.py",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "69d7b07322d17fa636fdb9c19911e70d37911032",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ff5e8f22_d370ff0f",
+        "filename": "appengine/monorail/tracker/tracker_helpers.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 761,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-02-13T23:09:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5a0b73e8_12da3cfe",
+      "revId": "69d7b07322d17fa636fdb9c19911e70d37911032",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
