@@ -1164,8 +1164,8 @@ class TestTryJobTest(wf_testcase.WaterfallTestCase):
     ]
 
     cl_result = test_try_job._GetUpdatedSuspectedCLs(
-        analysis,
-        TestTryJobResult.FromSerializable(result), try_job_suspected_cls)
+        analysis, TestTryJobResult.FromSerializable(result),
+        try_job_suspected_cls)
     self.assertEqual(cl_result, expected_cls)
 
   def testGetSuspectedCLsForTestTryJobWithHeuristicResult(self):
@@ -1300,7 +1300,7 @@ class TestTryJobTest(wf_testcase.WaterfallTestCase):
   @mock.patch.object(test_try_job, '_GetUpdatedAnalysisResult')
   def testUpdateWfAnalysisWithTryJobResultNoUpdate(self, mock_fn):
     test_try_job.UpdateWfAnalysisWithTryJobResult('m', 'n', 1, None, None, None)
-    mock_fn.assert_not_called()
+    self.assertFalse(mock_fn.called)
 
   @mock.patch.object(
       test_try_job, '_GetUpdatedAnalysisResult', return_value=({}, True))
@@ -1314,16 +1314,17 @@ class TestTryJobTest(wf_testcase.WaterfallTestCase):
     builder_name = 'b'
     build_number = 1
     WfAnalysis.Create(master_name, builder_name, build_number).put()
-    test_try_job.UpdateWfAnalysisWithTryJobResult(
-        master_name, builder_name, build_number,
-        TestTryJobResult(), ['rev1'], {})
+    test_try_job.UpdateWfAnalysisWithTryJobResult(master_name, builder_name,
+                                                  build_number,
+                                                  TestTryJobResult(), ['rev1'],
+                                                  {})
     analysis = WfAnalysis.Get(master_name, builder_name, build_number)
     self.assertEqual(analysis.result_status, result_status.FOUND_UNTRIAGED)
 
   @mock.patch.object(suspected_cl_util, 'UpdateSuspectedCL')
   def testUpdateSuspectedCLsNoCulprit(self, mock_fn):
     test_try_job.UpdateSuspectedCLs('m', 'b', 1, None, None)
-    mock_fn.assert_not_called()
+    self.assertFalse(mock_fn.called)
 
   @mock.patch.object(suspected_cl_util, 'UpdateSuspectedCL')
   def testUpdateSuspectedCLs(self, mock_fn):
@@ -1962,9 +1963,9 @@ class TestTryJobTest(wf_testcase.WaterfallTestCase):
     self.assertEqual(try_job_data.master_name, master_name)
     self.assertEqual(try_job_data.builder_name, builder_name)
     self.assertEqual(try_job_data.build_number, build_number)
-    self.assertEqual(
-        try_job_data.try_job_type,
-        failure_type.GetDescriptionForFailureType(failure_type.TEST))
+    self.assertEqual(try_job_data.try_job_type,
+                     failure_type.GetDescriptionForFailureType(
+                         failure_type.TEST))
     self.assertFalse(try_job_data.has_compile_targets)
     self.assertFalse(try_job_data.has_heuristic_results)
 
