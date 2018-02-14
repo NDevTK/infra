@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1db52a15_4a6d5966",
+        "filename": "appengine/monorail/tools/backfill-issue-snapshots.sql",
+        "patchSetId": 1
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-02-14T23:04:04Z",
+      "side": 1,
+      "message": "This was actually in the wrong place originally, the thing that throws the \"SQLSTATE 23000\" error which this catches is the INSERT, not the SELECT. The behavior was correct, this just keeps the script from printing excessively.",
+      "revId": "e4c69ea048e55cc4a629297a0d2f7e2268ce6aaf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
