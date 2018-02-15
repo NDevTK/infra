@@ -46,6 +46,30 @@
       "revId": "bb5bdd250b124e6a69d0c8319360969325696ed5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "da460763_5c090186",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-02-15T07:49:16Z",
+      "side": 1,
+      "message": "OK. Now I got it. That surprised me. Many thanks for this!",
+      "parentUuid": "6825fe3a_383ebd37",
+      "range": {
+        "startLine": 7,
+        "startChar": 23,
+        "endLine": 7,
+        "endChar": 58
+      },
+      "revId": "bb5bdd250b124e6a69d0c8319360969325696ed5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
