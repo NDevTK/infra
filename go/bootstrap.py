@@ -15,15 +15,12 @@ import contextlib
 import json
 import logging
 import os
-import platform
 import shutil
 import stat
 import subprocess
 import sys
-import tarfile
 import tempfile
 import urllib
-import zipfile
 
 
 LOGGER = logging.getLogger(__name__)
@@ -49,7 +46,7 @@ EXE_SFX = '.exe' if sys.platform == 'win32' else ''
 GIT_EXE = 'git.bat' if sys.platform == 'win32' else 'git'
 
 # Version of Go toolset CIPD package (infra/go/${platform}) to install.
-TOOLSET_VERSION = '1.9.4'
+TOOLSET_VERSION = '1.10'
 
 # Describes how to fetch 'glide'.
 GLIDE_SOURCE = {
@@ -452,6 +449,9 @@ def get_go_environ(layout):
   # get_go_environ is invoked multiple times.
   paths_to_add = [p for p in paths_to_add if p and p not in path]
   env['PATH'] = os.pathsep.join(paths_to_add + path)
+
+  # Don't use default cache in '~'.
+  env['GOCACHE'] = os.path.join(layout.workspace, '.cache')
 
   # Add a tag to the prompt
   infra_prompt_tag = env.get('INFRA_PROMPT_TAG')
