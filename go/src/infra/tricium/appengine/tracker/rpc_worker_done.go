@@ -53,8 +53,8 @@ func workerDone(c context.Context, req *admin.WorkerDoneRequest, isolator common
 	if err != nil {
 		return fmt.Errorf("failed to extract function name: %v", err)
 	}
-	functionRunKey := ds.NewKey(c, "FunctionRun", functionName, 0, workflowRunKey)
-	workerKey := ds.NewKey(c, "WorkerRun", req.Worker, 0, functionRunKey)
+	functionKey := ds.NewKey(c, "FunctionRun", functionName, 0, workflowRunKey)
+	workerKey := ds.NewKey(c, "WorkerRun", req.Worker, 0, functionKey)
 
 	// If this worker is already marked as done, abort.
 	workerRes := &track.WorkerRunResult{ID: 1, Parent: workerKey}
@@ -87,7 +87,7 @@ func workerDone(c context.Context, req *admin.WorkerDoneRequest, isolator common
 	}
 	workerResults := []*track.WorkerRunResult{}
 	for _, workerName := range functionRun.Workers {
-		workerKey := ds.NewKey(c, "WorkerRun", workerName, 0, functionRunKey)
+		workerKey := ds.NewKey(c, "WorkerRun", workerName, 0, functionKey)
 		workerResults = append(workerResults, &track.WorkerRunResult{ID: 1, Parent: workerKey})
 	}
 	if err := ds.Get(c, workerResults); err != nil {
@@ -127,8 +127,8 @@ func workerDone(c context.Context, req *admin.WorkerDoneRequest, isolator common
 	// Compute run state.
 	var runResults []*track.FunctionRunResult
 	for _, name := range run.Functions {
-		functionRunKey := ds.NewKey(c, "FunctionRun", name, 0, workflowRunKey)
-		runResults = append(runResults, &track.FunctionRunResult{ID: 1, Parent: functionRunKey})
+		functionKey := ds.NewKey(c, "FunctionRun", name, 0, workflowRunKey)
+		runResults = append(runResults, &track.FunctionRunResult{ID: 1, Parent: functionKey})
 	}
 	if err := ds.Get(c, runResults); err != nil {
 		return fmt.Errorf("failed to retrieve FunctionRunResult entities: %v", err)
@@ -207,7 +207,7 @@ func workerDone(c context.Context, req *admin.WorkerDoneRequest, isolator common
 		},
 		// Update function state.
 		func() error {
-			fr := &track.FunctionRunResult{ID: 1, Parent: functionRunKey}
+			fr := &track.FunctionRunResult{ID: 1, Parent: functionKey}
 			if err := ds.Get(c, fr); err != nil {
 				return fmt.Errorf("failed to get FunctionRunResult (function: %s): %v", functionName, err)
 			}
