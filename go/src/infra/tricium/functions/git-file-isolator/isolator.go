@@ -47,14 +47,25 @@ func main() {
 		exec.Command("git", "fetch", "--depth=1", "--no-tags", "--no-recurse-submodules", input.Repository, input.Ref),
 		exec.Command("git", "checkout", "FETCH_HEAD", "--"),
 	}
+
+	for _, p := range input.Paths {
+		log.Printf("Path: %s", p)
+		exec.Command("git", "status", "FETCH_HEAD")
+	}
+
 	// Explicitly add list of files to checkout to speed things up.
 	// NB! The max length for a command line supported by the OS may be exceeded (inspect with $getconf ARG_MAX)
+	// XXX(qyearsley): instead of checking out all files in one command,
+	// split them across several commands and handle the case where
+	// files are deleted.
+	// XXX OR, alternately, split out the deleted files before trying to check
+	// files out. Also, should binary files be included? I don't think so.
 	cmds[2].Args = append(cmds[2].Args, input.Paths...)
 	for _, c := range cmds {
 		c.Dir = dir
 		log.Printf("Running cmd: %s", c.Args)
 		if err := c.Run(); err != nil {
-			log.Fatalf("Failed to run command: %v, cmd: %s", err, c.Args)
+			log.Printf("Failed to run command: %v, cmd: %s", err, c.Args)
 		}
 	}
 
@@ -65,6 +76,8 @@ func main() {
 			log.Fatalf("Failed to create dirs for file: %v", err)
 		}
 		src := filepath.Join(dir, p)
+		// XXX Perhaps check whether the file exists before trying
+		// to copy it over.
 		cmd := exec.Command("cp", src, dest)
 		stderr, err := cmd.StderrPipe()
 		if err != nil {

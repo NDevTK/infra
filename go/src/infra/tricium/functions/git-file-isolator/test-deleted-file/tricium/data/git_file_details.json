@@ -1,0 +1,5 @@
+{
+  "repository": "https://gerrit.googlesource.com/gerrit",
+  "ref": "refs/changes/30/158030/3",
+  "paths": ["gerrit-sshd/src/main/java/com/google/gerrit/sshd/SshLog.java"]
+}
