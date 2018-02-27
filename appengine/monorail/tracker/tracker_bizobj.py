@@ -128,6 +128,15 @@ def FindApprovalDefByID(approval_id, config):
   return None
 
 
+def FindIssueTemplate(template_name, config):
+  """Find the specified issue template, or return None."""
+  for template in config.templates:
+    if template.name == template_name:
+      return template
+
+  return None
+
+
 def GetGrantedPerms(issue, effective_ids, config):
   """Return a set of permissions granted by user-valued fields in an issue."""
   granted_perms = set()
@@ -422,7 +431,7 @@ def ConvertDictToTemplate(template_dict):
 def MakeIssueTemplate(
     name, summary, status, owner_id, content, labels, field_values, admin_ids,
     component_ids, summary_must_be_edited=None, owner_defaults_to_member=None,
-    component_required=None, members_only=None):
+    component_required=None, members_only=None, template_id=None):
   """Make an issue template PB."""
   template = tracker_pb2.TemplateDef()
   template.name = name
@@ -446,6 +455,8 @@ def MakeIssueTemplate(
     template.component_required = component_required
   if members_only is not None:
     template.members_only = members_only
+  if template_id is not None:
+    template.template_id = template_id
 
   return template
 
