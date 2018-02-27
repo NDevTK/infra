@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "036d052e_7f2997cc",
+        "filename": "appengine/monorail/templates/tracker/template-detail-page.ezt",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-02-27T20:34:02Z",
+      "side": 1,
+      "message": "new_template_name also needs to be defined in the template editing servlet.",
+      "revId": "2ff8b16a7c78d4f9ffca61cacc0a8c9b90d05065",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "14805949_504336bd",
+        "filename": "appengine/monorail/templates/tracker/template-detail-page.ezt",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-02-27T20:34:02Z",
+      "side": 1,
+      "message": "Please convert tab to spaces.  Also, this seems redundant with the hidden form element name\u003d\"template\" on line 15.  Please combine if it makes sense.",
+      "revId": "2ff8b16a7c78d4f9ffca61cacc0a8c9b90d05065",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
