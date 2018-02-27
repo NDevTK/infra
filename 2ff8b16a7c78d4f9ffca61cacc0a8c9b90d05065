@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "c47b8373_7700bf22",
+        "filename": "appengine/monorail/templates/tracker/template-detail-page.ezt",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-02-27T21:28:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "036d052e_7f2997cc",
+      "revId": "2ff8b16a7c78d4f9ffca61cacc0a8c9b90d05065",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "14805949_504336bd",
         "filename": "appengine/monorail/templates/tracker/template-detail-page.ezt",
         "patchSetId": 3
@@ -33,6 +51,24 @@
       "revId": "2ff8b16a7c78d4f9ffca61cacc0a8c9b90d05065",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0a3d1fcc_ea45f756",
+        "filename": "appengine/monorail/templates/tracker/template-detail-page.ezt",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-02-27T21:28:36Z",
+      "side": 1,
+      "message": "line 15 is for passing to the url for the detail.do form. The one here is for parsing. I\u0027d like to keep them separate.",
+      "parentUuid": "14805949_504336bd",
+      "revId": "2ff8b16a7c78d4f9ffca61cacc0a8c9b90d05065",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
