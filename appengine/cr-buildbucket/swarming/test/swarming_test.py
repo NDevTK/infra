@@ -41,6 +41,9 @@ class BaseTest(testing.AppengineTestCase):
     self.patch(
         'notifications.enqueue_tasks_async', autospec=True,
         return_value=future(None))
+    self.patch(
+        'bq.enqueue_pull_task_async', autospec=True,
+        return_value=future(None))
 
     self.now = datetime.datetime(2015, 11, 30)
     self.patch(
@@ -379,6 +382,7 @@ class SwarmingTest(BaseTest):
     self.patch(
         'components.auth.get_current_identity', autospec=True,
         return_value=auth.Identity('user', 'john@example.com'))
+    assert 'Mock' not in auth.get_current_identity()
     self.patch(
         'swarming.swarming._is_migrating_builder_prod_async',
         autospec=True, return_value=future(True))

@@ -663,6 +663,7 @@ def create_task_async(build, build_number=None):
       build, build_number, bucket_cfg, builder_cfg, settings, False)
 
   assert build.swarming_hostname
+  assert 'Mock' not in auth.get_current_identity()
   res = yield _call_api_async(
       auth.get_current_identity(),
       build.swarming_hostname,
@@ -1150,6 +1151,7 @@ def _call_api_async(
   """
   delegation_token = None
   if impersonated_identity:
+    assert 'Mock' not in impersonated_identity
     delegation_token = yield auth.delegate_async(
         audience=[_self_identity()],
         services=['https://%s' % hostname],

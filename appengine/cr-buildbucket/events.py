@@ -9,6 +9,7 @@ on_something_happened functions must be called after the transaction completed
 successfully.
 """
 
+import datetime
 import json
 import logging
 
@@ -16,11 +17,27 @@ from google.appengine.ext import ndb
 
 from components import auth
 
+import bq
 import metrics
 import notifications
 
 # Event functions in this file are marked with `# pragma: no cover` because
 # they are called from other modules.
+
+# Mocked in tests.
+@ndb.tasklet
+def enqueue_tasks_async(queue, task_defs):  # pragma: no cover
+  tasks = [
+    taskqueue.Task(
+        url=t['url'],
+        payload=t['payload'],
+        retry_options=taskqueue.TaskRetryOptions(
+            task_age_limit=t['age_limit_sec']))
+    for t in task_defs
+  ]
+  # Cannot just return the return value of add_async because it is
+  # a non-Future object and does not play nice with `yield fut1, fut2` construct
+  yield taskqueue.Queue(queue).add_async(tasks, transactional=True)
 
 
 def on_build_created(build):  # pragma: no cover
@@ -43,8 +60,12 @@ def on_build_started(build):  # pragma: no cover
     metrics.add_build_scheduling_duration(build)
 
 
+@ndb.tasklet
 def on_build_completing_async(build):  # pragma: no cover
-  return notifications.enqueue_notifications_async(build)
+  yield (
+    notifications.enqueue_notifications_async(build),
+    bq.enqueue_bq_export_async(build),
+  )
 
 
 def on_build_completed(build):  # pragma: no cover

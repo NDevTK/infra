@@ -31,6 +31,9 @@ class NotificationsTest(testing.AppengineTestCase):
         'notifications.enqueue_tasks_async',
         autospec=True,
         return_value=test_util.future(None))
+    self.patch(
+        'bq.enqueue_pull_task_async', autospec=True,
+        return_value=test_util.future(None))
 
     self.patch(
         'google.appengine.api.app_identity.get_default_version_hostname',
@@ -41,6 +44,9 @@ class NotificationsTest(testing.AppengineTestCase):
         'components.utils.utcnow', return_value=datetime.datetime(2017, 1, 1))
 
     self.patch('components.pubsub.publish', autospec=True)
+    # Suppress BQ export in this test suite.
+    self.patch(
+        'bq.enqueue_pull_task_async', return_value=test_util.future(None))
 
   def test_pubsub_callback(self):
     build = model.Build(
