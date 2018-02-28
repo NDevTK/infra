@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6e565fa4_87bfeaea",
+        "filename": "infra/services/gsubtreed/gsubtreed.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 274,
+      "author": {
+        "id": 1246212
+      },
+      "writtenOn": "2018-02-28T23:51:51Z",
+      "side": 0,
+      "message": "Does this line actually do anything?  I don\u0027t think so, because AFAICT no one ever calls queue_fast_forward on origin_repo.\n\nAfter my previous fix, where I moved the effect of dry_run off of the origin_repo, noticing this line of code gave me pause.\n\nIf I\u0027m correct and it\u0027s actually doing nothing, I think it would be less confusing to remove it.",
+      "range": {
+        "startLine": 274,
+        "startChar": 2,
+        "endLine": 274,
+        "endChar": 13
+      },
+      "revId": "e39cbe5722c00ea213491b52791ce14f21d86765",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
