@@ -11,6 +11,8 @@ from google.protobuf import json_format
 from google.protobuf import message as message_pb
 from google.protobuf import struct_pb2
 from google.protobuf import timestamp_pb2
+# This module is used as a symlink in buildbucket GAE app.
+# Do not add import packages not available on GAE.
 
 BATCH_DEFAULT = 500
 BATCH_LIMIT = 10000

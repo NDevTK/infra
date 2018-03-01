@@ -7,3 +7,5 @@ queue:
   target: backend
   rate: 100/s
   max_concurrent_requests: 128
+- name: bq-export
+  mode: pull
