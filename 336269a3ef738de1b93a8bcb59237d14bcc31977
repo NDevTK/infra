@@ -94,6 +94,30 @@
       "revId": "336269a3ef738de1b93a8bcb59237d14bcc31977",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ea19ae2e_ea50323e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2018-03-01T00:50:53Z",
+      "side": 1,
+      "message": "I didn\u0027t even see that first edit button! You can click the edit link under the description just by itself too.",
+      "parentUuid": "7385a382_17e14d9a",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 16
+      },
+      "revId": "336269a3ef738de1b93a8bcb59237d14bcc31977",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
