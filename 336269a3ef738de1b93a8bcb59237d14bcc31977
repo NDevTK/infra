@@ -70,6 +70,30 @@
       "revId": "336269a3ef738de1b93a8bcb59237d14bcc31977",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7385a382_17e14d9a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1246212
+      },
+      "writtenOn": "2018-03-01T00:41:36Z",
+      "side": 1,
+      "message": "Ah, \"Edit\" followed by \"Edit\".  I found the first one, but not the second one.  :-)",
+      "parentUuid": "4c8324e6_a44ac0f5",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 16
+      },
+      "revId": "336269a3ef738de1b93a8bcb59237d14bcc31977",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
