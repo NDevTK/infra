@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "818860e4_b293546e",
+        "filename": "appengine/cr-buildbucket/bq.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-03-01T19:12:15Z",
+      "side": 1,
+      "message": "the type of build.status is model.BuildStatus https://cs.chromium.org/chromium/infra/appengine/cr-buildbucket/model.py?q\u003dbuildbucket/model.py\u0026sq\u003dpackage:chromium\u0026l\u003d28\nit does not have FAILED state. FAILED is in v2",
+      "parentUuid": "93aab989_150fcc9a",
+      "range": {
+        "startLine": 43,
+        "startChar": 2,
+        "endLine": 43,
+        "endChar": 52
+      },
+      "revId": "2cb52a6b2ef2db324af8fffb8ef987ebf634bece",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "75e1d3e3_e9aa797b",
         "filename": "appengine/cr-buildbucket/bq.py",
         "patchSetId": 5
@@ -36,6 +60,30 @@
       "writtenOn": "2018-03-01T14:50:43Z",
       "side": 1,
       "message": "Why not use bqh.send_rows? Is it because importing google-cloud-bigquery and its dependencies in order to create a client is too much of a pain? \n\nfyi: https://bugs.chromium.org/p/chromium/issues/detail?id\u003d813238",
+      "range": {
+        "startLine": 115,
+        "startChar": 2,
+        "endLine": 115,
+        "endChar": 25
+      },
+      "revId": "2cb52a6b2ef2db324af8fffb8ef987ebf634bece",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "039c3ab0_b44e653c",
+        "filename": "appengine/cr-buildbucket/bq.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-03-01T19:12:15Z",
+      "side": 1,
+      "message": "yeah, that\u0027s the main reason. I think the question should be reversed: not \"why not use it\", but \"why use it\" because a dependency always has a cost. Unlike in Go, this cost in Python is particularly high, unfortunately. The cost should be justified, i.e. there should be a problem that is hard enough that solving it ourselves is *higher* cost than reusing an existing solution. I don\u0027t see such a problem in this case. In patchset 6, this function is 34 executable lines of code without much logic, and I am not sure it would be much less with google-cloud-bigquery: we\u0027d still need to specify rows, insert ids and deadline.\n\nExample of a problem that is hard enough not to solve ourselves: converting a message to a row, that\u0027s why we reuse message_to_dict.\n\nother reasons are:\n\n- send_rows dictates insert ids. This does not work for buildbucket, which wants to use build ids as insert ids\n- send_rows does not expose insert errors API, but just raises an exception with a *string* explaining the insert errors. As you can see below, buildbucket needs to interpret insert errors.\n- with batches A, B and C, it may insert A entirely, half of B and no C at all\n\nbut these problems may be fixed\n\nbesides problems above, most of the code in send_rows is not relevant to buildbucket:\n\n- supports tuples: bb doesn\u0027t need that\n- automatic batching: this cron job inserts \u003c\u003d1000 rows in a batch",
+      "parentUuid": "75e1d3e3_e9aa797b",
       "range": {
         "startLine": 115,
         "startChar": 2,
