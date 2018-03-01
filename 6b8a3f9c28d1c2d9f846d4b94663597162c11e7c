@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "53188db5_057cd680",
+        "filename": "appengine/cr-buildbucket/bq.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-03-01T23:55:32Z",
+      "side": 1,
+      "message": "I think we need to wrap these in exception blocks or run them through different crons.\n\ntry:\n  _process_pull_task_batch(False)\nexcept Exception:\n  logging.exception(\u0027Failed to push prod tasks to BQ\u0027)\ntry:\n  _process_pull_task_batch(True)\nexcept Exception:\n  logging.exception(\u0027Failed to push experimental tasks to BQ\u0027)",
+      "range": {
+        "startLine": 59,
+        "startChar": 4,
+        "endLine": 60,
+        "endChar": 34
+      },
+      "revId": "6b8a3f9c28d1c2d9f846d4b94663597162c11e7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "64d998c9_d27d86f7",
+        "filename": "appengine/cr-buildbucket/bq.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-03-01T23:55:32Z",
+      "side": 1,
+      "message": "I believe it would be more efficient to have two different queues. It would also offer better isolation between experimental and prod tasks. E.g. if something goes horribly wrong with experimental tasks you can pause experimental queue.",
+      "range": {
+        "startLine": 69,
+        "startChar": 48,
+        "endLine": 69,
+        "endChar": 71
+      },
+      "revId": "6b8a3f9c28d1c2d9f846d4b94663597162c11e7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f25349d1_318f6fb1",
+        "filename": "appengine/cr-buildbucket/bq.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-03-01T23:55:32Z",
+      "side": 1,
+      "message": "https://www.googleapis.com/auth/bigquery should be sufficient",
+      "range": {
+        "startLine": 134,
+        "startChar": 13,
+        "endLine": 134,
+        "endChar": 35
+      },
+      "revId": "6b8a3f9c28d1c2d9f846d4b94663597162c11e7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "46533873_053540cd",
+        "filename": "packages/infra_libs/infra_libs/bigquery/helper.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-03-01T23:55:32Z",
+      "side": 1,
+      "message": "No need to specify all these scopes at once. \u0027bigquery\u0027 scope should be sufficient by itself for sure.\n (\u0027bigquery.insertdata\u0027 is probably also sufficient for inserts).",
+      "range": {
+        "startLine": 23,
+        "startChar": 3,
+        "endLine": 23,
+        "endChar": 43
+      },
+      "revId": "6b8a3f9c28d1c2d9f846d4b94663597162c11e7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
