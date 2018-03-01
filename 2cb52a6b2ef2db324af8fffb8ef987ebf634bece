@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "93aab989_150fcc9a",
+        "filename": "appengine/cr-buildbucket/bq.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2018-03-01T14:50:43Z",
+      "side": 1,
+      "message": "Wouldn\u0027t it be valid to have a Build with Status \u003d\u003d FAILED or something like that? It\u0027s possible I\u0027m mis-remembering the definition and there is a separate field for something like this.",
+      "range": {
+        "startLine": 43,
+        "startChar": 2,
+        "endLine": 43,
+        "endChar": 52
+      },
+      "revId": "2cb52a6b2ef2db324af8fffb8ef987ebf634bece",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "75e1d3e3_e9aa797b",
+        "filename": "appengine/cr-buildbucket/bq.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1167649
+      },
+      "writtenOn": "2018-03-01T14:50:43Z",
+      "side": 1,
+      "message": "Why not use bqh.send_rows? Is it because importing google-cloud-bigquery and its dependencies in order to create a client is too much of a pain? \n\nfyi: https://bugs.chromium.org/p/chromium/issues/detail?id\u003d813238",
+      "range": {
+        "startLine": 115,
+        "startChar": 2,
+        "endLine": 115,
+        "endChar": 25
+      },
+      "revId": "2cb52a6b2ef2db324af8fffb8ef987ebf634bece",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
