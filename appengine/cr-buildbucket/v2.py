@@ -90,7 +90,7 @@ def _parse_tags(dest_msg, tags):
 
       m = model.RE_BUILDSET_GERRIT_CL.match(v)
       if m:
-        dest_msg.input.gerrit_changes.add(
+        cl = dest_msg.input.gerrit_changes.add(
             host=m.group(1),
             change=int(m.group(2)),
             patchset=int(m.group(3)),
