@@ -46,6 +46,30 @@
       "revId": "336269a3ef738de1b93a8bcb59237d14bcc31977",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4c8324e6_a44ac0f5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2018-03-01T00:34:15Z",
+      "side": 1,
+      "message": "You can also click the \"Edit\" link here on Gerrit too :)",
+      "parentUuid": "642c7e63_f64f68b2",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 16
+      },
+      "revId": "336269a3ef738de1b93a8bcb59237d14bcc31977",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
