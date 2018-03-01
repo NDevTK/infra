@@ -21,6 +21,7 @@ import webapp2
 from swarming import swarmbucket_api
 import access
 import api
+import bq
 import config
 import model
 import notifications
@@ -355,6 +356,9 @@ def get_backend_routes():
     webapp2.Route(
         r'/internal/cron/buildbucket/update_buckets',
         CronUpdateBuckets),
+    webapp2.Route(
+        r'/internal/cron/buildbucket/bq-export',
+        bq.CronExportBuilds),
     webapp2.Route(
         r'/internal/task/buildbucket/notify/<build_id:\d+>',
         notifications.TaskPublishNotification),
