@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "d276ab60_3599cb2d",
+        "filename": "appengine/cr-buildbucket/bq.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-03-02T04:01:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "53188db5_057cd680",
+      "range": {
+        "startLine": 59,
+        "startChar": 4,
+        "endLine": 60,
+        "endChar": 34
+      },
+      "revId": "6b8a3f9c28d1c2d9f846d4b94663597162c11e7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "64d998c9_d27d86f7",
         "filename": "appengine/cr-buildbucket/bq.py",
         "patchSetId": 7
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "f0eecc4b_1a1469e1",
+        "filename": "appengine/cr-buildbucket/bq.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-03-02T04:01:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "64d998c9_d27d86f7",
+      "range": {
+        "startLine": 69,
+        "startChar": 48,
+        "endLine": 69,
+        "endChar": 71
+      },
+      "revId": "6b8a3f9c28d1c2d9f846d4b94663597162c11e7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f25349d1_318f6fb1",
         "filename": "appengine/cr-buildbucket/bq.py",
         "patchSetId": 7
@@ -68,6 +116,30 @@
       "revId": "6b8a3f9c28d1c2d9f846d4b94663597162c11e7c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "206a2b4e_d902e374",
+        "filename": "appengine/cr-buildbucket/bq.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-03-02T04:01:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f25349d1_318f6fb1",
+      "range": {
+        "startLine": 134,
+        "startChar": 13,
+        "endLine": 134,
+        "endChar": 35
+      },
+      "revId": "6b8a3f9c28d1c2d9f846d4b94663597162c11e7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
