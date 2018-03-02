@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "ffbd347d_cc6335f0",
+        "filename": "appengine/cr-buildbucket/cron.yaml",
+        "patchSetId": 8
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-03-02T05:22:46Z",
+      "side": 1,
+      "message": "Done, sorry this patchset was a mess",
+      "parentUuid": "225fdd67_6e824b41",
+      "range": {
+        "startLine": 49,
+        "startChar": 34,
+        "endLine": 49,
+        "endChar": 43
+      },
+      "revId": "e5ac3c1b66771c0b3206e304a12d322bd49be34c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e38afe57_8233a2fa",
         "filename": "appengine/cr-buildbucket/handlers.py",
         "patchSetId": 8
@@ -45,6 +69,30 @@
       "revId": "e5ac3c1b66771c0b3206e304a12d322bd49be34c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8780f517_ace41265",
+        "filename": "appengine/cr-buildbucket/handlers.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 364,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-03-02T05:22:46Z",
+      "side": 1,
+      "message": "used subclasses",
+      "parentUuid": "e38afe57_8233a2fa",
+      "range": {
+        "startLine": 364,
+        "startChar": 8,
+        "endLine": 364,
+        "endChar": 41
+      },
+      "revId": "e5ac3c1b66771c0b3206e304a12d322bd49be34c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
