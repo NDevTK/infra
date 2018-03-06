@@ -57,7 +57,7 @@ def ReportTestFailureAnalysisCompletionEvent(analysis):
   for proto in CreateTestFailureAnalysisCompletionEvent(analysis):
     events_and_ids.append((proto, analysis.key.urlsafe() + proto.test_name))
   if not events_and_ids:  # If there are no events, return.
-    return None
+    return True
   return bigquery_helper.ReportEventsToBigquery(events_and_ids, _PROJECT_ID,
                                                 _DATASET_ID, _TABLE_ID_TEST)
 
@@ -148,7 +148,9 @@ def _SetActionsForEvent(event):
     # If there's a culprit.host, then the SuspectedCL exists.
     culprit_cl = WfSuspectedCL.Get(event.analysis_info.culprit.project,
                                    event.analysis_info.culprit.revision)
-    assert culprit_cl
+    if not culprit_cl:
+      return
+
     if culprit_cl.revert_submission_status == analysis_status.COMPLETED:
       event.analysis_info.actions.append(findit_pb2.REVERT_SUBMITTED)
 
@@ -231,6 +233,9 @@ def CreateTestFailureAnalysisCompletionEvent(analysis):
   """
   events = []
 
+  if not analysis.failure_info:
+    return events
+
   for step in analysis.failure_info.get('failed_steps', {}):
     for test in analysis.failure_info['failed_steps'][step].get('tests') or {}:
       if analysis.flaky_tests and test in analysis.flaky_tests.get(step, []):
@@ -297,7 +302,8 @@ def CreateTestFlakeAnalysisCompletionEvent(analysis):
   if analysis.suspected_flake_build_number:
     event.analysis_info.culprit_build_number = (
         analysis.suspected_flake_build_number)
-    event.regression_range_confidence = analysis.confidence_in_suspected_build
+    event.regression_range_confidence = (
+        analysis.confidence_in_suspected_build or 0.0)
 
   culprit_key = analysis.culprit_urlsafe_key
   culprit = None

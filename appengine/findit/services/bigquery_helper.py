@@ -109,7 +109,7 @@ def _AssignTypeToRow(schema, row):
   for idx, schema_field in enumerate(schema):
     type_func = schema_field['type_conversion_function']
     row_dict[schema_field['name']] = type_func(row['f'][idx]['v'],
-                                                     schema_field['nullable'])
+                                               schema_field['nullable'])
   return row_dict
 
 
@@ -162,6 +162,7 @@ def InsertRequest(client, project_id, dataset_id, table_id, rows):
   if response.get('insertErrors'):
     logging.error('InsertRequest reported errors: %r',
                   response.get('insertErrors'))
+    print 'errors: ', response.get('insertErrors')
     return False
 
   return True
