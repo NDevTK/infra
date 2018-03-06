@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "810a9e12_8703dc5a",
+        "filename": "appengine/monorail/services/config_svc.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1640,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-03-06T20:33:44Z",
+      "side": 1,
+      "message": "Doesn\u0027t this need to be last to avoid foreign key dependencies in the template2* tables?",
+      "revId": "5aae84639393bb753fc60aa83a97ac4fe2355411",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4e715630_9d571dc9",
+        "filename": "appengine/monorail/services/test/config_svc_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1152,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-03-06T20:33:44Z",
+      "side": 1,
+      "message": "Need spaces around \u003d.",
+      "revId": "5aae84639393bb753fc60aa83a97ac4fe2355411",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
