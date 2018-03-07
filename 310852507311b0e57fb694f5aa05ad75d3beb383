@@ -1,0 +1,76 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "be09b2b0_717c291d",
+        "filename": "appengine/monorail/templates/tracker/issue-bulk-edit-page.ezt",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-03-07T00:03:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7b381c94_90207de1",
+      "range": {
+        "startLine": 63,
+        "startChar": 13,
+        "endLine": 63,
+        "endChar": 21
+      },
+      "revId": "310852507311b0e57fb694f5aa05ad75d3beb383",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "62feeb16_bc458694",
+        "filename": "appengine/monorail/templates/tracker/issue-description-update-form.ezt",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-03-07T00:03:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f62f2162_e1841ecc",
+      "range": {
+        "startLine": 82,
+        "startChar": 19,
+        "endLine": 82,
+        "endChar": 20
+      },
+      "revId": "310852507311b0e57fb694f5aa05ad75d3beb383",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "78e09d97_ea7fd8be",
+        "filename": "appengine/monorail/templates/tracker/issue-entry-page.ezt",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-03-07T00:03:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5622fcd9_fb0b913d",
+      "range": {
+        "startLine": 92,
+        "startChar": 0,
+        "endLine": 92,
+        "endChar": 7
+      },
+      "revId": "310852507311b0e57fb694f5aa05ad75d3beb383",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
