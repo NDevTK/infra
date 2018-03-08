@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "271bb4fb_5be49d26",
+        "filename": "appengine/cr-buildbucket/bq.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-03-08T20:58:01Z",
+      "side": 1,
+      "message": "I cannot find docs with a concrete response size limit for ndb. \nhttps://cloud.google.com/datastore/docs/concepts/limits\nsays\n\n\u003e Maximum API *request* size.\nThis limit applies when Cloud Datastore is used outside of Google App Engine. If Cloud Datastore is used from App Engine, the limit depends on the client library that is used.\n\n\u003e Maximum number of keys allowed for a Lookup operation in the Cloud Datastore API\t1,000\n\n(emphasis mine)\n\n\nhttps://ci.chromium.org/p/chromium/builds/b8952593003822775664\nis 132 steps. Its annotations are 70846 bytes in binary form.\nCompressed is 14522 bytes. I\u0027ve changed the annotations_binary property to be compressed.\n\nI\u0027ve looked at metrics. Looks like we have ~50 builds finishing every minute, so I\u0027ve changed the batch size to 100.\n\nFWIU, we are under 2Mb response size, and under 10MB when uncompressed (ignoring python overhead)",
+      "parentUuid": "3edb732b_0d8be4d9",
+      "range": {
+        "startLine": 116,
+        "startChar": 13,
+        "endLine": 116,
+        "endChar": 26
+      },
+      "revId": "b657ebaf638bbe2ba649059c5563a2106a62c978",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "922cd9fa_52619ec3",
         "filename": "appengine/cr-buildbucket/swarming/swarming.py",
         "patchSetId": 3
@@ -39,6 +63,24 @@
       "revId": "b657ebaf638bbe2ba649059c5563a2106a62c978",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4c7d7573_4dcf0aa1",
+        "filename": "appengine/cr-buildbucket/swarming/swarming.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1028,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-03-08T20:58:01Z",
+      "side": 1,
+      "message": "sure, good catch, thanks.",
+      "parentUuid": "922cd9fa_52619ec3",
+      "revId": "b657ebaf638bbe2ba649059c5563a2106a62c978",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
