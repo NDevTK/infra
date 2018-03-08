@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3edb732b_0d8be4d9",
+        "filename": "appengine/cr-buildbucket/bq.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-03-08T20:19:09Z",
+      "side": 1,
+      "message": "What\u0027s the typical size of annotation entities? There\u0027s a limit on total size of RPC. We are fetching 2000 entities, we may hit this limit.",
+      "range": {
+        "startLine": 116,
+        "startChar": 13,
+        "endLine": 116,
+        "endChar": 26
+      },
+      "revId": "b657ebaf638bbe2ba649059c5563a2106a62c978",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "922cd9fa_52619ec3",
+        "filename": "appengine/cr-buildbucket/swarming/swarming.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1028,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-03-08T20:19:09Z",
+      "side": 1,
+      "message": "can JSON \u003d\u003e Proto conversion be done outside the transaction? It is slow in Python.",
+      "revId": "b657ebaf638bbe2ba649059c5563a2106a62c978",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
