@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "70b311c3_074f600a",
+        "filename": "appengine/findit/pipelines/flake_failure/test/get_isolate_sha_pipeline_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2018-03-09T20:04:45Z",
+      "side": 1,
+      "message": "Why not use an actual list of strings?",
+      "range": {
+        "startLine": 90,
+        "startChar": 75,
+        "endLine": 90,
+        "endChar": 79
+      },
+      "revId": "8dc45cb898307e43d78253e311db34e611248736",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
