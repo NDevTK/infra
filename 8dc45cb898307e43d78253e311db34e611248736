@@ -22,6 +22,30 @@
       "revId": "8dc45cb898307e43d78253e311db34e611248736",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "914e3350_aab8322e",
+        "filename": "appengine/findit/pipelines/flake_failure/test/get_isolate_sha_pipeline_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-03-09T20:35:11Z",
+      "side": 1,
+      "message": "+1",
+      "parentUuid": "70b311c3_074f600a",
+      "range": {
+        "startLine": 90,
+        "startChar": 75,
+        "endLine": 90,
+        "endChar": 79
+      },
+      "revId": "8dc45cb898307e43d78253e311db34e611248736",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
