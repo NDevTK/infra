@@ -254,6 +254,22 @@ class BuildAnnotations(ndb.Model):
     return ndb.Key(cls, cls.ENTITY_ID, parent=build_key)
 
 
+class Builder(ndb.Model):
+  """A builder in a bucket.
+
+  Used internally for metrics.
+  Registered automatically by scheduling a build.
+  Unregistered automatically by not scheduling builds for 4 weeks.
+
+  Entity key:
+    No parent. ID is a string with format "{project}:{bucket}:{builder}".
+  """
+
+  # Last time we received a valid build scheduling request for this builder.
+  # May be off by 1 hour.
+  last_scheduled = ndb.DateTimeProperty()
+
+
 class TagIndexEntry(ndb.Model):
   """A single entry in a TagIndex, references a build."""
   created_time = ndb.DateTimeProperty(auto_now_add=True)
