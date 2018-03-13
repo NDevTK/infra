@@ -1138,6 +1138,8 @@ class ConfigServiceTest(unittest.TestCase):
     self.config_service.template2fieldvalue_tbl.InsertRows(
         self.cnxn, config_svc.TEMPLATE2FIELDVALUE_COLS, [
             (1, 1, None, 'somestring', None, None, None)], commit=False)
+    self.config_service.tempalte2milestone_tbl.InsertRow(
+        self.cnxn, template_id=1, commit=False).AndReturn(23)
 
     self.cnxn.Commit()
 
