@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "85f77d39_8f333cf4",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-03-13T02:23:58Z",
+      "side": 1,
+      "message": "perhaps a constant is in order?",
+      "range": {
+        "startLine": 262,
+        "startChar": 58,
+        "endLine": 262,
+        "endChar": 59
+      },
+      "revId": "276811d0f858064500bd5ed4605c92fb9d238c2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2168b15c_a4896b0e",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-03-13T02:23:58Z",
+      "side": 1,
+      "message": "imo, should also be a constant to be referred in probability calculation code in update_builders_async",
+      "range": {
+        "startLine": 269,
+        "startChar": 17,
+        "endLine": 269,
+        "endChar": 24
+      },
+      "revId": "276811d0f858064500bd5ed4605c92fb9d238c2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c1d3d8d1_a6453dea",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 425,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-03-13T02:23:58Z",
+      "side": 1,
+      "message": "is \u0027:\u0027 guaranteed not to be in any of the 3 items?",
+      "range": {
+        "startLine": 425,
+        "startChar": 27,
+        "endLine": 425,
+        "endChar": 28
+      },
+      "revId": "276811d0f858064500bd5ed4605c92fb9d238c2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0f1d0723_bb5a62f0",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 436,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-03-13T02:23:58Z",
+      "side": 1,
+      "message": "3600.0, just to be sure. total_seconds is float (per my experiments), but I don\u0027t see float guaranteed by documentation.",
+      "range": {
+        "startLine": 436,
+        "startChar": 68,
+        "endLine": 436,
+        "endChar": 69
+      },
+      "revId": "276811d0f858064500bd5ed4605c92fb9d238c2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
