@@ -33,6 +33,8 @@ TEMPLATE2ADMIN_TABLE_NAME = 'Template2Admin'
 TEMPLATE2COMPONENT_TABLE_NAME = 'Template2Component'
 TEMPLATE2FIELDVALUE_TABLE_NAME = 'Template2FieldValue'
 PROJECTISSUECONFIG_TABLE_NAME = 'ProjectIssueConfig'
+TEMPLATE2MILESTONE_TABLE_NAME = 'Template2Milestone'
+TEMPLATE2APPROVALVALUE_TABLE_NAME = 'Template2ApprovalValue'
 LABELDEF_TABLE_NAME = 'LabelDef'
 FIELDDEF_TABLE_NAME = 'FieldDef'
 FIELDDEF2ADMIN_TABLE_NAME = 'FieldDef2Admin'
@@ -53,6 +55,9 @@ TEMPLATE2ADMIN_COLS = ['template_id', 'admin_id']
 TEMPLATE2FIELDVALUE_COLS = [
     'template_id', 'field_id', 'int_value', 'str_value', 'user_id',
     'date_value', 'url_value']
+TEMPLATE2MILESTONE_COLS = ['id', 'template_id', 'name', 'rank']
+TEMPLATE2APPROVALVALUE_COLS = [
+    'approval_id', 'template_id', 'milestone_id', 'status']
 PROJECTISSUECONFIG_COLS = [
     'project_id', 'statuses_offer_merge', 'exclusive_label_prefixes',
     'default_template_for_developers', 'default_template_for_users',
@@ -520,6 +525,10 @@ class ConfigService(object):
     self.template2admin_tbl = sql.SQLTableManager(TEMPLATE2ADMIN_TABLE_NAME)
     self.template2fieldvalue_tbl = sql.SQLTableManager(
         TEMPLATE2FIELDVALUE_TABLE_NAME)
+    self.template2milestone_tbl = sql.SQLTableManager(
+        TEMPLATE2MILESTONE_TABLE_NAME)
+    self.template2approvalvalue_tbl = sql.SQLTableManager(
+        TEMPLATE2APPROVALVALUE_TABLE_NAME)
     self.projectissueconfig_tbl = sql.SQLTableManager(
         PROJECTISSUECONFIG_TABLE_NAME)
     self.statusdef_tbl = sql.SQLTableManager(STATUSDEF_TABLE_NAME)
@@ -1493,7 +1502,7 @@ class ConfigService(object):
       self, cnxn, project_id, name, content, summary, summary_must_be_edited,
       status, members_only, owner_defaults_to_member, component_required,
       owner_id=None, labels=None, component_ids=None, admin_ids=None,
-      field_values=None):
+      field_values=None, milestones=None):
     """Create a new issue template definition with the given info.
 
     Args:
@@ -1514,6 +1523,7 @@ class ConfigService(object):
       component_ids: list of component_ids, if any.
       admin_ids: list of admin_ids, if any.
       field_values: list of FieldValue PBs, if any.
+      milestones: list of Milestone PBs, if any.
 
     Returns:
       Integer template_id of the new issue template definition.
@@ -1545,6 +1555,18 @@ class ConfigService(object):
                fv.date_value, fv.url_value) for fv in field_values],
           commit=False)
 
+    if milestones:
+      self.template2milestone_tbl.InsertRows(
+          cnxn, TEMPLATE2MILESTONE_COLS, [
+              (ms.id, template_id, ms.name, ms.rank) for ms in milestones],
+          commit=False)
+      for ms in milestones:
+        self.template2approvalvalue_tbl.InsertRows(
+            cnxn, TEMPLATE2APPROVALVALUE_COLS, [
+              (approval.approval_id, template_id, ms.id, approval.status)
+              for approval in ms.approvals],
+            commit=False)
+
     cnxn.Commit()
     self.config_2lc.InvalidateKeys(cnxn, [project_id])
     self.InvalidateMemcacheForEntireProject(project_id)
@@ -1554,7 +1576,8 @@ class ConfigService(object):
       self, cnxn, project_id, template_id, name=None, content=None,
       summary=None, summary_must_be_edited=None, status=None, members_only=None,
       owner_defaults_to_member=None, component_required=None, owner_id=None,
-      labels=None, component_ids=None, admin_ids=None, field_values=None):
+      labels=None, component_ids=None, admin_ids=None, field_values=None,
+      milestones=None):
     """Update an existing issue template definition with the given info.
 
     Args:
@@ -1576,7 +1599,8 @@ class ConfigService(object):
       labels: updated list of string labels for the new issue, if any.
       component_ids: updated list of component_ids, if any.
       admin_ids: updated list of admin_ids, if any.
-      field_values: updated list of FieldValu PBs, if any.
+      field_values: updated list of FieldValue PBs, if any.
+      milestones: updated list of Milestone PBs, if any.
     """
     new_values = {}
     if name is not None:
@@ -1628,6 +1652,19 @@ class ConfigService(object):
               (template_id, fv.field_id, fv.int_value, fv.str_value, fv.user_id,
                fv.date_value, fv.url_value) for fv in field_values],
           commit=False)
+    if milestones is not None:
+      self.template2approvalvalue_tbl.Delete(
+          cnxn, template_id=template_id, commit=False)
+      self.template2milestone_tbl.Delete(
+          cnxn, template_id=template_id, commit=False)
+      for ms in milestones:
+        milestone_id = self.template2milestone_tbl.InsertRow(
+            cnxn, template_id=template_id, name=ms.name, rank=ms.rank,
+            commit=False)
+        self.template2approvalvalue_tbl.InsertRows(
+            cnxn, TEMPLATE2APPROVALVALUE_COLS, [
+                (av.approval_id, template_id, milestone_id, av.status.lower())
+                for av in ms.approval_values], commit=False)
 
     cnxn.Commit()
     self.config_2lc.InvalidateKeys(cnxn, [project_id])
@@ -1643,6 +1680,10 @@ class ConfigService(object):
     self.template2admin_tbl.Delete(cnxn, template_id=template_id, commit=False)
     self.template2fieldvalue_tbl.Delete(
         cnxn, template_id=template_id, commit=False)
+    self.template2approvalvalue_tbl.Delete(
+        cnxn, template_id=template_id, commit=False)
+    self.template2milestone_tbl.Delete(
+          cnxn, template_id=template_id, commit=False)
     self.template_tbl.Delete(cnxn, id=template_id, commit=False)
 
     cnxn.Commit()
