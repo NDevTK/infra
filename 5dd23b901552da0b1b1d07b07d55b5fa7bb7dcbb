@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "eca68d1c_e9ef3d2a",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/som/migrations/annotations.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-03-14T03:04:58Z",
+      "side": 1,
+      "message": "I\u0027d just put this in ../handler and avoid changing all the other files. Plus I\u0027m not really sure ErrStatus is such a great pattern to spread.",
+      "range": {
+        "startLine": 1,
+        "startChar": 8,
+        "endLine": 1,
+        "endChar": 18
+      },
+      "revId": "5dd23b901552da0b1b1d07b07d55b5fa7bb7dcbb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ff218f2a_3496624e",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/som/migrations/annotations.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-03-14T03:04:58Z",
+      "side": 1,
+      "message": "Can this query sort by Date (starting with most recent) and limit to the most recent 100 or 1000 annotations? We probably don\u0027t need to migrate any older than a week or two.",
+      "revId": "5dd23b901552da0b1b1d07b07d55b5fa7bb7dcbb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
