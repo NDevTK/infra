@@ -96,7 +96,7 @@ func GetBugQueueHandler(ctx *router.Context) {
 	}
 
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -123,7 +123,7 @@ func GetUncachedBugsHandler(ctx *router.Context) {
 
 	out, err := json.Marshal(bugs)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -167,7 +167,7 @@ func RefreshBugQueueHandler(ctx *router.Context) {
 	item, err := refreshBugQueue(c, label)
 
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 

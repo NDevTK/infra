@@ -83,7 +83,7 @@ func GetAnnotationsHandler(ctx *router.Context) {
 
 	data, err := json.Marshal(output)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -118,13 +118,13 @@ func RefreshAnnotationsHandler(ctx *router.Context) {
 
 	bugMap, err := refreshAnnotations(c, nil)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	data, err := json.Marshal(bugMap)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -198,26 +198,26 @@ func PostAnnotationsHandler(ctx *router.Context) {
 	tree := p.ByName("tree")
 	action := p.ByName("action")
 	if action != "add" && action != "remove" {
-		errStatus(c, w, http.StatusBadRequest, "unrecognized annotation action")
+		ErrStatus(c, w, http.StatusBadRequest, "unrecognized annotation action")
 		return
 	}
 
 	req := &postRequest{}
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
-		errStatus(c, w, http.StatusBadRequest, fmt.Sprintf("while decoding request: %s", err))
+		ErrStatus(c, w, http.StatusBadRequest, fmt.Sprintf("while decoding request: %s", err))
 		return
 	}
 
 	if err := xsrf.Check(c, req.XSRFToken); err != nil {
-		errStatus(c, w, http.StatusForbidden, err.Error())
+		ErrStatus(c, w, http.StatusForbidden, err.Error())
 		return
 	}
 
 	// Extract the annotation key from the otherwise unparsed body.
 	rawJSON := struct{ Key string }{}
 	if err := json.Unmarshal([]byte(*req.Data), &rawJSON); err != nil {
-		errStatus(c, w, http.StatusBadRequest, fmt.Sprintf("while decoding request: %s", err))
+		ErrStatus(c, w, http.StatusBadRequest, fmt.Sprintf("while decoding request: %s", err))
 	}
 
 	key := rawJSON.Key
@@ -231,7 +231,7 @@ func PostAnnotationsHandler(ctx *router.Context) {
 	err = datastore.Get(c, annotation)
 	if action == "remove" && err != nil {
 		logging.Errorf(c, "while getting %s: %s", key, err)
-		errStatus(c, w, http.StatusNotFound, fmt.Sprintf("Annotation %s not found", key))
+		ErrStatus(c, w, http.StatusNotFound, fmt.Sprintf("Annotation %s not found", key))
 		return
 	}
 
@@ -248,19 +248,19 @@ func PostAnnotationsHandler(ctx *router.Context) {
 	}
 
 	if err != nil {
-		errStatus(c, w, http.StatusBadRequest, err.Error())
+		ErrStatus(c, w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	err = r.Body.Close()
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	err = datastore.Put(c, annotation)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -283,7 +283,7 @@ func PostAnnotationsHandler(ctx *router.Context) {
 
 	resp, err := json.Marshal(makeAnnotationResponse(annotation, m))
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -297,7 +297,7 @@ func FlushOldAnnotationsHandler(ctx *router.Context) {
 
 	numDeleted, err := flushOldAnnotations(c)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -337,12 +337,12 @@ func FileBugHandler(ctx *router.Context) {
 	req := &postRequest{}
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
-		errStatus(c, w, http.StatusBadRequest, fmt.Sprintf("while decoding request: %s", err))
+		ErrStatus(c, w, http.StatusBadRequest, fmt.Sprintf("while decoding request: %s", err))
 		return
 	}
 
 	if err := xsrf.Check(c, req.XSRFToken); err != nil {
-		errStatus(c, w, http.StatusForbidden, err.Error())
+		ErrStatus(c, w, http.StatusForbidden, err.Error())
 		return
 	}
 
@@ -354,7 +354,7 @@ func FileBugHandler(ctx *router.Context) {
 		Labels      []string
 	}{}
 	if err := json.Unmarshal([]byte(*req.Data), &rawJSON); err != nil {
-		errStatus(c, w, http.StatusBadRequest, fmt.Sprintf("while decoding request: %s", err))
+		ErrStatus(c, w, http.StatusBadRequest, fmt.Sprintf("while decoding request: %s", err))
 	}
 
 	ccList := make([]*monorail.AtomPerson, len(rawJSON.Cc))
@@ -365,7 +365,7 @@ func FileBugHandler(ctx *router.Context) {
 	sa, err := info.ServiceAccount(c)
 	if err != nil {
 		logging.Errorf(c, "failed to get service account: %v", err)
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -389,12 +389,12 @@ func FileBugHandler(ctx *router.Context) {
 	res, err := mr.InsertIssue(c, fileBugReq)
 	if err != nil {
 		logging.Errorf(c, "error inserting new Issue: %v", err)
-		errStatus(c, w, http.StatusBadRequest, err.Error())
+		ErrStatus(c, w, http.StatusBadRequest, err.Error())
 		return
 	}
 	out, err := json.Marshal(res)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 

@@ -67,7 +67,7 @@ func GetLayoutTestsHandler(ctx *router.Context) {
 
 	fs, err := te.LoadAll(c)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -91,7 +91,7 @@ func GetLayoutTestsHandler(ctx *router.Context) {
 
 	b, err := json.Marshal(res)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -108,27 +108,27 @@ func LayoutTestExpectationChangeWorker(ctx *router.Context) {
 	defer cancelFunc()
 	updateID, err := strconv.Atoi(r.FormValue("updateID"))
 	if err != nil {
-		errStatus(c, w, http.StatusBadRequest, err.Error())
+		ErrStatus(c, w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	writeUpdate := func(changeID string, err error) {
 		if err := writeQueuedUpdate(c, int64(updateID), changeID, err); err != nil {
 			logging.Errorf(c, "getting from datastore: %v", err.Error())
-			errStatus(c, w, http.StatusInternalServerError, err.Error())
+			ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		}
 	}
 
 	fs, err := te.LoadAll(c)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		writeUpdate("", err)
 		return
 	}
 
 	newExp := &shortExp{}
 	if err := json.Unmarshal([]byte(r.FormValue("change")), newExp); err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		writeUpdate("", err)
 		return
 	}
@@ -143,14 +143,14 @@ func LayoutTestExpectationChangeWorker(ctx *router.Context) {
 	logging.Infof(c, "new expectation: %+v", *stmt)
 
 	if err := fs.UpdateExpectation(stmt); err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		writeUpdate("", err)
 		return
 	}
 
 	client, err := getGerritClient(c)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		writeUpdate("", err)
 		return
 	}
@@ -160,7 +160,7 @@ func LayoutTestExpectationChangeWorker(ctx *router.Context) {
 	if err != nil {
 		logging.Errorf(c, "error creating CL: %v", err.Error())
 		writeUpdate(changeID, err)
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -172,7 +172,7 @@ func LayoutTestExpectationChangeWorker(ctx *router.Context) {
 		Reviewer: reviewer,
 	}); err != nil {
 		logging.Errorf(c, "creating CL: %v", err.Error())
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		writeUpdate(changeID, err)
 		return
 	}
@@ -217,7 +217,7 @@ func PostLayoutTestExpectationChangeHandler(ctx *router.Context) {
 	newExp := &shortExp{}
 	if err := json.NewDecoder(r.Body).Decode(newExp); err != nil {
 		logging.Errorf(c, "decoding body: %v", err)
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -235,7 +235,7 @@ func PostLayoutTestExpectationChangeHandler(ctx *router.Context) {
 		return datastore.Put(c, queuedUpdate)
 	}, nil); err != nil {
 		logging.Errorf(c, "allocating id: %v", err)
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -245,7 +245,7 @@ func PostLayoutTestExpectationChangeHandler(ctx *router.Context) {
 	body, err := json.Marshal(newExp)
 	if err != nil {
 		logging.Errorf(c, "marshaling newExp: %v", err)
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -255,14 +255,14 @@ func PostLayoutTestExpectationChangeHandler(ctx *router.Context) {
 	workerHost, err := info.ModuleHostname(c, "analyzer", "", "")
 	if err != nil {
 		logging.Errorf(c, "getting worker backend hostname: %v", err)
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	task.Header["Host"] = []string{workerHost}
 
 	if err := taskqueue.Add(c, changeQueue, task); err != nil {
 		logging.Errorf(c, "adding to task queue: %v", err)
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -273,7 +273,7 @@ func PostLayoutTestExpectationChangeHandler(ctx *router.Context) {
 	respBytes, err := json.Marshal(resp)
 	if err != nil {
 		logging.Errorf(c, "marshaling response: %v", err)
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -289,7 +289,7 @@ func GetTestExpectationCLStatusHandler(ctx *router.Context) {
 
 	updateID, err := strconv.Atoi(p.ByName("id"))
 	if err != nil {
-		errStatus(c, w, http.StatusBadRequest, err.Error())
+		ErrStatus(c, w, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -300,7 +300,7 @@ func GetTestExpectationCLStatusHandler(ctx *router.Context) {
 	}
 
 	if err := datastore.Get(c, queuedUpdate); err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -312,7 +312,7 @@ func GetTestExpectationCLStatusHandler(ctx *router.Context) {
 
 	respBytes, err := json.Marshal(resp)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 

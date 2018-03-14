@@ -30,12 +30,12 @@ func PostClientMonHandler(ctx *router.Context) {
 
 	req := &eCatcherReq{}
 	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-		errStatus(c, w, http.StatusBadRequest, err.Error())
+		ErrStatus(c, w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if err := xsrf.Check(c, req.XSRFToken); err != nil {
-		errStatus(c, w, http.StatusForbidden, err.Error())
+		ErrStatus(c, w, http.StatusForbidden, err.Error())
 		return
 	}
 

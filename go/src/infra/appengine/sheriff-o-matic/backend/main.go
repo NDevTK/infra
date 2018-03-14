@@ -10,6 +10,7 @@ import (
 
 	"infra/appengine/sheriff-o-matic/som/client"
 	"infra/appengine/sheriff-o-matic/som/handler"
+	"infra/appengine/sheriff-o-matic/som/migrations"
 
 	"go.chromium.org/luci/appengine/gaeauth/server"
 	"go.chromium.org/luci/appengine/gaemiddleware/standard"
@@ -42,6 +43,7 @@ func init() {
 	r.POST("/_ah/queue/changetestexpectations", basemw, handler.LayoutTestExpectationChangeWorker)
 	r.GET("/_cron/analyze/:tree", basemw, handler.GetAnalyzeHandler)
 	r.POST("/_ah/queue/logdiff", basemw, handler.LogdiffWorker)
+	r.GET("/_ah/migrations/addannotationtrees", basemw, migrations.AnnotationTreeWorker)
 
 	http.DefaultServeMux.Handle("/", r)
 }

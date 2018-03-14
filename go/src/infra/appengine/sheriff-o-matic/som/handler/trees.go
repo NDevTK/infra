@@ -46,7 +46,7 @@ func GetTreeLogoHandler(ctx *router.Context) {
 	sa, err := info.ServiceAccount(c)
 	if err != nil {
 		logging.Errorf(c, "failed to get service account: %v", err)
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -73,7 +73,7 @@ func getTreeLogo(ctx *router.Context, sa string, sign signer) {
 	_, b, err := sign.SignBytes(c, []byte(unsigned))
 	if err != nil {
 		logging.Errorf(c, "failed to sign bytes: %v", err)
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	sig := base64.StdEncoding.EncodeToString(b)

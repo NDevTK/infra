@@ -34,7 +34,7 @@ func GetRevRangeHandler(ctx *router.Context) {
 	start := p.ByName("start")
 	end := p.ByName("end")
 	if start == "" || end == "" {
-		errStatus(c, w, http.StatusBadRequest, "Start and end parameters must be set.")
+		ErrStatus(c, w, http.StatusBadRequest, "Start and end parameters must be set.")
 		return
 	}
 
@@ -46,13 +46,13 @@ func GetRevRangeHandler(ctx *router.Context) {
 		crRev := client.GetCrRev(c)
 		startRev, err := crRev.GetRedirect(c, start)
 		if err != nil {
-			errStatus(c, w, http.StatusInternalServerError, err.Error())
+			ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		endRev, err := crRev.GetRedirect(c, end)
 		if err != nil {
-			errStatus(c, w, http.StatusInternalServerError, err.Error())
+			ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -63,11 +63,11 @@ func GetRevRangeHandler(ctx *router.Context) {
 
 		itm.SetValue([]byte(gitilesURL))
 		if err = memcache.Set(c, itm); err != nil {
-			errStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("while setting memcache: %s", err))
+			ErrStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("while setting memcache: %s", err))
 			return
 		}
 	} else if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("while getting memcache: %s", err))
+		ErrStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("while getting memcache: %s", err))
 		return
 	}
 

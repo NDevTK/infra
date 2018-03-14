@@ -49,7 +49,7 @@ func GetAlerts(ctx *router.Context, unresolved bool, resolved bool) {
 	if tree == "trooper" {
 		data, err := getTrooperAlerts(c)
 		if err != nil {
-			errStatus(c, w, http.StatusInternalServerError, err.Error())
+			ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -68,7 +68,7 @@ func GetAlerts(ctx *router.Context, unresolved bool, resolved bool) {
 
 		err := datastore.GetAll(c, q, &alertResults)
 		if err != nil {
-			errStatus(c, w, http.StatusInternalServerError, err.Error())
+			ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -78,7 +78,7 @@ func GetAlerts(ctx *router.Context, unresolved bool, resolved bool) {
 
 		err = datastore.GetAll(c, q, &revisionSummaryResults)
 		if err != nil {
-			errStatus(c, w, http.StatusInternalServerError, err.Error())
+			ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 			return
 		}
 	}
@@ -92,7 +92,7 @@ func GetAlerts(ctx *router.Context, unresolved bool, resolved bool) {
 
 		err := datastore.GetAll(c, q, &resolvedResults)
 		if err != nil {
-			errStatus(c, w, http.StatusInternalServerError, err.Error())
+			ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 			return
 		}
 	}
@@ -110,7 +110,7 @@ func GetAlerts(ctx *router.Context, unresolved bool, resolved bool) {
 	for i, alertJSON := range alertResults {
 		err := json.Unmarshal(alertJSON.Contents, &alertsSummary.Alerts[i])
 		if err != nil {
-			errStatus(c, w, http.StatusInternalServerError, err.Error())
+			ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -123,7 +123,7 @@ func GetAlerts(ctx *router.Context, unresolved bool, resolved bool) {
 	for i, alertJSON := range resolvedResults {
 		err := json.Unmarshal(alertJSON.Contents, &alertsSummary.Resolved[i])
 		if err != nil {
-			errStatus(c, w, http.StatusInternalServerError, err.Error())
+			ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -137,7 +137,7 @@ func GetAlerts(ctx *router.Context, unresolved bool, resolved bool) {
 		var summary messages.RevisionSummary
 		err := json.Unmarshal(summaryJSON.Contents, &summary)
 		if err != nil {
-			errStatus(c, w, http.StatusInternalServerError, err.Error())
+			ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 			return
 		}
 		alertsSummary.RevisionSummaries[summaryJSON.ID] = summary
@@ -145,7 +145,7 @@ func GetAlerts(ctx *router.Context, unresolved bool, resolved bool) {
 
 	data, err := json.MarshalIndent(alertsSummary, "", "\t")
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -176,12 +176,12 @@ func PostAlertsHandler(ctx *router.Context) {
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		errStatus(c, w, http.StatusBadRequest, err.Error())
+		ErrStatus(c, w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if err := r.Body.Close(); err != nil {
-		errStatus(c, w, http.StatusBadRequest, err.Error())
+		ErrStatus(c, w, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -189,19 +189,19 @@ func PostAlertsHandler(ctx *router.Context) {
 	alertsSummary := &messages.AlertsSummary{}
 	err = json.Unmarshal(data, alertsSummary)
 	if err != nil {
-		errStatus(c, w, http.StatusBadRequest, err.Error())
+		ErrStatus(c, w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if alertsSummary.Timestamp == 0 {
-		errStatus(c, w, http.StatusBadRequest,
+		ErrStatus(c, w, http.StatusBadRequest,
 			"Couldn't decode into AlertsSummary or did not include a timestamp.")
 		return
 	}
 
 	err = putAlertsDatastore(c, tree, alertsSummary, true)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 	}
 }
 
@@ -309,12 +309,12 @@ func PostAlertHandler(ctx *router.Context) {
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		errStatus(c, w, http.StatusBadRequest, err.Error())
+		ErrStatus(c, w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if err := r.Body.Close(); err != nil {
-		errStatus(c, w, http.StatusBadRequest, err.Error())
+		ErrStatus(c, w, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -322,12 +322,12 @@ func PostAlertHandler(ctx *router.Context) {
 	alert := &messages.Alert{}
 	err = json.Unmarshal(data, alert)
 	if err != nil {
-		errStatus(c, w, http.StatusBadRequest, err.Error())
+		ErrStatus(c, w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if key != alert.Key {
-		errStatus(c, w, http.StatusBadRequest, fmt.Sprintf("POST key '%s' does not match alert key '%s'", key, alert.Key))
+		ErrStatus(c, w, http.StatusBadRequest, fmt.Sprintf("POST key '%s' does not match alert key '%s'", key, alert.Key))
 		return
 	}
 
@@ -349,7 +349,7 @@ func PostAlertHandler(ctx *router.Context) {
 		return datastore.Put(c, alertJSON)
 	}, nil)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 }
@@ -365,28 +365,28 @@ func ResolveAlertHandler(ctx *router.Context) {
 	req := &postRequest{}
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
-		errStatus(c, w, http.StatusBadRequest, fmt.Sprintf("while decoding request: %s", err))
+		ErrStatus(c, w, http.StatusBadRequest, fmt.Sprintf("while decoding request: %s", err))
 		return
 	}
 
 	if err := xsrf.Check(c, req.XSRFToken); err != nil {
-		errStatus(c, w, http.StatusForbidden, err.Error())
+		ErrStatus(c, w, http.StatusForbidden, err.Error())
 		return
 	}
 
 	if err := r.Body.Close(); err != nil {
-		errStatus(c, w, http.StatusBadRequest, err.Error())
+		ErrStatus(c, w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if req.Data == nil {
-		errStatus(c, w, http.StatusBadRequest, err.Error())
+		ErrStatus(c, w, http.StatusBadRequest, err.Error())
 		return
 	}
 	resolveRequest := &model.ResolveRequest{}
 	err = json.Unmarshal(*req.Data, resolveRequest)
 	if err != nil {
-		errStatus(c, w, http.StatusBadRequest, err.Error())
+		ErrStatus(c, w, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -398,12 +398,12 @@ func ResolveAlertHandler(ctx *router.Context) {
 
 	err = datastore.Get(c, alertJSONs)
 	if err != nil {
-		errStatus(c, w, http.StatusBadRequest, err.Error())
+		ErrStatus(c, w, http.StatusBadRequest, err.Error())
 		return
 	}
 	for i := range resolveRequest.Keys {
 		if len(alertJSONs[i].Contents) == 0 {
-			errStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("Key %s not found", alertJSONs[i].ID))
+			ErrStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("Key %s not found", alertJSONs[i].ID))
 			return
 		}
 		alertJSONs[i].Resolved = resolveRequest.Resolved
@@ -412,7 +412,7 @@ func ResolveAlertHandler(ctx *router.Context) {
 	}
 	err = datastore.Put(c, alertJSONs)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -423,7 +423,7 @@ func ResolveAlertHandler(ctx *router.Context) {
 	}
 	resp, err := json.Marshal(resolveResponse)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -439,18 +439,18 @@ func GetRestartingMastersHandler(ctx *router.Context) {
 
 	masters, err := getRestartingMasters(c, tree)
 	if err == ErrUnrecognizedTree {
-		errStatus(c, w, http.StatusNotFound, err.Error())
+		ErrStatus(c, w, http.StatusNotFound, err.Error())
 		return
 	}
 
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	data, err := json.Marshal(masters)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")

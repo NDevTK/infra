@@ -59,7 +59,7 @@ var (
 		field.String("category")) // "consistent", "new" etc
 )
 
-var errStatus = func(c context.Context, w http.ResponseWriter, status int, msg string) {
+var ErrStatus = func(c context.Context, w http.ResponseWriter, status int, msg string) {
 	logging.Errorf(c, "Status %d msg %s", status, msg)
 	w.WriteHeader(status)
 	w.Write([]byte(msg))
@@ -81,7 +81,7 @@ func GetAnalyzeHandler(ctx *router.Context) {
 	tree := p.ByName("tree")
 	alertsSummary, err := generateAlerts(ctx)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -94,7 +94,7 @@ func GetAnalyzeHandler(ctx *router.Context) {
 
 	if tree == "chromium" {
 		if err := enqueueLogDiffTask(c, alertsSummary.Alerts); err != nil {
-			errStatus(c, w, http.StatusInternalServerError, err.Error())
+			ErrStatus(c, w, http.StatusInternalServerError, err.Error())
 		}
 	}
 
@@ -120,7 +120,7 @@ func generateAlerts(ctx *router.Context) (*messages.AlertsSummary, error) {
 
 	treeCfgs, ok := trees[tree]
 	if !ok {
-		errStatus(c, w, http.StatusNotFound, fmt.Sprintf("unrecoginzed tree: %s", tree))
+		ErrStatus(c, w, http.StatusNotFound, fmt.Sprintf("unrecoginzed tree: %s", tree))
 		return nil, nil
 	}
 

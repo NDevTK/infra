@@ -74,12 +74,12 @@ func LogDiffJSONHandler(ctx *router.Context) {
 	builder := p.ByName("builder")
 	lo1, err := strconv.Atoi(p.ByName("buildNum1"))
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error converting string to integer: %v", err))
+		ErrStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error converting string to integer: %v", err))
 		return
 	}
 	lo2, err := strconv.Atoi(p.ByName("buildNum2"))
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error converting string to integer: %v", err))
+		ErrStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error converting string to integer: %v", err))
 		return
 	}
 	buildNum1 := int64(lo1)
@@ -90,23 +90,23 @@ func LogDiffJSONHandler(ctx *router.Context) {
 	q = q.Eq("Master", master).Eq("Builder", builder).Eq("BuildNum1", buildNum1).Eq("BuildNum2", buildNum2)
 	err = datastore.GetAll(c, q, &diffs)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error retrieving diffs from datastore: %v", err))
+		ErrStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error retrieving diffs from datastore: %v", err))
 		return
 	}
 	if len(diffs) <= 0 {
-		errStatus(c, w, http.StatusNotFound, fmt.Sprintf("Can't find specified logdiff"))
+		ErrStatus(c, w, http.StatusNotFound, fmt.Sprintf("Can't find specified logdiff"))
 		return
 	}
 
 	if !diffs[0].Complete {
-		errStatus(c, w, http.StatusNotFound, fmt.Sprintf("Diff file in progress"))
+		ErrStatus(c, w, http.StatusNotFound, fmt.Sprintf("Diff file in progress"))
 		return
 	}
 	data := diffs[0].Diffs
 	buffer := bytes.NewBuffer(data)
 	reader, err := zlib.NewReader(buffer)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error decompressing logdiff: %v", err))
+		ErrStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error decompressing logdiff: %v", err))
 		return
 	}
 	tmp := new(bytes.Buffer)
@@ -126,18 +126,18 @@ func LogdiffWorker(ctx *router.Context) {
 	lastFail := r.FormValue("lastFail")
 	masURL, err := url.Parse(master)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error parsing url: %v", err))
+		ErrStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error parsing url: %v", err))
 		return
 	}
 	Master := &messages.MasterLocation{URL: *masURL}
 	lo1, err := strconv.Atoi(lastFail)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error converting string to integer: %v", err))
+		ErrStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error converting string to integer: %v", err))
 		return
 	}
 	lo2, err := strconv.Atoi(lastPass)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error converting string to integer: %v", err))
+		ErrStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error converting string to integer: %v", err))
 		return
 	}
 	buildNum1 := int64(lo1)
@@ -156,11 +156,11 @@ func LogdiffWorker(ctx *router.Context) {
 	res1 := <-logchan
 
 	if res1.err != nil {
-		errStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error fetching log: %v", res1.err))
+		ErrStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error fetching log: %v", res1.err))
 		return
 	}
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error fetching log: %v", err))
+		ErrStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error fetching log: %v", err))
 		return
 	}
 	diffs := difflib.Diff(res1.log, res2)
@@ -173,7 +173,7 @@ func LogdiffWorker(ctx *router.Context) {
 
 	data, err := json.Marshal(merged)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error marshaling JSON for logdiff: %v", err))
+		ErrStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error marshaling JSON for logdiff: %v", err))
 		return
 	}
 
@@ -185,12 +185,12 @@ func LogdiffWorker(ctx *router.Context) {
 	stringID := r.FormValue("ID")
 	id, err := strconv.Atoi(stringID)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error converting string to integer: %v", err))
+		ErrStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error converting string to integer: %v", err))
 		return
 	}
 	diff := &LogDiff{ID: int64(id)}
 	if err := datastore.Get(c, diff); err != nil {
-		errStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error getting Logdiff shell: %v", err))
+		ErrStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error getting Logdiff shell: %v", err))
 		return
 	}
 	diff.Diffs = buffer.Bytes()
@@ -198,7 +198,7 @@ func LogdiffWorker(ctx *router.Context) {
 	logdiffSize.Add(c, float64(len(diff.Diffs)), "chromium")
 	err = datastore.Put(c, diff)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error storing Logdiff: %v", err))
+		ErrStatus(c, w, http.StatusInternalServerError, fmt.Sprintf("error storing Logdiff: %v", err))
 		return
 	}
 }
