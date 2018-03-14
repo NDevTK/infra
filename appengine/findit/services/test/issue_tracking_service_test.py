@@ -1,10 +1,13 @@
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import copy
-import mock
-import datetime
 
+import copy
+import datetime
+import mock
+import urllib
+
+from dto.test_location import TestLocation
 from monorail_api import CustomizedField
 from monorail_api import Issue
 from waterfall.test import wf_testcase
@@ -15,8 +18,10 @@ from model.flake.detection.flake_issue import FlakeIssue
 from model.flake.flake_culprit import FlakeCulprit
 from model.flake.master_flake_analysis import DataPoint
 from model.flake.master_flake_analysis import MasterFlakeAnalysis
-
 from services import issue_tracking_service
+from services import swarmed_test_util
+from services import swarming
+from services import test_results
 from waterfall.flake import flake_constants
 from waterfall.test.wf_testcase import DEFAULT_CONFIG_DATA
 
@@ -30,6 +35,149 @@ class IssueTrackingServiceTest(wf_testcase.WaterfallTestCase):
     self.assertEqual(['Test-Findit-Analyzed'], issue.labels)
     issue_tracking_service.AddFinditLabelToIssue(issue)
     self.assertEqual(['Test-Findit-Analyzed'], issue.labels)
+
+  @mock.patch.object(
+      issue_tracking_service, 'GetGTestComponent', return_value='component')
+  @mock.patch.object(swarming, 'GetIsolatedDataForStep')
+  @mock.patch.object(swarmed_test_util,
+                     'RetrieveShardedTestResultsFromIsolatedServer')
+  def testGetComponentGTest(self, results_fn, isolate_fn, get_component_fn):
+    master_name = 'm'
+    builder_name = 'b'
+    build_number = 1
+    step_name = 's'
+    test_name = 't'
+
+    self.assertEqual('component',
+                     issue_tracking_service.GetComponent(
+                         None, master_name, builder_name, build_number,
+                         step_name, test_name))
+    isolate_fn.assert_called_with(master_name, builder_name, build_number,
+                                  step_name, None)
+    results_fn.assert_called()
+    get_component_fn.assert_called()
+
+  @mock.patch.object(
+      issue_tracking_service, 'GetGTestComponent', return_value='component')
+  @mock.patch.object(swarming, 'GetIsolatedDataForStep', return_value=None)
+  @mock.patch.object(swarmed_test_util,
+                     'RetrieveShardedTestResultsFromIsolatedServer')
+  def testGetComponentGTestNoIsolateData(self, results_fn, isolate_fn,
+                                         get_component_fn):
+    master_name = 'm'
+    builder_name = 'b'
+    build_number = 1
+    step_name = 's'
+    test_name = 't'
+
+    self.assertEqual(None,
+                     issue_tracking_service.GetComponent(
+                         None, master_name, builder_name, build_number,
+                         step_name, test_name))
+    isolate_fn.assert_called_with(master_name, builder_name, build_number,
+                                  step_name, None)
+    results_fn.assert_not_called()
+    get_component_fn.assert_not_called()
+
+  @mock.patch.object(
+      issue_tracking_service, 'GetGTestComponent', return_value='component')
+  @mock.patch.object(swarming, 'GetIsolatedDataForStep')
+  @mock.patch.object(
+      swarmed_test_util,
+      'RetrieveShardedTestResultsFromIsolatedServer',
+      return_value=None)
+  def testGetComponentGTestNoResults(self, results_fn, isolate_fn,
+                                         get_component_fn):
+    master_name = 'm'
+    builder_name = 'b'
+    build_number = 1
+    step_name = 's'
+    test_name = 't'
+
+    self.assertEqual(None,
+                     issue_tracking_service.GetComponent(
+                         None, master_name, builder_name, build_number,
+                         step_name, test_name))
+    isolate_fn.assert_called_with(master_name, builder_name, build_number,
+                                  step_name, None)
+    results_fn.assert_called()
+    get_component_fn.assert_not_called()
+
+  @mock.patch.object(
+      issue_tracking_service,
+      'GetNearestComponentForPath',
+      return_value='component')
+  def testGetComponentLayoutTest(self, get_component_fn):
+    master_name = 'm'
+    builder_name = 'b'
+    build_number = 1
+    step_name = '__layout__test'
+    test_name = 't'
+
+    self.assertEqual('component',
+                     issue_tracking_service.GetComponent(
+                         None, master_name, builder_name, build_number,
+                         step_name, test_name))
+    get_component_fn.assert_called_with(
+        'third_party/WebKit/LayoutTests/' + test_name)
+
+  @mock.patch.object(test_results, 'GetTestLocation')
+  @mock.patch.object(
+      issue_tracking_service,
+      'GetNearestComponentForPath',
+      return_value='chromium>foo')
+  def testGetGTestComponent(self, get_component_fn, get_location_fn):
+    test_name = 'test'
+    results = {'foo': 'bar'}
+
+    get_location_fn.return_value = TestLocation(file='foo/bar.cc', line=1), None
+    self.assertEqual('chromium>foo',
+                     issue_tracking_service.GetGTestComponent(
+                         test_name, results))
+    get_location_fn.assert_called_with(results, test_name)
+    get_component_fn.assert_called_with('foo/bar.cc')
+
+  @mock.patch.object(test_results, 'GetTestLocation')
+  @mock.patch.object(
+      issue_tracking_service,
+      'GetNearestComponentForPath',
+      return_value='chromium>foo')
+  def testGetGTestComponentNoLocation(self, get_component_fn, get_location_fn):
+    test_name = 'test'
+    results = {'foo': 'bar'}
+
+    get_location_fn.return_value = None, None
+    self.assertEqual(None,
+                     issue_tracking_service.GetGTestComponent(
+                         test_name, results))
+    get_location_fn.assert_called_with(results, test_name)
+    get_component_fn.assert_not_called()
+
+  @mock.patch.object(urllib, 'urlopen')
+  def testGetNearestComponentForPath(self, url_fn):
+    path = 'foo/bar/baz'
+    read_fn = mock.Mock()
+    read_fn.read.return_value = ('{'
+                                 '"dir-to-component": {'
+                                 '"foo/bar": "chromium>foo"'
+                                 '}'
+                                 '}')
+    url_fn.return_value = read_fn
+    self.assertEqual('chromium>foo',
+                     issue_tracking_service.GetNearestComponentForPath(path))
+
+  @mock.patch.object(urllib, 'urlopen')
+  def testGetNearestComponentForPathNoMatch(self, url_fn):
+    path = 'b/a/baz'
+    read_fn = mock.Mock()
+    read_fn.read.return_value = ('{'
+                                 '"dir-to-component": {'
+                                 '"foo/bar": "chromium>foo"'
+                                 '}'
+                                 '}')
+    url_fn.return_value = read_fn
+    self.assertEqual(None,
+                     issue_tracking_service.GetNearestComponentForPath(path))
 
   def testGenerateCommentWithCulprit(self):
     analysis = MasterFlakeAnalysis.Create('m', 'b', 1, 's', 't')
