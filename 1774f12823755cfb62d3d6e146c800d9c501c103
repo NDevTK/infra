@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f4a8aa80_332c2abc",
+        "filename": "appengine/findit/services/issue_tracking_service.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2018-03-14T22:17:16Z",
+      "side": 1,
+      "message": "Might want to add a case to bail out here if too many directories are traversed in this loop.",
+      "range": {
+        "startLine": 143,
+        "startChar": 1,
+        "endLine": 143,
+        "endChar": 49
+      },
+      "revId": "1774f12823755cfb62d3d6e146c800d9c501c103",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
