@@ -34,8 +34,6 @@ BUILDERS = freeze({
     'lkgr_status_gs_path': 'chromium-infra/lkgr-status',
     'repo': 'https://chromium.googlesource.com/chromium/src',
     'ref': 'refs/heads/lkgr',
-    'gclient_config': 'chromium',
-    'checkout_dir': 'src',
   },
   'V8 lkgr finder': {
     'project': 'v8',
@@ -43,16 +41,12 @@ BUILDERS = freeze({
     'lkgr_status_gs_path': 'chromium-v8/lkgr-status',
     'repo': 'https://chromium.googlesource.com/v8/v8',
     'ref': 'refs/heads/lkgr',
-    'gclient_config': 'v8',
-    'checkout_dir': 'v8',
   },
   'WebRTC lkgr finder': {
     'project': 'webrtc',
     'lkgr_status_gs_path': 'chromium-webrtc/lkgr-status',
     'repo': 'https://webrtc.googlesource.com/src',
     'ref': 'refs/heads/lkgr',
-    'gclient_config': 'webrtc',
-    'checkout_dir': 'src',
   }
   # When adding a new builder, please make sure to add dep containing relevant
   # gclient_config into DEPS list above.
@@ -63,7 +57,6 @@ def RunSteps(api, buildername):
   botconfig = BUILDERS[buildername]
   api.gclient.set_config('infra')
   api.gclient.c.revisions['infra'] = 'HEAD'
-  api.gclient.apply_config(botconfig['gclient_config'])
 
   # Projects can define revision mappings that conflict with infra revision
   # mapping, so we overide them here to only map infra's revision so that it
@@ -132,8 +125,7 @@ def RunSteps(api, buildername):
 
   new_lkgr = step_result.raw_io.output_texts['lkgr_hash']
   if new_lkgr and new_lkgr != current_lkgr:
-    with api.context(cwd=checkout_dir.join(botconfig['checkout_dir'])):
-      api.git('push', repo, '%s:%s' % (new_lkgr, ref), name='push lkgr to ref')
+    api.git('push', repo, '%s:%s' % (new_lkgr, ref), name='push lkgr to ref')
 
 
 def GenTests(api):
