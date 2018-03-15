@@ -22,6 +22,30 @@
       "revId": "833bba71dea9bc4594c36f00cb0aaf133aae247b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "96879ef8_29a1ba66",
+        "filename": "appengine/findit/services/step_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-03-15T22:47:06Z",
+      "side": 1,
+      "message": "The original design is a \"try it\u0027s best\" approach, in the docstring it says the calling code should be responsible for checking what\u0027s returned and deciding what to do, because None can be returned for other reasons too (e.g. missing builds or some undetected error happened).",
+      "parentUuid": "2fd18d32_4fbcb6c5",
+      "range": {
+        "startLine": 104,
+        "startChar": 31,
+        "endLine": 104,
+        "endChar": 33
+      },
+      "revId": "833bba71dea9bc4594c36f00cb0aaf133aae247b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
