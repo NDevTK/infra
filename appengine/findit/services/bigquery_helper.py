@@ -109,7 +109,7 @@ def _AssignTypeToRow(schema, row):
   for idx, schema_field in enumerate(schema):
     type_func = schema_field['type_conversion_function']
     row_dict[schema_field['name']] = type_func(row['f'][idx]['v'],
-                                                     schema_field['nullable'])
+                                               schema_field['nullable'])
   return row_dict
 
 
@@ -229,7 +229,9 @@ def ReportEventsToBigquery(events_and_ids, project_id, dataset_id, table_id):
       'json':
           json.loads(
               json_format.MessageToJson(
-                  event, preserving_proto_field_name=True)),
+                  event,
+                  preserving_proto_field_name=True,
+                  including_default_value_fields=True)),
       'insertId':
           insert_id
   } for event, insert_id in events_and_ids]
