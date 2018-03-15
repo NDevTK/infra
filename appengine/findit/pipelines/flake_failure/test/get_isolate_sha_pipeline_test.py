@@ -20,6 +20,7 @@ from pipelines.flake_failure.run_flake_try_job_pipeline import (
     RunFlakeTryJobParameters)
 from pipelines.flake_failure.run_flake_try_job_pipeline import (
     RunFlakeTryJobPipeline)
+from services import step_util
 from services import swarming
 from services import swarmbot_util
 from waterfall import build_util
@@ -50,7 +51,7 @@ class GetIsolateShaPipelineTest(WaterfallTestCase):
 
     self.assertTrue(mocked_get_isolate_sha.called)
 
-  @mock.patch.object(build_util, 'GetBoundingBuilds')
+  @mock.patch.object(step_util, 'GetValidBoundingBuildsForStep')
   def testGetIsolateShaForCommitPositionPipelineBuildLevel(
       self, mocked_build_info):
     master_name = 'm'
@@ -90,7 +91,7 @@ class GetIsolateShaPipelineTest(WaterfallTestCase):
 
   @mock.patch.object(waterfall_config, 'GetTrybotDimensions')
   @mock.patch.object(swarmbot_util, 'GetCacheName')
-  @mock.patch.object(build_util, 'GetBoundingBuilds')
+  @mock.patch.object(step_util, 'GetValidBoundingBuildsForStep')
   @mock.patch.object(build_util, 'GetBuildInfo')
   def testGetIsolateShaForCommitPositionPipelineCommitLevel(
       self, mocked_reference_build, mocked_bounding_builds, mocked_cache,
