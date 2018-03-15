@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Functions for interfacing with Mororail bugs."""
 
+import re
 import base64
 import datetime
 import json
@@ -20,9 +21,11 @@ from libs import time_util
 from monorail_api import CustomizedField
 from monorail_api import IssueTrackerAPI
 from monorail_api import Issue
-
 from model.flake import master_flake_analysis
 from model.flake.detection.flake_issue import FlakeIssue
+from services import test_results
+from services import swarming
+from services import swarmed_test_util
 from waterfall import waterfall_config
 from waterfall.flake import flake_constants
 

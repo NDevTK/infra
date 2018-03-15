@@ -1,9 +1,10 @@
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
 import copy
-import mock
 import datetime
+import mock
 
 from monorail_api import CustomizedField
 from monorail_api import Issue
@@ -15,7 +16,6 @@ from model.flake.detection.flake_issue import FlakeIssue
 from model.flake.flake_culprit import FlakeCulprit
 from model.flake.master_flake_analysis import DataPoint
 from model.flake.master_flake_analysis import MasterFlakeAnalysis
-
 from services import issue_tracking_service
 from waterfall.flake import flake_constants
 from waterfall.test.wf_testcase import DEFAULT_CONFIG_DATA
