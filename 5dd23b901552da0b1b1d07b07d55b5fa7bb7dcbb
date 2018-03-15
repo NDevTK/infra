@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "dddf5063_a800fe34",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/som/migrations/annotations.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-03-15T00:30:47Z",
+      "side": 1,
+      "message": "Moved and unexported errStatus. Agreed that it\u0027s best to leave that particular function in its own package.",
+      "parentUuid": "eca68d1c_e9ef3d2a",
+      "range": {
+        "startLine": 1,
+        "startChar": 8,
+        "endLine": 1,
+        "endChar": 18
+      },
+      "revId": "5dd23b901552da0b1b1d07b07d55b5fa7bb7dcbb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ff218f2a_3496624e",
         "filename": "go/src/infra/appengine/sheriff-o-matic/som/migrations/annotations.go",
         "patchSetId": 1
@@ -39,6 +63,24 @@
       "revId": "5dd23b901552da0b1b1d07b07d55b5fa7bb7dcbb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3a927d90_4826f639",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/som/migrations/annotations.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-03-15T00:30:47Z",
+      "side": 1,
+      "message": "Done. I ended up using the cuteoff date that we use in our handler to prune old annotations. (10 days)",
+      "parentUuid": "ff218f2a_3496624e",
+      "revId": "5dd23b901552da0b1b1d07b07d55b5fa7bb7dcbb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
