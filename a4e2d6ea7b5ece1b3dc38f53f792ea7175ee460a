@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "01e56839_d42526db",
+        "filename": "appengine/findit/services/step_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-03-15T20:42:10Z",
+      "side": 1,
+      "message": "It may be better to break this into 2 functions: 1 that gets the raw builds on the left and right (the original code), then a second one that takes the output of this first function as input and outputs the 2 nearest valid replacement builds.",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 94,
+        "endChar": 42
+      },
+      "revId": "a4e2d6ea7b5ece1b3dc38f53f792ea7175ee460a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
