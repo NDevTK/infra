@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "15e971a6_7d296c44",
+        "filename": "appengine/findit/services/issue_tracking_service.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-03-15T20:30:49Z",
+      "side": 1,
+      "message": "Hmm organizationally it appears these are test type specific operations that eventually depend on GetNearestComponentForPath, which I think really should be the only function here. How about move these outside to separate modules (either existing or new ones)? It seems they\u0027re doing test-type-specific preprocessing whereas issue_tracking_service should be the actual layer that handles talking to monorail.\n\ne.g. GetComponent and GetGtestComponent can be moved to a different appropriately named services module (no ideas off the top of my head yet) and keep GetNearestComponentForPath here.",
+      "range": {
+        "startLine": 99,
+        "startChar": 0,
+        "endLine": 133,
+        "endChar": 0
+      },
+      "revId": "1774f12823755cfb62d3d6e146c800d9c501c103",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f4a8aa80_332c2abc",
         "filename": "appengine/findit/services/issue_tracking_service.py",
         "patchSetId": 2
