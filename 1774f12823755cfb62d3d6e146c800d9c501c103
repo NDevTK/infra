@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "5baeda38_d2482fd0",
+        "filename": "appengine/findit/services/issue_tracking_service.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2018-03-15T20:53:43Z",
+      "side": 1,
+      "message": "I think that\u0027s a good point, and I think probably GetNearestComponentForPath can be categorized (along with the others) as something useful to issue tracking, but not necessarily related in the way that would be required for it to share a module.\n\nI created a module monorail_helper, which will house things useful for issue tracking, but doesn\u0027t talk to the service directly.",
+      "parentUuid": "15e971a6_7d296c44",
+      "range": {
+        "startLine": 99,
+        "startChar": 0,
+        "endLine": 133,
+        "endChar": 0
+      },
+      "revId": "1774f12823755cfb62d3d6e146c800d9c501c103",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f4a8aa80_332c2abc",
         "filename": "appengine/findit/services/issue_tracking_service.py",
         "patchSetId": 2
