@@ -70,6 +70,30 @@
       "revId": "833bba71dea9bc4594c36f00cb0aaf133aae247b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "916b6061_68bf6483",
+        "filename": "appengine/findit/services/step_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-03-15T23:44:34Z",
+      "side": 1,
+      "message": "Yes, so keep the current design as-is. The only corner case I can think of is if the upper bound build doesn\u0027t have valid artifacts, and the nearest build that does is the lower bound build, in this case i think returning the lower bound build for both is fine but add a comment",
+      "parentUuid": "7f8b32ec_1bf840ef",
+      "range": {
+        "startLine": 104,
+        "startChar": 31,
+        "endLine": 104,
+        "endChar": 33
+      },
+      "revId": "833bba71dea9bc4594c36f00cb0aaf133aae247b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
