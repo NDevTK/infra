@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2fd18d32_4fbcb6c5",
+        "filename": "appengine/findit/services/step_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-03-15T22:14:46Z",
+      "side": 1,
+      "message": "Jeff: I think if requested_commit_position \u003e latest_build_info.commit_position, we should return None for both bounds, shouldn\u0027t we?",
+      "range": {
+        "startLine": 104,
+        "startChar": 31,
+        "endLine": 104,
+        "endChar": 33
+      },
+      "revId": "833bba71dea9bc4594c36f00cb0aaf133aae247b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
