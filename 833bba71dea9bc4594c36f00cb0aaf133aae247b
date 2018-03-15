@@ -46,6 +46,30 @@
       "revId": "833bba71dea9bc4594c36f00cb0aaf133aae247b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f8b32ec_1bf840ef",
+        "filename": "appengine/findit/services/step_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-03-15T22:51:32Z",
+      "side": 1,
+      "message": "So I\u0027ll keep it as is?",
+      "parentUuid": "96879ef8_29a1ba66",
+      "range": {
+        "startLine": 104,
+        "startChar": 31,
+        "endLine": 104,
+        "endChar": 33
+      },
+      "revId": "833bba71dea9bc4594c36f00cb0aaf133aae247b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
