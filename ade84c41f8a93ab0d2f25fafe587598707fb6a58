@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c2fb2e88_9b5c7b28",
+        "filename": "appengine/findit/services/step_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-03-16T17:12:56Z",
+      "side": 1,
+      "message": "nit: typo",
+      "range": {
+        "startLine": 15,
+        "startChar": 8,
+        "endLine": 15,
+        "endChar": 17
+      },
+      "revId": "ade84c41f8a93ab0d2f25fafe587598707fb6a58",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
