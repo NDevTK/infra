@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c51c3bc2_1fcd02d6",
+        "filename": "appengine/findit/services/monorail_util.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-03-17T00:55:13Z",
+      "side": 1,
+      "message": "nit: returns",
+      "range": {
+        "startLine": 26,
+        "startChar": 5,
+        "endLine": 26,
+        "endChar": 11
+      },
+      "revId": "6b0a558cc93187259f005aea5debaca0068632f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2bc83c6a_21aba240",
+        "filename": "appengine/findit/services/monorail_util.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-03-17T00:55:13Z",
+      "side": 1,
+      "message": "webkit_layout_tests",
+      "range": {
+        "startLine": 31,
+        "startChar": 6,
+        "endLine": 31,
+        "endChar": 12
+      },
+      "revId": "6b0a558cc93187259f005aea5debaca0068632f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "91c954c9_cf14102c",
+        "filename": "appengine/findit/services/monorail_util.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-03-17T00:55:13Z",
+      "side": 1,
+      "message": "Add a comment to explain why this is needed.",
+      "range": {
+        "startLine": 62,
+        "startChar": 36,
+        "endLine": 62,
+        "endChar": 71
+      },
+      "revId": "6b0a558cc93187259f005aea5debaca0068632f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bfecf072_3888be52",
+        "filename": "appengine/findit/services/monorail_util.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-03-17T00:55:13Z",
+      "side": 1,
+      "message": "We\u0027d better use http_client for automatic retry upon failures.",
+      "range": {
+        "startLine": 68,
+        "startChar": 2,
+        "endLine": 68,
+        "endChar": 51
+      },
+      "revId": "6b0a558cc93187259f005aea5debaca0068632f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d46880b_6e5a2010",
+        "filename": "appengine/findit/services/monorail_util.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-03-17T00:55:13Z",
+      "side": 1,
+      "message": "It could be expensive to load every time. Since the data is updated every 6 hours, we could put it in memcache.\n\nWhat\u0027s the size of the data?",
+      "range": {
+        "startLine": 68,
+        "startChar": 2,
+        "endLine": 70,
+        "endChar": 51
+      },
+      "revId": "6b0a558cc93187259f005aea5debaca0068632f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "685380d0_3ba168b8",
+        "filename": "appengine/findit/services/monorail_util.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-03-17T00:55:13Z",
+      "side": 1,
+      "message": "Will os.path.dirname work here?",
+      "range": {
+        "startLine": 72,
+        "startChar": 2,
+        "endLine": 72,
+        "endChar": 61
+      },
+      "revId": "6b0a558cc93187259f005aea5debaca0068632f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
