@@ -22,6 +22,30 @@
       "revId": "fe7c72d8c56f5d232958dc4ba4bf97fb9bfecb9c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "556b9cd1_37ef7c80",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 310,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2018-03-21T17:38:58Z",
+      "side": 1,
+      "message": "Makes sense, they\u0027re all commented in the declarations. I added a comment here as well.\n\nTracking them explicitly just makes it a bit more obvious and sneaky bugs are a bit less likely.",
+      "parentUuid": "4bf7d405_dc26f4fa",
+      "range": {
+        "startLine": 310,
+        "startChar": 4,
+        "endLine": 310,
+        "endChar": 36
+      },
+      "revId": "fe7c72d8c56f5d232958dc4ba4bf97fb9bfecb9c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
