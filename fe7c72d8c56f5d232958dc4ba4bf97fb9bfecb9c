@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4bf7d405_dc26f4fa",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 310,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-03-21T05:38:29Z",
+      "side": 1,
+      "message": "This is fine for now but in general I think some of these can be deduced, e.g. \u0027has_commented_on_cl\u0027 can be derived by getting the flake culprit and checking that model\u0027s \u0027notified\u0027 field.\n\nNote this could have multiple meanings depending on how you\u0027re designing it and would have to included such cases in the possible code paths. For example if you explicitly mean that this was the analysis that triggered that notification, or this analysis\u0027 culprit has been notified at all by anyone.\n\nSame with the other fields?\n\nAs long as the cases are made clear (and commented here) I think this approach is fine.",
+      "range": {
+        "startLine": 310,
+        "startChar": 4,
+        "endLine": 310,
+        "endChar": 36
+      },
+      "revId": "fe7c72d8c56f5d232958dc4ba4bf97fb9bfecb9c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
