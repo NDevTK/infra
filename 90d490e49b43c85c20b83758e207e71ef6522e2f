@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "377e2509_f58885b8",
+        "filename": "appengine/findit/dto/test/swarming_task_error_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-03-26T04:02:03Z",
+      "side": 1,
+      "message": "why not just compare\n\nexpected_error \u003d SwarmingTaskError(code\u003d1000, message\u003d\u0027Unknown error\u0027) and skip ToSerializable?",
+      "range": {
+        "startLine": 13,
+        "startChar": 4,
+        "endLine": 16,
+        "endChar": 71
+      },
+      "revId": "90d490e49b43c85c20b83758e207e71ef6522e2f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
