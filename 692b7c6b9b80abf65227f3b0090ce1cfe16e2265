@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7fbae346_2cce7943",
+        "filename": "appengine/monorail/tools/ml/README.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-03-27T19:27:36Z",
+      "side": 1,
+      "message": "I _think_ titles in Markdown should already be bolded, so not sure if the **\u0027s will have an effect",
+      "revId": "692b7c6b9b80abf65227f3b0090ce1cfe16e2265",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d470e6bf_7c8c43c8",
+        "filename": "appengine/monorail/tools/ml/component.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-03-27T19:27:36Z",
+      "side": 1,
+      "message": "This might conflict with crrev.com/c/964585",
+      "revId": "692b7c6b9b80abf65227f3b0090ce1cfe16e2265",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
