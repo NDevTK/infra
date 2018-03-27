@@ -35,9 +35,7 @@ class RunTestSwarmingTaskPipelineTest(wf_testcase.WaterfallTestCase):
     p = RunTestSwarmingTaskPipeline(self.pipeline_input)
     p.RunImpl(self.pipeline_input)
     mock_trigger.assert_called_once_with(self.pipeline_input, 'pipeline-id')
-    mock_save_params.assert_called_once_with({
-        'task_id': 'task_id'
-    })
+    mock_save_params.assert_called_once_with({'task_id': 'task_id'})
 
   @mock.patch.object(
       RunTestSwarmingTaskPipeline,
@@ -66,18 +64,14 @@ class RunTestSwarmingTaskPipelineTest(wf_testcase.WaterfallTestCase):
       test_swarming, 'OnSwarmingTaskStateChanged', return_value=True)
   def testCallbackImplCompleted(self, _):
     p = RunTestSwarmingTaskPipeline(self.pipeline_input)
-    result = p.CallbackImpl(self.pipeline_input, {
-        'task_id': 'task_id'
-    })
+    result = p.CallbackImpl(self.pipeline_input, {'task_id': 'task_id'})
     self.assertEqual((None, True), result)
 
   @mock.patch.object(
       test_swarming, 'OnSwarmingTaskStateChanged', return_value=None)
   def testCallbackImplRunning(self, _):
     p = RunTestSwarmingTaskPipeline(self.pipeline_input)
-    result = p.CallbackImpl(self.pipeline_input, {
-        'task_id': 'task_id'
-    })
+    result = p.CallbackImpl(self.pipeline_input, {'task_id': 'task_id'})
     self.assertIsNone(result)
 
   @mock.patch.object(
@@ -86,9 +80,7 @@ class RunTestSwarmingTaskPipelineTest(wf_testcase.WaterfallTestCase):
       side_effect=exceptions.RetryException('r', 'm'))
   def testCallbackImplFailedRun(self, _):
     p = RunTestSwarmingTaskPipeline(self.pipeline_input)
-    result = p.CallbackImpl(self.pipeline_input, {
-        'task_id': 'task_id'
-    })
+    result = p.CallbackImpl(self.pipeline_input, {'task_id': 'task_id'})
     self.assertEqual(('Error on updating swarming task result: m', None),
                      result)
 

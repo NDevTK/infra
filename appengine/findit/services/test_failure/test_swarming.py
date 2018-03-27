@@ -7,6 +7,8 @@ import logging
 from google.appengine.ext import ndb
 
 from common.findit_http_client import FinditHttpClient
+from dto.collect_swarming_task_results_outputs import (
+    CollectSwarmingTaskResultsOutputs)
 from infra_api_clients.swarming import swarming_util
 from libs import analysis_status
 from model.wf_swarming_task import WfSwarmingTask
@@ -15,6 +17,7 @@ from services import monitoring
 from services import swarmed_test_util
 from services import swarming
 from services import test_results
+from services.test_failure import test_failure_analysis
 from waterfall import waterfall_config
 
 
@@ -144,14 +147,6 @@ def OnSwarmingTaskTimeout(run_swarming_task_params, task_id):
       run_swarming_task_params.build_key.GetParts())
   step_name = run_swarming_task_params.step_name
 
-  _UpdateSwarmingTaskEntity(
-      master_name,
-      builder_name,
-      build_number,
-      step_name,
-      error=constants.GenerateError(constants.TIMED_OUT),
-  )
-
   _state, output_json, _error = swarmed_test_util.GetSwarmingTaskData(task_id)
   if output_json:
     tests_statuses = test_results.GetTestsRunStatuses(output_json)
@@ -239,3 +234,78 @@ def OnSwarmingTaskStateChanged(run_swarming_task_parameters, task_id):
     # Swarming task finished with error.
     return OnSwarmingTaskError(master_name, builder_name, build_number,
                                step_name, error)
+
+
+def GetsStepsToCollectSwarmingTaskResults(collect_consistent_failure_inputs):
+  """Gets steps that Findit needs to wait swarming tasks to complete and collect
+    results for.
+
+  Args:
+    collect_consistent_failure_inputs (CollectSwarmingTaskResultsInputs): Key to
+    a build and if the build has completed.
+
+  Returns:
+    steps (list): A list of step names that Findit needs to wait swarming tasks
+      to complete and collect results for. It will be empty if build has not
+      completed yet or there's no first time failures in the build.
+  """
+  build_completed = collect_consistent_failure_inputs.build_completed
+  if not build_completed:
+    # Build has not completed, bail out.
+    return []
+
+  master_name, builder_name, build_number = (
+      collect_consistent_failure_inputs.build_key.GetParts())
+  return test_failure_analysis.GetFirstTimeFailedSteps(
+      master_name, builder_name, build_number)
+
+
+def CollectSwarmingTaskResults(collect_consistent_failure_inputs,
+                               first_failed_steps):
+  """Collects results of all swarming retuns in a build.
+
+  Args:
+    collect_consistent_failure_inputs (CollectSwarmingTaskResultsInputs): Key to
+      a build and if the build has completed.
+    first_failed_steps (list): A list of step_names that Findit needs to wait
+      swarming tasks to complete and collect results for.
+
+  Returns:
+    (CollectSwarmingTaskResultsOutputs): Consistently
+      failed tests.
+      - It will be None if any task is still running.
+      - It will be empty if no consistent test failures in build.
+  """
+
+  master_name, builder_name, build_number = (
+      collect_consistent_failure_inputs.build_key.GetParts())
+  consistent_failures = {}
+
+  for step_name in first_failed_steps:
+    task = WfSwarmingTask.Get(master_name, builder_name, build_number,
+                              step_name)
+    assert task, 'Cannot get WfSwarmingTask entity %s/%s/%d/%s.' % (
+        master_name, builder_name, build_number, step_name)
+    if task.status in [analysis_status.PENDING, analysis_status.RUNNING]:
+      return None
+
+    if task.status == analysis_status.ERROR:
+      logging.warning('Swarming task %s/%s/%s/%s completed with error %s.' %
+                      (master_name, builder_name, build_number, step_name,
+                       (task.error or {}).get('message', 'Unknown error.')))
+      continue
+
+    if not task.classified_tests:  # Task completed without results.
+      logging.warning('No result for swarming task %s/%s/%s/%s' %
+                      (master_name, builder_name, build_number, step_name))
+      continue
+
+    if not task.reliable_tests:  # No consistent test failures.
+      continue
+
+    consistent_failures[step_name] = task.reliable_tests
+
+  return (CollectSwarmingTaskResultsOutputs.FromSerializable({
+      'consistent_failures': consistent_failures
+  }) if consistent_failures else
+          CollectSwarmingTaskResultsOutputs.FromSerializable({}))
