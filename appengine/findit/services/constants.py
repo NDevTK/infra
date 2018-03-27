@@ -7,8 +7,10 @@ FLAKY_FAILURE_LOG = 'flaky'
 WRONG_FORMAT_LOG = 'not in desired test result formats'
 
 # Swarming task states.
-STATES_RUNNING = ('RUNNING', 'PENDING')
+STATE_PENDING = 'PENDING'
+STATE_RUNNING = 'RUNNING'
 STATE_COMPLETED = 'COMPLETED'
+STATE_NOT_STOP = (STATE_PENDING, STATE_RUNNING)
 
 # TODO(crbug.com/785463): Use enum for error codes.
 
@@ -34,3 +36,18 @@ NO_OUTPUT_JSON = 320
 UNKNOWN = 1000
 # Unable to recognize the format of output json.
 UNRECOGNIZABLE = 10
+
+ERROR_CODE_TO_MESSAGE = {
+    TIMED_OUT: 'Process swarming task result timed out',
+    NO_TASK_OUTPUTS: 'outputs_ref is None',
+    NO_OUTPUT_JSON: 'No swarming task failure log',
+    UNKNOWN: 'Unknown error',
+    UNRECOGNIZABLE: 'Test results format is unrecognized, cannot find a parser.'
+}
+
+
+def GenerateError(code):
+  return {
+      'code': code,
+      'message': ERROR_CODE_TO_MESSAGE.get(code, ERROR_CODE_TO_MESSAGE[UNKNOWN])
+  }
