@@ -28,8 +28,8 @@ from oauth2client.client import GoogleCredentials
 
 credentials = GoogleCredentials.get_application_default()
 
-# This must be identical with settings.spam_feature_hashes.
-COMPONENT_FEATURE_HASHES = 500
+# This must be identical with settings.component_features.
+COMPONENT_FEATURE_HASHES = 5000
 
 MODEL_NAME = 'component'
 
