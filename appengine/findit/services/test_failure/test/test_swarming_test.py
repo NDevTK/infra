@@ -7,7 +7,9 @@ import mock
 
 from google.appengine.ext import ndb
 
+from common.waterfall import failure_type
 from dto import swarming_task_error
+from dto.run_swarming_tasks_input import RunSwarmingTasksInput
 from dto.swarming_task_error import SwarmingTaskError
 from dto.run_swarming_task_parameters import RunSwarmingTaskParameters
 from infra_api_clients.swarming.swarming_task_request import SwarmingTaskRequest
@@ -16,9 +18,13 @@ from libs import analysis_status
 from model.wf_swarming_task import WfSwarmingTask
 from services import constants
 from services.parameters import BuildKey
+from services.parameters import TestFailureInfo
+from services.parameters import TestHeuristicAnalysisOutput
+from services.parameters import TestHeuristicResult
 from services import swarmed_test_util
 from services import swarming
 from services import test_results
+from services.test_failure import test_failure_analysis
 from services.test_failure import test_swarming
 from waterfall.test import wf_testcase
 
@@ -451,3 +457,60 @@ class TestSwarmingTest(wf_testcase.WaterfallTestCase):
                                        step_name)
     self.assertEqual(error, swarming_task.error)
     self.assertEqual(analysis_status.PENDING, swarming_task.status)
+
+  @mock.patch.object(
+      test_swarming, 'NeedANewSwarmingTask', side_effect=[True, False])
+  @mock.patch.object(
+      test_failure_analysis,
+      'GetsFirstFailureAtTestLevel',
+      return_value={
+          'step': ['test'],
+          'step1': ['test1']
+      })
+  def testGetFirstTimeTestFailuresToRunSwarmingTasks(self, mock_fn, _):
+    master_name = 'm'
+    builder_name = 'b'
+    build_number = 13
+    step_name = 'step'
+
+    failure_info_json = {
+        'failure_type': failure_type.TEST,
+        'failed_steps': {
+            step_name: {}
+        }
+    }
+    failure_info = TestFailureInfo.FromSerializable(failure_info_json)
+
+    heuristic_result = TestHeuristicAnalysisOutput(
+        failure_info=failure_info,
+        heuristic_result=TestHeuristicResult.FromSerializable({}))
+
+    params = RunSwarmingTasksInput(
+        build_key=BuildKey(
+            master_name=master_name,
+            builder_name=builder_name,
+            build_number=build_number),
+        heuristic_result=heuristic_result,
+        force=False)
+    self.assertEqual({
+        'step': ['test']
+    }, test_swarming.GetFirstTimeTestFailuresToRunSwarmingTasks(params))
+    mock_fn.assert_called_once_with(master_name, builder_name, build_number,
+                                    failure_info, False)
+
+  @mock.patch.object(test_failure_analysis, 'GetsFirstFailureAtTestLevel')
+  def testGetFirstTimeTestFailuresToRunSwarmingTasksBailOut(self, mock_fn):
+    master_name = 'm'
+    builder_name = 'b'
+    build_number = 14
+
+    params = RunSwarmingTasksInput(
+        build_key=BuildKey(
+            master_name=master_name,
+            builder_name=builder_name,
+            build_number=build_number),
+        heuristic_result=TestHeuristicAnalysisOutput.FromSerializable({}),
+        force=False)
+    self.assertEqual(
+        {}, test_swarming.GetFirstTimeTestFailuresToRunSwarmingTasks(params))
+    self.assertFalse(mock_fn.called)

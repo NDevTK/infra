@@ -7,6 +7,7 @@ import logging
 from google.appengine.ext import ndb
 
 from common.findit_http_client import FinditHttpClient
+from common.waterfall import failure_type
 from dto import swarming_task_error
 from dto.swarming_task_error import SwarmingTaskError
 from infra_api_clients.swarming import swarming_util
@@ -17,6 +18,7 @@ from services import monitoring
 from services import swarmed_test_util
 from services import swarming
 from services import test_results
+from services.test_failure import test_failure_analysis
 from waterfall import waterfall_config
 
 
@@ -235,3 +237,28 @@ def OnSwarmingTaskStateChanged(run_swarming_task_parameters, task_id):
     # Swarming task finished with error.
     return OnSwarmingTaskError(master_name, builder_name, build_number,
                                step_name, error)
+
+
+def GetFirstTimeTestFailuresToRunSwarmingTasks(run_swarming_tasks_input):
+  """Gets all first time failed steps and tests in build to run swarming tasks.
+  """
+  master_name, builder_name, build_number = (
+      run_swarming_tasks_input.build_key.GetParts())
+  failure_info = run_swarming_tasks_input.heuristic_result.failure_info
+  force = run_swarming_tasks_input.force
+
+  if (not failure_info or not failure_info.failed_steps or
+      not failure_info.failure_type == failure_type.TEST):
+    return {}
+
+  # Gets all the first time failures in the build.
+  test_first_failures = test_failure_analysis.GetsFirstFailureAtTestLevel(
+      master_name, builder_name, build_number, failure_info, force)
+
+  # Gets the first time failures that have not run swarming tasks.
+  new_test_first_failures = {}
+  for step_name, tests in test_first_failures.iteritems():
+    if NeedANewSwarmingTask(master_name, builder_name, build_number, step_name,
+                            force):
+      new_test_first_failures[step_name] = tests
+  return new_test_first_failures
