@@ -1,0 +1,211 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ce617a91_65a87b88",
+        "filename": "appengine/findit/pipelines/test_failure/collect_swarming_task_results_pipeline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-03-28T22:46:20Z",
+      "side": 1,
+      "message": "It might be better to do the other way: longer waiting at first, shorter waiting later. The longer we wait, the more likely the task is completed.",
+      "range": {
+        "startLine": 23,
+        "startChar": 2,
+        "endLine": 23,
+        "endChar": 72
+      },
+      "revId": "166fe84bca01fc0764a42bb8cb247a1706114555",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "11b09f4c_f6c639c1",
+        "filename": "appengine/findit/pipelines/test_failure/collect_swarming_task_results_pipeline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-03-28T22:46:20Z",
+      "side": 1,
+      "message": "Do we need to set some error or something?",
+      "range": {
+        "startLine": 38,
+        "startChar": 4,
+        "endLine": 38,
+        "endChar": 8
+      },
+      "revId": "166fe84bca01fc0764a42bb8cb247a1706114555",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4fad31be_7c1097a5",
+        "filename": "appengine/findit/pipelines/test_failure/collect_swarming_task_results_pipeline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-03-28T22:46:20Z",
+      "side": 1,
+      "message": "This won\u0027t mark this pipeline as completed. The outcome is the pipeline gets aborted in 2 hours when timeout comes.\n\nShould we abort the analysis instead or handle it differently?",
+      "range": {
+        "startLine": 53,
+        "startChar": 6,
+        "endLine": 53,
+        "endChar": 12
+      },
+      "revId": "166fe84bca01fc0764a42bb8cb247a1706114555",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b65eff59_8b6e72bf",
+        "filename": "appengine/findit/services/test_failure/test_swarming.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-03-28T22:46:20Z",
+      "side": 1,
+      "message": "remove.",
+      "range": {
+        "startLine": 244,
+        "startChar": 7,
+        "endLine": 244,
+        "endChar": 8
+      },
+      "revId": "166fe84bca01fc0764a42bb8cb247a1706114555",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b91274ac_9910f70d",
+        "filename": "appengine/findit/services/test_failure/test_swarming.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 268,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-03-28T22:46:20Z",
+      "side": 1,
+      "message": "This function seems not collecting test results, but instead wait for test results.",
+      "range": {
+        "startLine": 268,
+        "startChar": 4,
+        "endLine": 268,
+        "endChar": 11
+      },
+      "revId": "166fe84bca01fc0764a42bb8cb247a1706114555",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d749a398_ca281c5a",
+        "filename": "appengine/findit/services/test_failure/test_swarming.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 270,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-03-28T22:46:20Z",
+      "side": 1,
+      "message": "typo?",
+      "range": {
+        "startLine": 270,
+        "startChar": 38,
+        "endLine": 270,
+        "endChar": 44
+      },
+      "revId": "166fe84bca01fc0764a42bb8cb247a1706114555",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b3c66a95_573f4b73",
+        "filename": "appengine/findit/services/test_failure/test_swarming.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 280,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-03-28T22:46:20Z",
+      "side": 1,
+      "message": "merge to last line.",
+      "range": {
+        "startLine": 280,
+        "startChar": 6,
+        "endLine": 280,
+        "endChar": 19
+      },
+      "revId": "166fe84bca01fc0764a42bb8cb247a1706114555",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "18c1ef8c_d632a184",
+        "filename": "appengine/findit/services/test_failure/test_swarming.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-03-28T22:46:20Z",
+      "side": 1,
+      "message": "The pipeline seems to not handle this one differently from the first one -- still running.",
+      "range": {
+        "startLine": 282,
+        "startChar": 8,
+        "endLine": 282,
+        "endChar": 65
+      },
+      "revId": "166fe84bca01fc0764a42bb8cb247a1706114555",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "204eb2d5_58e0c15f",
+        "filename": "appengine/findit/services/test_failure/test_swarming.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 295,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-03-28T22:46:20Z",
+      "side": 1,
+      "message": "Could we add comments on which code piece will collect the results?",
+      "range": {
+        "startLine": 294,
+        "startChar": 4,
+        "endLine": 295,
+        "endChar": 17
+      },
+      "revId": "166fe84bca01fc0764a42bb8cb247a1706114555",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
