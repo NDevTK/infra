@@ -17,6 +17,9 @@ from framework import sql
 from search import search_helpers
 from tracker import tracker_bizobj
 from tracker import tracker_helpers
+from search import query2ast
+from search import ast2select
+from search import ast2ast
 
 
 ISSUESNAPSHOT_TABLE_NAME = 'IssueSnapshot'
@@ -52,8 +55,9 @@ class ChartService(object):
     self.issuesnapshot2label_tbl = sql.SQLTableManager(
         ISSUESNAPSHOT2LABEL_TABLE_NAME)
 
-  def QueryIssueSnapshots(self, cnxn, unixtime, bucketby,
-                          effective_ids, project, perms, label_prefix=None):
+  def QueryIssueSnapshots(self, cnxn, services, unixtime, bucketby,
+                          effective_ids, project, perms, label_prefix=None,
+                          query=None):
     """Queries historical issue counts grouped by label or component.
 
     Args:
@@ -65,10 +69,16 @@ class ChartService(object):
       perms: A permissions object associated with the current user.
       label_prefix: Required when bucketby is 'label.' Will limit the query to
         only labels with the specified prefix (for example 'Pri').
+      query (int): Optional. A query string from the request to apply to
+        the snapshot query.
 
     Returns:
       A dictionary of: {'label or component name': number of occurences}
     """
+    # TODO(CL): Do this in WorkEnv?
+    project_config = services.config.GetProjectConfig(cnxn, project.project_id)
+    query_left_joins, query_where = self._QueryToWhere(cnxn, services, project_config, query, project)
+
     restricted_label_ids = search_helpers.GetPersonalAtRiskLabelIDs(
       cnxn, None, self.config_service, effective_ids, project, perms)
 
@@ -149,6 +159,10 @@ class ChartService(object):
       group_by = ['Lab.label']
     else:
       raise ValueError('`bucketby` must be in (component, label)')
+
+    # TODO(CL): These should be querying historical snapshots...
+    left_joins.extend(query_left_joins)
+    where.extend(query_where)
 
     promises = []
     for shard_id in range(settings.num_logical_shards):
@@ -248,3 +262,28 @@ class ChartService(object):
     """This is a separate method so it can be mocked by tests."""
     return time.time()
 
+  def _QueryToWhere(self, cnxn, services, project_config, query, project):
+    """Parses a query string into WHERE conditions.
+
+    Args:
+      query (string): The query to parse.
+
+    Returns:
+      TODO(CL):
+    """
+    if not query:
+      return [], []
+
+    scope = '' # ?
+    query_ast = query2ast.ParseUserQuery(query, scope,
+        query2ast.BUILTIN_ISSUE_FIELDS, project_config)
+    print 'query_ast', query_ast, '*' * 300
+    query_ast = ast2ast.PreprocessAST(cnxn, query_ast, [project.project_id], services, project_config)
+    left_joins, where = ast2select.BuildSQLQuery(query_ast)
+    print 'query?', query, 'lj', left_joins, where, '*' * 300
+
+    print left_joins
+    # TODO(CL): Figure out how (if) to translate the query's join tables to the
+    #   snapshot join tables.
+    # import sys; sys.exit()
+    return left_joins, where
