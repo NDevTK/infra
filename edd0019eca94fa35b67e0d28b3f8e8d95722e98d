@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b3a0b510_06adf412",
+        "filename": "appengine/findit/pipelines/test_failure/collect_swarming_task_results_pipeline.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-03-29T21:47:50Z",
+      "side": 1,
+      "message": "What if it is an empty list?",
+      "range": {
+        "startLine": 46,
+        "startChar": 4,
+        "endLine": 46,
+        "endChar": 48
+      },
+      "revId": "edd0019eca94fa35b67e0d28b3f8e8d95722e98d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

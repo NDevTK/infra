@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "a2fd216f_e01f1bfa",
+        "filename": "appengine/findit/pipelines/test_failure/collect_swarming_task_results_pipeline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-03-29T21:47:50Z",
+      "side": 1,
+      "message": "I think query once a minute is fine. Pinpoint already does it that way for each perf bisect job.\n\nSome variance is fine too. Your call.",
+      "parentUuid": "5b52401c_7a271d00",
+      "range": {
+        "startLine": 23,
+        "startChar": 2,
+        "endLine": 23,
+        "endChar": 72
+      },
+      "revId": "166fe84bca01fc0764a42bb8cb247a1706114555",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "11b09f4c_f6c639c1",
         "filename": "appengine/findit/pipelines/test_failure/collect_swarming_task_results_pipeline.py",
         "patchSetId": 2
@@ -237,6 +261,30 @@
     },
     {
       "key": {
+        "uuid": "e7b85430_e7c63d8f",
+        "filename": "appengine/findit/services/test_failure/test_swarming.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 268,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-03-29T21:47:50Z",
+      "side": 1,
+      "message": "It seems we have different definition of \"Collect\" here. My definition is to retrieve the output.json from Isolate once Swarming task is done. Your definition seems to be retrieve the test results from WfSwarmingTask entities in ndb.\n\nThat\u0027s fine too. But the waiting was not clear.",
+      "parentUuid": "6ff4a597_f62c98c7",
+      "range": {
+        "startLine": 268,
+        "startChar": 4,
+        "endLine": 268,
+        "endChar": 11
+      },
+      "revId": "166fe84bca01fc0764a42bb8cb247a1706114555",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d749a398_ca281c5a",
         "filename": "appengine/findit/services/test_failure/test_swarming.py",
         "patchSetId": 2
@@ -413,6 +461,30 @@
       "side": 1,
       "message": "I don\u0027t understand this question.",
       "parentUuid": "204eb2d5_58e0c15f",
+      "range": {
+        "startLine": 294,
+        "startChar": 4,
+        "endLine": 295,
+        "endChar": 17
+      },
+      "revId": "166fe84bca01fc0764a42bb8cb247a1706114555",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "99878623_07c2554f",
+        "filename": "appengine/findit/services/test_failure/test_swarming.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 295,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-03-29T21:47:50Z",
+      "side": 1,
+      "message": "add a comment on which code will retrieve output.json from Isolate and save aggregated result into WfSwarmingTask.\n\nSorry for the confusion. We seem to have different definition of \"Collect\".",
+      "parentUuid": "78c98ee6_30a470ca",
       "range": {
         "startLine": 294,
         "startChar": 4,
