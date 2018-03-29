@@ -31,8 +31,8 @@ handlers:
   script: monorailapp.app
   login: admin
 
-inbound_services:
-- warmup
+#inbound_services:
+#- warmup
 
 libraries:
 - name: endpoints

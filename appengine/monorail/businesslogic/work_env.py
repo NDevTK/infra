@@ -476,7 +476,7 @@ class WorkEnv(object):
       return self.services.issue_star.LookupStarredItemIDs(
           self.mr.cnxn, self.mr.auth.user_id)
 
-  def SnapshotCountsQuery(self, timestamp, bucketby='label', label_prefix=None):
+  def SnapshotCountsQuery(self, timestamp, bucketby='label', label_prefix=None, query=None):
     """Query IssueSnapshots for daily counts.
 
     See chart_svc.QueryIssueSnapshots for more detail on arguments.
@@ -488,13 +488,15 @@ class WorkEnv(object):
         with the supplied prefix.
 
     Returns:
+      # TODO(CL): Update
       A dict of: {name: count} for each item in the second dimension (as
       defined by bucketby).
     """
     with self.mr.profiler.Phase('querying snapshot counts'):
       return self.services.chart.QueryIssueSnapshots(
-        self.mr.cnxn, timestamp, bucketby, self.mr.auth.effective_ids,
-        self.mr.project, self.mr.perms, label_prefix=label_prefix)
+        self.mr.cnxn, self.services, timestamp, bucketby,
+        self.mr.auth.effective_ids, self.mr.project, self.mr.perms,
+        label_prefix=label_prefix, query=query)
 
   ### User methods
 

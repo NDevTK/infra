@@ -19,10 +19,12 @@ class SnapshotCounts(jsonfeed.InternalTask):
     timestamp (int): The point in time at which snapshots will be counted.
     label_prefix (str): Required if bucketby=label. Returns only labels
       with this prefix, e.g. 'Pri'.
+    q (str): Optional query string.
 
   Output:
     A JSON response with the following structure:
     {
+      TODO(CL): update this
       "name1": count1,
       "name2": count2
     }
@@ -31,6 +33,7 @@ class SnapshotCounts(jsonfeed.InternalTask):
   def HandleRequest(self, mr):
     bucketby = mr.GetParam('bucketby') or 'label'
     label_prefix = mr.GetParam('label_prefix')
+    query = mr.GetParam('q')
     timestamp = mr.GetParam('timestamp')
     if timestamp:
       timestamp = int(timestamp)
@@ -40,6 +43,17 @@ class SnapshotCounts(jsonfeed.InternalTask):
       return { 'error': 'Param `label_prefix` required.' }
 
     with work_env.WorkEnv(mr, self.services) as we:
-      results = we.SnapshotCountsQuery(timestamp, bucketby, label_prefix)
+      results, unsupported_fields = we.SnapshotCountsQuery(timestamp, bucketby,
+          label_prefix, query)
 
-    return results
+    print 'unsupported_fields', unsupported_fields
+    unsupported_field_names = [
+        field.field_name
+        for cond in unsupported_fields
+        for field in cond.field_defs
+    ]
+
+    return {
+      'results': results,
+      'unsupported_fields': unsupported_field_names,
+    }
