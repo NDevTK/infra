@@ -16,6 +16,57 @@
       "revId": "909d6b006776490808ceefc14f20d4f5156dffe1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bed58049_9888d29f",
+        "filename": "appengine/monorail/search/ast2select.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-03-30T21:02:43Z",
+      "side": 1,
+      "message": "Sure, we can add back the concept of derived values to snapshots sometime if there is significant demand for that.   When you write the snapshot owner_id, you call GetOwnerId(issue), which gets the explicit or derived owner, which is correct.",
+      "revId": "909d6b006776490808ceefc14f20d4f5156dffe1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7004c72a_cc59c6bd",
+        "filename": "appengine/monorail/search/ast2select.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-03-30T21:02:43Z",
+      "side": 1,
+      "message": "Not a high priority at first, but I think that you could support this on snapshots.  We\u0027d need to think about how to interpret \"today-3\" for past timestamps.",
+      "revId": "909d6b006776490808ceefc14f20d4f5156dffe1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2490a1ff_33232578",
+        "filename": "appengine/monorail/services/chart_svc.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-03-30T21:02:43Z",
+      "side": 1,
+      "message": "(int)?",
+      "revId": "909d6b006776490808ceefc14f20d4f5156dffe1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
