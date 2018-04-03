@@ -20,18 +20,20 @@ class SnapshotCounts(jsonfeed.InternalTask):
       one key 'total'.
     label_prefix (str): Required if group_by=label. Returns only labels
       with this prefix, e.g. 'Pri'.
+    q (str): Optional query string.
 
   Output:
     A JSON response with the following structure:
     {
-      "name1": count1,
-      "name2": count2
+      results: { name: count } for item in 2nd dimension.
+      unsupported_fields: a list of strings for each unsupported field in query.
     }
   """
 
   def HandleRequest(self, mr):
     group_by = mr.GetParam('group_by', None)
-    label_prefix = mr.GetParam('label_prefix')
+    label_prefix = mr.GetParam('label_prefix', None)
+    query = mr.GetParam('q', None)
     timestamp = mr.GetParam('timestamp')
     if timestamp:
       timestamp = int(timestamp)
@@ -41,6 +43,16 @@ class SnapshotCounts(jsonfeed.InternalTask):
       return { 'error': 'Param `label_prefix` required.' }
 
     with work_env.WorkEnv(mr, self.services) as we:
-      results = we.SnapshotCountsQuery(timestamp, group_by, label_prefix)
+      results, unsupported_fields = we.SnapshotCountsQuery(timestamp, group_by,
+          label_prefix, query)
 
-    return results
+    unsupported_field_names = list(set([
+        field.field_name
+        for cond in unsupported_fields
+        for field in cond.field_defs
+    ]))
+
+    return {
+      'results': results,
+      'unsupported_fields': unsupported_field_names,
+    }
