@@ -79,8 +79,7 @@ vulcanize:
 		--js elements/bar-chart.vulcanized.js --only-split
 
 clean_vulcanized:
-	rm -f elements/**/*.vulcanized.{js,html}
-
+	find . -name "*.vulcanized.*" -delete
 
 # AppEngine apps can be tested locally and in non-default versions upload to
 # the main app-id, but it is still sometimes useful to have a completely
