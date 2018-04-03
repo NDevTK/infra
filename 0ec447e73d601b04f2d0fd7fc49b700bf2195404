@@ -16,6 +16,24 @@
       "revId": "0ec447e73d601b04f2d0fd7fc49b700bf2195404",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "37a16b7d_b1922649",
+        "filename": "appengine/monorail/templates/tracker/launch-gates-widget.ezt",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-04-03T16:48:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "28af4791_2ad47550",
+      "revId": "0ec447e73d601b04f2d0fd7fc49b700bf2195404",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
