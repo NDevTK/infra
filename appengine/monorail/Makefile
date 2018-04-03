@@ -67,7 +67,6 @@ run: serve
 deps:
 	bower install
 	npm install
-	ln -sf ../../../crdx/chopsui bower_components/chopsui
 
 vulcanize: deps
 	$(VULCANIZE_PATH) elements/mr-approval-page/mr-approval-page.html --inline-script | $(CRISPER_PATH) --html elements/mr-approval-page/mr-approval-page.vulcanized.html --js elements/mr-approval-page/mr-approval-page.vulcanized.js --only-split
