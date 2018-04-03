@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "28af4791_2ad47550",
+        "filename": "appengine/monorail/templates/tracker/launch-gates-widget.ezt",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-04-03T04:33:36Z",
+      "side": 1,
+      "message": "Normally EZT escapes values to make them safe in HTML text and attributes.  You should use [format \"js\"][initial_phases.name][end] if there is any chance for any kind of JS escape character to be part of the name string.",
+      "revId": "0ec447e73d601b04f2d0fd7fc49b700bf2195404",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
