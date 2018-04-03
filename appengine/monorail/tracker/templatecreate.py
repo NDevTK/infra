@@ -58,7 +58,7 @@ class TemplateCreate(servlet.Servlet):
     field_views = [
       tracker_views.MakeFieldValueView(fd, config, [], [], [], {})
       for fd in config.field_defs if not fd.is_deleted]
-    initial_milestones = [tracker_pb2.Milestone()] * 6
+    initial_phases = [tracker_pb2.Phase()] * 6
     return {
         'admin_tab_mode': self._PROCESS_SUBTAB,
         'allow_edit': ezt.boolean(True),
@@ -76,9 +76,11 @@ class TemplateCreate(servlet.Servlet):
         'initial_admins': '',
         'fields': [view for view in field_views
                    if view.field_def.type_name is not "APPROVAL_TYPE"],
-        'initial_milestones': initial_milestones,
+        'initial_add_phases': ezt.boolean(False),
+        'initial_phases': initial_phases,
         'approvals': [view for view in field_views
                    if view.field_def.type_name is "APPROVAL_TYPE"],
+        'prechecked_approvals': [],
         }
 
   def ProcessFormData(self, mr, post_data):
@@ -95,6 +97,8 @@ class TemplateCreate(servlet.Servlet):
     config = self.services.config.GetProjectConfig(mr.cnxn, mr.project_id)
     parsed = template_helpers.ParseTemplateRequest(post_data, config)
 
+    if not parsed.name:
+      mr.errors.name = 'Please provide a template name'
     if tracker_bizobj.FindIssueTemplate(parsed.name, config):
       mr.errors.name = 'Template with name %s already exists' % parsed.name
 
@@ -111,6 +115,10 @@ class TemplateCreate(servlet.Servlet):
           tracker_views.MakeFieldValueView(fd, config, [], [],
                                            fd_id_to_fvs[fd.field_id], {})
           for fd in config.field_defs if not fd.is_deleted]
+      prechecked_approvals = []
+      for phs_idx, approval_ids in parsed.approvals_by_phase_idx.iteritems():
+        prechecked_approvals.extend(['%d_phase_%d' % (approval_id, phs_idx)
+                                     for approval_id in approval_ids])
 
       self.PleaseCorrect(
           mr,
@@ -127,7 +135,13 @@ class TemplateCreate(servlet.Servlet):
           initial_component_required=ezt.boolean(parsed.component_required),
           initial_admins=parsed.admin_str,
           labels=parsed.labels,
-          fields=field_views
+          fields=field_views,
+          initial_add_phases=ezt.boolean(parsed.add_phases),
+          initial_phases=[tracker_pb2.Phase(name=name) for name in
+                          parsed.phase_names],
+          approvals=[view for view in field_views
+                     if view.field_def.type_name is "APPROVAL_TYPE"],
+          prechecked_approvals = prechecked_approvals
       )
       return
 
