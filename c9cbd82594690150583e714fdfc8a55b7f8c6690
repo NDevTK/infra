@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1840c333_3b0e8e2e",
+        "filename": "appengine/monorail/businesslogic/work_env.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 482,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-04-04T17:14:14Z",
+      "side": 1,
+      "message": "query needs a docstring line.",
+      "revId": "c9cbd82594690150583e714fdfc8a55b7f8c6690",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9aaa93d0_c1efc83a",
+        "filename": "appengine/monorail/services/chart_svc.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 313,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-04-04T17:14:14Z",
+      "side": 1,
+      "message": "To be similar to the issue list page, this should be set by the can\u003d query string parameter and converted into a query scope string by savedqueries_helpers.SavedQueryIDToCond and searchpipeline.ReplaceKeywordsWithUserID().",
+      "revId": "c9cbd82594690150583e714fdfc8a55b7f8c6690",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
