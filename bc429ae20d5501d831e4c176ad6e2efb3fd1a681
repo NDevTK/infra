@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fd626e0e_6f10148e",
+        "filename": "appengine/monorail/features/snapshot_counts.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-04-04T23:47:09Z",
+      "side": 1,
+      "message": "I\u0027m not sure whether I should be using mr.me_user_id here (which seems to be unavailable at times) or mr.auth.user_id (which seems to be more available but perhaps not the intended value sometimes).",
+      "revId": "bc429ae20d5501d831e4c176ad6e2efb3fd1a681",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

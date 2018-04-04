@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "afd99e72_10de7065",
+        "filename": "appengine/monorail/businesslogic/work_env.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 482,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-04-04T23:47:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1840c333_3b0e8e2e",
+      "revId": "c9cbd82594690150583e714fdfc8a55b7f8c6690",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9aaa93d0_c1efc83a",
         "filename": "appengine/monorail/services/chart_svc.py",
         "patchSetId": 9
@@ -33,6 +51,24 @@
       "revId": "c9cbd82594690150583e714fdfc8a55b7f8c6690",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0ef772b0_981efac3",
+        "filename": "appengine/monorail/services/chart_svc.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 313,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-04-04T23:47:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9aaa93d0_c1efc83a",
+      "revId": "c9cbd82594690150583e714fdfc8a55b7f8c6690",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
