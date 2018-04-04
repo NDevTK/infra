@@ -720,6 +720,11 @@ JOIN_RE_LIST = [
         r'ON Issue.id = {tab_col}'
         r'( AND {tab_col} IS NULL)?'),
     _MakeRE(
+        r'^\({table} AS {table} JOIN User AS {table} '
+        r'ON {tab_col} = {tab_col} AND {email_cond}\) '
+        r'ON IssueSnapshot.id = {tab_col}'
+        r'( AND {tab_col} IS NULL)?'),
+    _MakeRE(
         r'^\({table} JOIN Hotlist AS {table} '
         r'ON {tab_col} = {tab_col} AND {hotlist_cond}\) '
         r'ON Issue.id = {tab_col}?'),
