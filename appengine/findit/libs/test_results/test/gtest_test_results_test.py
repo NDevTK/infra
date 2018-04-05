@@ -7,9 +7,8 @@ import json
 import mock
 import os
 
-from services import gtest
+from libs.test_results.gtest_test_results import GtestTestResults
 from services import constants
-from services.gtest import GtestResults
 from waterfall.test import wf_testcase
 
 _SAMPLE_TEST_RESULTS = {
@@ -44,11 +43,7 @@ _SAMPLE_TEST_RESULTS = {
 }
 
 
-class GtestTest(wf_testcase.WaterfallTestCase):
-
-  def setUp(self):
-    super(GtestTest, self).setUp()
-    self.gtest_results = GtestResults()
+class GtestTestResultsTest(wf_testcase.WaterfallTestCase):
 
   def _GetGtestResultLog(self, master_name, builder_name, build_number,
                          step_name):
@@ -58,29 +53,32 @@ class GtestTest(wf_testcase.WaterfallTestCase):
     with open(file_name, 'r') as f:
       return f.read()
 
-  def testRemoveAllPrefixesNoPrefix(self):
+  def testRemoveAllPrefixesFromTestNameNoPrefix(self):
     test = 'abc_test'
-    self.assertEqual(test, self.gtest_results.RemoveAllPrefixes(test))
+    self.assertEqual(test,
+                     GtestTestResults(None).RemoveAllPrefixesFromTestName(test))
 
-  def testRemoveAllPrefixes(self):
+  def testRemoveAllPrefixesFromTestName(self):
     test = 'abc_test.PRE_PRE_test1'
     self.assertEqual('abc_test.test1',
-                     self.gtest_results.RemoveAllPrefixes(test))
+                     GtestTestResults(None).RemoveAllPrefixesFromTestName(test))
 
   def testConcatenateTestLogOneStringContainsAnother(self):
     string1 = base64.b64encode('This string should contain string2.')
     string2 = base64.b64encode('string2.')
     self.assertEqual(string1,
-                     self.gtest_results.ConcatenateTestLog(string1, string2))
+                     GtestTestResults(None).ConcatenateTestLog(
+                         string1, string2))
     self.assertEqual(string1,
-                     self.gtest_results.ConcatenateTestLog(string2, string1))
+                     GtestTestResults(None).ConcatenateTestLog(
+                         string2, string1))
 
   def testConcatenateTestLog(self):
     string1 = base64.b64encode('string1.')
     string2 = base64.b64encode('string2.')
     self.assertEqual(
         base64.b64encode('string1.string2.'),
-        self.gtest_results.ConcatenateTestLog(string1, string2))
+        GtestTestResults(None).ConcatenateTestLog(string1, string2))
 
   def testGetTestLevelFailures(self):
     master_name = 'm'
@@ -100,8 +98,8 @@ class GtestTest(wf_testcase.WaterfallTestCase):
     step_log = self._GetGtestResultLog(master_name, builder_name, build_number,
                                        step_name)
 
-    failed_test_log = self.gtest_results.GetConsistentTestFailureLog(
-        json.loads(step_log))
+    failed_test_log = GtestTestResults(
+        json.loads(step_log)).GetConsistentTestFailureLog()
     self.assertEqual(expected_failure_log, failed_test_log)
 
   def testGetTestLevelFailuresFlaky(self):
@@ -113,8 +111,8 @@ class GtestTest(wf_testcase.WaterfallTestCase):
     step_log = self._GetGtestResultLog(master_name, builder_name, build_number,
                                        step_name)
 
-    failed_test_log = self.gtest_results.GetConsistentTestFailureLog(
-        json.loads(step_log))
+    failed_test_log = GtestTestResults(
+        json.loads(step_log)).GetConsistentTestFailureLog()
     self.assertEqual(constants.FLAKY_FAILURE_LOG, failed_test_log)
 
   def testDoesTestExist(self):
@@ -125,13 +123,13 @@ class GtestTest(wf_testcase.WaterfallTestCase):
         'all_tests': [existing_test_name]
     }
     self.assertTrue(
-        self.gtest_results.DoesTestExist(gtest_result, existing_test_name))
+        GtestTestResults(gtest_result).DoesTestExist(existing_test_name))
     self.assertFalse(
-        self.gtest_results.DoesTestExist(gtest_result, nonexistent_test_name))
+        GtestTestResults(gtest_result).DoesTestExist(nonexistent_test_name))
 
   def testIsTestEnabledWhenResultEmpty(self):
     test_name = 'test'
-    self.assertFalse(self.gtest_results.IsTestEnabled(None, test_name))
+    self.assertFalse(GtestTestResults(None).IsTestEnabled(test_name))
 
   def testIsTestEnabledWhenDisabled(self):
     test_name = 'test'
@@ -140,19 +138,17 @@ class GtestTest(wf_testcase.WaterfallTestCase):
         'all_tests': ['a_test', 'test'],
         'disabled_tests': [test_name]
     }
-    self.assertFalse(
-        self.gtest_results.IsTestEnabled(isolate_output, test_name))
+    self.assertFalse(GtestTestResults(isolate_output).IsTestEnabled(test_name))
 
   def testIsTestEnabledWhenNotInAllTests(self):
     test_name = 'test'
     isolate_output = {'all_tests': [], 'disabled_tests': [test_name]}
-    self.assertFalse(
-        self.gtest_results.IsTestEnabled(isolate_output, test_name))
+    self.assertFalse(GtestTestResults(isolate_output).IsTestEnabled(test_name))
 
   def testIsTestEnabledWhenEnabled(self):
     test_name = 'test'
     isolate_output = {'all_tests': ['test'], 'disabled_tests': []}
-    self.assertTrue(self.gtest_results.IsTestEnabled(isolate_output, test_name))
+    self.assertTrue(GtestTestResults(isolate_output).IsTestEnabled(test_name))
 
   def testGetMergedTestResultsOneShard(self):
     shard_results = [{
@@ -166,7 +162,7 @@ class GtestTest(wf_testcase.WaterfallTestCase):
         }]
     }]
     self.assertEqual(shard_results[0],
-                     self.gtest_results.GetMergedTestResults(shard_results))
+                     GtestTestResults.GetMergedTestResults(shard_results))
 
   def testGetMergedTestResults(self):
     shard_results = [{
@@ -205,10 +201,10 @@ class GtestTest(wf_testcase.WaterfallTestCase):
     }
 
     self.assertEqual(expected_result,
-                     self.gtest_results.GetMergedTestResults(shard_results))
+                     GtestTestResults.GetMergedTestResults(shard_results))
 
   def testIsTestResultsInExpectedFormat(self):
-    self.assertEqual({}, self.gtest_results.GetTestsRunStatuses(None))
+    self.assertEqual({}, GtestTestResults(None).GetTestsRunStatuses())
 
   def testIsTestResultsInExpectedFormatMatch(self):
     log = {
@@ -226,10 +222,10 @@ class GtestTest(wf_testcase.WaterfallTestCase):
             }]
         }]
     }
-    self.assertTrue(gtest.IsTestResultsInExpectedFormat(log))
+    self.assertTrue(GtestTestResults.IsTestResultsInExpectedFormat(log))
 
   def testIsTestResultsInExpectedFormatNotMatch(self):
-    self.assertFalse(gtest.IsTestResultsInExpectedFormat('log'))
+    self.assertFalse(GtestTestResults.IsTestResultsInExpectedFormat('log'))
 
   def testGetFailedTestsInformation(self):
     test_results = _SAMPLE_TEST_RESULTS
@@ -247,19 +243,19 @@ class GtestTest(wf_testcase.WaterfallTestCase):
         'Unittest1.Subtest2': 'Unittest1.Subtest2',
         'Unittest2.PRE_Subtest1': 'Unittest2.Subtest1'
     }
+    test_results_object = GtestTestResults(test_results)
     with mock.patch.object(
-        self.gtest_results, 'ConcatenateTestLog', side_effect=side_effect):
-      log, tests = self.gtest_results.GetFailedTestsInformation(test_results)
+        test_results_object, 'ConcatenateTestLog', side_effect=side_effect):
+      log, tests = test_results_object.GetFailedTestsInformation()
       self.assertEqual(expected_log, log)
       self.assertEqual(expected_tests, tests)
 
   def testIsTestResultUseful(self):
-    test_results_log = _SAMPLE_TEST_RESULTS
-    self.assertTrue(self.gtest_results.IsTestResultUseful(test_results_log))
+    self.assertTrue(GtestTestResults(_SAMPLE_TEST_RESULTS).IsTestResultUseful())
 
   def testTaskHasNoUsefulResult(self):
     test_results_log = {'per_iteration_data': [{}]}
-    self.assertFalse(self.gtest_results.IsTestResultUseful(test_results_log))
+    self.assertFalse(GtestTestResults(test_results_log).IsTestResultUseful())
 
   def testGetTestsRunStatuses(self):
     expected_statuses = {
@@ -282,19 +278,19 @@ class GtestTest(wf_testcase.WaterfallTestCase):
     }
     self.assertEqual(
         expected_statuses,
-        self.gtest_results.GetTestsRunStatuses(_SAMPLE_TEST_RESULTS))
+        GtestTestResults(_SAMPLE_TEST_RESULTS).GetTestsRunStatuses())
 
   def testGetTestLocationNoTestLocations(self):
-    result, error = self.gtest_results.GetTestLocation({}, 'test')
+    result, error = GtestTestResults({}).GetTestLocation('test')
     self.assertIsNone(result)
     self.assertEqual('test_locations not found.', error)
 
   def testGetTestLocationNoTestLocation(self):
-    result, error = self.gtest_results.GetTestLocation({
+    result, error = GtestTestResults({
         'test_locations': {
             'test': {}
         }
-    }, 'test')
+    }).GetTestLocation('test')
     self.assertIsNone(result)
     self.assertEqual('test_location not found for test.', error)
 
@@ -305,6 +301,6 @@ class GtestTest(wf_testcase.WaterfallTestCase):
         'file': '/path/to/test_file.cc',
     }
     test_results_log = {'test_locations': {test_name: expected_test_location,}}
-    result, error = self.gtest_results.GetTestLocation(test_results_log, 'test')
-    self.assertEqual(expected_test_location, result.ToSerializable())
+    result, error = GtestTestResults(test_results_log).GetTestLocation('test')
+    self.assertEqual(expected_test_location, result)
     self.assertIsNone(error)
