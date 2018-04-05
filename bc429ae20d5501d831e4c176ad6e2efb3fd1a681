@@ -16,6 +16,24 @@
       "revId": "bc429ae20d5501d831e4c176ad6e2efb3fd1a681",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f1ee6369_f125f41a",
+        "filename": "appengine/monorail/features/snapshot_counts.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-04-05T17:27:39Z",
+      "side": 1,
+      "message": "It should be mr.me_user_id.   It should always be defined when running the app.  It looks like it is not always defined in unit tests.  You could set mr.me_user_id \u003d 111L in unit tests.  \n\nAlso, just to explain: me_user_id is the user that should be used in query terms like [owner:me].  It is usually the same as the signed in user, however our besearch module has no signed in user so we pass it as a query string parameter.  And, for the dashboard feature that was demo\u0027d before monorail launched, \"me\" was set to the user who owned the dashboard that the signed in user was viewing.  That last case is relevant for charts for when we eventually have sharable dashboards with charts.",
+      "parentUuid": "fd626e0e_6f10148e",
+      "revId": "bc429ae20d5501d831e4c176ad6e2efb3fd1a681",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
