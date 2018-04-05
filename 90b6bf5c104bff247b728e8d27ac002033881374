@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "69035a5b_59f3007d",
+        "filename": "bootstrap/deps.pyl",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-04-05T00:20:08Z",
+      "side": 1,
+      "message": "TODO: update hash once https://crrev.com/c/996894 lands.",
+      "range": {
+        "startLine": 92,
+        "startChar": 12,
+        "endLine": 92,
+        "endChar": 52
+      },
+      "revId": "90b6bf5c104bff247b728e8d27ac002033881374",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
