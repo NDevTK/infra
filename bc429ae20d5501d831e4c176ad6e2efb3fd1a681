@@ -34,6 +34,24 @@
       "revId": "bc429ae20d5501d831e4c176ad6e2efb3fd1a681",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "db8f93af_a6d054a4",
+        "filename": "appengine/monorail/features/snapshot_counts.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-04-05T20:25:05Z",
+      "side": 1,
+      "message": "Done, thanks",
+      "parentUuid": "f1ee6369_f125f41a",
+      "revId": "bc429ae20d5501d831e4c176ad6e2efb3fd1a681",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
