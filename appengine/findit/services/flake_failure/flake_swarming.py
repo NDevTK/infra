@@ -11,12 +11,11 @@ from dto.flake_swarming_task_output import FlakeSwarmingTaskOutput
 from dto.swarming_task_error import SwarmingTaskError
 from infra_api_clients.swarming import swarming_util
 from libs import time_util
-
+from libs.test_results import test_results_util
 from services import constants
 from services import monitoring
 from services import swarmed_test_util
 from services import swarming
-from services import test_results
 
 _FINDIT_HTTP_CLIENT = FinditHttpClient()
 
@@ -27,7 +26,8 @@ def _ParseFlakeSwarmingTaskOutput(task_data, output_json, error):
 
   if output_json:
     # Use whatever's available in output_json.
-    test_statuses = test_results.GetTestsRunStatuses(output_json)
+    test_statuses = test_results_util.GetTestResultObject(
+        output_json).GetTestsRunStatuses()
 
     # There should be exactly 1 test that was run.
     assert len(test_statuses.keys()) == 1
@@ -36,7 +36,8 @@ def _ParseFlakeSwarmingTaskOutput(task_data, output_json, error):
     tries = test_statuses.get(test_name, {}).get('total_run', 0)
     successes = test_statuses.get(test_name, {}).get('SUCCESS', 0)
 
-    if tries == 0 and test_results.DoesTestExist(output_json, test_name):
+    if tries == 0 and test_results_util.GetTestResultObject(
+        output_json).DoesTestExist(test_name):
       # The test exists, but something went wrong prevnting even a single test
       # from being processed which counts as an error.
       error = error or SwarmingTaskError.GenerateError(
