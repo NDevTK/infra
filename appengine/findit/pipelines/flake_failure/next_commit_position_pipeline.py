@@ -8,9 +8,9 @@ from dto.int_range import IntRange
 from gae_libs.pipelines import SynchronousPipeline
 from libs.structured_object import StructuredObject
 from services import step_util
+from services.flake_failure import heuristic_analysis
 from services.flake_failure import lookback_algorithm
 from services.flake_failure import next_commit_position_utils
-from waterfall import build_util
 
 
 class NextCommitPositionInput(StructuredObject):
@@ -78,6 +78,15 @@ class NextCommitPositionPipeline(SynchronousPipeline):
       return NextCommitPositionOutput(
           next_commit_position=None, culprit_commit_position=None)
 
+    # Try the analysis' heuristic results first, if any.
+    next_commit_position = (
+        next_commit_position_utils.GetNextCommitPositionFromHeuristicResults(
+            analysis_urlsafe_key))
+    if next_commit_position is not None:
+      return NextCommitPositionOutput(
+          next_commit_position=next_commit_position,
+          culprit_commit_position=None)
+
     # Round off the next calculated commit position to the nearest builds on
     # both sides.
     lower_bound_build, upper_bound_build = (
@@ -89,10 +98,15 @@ class NextCommitPositionPipeline(SynchronousPipeline):
     analysis.UpdateSuspectedBuildID(lower_bound_build, upper_bound_build)
 
     # Run heuristic analysis if eligible and not yet already done.
-    if analysis.CanRunHeuristicAnalysis():  # pragma: no cover.
-      # TODO(crbug.com/798228): Run heuristic analysis and consider results
-      # first before falling back to the lookback algorithm's suggestions.
-      pass
+    if analysis.CanRunHeuristicAnalysis():
+      heuristic_analysis.RunHeuristicAnalysis(analysis)
+      next_commit_position = (
+          next_commit_position_utils.GetNextCommitPositionFromHeuristicResults(
+              analysis_urlsafe_key))
+      if next_commit_position is not None:
+        return NextCommitPositionOutput(
+            next_commit_position=next_commit_position,
+            culprit_commit_position=None)
 
     # Pick the commit position of the returned neighboring builds that has not
     # yet been analyzed if possible, or the commit position itself when not.
