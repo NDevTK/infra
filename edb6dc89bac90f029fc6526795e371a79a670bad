@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da3b96f9_b79d3553",
+        "filename": "appengine/monorail/framework/servlet.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2018-04-09T16:44:20Z",
+      "side": 1,
+      "message": "Shouldn\u0027t this just be a DistributionMetric, since the number of objects in each generation *this* time is not a number added on to the number in each generation *last* time, it\u0027s just a raw scalar value, right?",
+      "range": {
+        "startLine": 67,
+        "startChar": 18,
+        "endLine": 67,
+        "endChar": 46
+      },
+      "revId": "edb6dc89bac90f029fc6526795e371a79a670bad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
