@@ -94,6 +94,30 @@
     },
     {
       "key": {
+        "uuid": "a7bf4a87_7ade0817",
+        "filename": "appengine/findit/pipelines/flake_failure/next_commit_position_pipeline.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-04-09T23:22:01Z",
+      "side": 1,
+      "message": "Sorry, I misunderstood.",
+      "parentUuid": "3ade703b_637b0c96",
+      "range": {
+        "startLine": 81,
+        "startChar": 4,
+        "endLine": 88,
+        "endChar": 39
+      },
+      "revId": "493d9259f448ca367c80be25de17165ac38e8cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "266094f6_149889be",
         "filename": "appengine/findit/services/flake_failure/heuristic_analysis.py",
         "patchSetId": 3
