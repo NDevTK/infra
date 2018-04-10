@@ -167,6 +167,30 @@
     },
     {
       "key": {
+        "uuid": "c26d4d57_1adf58e8",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 450,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-04-10T05:45:34Z",
+      "side": 1,
+      "message": "OK. I sorted it out myself: https://chromium.googlesource.com/infra/infra/+blame/75ede494b3d5ed4fa9077e8418c189f942ec195d/appengine/findit/model/flake/master_flake_analysis.py#428\n\nSince that code path is not widely use yet (I hope only those flake analyses run by the new flake analysis pipeline so far), we\u0027d better correct it asap.",
+      "parentUuid": "92267056_4733aef7",
+      "range": {
+        "startLine": 450,
+        "startChar": 10,
+        "endLine": 450,
+        "endChar": 70
+      },
+      "revId": "493d9259f448ca367c80be25de17165ac38e8cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3ade703b_637b0c96",
         "filename": "appengine/findit/pipelines/flake_failure/next_commit_position_pipeline.py",
         "patchSetId": 3
