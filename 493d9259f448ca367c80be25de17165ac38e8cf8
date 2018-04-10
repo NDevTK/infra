@@ -191,6 +191,30 @@
     },
     {
       "key": {
+        "uuid": "3e579831_4910d384",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 450,
+      "author": {
+        "id": 1178184
+      },
+      "writtenOn": "2018-04-10T19:36:23Z",
+      "side": 1,
+      "message": "build_id is also an integer, we may want to reflect that here.",
+      "parentUuid": "c26d4d57_1adf58e8",
+      "range": {
+        "startLine": 450,
+        "startChar": 10,
+        "endLine": 450,
+        "endChar": 70
+      },
+      "revId": "493d9259f448ca367c80be25de17165ac38e8cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3ade703b_637b0c96",
         "filename": "appengine/findit/pipelines/flake_failure/next_commit_position_pipeline.py",
         "patchSetId": 3
