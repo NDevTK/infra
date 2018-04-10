@@ -143,6 +143,30 @@
     },
     {
       "key": {
+        "uuid": "92267056_4733aef7",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 450,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-04-10T05:36:44Z",
+      "side": 1,
+      "message": "hm, when did you deprecate suspected_flake_build_number for suspected_flake_build_id instead? And what was the reason?\n\nI wish I could catch up with code-review in the past few weeks and spotted that earlier, but I must have missed some context.\n\n\nAs I mentioned in the comment above, build id and build number are two different concepts and are not exchangeable, both of them will continue to exist in the Luci world, and they should not be compared with each other. I apologized if I didn\u0027t bring it up to the team before.\n\nSome builders are already flipped to Luci world already, and more builders are on the way.",
+      "parentUuid": "35494151_1d812ed1",
+      "range": {
+        "startLine": 450,
+        "startChar": 10,
+        "endLine": 450,
+        "endChar": 70
+      },
+      "revId": "493d9259f448ca367c80be25de17165ac38e8cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3ade703b_637b0c96",
         "filename": "appengine/findit/pipelines/flake_failure/next_commit_position_pipeline.py",
         "patchSetId": 3
