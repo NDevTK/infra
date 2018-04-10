@@ -4,7 +4,6 @@
 
 import base64
 import logging
-import math
 
 from google.appengine.ext import ndb
 
@@ -18,8 +17,6 @@ from model import triage_status
 from model.base_analysis import BaseAnalysis
 from model.base_build_model import BaseBuildModel
 from model.base_triaged_model import TriagedModel
-from model.flake.flake_swarming_task import FlakeSwarmingTaskData
-from waterfall.build_info import BuildInfo
 
 
 class DataPoint(ndb.Model):
@@ -277,9 +274,11 @@ class MasterFlakeAnalysis(BaseAnalysis, BaseBuildModel, VersionedModel,
 
   def GetDataPointOfSuspectedBuild(self):
     """Gets the corresponding data point to the suspected flake build."""
-    if self.suspected_flake_build_number is not None:
+    if (self.suspected_flake_build_number is not None or
+        self.suspected_flake_build_id is not None):
       for data_point in self.data_points:
-        if data_point.build_number == self.suspected_flake_build_number:
+        if (data_point.build_number == self.suspected_flake_build_number or
+            str(data_point.build_number) == self.suspected_flake_build_id):
           return data_point
 
     return None
@@ -297,6 +296,7 @@ class MasterFlakeAnalysis(BaseAnalysis, BaseBuildModel, VersionedModel,
     self.correct_culprit = None
     self.algorithm_parameters = None
     self.suspected_flake_build_number = None
+    self.suspected_flake_build_id = None
     self.suspect_urlsafe_keys = []
     self.culprit_urlsafe_key = None
     self.try_job_status = None
@@ -305,6 +305,7 @@ class MasterFlakeAnalysis(BaseAnalysis, BaseBuildModel, VersionedModel,
     self.last_attempted_build_number = None
     self.last_attempted_swarming_task_id = None
     self.last_attempted_revision = None
+    self.heuristic_analysis_status = None
 
     # Reset booleans that track the actions taken by this analysis.
     self.has_filed_bug = False
@@ -445,7 +446,9 @@ class MasterFlakeAnalysis(BaseAnalysis, BaseBuildModel, VersionedModel,
     if (self.suspected_flake_build_id is None and
         self.FindMatchingDataPointWithCommitPosition(lower_bound) and
         self.FindMatchingDataPointWithCommitPosition(upper_bound)):
-      self.Update(suspected_flake_build_id=str(upper_bound_build.build_number))
+      self.Update(
+          suspected_flake_build_id=str(upper_bound_build.build_number),
+          suspected_build_number=upper_bound_build.build_number)
 
   def Update(self, **kwargs):
     """Updates fields according to what's specified in kwargs.
