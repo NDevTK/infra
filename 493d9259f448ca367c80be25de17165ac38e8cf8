@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "4ae646e2_4f06c1de",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 278,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-04-10T01:29:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4a5c3801_6604368a",
+      "range": {
+        "startLine": 278,
+        "startChar": 8,
+        "endLine": 278,
+        "endChar": 37
+      },
+      "revId": "493d9259f448ca367c80be25de17165ac38e8cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9e5b560b_6b05e366",
         "filename": "appengine/findit/model/flake/master_flake_analysis.py",
         "patchSetId": 3
@@ -36,6 +60,30 @@
       "writtenOn": "2018-04-06T22:42:08Z",
       "side": 1,
       "message": "build id is the buildbucket build id, and it is different from build number.",
+      "range": {
+        "startLine": 281,
+        "startChar": 12,
+        "endLine": 281,
+        "endChar": 73
+      },
+      "revId": "493d9259f448ca367c80be25de17165ac38e8cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d9c295ff_88347c54",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-04-10T01:29:46Z",
+      "side": 1,
+      "message": "This is for legacy/backwards-compatibility as the old pipelines still call this function (even though it\u0027s not supported anymore)",
+      "parentUuid": "9e5b560b_6b05e366",
       "range": {
         "startLine": 281,
         "startChar": 12,
@@ -68,6 +116,30 @@
       "revId": "493d9259f448ca367c80be25de17165ac38e8cf8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "35494151_1d812ed1",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 450,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-04-10T01:29:46Z",
+      "side": 1,
+      "message": "For now build_id \u003d\u003d str(build_number), as LUCI hasn\u0027t flipped the switch yet, but we\u0027re no longer supporting suspected_flake_build_number in favor of suspected_flake_build_id",
+      "parentUuid": "c086019e_863add9f",
+      "range": {
+        "startLine": 450,
+        "startChar": 10,
+        "endLine": 450,
+        "endChar": 70
+      },
+      "revId": "493d9259f448ca367c80be25de17165ac38e8cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -118,6 +190,30 @@
     },
     {
       "key": {
+        "uuid": "b1ae4919_61dba629",
+        "filename": "appengine/findit/pipelines/flake_failure/next_commit_position_pipeline.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-04-10T01:29:46Z",
+      "side": 1,
+      "message": "Added more commenting to make this more clear",
+      "parentUuid": "a7bf4a87_7ade0817",
+      "range": {
+        "startLine": 81,
+        "startChar": 4,
+        "endLine": 88,
+        "endChar": 39
+      },
+      "revId": "493d9259f448ca367c80be25de17165ac38e8cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "266094f6_149889be",
         "filename": "appengine/findit/services/flake_failure/heuristic_analysis.py",
         "patchSetId": 3
@@ -138,6 +234,30 @@
       "revId": "493d9259f448ca367c80be25de17165ac38e8cf8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d5b5f718_2fc6d748",
+        "filename": "appengine/findit/services/flake_failure/heuristic_analysis.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-04-10T01:29:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "266094f6_149889be",
+      "range": {
+        "startLine": 70,
+        "startChar": 4,
+        "endLine": 70,
+        "endChar": 30
+      },
+      "revId": "493d9259f448ca367c80be25de17165ac38e8cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -164,6 +284,30 @@
     },
     {
       "key": {
+        "uuid": "f11161e7_1e5e10db",
+        "filename": "appengine/findit/services/flake_failure/heuristic_analysis.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-04-10T01:29:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fdd09b66_1d5abaeb",
+      "range": {
+        "startLine": 71,
+        "startChar": 3,
+        "endLine": 72,
+        "endChar": 29
+      },
+      "revId": "493d9259f448ca367c80be25de17165ac38e8cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b34e288e_f92c2f71",
         "filename": "appengine/findit/services/flake_failure/heuristic_analysis.py",
         "patchSetId": 3
@@ -187,6 +331,30 @@
     },
     {
       "key": {
+        "uuid": "194af081_15084ea7",
+        "filename": "appengine/findit/services/flake_failure/heuristic_analysis.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-04-10T01:29:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b34e288e_f92c2f71",
+      "range": {
+        "startLine": 76,
+        "startChar": 24,
+        "endLine": 77,
+        "endChar": 45
+      },
+      "revId": "493d9259f448ca367c80be25de17165ac38e8cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ffd9b26f_8a0eb42d",
         "filename": "appengine/findit/services/flake_failure/heuristic_analysis.py",
         "patchSetId": 3
@@ -198,6 +366,30 @@
       "writtenOn": "2018-04-06T22:50:20Z",
       "side": 1,
       "message": "Consider returning something here to indicate some heuristics worked/didn\u0027t work.",
+      "range": {
+        "startLine": 125,
+        "startChar": 4,
+        "endLine": 125,
+        "endChar": 24
+      },
+      "revId": "493d9259f448ca367c80be25de17165ac38e8cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "78a22a9c_babd6f94",
+        "filename": "appengine/findit/services/flake_failure/heuristic_analysis.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-04-10T01:29:46Z",
+      "side": 1,
+      "message": "This is probably unnecessary as the calling code doesn\u0027t check for errors and can proceed without heuristic analysis just fine",
+      "parentUuid": "ffd9b26f_8a0eb42d",
       "range": {
         "startLine": 125,
         "startChar": 4,
