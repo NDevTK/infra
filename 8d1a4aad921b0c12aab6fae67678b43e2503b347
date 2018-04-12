@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "2630cdf1_82629d21",
+        "filename": "appengine/monorail/elements/mr-approval-card/mr-approval-card.js",
+        "patchSetId": 6
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T19:38:14Z",
+      "side": 1,
+      "message": "Went through and added short comments to all elements.",
+      "parentUuid": "42b49409_76db3bec",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e71f9c5a_41eb1420",
         "filename": "appengine/monorail/elements/mr-approval-card/mr-approval-card.js",
         "patchSetId": 6
@@ -33,6 +51,24 @@
       "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "767d038e_8e2d4d87",
+        "filename": "appengine/monorail/elements/mr-approval-card/mr-approval-card.js",
+        "patchSetId": 6
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T19:38:14Z",
+      "side": 1,
+      "message": "Done. Thanks! I didn\u0027t actually know about some, so that\u0027s great. :D",
+      "parentUuid": "e71f9c5a_41eb1420",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "6b87c9f4_0b138257",
+        "filename": "appengine/monorail/elements/mr-approval-page/mr-approval-page.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T19:38:14Z",
+      "side": 1,
+      "message": "AFAIK I think it\u0027s fine to shorten these. Done.",
+      "parentUuid": "752c1558_6a0ca9e5",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "80ab6d41_2a154c46",
         "filename": "appengine/monorail/elements/mr-approval-page/mr-approval-page.html",
         "patchSetId": 6
@@ -64,6 +118,24 @@
       "writtenOn": "2018-04-12T17:53:47Z",
       "side": 1,
       "message": "Would it be more conventional + consistent to do this with margins or padding?",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ef68b470_2229f320",
+        "filename": "appengine/monorail/elements/mr-approval-page/mr-approval-page.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T19:38:14Z",
+      "side": 1,
+      "message": "I\u0027m not sure what\u0027s conventional, but one reason I like using widths for this case is that it allows changing only one variable (the width%) to change the container size while keeping it centered. I also find it sort of easier to reason about in the case of things like the max-width defined below for large monitors. \n\nI think if we switch to using box-sizing: border-box, though, we could set the width to 100% and use padding instead. To me it seems kind of intuitive that the container is a certain size and then centered, but I can also see the argument that using widths doesn\u0027t guarantee that the container would always span the whole page. \n\nLMK what you think!",
+      "parentUuid": "80ab6d41_2a154c46",
       "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -87,6 +159,42 @@
     },
     {
       "key": {
+        "uuid": "3a41dea7_1e496f5f",
+        "filename": "appengine/monorail/elements/mr-approval-page/mr-approval-page.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T19:38:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e8dd53fe_56201383",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d48827d4_df70f29e",
+        "filename": "appengine/monorail/elements/mr-approval-page/mr-approval-page.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T19:38:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e8dd53fe_56201383",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bad22e8d_f6a535c5",
         "filename": "appengine/monorail/elements/mr-approval-page/mr-approval-page.html",
         "patchSetId": 6
@@ -98,6 +206,24 @@
       "writtenOn": "2018-04-12T17:53:47Z",
       "side": 1,
       "message": "Is there an easy way to define breakpoints project-wide?",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3ddef19d_5c8b5c40",
+        "filename": "appengine/monorail/elements/mr-approval-page/mr-approval-page.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T19:38:14Z",
+      "side": 1,
+      "message": "Not that I know of unfortunately. At least not without using a preprocessor or something of the like. I did try to use the breakpoints defined in Material Design so that we at least have a convention to follow, though: https://material.io/guidelines/layout/responsive-ui.html",
+      "parentUuid": "bad22e8d_f6a535c5",
       "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -121,6 +247,24 @@
     },
     {
       "key": {
+        "uuid": "6a30e981_4ca825d2",
+        "filename": "appengine/monorail/elements/mr-gates-view/mr-gate.js",
+        "patchSetId": 6
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T19:38:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "935ca8d7_9a04edfe",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e23e1575_a9d51292",
         "filename": "appengine/monorail/elements/mr-gates-view/mr-gates-view.js",
         "patchSetId": 6
@@ -135,6 +279,24 @@
       "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8719d72e_866bd072",
+        "filename": "appengine/monorail/elements/mr-gates-view/mr-gates-view.js",
+        "patchSetId": 6
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T19:38:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e23e1575_a9d51292",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -155,6 +317,24 @@
     },
     {
       "key": {
+        "uuid": "584a20f9_94cbb92e",
+        "filename": "appengine/monorail/elements/mr-issue-details/mr-issue-details.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T19:38:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9fc55bc3_49820676",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "783a6180_19c057fb",
         "filename": "appengine/monorail/elements/mr-issue-details/mr-issue-details.html",
         "patchSetId": 6
@@ -169,6 +349,24 @@
       "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b6220196_ec32f93f",
+        "filename": "appengine/monorail/elements/mr-issue-details/mr-issue-details.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T19:38:14Z",
+      "side": 1,
+      "message": "They shouldn\u0027t! In the past you had to use the /deep/ selector to do this, but then they deprecated it. AFAIK there\u0027s actually no longer a way to directly style the shadow dom from a parent element anymore. (you\u0027re supposed to expose styling mixins or CSS variables to accomplish this)",
+      "parentUuid": "783a6180_19c057fb",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -189,6 +387,24 @@
     },
     {
       "key": {
+        "uuid": "576bcc3e_452ca2ed",
+        "filename": "appengine/monorail/elements/mr-issue-details/mr-issue-details.js",
+        "patchSetId": 6
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T19:38:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f149524c_09b1713f",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ced0ee07_4884b08d",
         "filename": "appengine/monorail/elements/mr-issue-details/mr-issue-details.js",
         "patchSetId": 6
@@ -203,6 +419,24 @@
       "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "495e2e35_a6549e42",
+        "filename": "appengine/monorail/elements/mr-issue-details/mr-issue-details.js",
+        "patchSetId": 6
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T19:38:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ced0ee07_4884b08d",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -223,6 +457,24 @@
     },
     {
       "key": {
+        "uuid": "9c08def1_14b7d5eb",
+        "filename": "appengine/monorail/elements/mr-issue-details/mr-metadata.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T19:38:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "87407e1e_45d183b9",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7355c135_9c3e7ff4",
         "filename": "appengine/monorail/elements/mr-issue-details/mr-metadata.html",
         "patchSetId": 6
@@ -234,6 +486,24 @@
       "writtenOn": "2018-04-12T17:53:47Z",
       "side": 1,
       "message": "Mixing em and px seems a bit weird to me 😕",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b85269a5_59e5da3f",
+        "filename": "appengine/monorail/elements/mr-issue-details/mr-metadata.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T19:38:14Z",
+      "side": 1,
+      "message": "I should document/clarify this more clearly somewhere, but the sizing system is based on the spacing system proposed by esprehn in this doc: https://docs.google.com/document/d/1-WUl8-HDimjYbKhDRMYYdw9ocbf5UaG9gJFWLpnJJv0/edit# (under uniform design language).",
+      "parentUuid": "7355c135_9c3e7ff4",
       "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -257,6 +527,24 @@
     },
     {
       "key": {
+        "uuid": "c0172e72_5a7c6c7d",
+        "filename": "appengine/monorail/elements/mr-issue-details/mr-metadata.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T19:38:14Z",
+      "side": 1,
+      "message": "Removed. Thanks! I didn\u0027t realize that. In that case, it will be very important that the FLT page has feature parity with the old Monorail issue page.",
+      "parentUuid": "9b8d0292_0d3b068f",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "549131ec_a5f63f8a",
         "filename": "appengine/monorail/elements/mr-issue-details/mr-metadata.js",
         "patchSetId": 6
@@ -274,6 +562,24 @@
     },
     {
       "key": {
+        "uuid": "5bebf1f6_3494a970",
+        "filename": "appengine/monorail/elements/mr-issue-details/mr-metadata.js",
+        "patchSetId": 6
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T19:38:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "549131ec_a5f63f8a",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "46490fa9_f927e5c5",
         "filename": "crdx/chopsui/chops-button.html",
         "patchSetId": 6
@@ -288,6 +594,24 @@
       "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a57731f_bc9e67cd",
+        "filename": "crdx/chopsui/chops-button.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T19:38:14Z",
+      "side": 1,
+      "message": "Technically, anything defined on :host can be directly overridden by the parent if the parent style chops-button for example. So the parent can change this pretty easily.",
+      "parentUuid": "46490fa9_f927e5c5",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
