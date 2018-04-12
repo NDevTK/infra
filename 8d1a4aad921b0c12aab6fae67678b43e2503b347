@@ -19,6 +19,57 @@
     },
     {
       "key": {
+        "uuid": "e71f9c5a_41eb1420",
+        "filename": "appengine/monorail/elements/mr-approval-card/mr-approval-card.js",
+        "patchSetId": 6
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-04-12T17:53:47Z",
+      "side": 1,
+      "message": "This could (subjectively) be cleaner as:\n\nif (evt.path.some(el \u003d\u003e el.classList \u0026\u0026 el.classList.contains(\u0027no-toggle\u0027))) {\n  return;\n}",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "752c1558_6a0ca9e5",
+        "filename": "appengine/monorail/elements/mr-approval-page/mr-approval-page.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-04-12T17:53:47Z",
+      "side": 1,
+      "message": "Can these paths be shorter? e.g.\n\u003clink rel\u003d\"import\" href\u003d\"../mr-issue-details/mr-metadata.html\"\u003e\nOr is it convention to make the relative include path go down to the root path?",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "80ab6d41_2a154c46",
+        "filename": "appengine/monorail/elements/mr-approval-page/mr-approval-page.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-04-12T17:53:47Z",
+      "side": 1,
+      "message": "Would it be more conventional + consistent to do this with margins or padding?",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e8dd53fe_56201383",
         "filename": "appengine/monorail/elements/mr-approval-page/mr-approval-page.html",
         "patchSetId": 6
@@ -30,6 +81,23 @@
       "writtenOn": "2018-04-12T15:58:27Z",
       "side": 1,
       "message": "extra newline?",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bad22e8d_f6a535c5",
+        "filename": "appengine/monorail/elements/mr-approval-page/mr-approval-page.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-04-12T17:53:47Z",
+      "side": 1,
+      "message": "Is there an easy way to define breakpoints project-wide?",
       "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -70,6 +138,40 @@
     },
     {
       "key": {
+        "uuid": "9fc55bc3_49820676",
+        "filename": "appengine/monorail/elements/mr-issue-details/mr-issue-details.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-04-12T17:53:47Z",
+      "side": 1,
+      "message": "h2\u0027s have width: 100% by default",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "783a6180_19c057fb",
+        "filename": "appengine/monorail/elements/mr-issue-details/mr-issue-details.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-04-12T17:53:47Z",
+      "side": 1,
+      "message": "Do these styles get through the shadow dom into the child element?",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f149524c_09b1713f",
         "filename": "appengine/monorail/elements/mr-issue-details/mr-issue-details.js",
         "patchSetId": 6
@@ -81,6 +183,57 @@
       "writtenOn": "2018-04-12T15:58:27Z",
       "side": 1,
       "message": "class doc?",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ced0ee07_4884b08d",
+        "filename": "appengine/monorail/elements/mr-issue-details/mr-issue-details.js",
+        "patchSetId": 6
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-04-12T17:53:47Z",
+      "side": 1,
+      "message": "Add a TODO to remove lorem ipsum once there\u0027s real data?",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "87407e1e_45d183b9",
+        "filename": "appengine/monorail/elements/mr-issue-details/mr-metadata.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-04-12T17:53:47Z",
+      "side": 1,
+      "message": "Same comment re: h2\u0027s",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7355c135_9c3e7ff4",
+        "filename": "appengine/monorail/elements/mr-issue-details/mr-metadata.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-04-12T17:53:47Z",
+      "side": 1,
+      "message": "Mixing em and px seems a bit weird to me 😕",
       "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -115,6 +268,23 @@
       "writtenOn": "2018-04-12T15:58:27Z",
       "side": 1,
       "message": "class doc",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "46490fa9_f927e5c5",
+        "filename": "crdx/chopsui/chops-button.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-04-12T17:53:47Z",
+      "side": 1,
+      "message": "Should we give the parent/embedder choice on how this element is displayed?",
       "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
