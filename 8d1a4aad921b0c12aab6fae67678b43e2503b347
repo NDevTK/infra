@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "42b49409_76db3bec",
+        "filename": "appengine/monorail/elements/mr-approval-card/mr-approval-card.js",
+        "patchSetId": 6
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-04-12T15:58:27Z",
+      "side": 1,
+      "message": "Replace with description?",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e8dd53fe_56201383",
+        "filename": "appengine/monorail/elements/mr-approval-page/mr-approval-page.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-04-12T15:58:27Z",
+      "side": 1,
+      "message": "extra newline?",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "935ca8d7_9a04edfe",
+        "filename": "appengine/monorail/elements/mr-gates-view/mr-gate.js",
+        "patchSetId": 6
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-04-12T15:58:27Z",
+      "side": 1,
+      "message": "Actual description",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e23e1575_a9d51292",
+        "filename": "appengine/monorail/elements/mr-gates-view/mr-gates-view.js",
+        "patchSetId": 6
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-04-12T15:58:27Z",
+      "side": 1,
+      "message": "Desc?",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f149524c_09b1713f",
+        "filename": "appengine/monorail/elements/mr-issue-details/mr-issue-details.js",
+        "patchSetId": 6
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-04-12T15:58:27Z",
+      "side": 1,
+      "message": "class doc?",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "549131ec_a5f63f8a",
+        "filename": "appengine/monorail/elements/mr-issue-details/mr-metadata.js",
+        "patchSetId": 6
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-04-12T15:58:27Z",
+      "side": 1,
+      "message": "class doc",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
