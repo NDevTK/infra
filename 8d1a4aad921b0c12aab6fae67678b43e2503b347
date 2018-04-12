@@ -87,6 +87,23 @@
     },
     {
       "key": {
+        "uuid": "9b8d0292_0d3b068f",
+        "filename": "appengine/monorail/elements/mr-issue-details/mr-metadata.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-04-12T17:40:44Z",
+      "side": 1,
+      "message": "FYI unless, amineer told you something different, I think we decided that we didn\u0027t want to give users nav to the old ezt pages for launch issues. Gates and approvals will not be shown on the old pages so it would be pointless and maybe confuse people.",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "549131ec_a5f63f8a",
         "filename": "appengine/monorail/elements/mr-issue-details/mr-metadata.js",
         "patchSetId": 6
