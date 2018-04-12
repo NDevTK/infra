@@ -142,6 +142,24 @@
     },
     {
       "key": {
+        "uuid": "22f726dd_31d4f647",
+        "filename": "appengine/monorail/elements/mr-approval-page/mr-approval-page.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-04-12T21:10:39Z",
+      "side": 1,
+      "message": "I think my main concern was that the widths of the margins around the container wouldn\u0027t be predictable and could look weird at smaller mobile sizes. I don\u0027t think this point is super consequential and using width: 90% looks fine to me. Just to be clear, concretely the way I was thinking of was:\n\n.container {\n  margin: 0 auto;\n  padding: 0 2em;\n}\n\n(I also haven\u0027t looked at the page using this CSS so I\u0027m just engaging in armchair stylesheets here)",
+      "parentUuid": "ef68b470_2229f320",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e8dd53fe_56201383",
         "filename": "appengine/monorail/elements/mr-approval-page/mr-approval-page.html",
         "patchSetId": 6
@@ -224,6 +242,24 @@
       "side": 1,
       "message": "Not that I know of unfortunately. At least not without using a preprocessor or something of the like. I did try to use the breakpoints defined in Material Design so that we at least have a convention to follow, though: https://material.io/guidelines/layout/responsive-ui.html",
       "parentUuid": "bad22e8d_f6a535c5",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c1f1df62_4d2fbc09",
+        "filename": "appengine/monorail/elements/mr-approval-page/mr-approval-page.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-04-12T21:10:39Z",
+      "side": 1,
+      "message": "Oh nice! TIL. Can we link those breakpoints somewhere so other people know to use them? Either from a Monorail or ChOps UI docs page? (I can make the doc CL)",
+      "parentUuid": "3ddef19d_5c8b5c40",
       "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -370,6 +406,24 @@
     },
     {
       "key": {
+        "uuid": "043bdac2_1105b8d0",
+        "filename": "appengine/monorail/elements/mr-issue-details/mr-issue-details.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-04-12T21:10:39Z",
+      "side": 1,
+      "message": "Ah ok thanks, but this is just styling the container of chops-button, which does work?",
+      "parentUuid": "b6220196_ec32f93f",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f149524c_09b1713f",
         "filename": "appengine/monorail/elements/mr-issue-details/mr-issue-details.js",
         "patchSetId": 6
@@ -510,6 +564,24 @@
     },
     {
       "key": {
+        "uuid": "aa303a5b_25258357",
+        "filename": "appengine/monorail/elements/mr-issue-details/mr-metadata.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-04-12T21:10:39Z",
+      "side": 1,
+      "message": "Got it, there\u0027s rationale for horizontal px in that doc but no rationale for vertical em. Also, if everything used em or rem and one adhered to powers of two, I think things would still line up pretty nicely and also benefit from the scalability benefits of em.\n\n\u003e I should document/clarify this more clearly somewhere\n\nRe: my other comment about documenting breakpoints somewhere, is there a Chops-UI standards document/styleguide? Could there be one?",
+      "parentUuid": "b85269a5_59e5da3f",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "9b8d0292_0d3b068f",
         "filename": "appengine/monorail/elements/mr-issue-details/mr-metadata.html",
         "patchSetId": 6
@@ -609,6 +681,24 @@
       "side": 1,
       "message": "Technically, anything defined on :host can be directly overridden by the parent if the parent style chops-button for example. So the parent can change this pretty easily.",
       "parentUuid": "46490fa9_f927e5c5",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "80b153e0_3f70b744",
+        "filename": "crdx/chopsui/chops-button.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-04-12T21:10:39Z",
+      "side": 1,
+      "message": "🤯",
+      "parentUuid": "2a57731f_bc9e67cd",
       "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
