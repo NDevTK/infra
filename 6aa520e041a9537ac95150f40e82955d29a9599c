@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "48ced584_64544352",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-04-12T01:26:38Z",
+      "side": 1,
+      "message": "Could you describe what are the new popularizations? What\u0027s the new structure?",
+      "range": {
+        "startLine": 9,
+        "startChar": 83,
+        "endLine": 9,
+        "endChar": 97
+      },
+      "revId": "6aa520e041a9537ac95150f40e82955d29a9599c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a95ffa11_a6eba8c3",
+        "filename": "appengine/findit/libs/test_results/base_test_results.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-04-12T01:26:38Z",
+      "side": 1,
+      "message": "Do we need one more like IsKnownFormat?",
+      "range": {
+        "startLine": 60,
+        "startChar": 6,
+        "endLine": 60,
+        "endChar": 26
+      },
+      "revId": "6aa520e041a9537ac95150f40e82955d29a9599c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "009b4db7_ced89468",
+        "filename": "appengine/findit/libs/test_results/test/__init__.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-04-12T01:26:38Z",
+      "side": 1,
+      "message": "8",
+      "range": {
+        "startLine": 1,
+        "startChar": 15,
+        "endLine": 1,
+        "endChar": 16
+      },
+      "revId": "6aa520e041a9537ac95150f40e82955d29a9599c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b08cc2a1_9b795a23",
+        "filename": "appengine/findit/libs/test_results/test/data/m_b_123_abc_test.json",
+        "patchSetId": 5
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-04-12T01:26:38Z",
+      "side": 1,
+      "message": "How about using a hard-coded and simplified version of this? i.e. embed this into the code\n\nSame for others.",
+      "range": {
+        "startLine": 1,
+        "startChar": 1,
+        "endLine": 12,
+        "endChar": 6
+      },
+      "revId": "6aa520e041a9537ac95150f40e82955d29a9599c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
