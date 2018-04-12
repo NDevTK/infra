@@ -160,6 +160,24 @@
     },
     {
       "key": {
+        "uuid": "6562ae7a_9dfadad0",
+        "filename": "appengine/monorail/elements/mr-approval-page/mr-approval-page.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T21:34:12Z",
+      "side": 1,
+      "message": "Ahh, I see, that makes sense! I tried out your idea, and I quite like it. You have a good point that it does make the fluidity feel nicer to have the padding and margins stay consistent. Thanks! :)",
+      "parentUuid": "22f726dd_31d4f647",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e8dd53fe_56201383",
         "filename": "appengine/monorail/elements/mr-approval-page/mr-approval-page.html",
         "patchSetId": 6
@@ -260,6 +278,24 @@
       "side": 1,
       "message": "Oh nice! TIL. Can we link those breakpoints somewhere so other people know to use them? Either from a Monorail or ChOps UI docs page? (I can make the doc CL)",
       "parentUuid": "3ddef19d_5c8b5c40",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "82c53c6c_680231dc",
+        "filename": "appengine/monorail/elements/mr-approval-page/mr-approval-page.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T21:34:12Z",
+      "side": 1,
+      "message": "Yeah, sure! I definitely wanted to start up a doc page in https://chopsui-gallery.appspot.com/ at some point, so that we can collect all of the practices we want to use across our ChOps services. \n\nIf you want to start up a doc CL somewhere, that\u0027d be great, and I can try to figure out how to get the docs to display on the chopsui-gallery site later, so that everything is in one nice easy to access location.",
+      "parentUuid": "c1f1df62_4d2fbc09",
       "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -424,6 +460,24 @@
     },
     {
       "key": {
+        "uuid": "4f6e22ce_c30b24e6",
+        "filename": "appengine/monorail/elements/mr-issue-details/mr-issue-details.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T21:34:12Z",
+      "side": 1,
+      "message": "Yup!",
+      "parentUuid": "043bdac2_1105b8d0",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f149524c_09b1713f",
         "filename": "appengine/monorail/elements/mr-issue-details/mr-issue-details.js",
         "patchSetId": 6
@@ -576,6 +630,24 @@
       "side": 1,
       "message": "Got it, there\u0027s rationale for horizontal px in that doc but no rationale for vertical em. Also, if everything used em or rem and one adhered to powers of two, I think things would still line up pretty nicely and also benefit from the scalability benefits of em.\n\n\u003e I should document/clarify this more clearly somewhere\n\nRe: my other comment about documenting breakpoints somewhere, is there a Chops-UI standards document/styleguide? Could there be one?",
       "parentUuid": "b85269a5_59e5da3f",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c06f9612_dca4f248",
+        "filename": "appengine/monorail/elements/mr-issue-details/mr-metadata.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-04-12T21:34:12Z",
+      "side": 1,
+      "message": "I definitely do want to start up a ChOpsUI style guide somewhere but haven\u0027t had a chance to do it yet. I do want to document this stuff. \n\nI believe, although it\u0027s not listed in the doc, that the justification for using ems for vertical spacing is that ems are based on font-size and it intuitively feels right for the verical spacing to change based on font height (ie: like when you double or 1.5 space your papers/text). \n\nI think for horizontal spacing, pixels/rems are a bit more predictable, so they can better ensure that items with very different font sizes still line up horizontally. Technically, this does mean ems don\u0027t really cause items to line up vertically, but I think vertical lining up is a lot more difficult to naturally accomplish in this way because of changing font sizes.",
+      "parentUuid": "aa303a5b_25258357",
       "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
