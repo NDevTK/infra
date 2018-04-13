@@ -161,6 +161,7 @@ class TemplateCreateTest(unittest.TestCase):
                         name in ['Canary', 'Stable-Exp', 'Stable', '', '', '']],
         approvals=mox.IgnoreArg(),
         prechecked_approvals=['2_phase_1', '3_phase_2'],
+        required_approval_ids=[]
         )
     self.mox.ReplayAll()
     url = self.servlet.ProcessFormData(self.mr, post_data)
