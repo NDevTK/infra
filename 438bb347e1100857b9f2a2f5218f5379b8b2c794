@@ -16,6 +16,24 @@
       "revId": "438bb347e1100857b9f2a2f5218f5379b8b2c794",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3e7663a3_74686f06",
+        "filename": "appengine/monorail/templates/tracker/launch-gates-widget.ezt",
+        "patchSetId": 9
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-04-13T18:36:57Z",
+      "side": 1,
+      "message": "At this point I prefer the current implementation.\n\nnot only would a is_required_approval only be relevant for FieldValueViews of approval fields, they would also only be used here (so far).",
+      "parentUuid": "fdf570a7_2078af17",
+      "revId": "438bb347e1100857b9f2a2f5218f5379b8b2c794",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
