@@ -302,6 +302,24 @@
     },
     {
       "key": {
+        "uuid": "2b42166a_e925ffd0",
+        "filename": "appengine/monorail/elements/mr-approval-page/mr-approval-page.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-04-13T19:26:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "82c53c6c_680231dc",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "935ca8d7_9a04edfe",
         "filename": "appengine/monorail/elements/mr-gates-view/mr-gate.js",
         "patchSetId": 6
@@ -651,6 +669,24 @@
       "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "13d37e63_fe302e20",
+        "filename": "appengine/monorail/elements/mr-issue-details/mr-metadata.html",
+        "patchSetId": 6
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-04-13T19:26:33Z",
+      "side": 1,
+      "message": "Got it, thanks. That makes sense to me. Adding a note about this to the style guide CL.",
+      "parentUuid": "c06f9612_dca4f248",
+      "revId": "8d1a4aad921b0c12aab6fae67678b43e2503b347",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
