@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fdf570a7_2078af17",
+        "filename": "appengine/monorail/templates/tracker/launch-gates-widget.ezt",
+        "patchSetId": 9
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-04-13T04:46:45Z",
+      "side": 1,
+      "message": "Another way to do this would be to add an is_required_approval field to the FieldValueView object and use [if-any approvals.is_required_approval]checked\u003d\"checked\"[end] in the loop that renders the checkbox elements.  That avoids some JS code.",
+      "revId": "438bb347e1100857b9f2a2f5218f5379b8b2c794",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
