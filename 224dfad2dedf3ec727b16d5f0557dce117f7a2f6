@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "00f66652_55213e9e",
+        "filename": "appengine/findit/libs/test_results/base_test_results.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-04-16T22:57:18Z",
+      "side": 1,
+      "message": "This one might be gtest-specific. I haven\u0027t seen PRE_ in other test types yet.\n\nMind a TODO with a bug to encapsulate this into the gtest result parser?",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 57,
+        "endChar": 15
+      },
+      "revId": "224dfad2dedf3ec727b16d5f0557dce117f7a2f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1f8e60af_7a841f48",
+        "filename": "appengine/findit/libs/test_results/test/gtest_test_results_test.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-04-16T22:57:18Z",
+      "side": 1,
+      "message": "Those test data json files are not deleted. Are they still in use?\n\nExample: m_b_123_abc_test.json",
+      "range": {
+        "startLine": 45,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 31
+      },
+      "revId": "224dfad2dedf3ec727b16d5f0557dce117f7a2f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
