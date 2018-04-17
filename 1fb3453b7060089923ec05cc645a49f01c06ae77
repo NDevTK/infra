@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8214e786_9b490d3e",
+        "filename": "infra/tools/dockerbuild/wheel.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 312,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2018-04-17T01:03:47Z",
+      "side": 1,
+      "message": "UniversalSource (it\u0027s pure-python)",
+      "range": {
+        "startLine": 312,
+        "startChar": 2,
+        "endLine": 312,
+        "endChar": 18
+      },
+      "revId": "1fb3453b7060089923ec05cc645a49f01c06ae77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
