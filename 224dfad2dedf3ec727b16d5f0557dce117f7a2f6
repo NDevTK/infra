@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "dac007aa_2f6cffa6",
+        "filename": "appengine/findit/libs/test_results/base_test_results.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-04-17T17:59:14Z",
+      "side": 1,
+      "message": "Done. Removed.",
+      "parentUuid": "00f66652_55213e9e",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 57,
+        "endChar": 15
+      },
+      "revId": "224dfad2dedf3ec727b16d5f0557dce117f7a2f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1f8e60af_7a841f48",
         "filename": "appengine/findit/libs/test_results/test/gtest_test_results_test.py",
         "patchSetId": 7
@@ -45,6 +69,30 @@
       "revId": "224dfad2dedf3ec727b16d5f0557dce117f7a2f6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4cbe3c9b_94623539",
+        "filename": "appengine/findit/libs/test_results/test/gtest_test_results_test.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-04-17T17:59:14Z",
+      "side": 1,
+      "message": "The data files for this tests were deleted.",
+      "parentUuid": "1f8e60af_7a841f48",
+      "range": {
+        "startLine": 45,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 31
+      },
+      "revId": "224dfad2dedf3ec727b16d5f0557dce117f7a2f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
