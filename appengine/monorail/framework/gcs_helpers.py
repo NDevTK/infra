@@ -16,6 +16,7 @@ from datetime import datetime, timedelta
 
 from google.appengine.api import app_identity
 from google.appengine.api import images
+from google.appengine.api import memcache
 from google.appengine.api import urlfetch
 from third_party import cloudstorage
 from third_party.cloudstorage import errors
@@ -111,11 +112,16 @@ def StoreLogoInGCS(file_name, content, project_id):
 
 def SignUrl(bucket, object_id):
   try:
+    cache_key = ("gcs-object-url-%s" % object_id)
+
+    #cached = memcache.get(key=cache_key)
+    #if cached is not None:
+      #return cached
+
     result = ('https://www.googleapis.com/storage/v1/b/'
         '{bucket}/o/{object_id}?access_token={token}&alt=media')
 
-    if IS_DEV_APPSERVER:
-      result = '/_ah/gcs{resource}?{querystring}'
+    ttl_sec = 60 * 60
 
     scopes = ['https://www.googleapis.com/auth/devstorage.read_only']
 
@@ -127,9 +133,19 @@ def SignUrl(bucket, object_id):
           object_id=urllib.quote_plus(object_id),
           token=app_identity.get_access_token(scopes)[0])
 
+    if IS_DEV_APPSERVER:
+      url = '/_ah/gcs/%s/%s' % (bucket, object_id)
+      if not memcache.set(key=cache_key, value=url, time=ttl_sec):
+        logging.error('Could not cache gcs url %s for %s', url, object_id)
+
+      return url
+
     resp = urlfetch.fetch(url, follow_redirects=False)
 
     redir = resp.headers["Location"]
+    if not memcache.set(key=cache_key, value=redir, time=ttl_sec):
+      logging.error('Could not cache gcs url %s for %s', redir, object_id)
+
     return redir
 
   except Exception as e:
