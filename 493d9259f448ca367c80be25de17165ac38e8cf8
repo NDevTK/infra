@@ -96,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "6a78be56_b57363a4",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-04-24T19:02:20Z",
+      "side": 1,
+      "message": "After discussion build_number will still be used for display purposes",
+      "parentUuid": "d9c295ff_88347c54",
+      "range": {
+        "startLine": 281,
+        "startChar": 12,
+        "endLine": 281,
+        "endChar": 73
+      },
+      "revId": "493d9259f448ca367c80be25de17165ac38e8cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c086019e_863add9f",
         "filename": "appengine/findit/model/flake/master_flake_analysis.py",
         "patchSetId": 3
@@ -212,6 +236,30 @@
       "revId": "493d9259f448ca367c80be25de17165ac38e8cf8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f57adeb4_54e7761e",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 450,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-04-24T19:02:20Z",
+      "side": 1,
+      "message": "ok after some clarifying discussion build id and build number will both be used, build number will still be around for display purposes only.",
+      "parentUuid": "3e579831_4910d384",
+      "range": {
+        "startLine": 450,
+        "startChar": 10,
+        "endLine": 450,
+        "endChar": 70
+      },
+      "revId": "493d9259f448ca367c80be25de17165ac38e8cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
