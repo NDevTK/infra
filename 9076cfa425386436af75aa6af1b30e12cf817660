@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "60231ea6_41fa445a",
+        "filename": "appengine/findit/services/flake_failure/next_commit_position_utils.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-04-24T20:17:09Z",
+      "side": 1,
+      "message": "I don\u0027t really understand in what condition, what commit position should be returned here. Could you elaborate what\u0027s the criteria?",
+      "range": {
+        "startLine": 68,
+        "startChar": 5,
+        "endLine": 68,
+        "endChar": 58
+      },
+      "revId": "9076cfa425386436af75aa6af1b30e12cf817660",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b5cd1ace_d4c9f510",
+        "filename": "appengine/findit/services/flake_failure/next_commit_position_utils.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-04-24T20:17:09Z",
+      "side": 1,
+      "message": "Are you sure you don\u0027t want to continue here? \n\nAnd not related to this change, but in this case the suspect should not be the culprit for sure, right? Should we do something about it? like remove it from suspects?",
+      "revId": "9076cfa425386436af75aa6af1b30e12cf817660",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
