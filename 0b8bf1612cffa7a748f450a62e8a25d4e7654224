@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "a8c00912_28582365",
+        "filename": "appengine/monorail/framework/gcs_helpers.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-04-24T22:52:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e658094b_71436a73",
+      "revId": "0b8bf1612cffa7a748f450a62e8a25d4e7654224",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "91604427_16f6f931",
         "filename": "appengine/monorail/framework/gcs_helpers.py",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "0b8bf1612cffa7a748f450a62e8a25d4e7654224",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b730dee4_d8f77072",
+        "filename": "appengine/monorail/framework/gcs_helpers.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-04-24T22:52:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "91604427_16f6f931",
+      "revId": "0b8bf1612cffa7a748f450a62e8a25d4e7654224",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "087f64fc_91cce195",
+        "filename": "appengine/monorail/framework/gcs_helpers.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-04-24T22:52:15Z",
+      "side": 1,
+      "message": "GCS signatures are good for one hour. I added a constant for 50 minutes. SG?",
+      "parentUuid": "95edf40b_18872d83",
+      "revId": "0b8bf1612cffa7a748f450a62e8a25d4e7654224",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5ded9402_78fdde49",
         "filename": "appengine/monorail/framework/gcs_helpers.py",
         "patchSetId": 2
@@ -67,6 +121,24 @@
       "revId": "0b8bf1612cffa7a748f450a62e8a25d4e7654224",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bcefd69d_99f3a2a8",
+        "filename": "appengine/monorail/framework/gcs_helpers.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-04-24T22:52:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5ded9402_78fdde49",
+      "revId": "0b8bf1612cffa7a748f450a62e8a25d4e7654224",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
