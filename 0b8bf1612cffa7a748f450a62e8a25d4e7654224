@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e658094b_71436a73",
+        "filename": "appengine/monorail/framework/gcs_helpers.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-04-24T22:38:42Z",
+      "side": 1,
+      "message": "Style: single quotes please, and no need for parens.",
+      "revId": "0b8bf1612cffa7a748f450a62e8a25d4e7654224",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "91604427_16f6f931",
+        "filename": "appengine/monorail/framework/gcs_helpers.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-04-24T22:38:42Z",
+      "side": 1,
+      "message": "You need to uncomment these lines.",
+      "revId": "0b8bf1612cffa7a748f450a62e8a25d4e7654224",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "95edf40b_18872d83",
+        "filename": "appengine/monorail/framework/gcs_helpers.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-04-24T22:38:42Z",
+      "side": 1,
+      "message": "Could this use framework_constants.MEMCACHE_EXPIRATION, which is 6 hours?",
+      "revId": "0b8bf1612cffa7a748f450a62e8a25d4e7654224",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5ded9402_78fdde49",
+        "filename": "appengine/monorail/framework/gcs_helpers.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-04-24T22:38:42Z",
+      "side": 1,
+      "message": "Now that there is code being added to each part of this if-return structure, I think it would be more clear if it was an if-else where both branches set the same url variable.  The the memcache.set() could be written once after the if-else.",
+      "revId": "0b8bf1612cffa7a748f450a62e8a25d4e7654224",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
