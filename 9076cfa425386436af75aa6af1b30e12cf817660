@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "e7163a67_75864bb1",
+        "filename": "appengine/findit/services/flake_failure/next_commit_position_utils.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-04-25T19:14:24Z",
+      "side": 1,
+      "message": "Added more details to the docstring",
+      "parentUuid": "60231ea6_41fa445a",
+      "range": {
+        "startLine": 68,
+        "startChar": 5,
+        "endLine": 68,
+        "endChar": 58
+      },
+      "revId": "9076cfa425386436af75aa6af1b30e12cf817660",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b5cd1ace_d4c9f510",
         "filename": "appengine/findit/services/flake_failure/next_commit_position_utils.py",
         "patchSetId": 5
@@ -36,6 +60,24 @@
       "writtenOn": "2018-04-24T20:17:09Z",
       "side": 1,
       "message": "Are you sure you don\u0027t want to continue here? \n\nAnd not related to this change, but in this case the suspect should not be the culprit for sure, right? Should we do something about it? like remove it from suspects?",
+      "revId": "9076cfa425386436af75aa6af1b30e12cf817660",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "afb407c8_7b4d6214",
+        "filename": "appengine/findit/services/flake_failure/next_commit_position_utils.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-04-25T19:14:24Z",
+      "side": 1,
+      "message": "Yes, we should not continue in this case (the suspects are assumed to be in chronological order). If the previous commit is already flaky, there is no point to try the suspect as well, because the culprit must have already occurred before the heuristic suspect",
+      "parentUuid": "b5cd1ace_d4c9f510",
       "revId": "9076cfa425386436af75aa6af1b30e12cf817660",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
