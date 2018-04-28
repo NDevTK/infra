@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "529b9a7c_916ad7a3",
+        "filename": "appengine/monorail/features/inboundemail.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 302,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-04-28T00:17:36Z",
+      "side": 1,
+      "message": "replace with or add \"_\"?",
+      "range": {
+        "startLine": 302,
+        "startChar": 23,
+        "endLine": 302,
+        "endChar": 37
+      },
+      "revId": "2860a8252c057db519a9c369fdac1ade1f35ab97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df533335_6d326af9",
+        "filename": "appengine/monorail/features/send_notifications.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-04-28T00:17:36Z",
+      "side": 1,
+      "message": "Add \u0027comment_id\u0027 under \u0027Args\u0027",
+      "revId": "2860a8252c057db519a9c369fdac1ade1f35ab97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
