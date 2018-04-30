@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f52e9697_39c86c66",
+        "filename": "appengine/findit/services/try_job.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 341,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-04-30T17:25:44Z",
+      "side": 1,
+      "message": "Mind checking whether all existing code have migrated to the new pubsub?\n\nIf so, we should remove the old code path and this flag as well. It seems better to be in a follow-up CL though.",
+      "range": {
+        "startLine": 341,
+        "startChar": 18,
+        "endLine": 341,
+        "endChar": 37
+      },
+      "revId": "8ad530a6866cb00751b195475fe4e3f301f866cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
