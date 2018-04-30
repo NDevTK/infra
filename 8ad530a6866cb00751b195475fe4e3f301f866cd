@@ -46,6 +46,30 @@
       "revId": "8ad530a6866cb00751b195475fe4e3f301f866cd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d6890992_5c890b42",
+        "filename": "appengine/findit/services/try_job.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 341,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-04-30T17:51:00Z",
+      "side": 1,
+      "message": "Nice! Many thanks!",
+      "parentUuid": "4a8f8f87_54c772f8",
+      "range": {
+        "startLine": 341,
+        "startChar": 18,
+        "endLine": 341,
+        "endChar": 37
+      },
+      "revId": "8ad530a6866cb00751b195475fe4e3f301f866cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
