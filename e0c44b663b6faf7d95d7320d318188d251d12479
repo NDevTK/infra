@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "61d27d6a_5b1180b2",
+        "filename": "appengine/findit/services/flake_failure/data_point_util.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-04-30T23:19:10Z",
+      "side": 1,
+      "message": "_UpdateExistingDataPoint is only called in the \"if data_point\" clause, so this assert seems unnecessary",
+      "range": {
+        "startLine": 91,
+        "startChar": 9,
+        "endLine": 91,
+        "endChar": 19
+      },
+      "revId": "e0c44b663b6faf7d95d7320d318188d251d12479",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4381e02_9f0afc51",
+        "filename": "appengine/findit/services/flake_failure/data_point_util.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-04-30T23:19:10Z",
+      "side": 1,
+      "message": "This could be removed now, right?",
+      "range": {
+        "startLine": 207,
+        "startChar": 19,
+        "endLine": 207,
+        "endChar": 26
+      },
+      "revId": "e0c44b663b6faf7d95d7320d318188d251d12479",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c17a4a46_b6d7d567",
+        "filename": "appengine/findit/services/flake_failure/data_point_util.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-04-30T23:19:10Z",
+      "side": 1,
+      "message": "I would suggest to refactor this function in this way:\n\n@ndb.transactional\ndef _UpdateAnalysisDataPoints(analysis_urlsafe_key, commit_position, failed_swarming_task_attempts\u003dNone, ...):\n  # arguments should be all the fields in the data_point that could be updated.\n  Get analysis\n  Get/create the data_point\n  Update the data_point\n  analysis.put()\n\ndef UpdateAnalysisDataPointsForSwarmingTaskInfo(analysis_urlsafe_key, commit_position, revision,swarming_task_output):\n  In each case, collect necessary info for updating/creating the data_point, then call _UpdateAnalysisDataPoints",
+      "range": {
+        "startLine": 208,
+        "startChar": 4,
+        "endLine": 208,
+        "endChar": 28
+      },
+      "revId": "e0c44b663b6faf7d95d7320d318188d251d12479",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cf5e17aa_3f682484",
+        "filename": "appengine/findit/services/flake_failure/data_point_util.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-04-30T23:19:10Z",
+      "side": 1,
+      "message": "nit: task",
+      "range": {
+        "startLine": 211,
+        "startChar": 68,
+        "endLine": 211,
+        "endChar": 72
+      },
+      "revId": "e0c44b663b6faf7d95d7320d318188d251d12479",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "99035ea6_3a5012cc",
+        "filename": "appengine/findit/services/flake_failure/data_point_util.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 241,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-04-30T23:19:10Z",
+      "side": 1,
+      "message": "should also check if swarming_task_output exists, right?",
+      "range": {
+        "startLine": 241,
+        "startChar": 9,
+        "endLine": 241,
+        "endChar": 29
+      },
+      "revId": "e0c44b663b6faf7d95d7320d318188d251d12479",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
