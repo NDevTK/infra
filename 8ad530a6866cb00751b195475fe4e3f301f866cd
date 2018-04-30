@@ -22,6 +22,30 @@
       "revId": "8ad530a6866cb00751b195475fe4e3f301f866cd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4a8f8f87_54c772f8",
+        "filename": "appengine/findit/services/try_job.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 341,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-04-30T17:41:22Z",
+      "side": 1,
+      "message": "Yes, I\u0027m actually doing this in my following CL where I\u0027ll also remove the old pubsub code.",
+      "parentUuid": "f52e9697_39c86c66",
+      "range": {
+        "startLine": 341,
+        "startChar": 18,
+        "endLine": 341,
+        "endChar": 37
+      },
+      "revId": "8ad530a6866cb00751b195475fe4e3f301f866cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
