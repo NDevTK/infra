@@ -3,9 +3,12 @@
 # found in the LICENSE file.
 """Updates a flake analysis' data points with incoming pass rate information."""
 
+from google.appengine.ext import ndb
+
 from dto.flake_swarming_task_output import FlakeSwarmingTaskOutput
 from gae_libs.pipelines import GeneratorPipeline
 from libs.structured_object import StructuredObject
+from services import step_util
 from services.flake_failure import data_point_util
 
 
@@ -30,6 +33,16 @@ class UpdateFlakeAnalysisDataPointsPipeline(GeneratorPipeline):
 
   def RunImpl(self, parameters):
     """Creates or updates existing data points with swarming task results."""
+    analysis = ndb.Key(urlsafe=parameters.analysis_urlsafe_key).get()
+    assert analysis
+
+    # Get the bounding builds' info to help craft data points with.
+    (lower_bound_build,
+     upper_bound_build) = step_util.GetValidBoundingBuildsForStep(
+         analysis.master_name, analysis.builder_name, analysis.step_name, None,
+         analysis.build_number, parameters.commit_position)
+
     data_point_util.UpdateAnalysisDataPoints(
         parameters.analysis_urlsafe_key, parameters.commit_position,
-        parameters.revision, parameters.swarming_task_output)
+        parameters.revision, parameters.swarming_task_output, lower_bound_build,
+        upper_bound_build)
