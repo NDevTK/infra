@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "679581b3_b1f2504e",
+        "filename": "appengine/findit/services/flake_failure/data_point_util.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-05-01T00:09:48Z",
+      "side": 1,
+      "message": "This is more to ensure this function is being called in the correct context, so I\u0027d like to leave it if possible",
+      "parentUuid": "61d27d6a_5b1180b2",
+      "range": {
+        "startLine": 91,
+        "startChar": 9,
+        "endLine": 91,
+        "endChar": 19
+      },
+      "revId": "e0c44b663b6faf7d95d7320d318188d251d12479",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a4381e02_9f0afc51",
         "filename": "appengine/findit/services/flake_failure/data_point_util.py",
         "patchSetId": 5
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "e9b1f17e_867aeee4",
+        "filename": "appengine/findit/services/flake_failure/data_point_util.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-05-01T00:09:48Z",
+      "side": 1,
+      "message": "yes good catch",
+      "parentUuid": "a4381e02_9f0afc51",
+      "range": {
+        "startLine": 207,
+        "startChar": 19,
+        "endLine": 207,
+        "endChar": 26
+      },
+      "revId": "e0c44b663b6faf7d95d7320d318188d251d12479",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c17a4a46_b6d7d567",
         "filename": "appengine/findit/services/flake_failure/data_point_util.py",
         "patchSetId": 5
@@ -59,6 +107,30 @@
       "writtenOn": "2018-04-30T23:19:10Z",
       "side": 1,
       "message": "I would suggest to refactor this function in this way:\n\n@ndb.transactional\ndef _UpdateAnalysisDataPoints(analysis_urlsafe_key, commit_position, failed_swarming_task_attempts\u003dNone, ...):\n  # arguments should be all the fields in the data_point that could be updated.\n  Get analysis\n  Get/create the data_point\n  Update the data_point\n  analysis.put()\n\ndef UpdateAnalysisDataPointsForSwarmingTaskInfo(analysis_urlsafe_key, commit_position, revision,swarming_task_output):\n  In each case, collect necessary info for updating/creating the data_point, then call _UpdateAnalysisDataPoints",
+      "range": {
+        "startLine": 208,
+        "startChar": 4,
+        "endLine": 208,
+        "endChar": 28
+      },
+      "revId": "e0c44b663b6faf7d95d7320d318188d251d12479",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "584b5f85_4bf35c39",
+        "filename": "appengine/findit/services/flake_failure/data_point_util.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-05-01T00:09:48Z",
+      "side": 1,
+      "message": "Hm I think in this approach the calling layer is still responsible for the ndb get, so it\u0027s probably better that the outer layer is transactional as well. In both branches data points are written to the analysis so I think I will keep the current approach.",
+      "parentUuid": "c17a4a46_b6d7d567",
       "range": {
         "startLine": 208,
         "startChar": 4,
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "baf2b151_50407fb0",
+        "filename": "appengine/findit/services/flake_failure/data_point_util.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-05-01T00:09:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cf5e17aa_3f682484",
+      "range": {
+        "startLine": 211,
+        "startChar": 68,
+        "endLine": 211,
+        "endChar": 72
+      },
+      "revId": "e0c44b663b6faf7d95d7320d318188d251d12479",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "99035ea6_3a5012cc",
         "filename": "appengine/findit/services/flake_failure/data_point_util.py",
         "patchSetId": 5
@@ -114,6 +210,30 @@
       "revId": "e0c44b663b6faf7d95d7320d318188d251d12479",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ad8d3530_518bcd51",
+        "filename": "appengine/findit/services/flake_failure/data_point_util.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 241,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-05-01T00:09:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "99035ea6_3a5012cc",
+      "range": {
+        "startLine": 241,
+        "startChar": 9,
+        "endLine": 241,
+        "endChar": 29
+      },
+      "revId": "e0c44b663b6faf7d95d7320d318188d251d12479",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
