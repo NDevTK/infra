@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f726e3a3_033a4cfb",
+        "filename": "appengine/findit/pipelines/flake_failure/update_flake_analysis_data_points_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-05-01T16:52:48Z",
+      "side": 1,
+      "message": "I have comments in https://chromium-review.googlesource.com/c/infra/infra/+/1031513\n\nAlso copied as below\n--------------------\nFirst, we can\u0027t get rid of regression for the whole analysis, because we might not have the corresponding builder for a Waterfall builder, until 1) we fully migrated to Luci and 2) VMs are added to Findit pool in time before a new OS/version is added to Waterfall.\n\nSecond, we should show regression range for the whole analysis. As the analysis moves on, the regression range would become available (a stable point is hit), and be shrunk (as we narrow it down to a single Waterfall build and then to a single commit). If the analysis failed out in the middle, we still have a smaller range to human to investigate further.\n\nThird, We could get rid of the regression range for a specific point and just show the commit position instead. If we still want to keep that, the commit position and the git hash highlighted here could be computed at run time by retrieving from the immediate previous data point after ordering them by commit position.\n\nForth, for the regression range of the whole analysis, we could add two fields to the data model to track them explicitly instead of going through all the computation here and other places.\n\nHope the above explain it better. Please feel free to set up a quick meeting to discuss further.",
+      "range": {
+        "startLine": 40,
+        "startChar": 4,
+        "endLine": 43,
+        "endChar": 59
+      },
+      "revId": "8d5f7ee14b47b2d7f250d8bd7e434c79fcc93522",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
