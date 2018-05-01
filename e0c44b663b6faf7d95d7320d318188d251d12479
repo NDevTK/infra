@@ -143,6 +143,30 @@
     },
     {
       "key": {
+        "uuid": "5eb804dc_dbd1c4d7",
+        "filename": "appengine/findit/services/flake_failure/data_point_util.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-05-01T00:25:49Z",
+      "side": 1,
+      "message": "My reasoning is that I believe we should make the function in a transaction as atomic as possible.\n\nBasically I suggest to keep the original UpdateAnalysisDataPoints (meaning you don\u0027t need to get bounding builds in pipeline), and extract the code to update analysis to a single function which is in a transaction.",
+      "parentUuid": "584b5f85_4bf35c39",
+      "range": {
+        "startLine": 208,
+        "startChar": 4,
+        "endLine": 208,
+        "endChar": 28
+      },
+      "revId": "e0c44b663b6faf7d95d7320d318188d251d12479",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "cf5e17aa_3f682484",
         "filename": "appengine/findit/services/flake_failure/data_point_util.py",
         "patchSetId": 5
