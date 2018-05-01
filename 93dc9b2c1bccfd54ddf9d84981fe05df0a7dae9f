@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f788eb8f_45093dba",
+        "filename": "go/src/infra/tricium/appengine/gerrit/poll.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 372,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2018-05-01T17:22:01Z",
+      "side": 1,
+      "message": "filterByWhitelist",
+      "revId": "93dc9b2c1bccfd54ddf9d84981fe05df0a7dae9f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cf885f58_068ea4ee",
+        "filename": "go/src/infra/tricium/appengine/gerrit/poll.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 379,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2018-05-01T17:22:01Z",
+      "side": 1,
+      "message": "Wasn\u0027t it done already? \"While at it\"",
+      "revId": "93dc9b2c1bccfd54ddf9d84981fe05df0a7dae9f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f3278b52_e997ae88",
+        "filename": "go/src/infra/tricium/appengine/gerrit/poll.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 397,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2018-05-01T17:22:01Z",
+      "side": 1,
+      "message": "Move this line at 392, so you don\u0027t risk missing one like 414 and can remove lines 403, 408.",
+      "revId": "93dc9b2c1bccfd54ddf9d84981fe05df0a7dae9f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3dfdfa3a_28b4d723",
+        "filename": "go/src/infra/tricium/appengine/gerrit/poll.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 414,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2018-05-01T17:22:01Z",
+      "side": 1,
+      "message": "In case of DB error, I prefer to err on the safe side.",
+      "revId": "93dc9b2c1bccfd54ddf9d84981fe05df0a7dae9f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5ed87406_35623684",
+        "filename": "go/src/infra/tricium/appengine/gerrit/poll.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 416,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2018-05-01T17:22:01Z",
+      "side": 1,
+      "message": "you can remove this line, change 418 to be:\n\n  } else if !whitelisted {\n\nthen you can merge lines 390 and 391.",
+      "revId": "93dc9b2c1bccfd54ddf9d84981fe05df0a7dae9f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
