@@ -199,7 +199,7 @@ class ConfigRowTwoLevelCacheTest(unittest.TestCase):
     self.fielddef_rows = [(1, 789, None, 'Field', 'INT_TYPE',
                            'Defect', '', False, False, False,
                            1, 99, None, '', '',
-                           None, 'NEVER', 'no_action', 'doc', False, None)]
+                           None, 'NEVER', 'no_action', 'doc', False, False, None)]
     self.approvaldef2approver_rows = [(2, 101, 789), (2, 102, 789)]
     self.approvaldef2survey_rows = [(2, 'Q1\nQ2\nQ3', 789)]
     self.fielddef2admin_rows = []
@@ -1015,7 +1015,8 @@ class ConfigServiceTest(unittest.TestCase):
         min_value=1, max_value=100, regex=None,
         needs_member=None, needs_perm=None,
         grants_perm=None, notify_on='never', date_action='no_action',
-        docstring='doc', approval_id=None, commit=False).AndReturn(1)
+        docstring='doc', is_phase_field=False, approval_id=None,
+        commit=False).AndReturn(1)
     self.config_service.fielddef2admin_tbl.InsertRows(
         self.cnxn, config_svc.FIELDDEF2ADMIN_COLS, [], commit=False)
     self.cnxn.Commit()
@@ -1026,7 +1027,7 @@ class ConfigServiceTest(unittest.TestCase):
     self.mox.ReplayAll()
     field_id = self.config_service.CreateFieldDef(
         self.cnxn, 789, 'PercentDone', 'int_type', 'Defect', '', False, False,
-        False, 1, 100, None, None, None, None, 0, 'no_action', 'doc', [])
+        False, 1, 100, None, None, None, None, 0, 'no_action', 'doc', [], False)
     self.mox.VerifyAll()
     self.assertEqual(1, field_id)
 
