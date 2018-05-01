@@ -22,6 +22,30 @@
       "revId": "8d5f7ee14b47b2d7f250d8bd7e434c79fcc93522",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "90c7dd08_246b9c89",
+        "filename": "appengine/findit/pipelines/flake_failure/update_flake_analysis_data_points_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-05-01T20:40:17Z",
+      "side": 1,
+      "message": "I think we need to clarify what \"regression range\" means, as there are at least 2 definitions floating around that are causing confusion.\n\nCurrently (old pipelines, and new pipelines that this CL is attempting to fix the main bug for), \"regression range\" means the commits in single and specific build cycle. I would like to get rid of this definition within Flake Analyzer entirely if possible, as there are invalid/exception builds, etc, and all analysis that go from stable -\u003e flaky at any point, regardless of confidence, etc, will always pinpoint down to a single commit that represents the culprit.\n\nWhat \"regression range\" should mean: Any 2 already analyzed data points by this analysis that go from stable -\u003e flaky regardless of distance. This range should be continually shrinking as the analysis progresses. When the analysis completes, the regression range has a distance of 1, and the later point is the culprit.\n\nIn the original bug for this CL, the \"regression range\" is None when logging bugs, because it assumes the old build-cycle definition of regression range (using suspected build git hash + previous build git hash to compute). This CL was originally to continue support for that feature since bugs expect to display something for regression range.\n\nI\u0027d actually prefer to eliminate \"regression range\" entirely from bug filing because:\n1. In the new pipelines, analyses that find build-level regression ranges but don\u0027t find culprits are because they ended in error. Should not file a bug (pipelines would abort by then).\n2. Since only culprits with high confidence will file bugs, if we continue to include a \"regression range\", the only one that makes sense would be the build level one (which I\u0027d like to get rid of, but this CL is to continue support for), because the second definition would have culprit and regression range would be 1:1, thus redundant.\n\nIf it\u0027s ok, I\u0027d actually prefer to eliminate \"regression range\" from the body of the bug that gets filed due to reasons above, make the \"regression range\" that gets displayed in the analysis page based on the current progress of the analysis.\n\nThis change in this CL is still needed though to restore build number to the data points for display purposes.\n\nThoughts?",
+      "parentUuid": "f726e3a3_033a4cfb",
+      "range": {
+        "startLine": 40,
+        "startChar": 4,
+        "endLine": 43,
+        "endChar": 59
+      },
+      "revId": "8d5f7ee14b47b2d7f250d8bd7e434c79fcc93522",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
