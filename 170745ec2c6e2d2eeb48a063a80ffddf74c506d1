@@ -25,6 +25,29 @@
     },
     {
       "key": {
+        "uuid": "5694108c_652350ff",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-05-03T21:07:51Z",
+      "side": 1,
+      "message": "Based on our offline discussion, this could be removed eventually. Not urgent, but please file a bug for record.",
+      "range": {
+        "startLine": 46,
+        "startChar": 2,
+        "endLine": 57,
+        "endChar": 48
+      },
+      "revId": "170745ec2c6e2d2eeb48a063a80ffddf74c506d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8f90ac3c_db820e5a",
         "filename": "appengine/findit/pipelines/flake_failure/update_flake_analysis_data_points_pipeline.py",
         "patchSetId": 3
