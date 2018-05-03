@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4cfed6de_0d28416c",
+        "filename": "appengine/findit/services/flake_failure/data_point_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-05-03T17:33:35Z",
+      "side": 0,
+      "message": "After this change, where will these values be updated? Or do we still need them?",
+      "range": {
+        "startLine": 202,
+        "startChar": 0,
+        "endLine": 203,
+        "endChar": 34
+      },
+      "revId": "25b62cab65360528b108f10dbad3989ffc681eed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

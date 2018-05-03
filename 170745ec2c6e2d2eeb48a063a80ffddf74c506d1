@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "65fd8d51_32162a1e",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-05-03T17:33:35Z",
+      "side": 1,
+      "message": "build_url and try_job_url will be mutually exclusive at all time right? Do we need to differentiate these 2 urls? Could you just rename the existing try_job_url and reuse that one?",
+      "range": {
+        "startLine": 31,
+        "startChar": 2,
+        "endLine": 31,
+        "endChar": 11
+      },
+      "revId": "170745ec2c6e2d2eeb48a063a80ffddf74c506d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8f90ac3c_db820e5a",
+        "filename": "appengine/findit/pipelines/flake_failure/update_flake_analysis_data_points_pipeline.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-05-03T17:33:35Z",
+      "side": 1,
+      "message": "You can simply pass over parameters, so that\n1. if you change the fields in parameters again, you don\u0027t need to change this function call;\n2. You don\u0027t need to worry about breaking the pipeline because the sequence of arguments are mismatch.",
+      "range": {
+        "startLine": 43,
+        "startChar": 8,
+        "endLine": 45,
+        "endChar": 39
+      },
+      "revId": "170745ec2c6e2d2eeb48a063a80ffddf74c506d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5976fb19_802c22c4",
+        "filename": "appengine/findit/services/flake_failure/data_point_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-05-03T17:33:35Z",
+      "side": 1,
+      "message": "looks like you need to rebase.",
+      "revId": "170745ec2c6e2d2eeb48a063a80ffddf74c506d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
