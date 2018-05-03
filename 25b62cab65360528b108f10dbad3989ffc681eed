@@ -22,6 +22,30 @@
       "revId": "25b62cab65360528b108f10dbad3989ffc681eed",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d8b94378_6e40eca4",
+        "filename": "appengine/findit/services/flake_failure/data_point_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-05-03T21:29:33Z",
+      "side": 0,
+      "message": "In a separate change I plan to deprecate these fields, as they aren\u0027t being used by anything anymore.",
+      "parentUuid": "4cfed6de_0d28416c",
+      "range": {
+        "startLine": 202,
+        "startChar": 0,
+        "endLine": 203,
+        "endChar": 34
+      },
+      "revId": "25b62cab65360528b108f10dbad3989ffc681eed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
