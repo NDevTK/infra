@@ -96,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "2691d986_91965773",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-05-03T22:23:04Z",
+      "side": 1,
+      "message": "Are you gonna to deprecate the code #40-#44 in that bug? If not, please file a separate bug (for clarity) to remove the code highlighted by this comment.",
+      "parentUuid": "81a2c27f_8d1ed533",
+      "range": {
+        "startLine": 46,
+        "startChar": 2,
+        "endLine": 57,
+        "endChar": 48
+      },
+      "revId": "170745ec2c6e2d2eeb48a063a80ffddf74c506d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8f90ac3c_db820e5a",
         "filename": "appengine/findit/pipelines/flake_failure/update_flake_analysis_data_points_pipeline.py",
         "patchSetId": 3
