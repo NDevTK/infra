@@ -65,6 +65,10 @@ class NextCommitPositionPipeline(SynchronousPipeline):
 
     if calculated_next_commit_position is None:
       # The analysis is finished according to the lookback algorithm.
+      assert not analysis.FindMatchingDataPointWithCommitPosition(
+          calculated_next_commit_position), (
+              'Lookback algorithm suggests commit position {} which has '
+              'already been run'.format(calculated_next_commit_position))
       return NextCommitPositionOutput(
           next_commit_position=calculated_next_commit_position,
           culprit_commit_position=culprit_commit_position)
@@ -85,6 +89,10 @@ class NextCommitPositionPipeline(SynchronousPipeline):
 
     if next_commit_position is not None:
       # Heuristic results are available and should be tried first.
+      assert not analysis.FindMatchingDataPointWithCommitPosition(
+          next_commit_position), (
+              'Existing heuristic results suggest commit position {} which has '
+              'already been run'.format(calculated_next_commit_position))
       return NextCommitPositionOutput(
           next_commit_position=next_commit_position,
           culprit_commit_position=None)
@@ -112,6 +120,10 @@ class NextCommitPositionPipeline(SynchronousPipeline):
           next_commit_position_utils.GetNextCommitPositionFromHeuristicResults(
               analysis_urlsafe_key))
       if next_commit_position is not None:
+        assert not analysis.FindMatchingDataPointWithCommitPosition(
+            next_commit_position
+        ), ('Newly run heuristic results suggest commit position {} which has '
+            'already been run'.format(calculated_next_commit_position))
         return NextCommitPositionOutput(
             next_commit_position=next_commit_position,
             culprit_commit_position=None)
@@ -124,7 +136,10 @@ class NextCommitPositionPipeline(SynchronousPipeline):
     actual_next_commit_position = (
         next_commit_position_utils.GetNextCommitPositionFromBuildRange(
             analysis, build_range, calculated_next_commit_position))
-
+    assert not analysis.FindMatchingDataPointWithCommitPosition(
+        actual_next_commit_position), (
+            'Rounded-off commit position {} has already been run'.format(
+                calculated_next_commit_position))
     return NextCommitPositionOutput(
         next_commit_position=actual_next_commit_position,
         culprit_commit_position=culprit_commit_position)
