@@ -3,14 +3,10 @@
 # found in the LICENSE file.
 """Utility functions for processing a flaky test's pass rates."""
 
+import numpy as np
+
 from waterfall import waterfall_config
 from waterfall.flake import flake_constants
-
-
-def ArePassRatesEqual(pass_rate_1, pass_rate_2):
-  assert pass_rate_1 is not None
-  assert pass_rate_2 is not None
-  return abs(pass_rate_1 - pass_rate_2) <= flake_constants.EPSILON
 
 
 def CalculateNewPassRate(existing_pass_rate, existing_iterations,
