@@ -44,6 +44,8 @@ func getBuilderCmd(authOpts auth.Options) *subcommands.Command {
 				"(repeatable) set tags for this build. Buildbucket expects these to be `key:value`.")
 			ret.Flags.StringVar(&ret.bbHost, "B", bbHostDefault,
 				"The buildbucket hostname to grab the definition from.")
+			ret.Flags.StringVar(&ret.sHost, "S", "",
+				"Override swarming server hostname for this build.")
 			ret.Flags.BoolVar(&ret.canary, "canary", false,
 				"Get a 'canary' build, rather than a 'prod' build.")
 
@@ -60,6 +62,7 @@ type cmdGetBuilder struct {
 
 	tags   stringlistflag.Flag
 	bbHost string
+	sHost  string
 	canary bool
 }
 
@@ -71,6 +74,12 @@ func (c *cmdGetBuilder) validateFlags(ctx context.Context, args []string) (authO
 	if err = validateHost(c.bbHost); err != nil {
 		err = errors.Annotate(err, "").Err()
 		return
+	}
+	if c.sHost != "" {
+		if err = validateHost(c.sHost); err != nil {
+			err = errors.Annotate(err, "").Err()
+			return
+		}
 	}
 
 	toks := strings.SplitN(args[0], ":", 2)
@@ -138,10 +147,14 @@ func (c *cmdGetBuilder) grabBuilderDefinition(ctx context.Context, bucket, build
 	if err != nil {
 		return nil, err
 	}
-	// TODO(iannucci): obtain swarming server from answer
-	jd.SwarmingHostname = "chromium-swarm.appspot.com"
-	if strings.Contains(c.bbHost, "-dev.") {
-		jd.SwarmingHostname = "chromium-swarm-dev.appspot.com"
+	if c.sHost == "" {
+		// TODO(iannucci): obtain swarming server from answer
+		jd.SwarmingHostname = "chromium-swarm.appspot.com"
+		if strings.Contains(c.bbHost, "-dev.") {
+			jd.SwarmingHostname = "chromium-swarm-dev.appspot.com"
+		}
+	} else {
+		jd.SwarmingHostname = c.sHost
 	}
 
 	return jd, nil
