@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "32d67fea_62691f8e",
+        "filename": "go/src/infra/tricium/appengine/gerrit/poll.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 383,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-05-08T06:22:20Z",
+      "side": 1,
+      "message": "whitelistedChanges :\u003d make([]gr.ChangeInfo, 0, len(changes))",
+      "range": {
+        "startLine": 383,
+        "startChar": 1,
+        "endLine": 383,
+        "endChar": 39
+      },
+      "revId": "c88c7d55eb985b7f85bdaf0b5a417a485a442160",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "de98871b_0eb64fc1",
         "filename": "go/src/infra/tricium/appengine/gerrit/poll.go",
         "patchSetId": 5
@@ -13,6 +36,58 @@
       "writtenOn": "2018-05-08T00:18:20Z",
       "side": 1,
       "message": "We shouldn\u0027t call this once per change, it should be done at the top, or lazily?\n\nI assume in general len(changes) \u003d\u003d 1 but I don\u0027t know how far it could scale to.",
+      "revId": "c88c7d55eb985b7f85bdaf0b5a417a485a442160",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8eb9a447_882d464c",
+        "filename": "go/src/infra/tricium/appengine/gerrit/poll.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 398,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-05-08T06:22:20Z",
+      "side": 1,
+      "message": "+1. applies to db too",
+      "parentUuid": "de98871b_0eb64fc1",
+      "revId": "c88c7d55eb985b7f85bdaf0b5a417a485a442160",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "23ad7598_39232830",
+        "filename": "go/src/infra/tricium/appengine/gerrit/poll.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 401,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-05-08T06:22:20Z",
+      "side": 1,
+      "message": "it is not going to appear in the next iteration of this loop",
+      "revId": "c88c7d55eb985b7f85bdaf0b5a417a485a442160",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "03fb3931_56813c78",
+        "filename": "go/src/infra/tricium/appengine/gerrit/poll.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 416,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-05-08T06:22:20Z",
+      "side": 1,
+      "message": "this will cause duplicated log lines for the same owner. Can be fixed by moving it to L414",
       "revId": "c88c7d55eb985b7f85bdaf0b5a417a485a442160",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
