@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "18e8726d_08f8f136",
+        "filename": "appengine/findit/services/flake_failure/pass_rate_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-05-08T17:00:07Z",
+      "side": 0,
+      "message": "We might have similar functions to tell flaky/stable data point. You may want to refactor those functions too.",
+      "range": {
+        "startLine": 10,
+        "startChar": 4,
+        "endLine": 10,
+        "endChar": 21
+      },
+      "revId": "523b14498c2a3ca4dfef744b3ea65f9e42b74ee2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
