@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e742c4b5_ae31f47a",
+        "filename": "go/src/infra/tricium/appengine/gerrit/poll.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 410,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-05-09T21:55:44Z",
+      "side": 1,
+      "message": "%q",
+      "range": {
+        "startLine": 410,
+        "startChar": 71,
+        "endLine": 410,
+        "endChar": 72
+      },
+      "revId": "d89b1d6437ae62f0e76145224d2f81b43fd40f75",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c3147a49_dd67eee7",
+        "filename": "go/src/infra/tricium/appengine/gerrit/poll.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 415,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-05-09T21:55:44Z",
+      "side": 1,
+      "message": "%q",
+      "range": {
+        "startLine": 415,
+        "startChar": 65,
+        "endLine": 415,
+        "endChar": 67
+      },
+      "revId": "d89b1d6437ae62f0e76145224d2f81b43fd40f75",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "521426cb_a27b4b2b",
+        "filename": "go/src/infra/tricium/appengine/gerrit/poll.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 419,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-05-09T21:55:44Z",
+      "side": 1,
+      "message": "%q",
+      "range": {
+        "startLine": 419,
+        "startChar": 30,
+        "endLine": 419,
+        "endChar": 32
+      },
+      "revId": "d89b1d6437ae62f0e76145224d2f81b43fd40f75",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
