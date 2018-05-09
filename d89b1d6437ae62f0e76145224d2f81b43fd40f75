@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "310d6b68_2e605306",
+        "filename": "go/src/infra/tricium/appengine/gerrit/poll.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 410,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2018-05-09T22:35:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e742c4b5_ae31f47a",
+      "range": {
+        "startLine": 410,
+        "startChar": 71,
+        "endLine": 410,
+        "endChar": 72
+      },
+      "revId": "d89b1d6437ae62f0e76145224d2f81b43fd40f75",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c3147a49_dd67eee7",
         "filename": "go/src/infra/tricium/appengine/gerrit/poll.go",
         "patchSetId": 7
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "10503097_bba9c961",
+        "filename": "go/src/infra/tricium/appengine/gerrit/poll.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 415,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2018-05-09T22:35:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c3147a49_dd67eee7",
+      "range": {
+        "startLine": 415,
+        "startChar": 65,
+        "endLine": 415,
+        "endChar": 67
+      },
+      "revId": "d89b1d6437ae62f0e76145224d2f81b43fd40f75",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "521426cb_a27b4b2b",
         "filename": "go/src/infra/tricium/appengine/gerrit/poll.go",
         "patchSetId": 7
@@ -68,6 +116,30 @@
       "revId": "d89b1d6437ae62f0e76145224d2f81b43fd40f75",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5701541a_d5a8e3d9",
+        "filename": "go/src/infra/tricium/appengine/gerrit/poll.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 419,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2018-05-09T22:35:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "521426cb_a27b4b2b",
+      "range": {
+        "startLine": 419,
+        "startChar": 30,
+        "endLine": 419,
+        "endChar": 32
+      },
+      "revId": "d89b1d6437ae62f0e76145224d2f81b43fd40f75",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
