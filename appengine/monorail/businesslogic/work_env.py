@@ -481,7 +481,7 @@ class WorkEnv(object):
     with self.mr.profiler.Phase('Updating issue %r' % (issue.issue_id)):
       amendments, comment_pb = self.services.issue.DeltaUpdateIssue(
           self.mr.cnxn, self.services, self.mr.auth.user_id, issue.project_id,
-          config, issue, delta, comment=comment_content)
+          config, issue, delta, comment=comment_content, index_now=False)
 
     with self.mr.profiler.Phase('Following up after issue update'):
       # TODO(jrobbins): side effects of setting merged_into.
