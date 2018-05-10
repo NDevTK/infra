@@ -16,6 +16,24 @@
       "revId": "72c9d687580905f189c67580de320887fd78749b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1cfa4b37_5f021347",
+        "filename": "infra/tools/bot_setup/start/swarming.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-05-10T21:20:58Z",
+      "side": 1,
+      "message": "For rare cases when I need to test some changes to ccompute bootstrap+swarming on -dev.",
+      "parentUuid": "51009246_e02fd13f",
+      "revId": "72c9d687580905f189c67580de320887fd78749b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
