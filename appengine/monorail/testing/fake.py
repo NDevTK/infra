@@ -1370,7 +1370,7 @@ class IssueService(object):
       self, cnxn, services, project_id,
       summary, status, owner_id, cc_ids, labels, field_values,
       component_ids, reporter_id, marked_description, blocked_on=None,
-      blocking=None, attachments=None, timestamp=None, index_now=True,
+      blocking=None, attachments=None, timestamp=None, index_now=False,
       phases=None):
     issue = tracker_pb2.Issue()
     issue.project_id = project_id
@@ -1454,7 +1454,7 @@ class IssueService(object):
       self, cnxn, services, reporter_id, project_id,
       local_id, summary, status, owner_id, cc_ids, labels, field_values,
       component_ids, blocked_on, blocking, dangling_blocked_on_refs,
-      dangling_blocking_refs, merged_into, index_now=True,
+      dangling_blocking_refs, merged_into, index_now=False,
       page_gen_ts=None, comment=None, inbound_message=None, attachments=None,
       kept_attachments=None, is_description=False, timestamp=None):
     """Feel free to implement a spec-compliant return value."""
@@ -1600,7 +1600,8 @@ class IssueService(object):
       self, _cnxn, issue, user_id, content,
       inbound_message=None, amendments=None, attachments=None,
       kept_attachments=None, timestamp=None, is_spam=False,
-      is_description=False, approval_id=None, commit=True):
+      is_description=False, approval_id=None, commit=True,
+):
     # Add a comment to an issue
     comment = tracker_pb2.IssueComment()
     comment.id = len(self.comments_by_cid)
@@ -1672,7 +1673,7 @@ class IssueService(object):
 
   def SoftDeleteComment(
       self, cnxn, issue, comment, deleted_by_user_id, user_service,
-      delete=True, reindex=True, is_spam=False):
+      delete=True, reindex=False, is_spam=False):
     comment.is_spam = is_spam
     if delete:
       comment.deleted_by = deleted_by_user_id
