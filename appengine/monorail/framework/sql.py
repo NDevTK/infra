@@ -183,11 +183,6 @@ class MonorailConnection(object):
     """Return a connection to the DB replica that will be used for shard_id."""
     if shard_id not in self.sql_cnxns:
       physical_shard_id = shard_id % settings.num_logical_shards
-
-      # TODO(jrobbins): remove this substitution when replica 8 is availble.
-      if physical_shard_id == 8:
-        physical_shard_id = 0
-
       shard_instance_name = (
           settings.physical_db_name_format % physical_shard_id)
       self.sql_cnxns[shard_id] = cnxn_pool.get(
@@ -274,7 +269,6 @@ class MonorailConnection(object):
     """Safely close any connections that are still open."""
     for sql_cnxn in self.sql_cnxns.itervalues():
       try:
-        sql_cnxn.commit()
         cnxn_pool.release(sql_cnxn)
       except MySQLdb.DatabaseError:
         # This might happen if the cnxn is somehow already closed.

@@ -18,7 +18,6 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/json"
-	"fmt"
 	"testing"
 
 	"golang.org/x/net/context"
@@ -148,10 +147,7 @@ type buildbotMock struct {
 	builders map[string]struct{}
 }
 
-func (m *buildbotMock) GetCompressedMasterJSON(c context.Context, req *milo.MasterRequest) (*milo.CompressedMasterJSON, error) {
-	if !req.NoEmulation {
-		return nil, fmt.Errorf("did not disable emulation")
-	}
+func (m *buildbotMock) GetCompressedMasterJSON(context.Context, *milo.MasterRequest) (*milo.CompressedMasterJSON, error) {
 	masterJSON := masterJSON{
 		Builders: m.builders,
 	}

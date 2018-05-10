@@ -187,25 +187,14 @@ def GetGrantedPerms(issue, effective_ids, config):
   return granted_perms
 
 
-def LabelsByPrefix(labels, lower_field_names):
-  """Convert a list of key-value labels into {lower_prefix: [value, ...]}.
-
-  It also handles custom fields with dashes in the field name.
-  """
+def LabelsByPrefix(labels):
+  """Convert a list of key-value labels into {lower_prefix: [value, ...]}."""
   label_values_by_prefix = collections.defaultdict(list)
   for lab in labels:
     if '-' not in lab:
       continue
-    lower_lab = lab.lower()
-    for lower_field_name in lower_field_names:
-      if lower_lab.startswith(lower_field_name + '-'):
-        prefix = lower_field_name
-        value = lab[len(lower_field_name)+1:]
-        break
-    else:  # No field name matched
-      prefix, value = lab.split('-', 1)
-      prefix = prefix.lower()
-    label_values_by_prefix[prefix].append(value)
+    prefix, value = lab.split('-', 1)
+    label_values_by_prefix[prefix.lower()].append(value)
   return label_values_by_prefix
 
 

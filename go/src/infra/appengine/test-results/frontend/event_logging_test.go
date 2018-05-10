@@ -16,7 +16,6 @@ import (
 
 func TestCreateEvent(t *testing.T) {
 	var nilTime *float64
-	pTrue := true
 
 	Convey("create events", t, func() {
 		ctx := context.Background()
@@ -32,11 +31,10 @@ func TestCreateEvent(t *testing.T) {
 			BuildID:     12345,
 			Tests: model.FullTest{
 				"path": &model.FullTestLeaf{
-					Actual:     []string{"PASS"},
-					Expected:   []string{"PASS"},
-					Runtime:    nilTime,
-					Runtimes:   []*float64{nilTime, nilTime},
-					Unexpected: &pTrue,
+					Actual:   []string{"PASS"},
+					Expected: []string{"PASS"},
+					Runtime:  nilTime,
+					Runtimes: []*float64{nilTime, nilTime},
 				},
 				"other/path": &model.FullTestLeaf{
 					Actual:   []string{"IMAGE+TEXT"},
@@ -61,10 +59,9 @@ func TestCreateEvent(t *testing.T) {
 				},
 				StartTime: zeroTS,
 				Run: &gen.TestRun{
-					Actual:       []gen.ResultType{gen.ResultType_PASS},
-					Expected:     []gen.ResultType{gen.ResultType_PASS},
-					Name:         "path",
-					IsUnexpected: true,
+					Actual:   []gen.ResultType{gen.ResultType_PASS},
+					Expected: []gen.ResultType{gen.ResultType_PASS},
+					Name:     "path",
 				},
 				BuildId: "12345",
 			},
@@ -79,10 +76,9 @@ func TestCreateEvent(t *testing.T) {
 				},
 				StartTime: zeroTS,
 				Run: &gen.TestRun{
-					Actual:       []gen.ResultType{gen.ResultType_IMAGE_TEXT},
-					Expected:     []gen.ResultType{gen.ResultType_WONTFIX},
-					Name:         "other/path",
-					IsUnexpected: false,
+					Actual:   []gen.ResultType{gen.ResultType_IMAGE_TEXT},
+					Expected: []gen.ResultType{gen.ResultType_WONTFIX},
+					Name:     "other/path",
 				},
 				BuildId: "12345",
 			},

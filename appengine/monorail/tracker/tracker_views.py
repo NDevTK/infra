@@ -594,10 +594,10 @@ class FieldValueView(object):
     if applicable is not None:
       self.applicable = ezt.boolean(applicable)
     else:
-      # Note: We don't show approval types, approval sub fields, or
-      # phase fields in ezt issue pages.
+      # Note: We don't show approval types or approval sub fields
+      # in ezt issue pages
       if (fd.field_type == tracker_pb2.FieldTypes.APPROVAL_TYPE or
-          fd.approval_id or fd.is_phase_field):
+          fd.approval_id):
         self.applicable = ezt.boolean(False)
       else:
         # A field is applicable to a given issue if it (a) applies to all,
@@ -619,13 +619,8 @@ def _PrecomputeInfoForValueViews(labels, derived_labels, field_values, config):
   field_values_by_id = collections.defaultdict(list)
   for fv in field_values:
     field_values_by_id[fv.field_id].append(fv)
-  lower_enum_field_names = [
-      fd.field_name.lower() for fd in config.field_defs
-      if fd.field_type == tracker_pb2.FieldTypes.ENUM_TYPE]
-  labels_by_prefix = tracker_bizobj.LabelsByPrefix(
-      labels, lower_enum_field_names)
-  der_labels_by_prefix = tracker_bizobj.LabelsByPrefix(
-      derived_labels, lower_enum_field_names)
+  labels_by_prefix = tracker_bizobj.LabelsByPrefix(labels)
+  der_labels_by_prefix = tracker_bizobj.LabelsByPrefix(derived_labels)
   label_docs = {wkl.label.lower(): wkl.label_docstring
                 for wkl in config.well_known_labels}
   return labels_by_prefix, der_labels_by_prefix, field_values_by_id, label_docs
