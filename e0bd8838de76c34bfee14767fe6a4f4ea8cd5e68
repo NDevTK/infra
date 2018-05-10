@@ -34,6 +34,24 @@
       "revId": "e0bd8838de76c34bfee14767fe6a4f4ea8cd5e68",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d77433ff_760d39bb",
+        "filename": "appengine/monorail/businesslogic/work_env.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 490,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-05-10T23:47:48Z",
+      "side": 1,
+      "message": "whoops - lemme revise this yet again since I didn\u0027t follow your advise here",
+      "parentUuid": "df623142_69728b98",
+      "revId": "e0bd8838de76c34bfee14767fe6a4f4ea8cd5e68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
