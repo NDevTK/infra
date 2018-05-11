@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "559cb77e_accdb032",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/frontend/test/som-rev-range-test.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-05-11T17:38:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aa2191bb_67bf6088",
+      "revId": "e362369b677bf20bd52c0ffcd1034bedb3f2c45b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "39af8aca_c5624fad",
         "filename": "go/src/infra/appengine/sheriff-o-matic/frontend/test/som-rev-range-test.html",
         "patchSetId": 1
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "06fe4825_9c72e7a0",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/frontend/test/som-rev-range-test.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-05-11T17:38:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "39af8aca_c5624fad",
+      "revId": "e362369b677bf20bd52c0ffcd1034bedb3f2c45b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "59207a38_59977490",
         "filename": "go/src/infra/appengine/sheriff-o-matic/frontend/test/som-rev-range-test.html",
         "patchSetId": 1
@@ -50,6 +86,24 @@
       "revId": "e362369b677bf20bd52c0ffcd1034bedb3f2c45b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b6b62855_a531606d",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/frontend/test/som-rev-range-test.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-05-11T17:38:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "59207a38_59977490",
+      "revId": "e362369b677bf20bd52c0ffcd1034bedb3f2c45b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
