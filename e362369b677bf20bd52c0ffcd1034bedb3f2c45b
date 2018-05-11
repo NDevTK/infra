@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "aa2191bb_67bf6088",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/frontend/test/som-rev-range-test.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-05-11T17:28:28Z",
+      "side": 1,
+      "message": "Is the space after flush( standard?",
+      "revId": "e362369b677bf20bd52c0ffcd1034bedb3f2c45b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "39af8aca_c5624fad",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/frontend/test/som-rev-range-test.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-05-11T17:28:28Z",
+      "side": 1,
+      "message": "This could be:\n\nassert(!element.shadowRoot.querySelector(\u0027div\u0027).textContent.trim().includes(\u0027398901 - 398946\u0027))\n\nAlso is the trim() necessary?\n\nassert(!element.shadowRoot.querySelector(\u0027div\u0027).textContent.includes(\u0027398901 - 398946\u0027))",
+      "revId": "e362369b677bf20bd52c0ffcd1034bedb3f2c45b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "59207a38_59977490",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/frontend/test/som-rev-range-test.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-05-11T17:28:28Z",
+      "side": 1,
+      "message": "Chai has assert.isFalse:\n\nassert.isFalse(element.$.collapse.opened);",
+      "revId": "e362369b677bf20bd52c0ffcd1034bedb3f2c45b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
