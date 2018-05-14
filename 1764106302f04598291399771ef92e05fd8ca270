@@ -22,6 +22,30 @@
       "revId": "1764106302f04598291399771ef92e05fd8ca270",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b071c19e_6b840a36",
+        "filename": "appengine/findit/templates/flake/result.html",
+        "patchSetId": 5
+      },
+      "lineNbr": 335,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-05-14T18:59:59Z",
+      "side": 1,
+      "message": "Yes. Not all Swarming tasks have a failed run of the test.",
+      "parentUuid": "7a505fff_c1a38225",
+      "range": {
+        "startLine": 332,
+        "startChar": 12,
+        "endLine": 335,
+        "endChar": 15
+      },
+      "revId": "1764106302f04598291399771ef92e05fd8ca270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
