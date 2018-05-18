@@ -16,6 +16,24 @@
       "revId": "a85971271353b2198536ce8925b5991cd88fc97b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "489c3b56_9a7f5725",
+        "filename": "appengine/monorail/elements/flt/mr-issue-details/mr-metadata.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-05-18T18:41:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a800e65_2901ac2b",
+      "revId": "a85971271353b2198536ce8925b5991cd88fc97b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
