@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a800e65_2901ac2b",
+        "filename": "appengine/monorail/elements/flt/mr-issue-details/mr-metadata.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-05-18T17:44:30Z",
+      "side": 1,
+      "message": "This return could be omitted via:\n\n_computeLabelsList(labels) {\n  return labels.filter((l) \u003d\u003e !PRIORITY_REGEX.test(l));\n}",
+      "revId": "a85971271353b2198536ce8925b5991cd88fc97b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
