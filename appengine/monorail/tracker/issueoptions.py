@@ -235,15 +235,18 @@ def GetMemberOptions(mr, services):
       mr.cnxn, [mem.user_id for mem in member_data['all_members']])
   logging.info('group_ids is %r', group_ids)
 
-  acexclusion_ids = services.project.GetProjectAutocompleteExclusion(
+  (acexclusion_ids, no_expand_ids
+   ) = services.project.GetProjectAutocompleteExclusion(
       mr.cnxn, mr.project_id)
+  group_ids_to_expand = [
+    gid for gid in group_ids if gid not in no_expand_ids]
 
   # TODO(jrobbins): Normally, users will be allowed view the members
   # of any user group if the project From: email address is listed
   # as a group member, as well as any group that they are personally
   # members of.
   member_ids, owner_ids = services.usergroup.LookupVisibleMembers(
-      mr.cnxn, group_ids, mr.perms, mr.auth.effective_ids, services)
+      mr.cnxn, group_ids_to_expand, mr.perms, mr.auth.effective_ids, services)
   indirect_ids = set()
   for gid in group_ids:
     indirect_ids.update(member_ids.get(gid, []))

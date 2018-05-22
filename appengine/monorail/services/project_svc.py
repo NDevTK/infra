@@ -44,7 +44,8 @@ PROJECT_COLS = [
 USER2PROJECT_COLS = ['project_id', 'user_id', 'role_name']
 EXTRAPERM_COLS = ['project_id', 'user_id', 'perm']
 MEMBERNOTES_COLS = ['project_id', 'user_id', 'notes']
-AUTOCOMPLETEEXCLUSION_COLS = ['project_id', 'user_id']
+AUTOCOMPLETEEXCLUSION_COLS = [
+    'project_id', 'user_id', 'ac_exclude', 'no_expand']
 
 RECENT_ACTIVITY_THRESHOLD = framework_constants.SECS_PER_HOUR
 
@@ -636,29 +637,45 @@ class ProjectService(object):
       project_id: int ID of the current project.
 
     Returns:
-      A list of user ids who are excluded from autocomplete list for given
-      project.
+      A pair containing: a list of user IDs who are excluded from the
+      autocomplete list for given project, and a list of group IDs to
+      not expand.
     """
     acexclusion_rows = self.acexclusion_tbl.Select(
-        cnxn, cols=['user_id'], project_id=project_id)
-    user_ids = [row[0] for row in acexclusion_rows]
-    return user_ids
+        cnxn, cols=['user_id'], project_id=project_id, ac_exclude=True)
+    acexclusion_ids = [row[0] for row in acexclusion_rows]
+    acexclusion_ids = [row[0] for row in acexclusion_rows]
+    no_expand_rows = self.acexclusion_tbl.Select(
+        cnxn, cols=['user_id'], project_id=project_id, no_expand=True)
+    no_expand_ids = [row[0] for row in no_expand_rows]
+    return acexclusion_ids, no_expand_ids
 
   def UpdateProjectAutocompleteExclusion(
-      self, cnxn, project_id, member_id, exclude):
+      self, cnxn, project_id, member_id, ac_exclude, no_expand):
     """Update autocomplete exclusion for given user.
 
     Args:
       cnxn: connection to SQL database.
       project_id: int ID of the current project.
       member_id: int user ID of the user that was edited.
-      exclude: Whether this user should be excluded.
+      ac_exclude: Whether this user should be excluded.
+      no_expand: Whether this group should not be expanded.
     """
-    if exclude:
+    logging.warn('ac_exclude is %r', ac_exclude)
+    logging.warn('no_expand is %r', no_expand)
+    if ac_exclude or no_expand:
       self.acexclusion_tbl.InsertRows(
-        cnxn, AUTOCOMPLETEEXCLUSION_COLS, [(project_id, member_id)],
-        ignore=True)
+        cnxn, AUTOCOMPLETEEXCLUSION_COLS,
+        [(project_id, member_id, ac_exclude, no_expand)],
+        replace=True)
     else:
       self.acexclusion_tbl.Delete(
           cnxn, project_id=project_id, user_id=member_id)
 
+    now = int(time.time())
+    self.project_tbl.Update(
+        cnxn, {'cached_content_timestamp': now},
+        project_id=project_id)
+    cnxn.Commit()
+
+    self.project_2lc.InvalidateKeys(cnxn, [project_id])
