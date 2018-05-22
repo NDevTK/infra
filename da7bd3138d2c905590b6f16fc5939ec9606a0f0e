@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fbc3542c_4880e6f8",
+        "filename": "appengine/monorail/elements/mr-flipper/mr-flipper-test.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-05-22T19:06:11Z",
+      "side": 1,
+      "message": "As long as these values are set as plain default Polymer values without any initial computations or anything of the like, do we need a test for this? I think maybe we can trust that Polymer sets these values properly.",
+      "range": {
+        "startLine": 28,
+        "startChar": 10,
+        "endLine": 28,
+        "endChar": 32
+      },
+      "revId": "da7bd3138d2c905590b6f16fc5939ec9606a0f0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3cc48a53_08558363",
+        "filename": "appengine/monorail/elements/mr-flipper/mr-flipper-test.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-05-22T19:06:11Z",
+      "side": 1,
+      "message": "Mmmmmmmmm",
+      "range": {
+        "startLine": 43,
+        "startChar": 27,
+        "endLine": 43,
+        "endChar": 36
+      },
+      "revId": "da7bd3138d2c905590b6f16fc5939ec9606a0f0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "11cb97a8_e55667e8",
+        "filename": "appengine/monorail/elements/mr-flipper/mr-flipper.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-05-22T19:06:11Z",
+      "side": 1,
+      "message": "I know this code was here before, but I think while skimming it\u0027s not super clear why we\u0027re truncating the string. I think a short doc explaining the response format might be nice.",
+      "range": {
+        "startLine": 78,
+        "startChar": 38,
+        "endLine": 78,
+        "endChar": 55
+      },
+      "revId": "da7bd3138d2c905590b6f16fc5939ec9606a0f0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
