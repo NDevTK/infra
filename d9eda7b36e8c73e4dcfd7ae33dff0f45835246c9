@@ -1,0 +1,140 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1fe3182e_33c385d3",
+        "filename": "appengine/monorail/project/peopledetail.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-05-22T23:27:39Z",
+      "side": 1,
+      "message": "This wasn\u0027t changed by this CL but this variable might be more readable as ac_exclusion_ids",
+      "revId": "d9eda7b36e8c73e4dcfd7ae33dff0f45835246c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "30ef8543_25dc01e1",
+        "filename": "appengine/monorail/project/peopledetail.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-05-22T23:27:39Z",
+      "side": 1,
+      "message": "Is logging these necessary?",
+      "revId": "d9eda7b36e8c73e4dcfd7ae33dff0f45835246c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df3eb7f5_8182b05b",
+        "filename": "appengine/monorail/project/peopledetail.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-05-22T23:27:39Z",
+      "side": 1,
+      "message": "1. I think `not bool(x)` is equivalent to `not x`\n(though maybe less easily readable)\n\n2. And if these are being coerced into a bool I think they should be:\npost_data.get(\u0027ac_include\u0027, False)\npost_data.get(\u0027ac_expand\u0027, False)\n\n3. Is the logic correct here? This line is changing the behavior from `ac_exclusion \u003d x` to `ac_exclusion \u003d not x`",
+      "revId": "d9eda7b36e8c73e4dcfd7ae33dff0f45835246c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b1efeef9_f1d1c47d",
+        "filename": "appengine/monorail/services/project_svc.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 647,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-05-22T23:27:39Z",
+      "side": 1,
+      "message": "I think this line is duplicated",
+      "revId": "d9eda7b36e8c73e4dcfd7ae33dff0f45835246c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ddd5183c_079608e5",
+        "filename": "appengine/monorail/services/project_svc.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 665,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-05-22T23:27:39Z",
+      "side": 1,
+      "message": "1. are these logs necessary?\n2. since they\u0027re informational I think they should be logging.info",
+      "revId": "d9eda7b36e8c73e4dcfd7ae33dff0f45835246c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "780ab9e8_5ca55c27",
+        "filename": "appengine/monorail/services/project_svc.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 679,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-05-22T23:27:39Z",
+      "side": 1,
+      "message": "Is there a method to update the cached_content_timestamp? It seems like a common enough operation that maybe it should have its own method",
+      "revId": "d9eda7b36e8c73e4dcfd7ae33dff0f45835246c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e4e90509_46ba5d5a",
+        "filename": "appengine/monorail/templates/project/people-detail-page.ezt",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-05-22T23:27:39Z",
+      "side": 1,
+      "message": "IMHO we should use \u003cdiv\u003es and margins over \u003cbr\u003es for line spacing to make it more easily stylable",
+      "revId": "d9eda7b36e8c73e4dcfd7ae33dff0f45835246c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d7eb4dca_a0ebdc91",
+        "filename": "appengine/monorail/tracker/issueoptions.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-05-22T23:27:39Z",
+      "side": 1,
+      "message": "This is renamed but group_ids below hasn\u0027t been changed",
+      "revId": "d9eda7b36e8c73e4dcfd7ae33dff0f45835246c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
