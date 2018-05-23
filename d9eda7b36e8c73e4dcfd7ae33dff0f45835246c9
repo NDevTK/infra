@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "3f1568a6_d2b4f78e",
+        "filename": "appengine/monorail/project/peopledetail.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-05-23T00:27:10Z",
+      "side": 1,
+      "message": "Changed throughout the code.",
+      "parentUuid": "1fe3182e_33c385d3",
+      "revId": "d9eda7b36e8c73e4dcfd7ae33dff0f45835246c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "30ef8543_25dc01e1",
         "filename": "appengine/monorail/project/peopledetail.py",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2018-05-22T23:27:39Z",
       "side": 1,
       "message": "Is logging these necessary?",
+      "revId": "d9eda7b36e8c73e4dcfd7ae33dff0f45835246c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "24ce9ffb_c2810142",
+        "filename": "appengine/monorail/project/peopledetail.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-05-23T00:27:10Z",
+      "side": 1,
+      "message": "Gone.",
+      "parentUuid": "30ef8543_25dc01e1",
       "revId": "d9eda7b36e8c73e4dcfd7ae33dff0f45835246c9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "ad06366d_30ef8350",
+        "filename": "appengine/monorail/project/peopledetail.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-05-23T00:27:10Z",
+      "side": 1,
+      "message": "1. Done.\n2. Done.\n3. It is correct.  ac_exclude is now \u003d not ac_include.  Basically, the code deals with exclusion, but I thought at is unnecessarily confusing for users, so in the UI it talks about inclusion.",
+      "parentUuid": "df3eb7f5_8182b05b",
+      "revId": "d9eda7b36e8c73e4dcfd7ae33dff0f45835246c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b1efeef9_f1d1c47d",
         "filename": "appengine/monorail/services/project_svc.py",
         "patchSetId": 1
@@ -64,6 +118,24 @@
       "writtenOn": "2018-05-22T23:27:39Z",
       "side": 1,
       "message": "I think this line is duplicated",
+      "revId": "d9eda7b36e8c73e4dcfd7ae33dff0f45835246c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "59dbfe8b_bea0cd1d",
+        "filename": "appengine/monorail/services/project_svc.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 647,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-05-23T00:27:10Z",
+      "side": 1,
+      "message": "Gone.",
+      "parentUuid": "b1efeef9_f1d1c47d",
       "revId": "d9eda7b36e8c73e4dcfd7ae33dff0f45835246c9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "99c754ac_186f15ff",
+        "filename": "appengine/monorail/services/project_svc.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 665,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-05-23T00:27:10Z",
+      "side": 1,
+      "message": "Gone.",
+      "parentUuid": "ddd5183c_079608e5",
+      "revId": "d9eda7b36e8c73e4dcfd7ae33dff0f45835246c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "780ab9e8_5ca55c27",
         "filename": "appengine/monorail/services/project_svc.py",
         "patchSetId": 1
@@ -98,6 +188,24 @@
       "writtenOn": "2018-05-22T23:27:39Z",
       "side": 1,
       "message": "Is there a method to update the cached_content_timestamp? It seems like a common enough operation that maybe it should have its own method",
+      "revId": "d9eda7b36e8c73e4dcfd7ae33dff0f45835246c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c03e1bc0_5cd0bf55",
+        "filename": "appengine/monorail/services/project_svc.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 679,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-05-23T00:27:10Z",
+      "side": 1,
+      "message": "Added.",
+      "parentUuid": "780ab9e8_5ca55c27",
       "revId": "d9eda7b36e8c73e4dcfd7ae33dff0f45835246c9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -121,6 +229,24 @@
     },
     {
       "key": {
+        "uuid": "179d16c6_f16aedfb",
+        "filename": "appengine/monorail/templates/project/people-detail-page.ezt",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-05-23T00:27:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e4e90509_46ba5d5a",
+      "revId": "d9eda7b36e8c73e4dcfd7ae33dff0f45835246c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d7eb4dca_a0ebdc91",
         "filename": "appengine/monorail/tracker/issueoptions.py",
         "patchSetId": 1
@@ -132,6 +258,24 @@
       "writtenOn": "2018-05-22T23:27:39Z",
       "side": 1,
       "message": "This is renamed but group_ids below hasn\u0027t been changed",
+      "revId": "d9eda7b36e8c73e4dcfd7ae33dff0f45835246c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "69751822_f2822d84",
+        "filename": "appengine/monorail/tracker/issueoptions.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-05-23T00:27:10Z",
+      "side": 1,
+      "message": "They are actually two separate variables... actually three.  I renamed them to be more clear.",
+      "parentUuid": "d7eb4dca_a0ebdc91",
       "revId": "d9eda7b36e8c73e4dcfd7ae33dff0f45835246c9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
