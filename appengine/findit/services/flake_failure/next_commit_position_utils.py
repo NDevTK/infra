@@ -48,18 +48,29 @@ def GetNextCommitPositionFromBuildRange(analysis, build_range,
     (int): The commit position of either the upper bound build, lower bound
         build, or the originally-requested commit position itself.
   """
+  upper_commit_position = build_range.upper
+  lower_commit_position = build_range.lower
+
   assert (build_range.lower <= requested_commit_position and
-          requested_commit_position <= build_range.upper)
+          requested_commit_position <= build_range.upper), (
+              '{} is not within range of {} and {}'.format(
+                  requested_commit_position, lower_commit_position,
+                  upper_commit_position))
 
-  if not analysis.FindMatchingDataPointWithCommitPosition(build_range.upper):
-    # Try the later build first.
-    return build_range.upper
+  # Check for the closer commit.
+  if ((upper_commit_position - requested_commit_position) <=
+      (requested_commit_position - lower_commit_position) and
+      not analysis.FindMatchingDataPointWithCommitPosition(
+          upper_commit_position)):
+    # The upper bound commit position is closer and unanalyzed.
+    return upper_commit_position
 
-  if not analysis.FindMatchingDataPointWithCommitPosition(build_range.lower):
-    # Try the earlier build.
-    return build_range.lower
+  if not analysis.FindMatchingDataPointWithCommitPosition(
+      lower_commit_position):
+    # The lower bound commit position is closer and unanalyzed.
+    return lower_commit_position
 
-  # Both the earlier and later builds have already been analyzed.
+  # Both the upper and lower bound commits have already been analyzed.
   # Use the requested commit position directly.
   return requested_commit_position
 
