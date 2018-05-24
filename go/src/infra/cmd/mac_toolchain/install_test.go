@@ -34,7 +34,7 @@ func TestInstallXcode(t *testing.T) {
 		Convey("for accepted license, mac", func() {
 			err := installXcode(ctx, installArgs)
 			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 5)
+			So(s.Calls, ShouldHaveLength, 6)
 			So(s.Calls[0].Executable, ShouldEqual, "cipd")
 			So(s.Calls[0].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
@@ -70,7 +70,7 @@ func TestInstallXcode(t *testing.T) {
 			}
 			err := installXcode(ctx, installArgs)
 			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 2)
+			So(s.Calls, ShouldHaveLength, 4)
 			So(s.Calls[0].Executable, ShouldEqual, "cipd")
 			So(s.Calls[0].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
@@ -89,7 +89,7 @@ func TestInstallXcode(t *testing.T) {
 			}
 			err := installXcode(ctx, installArgs)
 			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 3)
+			So(s.Calls, ShouldHaveLength, 4)
 			So(s.Calls[0].Executable, ShouldEqual, "cipd")
 			So(s.Calls[0].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
@@ -110,7 +110,7 @@ func TestInstallXcode(t *testing.T) {
 			installArgs.serviceAccountJSON = "test/service-account.json"
 			err := installXcode(ctx, installArgs)
 			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 5)
+			So(s.Calls, ShouldHaveLength, 6)
 			So(s.Calls[0].Executable, ShouldEqual, "cipd")
 			So(s.Calls[0].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
