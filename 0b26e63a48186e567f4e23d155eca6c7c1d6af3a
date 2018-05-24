@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "60cda909_230f951a",
+        "filename": "appengine/findit/waterfall/buildbot.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2018-05-24T17:38:41Z",
+      "side": 1,
+      "message": "cool!",
+      "range": {
+        "startLine": 188,
+        "startChar": 4,
+        "endLine": 188,
+        "endChar": 19
+      },
+      "revId": "0b26e63a48186e567f4e23d155eca6c7c1d6af3a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
