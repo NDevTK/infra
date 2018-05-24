@@ -122,8 +122,6 @@ class Metric(object):
         any(not isinstance(x, Field) for x in field_spec)):
       raise errors.MetricDefinitionError(
           'Metric constructor takes a list of Fields, or None')
-    if len(field_spec) > 7:
-      raise errors.MonitoringTooManyFieldsError(self._name, field_spec)
 
     self._start_time = None
     self._field_spec = field_spec

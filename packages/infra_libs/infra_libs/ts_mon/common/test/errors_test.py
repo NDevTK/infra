@@ -14,7 +14,6 @@ class ErrorsTest(unittest.TestCase):
       (errors.MonitoringIncrementUnsetValueError, ('test',)),
       (errors.MonitoringInvalidValueTypeError, ('test', 'foo')),
       (errors.MonitoringInvalidFieldTypeError, ('test', 'foo', 'bar')),
-      (errors.MonitoringTooManyFieldsError, ('test', {'foo': 'bar'})),
       (errors.MonitoringNoConfiguredMonitorError, ('test',)),
       (errors.MonitoringNoConfiguredMonitorError, (None,)),
       (errors.MonitoringNoConfiguredTargetError, ('test',)),

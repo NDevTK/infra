@@ -70,18 +70,6 @@ class MonitoringInvalidFieldTypeError(MonitoringError):
         self.metric, self.field, self.value, type(self.value))
 
 
-class MonitoringTooManyFieldsError(MonitoringError):
-  """Raised when sending a metric with more than 7 fields."""
-
-  def __init__(self, metric, fields):
-    self.metric = metric
-    self.fields = fields
-
-  def __str__(self):
-    return 'Metric "%s" was given too many (%d > 7) fields: %s.' % (
-        self.metric, len(self.fields), self.fields)
-
-
 class MonitoringNoConfiguredMonitorError(MonitoringError):
   """Raised when sending a metric without configuring the global Monitor."""
 
