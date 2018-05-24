@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2d589772_9ab3319a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-05-24T22:33:32Z",
+      "side": 1,
+      "message": "I\u0027m  confused by the later and earlier here. Mind using some notation?",
+      "range": {
+        "startLine": 11,
+        "startChar": 11,
+        "endLine": 11,
+        "endChar": 16
+      },
+      "revId": "621392342f0ef8979c6c0cf71d5da35ff232b9c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2c87635f_8cc6222d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-05-24T22:33:32Z",
+      "side": 1,
+      "message": "the build with a commit position that is closer ? Or what else does it mean?",
+      "range": {
+        "startLine": 18,
+        "startChar": 69,
+        "endLine": 18,
+        "endChar": 75
+      },
+      "revId": "621392342f0ef8979c6c0cf71d5da35ff232b9c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
