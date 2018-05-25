@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ea6cd818_8b9b54f4",
+        "filename": "DEPS",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-05-25T22:59:51Z",
+      "side": 1,
+      "message": "borked",
+      "range": {
+        "startLine": 26,
+        "startChar": 6,
+        "endLine": 27,
+        "endChar": 47
+      },
+      "revId": "f53af38fb5464fc5bda8cd1467f1c4e18d792a45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
