@@ -9,10 +9,10 @@ test: build
 	tools/run_tests.sh
 
 deploy: build
-	tools/gae upload -x
+	tools/gae upload -x default backend
 
 upload: build
-	tools/gae upload
+	tools/gae upload default backend
 
 rollback:
 	appcfg.py -V `tools/gae version` rollback .

@@ -348,6 +348,7 @@ def get_frontend_routes():  # pragma: no cover
   prpc_server.add_interceptor(auth.prpc_interceptor)
   prpc_server.add_service(access.AccessServicer())
   prpc_server.add_service(v2_api.BuildsApi())
+  prpc_server.add_discovery_service()
   routes += prpc_server.get_routes()
 
   return routes

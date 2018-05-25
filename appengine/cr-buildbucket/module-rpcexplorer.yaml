@@ -1,0 +1,27 @@
+application: cr-buildbucket-dev
+module: rpcexplorer
+version: 1
+runtime: python27
+threadsafe: true
+
+handlers:
+# RPC Explorer
+- url: /rpcexplorer/?
+  static_files: rpcexplorer/index.html
+  upload: rpcexplorer/index.html
+  secure: always
+
+# The entire subpath is globbed because RPC Explorer uses native URL redirecting
+# for sub-pages, and we want all of them to map to the same HTML file.
+- url: /rpcexplorer/services/.*
+  static_files: rpcexplorer/index.html
+  upload: rpcexplorer/index.html
+  secure: always
+
+# RPC Explorer
+- url: /rpcexplorer
+  static_dir: rpcexplorer
+  secure: always
+
+skip_files:
+- .+\.(py|md|cfg|yaml)
