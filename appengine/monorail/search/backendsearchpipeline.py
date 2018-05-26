@@ -144,6 +144,11 @@ def SearchProjectCan(
   if project_ids:
     cond_str = 'Issue.project_id IN (%s)' % sql.PlaceHolders(project_ids)
     where.append((cond_str, project_ids))
+  else:
+    project_join = ('Project ON Issue.project_id = Project.project_id', [])
+    left_joins.append(project_join)
+    where.append(('Project.state = %s', ['live']))
+    where.append(('Project.access = %s', ['anyone']))
 
   try:
     query_ast = ast2ast.PreprocessAST(

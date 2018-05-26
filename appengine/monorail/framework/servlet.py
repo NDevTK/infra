@@ -234,6 +234,7 @@ class Servlet(webapp2.RequestHandler):
       self.response.status = httplib.BAD_REQUEST
 
     except exceptions.NoSuchProjectException as e:
+      logging.exception(e)
       logging.info('Rejecting invalid request: %r', e)
       self.response.status = httplib.BAD_REQUEST
 

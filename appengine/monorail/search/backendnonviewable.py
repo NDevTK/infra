@@ -55,7 +55,9 @@ class BackendNonviewable(jsonfeed.InternalTask):
     if user_id:
       effective_ids.add(user_id)
     project_id = mr.specified_project_id
-    project = self.services.project.GetProject(mr.cnxn, project_id)
+    project = None
+    if project_id:
+      project = self.services.project.GetProject(mr.cnxn, project_id)
 
     perms = permissions.GetPermissions(user, effective_ids, project)
 
@@ -100,8 +102,9 @@ class BackendNonviewable(jsonfeed.InternalTask):
     cnxn_2 = sql.MonorailConnection()
     at_risk_iids_promise = framework_helpers.Promise(
       self.GetAtRiskIIDs, cnxn_2, user, effective_ids, project, perms, shard_id)
+    project_id = project.project_id if project else None
     ok_iids = self.GetViewableIIDs(
-      cnxn, effective_ids, project.project_id, shard_id)
+      cnxn, effective_ids, project_id, shard_id)
     at_risk_iids = at_risk_iids_promise.WaitAndGetValue()
 
     # The set of non-viewable issues is the at-risk ones minus the ones where
@@ -115,11 +118,11 @@ class BackendNonviewable(jsonfeed.InternalTask):
     """Return IIDs of restricted issues that user might not be able to view."""
     at_risk_label_ids = search_helpers.GetPersonalAtRiskLabelIDs(
       cnxn, user, self.services.config, effective_ids, project, perms)
+    project_id = project.project_id if project else None
     at_risk_iids = self.services.issue.GetIIDsByLabelIDs(
-      cnxn, at_risk_label_ids, project.project_id, shard_id)
+      cnxn, at_risk_label_ids, project_id, shard_id)
 
     return at_risk_iids
-
 
   def GetViewableIIDs(self, cnxn, effective_ids, project_id, shard_id):
     """Return IIDs of issues that user can view because they participate."""
@@ -127,7 +130,8 @@ class BackendNonviewable(jsonfeed.InternalTask):
     if not effective_ids:
       return []
 
+    project_id_list = [project_id] if project_id else None
     ok_iids = self.services.issue.GetIIDsByParticipant(
-      cnxn, effective_ids, [project_id], shard_id)
+      cnxn, effective_ids, project_id_list, shard_id)
 
     return ok_iids

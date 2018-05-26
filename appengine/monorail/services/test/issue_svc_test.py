@@ -1851,8 +1851,9 @@ class IssueServiceTest(unittest.TestCase):
     self.services.issue.issue_tbl.Select(
         self.cnxn, shard_id=1, cols=['id'],
         left_joins=[('Issue2Label ON Issue.id = Issue2Label.issue_id', [])],
-        label_id=[123, 456], project_id=789,
-        where=[('shard = %s', [1])]
+        label_id=[123, 456],
+        where=[('shard = %s', [1]),
+               ('project_id = %s', [789])]
         ).AndReturn([(1,), (2,), (3,)])
 
   def testGetIIDsByLabelIDs(self):
