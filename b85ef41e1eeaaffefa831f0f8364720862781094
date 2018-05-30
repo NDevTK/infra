@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "be0971bc_8e316ba8",
+        "filename": "appengine/findit/pipelines/flake_failure/analyze_flake_pipeline.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-05-30T17:09:09Z",
+      "side": 1,
+      "message": "For a filed bug by Findit, we should not update it again.\nPlease add a TODO with a bug to fix that.",
+      "range": {
+        "startLine": 162,
+        "startChar": 8,
+        "endLine": 166,
+        "endChar": 59
+      },
+      "revId": "b85ef41e1eeaaffefa831f0f8364720862781094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a3868ae4_1ab93742",
+        "filename": "appengine/findit/pipelines/flake_failure/analyze_flake_pipeline.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-05-30T17:09:09Z",
+      "side": 1,
+      "message": "Could this be in the root pipeline instead? The one handling aborted pipeline?\n\nIt seems better to have this logic in one place instead.",
+      "range": {
+        "startLine": 260,
+        "startChar": 4,
+        "endLine": 269,
+        "endChar": 0
+      },
+      "revId": "b85ef41e1eeaaffefa831f0f8364720862781094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
