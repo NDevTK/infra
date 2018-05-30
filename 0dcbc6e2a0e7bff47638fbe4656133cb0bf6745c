@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "4c85ff59_08898470",
+        "filename": "appengine/findit/pipelines/flake_failure/analyze_flake_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-05-30T22:03:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "18237f07_0c49fcc4",
+      "range": {
+        "startLine": 85,
+        "startChar": 6,
+        "endLine": 85,
+        "endChar": 17
+      },
+      "revId": "0dcbc6e2a0e7bff47638fbe4656133cb0bf6745c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "56b57d97_6863c2a2",
         "filename": "appengine/findit/pipelines/flake_failure/analyze_flake_pipeline.py",
         "patchSetId": 4
@@ -36,6 +60,30 @@
       "writtenOn": "2018-05-30T20:02:50Z",
       "side": 1,
       "message": "Should these two be merged?",
+      "range": {
+        "startLine": 80,
+        "startChar": 2,
+        "endLine": 94,
+        "endChar": 76
+      },
+      "revId": "0dcbc6e2a0e7bff47638fbe4656133cb0bf6745c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5667b9b2_143bbcae",
+        "filename": "appengine/findit/pipelines/flake_failure/analyze_flake_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-05-30T22:03:51Z",
+      "side": 1,
+      "message": "Just to clarify, to merge OnAbort with OnFinalized completely, or just the calls to monitoring merged? If it\u0027s monitoring only, for now I\u0027m thinking not, as we will capture both those that ended in .error and those that ended in pipeline abort. Those with .error should always include those with .abort as well. This way we can differentiate within overall error which were due to bugs in Findit vs those that were not Findit\u0027s fault.\n\nIIUC if there is a pipeline abort, both OnAbort and OnFinalized will be called. OnAbort will set .error, so when OnFinalized() is called .error is checked and will also report to monitoring that .error is present. This ensures .error is always counted, and pipeline abort is always a subset. In my next CL I plan to make all pipelines that have detectable errors (swarming task failed, try job failed, which is not always Findit\u0027s fault) set .error and bail out without causing pipeline aborts so they can be measured separately",
+      "parentUuid": "56b57d97_6863c2a2",
       "range": {
         "startLine": 80,
         "startChar": 2,
