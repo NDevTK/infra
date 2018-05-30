@@ -22,6 +22,30 @@
       "revId": "8c4993a8e570316cd6519868727588d5a1140c6a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "25b2ede5_da1ceadf",
+        "filename": "infra/services/lkgr_finder/config/webrtc_cfg.pyl",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1179484
+      },
+      "writtenOn": "2018-05-30T12:43:43Z",
+      "side": 1,
+      "message": "Hm, I\u0027m not sure how this URL works, I hoped it would use this as a base and append the builder name, but it\u0027s not that simple. Maybe we\u0027ll keep the URL and rely on redirects, and when V8 switches LKGR to LUCI, we\u0027ll have an example.",
+      "parentUuid": "58bfb0ca_33139ae0",
+      "range": {
+        "startLine": 33,
+        "startChar": 19,
+        "endLine": 33,
+        "endChar": 75
+      },
+      "revId": "8c4993a8e570316cd6519868727588d5a1140c6a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
