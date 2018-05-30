@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "ecbb1334_dbce4bed",
+        "filename": "appengine/findit/pipelines/flake_failure/analyze_flake_pipeline.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-05-30T17:18:23Z",
+      "side": 1,
+      "message": "Does ReportAnalysisEventPipeline and FinishAnalyzeFlakePipeline follow specific orders. It\u0027s confusing because here it doesn\u0027t, but on line 173 - 182, they do.",
+      "revId": "b85ef41e1eeaaffefa831f0f8364720862781094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "be0971bc_8e316ba8",
         "filename": "appengine/findit/pipelines/flake_failure/analyze_flake_pipeline.py",
         "patchSetId": 3
