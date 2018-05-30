@@ -76,7 +76,7 @@ class MetricTest(TestBase):
     with self.assertRaises(errors.MonitoringTooManyFieldsError) as e:
       metrics.Metric('test', 'test', fields)
     self.assertEquals(e.exception.metric, 'test')
-    self.assertEquals(len(e.exception.fields), 8)
+    self.assertEquals(len(e.exception.fields), 13)
 
   def test_set_wrong_number_of_fields(self):
     m = metrics.StringMetric('foo', 'foo', [metrics.IntegerField('asdf')])
