@@ -201,6 +201,10 @@ class BasePipeline(pipeline.Pipeline):
   input_type = _UNDEFINED_TYPE
   output_type = _UNDEFINED_TYPE
 
+  def IsRootPipeline(self):
+    """Returns whether this pipeline is the root pipeline."""
+    return self.pipeline_id == self.root_pipeline_id
+
   def OnAbort(self, arg):
     """Called when the pipeline is aborted.
 
