@@ -18,6 +18,10 @@ from pipelines.delay_pipeline import DelayPipeline
 from pipelines.flake_failure.analyze_flake_pipeline import AnalyzeFlakeInput
 from pipelines.flake_failure.analyze_flake_pipeline import (
     AnalyzeFlakePipeline)
+from pipelines.flake_failure.analyze_flake_pipeline import (
+    FinishAnalyzeFlakeInput)
+from pipelines.flake_failure.analyze_flake_pipeline import (
+    FinishAnalyzeFlakePipeline)
 from pipelines.flake_failure.create_and_submit_revert_pipeline import (
     CreateAndSubmitRevertInput)
 from pipelines.flake_failure.create_and_submit_revert_pipeline import (
@@ -147,15 +151,17 @@ class AnalyzeFlakePipelineTest(WaterfallTestCase):
         analysis_urlsafe_key=analysis.key.urlsafe())
     expected_report_event_input = ReportEventInput(
         analysis_urlsafe_key=analysis.key.urlsafe())
+    expected_finish_analyze_flake_input = FinishAnalyzeFlakeInput(
+        analysis_urlsafe_key=analysis.key.urlsafe())
 
     self.MockGeneratorPipeline(CreateBugForFlakePipeline,
                                expected_create_bug_input, None)
     self.MockGeneratorPipeline(CreateAndSubmitRevertPipeline,
                                expected_create_and_submit_revert_input, True)
     self.MockGeneratorPipeline(UpdateMonorailBugPipeline,
-                               expected_update_bug_input, None)
+                               expected_update_bug_input, True)
     self.MockGeneratorPipeline(NotifyCulpritPipeline,
-                               expected_notify_culprit_input, None)
+                               expected_notify_culprit_input, True)
     self.MockGeneratorPipeline(ReportAnalysisEventPipeline,
                                expected_report_event_input, None)
 
@@ -312,6 +318,29 @@ class AnalyzeFlakePipelineTest(WaterfallTestCase):
     pipeline_job.start()
     self.execute_queued_tasks()
     mocked_revision.assert_called_once_with(mock.ANY, 1000)
+
+  def testFinishAnalyzeFlakePipelineNoError(self):
+    analysis = MasterFlakeAnalysis.Create('m', 'b', 123, 's', 't')
+    analysis.request_time = datetime.datetime(2015, 1, 1, 1, 1, 1)
+    analysis.Save()
+
+    pipeline_job = FinishAnalyzeFlakePipeline(
+        FinishAnalyzeFlakeInput(analysis_urlsafe_key=analysis.key.urlsafe()))
+    pipeline_job.start()
+    self.execute_queued_tasks()
+    self.assertEqual(analysis_status.COMPLETED, analysis.status)
+
+  def testFinishAnalyzeFlakePipelineWithError(self):
+    analysis = MasterFlakeAnalysis.Create('m', 'b', 123, 's', 't')
+    analysis.request_time = datetime.datetime(2015, 1, 1, 1, 1, 1)
+    analysis.error = analysis.GetError()
+    analysis.Save()
+
+    pipeline_job = FinishAnalyzeFlakePipeline(
+        FinishAnalyzeFlakeInput(analysis_urlsafe_key=analysis.key.urlsafe()))
+    pipeline_job.start()
+    self.execute_queued_tasks()
+    self.assertEqual(analysis_status.ERROR, analysis.status)
 
   @mock.patch.object(flake_analysis_util,
                      'ReportPotentialErrorToCompleteAnalysis')
