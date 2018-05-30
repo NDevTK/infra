@@ -29,8 +29,8 @@
         'ios-simulator',
       ],
     },
-    'client.webrtc': {
-      'base_url': 'https://build.chromium.org/p/client.webrtc',
+    'luci.webrtc.ci': {
+      'base_url': 'https://ci.chromium.org/p/webrtc/builders/luci.webrtc.ci',
       'builders': [
         'Android32 (M Nexus5X)',
         'Android32 (M Nexus5X)(dbg)',
