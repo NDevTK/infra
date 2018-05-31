@@ -22,6 +22,30 @@
       "revId": "d793e49b0c2add7eef01b6380e39823bdde179e3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cd811b22_89226681",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/metrics.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1107806
+      },
+      "writtenOn": "2018-05-31T00:17:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cc7086d5_229c1105",
+      "range": {
+        "startLine": 130,
+        "startChar": 36,
+        "endLine": 130,
+        "endChar": 37
+      },
+      "revId": "d793e49b0c2add7eef01b6380e39823bdde179e3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
