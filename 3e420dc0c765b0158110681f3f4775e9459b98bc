@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ded24d50_b2365d70",
+        "filename": "appengine/findit/waterfall/flake/step_mapper.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-05-31T23:48:00Z",
+      "side": 1,
+      "message": "Unrelated to this CL, should it be renamed to something else? Because it is not specific to webkit layout test.",
+      "range": {
+        "startLine": 9,
+        "startChar": 23,
+        "endLine": 9,
+        "endChar": 49
+      },
+      "revId": "3e420dc0c765b0158110681f3f4775e9459b98bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
