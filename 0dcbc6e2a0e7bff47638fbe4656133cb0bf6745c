@@ -96,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "99f5f331_be8a8d0f",
+        "filename": "appengine/findit/pipelines/flake_failure/analyze_flake_pipeline.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-05-31T23:59:16Z",
+      "side": 1,
+      "message": "Sorry for the confusion. My question is: should we merge all the code in both method into one place? To be more specific, whether the code within OnAbort should be moved into OnFinalized? Not just monitoring.\n\nMy overall feeling is that having both OnAbort and OnFinalized to deal with error processing is making things complex. For example: it is unclear to me that OnFinalized did check whether .error is set.\n\nFor pipeline, OnFianlized is always being called no matter whether it is aborted or succeeded. OnAbort is ONLY called when it is aborted.\n\nIIUC of the code here, if an analysis is aborted, the analysis will get updated twice: 1) by flake_analysis_util.ReportPotentialErrorToCompleteAnalysis when OnAbort is called; 2) analysis.Update when OnFinalized is called.\nThe second one is redundant.",
+      "parentUuid": "5667b9b2_143bbcae",
+      "range": {
+        "startLine": 80,
+        "startChar": 2,
+        "endLine": 94,
+        "endChar": 76
+      },
+      "revId": "0dcbc6e2a0e7bff47638fbe4656133cb0bf6745c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "fb3e17fa_ce3f65e0",
         "filename": "appengine/findit/pipelines/flake_failure/test/analyze_flake_pipeline_test.py",
         "patchSetId": 4
@@ -128,6 +152,24 @@
       "revId": "0dcbc6e2a0e7bff47638fbe4656133cb0bf6745c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "35a555ab_2f0e4292",
+        "filename": "appengine/findit/pipelines/flake_failure/test/analyze_flake_pipeline_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 331,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-05-31T23:59:16Z",
+      "side": 1,
+      "message": "Correct. Once finalized is called, no subpipeline is running.",
+      "parentUuid": "2e30c452_124dec89",
+      "revId": "0dcbc6e2a0e7bff47638fbe4656133cb0bf6745c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
