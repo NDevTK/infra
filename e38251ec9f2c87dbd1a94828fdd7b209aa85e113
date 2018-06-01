@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a3e0f0f2_6ce4861c",
+        "filename": "appengine/findit/pipelines/flake_failure/analyze_flake_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-06-01T23:52:16Z",
+      "side": 1,
+      "message": "if ...:\n  return # bail out\n\npass # meaty code here",
+      "range": {
+        "startLine": 81,
+        "startChar": 4,
+        "endLine": 81,
+        "endChar": 29
+      },
+      "revId": "e38251ec9f2c87dbd1a94828fdd7b209aa85e113",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a1b0a2da_c304137b",
+        "filename": "appengine/findit/pipelines/flake_failure/analyze_flake_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-06-01T23:52:16Z",
+      "side": 1,
+      "message": "Not necessarily set. For example, the pipeline is aborted for uncaught exceptions like what we are suffering right now.",
+      "range": {
+        "startLine": 90,
+        "startChar": 27,
+        "endLine": 90,
+        "endChar": 65
+      },
+      "revId": "e38251ec9f2c87dbd1a94828fdd7b209aa85e113",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "57fc95e4_d9784aa5",
+        "filename": "appengine/findit/pipelines/flake_failure/analyze_flake_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-06-01T23:52:16Z",
+      "side": 1,
+      "message": "If there is no error, do we still need an update?",
+      "range": {
+        "startLine": 95,
+        "startChar": 6,
+        "endLine": 96,
+        "endChar": 69
+      },
+      "revId": "e38251ec9f2c87dbd1a94828fdd7b209aa85e113",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
