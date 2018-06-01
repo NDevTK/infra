@@ -50,7 +50,7 @@ InvalidArgument = status_code_error_class(prpc.StatusCode.INVALID_ARGUMENT)
 
 METHODS_BY_NAME = {
     m.name: m
-    for m in rpc_prpc_pb2.BuildsServiceDescription['descriptor'].method
+    for m in rpc_prpc_pb2.BuildsServiceDescription['service_descriptor'].method
 }
 
 
