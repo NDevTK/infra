@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7e82c00f_9f08c7d0",
+        "filename": "recipes/recipe_modules/infra_cipd/api.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-06-04T18:32:46Z",
+      "side": 1,
+      "message": "please document it expected build.py in path_to_repo.join(\u0027build\u0027, \u0027build.py\u0027).",
+      "revId": "b7f27a32f7157afef98b765957a4a4a67637f33d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "973bb56b_49c9c2e0",
+        "filename": "recipes/recipe_modules/infra_cipd/api.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-06-04T18:32:46Z",
+      "side": 1,
+      "message": "nit: I think we can forbid nesting such context (if it makes code simpler)",
+      "range": {
+        "startLine": 47,
+        "startChar": 6,
+        "endLine": 47,
+        "endChar": 21
+      },
+      "revId": "b7f27a32f7157afef98b765957a4a4a67637f33d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "81d51578_53a8f4dc",
+        "filename": "recipes/recipe_modules/infra_cipd/api.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-06-04T18:32:46Z",
+      "side": 1,
+      "message": "this will have to be removed on LUCI.\n\nI propose to move it to InfraCIPDAPI property, which by default is None.\n\ndef set_service_account_json(self, path):\n  ...",
+      "range": {
+        "startLine": 89,
+        "startChar": 6,
+        "endLine": 89,
+        "endChar": 58
+      },
+      "revId": "b7f27a32f7157afef98b765957a4a4a67637f33d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
