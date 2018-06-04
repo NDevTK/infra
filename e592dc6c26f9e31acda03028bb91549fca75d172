@@ -22,6 +22,30 @@
       "revId": "e592dc6c26f9e31acda03028bb91549fca75d172",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8c40fdac_a6f55b24",
+        "filename": "recipes/recipe_modules/infra_cipd/api.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-06-04T21:44:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "67055a7e_12191d5e",
+      "range": {
+        "startLine": 32,
+        "startChar": 48,
+        "endLine": 32,
+        "endChar": 55
+      },
+      "revId": "e592dc6c26f9e31acda03028bb91549fca75d172",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
