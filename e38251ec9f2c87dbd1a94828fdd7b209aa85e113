@@ -120,6 +120,30 @@
     },
     {
       "key": {
+        "uuid": "5c672ed5_f2a705b8",
+        "filename": "appengine/findit/pipelines/flake_failure/analyze_flake_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-06-04T18:35:47Z",
+      "side": 1,
+      "message": "If there\u0027s already an error the original error will still prevail as analysis.GetError() returns the original error first if set, and if not falls back to returning a generic one.",
+      "parentUuid": "22d105be_0cbd6ec4",
+      "range": {
+        "startLine": 90,
+        "startChar": 27,
+        "endLine": 90,
+        "endChar": 65
+      },
+      "revId": "e38251ec9f2c87dbd1a94828fdd7b209aa85e113",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "57fc95e4_d9784aa5",
         "filename": "appengine/findit/pipelines/flake_failure/analyze_flake_pipeline.py",
         "patchSetId": 6
