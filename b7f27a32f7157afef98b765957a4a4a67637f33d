@@ -62,6 +62,30 @@
       "revId": "b7f27a32f7157afef98b765957a4a4a67637f33d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f264e67a_e9473663",
+        "filename": "recipes/recipe_modules/infra_cipd/api.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-06-04T18:34:35Z",
+      "side": 1,
+      "message": "Or actually, just compare self.m.cipd.default_bot_service_account_credentials to None and don\u0027t pass --service-account-json is it is None.",
+      "parentUuid": "81d51578_53a8f4dc",
+      "range": {
+        "startLine": 89,
+        "startChar": 6,
+        "endLine": 89,
+        "endChar": 58
+      },
+      "revId": "b7f27a32f7157afef98b765957a4a4a67637f33d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
