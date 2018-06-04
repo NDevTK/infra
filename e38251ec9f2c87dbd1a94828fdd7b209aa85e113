@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "cf04c895_103de0a8",
+        "filename": "appengine/findit/pipelines/flake_failure/analyze_flake_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-06-04T18:06:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a3e0f0f2_6ce4861c",
+      "range": {
+        "startLine": 81,
+        "startChar": 4,
+        "endLine": 81,
+        "endChar": 29
+      },
+      "revId": "e38251ec9f2c87dbd1a94828fdd7b209aa85e113",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a1b0a2da_c304137b",
         "filename": "appengine/findit/pipelines/flake_failure/analyze_flake_pipeline.py",
         "patchSetId": 6
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "696f761c_30ce6bad",
+        "filename": "appengine/findit/pipelines/flake_failure/analyze_flake_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-06-04T18:06:29Z",
+      "side": 1,
+      "message": "I think this is fine as is, if there is an uncaught exception, line 87 will have error as None, then the branch in self.was_aborted will set error \u003d analysis.GetError() which will always return an error dict.\n\nI\u0027ve updated the comments to make this more clear.",
+      "parentUuid": "a1b0a2da_c304137b",
+      "range": {
+        "startLine": 90,
+        "startChar": 27,
+        "endLine": 90,
+        "endChar": 65
+      },
+      "revId": "e38251ec9f2c87dbd1a94828fdd7b209aa85e113",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "57fc95e4_d9784aa5",
         "filename": "appengine/findit/pipelines/flake_failure/analyze_flake_pipeline.py",
         "patchSetId": 6
@@ -59,6 +107,30 @@
       "writtenOn": "2018-06-01T23:52:16Z",
       "side": 1,
       "message": "If there is no error, do we still need an update?",
+      "range": {
+        "startLine": 95,
+        "startChar": 6,
+        "endLine": 96,
+        "endChar": 69
+      },
+      "revId": "e38251ec9f2c87dbd1a94828fdd7b209aa85e113",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "44622e07_2c42dde6",
+        "filename": "appengine/findit/pipelines/flake_failure/analyze_flake_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-06-04T18:06:29Z",
+      "side": 1,
+      "message": "Yes, error will be None but end_time and final status are to be set here. analysis.Update will only update if there are changes. e.g. calling analysis.Update(status\u003dCOMPLETED) twice will no op the second time because the only field specified is unchanged, so if error\u003dNone and analysis already has no error, that part will not update.",
+      "parentUuid": "57fc95e4_d9784aa5",
       "range": {
         "startLine": 95,
         "startChar": 6,
