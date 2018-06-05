@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "46c0fc98_64a98d0f",
+        "filename": "appengine/monorail/Makefile",
+        "patchSetId": 1
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-06-05T19:34:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a6addc0d_dc159054",
+      "revId": "30cc2f25682329e7eb8f84d5f9163bdd1f6ee7cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5d061c3d_7b383fb0",
         "filename": "appengine/monorail/Makefile",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2018-06-05T19:28:01Z",
       "side": 1,
       "message": "I\u0027d like to keep the previously live version so that we can roll back to it.  And, in cases where we did a rollback and then deployed a fixed version, I don\u0027t want to delete the known-good version.   Also, I don\u0027t know how many tainted versions developers are using on staging.",
+      "revId": "30cc2f25682329e7eb8f84d5f9163bdd1f6ee7cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3c0b5499_6fa3e926",
+        "filename": "appengine/monorail/Makefile",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-06-05T19:34:34Z",
+      "side": 1,
+      "message": "This target only applies to staging. Is having a quick rollback option on staging more important than having an easy way to clean up old versions?\n\nThe \"when is it okay to delete a version\" question probably needs a much more formal answer for prod, but the problem of cleaning up old versions isn\u0027t as acute there.",
+      "parentUuid": "5d061c3d_7b383fb0",
       "revId": "30cc2f25682329e7eb8f84d5f9163bdd1f6ee7cd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
