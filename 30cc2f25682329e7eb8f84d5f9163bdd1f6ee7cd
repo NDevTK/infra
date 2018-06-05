@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a6addc0d_dc159054",
+        "filename": "appengine/monorail/Makefile",
+        "patchSetId": 1
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-06-05T19:28:01Z",
+      "side": 1,
+      "message": "You added some junk characters here.",
+      "revId": "30cc2f25682329e7eb8f84d5f9163bdd1f6ee7cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d061c3d_7b383fb0",
+        "filename": "appengine/monorail/Makefile",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-06-05T19:28:01Z",
+      "side": 1,
+      "message": "I\u0027d like to keep the previously live version so that we can roll back to it.  And, in cases where we did a rollback and then deployed a fixed version, I don\u0027t want to delete the known-good version.   Also, I don\u0027t know how many tainted versions developers are using on staging.",
+      "revId": "30cc2f25682329e7eb8f84d5f9163bdd1f6ee7cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
