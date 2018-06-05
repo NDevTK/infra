@@ -101,6 +101,10 @@
     "name": "recipe simulation test"
   },
   {
+    "cmd": [],
+    "name": "will fail on LUCI"
+  },
+  {
     "name": "$result",
     "recipe_result": null,
     "status_code": 0
