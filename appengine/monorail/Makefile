@@ -117,3 +117,10 @@ deploy_prod: deps vulcanize
 # your browser to confirm that the new version works anyway, so just use the
 # console interface to make it the default; and b) If you really want to use
 # the command line you can use gae.py directly.
+
+# Delete the oldest 10 versions of each service. This will fail to delete
+# a version if it is still serving traffic.
+version_clean_staging:
+	gcloud --project=$(STAGEID) app versions list --service besearch --sort-by LAST_DEPLOYED --limit 10 | awk 'NR > 1 {print $2}' | xargs gcloud app versions delete
+	gcloud --project=$(STAGEID) app versions list --service default --sort-by LAST_DEPLOYED --limit 10 | awk 'NR > 1 {print $2}' | xargs gcloud app versions delete
+	gcloud --project=$(STAGEID) app versions list --service latency-insensitive --sort-by LAST_DEPLOYED --limit 10 | awk 'NR > 1 {print $2}' | xargs gcloud app versions delete
