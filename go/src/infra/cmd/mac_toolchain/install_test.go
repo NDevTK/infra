@@ -199,7 +199,7 @@ func TestInstallXcode(t *testing.T) {
 			s.ReturnOutput = []string{"", "old/xcode/path"}
 
 			installArgs.xcodeAppPath = "testdata/Xcode-legacy.app"
-			installArgs.xcodeVersion = "8e1234"
+			installArgs.xcodeVersion = "8e3004b"
 			err := installXcode(ctx, installArgs)
 			So(err, ShouldBeNil)
 			So(len(s.Calls), ShouldEqual, 10)
@@ -208,7 +208,7 @@ func TestInstallXcode(t *testing.T) {
 			So(s.Calls[0].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-legacy.app",
 			})
-			So(s.Calls[0].ConsumedStdin, ShouldEqual, "test/prefix/mac 8e1234\n")
+			So(s.Calls[0].ConsumedStdin, ShouldEqual, "test/prefix/mac 8e3004b\n")
 
 			So(s.Calls[1].Executable, ShouldEqual, "/usr/bin/xcode-select")
 			So(s.Calls[1].Args, ShouldResemble, []string{"-p"})
@@ -253,7 +253,7 @@ func TestInstallXcode(t *testing.T) {
 			s.ReturnOutput = []string{"", "old/xcode/path"}
 
 			installArgs.xcodeAppPath = "testdata/Xcode-legacy.app"
-			installArgs.xcodeVersion = "8E1234"
+			installArgs.xcodeVersion = "8e3004b"
 			installArgs.packageInstallerOnBots = "nonexistent"
 			err := installXcode(ctx, installArgs)
 			So(err, ShouldBeNil)
@@ -263,7 +263,7 @@ func TestInstallXcode(t *testing.T) {
 			So(s.Calls[0].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-legacy.app",
 			})
-			So(s.Calls[0].ConsumedStdin, ShouldEqual, "test/prefix/mac 8E1234\n")
+			So(s.Calls[0].ConsumedStdin, ShouldEqual, "test/prefix/mac 8e3004b\n")
 
 			So(s.Calls[1].Executable, ShouldEqual, "/usr/bin/xcode-select")
 			So(s.Calls[1].Args, ShouldResemble, []string{"-p"})
