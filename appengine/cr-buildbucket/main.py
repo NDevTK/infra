@@ -18,16 +18,9 @@ from swarming import swarmbucket_api
 
 def create_frontend_app():  # pragma: no cover
   """Returns WSGI app for frontend."""
-  # Currently endpoints_webapp2.api_server returns a list of routes, so we
-  # could create a webapp2.WSGIApplication with (API routes + frontend routes).
-  # In the future, it will return a webapp2.WSGIApplication directly, to which
-  # we will have to append frontend routes.
-  app = webapp2.WSGIApplication(endpoints_webapp2.api_server(
-      [api.BuildbucketApi, swarmbucket_api.SwarmbucketApi, config.ConfigApi],
-      base_path='/_ah/api'), debug=utils.is_local_dev_server())
-  for route in handlers.get_frontend_routes():
-    app.router.add(route)
-  return app
+  routes = handlers.get_frontend_routes() + endpoints_webapp2.api_routes(
+      [api.BuildBucketApi, swarmbucket_api.SwarmbucketApi, config.ConfigApi])
+  return webapp2.WSGIApplication(routes, debug=utils.is_local_dev_server())
 
 
 def create_backend_app():  # pragma: no cover
