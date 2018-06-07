@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "82377442_506a1997",
+        "filename": "appengine/findit/services/flake_detection/flaky_tests.cq_false_rejection.sql",
+        "patchSetId": 2
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-06-07T18:49:06Z",
+      "side": 1,
+      "message": "could be removed.",
+      "range": {
+        "startLine": 111,
+        "startChar": 10,
+        "endLine": 111,
+        "endChar": 16
+      },
+      "revId": "7c03870f3765832a8e9420a8da8a742ea71556fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
