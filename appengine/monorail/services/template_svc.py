@@ -49,7 +49,8 @@ class TemplateTwoLevelCache(caches.AbstractTwoLevelCache):
   Holds a dictionary of {project_id: templateset} key value pairs,
   where a templateset is a list of all templates in a project.
   """
-  memcache_prefix = 'templateset:'
+  memcache_prefix = 'templatesetprotos:'
+  pb_class = tracker_pb2.TemplateSet
 
   def __init__(self, cache_manager, template_service):
     super(TemplateTwoLevelCache, self).__init__(
@@ -144,7 +145,8 @@ class TemplateTwoLevelCache(caches.AbstractTwoLevelCache):
           if phase and phase not in template.phases:
             template_dict.get(template_id).phases.append(phase)
 
-      project_templates_dict[project_id] = template_dict.values()
+      project_templates_dict[project_id] = tracker_pb2.TemplateSet(
+          templates=template_dict.values())
 
     return project_templates_dict
 
