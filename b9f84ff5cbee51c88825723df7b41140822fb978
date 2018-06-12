@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1bc7fcf6_028ab3f4",
+        "filename": "go/src/infra/tricium/appengine/devcfg/projects/infra/tricium-dev.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2018-06-12T01:19:03Z",
+      "side": 1,
+      "message": "?",
+      "range": {
+        "startLine": 15,
+        "startChar": 23,
+        "endLine": 15,
+        "endChar": 33
+      },
+      "revId": "b9f84ff5cbee51c88825723df7b41140822fb978",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
