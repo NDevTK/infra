@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8b1fb04e_374b9eb4",
+        "filename": "cr-buildbucket.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 447,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-06-12T20:49:32Z",
+      "side": 1,
+      "message": "ah, that\u0027s what I missed in internal.infra config. Well, too late :)",
+      "range": {
+        "startLine": 445,
+        "startChar": 8,
+        "endLine": 447,
+        "endChar": 58
+      },
+      "revId": "bdae6cf505789833c17bca2ab40df5fad529640f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
