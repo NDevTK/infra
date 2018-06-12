@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5033ad7d_16f2636c",
+        "filename": "appengine/cr-buildbucket/main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-06-12T23:10:35Z",
+      "side": 1,
+      "message": "why do we have a half of endpoint routes here and another half in get_frontend_routes?\ni think this should be in get_frontend_routes too",
+      "range": {
+        "startLine": 21,
+        "startChar": 41,
+        "endLine": 22,
+        "endChar": 77
+      },
+      "revId": "0a0af05791d7865479db167c5997b8fbfac24abe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
