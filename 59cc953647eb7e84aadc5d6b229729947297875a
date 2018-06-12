@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b580cf9e_1ce91a1e",
+        "filename": "appengine/monorail/services/template_svc.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-06-12T17:14:18Z",
+      "side": 1,
+      "message": "I think you could also remove line 53 and just replace None with tracker_pb2.TemplateSet.\n\nSame for memcache_prefix in line 52 and self.memcache_prefix.",
+      "range": {
+        "startLine": 57,
+        "startChar": 56,
+        "endLine": 57,
+        "endChar": 60
+      },
+      "revId": "59cc953647eb7e84aadc5d6b229729947297875a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
