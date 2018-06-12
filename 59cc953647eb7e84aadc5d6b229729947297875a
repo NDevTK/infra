@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "1392ffc4_73de9b7c",
+        "filename": "appengine/monorail/services/template_svc.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-06-12T17:14:26Z",
+      "side": 1,
+      "message": "This should be part of the super().__init__() call instead of None on line 57.  Otherwise, if you keep passing None, self.pb_class is set to None and these objects will still be serialized with python pickle.",
+      "revId": "59cc953647eb7e84aadc5d6b229729947297875a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b580cf9e_1ce91a1e",
         "filename": "appengine/monorail/services/template_svc.py",
         "patchSetId": 2
