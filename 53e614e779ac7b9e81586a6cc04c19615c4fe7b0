@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "930bf077_8d77f193",
+        "filename": "appengine/cr-buildbucket/handlers.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 339,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-06-12T23:30:42Z",
+      "side": 1,
+      "message": "As a side-effect this also adds ConfigApi routes to /api.",
+      "revId": "53e614e779ac7b9e81586a6cc04c19615c4fe7b0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

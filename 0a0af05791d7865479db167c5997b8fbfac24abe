@@ -22,6 +22,30 @@
       "revId": "0a0af05791d7865479db167c5997b8fbfac24abe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2afc371e_1d8e3cad",
+        "filename": "appengine/cr-buildbucket/main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-06-12T23:30:42Z",
+      "side": 1,
+      "message": "Accumulated technical debt. Done.",
+      "parentUuid": "5033ad7d_16f2636c",
+      "range": {
+        "startLine": 21,
+        "startChar": 41,
+        "endLine": 22,
+        "endChar": 77
+      },
+      "revId": "0a0af05791d7865479db167c5997b8fbfac24abe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
