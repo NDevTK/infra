@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "dd353808_32ee0726",
+        "filename": "appengine/monorail/services/template_svc.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-06-12T17:54:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1392ffc4_73de9b7c",
+      "revId": "59cc953647eb7e84aadc5d6b229729947297875a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b580cf9e_1ce91a1e",
         "filename": "appengine/monorail/services/template_svc.py",
         "patchSetId": 2
@@ -39,6 +57,30 @@
       "revId": "59cc953647eb7e84aadc5d6b229729947297875a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b8f48d5d_5cf4e23e",
+        "filename": "appengine/monorail/services/template_svc.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-06-12T17:54:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b580cf9e_1ce91a1e",
+      "range": {
+        "startLine": 57,
+        "startChar": 56,
+        "endLine": 57,
+        "endChar": 60
+      },
+      "revId": "59cc953647eb7e84aadc5d6b229729947297875a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
