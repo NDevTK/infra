@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9ba740fc_fec7931f",
+        "filename": "appengine/monorail/api/converters.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 312,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-06-14T05:31:10Z",
+      "side": 1,
+      "message": "I\u0027ve tried this and encountered something like:\n\"Assignment not allowed to composite field \"approval_ref\" in protocol message object.\"\n\nI think this should be:\n\nresult.approval_ref.field_name\u003dfd.field_name",
+      "range": {
+        "startLine": 312,
+        "startChar": 4,
+        "endLine": 312,
+        "endChar": 71
+      },
+      "revId": "b64237e2e2644100c01b57ed6858d3687284e702",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0c1d5f60_afbe36c5",
+        "filename": "appengine/monorail/api/test/converters_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 386,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-06-14T05:31:10Z",
+      "side": 1,
+      "message": "now or TODO, add a test that covers approval_ref conversion",
+      "revId": "b64237e2e2644100c01b57ed6858d3687284e702",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
