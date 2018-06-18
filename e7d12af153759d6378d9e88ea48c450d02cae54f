@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "b7f8a48e_ab4d6a36",
+        "filename": "appengine/cr-buildbucket/handlers.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-06-18T21:14:39Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "1edfc982_194ef24b",
+      "range": {
+        "startLine": 279,
+        "startChar": 9,
+        "endLine": 279,
+        "endChar": 33
+      },
+      "revId": "e7d12af153759d6378d9e88ea48c450d02cae54f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e8b52fd6_a1c6ab1d",
         "filename": "appengine/cr-buildbucket/handlers.py",
         "patchSetId": 6
@@ -45,6 +69,30 @@
       "revId": "e7d12af153759d6378d9e88ea48c450d02cae54f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4a04854d_621e507e",
+        "filename": "appengine/cr-buildbucket/handlers.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 296,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-06-18T21:14:39Z",
+      "side": 1,
+      "message": "this should have been in the prev CL :( done",
+      "parentUuid": "e8b52fd6_a1c6ab1d",
+      "range": {
+        "startLine": 296,
+        "startChar": 4,
+        "endLine": 296,
+        "endChar": 20
+      },
+      "revId": "e7d12af153759d6378d9e88ea48c450d02cae54f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "36ae738a_887ec2f2",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 321,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-06-18T21:14:39Z",
+      "side": 1,
+      "message": "made it 16",
+      "parentUuid": "805d9097_a4802292",
+      "range": {
+        "startLine": 321,
+        "startChar": 16,
+        "endLine": 321,
+        "endChar": 18
+      },
+      "revId": "e7d12af153759d6378d9e88ea48c450d02cae54f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e19b94bd_fc380e37",
         "filename": "appengine/cr-buildbucket/model.py",
         "patchSetId": 6
@@ -91,6 +163,30 @@
       "revId": "e7d12af153759d6378d9e88ea48c450d02cae54f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2cad15dd_1016d15c",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 339,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-06-18T21:14:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e19b94bd_fc380e37",
+      "range": {
+        "startLine": 339,
+        "startChar": 4,
+        "endLine": 339,
+        "endChar": 26
+      },
+      "revId": "e7d12af153759d6378d9e88ea48c450d02cae54f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "f2294dfe_2a82300a",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 962,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-06-18T21:14:39Z",
+      "side": 1,
+      "message": "thought of this too. done",
+      "parentUuid": "5dbd3adc_3085041d",
+      "range": {
+        "startLine": 959,
+        "startChar": 2,
+        "endLine": 962,
+        "endChar": 3
+      },
+      "revId": "e7d12af153759d6378d9e88ea48c450d02cae54f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b9250cd4_ea5778cc",
         "filename": "appengine/cr-buildbucket/service.py",
         "patchSetId": 6
@@ -140,6 +260,30 @@
     },
     {
       "key": {
+        "uuid": "e459ed72_f33419aa",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 966,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-06-18T21:14:39Z",
+      "side": 1,
+      "message": "oops, done",
+      "parentUuid": "b9250cd4_ea5778cc",
+      "range": {
+        "startLine": 966,
+        "startChar": 18,
+        "endLine": 966,
+        "endChar": 22
+      },
+      "revId": "e7d12af153759d6378d9e88ea48c450d02cae54f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "64fd4d67_91f7d512",
         "filename": "appengine/cr-buildbucket/service.py",
         "patchSetId": 6
@@ -160,6 +304,30 @@
       "revId": "e7d12af153759d6378d9e88ea48c450d02cae54f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8ce0d64_c9e52f91",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 1005,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-06-18T21:14:39Z",
+      "side": 1,
+      "message": "nice! now it is actually linear! also got rid of some code. Thanks!",
+      "parentUuid": "64fd4d67_91f7d512",
+      "range": {
+        "startLine": 1005,
+        "startChar": 4,
+        "endLine": 1005,
+        "endChar": 43
+      },
+      "revId": "e7d12af153759d6378d9e88ea48c450d02cae54f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
