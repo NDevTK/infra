@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1edfc982_194ef24b",
+        "filename": "appengine/cr-buildbucket/handlers.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-06-18T17:50:18Z",
+      "side": 1,
+      "message": "This check is kind of moot now :-/ With pretty high probability build_id is in some other shards.",
+      "range": {
+        "startLine": 279,
+        "startChar": 9,
+        "endLine": 279,
+        "endChar": 33
+      },
+      "revId": "e7d12af153759d6378d9e88ea48c450d02cae54f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e8b52fd6_a1c6ab1d",
+        "filename": "appengine/cr-buildbucket/handlers.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 296,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-06-18T17:50:18Z",
+      "side": 1,
+      "message": "I thought we gave up on sorting?",
+      "range": {
+        "startLine": 296,
+        "startChar": 4,
+        "endLine": 296,
+        "endChar": 20
+      },
+      "revId": "e7d12af153759d6378d9e88ea48c450d02cae54f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "805d9097_a4802292",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 321,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-06-18T17:50:18Z",
+      "side": 1,
+      "message": "CL description says 16",
+      "range": {
+        "startLine": 321,
+        "startChar": 16,
+        "endLine": 321,
+        "endChar": 18
+      },
+      "revId": "e7d12af153759d6378d9e88ea48c450d02cae54f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e19b94bd_fc380e37",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 339,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-06-18T17:50:18Z",
+      "side": 1,
+      "message": "nit: please move it to a separate function \u0027random_key\u0027 or something. \u0027make_key\u0027 looks like a constructor, it is surprising when it is not deterministic.",
+      "range": {
+        "startLine": 339,
+        "startChar": 4,
+        "endLine": 339,
+        "endChar": 26
+      },
+      "revId": "e7d12af153759d6378d9e88ea48c450d02cae54f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5dbd3adc_3085041d",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 962,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-06-18T17:50:18Z",
+      "side": 1,
+      "message": "nit: this may be model.TagIndex.all_shard_keys() to hide SHARD_COUNT from callers completely.",
+      "range": {
+        "startLine": 959,
+        "startChar": 2,
+        "endLine": 962,
+        "endChar": 3
+      },
+      "revId": "e7d12af153759d6378d9e88ea48c450d02cae54f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b9250cd4_ea5778cc",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 966,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-06-18T17:50:18Z",
+      "side": 1,
+      "message": "nit: this is unnecessary, idx.key would work just fine",
+      "range": {
+        "startLine": 966,
+        "startChar": 18,
+        "endLine": 966,
+        "endChar": 22
+      },
+      "revId": "e7d12af153759d6378d9e88ea48c450d02cae54f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "64fd4d67_91f7d512",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 1005,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-06-18T17:50:18Z",
+      "side": 1,
+      "message": "We can probably skip adding such entries to the \u0027entry_heap\u0027 entirely? This will make scanning non-first pages also fast.",
+      "range": {
+        "startLine": 1005,
+        "startChar": 4,
+        "endLine": 1005,
+        "endChar": 43
+      },
+      "revId": "e7d12af153759d6378d9e88ea48c450d02cae54f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
