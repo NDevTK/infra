@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3461f383_d5e9ee04",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 966,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-06-18T22:54:54Z",
+      "side": 1,
+      "message": "done in L817",
+      "parentUuid": "7f22e3bf_d36577d7",
+      "range": {
+        "startLine": 966,
+        "startChar": 11,
+        "endLine": 966,
+        "endChar": 59
+      },
+      "revId": "9ab7914c0670feb2a1d5402192efbdda2aff1ead",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c69d848a_d8ad932a",
         "filename": "appengine/cr-buildbucket/service.py",
         "patchSetId": 9
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "5bcf87d7_7b62fedc",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 981,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-06-18T22:54:54Z",
+      "side": 1,
+      "message": "done in L1034",
+      "parentUuid": "c69d848a_d8ad932a",
+      "range": {
+        "startLine": 981,
+        "startChar": 8,
+        "endLine": 981,
+        "endChar": 9
+      },
+      "revId": "9ab7914c0670feb2a1d5402192efbdda2aff1ead",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "32d27a42_21f87a64",
         "filename": "appengine/cr-buildbucket/service.py",
         "patchSetId": 9
@@ -68,6 +116,30 @@
       "revId": "9ab7914c0670feb2a1d5402192efbdda2aff1ead",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a5882ec6_53bc1e79",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 1033,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-06-18T22:54:54Z",
+      "side": 1,
+      "message": "it is sufficient, see L965",
+      "parentUuid": "32d27a42_21f87a64",
+      "range": {
+        "startLine": 1033,
+        "startChar": 18,
+        "endLine": 1033,
+        "endChar": 45
+      },
+      "revId": "9ab7914c0670feb2a1d5402192efbdda2aff1ead",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
