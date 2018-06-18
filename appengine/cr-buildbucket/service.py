@@ -5,6 +5,7 @@
 import collections
 import contextlib
 import datetime
+import heapq
 import logging
 import random
 import re
@@ -954,13 +955,24 @@ def _tag_index_search(q):
   q.tags = q.tags[:]
   q.tags.remove(indexed_tag)
 
-  idx = model.TagIndex.get_by_id(indexed_tag)
-  if idx and idx.permanently_incomplete:
-    raise errors.TagIndexIncomplete('TagIndex(%s) is incomplete' % indexed_tag)
-  if not idx or not idx.entries:
-    logging.info('no index/entries for tag %s', indexed_tag)
+  # Load index entries.
+  index_keys = [
+      model.TagIndex.make_key(i, indexed_tag)
+      for i in xrange(model.TagIndex.SHARD_COUNT)
+  ]
+
+  # Put index entries to a min-heap, sorted by build_id.
+  entry_heap = []  # tuples (build_id, model.TagIndexEntry).
+  for key, idx in zip(index_keys, ndb.get_multi(index_keys)):
+    if not idx:
+      continue
+    if idx.permanently_incomplete:
+      raise errors.TagIndexIncomplete('TagIndex(%s) is incomplete' % key.id())
+    entry_heap.extend((e.build_id, e) for e in idx.entries)
+  if not entry_heap:
+    logging.info('no index entries for tag %s', indexed_tag)
     return [], None
-  logging.info('using TagIndex(%s)', indexed_tag)
+  heapq.heapify(entry_heap)
 
   # If buckets were not specified explicitly, permissions were not checked
   # earlier. In this case, check permissions for each build.
@@ -973,10 +985,6 @@ def _tag_index_search(q):
       has = acl.can_search_builds(bucket)
       has_access_cache[bucket] = has
     return has
-
-  # Sort entries, newest build first, and start from the newest.
-  entries = sorted(idx.entries, key=lambda e: e.build_id)
-  entry_index = 0
 
   id_low, id_high = model.build_id_range(q.create_time_low, q.create_time_high)
 
@@ -994,12 +1002,11 @@ def _tag_index_search(q):
       # If the min id is greater than the requested max, we should give up.
       return [], None
     # TODO(nodir): optimization: use binary search.
-    while entry_index < len(entries):
-      if entries[entry_index].build_id > min_id_exclusive:
-        break
-      entry_index += 1
-    if entry_index == len(entries):
-      # We've skipped everything.
+    # Pop heap entries with key <= the min.
+    while entry_heap and entry_heap[0][0] <= min_id_exclusive:
+      heapq.heappop(entry_heap)
+    if not entry_heap:
+      # We've popped everything.
       return [], None
 
   # scalar_filters maps a name of a model.Build attribute to a filter value.
@@ -1031,9 +1038,8 @@ def _tag_index_search(q):
   while len(result) < q.max_builds:
     fetch_count = q.max_builds - len(result)
     entries_to_fetch = []  # ordered by build id by ascending.
-    while entry_index < len(entries):
-      e = entries[entry_index]
-      entry_index += 1
+    while entry_heap:
+      _, e = heapq.heappop(entry_heap)
       prev = last_considered_entry
       last_considered_entry = e
       if prev and prev.build_id == e.build_id:
@@ -1045,7 +1051,7 @@ def _tag_index_search(q):
       if id_high is not None and e.build_id >= id_high:
         # Since the index is ordered by ascending build ids, if we exceed
         # build_id_high, we should stop and not return a cursor.
-        entry_index = len(entries)
+        entry_heap = []
         eof = True
         break
       # If we filter by bucket, check it here without fetching the build.
@@ -1065,7 +1071,7 @@ def _tag_index_search(q):
     build_keys = [ndb.Key(model.Build, e.build_id) for e in entries_to_fetch]
     for e, b in zip(entries_to_fetch, ndb.get_multi(build_keys)):
       # Check for inconsistent entries.
-      if not (b and b.bucket == e.bucket and idx.key.id() in b.tags):
+      if not (b and b.bucket == e.bucket and indexed_tag in b.tags):
         logging.warning('entry with build_id %d is inconsistent', e.build_id)
         inconsistent_entries += 1
         continue
@@ -1714,11 +1720,10 @@ def _add_to_tag_index_async(tag, new_entries):
   for i in xrange(len(new_entries) - 1):
     assert new_entries[i].build_id != new_entries[i + 1].build_id, 'Duplicate!'
 
-  logging.debug('adding %d entries to tag index %s', len(new_entries), tag)
-
   @ndb.transactional_tasklet
   def txn_async():
-    idx = (yield model.TagIndex.get_by_id_async(tag)) or model.TagIndex(id=tag)
+    idx_key = model.TagIndex.make_key(None, tag)
+    idx = (yield idx_key.get_async()) or model.TagIndex(key=idx_key)
     if idx.permanently_incomplete:
       return
 
@@ -1728,6 +1733,9 @@ def _add_to_tag_index_async(tag, new_entries):
       idx.permanently_incomplete = True
       idx.entries = []
     else:
+      logging.debug(
+          'adding %d entries to TagIndex(%s)', len(new_entries), idx_key.id()
+      )
       idx.entries.extend(new_entries)
     yield idx.put_async()
 
