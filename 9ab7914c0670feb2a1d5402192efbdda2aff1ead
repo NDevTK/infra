@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7f22e3bf_d36577d7",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 966,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-06-18T21:48:00Z",
+      "side": 1,
+      "message": "Strictly speaking this should be a proper request validation that returns HTTP 400 bad to the client, since q.start_cursor is under client\u0027s control.",
+      "range": {
+        "startLine": 966,
+        "startChar": 11,
+        "endLine": 966,
+        "endChar": 59
+      },
+      "revId": "9ab7914c0670feb2a1d5402192efbdda2aff1ead",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c69d848a_d8ad932a",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 981,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-06-18T21:48:00Z",
+      "side": 1,
+      "message": "There can be duplicates here if same build was added to different shards. Is code below capable of handling them? If not, we\u0027ll need to keep a set of seen ids to dedup them.",
+      "range": {
+        "startLine": 981,
+        "startChar": 8,
+        "endLine": 981,
+        "endChar": 9
+      },
+      "revId": "9ab7914c0670feb2a1d5402192efbdda2aff1ead",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "32d27a42_21f87a64",
+        "filename": "appengine/cr-buildbucket/service.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 1033,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-06-18T21:48:00Z",
+      "side": 1,
+      "message": "I believe this is insufficient to catch a duplicate right on the boundary between pages?",
+      "range": {
+        "startLine": 1033,
+        "startChar": 18,
+        "endLine": 1033,
+        "endChar": 45
+      },
+      "revId": "9ab7914c0670feb2a1d5402192efbdda2aff1ead",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
