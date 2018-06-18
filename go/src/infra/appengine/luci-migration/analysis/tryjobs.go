@@ -19,8 +19,10 @@ package analysis
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -28,7 +30,7 @@ import (
 
 	"go.chromium.org/luci/buildbucket"
 	"go.chromium.org/luci/buildbucket/proto"
-	bbapi "go.chromium.org/luci/common/api/buildbucket/buildbucket/v1"
+	bbv1 "go.chromium.org/luci/common/api/buildbucket/buildbucket/v1"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/data/strpair"
 	"go.chromium.org/luci/common/errors"
@@ -45,7 +47,7 @@ const groupFetchWorkers = 10
 // Tryjobs compares LUCI and Buildbot tryjobs.
 type Tryjobs struct {
 	HTTP                 *http.Client
-	Buildbucket          *bbapi.Service
+	Buildbucket          *bbv1.Service
 	MinTrustworthyGroups int // minimum number of build groups to analyze correctness
 
 	// MaxGroups is the maximum number of groups suitable for correctness
@@ -129,7 +131,7 @@ func (t *Tryjobs) analyze(c context.Context, builder, buildbotBucket, luciBucket
 
 type fetcher struct {
 	HTTP                       *http.Client
-	Buildbucket                *bbapi.Service
+	Buildbucket                *bbv1.Service
 	MaxGroups                  int
 	Builder                    string
 	BuildbotBucket, LUCIBucket string
@@ -198,16 +200,16 @@ func (f *fetcher) fetchGroupKeys(c context.Context, keys chan groupKey) error {
 	req := f.Buildbucket.Search()
 	req.Context(c)
 	req.Bucket(f.LUCIBucket)
-	req.Status(bbapi.StatusCompleted)
-	req.Tag(strpair.Format(bbapi.TagBuilder, f.Builder))
-	req.CreationTsLow(bbapi.FormatTimestamp(f.MinCreationDate))
+	req.Status(bbv1.StatusCompleted)
+	req.Tag(strpair.Format(bbv1.TagBuilder, f.Builder))
+	req.CreationTsLow(bbv1.FormatTimestamp(f.MinCreationDate))
 	req.IncludeExperimental(true)
 	req.Fields("builds(tags, result_details_json)")
 	if cap(keys) > 0 {
 		req.MaxBuilds(int64(cap(keys)))
 	}
 
-	foundBuilds := make(chan *bbapi.ApiCommonBuildMessage, cap(keys))
+	foundBuilds := make(chan *bbv1.ApiCommonBuildMessage, cap(keys))
 	var searchErr error
 	go func() {
 		defer close(foundBuilds)
@@ -216,25 +218,30 @@ func (f *fetcher) fetchGroupKeys(c context.Context, keys chan groupKey) error {
 
 	seen := make(map[groupKey]struct{}, DefaultMaxGroups+groupFetchWorkers)
 	for msg := range foundBuilds {
-		var b buildbucket.Build
-		var props properties
-		b.Output.Properties = &props
-		if err := b.ParseMessage(msg); err != nil {
-			return errors.Annotate(err, "parsing build %d", msg.Id).Err()
+		var resultDetails struct {
+			Properties properties `json:"properties"`
+		}
+		if msg.ResultDetailsJson != "" {
+			if err := json.NewDecoder(strings.NewReader(msg.ResultDetailsJson)).Decode(&resultDetails); err != nil {
+				return errors.Annotate(err, "parsing result details of build %d", msg.Id).Err()
+			}
 		}
 
 		var change *buildbucketpb.GerritChange
-		for _, bs := range b.BuildSets {
-			if cl, ok := bs.(*buildbucketpb.GerritChange); ok {
-				if change != nil {
-					logging.Warningf(c, "build %d has multiple Gerrit changes; using first one, %q", b.ID, change)
-					break
+		for _, t := range msg.Tags {
+			if k, v := strpair.Parse(t); k == bbv1.TagBuildSet {
+				if cl, _ := buildbucketpb.ParseBuildSet(v).(*buildbucketpb.GerritChange); cl != nil {
+					if change == nil {
+						change = cl
+					} else {
+						logging.Warningf(c, "build %d has multiple Gerrit changes; using first one, %q", msg.Id, change)
+						break
+					}
 				}
-				change = cl
 			}
 		}
 		if change == nil {
-			logging.Infof(c, "skipped build %d: no gerrit change", b.ID)
+			logging.Infof(c, "skipped build %d: no gerrit change", msg.Id)
 			continue
 		}
 
@@ -242,7 +249,7 @@ func (f *fetcher) fetchGroupKeys(c context.Context, keys chan groupKey) error {
 			Host:        change.Host,
 			Change:      change.Change,
 			Patchset:    change.Patchset,
-			GotRevision: props.GotRevision,
+			GotRevision: resultDetails.Properties.GotRevision,
 		}
 		if _, ok := seen[key]; !ok {
 			keys <- key
@@ -357,11 +364,11 @@ func (f *fetcher) fetchGroup(c context.Context, g *fetchGroup) error {
 		req := f.Buildbucket.Search()
 		req.Context(c)
 		req.Bucket(bucket)
-		req.Status(bbapi.StatusCompleted)
+		req.Status(bbv1.StatusCompleted)
 		req.Tag(
-			strpair.Format(bbapi.TagBuilder, f.Builder),
-			strpair.Format(bbapi.TagBuildSet, g.Key.GerritChange().BuildSetString()))
-		req.CreationTsLow(bbapi.FormatTimestamp(f.MinCreationDate))
+			strpair.Format(bbv1.TagBuilder, f.Builder),
+			strpair.Format(bbv1.TagBuildSet, g.Key.GerritChange().BuildSetString()))
+		req.CreationTsLow(bbv1.FormatTimestamp(f.MinCreationDate))
 		req.IncludeExperimental(true)
 		req.Fields(
 			"builds(cancelation_reason)",
@@ -374,7 +381,7 @@ func (f *fetcher) fetchGroup(c context.Context, g *fetchGroup) error {
 			"builds(status)",
 			"builds(url)",
 		)
-		var msgs []*bbapi.ApiCommonBuildMessage
+		var msgs []*bbv1.ApiCommonBuildMessage
 		msgs, _, *err = req.Fetch(0, nil)
 		if *err != nil {
 			return
