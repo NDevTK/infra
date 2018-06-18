@@ -461,6 +461,7 @@ def add_many_async(build_request_list):
         index_entries[t].append(
             model.TagIndexEntry(build_id=b.key.id(), bucket=b.bucket)
         )
+    logging.info('new entries: %r', index_entries)
     return [
         _add_to_tag_index_async(tag, entries)
         for tag, entries in index_entries.iteritems()
@@ -954,13 +955,27 @@ def _tag_index_search(q):
   q.tags = q.tags[:]
   q.tags.remove(indexed_tag)
 
-  idx = model.TagIndex.get_by_id(indexed_tag)
-  if idx and idx.permanently_incomplete:
-    raise errors.TagIndexIncomplete('TagIndex(%s) is incomplete' % indexed_tag)
-  if not idx or not idx.entries:
-    logging.info('no index/entries for tag %s', indexed_tag)
+  # Load index entries.
+  indexes = ndb.get_multi(
+      model.TagIndex.make_key(i, indexed_tag)
+      for i in xrange(model.TagIndex.SHARD_COUNT)
+  )
+  entries = []
+  for idx in indexes:
+    if not idx:
+      continue
+    if idx.permanently_incomplete:
+      raise errors.TagIndexIncomplete(
+          'TagIndex for %s is incomplete' % indexed_tag
+      )
+    entries.extend(idx.entries)
+  if not entries:
+    logging.info('no index entries for tag %s', indexed_tag)
     return [], None
-  logging.info('using TagIndex(%s)', indexed_tag)
+  entries.sort(key=lambda e: e.build_id)
+  logging.info('entries: %r', entries)
+  # Start from the newest.
+  entry_index = 0
 
   # If buckets were not specified explicitly, permissions were not checked
   # earlier. In this case, check permissions for each build.
@@ -973,10 +988,6 @@ def _tag_index_search(q):
       has = acl.can_search_builds(bucket)
       has_access_cache[bucket] = has
     return has
-
-  # Sort entries, newest build first, and start from the newest.
-  entries = sorted(idx.entries, key=lambda e: e.build_id)
-  entry_index = 0
 
   id_low, id_high = model.build_id_range(q.create_time_low, q.create_time_high)
 
@@ -1065,7 +1076,7 @@ def _tag_index_search(q):
     build_keys = [ndb.Key(model.Build, e.build_id) for e in entries_to_fetch]
     for e, b in zip(entries_to_fetch, ndb.get_multi(build_keys)):
       # Check for inconsistent entries.
-      if not (b and b.bucket == e.bucket and idx.key.id() in b.tags):
+      if not (b and b.bucket == e.bucket and indexed_tag in b.tags):
         logging.warning('entry with build_id %d is inconsistent', e.build_id)
         inconsistent_entries += 1
         continue
@@ -1714,20 +1725,21 @@ def _add_to_tag_index_async(tag, new_entries):
   for i in xrange(len(new_entries) - 1):
     assert new_entries[i].build_id != new_entries[i + 1].build_id, 'Duplicate!'
 
-  logging.debug('adding %d entries to tag index %s', len(new_entries), tag)
-
   @ndb.transactional_tasklet
   def txn_async():
-    idx = (yield model.TagIndex.get_by_id_async(tag)) or model.TagIndex(id=tag)
+    idx_key = model.TagIndex.make_key(None, tag)
+    idx = (yield idx_key.get_async()) or model.TagIndex(key=idx_key)
     if idx.permanently_incomplete:
       return
-
     # Avoid going beyond 1Mb entity size limit by limiting the number of entries
     new_size = len(idx.entries) + len(new_entries)
     if new_size > model.TagIndex.MAX_ENTRY_COUNT:
       idx.permanently_incomplete = True
       idx.entries = []
     else:
+      logging.debug(
+          'adding %d entries to TagIndex(%s)', len(new_entries), idx_key.id()
+      )
       idx.entries.extend(new_entries)
     yield idx.put_async()
 
