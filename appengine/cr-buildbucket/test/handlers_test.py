@@ -42,6 +42,7 @@ class TaskBackfillTagIndexTest(HandlerTest):
     super(TaskBackfillTagIndexTest, self).setUp()
     self.now = datetime.datetime(2017, 1, 1)
     self.patch('components.utils.utcnow', side_effect=lambda: self.now)
+    self.patch('model.TagIndex.random_shard_index', return_value=0)
 
   def post(self, payload, headers=None):
     headers = headers or {}
