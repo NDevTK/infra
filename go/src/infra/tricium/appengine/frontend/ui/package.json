@@ -1,0 +1,22 @@
+{
+  "name": "tricium",
+  "version": "1.0.0",
+  "description": "Tricium Frontend Web UI",
+  "main": "src/tricium-app.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {},
+  "devDependencies": {
+    "polymer-cli": "^1.7.3",
+    "web-component-tester": "^6.6.0",
+    "wct-browser-legacy": "^1.0.0"
+  },
+  "dependencies": {
+    "@polymer/app-layout": "^3.0.0-pre.19",
+    "@polymer/app-route": "^3.0.0-pre.19",
+    "@polymer/iron-ajax": "^3.0.0-pre.19",
+    "@polymer/polymer": "^3.0.2",
+    "@webcomponents/webcomponentsjs": "^2.0.2"
+  }
+}

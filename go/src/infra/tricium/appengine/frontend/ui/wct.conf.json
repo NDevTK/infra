@@ -1,0 +1,10 @@
+{
+  "verbose": false,
+  "npm": true,
+  "moduleResolution":"node",
+  "plugins": {
+    "local": {
+      "browsers": [ "chrome" ]
+    }
+  }
+}
