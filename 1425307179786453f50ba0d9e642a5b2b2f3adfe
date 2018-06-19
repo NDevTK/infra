@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c276b55d_922fc0bf",
+        "filename": "appengine/findit/libs/test_results/gtest_test_results.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2018-06-19T16:59:15Z",
+      "side": 1,
+      "message": "Maybe rewrite to make it clear that you merge the ith dict in shard onto the ith dictionary of merged, s.t. merged is updated but shard is not.",
+      "range": {
+        "startLine": 264,
+        "startChar": 9,
+        "endLine": 264,
+        "endChar": 52
+      },
+      "revId": "1425307179786453f50ba0d9e642a5b2b2f3adfe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
