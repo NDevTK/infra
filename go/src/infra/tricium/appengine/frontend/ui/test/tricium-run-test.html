@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+<script src="/node_modules/web-component-tester/browser.js"></script>
+<script src="/node_modules/@polymer/test-fixture/test-fixture.js"></script>
+
+<script type="module" src="../src/tricium-run.js"></script>
+
+<test-fixture id="element">
+  <template>
+    <tricium-run run-id="1234"></tricium-run>
+  </template>
+</test-fixture>
+
+<script>
+suite('<tricium-run>', () => {
+  let element;
+
+  setup(() => {
+    element = fixture('element');
+  });
+
+  test('Properties', () => {
+    assert.equal(element.runId, '1234');
+  });
+});
+</script>

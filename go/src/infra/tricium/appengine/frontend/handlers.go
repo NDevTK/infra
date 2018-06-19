@@ -33,7 +33,7 @@ func mainPageHandler(ctx *router.Context) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	mainPage := template.Must(template.ParseFiles("index.html"))
+	mainPage := template.Must(template.ParseFiles("ui/build/default/index.html"))
 	if err = mainPage.Execute(w, args); err != nil {
 		logging.WithError(err).Errorf(c, "Failed to render frontend UI")
 		w.WriteHeader(http.StatusInternalServerError)
