@@ -1,0 +1,21 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "plugins": [
+    "html"
+  ],
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "globals": {
+    "assert": false,
+    "Polymer": false,
+    "suite": false,
+    "test": false,
+    "WCT": false
+  },
+  "rules": {}
+}
