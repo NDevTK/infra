@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+<script src="/node_modules/web-component-tester/browser.js"></script>
+<script src="/node_modules/@polymer/test-fixture/test-fixture.js"></script>
+
+<script type="module" src="../src/tricium-feedback.js"></script>
+
+<test-fixture id="element">
+  <template>
+    <tricium-feedback category="Spacey"></tricium-feedback>
+  </template>
+</test-fixture>
+
+<script>
+suite('<tricium-feedback>', () => {
+  let element;
+
+  setup(() => {
+    element = fixture('element');
+  });
+
+  test('Properties', () => {
+    assert.equal(element.category, 'Spacey');
+  });
+});
+</script>
