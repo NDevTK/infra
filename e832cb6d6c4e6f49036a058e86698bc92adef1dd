@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ecfa5d7d_2d149108",
+        "filename": "appengine/cr-buildbucket/user.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 312,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-06-20T21:36:10Z",
+      "side": 1,
+      "message": "one \u0027identity\u0027 can be deleted",
+      "range": {
+        "startLine": 312,
+        "startChar": 46,
+        "endLine": 312,
+        "endChar": 63
+      },
+      "revId": "e832cb6d6c4e6f49036a058e86698bc92adef1dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
