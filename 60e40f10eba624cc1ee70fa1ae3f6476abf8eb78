@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "99bab686_29950a91",
+        "filename": "appengine/findit/backend_main.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-06-20T23:51:39Z",
+      "side": 1,
+      "message": "This function appears in all 3 main modules, should it be moved to somewhere else?",
+      "range": {
+        "startLine": 22,
+        "startChar": 4,
+        "endLine": 22,
+        "endChar": 24
+      },
+      "revId": "60e40f10eba624cc1ee70fa1ae3f6476abf8eb78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f4e0b67a_74b5f2fd",
+        "filename": "appengine/findit/frontend_main.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-06-20T23:51:39Z",
+      "side": 1,
+      "message": "These lines of code also appear in default_main, is it intentional?",
+      "range": {
+        "startLine": 49,
+        "startChar": 0,
+        "endLine": 58,
+        "endChar": 52
+      },
+      "revId": "60e40f10eba624cc1ee70fa1ae3f6476abf8eb78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
