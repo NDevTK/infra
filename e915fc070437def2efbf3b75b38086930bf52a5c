@@ -2,6 +2,69 @@
   "comments": [
     {
       "key": {
+        "uuid": "46f8bdfe_62738634",
+        "filename": "go/src/infra/tricium/appengine/frontend/ui/README.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-06-20T20:21:21Z",
+      "side": 1,
+      "message": "so you need to run both the gae devserver *and* polymer serve? or the latter runs the former too?",
+      "revId": "e915fc070437def2efbf3b75b38086930bf52a5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "956a266d_6eaa5754",
+        "filename": "go/src/infra/tricium/appengine/frontend/ui/index.html",
+        "patchSetId": 7
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-06-20T20:21:21Z",
+      "side": 1,
+      "message": "#ccc",
+      "range": {
+        "startLine": 10,
+        "startChar": 10,
+        "endLine": 10,
+        "endChar": 16
+      },
+      "revId": "e915fc070437def2efbf3b75b38086930bf52a5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9d456b28_2d2925b6",
+        "filename": "go/src/infra/tricium/appengine/frontend/ui/package.json",
+        "patchSetId": 7
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-06-20T20:21:21Z",
+      "side": 1,
+      "message": "what is this one for?",
+      "range": {
+        "startLine": 13,
+        "startChar": 5,
+        "endLine": 13,
+        "endChar": 23
+      },
+      "revId": "e915fc070437def2efbf3b75b38086930bf52a5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "fac9917a_3bae08f2",
         "filename": "go/src/infra/tricium/appengine/frontend/ui/src/tricium-app.js",
         "patchSetId": 7
