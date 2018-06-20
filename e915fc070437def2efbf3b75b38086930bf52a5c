@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fac9917a_3bae08f2",
+        "filename": "go/src/infra/tricium/appengine/frontend/ui/src/tricium-app.js",
+        "patchSetId": 7
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1185234
+      },
+      "writtenOn": "2018-06-20T19:48:45Z",
+      "side": 1,
+      "message": "You can drop the quotes in cases where there\u0027s just one thing.  Here and other places..",
+      "range": {
+        "startLine": 48,
+        "startChar": 38,
+        "endLine": 48,
+        "endChar": 50
+      },
+      "revId": "e915fc070437def2efbf3b75b38086930bf52a5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
