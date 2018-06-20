@@ -12,10 +12,12 @@ import logging
 import os
 import threading
 
+from google.appengine.api import app_identity
 from google.appengine.api import memcache
 from google.appengine.ext import ndb
 
 from components import auth
+from components import utils
 
 from protorpc import messages
 from proto.config import project_config_pb2
@@ -264,6 +266,29 @@ def get_acessible_buckets_async():
     raise ndb.Return(available_buckets)
 
   return _get_or_create_cached_future('accessible_buckets', impl)
+
+
+@utils.cache
+def self_identity():  # pramga: no cover
+  """Returns identity of the buildbucket app."""
+  return auth.Identity('user', app_identity.get_service_account_name())
+
+
+def delegate_async(target_service_host, tag=''):
+  """Mints a delegation token for the current identity."""
+  tag = tag or ''
+
+  def impl():
+    return auth.delegate_async(
+        audience=[self_identity()],
+        services=['https://%s' % target_service_host],
+        impersonate=auth.get_current_identity(),
+        tags=[tag] if tag else [],
+    )
+
+  return _get_or_create_cached_future(
+      'delegation_token:%s:%s' % (target_service_host, tag), impl
+  )
 
 
 def current_identity_cannot(action_format, *args):  # pragma: no cover
