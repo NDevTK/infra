@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1e2fabb4_c0a66db2",
+        "filename": "appengine/findit/test/main_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-06-20T23:10:29Z",
+      "side": 1,
+      "message": "I think you need testing.AppengineTestCase here, because unittest.TestCase hasn\u0027t set up the AppEngine-related environment variables. os.getenv(\u0027APPLICATION_ID\u0027) is returning None in app_identity.py. I think that AppengineTestCase installs a mock for app_identity:\nhttps://chromium.googlesource.com/infra/infra/+/1aeac1701a47609ad9504ecb204e18b580dfe61a/appengine_module/testing_utils/testing.py#81",
+      "revId": "67930702aa61eb76bb574dec48dbd4ad0357fcee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
