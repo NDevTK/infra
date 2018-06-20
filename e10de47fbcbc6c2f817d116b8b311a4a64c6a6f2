@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a5589e66_b60a3dd8",
+        "filename": "appengine/findit/app.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-06-20T23:00:51Z",
+      "side": 0,
+      "message": "You still need this library because it\u0027s used in findit_api.py.",
+      "revId": "e10de47fbcbc6c2f817d116b8b311a4a64c6a6f2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
