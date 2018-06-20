@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "013bd356_8338e2c3",
+        "filename": "go/src/infra/tricium/appengine/frontend/ui/README.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2018-06-20T21:45:55Z",
+      "side": 1,
+      "message": "They would be two different things, and each might be useful:\n\n - polymer serve is nice for local development because it\u0027s faster to start and doesn\u0027t require rebuilding anything\n - gae devserver is nice because it\u0027s closer to what\u0027s actually served and will include other endpoints besides frontend UI.\n\nText changed in latest patchset to hopefully make this clearer.",
+      "parentUuid": "46f8bdfe_62738634",
+      "revId": "e915fc070437def2efbf3b75b38086930bf52a5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "956a266d_6eaa5754",
         "filename": "go/src/infra/tricium/appengine/frontend/ui/index.html",
         "patchSetId": 7
@@ -39,6 +57,30 @@
       "revId": "e915fc070437def2efbf3b75b38086930bf52a5c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0361986a_aece6391",
+        "filename": "go/src/infra/tricium/appengine/frontend/ui/index.html",
+        "patchSetId": 7
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2018-06-20T21:45:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "956a266d_6eaa5754",
+      "range": {
+        "startLine": 10,
+        "startChar": 10,
+        "endLine": 10,
+        "endChar": 16
+      },
+      "revId": "e915fc070437def2efbf3b75b38086930bf52a5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -65,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "e68abc10_06ce33a4",
+        "filename": "go/src/infra/tricium/appengine/frontend/ui/package.json",
+        "patchSetId": 7
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2018-06-20T21:45:55Z",
+      "side": 1,
+      "message": "This is apparently a requirement for running the tests (when I run wct without it in the Polymer 3 version, an error message is printed that says that this package must be installed. I notice that the pwa-starter-kit (https://github.com/Polymer/pwa-starter-kit/) uses lists wct-browser-legacy and chai in devDependencies but not web-component-tester, and the script imports in the tests are different as well.\n\nNot entirely sure what the whole story is here.",
+      "parentUuid": "9d456b28_2d2925b6",
+      "range": {
+        "startLine": 13,
+        "startChar": 5,
+        "endLine": 13,
+        "endChar": 23
+      },
+      "revId": "e915fc070437def2efbf3b75b38086930bf52a5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "fac9917a_3bae08f2",
         "filename": "go/src/infra/tricium/appengine/frontend/ui/src/tricium-app.js",
         "patchSetId": 7
@@ -76,6 +142,30 @@
       "writtenOn": "2018-06-20T19:48:45Z",
       "side": 1,
       "message": "You can drop the quotes in cases where there\u0027s just one thing.  Here and other places..",
+      "range": {
+        "startLine": 48,
+        "startChar": 38,
+        "endLine": 48,
+        "endChar": 50
+      },
+      "revId": "e915fc070437def2efbf3b75b38086930bf52a5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1272303c_896ab960",
+        "filename": "go/src/infra/tricium/appengine/frontend/ui/src/tricium-app.js",
+        "patchSetId": 7
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2018-06-20T21:45:55Z",
+      "side": 1,
+      "message": "Is there an advantage to dropping the quotes?\n\nBoth chromium style guide and google style guide say \"use double quotes for attributes\" but don\u0027t mention any case where they recommend dropping the quotes.\n\nhttps://chromium.googlesource.com/chromium/src/+/master/styleguide/web/web.md\nhttps://google.github.io/styleguide/htmlcssguide.html",
+      "parentUuid": "fac9917a_3bae08f2",
       "range": {
         "startLine": 48,
         "startChar": 38,
