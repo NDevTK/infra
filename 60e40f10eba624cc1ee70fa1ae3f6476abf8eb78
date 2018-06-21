@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "abe4c33e_32c747b6",
+        "filename": "appengine/findit/backend_main.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-06-21T00:13:32Z",
+      "side": 1,
+      "message": "Moved to appengine_util.py for sharing.",
+      "parentUuid": "99bab686_29950a91",
+      "range": {
+        "startLine": 22,
+        "startChar": 4,
+        "endLine": 22,
+        "endChar": 24
+      },
+      "revId": "60e40f10eba624cc1ee70fa1ae3f6476abf8eb78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f4e0b67a_74b5f2fd",
         "filename": "appengine/findit/frontend_main.py",
         "patchSetId": 3
@@ -36,6 +60,30 @@
       "writtenOn": "2018-06-20T23:51:39Z",
       "side": 1,
       "message": "These lines of code also appear in default_main, is it intentional?",
+      "range": {
+        "startLine": 49,
+        "startChar": 0,
+        "endLine": 58,
+        "endChar": 52
+      },
+      "revId": "60e40f10eba624cc1ee70fa1ae3f6476abf8eb78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "729281c6_fe63b4fa",
+        "filename": "appengine/findit/frontend_main.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-06-21T00:13:32Z",
+      "side": 1,
+      "message": "It was intended, because we can\u0027t dispatch /_ah/ to a different module other than default via dispatch.yaml, but I do plan to get rid of them from default_main in a separate CL.",
+      "parentUuid": "f4e0b67a_74b5f2fd",
       "range": {
         "startLine": 49,
         "startChar": 0,
