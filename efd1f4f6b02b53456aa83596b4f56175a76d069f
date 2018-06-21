@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7f153501_4f250d21",
+        "filename": "appengine/cr-buildbucket/swarming/test/swarmbucket_api_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-06-21T21:37:08Z",
+      "side": 1,
+      "message": "probably unnecessary, same below",
+      "range": {
+        "startLine": 141,
+        "startChar": 9,
+        "endLine": 141,
+        "endChar": 10
+      },
+      "revId": "efd1f4f6b02b53456aa83596b4f56175a76d069f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
