@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c6149170_40a55edc",
+        "filename": "appengine/cr-buildbucket/swarming/swarming.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 632,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-06-21T21:31:25Z",
+      "side": 1,
+      "message": "yapf did that because there is no comma after sort_keys\u003dTrue. Please add it and run make format",
+      "range": {
+        "startLine": 632,
+        "startChar": 18,
+        "endLine": 632,
+        "endChar": 19
+      },
+      "revId": "56c17823869120d1d823a121a9758162961baf2f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
