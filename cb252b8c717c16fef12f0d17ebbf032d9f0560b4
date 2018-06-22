@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "47878f76_7b5ac036",
+        "filename": "appengine/monorail/framework/urls.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-06-22T23:45:04Z",
+      "side": 1,
+      "message": "Nit: GetCommitsCron -\u003e getCommitsCron (just to follow the style of the other URLs here)",
+      "range": {
+        "startLine": 80,
+        "startChar": 27,
+        "endLine": 80,
+        "endChar": 41
+      },
+      "revId": "cb252b8c717c16fef12f0d17ebbf032d9f0560b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "80f8229e_da054244",
+        "filename": "appengine/monorail/sitewide/usercommits.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-06-22T23:45:04Z",
+      "side": 1,
+      "message": "It looks like most of the imports here are unused. Are you able to remove a lot of them? (Generally, it\u0027s a good idea to remove unused imports from code if you can because it helps keep things cleaner.)",
+      "revId": "cb252b8c717c16fef12f0d17ebbf032d9f0560b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "da842982_4fab67d7",
+        "filename": "appengine/monorail/sitewide/usercommits.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-06-22T23:45:04Z",
+      "side": 1,
+      "message": "Nit: use 2 spaces indentation instead of 4 spaces here.",
+      "range": {
+        "startLine": 27,
+        "startChar": 2,
+        "endLine": 27,
+        "endChar": 6
+      },
+      "revId": "cb252b8c717c16fef12f0d17ebbf032d9f0560b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
