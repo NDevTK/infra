@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "1f63bf4b_0ff276c3",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-06-23T00:01:40Z",
+      "side": 1,
+      "message": "drive-by comment: I don\u0027t know who you are and what you are trying to achieve, so feel free to ignore me.\n\nBut, I must warn you: this is non-trivial to do right such that it scales to big repos like chromium/src and multiple refs. So, if you can avoid doing this, please do :)\n\nBut if you have to -- see complexity of existing implementation in source of https://chromiumdash.appspot.com/ app in infra_internal repo.",
+      "revId": "cb252b8c717c16fef12f0d17ebbf032d9f0560b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "47878f76_7b5ac036",
         "filename": "appengine/monorail/framework/urls.py",
         "patchSetId": 1
