@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "1c2d9f86_854a3d34",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-06-23T01:42:08Z",
+      "side": 1,
+      "message": "Thanks for raising this point, Andrii! Markie is my intern, and she\u0027s working on Monorail profiles. See: http://go/chdir-epd for the design doc\n\nIt was definitely an oversight on my part that I didn\u0027t realize Chromium Dash already processed this data when I first drafted this project. Given the tight timeline of the internship (I want to avoid sending our interns in too many different directions if we can), I think we should carry on with the cron but only have it read the infra repo, so that the data is manageable but can still be used as a proof of concept for how commit data in Monorail could be used. \n\nAfter the internship ends, we can figure out a plan for what we will do to scale this to multiple repos, which might end up involving having Monorail read Chromium Dash\u0027s store instead or might involve trying to figure out some way to consolidate the two stores into one.",
+      "parentUuid": "1f63bf4b_0ff276c3",
+      "revId": "cb252b8c717c16fef12f0d17ebbf032d9f0560b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "47878f76_7b5ac036",
         "filename": "appengine/monorail/framework/urls.py",
         "patchSetId": 1
