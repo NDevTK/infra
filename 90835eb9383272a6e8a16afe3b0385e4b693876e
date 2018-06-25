@@ -1,0 +1,78 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2f9199aa_216aca0a",
+        "filename": "appengine/monorail/api/issues_servicer.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-06-25T22:21:27Z",
+      "side": 1,
+      "message": "This seems like it would produce a lot of output, is it necessary?",
+      "revId": "90835eb9383272a6e8a16afe3b0385e4b693876e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "11585d36_1f59ce2f",
+        "filename": "appengine/monorail/api/test/issues_servicer_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 344,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-06-25T22:21:27Z",
+      "side": 1,
+      "message": "Should be \u0027non-existent\u0027",
+      "range": {
+        "startLine": 344,
+        "startChar": 38,
+        "endLine": 344,
+        "endChar": 50
+      },
+      "revId": "90835eb9383272a6e8a16afe3b0385e4b693876e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "11cd518a_faeb32d7",
+        "filename": "appengine/monorail/api/test/issues_servicer_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 353,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-06-25T22:21:27Z",
+      "side": 1,
+      "message": "Is there a way to assert that this doesn\u0027t call any methods to delete the comment?",
+      "revId": "90835eb9383272a6e8a16afe3b0385e4b693876e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8c704453_3484fbcb",
+        "filename": "appengine/monorail/api/test/issues_servicer_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-06-25T22:21:27Z",
+      "side": 1,
+      "message": "Same here, is there a way to assert that the comment was actually deleted? (ditto for below too)",
+      "revId": "90835eb9383272a6e8a16afe3b0385e4b693876e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
