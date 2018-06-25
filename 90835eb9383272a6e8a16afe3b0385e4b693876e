@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f7797bb4_053bd9ed",
+        "filename": "appengine/monorail/api/issues_servicer.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-06-25T23:01:39Z",
+      "side": 1,
+      "message": "Gone.  We could use Google Cloud Debugger for this kind of info now.",
+      "parentUuid": "2f9199aa_216aca0a",
+      "revId": "90835eb9383272a6e8a16afe3b0385e4b693876e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "11585d36_1f59ce2f",
         "filename": "appengine/monorail/api/test/issues_servicer_test.py",
         "patchSetId": 1
@@ -42,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "4217000d_1c1a2e79",
+        "filename": "appengine/monorail/api/test/issues_servicer_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 344,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-06-25T23:01:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "11585d36_1f59ce2f",
+      "range": {
+        "startLine": 344,
+        "startChar": 38,
+        "endLine": 344,
+        "endChar": 50
+      },
+      "revId": "90835eb9383272a6e8a16afe3b0385e4b693876e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "11cd518a_faeb32d7",
         "filename": "appengine/monorail/api/test/issues_servicer_test.py",
         "patchSetId": 1
@@ -59,6 +101,24 @@
     },
     {
       "key": {
+        "uuid": "66c579ef_148d353f",
+        "filename": "appengine/monorail/api/test/issues_servicer_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 353,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-06-25T23:01:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "11cd518a_faeb32d7",
+      "revId": "90835eb9383272a6e8a16afe3b0385e4b693876e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8c704453_3484fbcb",
         "filename": "appengine/monorail/api/test/issues_servicer_test.py",
         "patchSetId": 1
@@ -70,6 +130,24 @@
       "writtenOn": "2018-06-25T22:21:27Z",
       "side": 1,
       "message": "Same here, is there a way to assert that the comment was actually deleted? (ditto for below too)",
+      "revId": "90835eb9383272a6e8a16afe3b0385e4b693876e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "30af17de_22c6edaa",
+        "filename": "appengine/monorail/api/test/issues_servicer_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-06-25T23:01:39Z",
+      "side": 1,
+      "message": "That one does check that the comment was deleted.  We represented deletion by having a non-null values for deleted_by.  The case below checks for None, which means not deleted.",
+      "parentUuid": "8c704453_3484fbcb",
       "revId": "90835eb9383272a6e8a16afe3b0385e4b693876e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
