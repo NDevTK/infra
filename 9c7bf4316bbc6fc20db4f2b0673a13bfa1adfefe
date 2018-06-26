@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "980180f6_c93b488f",
+        "filename": "appengine/monorail/sitewide/usercommits.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2018-06-26T20:05:38Z",
+      "side": 1,
+      "message": "nit: include a copyright header (with the date updated to 2018) here.",
+      "revId": "9c7bf4316bbc6fc20db4f2b0673a13bfa1adfefe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "de6132ea_fd6d0646",
+        "filename": "appengine/monorail/sitewide/usercommits.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2018-06-26T20:05:38Z",
+      "side": 1,
+      "message": "Make sure that you only import things you use. Even if you think you\u0027ll end up using them later, the imports can be added then.",
+      "revId": "9c7bf4316bbc6fc20db4f2b0673a13bfa1adfefe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "63e7b02a_cf88e16c",
+        "filename": "appengine/monorail/sitewide/usercommits.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2018-06-26T20:05:38Z",
+      "side": 1,
+      "message": "nit: we put two blank lines between the \u0027import\u0027 statements and the first class/function in the file.",
+      "revId": "9c7bf4316bbc6fc20db4f2b0673a13bfa1adfefe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "560820ad_945ed0bf",
+        "filename": "appengine/monorail/sitewide/usercommits.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1002100
+      },
+      "writtenOn": "2018-06-26T20:05:38Z",
+      "side": 1,
+      "message": "nit: make sure that you\u0027re using two-space indents everywhere.",
+      "revId": "9c7bf4316bbc6fc20db4f2b0673a13bfa1adfefe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
