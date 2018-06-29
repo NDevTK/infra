@@ -22,6 +22,30 @@
       "revId": "845a1eb1bf1719909cf8c37ce282a3a050e957c8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c084c088_a63ab8d8",
+        "filename": "appengine/monorail/sitewide/usercommits.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1287085
+      },
+      "writtenOn": "2018-06-29T18:50:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a95e8127_a5df58df",
+      "range": {
+        "startLine": 1,
+        "startChar": 12,
+        "endLine": 1,
+        "endChar": 16
+      },
+      "revId": "845a1eb1bf1719909cf8c37ce282a3a050e957c8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
