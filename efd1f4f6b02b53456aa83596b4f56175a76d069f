@@ -22,6 +22,30 @@
       "revId": "efd1f4f6b02b53456aa83596b4f56175a76d069f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "40b44428_c5e6ce6e",
+        "filename": "appengine/cr-buildbucket/swarming/test/swarmbucket_api_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2018-06-30T01:48:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7f153501_4f250d21",
+      "range": {
+        "startLine": 141,
+        "startChar": 9,
+        "endLine": 141,
+        "endChar": 10
+      },
+      "revId": "efd1f4f6b02b53456aa83596b4f56175a76d069f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
