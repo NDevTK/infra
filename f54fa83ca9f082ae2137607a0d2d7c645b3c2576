@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "041a1e34_49357ff0",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/clients/swarming.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-07-03T18:02:45Z",
+      "side": 1,
+      "message": "not necessary, these are defaults.",
+      "range": {
+        "startLine": 270,
+        "startChar": 3,
+        "endLine": 271,
+        "endChar": 14
+      },
+      "revId": "f54fa83ca9f082ae2137607a0d2d7c645b3c2576",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
