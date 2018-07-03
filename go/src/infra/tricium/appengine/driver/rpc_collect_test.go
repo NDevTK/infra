@@ -17,14 +17,24 @@ import (
 	"infra/tricium/appengine/common/triciumtest"
 )
 
-type mockSwarmingFailure struct {
-}
+// Mock Swarming API that indicates the task had a non-zero return code.
+type mockSwarmingFailure struct{}
 
 func (mockSwarmingFailure) Trigger(c context.Context, serverURL, isolateServerURL string, worker *admin.Worker, workerIsolate, pubsubUserdata string, tags []string) (string, error) {
 	return "mockmockmock", nil
 }
 func (mockSwarmingFailure) Collect(c context.Context, serverURL string, taskID string) (string, int64, error) {
-	return "", 1, nil
+	return "mockmockmock", 1, nil
+}
+
+// Mock Swarming API that indicates the task has no isolated output.
+type mockSwarmingIncomplete struct{}
+
+func (mockSwarmingIncomplete) Trigger(c context.Context, serverURL, isolateServerURL string, worker *admin.Worker, workerIsolate, pubsubUserdata string, tags []string) (string, error) {
+	return "mockmockmock", nil
+}
+func (mockSwarmingIncomplete) Collect(c context.Context, serverURL string, taskID string) (string, int64, error) {
+	return "", 0, nil
 }
 
 func TestCollectRequest(t *testing.T) {
@@ -77,6 +87,18 @@ func TestCollectRequest(t *testing.T) {
 
 			Convey("Enqueues no driver request", func() {
 				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), ShouldEqual, 0)
+			})
+
+			Convey("Driver collect request for incomplete worker without successors", func() {
+				err := collect(ctx, &admin.CollectRequest{
+					RunId:  runID,
+					Worker: "Hello",
+				}, mockWorkflowProvider{}, &mockSwarmingIncomplete{}, common.MockIsolator)
+				So(err, ShouldBeNil)
+
+				Convey("Re-enqueues the a driver (collect) request", func() {
+					So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), ShouldEqual, 1)
+				})
 			})
 		})
 	})
