@@ -55,6 +55,10 @@ func collect(c context.Context, req *admin.CollectRequest, wp config.WorkflowCac
 	}
 	if isolatedOutput == "" {
 		// No isolated output was found. The task may not be done yet.
+		// Try to re-enqueue.
+		if err = enqueueCollectRequest(c, req); err != nil {
+			return err
+		}
 		return nil
 	}
 	w, err := wf.GetWorker(req.Worker)
