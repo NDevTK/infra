@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b8c4a26a_e54e18dd",
+        "filename": "go/src/infra/tricium/appengine/driver/rpc_collect.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2018-07-04T02:24:45Z",
+      "side": 1,
+      "message": "I disagree with this assessment. sw.Collect() should be changed to look at SwarmingRpcsTaskResult.State",
+      "revId": "3a30885b05f50696b13942d303c6261a05215e0d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
