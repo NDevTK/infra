@@ -16,6 +16,24 @@
       "revId": "5214ecf389a7cfb68ab17a50b2d6340bf0f750c6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "783fbff1_4f97855d",
+        "filename": "go/src/infra/tricium/appengine/driver/rpc_collect.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2018-07-06T21:15:13Z",
+      "side": 1,
+      "message": "Thanks again, sorry for not catching this myself... [Should be fixed now, could you take one final look?]",
+      "parentUuid": "236fe053_96a3dbef",
+      "revId": "5214ecf389a7cfb68ab17a50b2d6340bf0f750c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
