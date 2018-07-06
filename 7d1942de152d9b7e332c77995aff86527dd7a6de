@@ -319,6 +319,30 @@
     },
     {
       "key": {
+        "uuid": "dffe7aa8_ef3ee3cf",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tasker.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-07-06T19:13:49Z",
+      "side": 1,
+      "message": "what you got is actually better!",
+      "parentUuid": "718ce42d_6e515360",
+      "range": {
+        "startLine": 221,
+        "startChar": 9,
+        "endLine": 221,
+        "endChar": 30
+      },
+      "revId": "7d1942de152d9b7e332c77995aff86527dd7a6de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ca34d662_7b62f0ff",
         "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tasker.go",
         "patchSetId": 5
