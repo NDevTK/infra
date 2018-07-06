@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "065e69d1_2569635f",
+        "filename": "go/src/infra/tricium/appengine/driver/rpc_collect.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2018-07-06T18:56:04Z",
+      "side": 1,
+      "message": "It shouldn\u0027t return an error?",
+      "revId": "f44a4ad706390def858944b81f865688a5a1f277",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
