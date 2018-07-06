@@ -16,6 +16,24 @@
       "revId": "f44a4ad706390def858944b81f865688a5a1f277",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "340a61da_b86b9730",
+        "filename": "go/src/infra/tricium/appengine/driver/rpc_collect.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2018-07-06T20:45:16Z",
+      "side": 1,
+      "message": "Good point. in this case, we still want to go ahead and mark the worker as done. An error will also show up in /tracker/internal/worker-done if this happens. If this happens it would indicate something wrong with the analyzer.\n\nRemoved the return here.",
+      "parentUuid": "065e69d1_2569635f",
+      "revId": "f44a4ad706390def858944b81f865688a5a1f277",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
