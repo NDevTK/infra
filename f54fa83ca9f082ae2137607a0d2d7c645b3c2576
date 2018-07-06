@@ -22,6 +22,30 @@
       "revId": "f54fa83ca9f082ae2137607a0d2d7c645b3c2576",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "83df7b9e_bd0d82bf",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/clients/swarming.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-06T19:02:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "041a1e34_49357ff0",
+      "range": {
+        "startLine": 270,
+        "startChar": 3,
+        "endLine": 271,
+        "endChar": 14
+      },
+      "revId": "f54fa83ca9f082ae2137607a0d2d7c645b3c2576",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

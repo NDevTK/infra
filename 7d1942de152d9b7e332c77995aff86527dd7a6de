@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "f65129b8_ec8bd4ce",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/entities.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-06T19:02:41Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c4628d5a_6a6bcd8a",
+      "range": {
+        "startLine": 45,
+        "startChar": 6,
+        "endLine": 45,
+        "endChar": 9
+      },
+      "revId": "7d1942de152d9b7e332c77995aff86527dd7a6de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5c6e58fc_f8943278",
         "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tasker.go",
         "patchSetId": 5
@@ -68,6 +92,30 @@
       "revId": "7d1942de152d9b7e332c77995aff86527dd7a6de",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "516539da_4aba4d73",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tasker.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-06T19:02:41Z",
+      "side": 1,
+      "message": "Thanks.\nMoved to validation.go\n\nThis will also allow tracking the complexity of validation in one place, to decide on whether the API is becoming unwieldy / needs restructuring.",
+      "parentUuid": "5c6e58fc_f8943278",
+      "range": {
+        "startLine": 56,
+        "startChar": 1,
+        "endLine": 61,
+        "endChar": 2
+      },
+      "revId": "7d1942de152d9b7e332c77995aff86527dd7a6de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -94,6 +142,30 @@
     },
     {
       "key": {
+        "uuid": "2902bf77_618578ba",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tasker.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-06T19:02:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "85fc0131_fd9ac344",
+      "range": {
+        "startLine": 86,
+        "startChar": 9,
+        "endLine": 86,
+        "endChar": 30
+      },
+      "revId": "7d1942de152d9b7e332c77995aff86527dd7a6de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "90e12665_e2037b64",
         "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tasker.go",
         "patchSetId": 5
@@ -108,6 +180,24 @@
       "revId": "7d1942de152d9b7e332c77995aff86527dd7a6de",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "97bba336_9ee436cd",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tasker.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-06T19:02:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "90e12665_e2037b64",
+      "revId": "7d1942de152d9b7e332c77995aff86527dd7a6de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -134,6 +224,30 @@
     },
     {
       "key": {
+        "uuid": "67c5be87_5608336a",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tasker.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-06T19:02:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8a085525_db89ec41",
+      "range": {
+        "startLine": 166,
+        "startChar": 2,
+        "endLine": 166,
+        "endChar": 40
+      },
+      "revId": "7d1942de152d9b7e332c77995aff86527dd7a6de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "af7290c2_243af0a6",
         "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tasker.go",
         "patchSetId": 5
@@ -154,6 +268,30 @@
       "revId": "7d1942de152d9b7e332c77995aff86527dd7a6de",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "718ce42d_6e515360",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tasker.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-06T19:02:41Z",
+      "side": 1,
+      "message": "Thanks, it\u0027s worse than that - I never want to modify commonTaskTags at all. The tests aren\u0027t mixing different kinds of operations, but when the same process is used for different RPCs in the app, I\u0027ll tags would start leaking across the RPCs via the global commonTaskTags... :(\n\nNote that I couldn\u0027t quite use your suggsetion (append() doesn\u0027t like expanded lists alongside multiple arguments)",
+      "parentUuid": "af7290c2_243af0a6",
+      "range": {
+        "startLine": 221,
+        "startChar": 9,
+        "endLine": 221,
+        "endChar": 30
+      },
+      "revId": "7d1942de152d9b7e332c77995aff86527dd7a6de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -226,6 +364,54 @@
     },
     {
       "key": {
+        "uuid": "b061bd89_900d7c6c",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tasker.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 290,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-06T19:02:41Z",
+      "side": 1,
+      "message": "Not needed yet.",
+      "parentUuid": "1e13beaa_32a62184",
+      "range": {
+        "startLine": 290,
+        "startChar": 5,
+        "endLine": 290,
+        "endChar": 24
+      },
+      "revId": "7d1942de152d9b7e332c77995aff86527dd7a6de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "85c8c907_6c5ae7f5",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tasker.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 290,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-06T19:02:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e4919805_9ae48ab6",
+      "range": {
+        "startLine": 290,
+        "startChar": 39,
+        "endLine": 290,
+        "endChar": 43
+      },
+      "revId": "7d1942de152d9b7e332c77995aff86527dd7a6de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6ff87785_4a37ea33",
         "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tasker_test.go",
         "patchSetId": 5
@@ -246,6 +432,30 @@
       "revId": "7d1942de152d9b7e332c77995aff86527dd7a6de",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8148a2e0_30eca9cc",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tasker_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 334,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-06T19:02:41Z",
+      "side": 1,
+      "message": "Done,\nwill rename in existing tests in follow up CL",
+      "parentUuid": "6ff87785_4a37ea33",
+      "range": {
+        "startLine": 334,
+        "startChar": 2,
+        "endLine": 334,
+        "endChar": 5
+      },
+      "revId": "7d1942de152d9b7e332c77995aff86527dd7a6de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -272,6 +482,30 @@
     },
     {
       "key": {
+        "uuid": "ce40a7f6_804f2081",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tasker_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 350,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-06T19:02:41Z",
+      "side": 1,
+      "message": "Done.\nWill change existing tests in follow up CL",
+      "parentUuid": "2d9915fb_95a08412",
+      "range": {
+        "startLine": 346,
+        "startChar": 3,
+        "endLine": 350,
+        "endChar": 5
+      },
+      "revId": "7d1942de152d9b7e332c77995aff86527dd7a6de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "978a195a_caadad8f",
         "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tasker_test.go",
         "patchSetId": 5
@@ -295,6 +529,30 @@
     },
     {
       "key": {
+        "uuid": "618bc99a_532d73d3",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tasker_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 371,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-06T19:02:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "978a195a_caadad8f",
+      "range": {
+        "startLine": 370,
+        "startChar": 3,
+        "endLine": 371,
+        "endChar": 28
+      },
+      "revId": "7d1942de152d9b7e332c77995aff86527dd7a6de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e53e5ef5_bb0007b9",
         "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tracker.go",
         "patchSetId": 5
@@ -315,6 +573,30 @@
       "revId": "7d1942de152d9b7e332c77995aff86527dd7a6de",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f5bf993a_620cae62",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tracker.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-06T19:02:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e53e5ef5_bb0007b9",
+      "range": {
+        "startLine": 197,
+        "startChar": 67,
+        "endLine": 197,
+        "endChar": 70
+      },
+      "revId": "7d1942de152d9b7e332c77995aff86527dd7a6de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
