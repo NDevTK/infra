@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "236fe053_96a3dbef",
+        "filename": "go/src/infra/tricium/appengine/driver/rpc_collect.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2018-07-06T21:00:06Z",
+      "side": 1,
+      "message": "That will crash.",
+      "revId": "5214ecf389a7cfb68ab17a50b2d6340bf0f750c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
