@@ -16,6 +16,24 @@
       "revId": "3a30885b05f50696b13942d303c6261a05215e0d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9f4d15c5_1528cfb6",
+        "filename": "go/src/infra/tricium/appengine/driver/rpc_collect.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2018-07-06T17:03:54Z",
+      "side": 1,
+      "message": "Good point, looking at the State field would be a much better way of deciding the state of the task.\n\nSo I started to change sw.Collect, which currently returns isolated output, exit code, and error, and in order to differentiate the different conditions I would have to change it to also return the state (or a \"done\" boolean) in addition.\n\nThis is the only place where sw.Collect is likely to be called, and it seemed simpler to change sw.Collect to return a *SwarmingRrpcsTaskResult, and have this method look at all the fields it needs.\n\nSo the latest patchset also refactors this to change the return type of sw.Collect, and then it re-enqueues only if the state is PENDING or RUNNING. Does that seem OK?",
+      "parentUuid": "b8c4a26a_e54e18dd",
+      "revId": "3a30885b05f50696b13942d303c6261a05215e0d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
