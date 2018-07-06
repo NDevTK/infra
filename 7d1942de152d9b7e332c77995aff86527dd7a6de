@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1f1e2ad5_0f76183a",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/clients/swarming.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 275,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-06T19:03:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cd2c1456_709938d2",
+      "range": {
+        "startLine": 274,
+        "startChar": 3,
+        "endLine": 275,
+        "endChar": 14
+      },
+      "revId": "7d1942de152d9b7e332c77995aff86527dd7a6de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c4628d5a_6a6bcd8a",
         "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/entities.go",
         "patchSetId": 5
@@ -306,6 +330,30 @@
       "writtenOn": "2018-07-03T18:02:45Z",
       "side": 1,
       "message": "👍",
+      "range": {
+        "startLine": 260,
+        "startChar": 0,
+        "endLine": 288,
+        "endChar": 1
+      },
+      "revId": "7d1942de152d9b7e332c77995aff86527dd7a6de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "49a5efcb_6ec6cb96",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tasker.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 288,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-06T19:03:52Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ca34d662_7b62f0ff",
       "range": {
         "startLine": 260,
         "startChar": 0,
