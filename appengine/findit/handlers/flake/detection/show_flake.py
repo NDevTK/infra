@@ -40,5 +40,14 @@ class ShowFlake(BaseHandler):
       flake_issue = flake.flake_issue_key.get()
       flake_dict['flake_issue'] = flake_issue.to_dict()
 
+    # TODO(crbug.com/864426): Polymer renders int64 type to a random number in
+    # html template variable replacement, and this is causing all the link on
+    # flake detection frontend page to point to 404, so convert int64 to str to
+    # work this around. Remove the hack once the bug is fixed.
+    for occurrence in flake_dict['occurrences']:
+      occurrence['build_id'] = str(occurrence['build_id'])
+      occurrence['reference_succeeded_build_id'] = str(
+          occurrence['reference_succeeded_build_id'])
+
     data = {'flake_json': flake_dict}
     return {'template': 'flake/detection/show_flake.html', 'data': data}
