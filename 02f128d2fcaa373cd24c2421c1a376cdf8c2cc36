@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "15943d1b_fca3d7fb",
+        "filename": "go/src/infra/tools/led/cmd_launch.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2018-07-18T21:48:35Z",
+      "side": 1,
+      "message": "I assume this all goes to stderr?",
+      "range": {
+        "startLine": 141,
+        "startChar": 1,
+        "endLine": 141,
+        "endChar": 14
+      },
+      "revId": "02f128d2fcaa373cd24c2421c1a376cdf8c2cc36",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "75f5a375_1bca66fb",
+        "filename": "go/src/infra/tools/led/cmd_launch.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2018-07-18T21:48:35Z",
+      "side": 1,
+      "message": "can you add https://chromium.googlesource.com/external/github.com/mattn/go-isatty/ as a dependency in //go/deps.yaml and use that to only do this stuff if stdout is not a terminal?\n\nAdd:\n\n   - package: github.com/mattn/go-isatty\n     repo: https://chromium.googlesource.com/external/github.com/mattn/go-isatty.git\n     version: master\n\nTo the bottom of deps.yaml and then run `deps.py update` (make sure your infra.git is up-to-date first because vadim recently rolled deps).",
+      "range": {
+        "startLine": 148,
+        "startChar": 1,
+        "endLine": 154,
+        "endChar": 2
+      },
+      "revId": "02f128d2fcaa373cd24c2421c1a376cdf8c2cc36",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
