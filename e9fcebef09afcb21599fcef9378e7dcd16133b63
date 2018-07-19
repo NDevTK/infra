@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fb49e1f3_3f1e039d",
+        "filename": "go/src/infra/tools/led/cmd_launch.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-07-19T20:34:28Z",
+      "side": 1,
+      "message": "Please use https://chromium.googlesource.com/infra/luci/luci-go/+/master/common/system/terminal/util.go#24 instead. Then you don\u0027t need to add a new dependency.\n\nIf you absolutely must to add a new package, please make it in a separate CL and include all changes in the commit message, e.g. https://chromium.googlesource.com/infra/infra/+/972a44deb51a64b0da87a2d684c58a5b717359d4",
+      "range": {
+        "startLine": 149,
+        "startChar": 4,
+        "endLine": 149,
+        "endChar": 38
+      },
+      "revId": "e9fcebef09afcb21599fcef9378e7dcd16133b63",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
