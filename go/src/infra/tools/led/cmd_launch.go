@@ -12,6 +12,7 @@ import (
 	"golang.org/x/net/context"
 
 	"github.com/maruel/subcommands"
+	"github.com/mattn/go-isatty"
 
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
@@ -145,20 +146,15 @@ func (c *cmdLaunch) Run(a subcommands.Application, args []string, env subcommand
 	logging.Infof(ctx, "LUCI UI: https://ci.chromium.org/swarming/task/%s?server=%s",
 		req.TaskId, jd.SwarmingHostname)
 
-	if c.json != "" {
-		f, err := os.Create(c.json)
-		if err != nil {
-			errors.Log(ctx, err)
-			return 1
-		}
-		defer f.Close()
+	if !isatty.IsTerminal(os.Stdout.Fd()) {
 		lti := launchedTaskInfo{}
 		lti.Swarming.TaskID = req.TaskId
 		lti.Swarming.Hostname = jd.SwarmingHostname
-		if err = json.NewEncoder(f).Encode(lti); err != nil {
+		if err = json.NewEncoder(os.Stdout).Encode(lti); err != nil {
 			errors.Log(ctx, err)
 			return 1
 		}
 	}
+
 	return 0
 }
