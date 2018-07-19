@@ -1,8 +1,8 @@
-hash: 3b80967a6cd35d02f0cbee1ecea324ec979af9e62d3bf9eaf7d6f26f48c3e222
-updated: 2018-07-18T16:56:08.777434998-07:00
+hash: 199ea06aad8e8599d3ce8d31b03d51a9c83e18efef5d957a6c8c1e89759a2f13
+updated: 2018-07-19T13:24:43.898664717-07:00
 imports:
 - name: cloud.google.com/go
-  version: a267b3d005e3a0f5886bf298bd27330332cb55a3
+  version: ffb8ba1de408dae97a525365cb711bd2fa28f8ef
   repo: https://code.googlesource.com/gocloud.git
   subpackages:
   - bigtable
@@ -56,7 +56,7 @@ imports:
   version: 7a0fa49edf48165190530c675167e2f319a05268
   repo: https://chromium.googlesource.com/external/github.com/go-ole/go-ole.git
 - name: github.com/go-sql-driver/mysql
-  version: 447ae1fd2f87c59f657f5c495f3db2612256717e
+  version: 99ff426eb706cffe92ff3d058e168b278cabf7c7
   repo: https://chromium.googlesource.com/external/github.com/go-sql-driver/mysql.git
 - name: github.com/golang/lint
   version: 06c8688daad7faa9da5a0c2f163a3d14aac986ca
@@ -185,6 +185,9 @@ imports:
   subpackages:
   - database/mysql
   - source/file
+- name: github.com/mattn/go-isatty
+  version: 6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c
+  repo: https://chromium.googlesource.com/external/github.com/mattn/go-isatty.git
 - name: github.com/Microsoft/go-winio
   version: 67921128fb397dd80339870d2193d6b1e6856fd4
   repo: https://chromium.googlesource.com/external/github.com/Microsoft/go-winio.git
@@ -242,7 +245,7 @@ imports:
   version: bd5ef7bd5415a7ac448318e64f11a24cd21e594b
   repo: https://chromium.googlesource.com/external/github.com/xeipuuv/gojsonreference.git
 - name: github.com/xeipuuv/gojsonschema
-  version: 1d523034197ff1f222f6429836dd36a2457a1874
+  version: b84684d0e066369f2a7a8a525f3080909ed4ea6b
   repo: https://chromium.googlesource.com/external/github.com/xeipuuv/gojsonschema.git
 - name: github.com/xtgo/set
   version: 708d80f4a27458f99f8ca12bd0e638c6ee65627f
@@ -253,7 +256,7 @@ imports:
   subpackages:
   - encoding/json5
 - name: go.opencensus.io
-  version: 824f6a62b825d737557c28c68ab9a05310341cd2
+  version: e1f41b1f502f5ce2c47a213fcee0721947995372
   repo: https://chromium.googlesource.com/external/github.com/census-instrumentation/opencensus-go.git
   subpackages:
   - plugin/grpc
@@ -282,7 +285,7 @@ imports:
   subpackages:
   - cmd/gomobile
 - name: golang.org/x/net
-  version: 8887df42c721e930089d31b28391090a10a497d7
+  version: a680a1efc54dd51c040b3b5ce4939ea3cf2ea0d1
   repo: https://go.googlesource.com/net.git
   subpackages:
   - context
@@ -308,7 +311,7 @@ imports:
   version: 0605a8320aceb4207a5fb3521281e17ec2075476
   repo: https://go.googlesource.com/text.git
 - name: golang.org/x/tools
-  version: 32950ab3be12acf6d472893021373669979907ab
+  version: 4735f53fb37db012e63d1a62914417980fb3c023
   repo: https://go.googlesource.com/tools.git
   subpackages:
   - cmd/callgraph
@@ -355,7 +358,7 @@ imports:
   - googleapis/...
   - protobuf/...
 - name: google.golang.org/grpc
-  version: 5562178a5206f11cb3ad0264d31583fec81472b4
+  version: 4f4261e7673a1c5bd829ae5507dbd85be97fc634
   repo: https://chromium.googlesource.com/external/github.com/grpc/grpc-go.git
   subpackages:
   - codes
