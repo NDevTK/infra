@@ -3839,6 +3839,131 @@
   },
   {
     "cmd": [],
+    "name": "firebase"
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/nodejs",
+      "-ensure-file",
+      "infra/nodejs/${platform} version:8.11.3",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "firebase.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"instance_id\": \"resolved-instance_id-of-version:8.11.3--\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"package\": \"infra/nodejs/${platform}\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/nodejs/npm",
+      "view",
+      "firebase-tools",
+      "version"
+    ],
+    "cwd": "[START_DIR]/nodejs",
+    "name": "firebase.fetch firebase-tools",
+    "stdout": "/path/to/tmp/",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "search",
+      "infra/firebase-tools",
+      "-tag",
+      "version:3.19.3",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "firebase.cipd search infra/firebase-tools version:3.19.3",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": []@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/nodejs/npm",
+      "install",
+      "firebase-tools"
+    ],
+    "cwd": "[START_DIR]/nodejs",
+    "name": "firebase.fetch firebase-tools (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-build",
+      "-in",
+      "[START_DIR]/nodejs/npm/node_modules/firebase-tools/firebase-tools",
+      "-name",
+      "infra/firebase-tools",
+      "-out",
+      "[START_DIR]/nodejs/npm/node_modules/firebase-tools/package.cipd",
+      "-json-output",
+      "/path/to/tmp/json",
+      "-install-mode",
+      "copy"
+    ],
+    "name": "firebase.build firebase-tools",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"infra/firebase-tools\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-register",
+      "[START_DIR]/nodejs/npm/node_modules/firebase-tools/package.cipd",
+      "-json-output",
+      "/path/to/tmp/json",
+      "-ref",
+      "latest",
+      "-tag",
+      "version:3.19.3"
+    ],
+    "name": "firebase.register infra/firebase-tools",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"infra/firebase-tools\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [],
     "name": "dep"
   },
   {
