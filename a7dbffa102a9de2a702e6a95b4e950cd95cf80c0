@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "28981781_e08cf12d",
+        "filename": "recipes/recipe_modules/third_party_packages/firebase.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2018-07-23T22:34:40Z",
+      "side": 1,
+      "message": "Maybe `infra/npm/firebase-tools`? Then all npm packages can go under this prefix. The `infra` namespace is getting too wide, imo.",
+      "range": {
+        "startLine": 12,
+        "startChar": 16,
+        "endLine": 12,
+        "endChar": 36
+      },
+      "revId": "a7dbffa102a9de2a702e6a95b4e950cd95cf80c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "77ae1247_4afd0a5f",
+        "filename": "recipes/recipe_modules/third_party_packages/firebase.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2018-07-23T22:34:40Z",
+      "side": 1,
+      "message": "so IIUC, the intended use for this is to install npm + firebase-tools both with CIPD, and then you can use it all together?",
+      "range": {
+        "startLine": 52,
+        "startChar": 4,
+        "endLine": 52,
+        "endChar": 45
+      },
+      "revId": "a7dbffa102a9de2a702e6a95b4e950cd95cf80c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "54ef5f61_7a48c3a1",
+        "filename": "recipes/recipes/third_party_packages.expected/basic-buildbot.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 3963,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2018-07-23T22:34:40Z",
+      "side": 1,
+      "message": "hm, does this look right to you? Or does it have one-too-many firebase-tools?\n\nI would also seriously consider packaging this from node_modules instead so that you can have multiple npm modules, each as a CIPD pacakge, and unpack them all under some directory to get a working node_modules folder.",
+      "range": {
+        "startLine": 3963,
+        "startChar": 7,
+        "endLine": 3963,
+        "endChar": 72
+      },
+      "revId": "a7dbffa102a9de2a702e6a95b4e950cd95cf80c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
