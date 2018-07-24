@@ -140,6 +140,30 @@
       "revId": "a7dbffa102a9de2a702e6a95b4e950cd95cf80c0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b4cf44d3_d7cb06be",
+        "filename": "recipes/recipes/third_party_packages.expected/basic-buildbot.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 3963,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2018-07-24T00:30:43Z",
+      "side": 1,
+      "message": "Two things:\n\n1) Can you confirm, locally, that \"node_modules/firebase-tools/firebase-tools\" is correct (and not, say \"node_modules/firebase-tools\"?)\n\n2) If the desire is to package up bits and pieces of an npm installation, it might be better to conventionally package the whole node_modules folder for infra/npm/* packages, with the expectation that the user of the package unpacks them at the base of the node_modules folder. If you just package \"firebase-tools\", in order to use the package the user of the CIPD package would need to know the folder name (e.g. firebase-tools) /inside/ of the CIPD package in order to use it. E.g. you\u0027d have to do something like:\n\n   @Subdir node_modules/firebase-tools/firebase-tools\n   infra/npm/firebase-tools latest\n\n   @Subdir node_modules/other-tool/other-tool\n   infra/npm/other-tools latest\n\nWhich looks really wrong to me. I would expect:\n\n   @Subdir node_modules\n   infra/npm/firebase-tools latest\n   infra/npm/other-tool     latest\n\nDoes that make more sense?",
+      "parentUuid": "b6a5b1b2_122906f0",
+      "range": {
+        "startLine": 3963,
+        "startChar": 7,
+        "endLine": 3963,
+        "endChar": 72
+      },
+      "revId": "a7dbffa102a9de2a702e6a95b4e950cd95cf80c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
