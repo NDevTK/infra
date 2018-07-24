@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "962b0d75_f5bcc7f5",
+        "filename": "recipes/recipe_modules/third_party_packages/firebase.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1271098
+      },
+      "writtenOn": "2018-07-24T00:19:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "28981781_e08cf12d",
+      "range": {
+        "startLine": 12,
+        "startChar": 16,
+        "endLine": 12,
+        "endChar": 36
+      },
+      "revId": "a7dbffa102a9de2a702e6a95b4e950cd95cf80c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "77ae1247_4afd0a5f",
         "filename": "recipes/recipe_modules/third_party_packages/firebase.py",
         "patchSetId": 2
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "6215e808_4fd0e6d9",
+        "filename": "recipes/recipe_modules/third_party_packages/firebase.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1271098
+      },
+      "writtenOn": "2018-07-24T00:19:58Z",
+      "side": 1,
+      "message": "The intended use is to be able to use the firebase-tools CLI, which is install by npm. Is that what you\u0027re asking?",
+      "parentUuid": "77ae1247_4afd0a5f",
+      "range": {
+        "startLine": 52,
+        "startChar": 4,
+        "endLine": 52,
+        "endChar": 45
+      },
+      "revId": "a7dbffa102a9de2a702e6a95b4e950cd95cf80c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "54ef5f61_7a48c3a1",
         "filename": "recipes/recipes/third_party_packages.expected/basic-buildbot.json",
         "patchSetId": 2
@@ -59,6 +107,30 @@
       "writtenOn": "2018-07-23T22:34:40Z",
       "side": 1,
       "message": "hm, does this look right to you? Or does it have one-too-many firebase-tools?\n\nI would also seriously consider packaging this from node_modules instead so that you can have multiple npm modules, each as a CIPD pacakge, and unpack them all under some directory to get a working node_modules folder.",
+      "range": {
+        "startLine": 3963,
+        "startChar": 7,
+        "endLine": 3963,
+        "endChar": 72
+      },
+      "revId": "a7dbffa102a9de2a702e6a95b4e950cd95cf80c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b6a5b1b2_122906f0",
+        "filename": "recipes/recipes/third_party_packages.expected/basic-buildbot.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 3963,
+      "author": {
+        "id": 1271098
+      },
+      "writtenOn": "2018-07-24T00:19:58Z",
+      "side": 1,
+      "message": "As in packaging the whole node_modules folder? I\u0027m not entirely familiar with how npm works, forgive me",
+      "parentUuid": "54ef5f61_7a48c3a1",
       "range": {
         "startLine": 3963,
         "startChar": 7,
