@@ -22,6 +22,30 @@
       "revId": "123ab315e19617746f08a291b856ae0701be1e09",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7067e508_ab0ccba2",
+        "filename": "appengine/monorail/api/converters.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 379,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-07-24T00:15:50Z",
+      "side": 1,
+      "message": "It\u0027s raised here in the LookupUserEmails function we call in 383:\nhttps://cs.chromium.org/chromium/infra/appengine/monorail/services/user_svc.py?type\u003dcs\u0026q\u003dNoSuchUserException+file:%5Einfra/appengine/monorail/+package:%5Echromium$\u0026g\u003d0\u0026l\u003d225\n\nPersonally, I don\u0027t think it\u0027s necessary when it\u0027s already specified in the method (of the same file) it\u0027s calling.",
+      "parentUuid": "02e03151_262d7c55",
+      "range": {
+        "startLine": 379,
+        "startChar": 38,
+        "endLine": 379,
+        "endChar": 63
+      },
+      "revId": "123ab315e19617746f08a291b856ae0701be1e09",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
