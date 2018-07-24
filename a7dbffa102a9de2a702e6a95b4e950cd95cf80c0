@@ -96,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "4cd777d7_17280521",
+        "filename": "recipes/recipe_modules/third_party_packages/firebase.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1271098
+      },
+      "writtenOn": "2018-07-24T21:32:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6215e808_4fd0e6d9",
+      "range": {
+        "startLine": 52,
+        "startChar": 4,
+        "endLine": 52,
+        "endChar": 45
+      },
+      "revId": "a7dbffa102a9de2a702e6a95b4e950cd95cf80c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "54ef5f61_7a48c3a1",
         "filename": "recipes/recipes/third_party_packages.expected/basic-buildbot.json",
         "patchSetId": 2
@@ -164,6 +188,30 @@
       "revId": "a7dbffa102a9de2a702e6a95b4e950cd95cf80c0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "34fdf5e4_35e1012c",
+        "filename": "recipes/recipes/third_party_packages.expected/basic-buildbot.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 3963,
+      "author": {
+        "id": 1271098
+      },
+      "writtenOn": "2018-07-24T21:32:26Z",
+      "side": 1,
+      "message": "Much more, thank you!",
+      "parentUuid": "b4cf44d3_d7cb06be",
+      "range": {
+        "startLine": 3963,
+        "startChar": 7,
+        "endLine": 3963,
+        "endChar": 72
+      },
+      "revId": "a7dbffa102a9de2a702e6a95b4e950cd95cf80c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
