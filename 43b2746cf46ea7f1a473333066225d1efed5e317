@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f0464a42_3be36a92",
+        "filename": "appengine/monorail/api/api_proto/project_objects.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2018-07-25T20:30:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9cc54eb5_d952ed22",
+      "revId": "43b2746cf46ea7f1a473333066225d1efed5e317",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5b56e9cc_5b06cf22",
         "filename": "appengine/monorail/api/api_proto/projects.proto",
         "patchSetId": 3
@@ -39,6 +57,30 @@
       "revId": "43b2746cf46ea7f1a473333066225d1efed5e317",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3b6b9178_b53c6f0e",
+        "filename": "appengine/monorail/api/api_proto/projects.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2018-07-25T20:30:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5b56e9cc_5b06cf22",
+      "range": {
+        "startLine": 70,
+        "startChar": 23,
+        "endLine": 70,
+        "endChar": 24
+      },
+      "revId": "43b2746cf46ea7f1a473333066225d1efed5e317",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -65,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "0c9e777a_1afa4c20",
+        "filename": "appengine/monorail/api/converters.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 689,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2018-07-25T20:30:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "91447613_38a57383",
+      "range": {
+        "startLine": 689,
+        "startChar": 4,
+        "endLine": 689,
+        "endChar": 13
+      },
+      "revId": "43b2746cf46ea7f1a473333066225d1efed5e317",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "593b5c89_f084bd5f",
         "filename": "appengine/monorail/tracker/issueoptions.py",
         "patchSetId": 3
@@ -76,6 +142,30 @@
       "writtenOn": "2018-07-25T18:41:00Z",
       "side": 1,
       "message": "It looks like\nconfig.field_defs would still have any fd.is_deleted while in \nfields, the deleted have been filtered out. \nSo the (field, fd) will not always be of the same field.",
+      "range": {
+        "startLine": 214,
+        "startChar": 31,
+        "endLine": 214,
+        "endChar": 48
+      },
+      "revId": "43b2746cf46ea7f1a473333066225d1efed5e317",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "585f987c_ea094231",
+        "filename": "appengine/monorail/tracker/issueoptions.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 214,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2018-07-25T20:30:09Z",
+      "side": 1,
+      "message": "Fixed.\nGood catch :)",
+      "parentUuid": "593b5c89_f084bd5f",
       "range": {
         "startLine": 214,
         "startChar": 31,
