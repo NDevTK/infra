@@ -1051,3 +1051,18 @@ class ConverterFunctionsTest(unittest.TestCase):
     self.assertEqual('A fake hotlist.', actual.summary)
     self.assertEqual(
         'Detailed description of the fake hotlist.', actual.description)
+
+  def testConvertFieldOptions(self):
+    """We can convert a field def an a list of users to FieldOptions protoc."""
+    field_def = testing_helpers.Blank(
+        field_name='Foo Field',
+        field_type=tracker_pb2.FieldTypes('USER_TYPE'),
+        approval_id=None)
+    actual = converters.ConvertFieldOptions(
+        field_def, [111L, 333L], self.users_by_id)
+    self.assertEqual('Foo Field', actual.field_ref.field_name)
+    self.assertEqual(common_pb2.USER_TYPE, actual.field_ref.type)
+    self.assertEqual([111L, 333L],
+                     [user_ref.user_id for user_ref in actual.user_refs])
+    self.assertEqual(['one@example.com', 'banned@example.com'],
+                     [user_ref.display_name for user_ref in actual.user_refs])
