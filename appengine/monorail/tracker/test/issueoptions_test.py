@@ -62,12 +62,26 @@ class IssueOptionsJSONTest(unittest.TestCase):
 
     self.services = services
 
+  def AddUserField(self, mr, name, needs_member=None, needs_perm=None):
+    if needs_perm:
+      needs_member = True
+    self.services.config.CreateFieldDef(
+        mr.cnxn, self.project.project_id, name, 'USER_TYPE',
+        applic_type=None, applic_pred=None, is_required=False, is_niche=False,
+        is_multivalued=False, min_value=None, max_value=None, regex=None,
+        needs_member=needs_member, needs_perm=needs_perm, grants_perm=False,
+        notify_on=None, date_action_str=None, docstring='Field Docstring',
+        admin_ids=None)
+
   def RunHandleRequest(self, servlet, logged_in_user_id, perms,
-                       effective_ids=None):
+                       effective_ids=None, user_fields=None):
     mr = testing_helpers.MakeMonorailRequest(project=self.project, perms=perms)
     mr.auth.user_id = logged_in_user_id
     if effective_ids:
       mr.auth.effective_ids = effective_ids
+    if user_fields:
+      for user_field in user_fields:
+        self.AddUserField(mr, **user_field)
     json_data = servlet.HandleRequest(mr)
     return json_data
 
@@ -181,6 +195,32 @@ class IssueOptionsJSONTest(unittest.TestCase):
     self.assertIn('Restrict-AddIssueComment-EditIssue', labels)
     self.assertIn('Restrict-View-CoreTeam', labels)
 
+  def testHandleRequest_Fields(self):
+    user_fields = [
+        {'name': 'Bar Field',
+         'needs_perm': permissions.VIEW},
+        {'name': 'Baz Field',
+         'needs_perm': permissions.EDIT_ISSUE},
+        {'name': 'Foo Field',
+         'needs_perm': 'FooPerm'},
+        {'name': 'Zoo Field'}]
+    self.project.extra_perms = [
+        project_pb2.Project.ExtraPerms(
+            member_id=222L,
+            perms=['FooPerm'])]
+    json_data = self.RunHandleRequest(
+        self.members_servlet, 111L, permissions.OWNER_ACTIVE_PERMISSIONSET,
+        user_fields=user_fields)
+    user_indexes = [
+        [json_data['members'][idx] for idx in field.get('user_indexes', [])]
+        for field in json_data['fields']]
+    self.assertEqual(
+        [['user_111@domain.com', 'user_222@domain.com', 'user_333@domain.com'],
+         ['user_111@domain.com', 'user_222@domain.com'],
+         ['user_222@domain.com'],
+         []],
+        user_indexes)
+
 
 class GetOptionsTest(unittest.TestCase):
 
@@ -247,20 +287,23 @@ class GetOptionsTest(unittest.TestCase):
 
   def testGetFieldOptions(self):
     self.config.field_defs = [
-      tracker_pb2.FieldDef(field_id=1, project_id=789, field_name='FieldName',
-          field_type=tracker_pb2.FieldTypes.INT_TYPE)
+      tracker_pb2.FieldDef(field_id=1, project_id=789, field_name='FieldName1',
+          field_type=tracker_pb2.FieldTypes.INT_TYPE, is_deleted=True),
+      tracker_pb2.FieldDef(field_id=2, project_id=789, field_name='FieldName2',
+          field_type=tracker_pb2.FieldTypes.INT_TYPE, needs_perm='Foo')
     ]
     actual = issueoptions.GetFieldOptions(self.mr, self.services, self.config,
         [], [])
     expected =  [{
       'choices': [],
      'docstring': None,
-     'field_id': 1,
-     'field_name': 'FieldName',
+     'field_id': 2,
+     'field_name': 'FieldName2',
      'field_type': 2,
      'is_multivalued': False,
      'is_required': False,
-     'needs_perm': None
+     'needs_perm': 'Foo',
+     'user_indexes': [],
     }]
     self.assertEqual(expected, actual)
 
