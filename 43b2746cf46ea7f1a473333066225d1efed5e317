@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9cc54eb5_d952ed22",
+        "filename": "appengine/monorail/api/api_proto/project_objects.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-07-25T18:41:00Z",
+      "side": 1,
+      "message": "Add another line",
+      "revId": "43b2746cf46ea7f1a473333066225d1efed5e317",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5b56e9cc_5b06cf22",
+        "filename": "appengine/monorail/api/api_proto/projects.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-07-25T18:41:00Z",
+      "side": 1,
+      "message": "4-\u003e3",
+      "range": {
+        "startLine": 70,
+        "startChar": 23,
+        "endLine": 70,
+        "endChar": 24
+      },
+      "revId": "43b2746cf46ea7f1a473333066225d1efed5e317",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "91447613_38a57383",
+        "filename": "appengine/monorail/api/converters.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 689,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-07-25T18:41:00Z",
+      "side": 1,
+      "message": "This could come back as None. Consider checking that before getting its field_name.",
+      "range": {
+        "startLine": 689,
+        "startChar": 4,
+        "endLine": 689,
+        "endChar": 13
+      },
+      "revId": "43b2746cf46ea7f1a473333066225d1efed5e317",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "593b5c89_f084bd5f",
+        "filename": "appengine/monorail/tracker/issueoptions.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 214,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-07-25T18:41:00Z",
+      "side": 1,
+      "message": "It looks like\nconfig.field_defs would still have any fd.is_deleted while in \nfields, the deleted have been filtered out. \nSo the (field, fd) will not always be of the same field.",
+      "range": {
+        "startLine": 214,
+        "startChar": 31,
+        "endLine": 214,
+        "endChar": 48
+      },
+      "revId": "43b2746cf46ea7f1a473333066225d1efed5e317",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
