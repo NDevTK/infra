@@ -69,6 +69,12 @@ message FieldDef {
   bool is_phase_field = 8;
 }
 
+// Next available tag: 3
+message FieldOptions {
+  FieldRef field_ref = 1;
+  repeated UserRef user_refs = 2;
+}
+
 
 // Next available tag: 4
 message ApprovalDef {

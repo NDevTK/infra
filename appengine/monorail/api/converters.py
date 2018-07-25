@@ -681,3 +681,18 @@ def ConvertHotlist(hotlist, users_by_id):
       summary=hotlist.summary,
       description=hotlist.description)
   return result
+
+
+def ConvertFieldOptions(field_def, qualified_users, users_by_id):
+  parent_approval_name = None
+  if field_def.approval_id:
+    parent_fd = tracker_bizobj.FindFieldDefByID(field_def.approval_id, config)
+    parent_approval_name = parent_fd.field_name
+  field_ref = ConvertFieldRef(
+      field_def.field_name, field_def.field_type, parent_approval_name)
+
+  user_refs = ConvertUserRefs(qualified_users, [], users_by_id)
+
+  result = project_objects_pb2.FieldOptions(
+      field_ref=field_ref, user_refs=user_refs)
+  return result
