@@ -221,6 +221,7 @@ class AnalyzeFlakePipelineTest(WaterfallTestCase):
         commit_position=start_commit_position,
         dimensions=ListOfBasestring.FromSerializable(['os:testOS']),
         revision=start_revision,
+        step_metadata=step_metadata,
         upper_bound_build_number=analysis.build_number)
 
     expected_pass_rate_input = DetermineApproximatePassRateInput(
