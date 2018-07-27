@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c4b3054e_f42a1703",
+        "filename": "cr-buildbucket.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 486,
+      "author": {
+        "id": 1246212
+      },
+      "writtenOn": "2018-07-27T16:31:58Z",
+      "side": 1,
+      "message": "Hmm.  How does this work?\n\nDoes this make api.properties.get() return an integer instead of a string? [1]\nThen does it get changed back to a string (as part of `args`) here? [2]\n\nThe gsubmodd \"services\" code already converts from an argument string to an int. [3]\n\n1. https://chrome-internal.googlesource.com/chrome/tools/build_limited/scripts/slave/+/361caf88856de0a1a40d7d5df8f44b7fe5587521/recipes/infra/gsubmodd.py#37\n\n2. https://chrome-internal.googlesource.com/chrome/tools/build_limited/scripts/slave/+/361caf88856de0a1a40d7d5df8f44b7fe5587521/recipes/infra/gsubmodd.py#51\n\n3. https://cs.chromium.org/chromium/infra/infra/services/gsubmodd/__main__.py?l\u003d42\u0026rcl\u003dd87dba0d6a5b0ddf35ef40b9b93f9be862148e04",
+      "range": {
+        "startLine": 486,
+        "startChar": 18,
+        "endLine": 486,
+        "endChar": 20
+      },
+      "revId": "148e5abe6bc8831ddcb15170f8b20598d4117fd8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
