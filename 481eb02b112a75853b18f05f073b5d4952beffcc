@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "94c7f542_53c33d8a",
+        "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-07-27T22:23:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "22e0a470_00b498cb",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 0
+      },
+      "revId": "481eb02b112a75853b18f05f073b5d4952beffcc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8853dde3_5e23ad4b",
         "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
         "patchSetId": 3
@@ -96,6 +120,30 @@
     },
     {
       "key": {
+        "uuid": "730e56f6_66d608c6",
+        "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-07-27T22:23:18Z",
+      "side": 1,
+      "message": "For now I think we have to keep it in a pipeline, even though it\u0027s trivial. The calling pipeline has the job to determine what the isolate sha is, and in some cases it needs to run a try job and others it can return the build index directly. Since try jobs are asynchronous the calling pipeline must also be asynchronous, making this pipeline still necessary.\n\ne.g.\n\nif build index available:\n  yield build index\u0027s isolate sha. # Must be yielded in a pipeline\nelse:\n  flake_try_job_result \u003d yield RunFlakeTryJob\n  yield GetIsolateShaForFlakeTryJob",
+      "parentUuid": "f896dd42_633bf040",
+      "range": {
+        "startLine": 76,
+        "startChar": 6,
+        "endLine": 76,
+        "endChar": 36
+      },
+      "revId": "481eb02b112a75853b18f05f073b5d4952beffcc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4bf47258_2c9e11bf",
         "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
         "patchSetId": 3
@@ -119,6 +167,30 @@
     },
     {
       "key": {
+        "uuid": "68e02cee_682768ca",
+        "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-07-27T22:23:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4bf47258_2c9e11bf",
+      "range": {
+        "startLine": 83,
+        "startChar": 44,
+        "endLine": 83,
+        "endChar": 68
+      },
+      "revId": "481eb02b112a75853b18f05f073b5d4952beffcc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7379f6ca_f3b2fc47",
         "filename": "appengine/findit/pipelines/flake_failure/test/get_isolate_sha_pipeline_test.py",
         "patchSetId": 3
@@ -130,6 +202,30 @@
       "writtenOn": "2018-07-27T20:23:28Z",
       "side": 1,
       "message": "I wonder if we should instead import the whole module like\n`import pipelines.flake_failure.get_isolate_sha_pipeline as isolate`\nand then simply prepend the previously imported names with `isolate.`",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 27
+      },
+      "revId": "481eb02b112a75853b18f05f073b5d4952beffcc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "72be29b4_178cdef7",
+        "filename": "appengine/findit/pipelines/flake_failure/test/get_isolate_sha_pipeline_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-07-27T22:23:18Z",
+      "side": 1,
+      "message": "I prefer to keep it this style since the names are already pretty long so the calling code doesn\u0027t use up the 80 character limit too quickly",
+      "parentUuid": "7379f6ca_f3b2fc47",
       "range": {
         "startLine": 17,
         "startChar": 0,
