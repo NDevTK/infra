@@ -22,6 +22,11 @@ STATE_NO_RESOURCE = 'NO_RESOURCE'
 CHROMIUM_GIT_REPOSITORY_URL = (
     'https://chromium.googlesource.com/chromium/src.git')
 
+# Gitiles constants.
+GITILES_HOST = 'chromium.googlesource.com'
+GITILES_PROJECT = 'chromium/src'
+GITILES_REF = 'refs/heads/master'
+
 # Default limit hours to revert a culprit: should only revert a culprit if it's
 # committed within this time range.
 DEFAULT_CULPRIT_COMMIT_LIMIT_HOURS = 24
