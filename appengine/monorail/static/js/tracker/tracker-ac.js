@@ -167,15 +167,15 @@ function TKR_openClosedComplete(prefix, openStatusDefs, closedStatusDefs) {
   var out = [];
   out.push({heading:'Open Statuses:'}); // TODO: i18n
   for (var i = 0; i < openStatusDefs.length; i++) {
-    out.push(new _AC_Completion(openStatusDefs[i].name,
-                                openStatusDefs[i].name,
-                                openStatusDefs[i].doc));
+    out.push(new _AC_Completion(openStatusDefs[i].status,
+                                openStatusDefs[i].status,
+                                openStatusDefs[i].docstring));
   }
   out.push({heading:'Closed Statuses:'});  // TODO: i18n
   for (var i = 0; i < closedStatusDefs.length; i++) {
-    out.push(new _AC_Completion(closedStatusDefs[i].name,
-                                closedStatusDefs[i].name,
-                                closedStatusDefs[i].doc));
+    out.push(new _AC_Completion(closedStatusDefs[i].status,
+                                closedStatusDefs[i].status,
+                                closedStatusDefs[i].docstring));
   }
   return out;
 }
@@ -208,25 +208,30 @@ var TKR_statusWords = [];
  * status values.  The store has some DIT-specific methods.
  * TODO(jrobbins): would it be easier to define my own class to use
  * instead of _AC_Simple_Store?
- * @param {Array} openStatusDefs An array of definitions of the
- * well-known open status values.  Each definition has a name and
- * docstring.
- * @param {Array} closedStatusDefs An array of definitions of the
- * well-known closed status values.  Each definition has a name and
- * docstring.
+ * @param {Array} statusDefs An array of definitions of the
+ * well-known status values.  Each definition has a name and docstring.
  */
-function TKR_setUpStatusStore(openStatusDefs, closedStatusDefs) {
+function TKR_setUpStatusStore(statusDefs) {
   var docdict = {};
+  var openStatusDefs = [];
+  var closedStatusDefs = [];
+  for (var i = 0; i < statusDefs.length; i++) {
+    if (statusDefs[i].meansOpen) {
+      openStatusDefs.push(statusDefs[i]);
+    } else {
+      closedStatusDefs.push(statusDefs[i]);
+    }
+  }
   TKR_statusWords = [];
   for (var i = 0; i < openStatusDefs.length; i++) {
    var status = openStatusDefs[i];
-   TKR_statusWords.push(status.name);
-   docdict[status.name] = status.doc;
+   TKR_statusWords.push(status.status);
+   docdict[status.name] = status.docstring;
   }
   for (var i = 0; i < closedStatusDefs.length; i++) {
    var status = closedStatusDefs[i];
-   TKR_statusWords.push(status.name);
-   docdict[status.name] = status.doc;
+   TKR_statusWords.push(status.status);
+   docdict[status.name] = status.docstring;
   }
 
   TKR_statusStore = new _AC_SimpleStore(TKR_statusWords, docdict);
@@ -713,9 +718,14 @@ function TKR_setUpComponentStore(componentDefs) {
   var componentWords = [];
   var docdict = {};
   for (var i = 0; i < componentDefs.length; i++) {
-   var component = componentDefs[i];
-   componentWords.push(component.name);
-   docdict[component.name] = component.doc;
+     var component = componentDefs[i] = {
+       name: componentDefs[i].path,
+       doc: componentDefs[i].docstring,
+     };
+     if (!component.deprecated) {
+       componentWords.push(component.name);
+       docdict[component.name] = component.doc;
+     }
   }
 
   TKR_componentListStore = new _AC_SimpleStore(componentWords, docdict);
@@ -1061,15 +1071,35 @@ function TKR_fetchOptions(projectName, token, cct) {
   const projectPart = projectName ? '/p/' + projectName : '/hosting';
   const optionsURL = `${projectPart}/feeds/issueOptions?token=${token}&cct=${cct}`;
   const membersURL = `${projectPart}/feeds/issueOptionsMembers?token=${token}&cct=${cct}`;
+  const prpcClient = new window.chops.rpc.PrpcClient({
+    insecure: Boolean(location.hostname === 'localhost'),
+    fetchImpl: (url, options) => {
+      options.credentials = 'same-origin';
+      return fetch(url, options);
+    },
+  });
+
+  const message = {
+    trace: {
+      token: window.CS_env.token,
+    },
+    project_name: projectName,
+  };
+  const projectOptionsPromise = prpcClient.call('monorail.Projects',
+      'GetConfig', message);
 
   const statusesLabelsPromise = CS_fetch(optionsURL);
   const membersPromise = CS_fetch(membersURL);
 
+  projectOptionsPromise.then((response) => {
+    console.log(response);
+    TKR_setUpStatusStore(response.statusDefs);
+    TKR_setUpComponentStore(response.componentDefs);
+  });
+
   statusesLabelsPromise.then((jsonData) => {
     TKR_setUpHotlistsStore(jsonData.hotlists);
-    TKR_setUpStatusStore(jsonData.open, jsonData.closed);
     TKR_setUpLabelStore(jsonData.labels);
-    TKR_setUpComponentStore(jsonData.components);
     TKR_setUpCustomPermissionsStore(jsonData.custom_permissions);
     TKR_exclPrefixes = jsonData.excl_prefixes;
     TKR_prepLabelAC(TKR_labelFieldIDPrefix);
