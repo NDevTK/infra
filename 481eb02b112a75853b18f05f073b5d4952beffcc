@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "22e0a470_00b498cb",
+        "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-07-27T20:49:35Z",
+      "side": 1,
+      "message": "There is CHROMIUM_GIT_REPOSITORY_URL in services/constants.py. Maybe you can move these to the same file",
+      "parentUuid": "a9ac703c_57dbf909",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 0
+      },
+      "revId": "481eb02b112a75853b18f05f073b5d4952beffcc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8853dde3_5e23ad4b",
         "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
         "patchSetId": 3
@@ -36,6 +60,30 @@
       "writtenOn": "2018-07-27T20:23:28Z",
       "side": 1,
       "message": "Since this pipeline has become trivial, we should add a TODO to remove it altogether in a later patch. (or make it a non-pipeline service function)",
+      "range": {
+        "startLine": 76,
+        "startChar": 6,
+        "endLine": 76,
+        "endChar": 36
+      },
+      "revId": "481eb02b112a75853b18f05f073b5d4952beffcc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f896dd42_633bf040",
+        "filename": "appengine/findit/pipelines/flake_failure/get_isolate_sha_pipeline.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-07-27T20:49:35Z",
+      "side": 1,
+      "message": "Agreed. Looks like after the change this pipeline can be removed. And I\u0027m thinking maybe it should be removed in the CL to save the trouble to define the inputs and all that.",
+      "parentUuid": "8853dde3_5e23ad4b",
       "range": {
         "startLine": 76,
         "startChar": 6,
