@@ -22,6 +22,30 @@
       "revId": "148e5abe6bc8831ddcb15170f8b20598d4117fd8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "647221d3_a9e6ba30",
+        "filename": "cr-buildbucket.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 486,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-07-27T16:35:10Z",
+      "side": 1,
+      "message": "yeah, it does make api.properties.get() return integer. And no, things will probably break at [2]. Reverting :(",
+      "parentUuid": "c4b3054e_f42a1703",
+      "range": {
+        "startLine": 486,
+        "startChar": 18,
+        "endLine": 486,
+        "endChar": 20
+      },
+      "revId": "148e5abe6bc8831ddcb15170f8b20598d4117fd8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
