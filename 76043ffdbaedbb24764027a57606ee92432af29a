@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d6cd4b10_c6526168",
+        "filename": "appengine/findit/services/constants.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-07-27T22:45:14Z",
+      "side": 1,
+      "message": "Nit: I would put these constants in the same group with CHROMIUM_GIT_REPOSITORY_URL\n\nI mean :\n\n# Gitiles constants.\nCHROMIUM_GIT_REPOSITORY_URL \u003d (\n    \u0027https://chromium.googlesource.com/chromium/src.git\u0027)\nGITILES_HOST \u003d \u0027chromium.googlesource.com\u0027\nGITILES_PROJECT \u003d \u0027chromium/src\u0027\nGITILES_REF \u003d \u0027refs/heads/master\u0027",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 20
+      },
+      "revId": "76043ffdbaedbb24764027a57606ee92432af29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
