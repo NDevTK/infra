@@ -15,17 +15,15 @@
       test('Extract project and local ids', function() {
           let match = new RegExp(replacers[0].re, 'g').exec('https://crbug.com/monorail/1234');
           let ref = extractRefs(match);
-          assert.deepEqual(ref, {project_name: 'monorail', local_id: '1234'});
+          assert.deepEqual(ref, {projectName: 'monorail', localId: '1234'});
       });
 
-      test('Replace crbug plain text', function() {
-          let {re, replacerFunc} = replacers[0];
-
-          // Match is found in components.
-          let str = 'crbug.com/monorail/1234';
-          let match = new RegExp(re, 'g').exec(str);
-          let components = {closedRefs: [{localId: 1234, projectName: 'monorail'}, {}]};
-          let actualRun = replacerFunc(match, components);
+      test('Replace crbug with found components', function() {
+          const {re, replacerFunc} = replacers[0];
+          const str = 'crbug.com/monorail/1234';
+          const match = new RegExp(re, 'g').exec(str);
+          const components = {closedRefs: [{localId: 1234, projectName: 'monorail'}, {}]};
+          const actualRun = replacerFunc(match, components);
           assert.deepEqual(
               actualRun,
               {
@@ -35,12 +33,13 @@
                   content: str
               }
           );
-
-          // Match has no project name.
-          str = 'crbug.com/1234';
-          match = new RegExp(re, 'g').exec(str);
-          components = {openRefs: [{localId: 134}, {localId: 1234, projectName: 'chromium'}]};
-          actualRun = replacerFunc(match, components);
+      });
+      test('Replace crbug with default project_name', function() {
+          const {re, replacerFunc} = replacers[0];
+          const str = 'crbug.com/1234';
+          const match = new RegExp(re, 'g').exec(str);
+          const components = {openRefs: [{localId: 134}, {localId: 1234, projectName: 'chromium'}]};
+          const actualRun = replacerFunc(match, components);
           assert.deepEqual(
               actualRun,
               {
@@ -50,10 +49,13 @@
                   content: str
               }
           );
-
-          // Match is not in components.
-          components = {};
-          actualRun = replacerFunc(match, components);
+      });
+      test('Replace crbug with no found components', function() {
+          const {re, replacerFunc} = replacers[0];
+          const str = 'crbug.com/1234';
+          const match = new RegExp(re, 'g').exec(str);
+          const components = {};
+          const actualRun = replacerFunc(match, components);
           assert.deepEqual(actualRun, {content: str});
       });
   });
