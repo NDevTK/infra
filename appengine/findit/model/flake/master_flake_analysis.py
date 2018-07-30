@@ -492,7 +492,7 @@ class MasterFlakeAnalysis(BaseAnalysis, BaseBuildModel, VersionedModel,
       self.Update(
           start_time=time_util.GetUTCNow(), status=analysis_status.RUNNING)
 
-  def UpdateSuspectedBuild(self, lower_bound_build, upper_bound_build):
+  def UpdateSuspectedBuild(self, lower_bound_target, upper_bound_target):
     """Sets the suspected build number if appropriate.
 
       A suspected build cycle can be set when a regression range is identified
@@ -500,14 +500,16 @@ class MasterFlakeAnalysis(BaseAnalysis, BaseBuildModel, VersionedModel,
 
     Args:
       analysis_urlsafe_key (str): The key to the analysis to update.
-      lower_bound_build (BuildInfo): The earlier build whose commit position to
-          check.
-      upper_bound_build (BuildInfo): The later build whose commit
-          position to check, assumed to be 1 build cycle apartlower_bound_build.
+      lower_bound_target (IsolatedTarget): The earlier isolated target whose
+          commit position to check.
+      upper_bound_build (IsolatedTarget): The later isolated target whose commit
+          position to check.
     """
-    lower_bound = lower_bound_build.commit_position
-    upper_bound = upper_bound_build.commit_position
-    assert upper_bound > lower_bound
+    lower_bound = lower_bound_target.commit_position
+    upper_bound = upper_bound_target.commit_position
+    assert upper_bound > lower_bound, ((
+        'Upper bound target commit position {} must be greater than lower '
+        'bound target {} commit position').format(upper_bound, lower_bound))
 
     lower_bound_data_point = self.FindMatchingDataPointWithCommitPosition(
         lower_bound)
@@ -518,11 +520,11 @@ class MasterFlakeAnalysis(BaseAnalysis, BaseBuildModel, VersionedModel,
         upper_bound_data_point):
       assert pass_rate_util.IsStableDefaultThresholds(
           lower_bound_data_point.pass_rate), (
-              'Lower bound build must be stable in order to have a suspect')
+              'Lower bound must be stable in order to have a suspect')
       assert not pass_rate_util.IsStableDefaultThresholds(
           upper_bound_data_point.pass_rate), (
-              'Upper bound build must be flaky in order to have a suspect')
-      self.Update(suspected_flake_build_number=upper_bound_build.build_number)
+              'Upper bound must be flaky in order to have a suspect')
+      self.Update(suspected_flake_build_number=upper_bound_target.build_id)
 
   def Update(self, **kwargs):
     """Updates fields according to what's specified in kwargs.
