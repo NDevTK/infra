@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d5552da4_40247eb0",
+        "filename": "appengine/monorail/static/js/autolink.js",
+        "patchSetId": 4
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-07-30T21:15:54Z",
+      "side": 1,
+      "message": "Is this email Regex meant to match any possible valie email? Is it possible to use a more standard email Regex? ie: http://emailregex.com/",
+      "range": {
+        "startLine": 12,
+        "startChar": 29,
+        "endLine": 12,
+        "endChar": 104
+      },
+      "revId": "41356d92ef7d9aa87172312c8974a590d7160c8d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
