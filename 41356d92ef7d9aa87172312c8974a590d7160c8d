@@ -22,6 +22,30 @@
       "revId": "41356d92ef7d9aa87172312c8974a590d7160c8d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "858a9a9c_c79b50c1",
+        "filename": "appengine/monorail/static/js/autolink.js",
+        "patchSetId": 4
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-07-30T21:36:42Z",
+      "side": 1,
+      "message": "We could always change it, this is just updating the display rather than storing data.  I prefer this more restrictive form because it only considers .org, .net, .com, .edu domains.  Programming code and error messages might have a lot of other uses for the \"@\" symbol that could look like an email address, so being more selective is good.",
+      "parentUuid": "d5552da4_40247eb0",
+      "range": {
+        "startLine": 12,
+        "startChar": 29,
+        "endLine": 12,
+        "endChar": 104
+      },
+      "revId": "41356d92ef7d9aa87172312c8974a590d7160c8d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
