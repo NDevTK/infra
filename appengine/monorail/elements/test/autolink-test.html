@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <title>Autolink Test</title>
 <meta charset="utf-8">
 <script src="/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
@@ -89,28 +89,61 @@
               ]
           };
           const actualTextRuns = replacerFunc(match, components);
-          assert.deepEqual(actualTextRuns,
-                           [
-                               {
-                                   tag: 'a',
-                                   href:'/p/chromium/issues/detail?id=123',
-                                   css: '',
-                                   content: '123',
-                               },
-                               {
-                                   content: 'monorail:234',
-                               },
-                               {
-                                   content: '#345',
-                               },
-                               {
-                                   tag: 'a',
-                                   href:'/p/proj/issues/detail?id=456',
-                                   css: 'strikeThrough',
-                                   content: 'proj:#456',
-                               },
-                           ]
-                          );
+          assert.deepEqual(
+              actualTextRuns,
+              [
+                  {
+                      tag: 'a',
+                      href:'/p/chromium/issues/detail?id=123',
+                      css: '',
+                      content: '123',
+                  },
+                  {content: 'monorail:234'},
+                  {content: '#345'},
+                  {
+                      tag: 'a',
+                      href:'/p/proj/issues/detail?id=456',
+                      css: 'strikeThrough',
+                      content: 'proj:#456',
+                  },
+              ]
+          );
       });
+  });
+
+  suite('user email component functions', function() {
+      const {lookup, extractRefs, replacers} = components.get('03-user-emails');
+      const {re, replacerFunc} = replacers[0];
+      const str = 'We should ask user1@gmail.com to confirm.';
+      const regex = new RegExp(re, 'g');
+      const match = regex.exec(str);
+
+      test('Extract user email', function() {
+          const actualEmail = extractRefs(match, 'unusedProjectName');
+          assert.equal('user1@gmail.com', actualEmail);
+      });
+
+      test('Replace existing user.', function() {
+          const components = {
+              users: [{email: 'user2@gmail.com'}, {email: 'user1@gmail.com'}]};
+          const actualTextRun = replacerFunc(match, components);
+          assert.deepEqual(
+              actualTextRun,
+              {tag: 'a', href: '/u/user1@gmail.com', content: 'user1@gmail.com'}
+          );
+      });
+
+      test('Replace non-existent user.', function() {
+          const actualTextRun = replacerFunc(match, {});
+          assert.deepEqual(
+              actualTextRun,
+              {
+                  tag: 'a',
+                  href: 'mailto:user1@gmail.com',
+                  content: 'user1@gmail.com',
+              }
+          );
+      });
+
   });
 </script>
