@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "637c88d9_f926015d",
+        "filename": "appengine/monorail/elements/test/autolink-test.html",
+        "patchSetId": 3
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-07-30T19:00:34Z",
+      "side": 1,
+      "message": "Done?",
+      "parentUuid": "b945887f_86f17553",
+      "revId": "82fcc0922795c4ec307b47d4ae4319d289fc26ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e77ead1e_dbd3a4d5",
         "filename": "appengine/monorail/elements/test/autolink-test.html",
         "patchSetId": 3
@@ -59,6 +77,30 @@
     },
     {
       "key": {
+        "uuid": "12e33bbc_227339fa",
+        "filename": "appengine/monorail/elements/test/autolink-test.html",
+        "patchSetId": 3
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-07-30T19:00:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e77ead1e_dbd3a4d5",
+      "range": {
+        "startLine": 91,
+        "startChar": 14,
+        "endLine": 91,
+        "endChar": 15
+      },
+      "revId": "82fcc0922795c4ec307b47d4ae4319d289fc26ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d9bf6bc8_14118246",
         "filename": "appengine/monorail/static/js/autolink.js",
         "patchSetId": 3
@@ -76,6 +118,24 @@
     },
     {
       "key": {
+        "uuid": "2499265c_57097e35",
+        "filename": "appengine/monorail/static/js/autolink.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-07-30T19:00:34Z",
+      "side": 1,
+      "message": "whoops, thx",
+      "parentUuid": "d9bf6bc8_14118246",
+      "revId": "82fcc0922795c4ec307b47d4ae4319d289fc26ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "53e1b027_e0e450f5",
         "filename": "appengine/monorail/static/js/autolink.js",
         "patchSetId": 3
@@ -87,6 +147,30 @@
       "writtenOn": "2018-07-30T18:11:18Z",
       "side": 1,
       "message": "Would this be more readable?\n\nreturn (issueRefRE.exec(match[0])).map(refMatch \u003d\u003e {\n  if (refMatch.groups.projectName) {\n     defaultProjectName \u003d refMatch.groups.projectName.slice(0, -1);\n  }\n  return {projectName: defaultProjectName, localId: refMatch.groups.localId}\n})",
+      "range": {
+        "startLine": 56,
+        "startChar": 4,
+        "endLine": 64,
+        "endChar": 16
+      },
+      "revId": "82fcc0922795c4ec307b47d4ae4319d289fc26ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b6036f6c_90c79025",
+        "filename": "appengine/monorail/static/js/autolink.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-07-30T19:00:34Z",
+      "side": 1,
+      "message": "For a match[0] \u003d \u0027bug \u003d monorail:1234 or chrome: 123231 , 123213\u0027\n\nEach issueRefRE.exec(match[0]) returns an array like: [\" monorail:1234\", \" monorail:1234\", \"monorail:\", \"\", \"1234\", index: 5, input: \"bug \u003d monorail:1234 or\", groups: {…}]\n\nand If I put this in a .map()\n\nissueRefRE.exec(match[0]) would only be executed once in this case.\n\nSo, refMatch would only be looping through items in the array of the first issueRefRE match.\neg refMatch \u003d \" monorail:1234\", then \" monorail:1234\", then \"monorail:\", then \"\", etc.",
+      "parentUuid": "53e1b027_e0e450f5",
       "range": {
         "startLine": 56,
         "startChar": 4,
