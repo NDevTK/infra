@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a24c50ca_53b3126e",
+        "filename": "appengine/monorail/elements/test/autolink-test.html",
+        "patchSetId": 3
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-07-30T15:58:56Z",
+      "side": 1,
+      "message": "Splitting this test up as jeffcarp suggested since I was wrong and only one component will have more than one (re, replacerFunc) pair",
+      "revId": "82fcc0922795c4ec307b47d4ae4319d289fc26ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
