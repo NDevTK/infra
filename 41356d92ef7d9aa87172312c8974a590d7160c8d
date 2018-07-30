@@ -46,6 +46,29 @@
       "revId": "41356d92ef7d9aa87172312c8974a590d7160c8d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2f71c799_92e2ce1b",
+        "filename": "appengine/monorail/static/js/autolink.js",
+        "patchSetId": 4
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-07-30T22:03:41Z",
+      "side": 1,
+      "message": "This can use the shorter syntax to omit the return (unless the same problem from before happens with this one, in that case maybe it\u0027s related to vulcanize?)",
+      "range": {
+        "startLine": 35,
+        "startChar": 8,
+        "endLine": 35,
+        "endChar": 73
+      },
+      "revId": "41356d92ef7d9aa87172312c8974a590d7160c8d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
