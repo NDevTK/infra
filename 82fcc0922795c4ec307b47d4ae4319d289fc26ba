@@ -16,6 +16,86 @@
       "revId": "82fcc0922795c4ec307b47d4ae4319d289fc26ba",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b945887f_86f17553",
+        "filename": "appengine/monorail/elements/test/autolink-test.html",
+        "patchSetId": 3
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-07-30T18:11:18Z",
+      "side": 1,
+      "message": "Nit: since this indentation style seemed very Pythonic to me I it looked it up in the Chromium+Google JS style guide and it says \"Aligning to the parenthesis is allowed, but discouraged.\"\nhttps://google.github.io/styleguide/jsguide.html#formatting-function-arguments",
+      "revId": "82fcc0922795c4ec307b47d4ae4319d289fc26ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e77ead1e_dbd3a4d5",
+        "filename": "appengine/monorail/elements/test/autolink-test.html",
+        "patchSetId": 3
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-07-30T18:11:18Z",
+      "side": 1,
+      "message": "Nit: trailing comma here and on lines 87 \u0026 113 \u0026 114",
+      "range": {
+        "startLine": 91,
+        "startChar": 14,
+        "endLine": 91,
+        "endChar": 15
+      },
+      "revId": "82fcc0922795c4ec307b47d4ae4319d289fc26ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d9bf6bc8_14118246",
+        "filename": "appengine/monorail/static/js/autolink.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-07-30T18:11:18Z",
+      "side": 1,
+      "message": "Can this also be `const projectName \u003d groups.projectName || defaultProjectName;` like on line 89?",
+      "revId": "82fcc0922795c4ec307b47d4ae4319d289fc26ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "53e1b027_e0e450f5",
+        "filename": "appengine/monorail/static/js/autolink.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-07-30T18:11:18Z",
+      "side": 1,
+      "message": "Would this be more readable?\n\nreturn (issueRefRE.exec(match[0])).map(refMatch \u003d\u003e {\n  if (refMatch.groups.projectName) {\n     defaultProjectName \u003d refMatch.groups.projectName.slice(0, -1);\n  }\n  return {projectName: defaultProjectName, localId: refMatch.groups.localId}\n})",
+      "range": {
+        "startLine": 56,
+        "startChar": 4,
+        "endLine": 64,
+        "endChar": 16
+      },
+      "revId": "82fcc0922795c4ec307b47d4ae4319d289fc26ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
