@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b57e0f1c_68cf2be4",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 527,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-07-30T20:47:10Z",
+      "side": 1,
+      "message": "Do we need to change this as well?",
+      "range": {
+        "startLine": 527,
+        "startChar": 18,
+        "endLine": 527,
+        "endChar": 46
+      },
+      "revId": "0a246faafb3466617ebd07018479cfd71389ec55",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4b08c659_cca67a69",
+        "filename": "appengine/findit/pipelines/flake_failure/next_commit_position_pipeline.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-07-30T20:47:10Z",
+      "side": 1,
+      "message": "Add these lines of code to a function in services/? Maybe reuse step_util/",
+      "range": {
+        "startLine": 105,
+        "startChar": 0,
+        "endLine": 128,
+        "endChar": 47
+      },
+      "revId": "0a246faafb3466617ebd07018479cfd71389ec55",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
