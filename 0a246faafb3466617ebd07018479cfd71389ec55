@@ -25,6 +25,53 @@
     },
     {
       "key": {
+        "uuid": "94b34e22_50456da2",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 527,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2018-07-30T21:33:12Z",
+      "side": 1,
+      "message": "I think we should rename this member to suspected_flake_build or suspected_flake_build_id. Depending on what else we do with this field, we may even consider making it a URL to avoid ambiguity. e.g. http://luci-milo.appspot.com/b/8939541490560163872 (requires login to luci)",
+      "parentUuid": "b57e0f1c_68cf2be4",
+      "range": {
+        "startLine": 527,
+        "startChar": 18,
+        "endLine": 527,
+        "endChar": 46
+      },
+      "revId": "0a246faafb3466617ebd07018479cfd71389ec55",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8da83476_cc747cd2",
+        "filename": "appengine/findit/pipelines/flake_failure/next_commit_position_pipeline.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2018-07-30T21:33:12Z",
+      "side": 1,
+      "message": "name is confusing, the function should return at most one isolated target because limit defaults to 1.",
+      "range": {
+        "startLine": 106,
+        "startChar": 4,
+        "endLine": 106,
+        "endChar": 23
+      },
+      "revId": "0a246faafb3466617ebd07018479cfd71389ec55",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4b08c659_cca67a69",
         "filename": "appengine/findit/pipelines/flake_failure/next_commit_position_pipeline.py",
         "patchSetId": 3
@@ -36,6 +83,30 @@
       "writtenOn": "2018-07-30T20:47:10Z",
       "side": 1,
       "message": "Add these lines of code to a function in services/? Maybe reuse step_util/",
+      "range": {
+        "startLine": 105,
+        "startChar": 0,
+        "endLine": 128,
+        "endChar": 47
+      },
+      "revId": "0a246faafb3466617ebd07018479cfd71389ec55",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d7bac5a7_b14e7853",
+        "filename": "appengine/findit/pipelines/flake_failure/next_commit_position_pipeline.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2018-07-30T21:33:12Z",
+      "side": 1,
+      "message": "+1",
+      "parentUuid": "4b08c659_cca67a69",
       "range": {
         "startLine": 105,
         "startChar": 0,
