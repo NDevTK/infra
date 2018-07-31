@@ -1,0 +1,303 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "88efb3d4_c8565b3c",
+        "filename": "go/src/infra/qscheduler/qslib/types/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T22:20:25Z",
+      "side": 1,
+      "message": "I\u0027d drop this. (justification for why type is separate not needed).",
+      "range": {
+        "startLine": 6,
+        "startChar": 34,
+        "endLine": 8,
+        "endChar": 46
+      },
+      "revId": "25316e7b92c4ca8df600d488fd13f3cda31d9c1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3c39ee5f_e58d4a05",
+        "filename": "go/src/infra/qscheduler/qslib/types/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T22:20:25Z",
+      "side": 1,
+      "message": "See my comment in CL lower in the stack about not having account.ID (can have a separate id here if needed, but account has no need for ID internally)",
+      "range": {
+        "startLine": 10,
+        "startChar": 20,
+        "endLine": 10,
+        "endChar": 30
+      },
+      "revId": "25316e7b92c4ca8df600d488fd13f3cda31d9c1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "031a704c_39969152",
+        "filename": "go/src/infra/qscheduler/qslib/types/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T22:20:25Z",
+      "side": 1,
+      "message": "I am not understanding the need for account.ID and task.ID.\n\nFor instance, can you not simply store []*task.Request here? Why do you need to reference these by an opaque ID distinct from the pointers?",
+      "range": {
+        "startLine": 13,
+        "startChar": 14,
+        "endLine": 13,
+        "endChar": 39
+      },
+      "revId": "25316e7b92c4ca8df600d488fd13f3cda31d9c1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d0047e2b_11e5021d",
+        "filename": "go/src/infra/qscheduler/qslib/types/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T22:20:25Z",
+      "side": 1,
+      "message": "Single method interfaces in go use the convention \n\ntype Doer interface {\n  Do(...)\n}\n\nPerhaps:\n\ntype Mutater interface {\n  Mutate(state *State)\n}",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 1
+      },
+      "revId": "25316e7b92c4ca8df600d488fd13f3cda31d9c1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e84a6235_4c6bf04a",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T22:20:25Z",
+      "side": 1,
+      "message": "Add package documentation",
+      "range": {
+        "startLine": 1,
+        "startChar": 1,
+        "endLine": 1,
+        "endChar": 12
+      },
+      "revId": "25316e7b92c4ca8df600d488fd13f3cda31d9c1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "97a0773f_41d89279",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T22:20:25Z",
+      "side": 1,
+      "message": "Again, if a task doesn\u0027t need an ID to do whatever it does inside the package, don\u0027t declare and export a type just for the external world. Let the external world decide how it wants to denote all the tasks it\u0027s storing.",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 14
+      },
+      "revId": "25316e7b92c4ca8df600d488fd13f3cda31d9c1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dd3b1b1c_1f2f1946",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T22:20:25Z",
+      "side": 1,
+      "message": "type LabelSet []string",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 1
+      },
+      "revId": "25316e7b92c4ca8df600d488fd13f3cda31d9c1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3086c4e5_456fb005",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T22:20:25Z",
+      "side": 1,
+      "message": "Implementation detail. Should be a comment inside the method.",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 14
+      },
+      "revId": "25316e7b92c4ca8df600d488fd13f3cda31d9c1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0a154bf7_7cd3daa3",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T22:20:25Z",
+      "side": 1,
+      "message": "This is potentially a large slice (even though mostly of size 1). Do you really want to copy it around instead of dispatching on pointer?",
+      "range": {
+        "startLine": 22,
+        "startChar": 6,
+        "endLine": 22,
+        "endChar": 16
+      },
+      "revId": "25316e7b92c4ca8df600d488fd13f3cda31d9c1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7a016ac9_e2c3b17b",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T22:20:25Z",
+      "side": 1,
+      "message": "This actually modifies a.Strings\nThis is an unexpected side-effect of calling a.Equals()",
+      "range": {
+        "startLine": 30,
+        "startChar": 1,
+        "endLine": 30,
+        "endChar": 24
+      },
+      "revId": "25316e7b92c4ca8df600d488fd13f3cda31d9c1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6055052d_37b041f0",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T22:20:25Z",
+      "side": 1,
+      "message": "s//This",
+      "range": {
+        "startLine": 42,
+        "startChar": 36,
+        "endLine": 42,
+        "endChar": 47
+      },
+      "revId": "25316e7b92c4ca8df600d488fd13f3cda31d9c1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5bacf6bd_463a6976",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T22:20:25Z",
+      "side": 1,
+      "message": "Can just store a *account.Config instead of using IDs...",
+      "range": {
+        "startLine": 46,
+        "startChar": 13,
+        "endLine": 46,
+        "endChar": 23
+      },
+      "revId": "25316e7b92c4ca8df600d488fd13f3cda31d9c1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5580e3c7_7c590dd6",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T22:20:25Z",
+      "side": 1,
+      "message": "No such type.",
+      "range": {
+        "startLine": 54,
+        "startChar": 71,
+        "endLine": 54,
+        "endChar": 82
+      },
+      "revId": "25316e7b92c4ca8df600d488fd13f3cda31d9c1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
