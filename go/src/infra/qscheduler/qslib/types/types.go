@@ -12,6 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package vector
+package types
 
-//go:generate cproto
+import (
+	"infra/qscheduler/qslib/types/account"
+	"infra/qscheduler/qslib/types/task"
+	"infra/qscheduler/qslib/types/vector"
+)
+
+func NewConfig() *Config {
+	return &Config{
+		AccountConfigs: map[string]*account.Config{},
+	}
+}
+
+func NewState() *State {
+	return &State{
+		Balances: map[string]*vector.Vector{},
+		Requests: map[string]*task.Request{},
+		Running:  []*task.Run{},
+		Workers:  map[string]*Worker{},
+	}
+}
