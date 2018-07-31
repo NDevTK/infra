@@ -22,6 +22,30 @@
       "revId": "8abc0e05be441ec4dc069c647b9220688ce9e574",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2eade877_b19c3157",
+        "filename": "luci-milo.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 1002080
+      },
+      "writtenOn": "2018-07-31T18:34:16Z",
+      "side": 1,
+      "message": "It\u0027s not necessary.  There\u0027s a bit of magic here, so only the first builder will show up, unless \"luci is prod\" is checked in luci-migration.appspot.com, in which case the second one will be shown.  This way the transition happens transparently on the console.",
+      "parentUuid": "fa1b7485_58474305",
+      "range": {
+        "startLine": 260,
+        "startChar": 10,
+        "endLine": 260,
+        "endChar": 79
+      },
+      "revId": "8abc0e05be441ec4dc069c647b9220688ce9e574",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
