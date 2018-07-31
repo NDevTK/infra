@@ -267,6 +267,12 @@ def AnyNewBuildSucceeded(master_name, builder_name, build_number):
   latest_build_numbers = buildbot.GetRecentCompletedBuilds(
       master_name, builder_name, FinditHttpClient())
 
+  if not latest_build_numbers:
+    # Failed to get later builds, cannot check their failures. Returns True to
+    # skip actions on the culprit.
+    # This should be rare, possible cause is builder rename.
+    return True
+
   for newer_build_number in xrange(build_number + 1,
                                    latest_build_numbers[0] + 1):
     # Checks all builds after current build.

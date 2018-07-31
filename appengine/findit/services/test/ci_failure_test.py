@@ -497,6 +497,10 @@ class CIFailureServicesTest(wf_testcase.WaterfallTestCase):
     mock_fn.side_effect = [buildbot.FAILURE, buildbot.FAILURE]
     self.assertFalse(ci_failure.AnyNewBuildSucceeded('m', 'b', 123))
 
+  @mock.patch.object(buildbot, 'GetRecentCompletedBuilds', return_value=[])
+  def testAnyNewBuildSucceededNoNewerBuild(self, _):
+    self.assertTrue(ci_failure.AnyNewBuildSucceeded('m', 'b', 123))
+
   @mock.patch.object(
       build_util,
       'GetWaterfallBuildStepLog',
