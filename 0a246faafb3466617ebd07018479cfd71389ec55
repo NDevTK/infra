@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "93b58c90_0390bb41",
+        "filename": "appengine/findit/model/flake/master_flake_analysis.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 527,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-07-31T07:08:51Z",
+      "side": 1,
+      "message": "per discussion offline we will maintain both for now to ease the transition from suspected_flake_build_number to suspected_build_id",
+      "parentUuid": "94b34e22_50456da2",
+      "range": {
+        "startLine": 527,
+        "startChar": 18,
+        "endLine": 527,
+        "endChar": 46
+      },
+      "revId": "0a246faafb3466617ebd07018479cfd71389ec55",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8da83476_cc747cd2",
         "filename": "appengine/findit/pipelines/flake_failure/next_commit_position_pipeline.py",
         "patchSetId": 3
@@ -60,6 +84,30 @@
       "writtenOn": "2018-07-30T21:33:12Z",
       "side": 1,
       "message": "name is confusing, the function should return at most one isolated target because limit defaults to 1.",
+      "range": {
+        "startLine": 106,
+        "startChar": 4,
+        "endLine": 106,
+        "endChar": 23
+      },
+      "revId": "0a246faafb3466617ebd07018479cfd71389ec55",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4b4c44e6_2649f232",
+        "filename": "appengine/findit/pipelines/flake_failure/next_commit_position_pipeline.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-07-31T07:08:51Z",
+      "side": 1,
+      "message": "The return value is technically a list, and the default to 1 is hidden to the calling function so I\u0027d prefer to keep this as is unless there\u0027s a better idea",
+      "parentUuid": "8da83476_cc747cd2",
       "range": {
         "startLine": 106,
         "startChar": 4,
@@ -116,6 +164,30 @@
       "revId": "0a246faafb3466617ebd07018479cfd71389ec55",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b452e695_105b2a00",
+        "filename": "appengine/findit/pipelines/flake_failure/next_commit_position_pipeline.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-07-31T07:08:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d7bac5a7_b14e7853",
+      "range": {
+        "startLine": 105,
+        "startChar": 0,
+        "endLine": 128,
+        "endChar": 47
+      },
+      "revId": "0a246faafb3466617ebd07018479cfd71389ec55",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
