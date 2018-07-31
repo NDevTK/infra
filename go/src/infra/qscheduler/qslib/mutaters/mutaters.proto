@@ -1,0 +1,42 @@
+syntax = "proto3";
+package mutaters;
+
+// TODO: Move all these protos to their own package, and rename them.
+
+// AssignIdleWorker represents a state mutation in which a request
+// is assigned to an already idle worker.
+message AssignIdleWorker {
+	// WorkerID of the worker to assign a task to.
+	string worker_id= 1;
+
+	// RequestID of the task to assign to that worker.
+	string request_id = 2;
+
+	// Priority at which the task will run.
+	int32 priority = 3;
+}
+
+// ChangePriority represents a state mutation in which a running request
+// has its priority changed.
+message ChangePriority {
+	// WorkerID of the worker running the job whose priority will change.
+
+	string worker_id = 1;
+
+	// NewPriority that the request will henceforth run with.
+	int32 new_priority = 2;
+}
+
+// PreemptTask represents a state mutation in which a running request
+// is interrupted, and replaced by a new request.
+message PreemptTask {
+	// WorkerID of the worker to preempt.
+	string worker_id = 1;
+
+	// RequestID of the request that will replace the current one on that
+	// worker.
+	string request_id = 2;
+
+	// Priority that the new request will run with, on the worker.
+	int32 priority = 3;
+}
