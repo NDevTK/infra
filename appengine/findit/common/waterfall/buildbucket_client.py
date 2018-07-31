@@ -319,3 +319,14 @@ def GetV2Build(build_id, fields=None):
   logging.warning('Unexpected prpc code: %s',
                   response_headers.get('X-Prpc-Grpc-Code'))
   return None
+
+
+def GetBuildNumberFromBuildId(build_id):
+  """Extracts the build number given a build id."""
+  try:
+    build_proto = GetV2Build(build_id)
+    build_properties = dict(build_proto.output.properties.items())
+    return int(build_properties['buildnumber'])
+  except Exception:
+    logging.error('Unable to get build number from build id %s' % build_id)
+    return None
