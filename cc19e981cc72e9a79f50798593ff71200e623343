@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2573d5bc_bd00fee0",
+        "filename": "appengine/findit/services/ci_failure.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 273,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2018-07-31T23:18:53Z",
+      "side": 1,
+      "message": "Should we log an error?",
+      "revId": "cc19e981cc72e9a79f50798593ff71200e623343",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
