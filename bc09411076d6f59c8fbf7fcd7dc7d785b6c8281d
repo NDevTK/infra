@@ -1,0 +1,45 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3631b243_948bba02",
+        "filename": "appengine/findit/common/waterfall/buildbucket_client.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 331,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-07-31T17:00:56Z",
+      "side": 1,
+      "message": "include exception message?",
+      "range": {
+        "startLine": 331,
+        "startChar": 4,
+        "endLine": 331,
+        "endChar": 75
+      },
+      "revId": "bc09411076d6f59c8fbf7fcd7dc7d785b6c8281d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "25ed7d0f_de55ef68",
+        "filename": "appengine/findit/services/step_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-07-31T17:00:56Z",
+      "side": 1,
+      "message": "+1",
+      "parentUuid": "9475abf9_6ae10bb6",
+      "revId": "bc09411076d6f59c8fbf7fcd7dc7d785b6c8281d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
