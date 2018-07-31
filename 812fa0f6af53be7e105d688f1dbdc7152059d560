@@ -1,0 +1,245 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5c3c3842_22c2e785",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T21:56:39Z",
+      "side": 1,
+      "message": "Add package docstring: https://golang.org/doc/effective_go.html#commentary",
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "396298fd_50d9d0e4",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T21:56:39Z",
+      "side": 1,
+      "message": "This is duplicating the type of Vector. How about:\n\n// Vector is used to store quantities associated with each available priority level, e.g.: balances or charge rates.",
+      "range": {
+        "startLine": 11,
+        "startChar": 15,
+        "endLine": 11,
+        "endChar": 47
+      },
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9e50feb1_9f357a49",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T21:56:39Z",
+      "side": 1,
+      "message": "A type like IntVector always confuses me. The reason this type exists is that it\u0027s an array of a fixed size determined at compile time. The names doesn\u0027t make that clear to me. How about PerPriorityInt? NumPriorityInts? (Something better... I don\u0027t like those either)",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 33
+      },
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "17a84187_aa69b614",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T21:56:39Z",
+      "side": 1,
+      "message": "Not used anywhere?",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 14
+      },
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8a1a0480_c506d2ca",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T21:56:39Z",
+      "side": 1,
+      "message": "I think these need documentation.\n\nChargeRate: Is this float / second? Not clear from the type.\nMaxFanout: Not sure what this is.",
+      "range": {
+        "startLine": 30,
+        "startChar": 1,
+        "endLine": 32,
+        "endChar": 15
+      },
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "41b77c2f_b49ea56a",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T21:56:39Z",
+      "side": 1,
+      "message": "Redundant with the function signature.\n\nHow about\n\nAdvance updates the state of a quota account by recharging the account for the elapsed time and draining the account for currently running jobs.",
+      "range": {
+        "startLine": 47,
+        "startChar": 0,
+        "endLine": 50,
+        "endChar": 19
+      },
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3aa94fe6_967a77fe",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T21:56:39Z",
+      "side": 1,
+      "message": "nit: balance.Advance() makes it sound like I\u0027m taking a loan of some sort (banking context).\n\nbalance.Update() perhaps?",
+      "range": {
+        "startLine": 51,
+        "startChar": 24,
+        "endLine": 51,
+        "endChar": 31
+      },
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "99044524_636cb7ce",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T21:56:39Z",
+      "side": 1,
+      "message": "Use time.Duration",
+      "range": {
+        "startLine": 51,
+        "startChar": 48,
+        "endLine": 51,
+        "endChar": 70
+      },
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f62e4fb4_60503fef",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T21:56:39Z",
+      "side": 1,
+      "message": "Just name it c. golang uses trivial names whenever type makes it clear what the variable is.",
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0bd1bf41_4346036d",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T21:56:39Z",
+      "side": 1,
+      "message": "Use tabulated tests to merge into one test.",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 1
+      },
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6c52fac0_f959746e",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T21:56:39Z",
+      "side": 1,
+      "message": "Merge into one via tabulated tests",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 64,
+        "endChar": 1
+      },
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
