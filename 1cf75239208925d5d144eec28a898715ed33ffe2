@@ -22,6 +22,30 @@
       "revId": "1cf75239208925d5d144eec28a898715ed33ffe2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "82d15e48_6232a6f6",
+        "filename": "appengine/findit/model/wf_analysis.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-07-31T20:32:14Z",
+      "side": 1,
+      "message": "I don\u0027t really know... Though it seems before my change this Reset was only used to set request_time in build_failure_analysis_pipelines. Not sure if it\u0027s a bug for a long time and got revealed by my new change.",
+      "parentUuid": "b5f9af34_c44347f7",
+      "range": {
+        "startLine": 111,
+        "startChar": 4,
+        "endLine": 111,
+        "endChar": 14
+      },
+      "revId": "1cf75239208925d5d144eec28a898715ed33ffe2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
