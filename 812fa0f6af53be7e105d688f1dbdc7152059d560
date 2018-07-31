@@ -88,6 +88,30 @@
     },
     {
       "key": {
+        "uuid": "532ff88f_753ee995",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-07-31T22:09:57Z",
+      "side": 1,
+      "message": "I see how you use it in a follow up CL.\n\nNot using the type defined in a module in that module is a code smell.\n\nOne suggestion is to not have a separate account package\n\npackage types\n\nfunc NewAccount(chargeRate NumPriorityFloats, maxBalance NumPriorityFloats, maxFanout int) Account {\n}\n\ntype Account struct {\n  ChargeRate NumPriorityFloats\n  MaxBalance NumPriorityFloats\n  MaxFanout int\n}\n.. because really, that\u0027s all an account is, right?\n\nThen types.Config can decide if it wants to associate some kind of id with each account it knows about or whatever. The Account itself has no need of, and does not know about, account ids.",
+      "parentUuid": "17a84187_aa69b614",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 14
+      },
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8a1a0480_c506d2ca",
         "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
         "patchSetId": 2
