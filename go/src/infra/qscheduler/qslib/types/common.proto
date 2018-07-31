@@ -1,0 +1,44 @@
+syntax = "proto3";
+package types;
+
+import "infra/qscheduler/qslib/types/task/task.proto";
+import "infra/qscheduler/qslib/types/vector/vector.proto";
+import "infra/qscheduler/qslib/types/account/account.proto";
+
+
+// Worker represents a resource that can run 1 task at a time. This corresponds
+// to the swarming concept of a Bot. This representation considers only the
+// subset of Labels that are Provisionable (can be changed by running a task),
+// because the quota scheduler algorithm is expected to run against a pool of
+// otherwise homogenous workers.
+message Worker {
+  string id = 1;
+  repeated string labels = 2;
+  task.Running running_task = 3;
+}
+
+// State represents the overall state of a quota scheduler worker pool,
+// account set, and task queue. This is represented separately from
+// configuration information. The state is expected to be updated frequently,
+// on each scheduler tick.
+message State {
+  // Requests that are waiting to be assigned to a worker.
+  map<string, task.Request> RequestQueue = 1;
+
+  // Requests that are running on a worker.
+  // TODO: Consider dropping or deprecating this field, as it is
+  // redundant with respect to Workers field.
+  repeated task.Running running = 2;
+
+  // Balance of all quota accounts for this pool.
+  map<string, vector.Vector> balances = 3;
+
+  // Workers that may run tasks, and their states.
+	map<string, Worker> workers = 4;
+}
+
+// Config represents configuration information about the behavior of accounts
+// for this quota scheduler pool.
+message Config {
+  map<string, account.Config> account_configs = 1;
+}
