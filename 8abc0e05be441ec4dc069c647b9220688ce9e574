@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa1b7485_58474305",
+        "filename": "luci-milo.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 1272456
+      },
+      "writtenOn": "2018-07-31T00:13:05Z",
+      "side": 1,
+      "message": "Should we remove these luci ones from this console? (Not totally sure how this works so I might be misunderstanding). They seem to be already represented below in the luci.codesearch console.",
+      "range": {
+        "startLine": 260,
+        "startChar": 10,
+        "endLine": 260,
+        "endChar": 79
+      },
+      "revId": "8abc0e05be441ec4dc069c647b9220688ce9e574",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
