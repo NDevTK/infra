@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "87c99a40_fab790b7",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-07-31T23:57:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5c3c3842_22c2e785",
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "396298fd_50d9d0e4",
         "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
         "patchSetId": 2
@@ -42,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "512b88b3_93798522",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-07-31T23:57:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "396298fd_50d9d0e4",
+      "range": {
+        "startLine": 11,
+        "startChar": 15,
+        "endLine": 11,
+        "endChar": 47
+      },
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9e50feb1_9f357a49",
         "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
         "patchSetId": 2
@@ -53,6 +95,30 @@
       "writtenOn": "2018-07-31T21:56:39Z",
       "side": 1,
       "message": "A type like IntVector always confuses me. The reason this type exists is that it\u0027s an array of a fixed size determined at compile time. The names doesn\u0027t make that clear to me. How about PerPriorityInt? NumPriorityInts? (Something better... I don\u0027t like those either)",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 33
+      },
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "06853cf0_052ebf3e",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-07-31T23:57:26Z",
+      "side": 1,
+      "message": "It\u0027s a direct generalization of Vector above, just specialized for integer quantities. I think the name as written is clearer than the alternatives.",
+      "parentUuid": "9e50feb1_9f357a49",
       "range": {
         "startLine": 15,
         "startChar": 0,
@@ -112,6 +178,30 @@
     },
     {
       "key": {
+        "uuid": "d33242a6_137d1593",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-07-31T23:57:26Z",
+      "side": 1,
+      "message": "I moved towards separate packages because I wanted to reduce stutter and start having things like (task.Request, task.Running, etc). But in order to factor out task from types, I need to factor out account as well to avoid circular import dependencies.\n\nIndeed, account.ID is not used within the account package. It is first used in the task package. I suppose I could move this to task.AccountID but that seems less clear at first blush.\n\nI think I want to stick with tasks using the ID to refer to their account (rather than by pointer) mainly  because that makes it easy to avoid serialization confusion.\n\nLet\u0027s discuss this again further though.",
+      "parentUuid": "532ff88f_753ee995",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 14
+      },
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8a1a0480_c506d2ca",
         "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
         "patchSetId": 2
@@ -135,6 +225,30 @@
     },
     {
       "key": {
+        "uuid": "11dc677f_adb94c67",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-07-31T23:57:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8a1a0480_c506d2ca",
+      "range": {
+        "startLine": 30,
+        "startChar": 1,
+        "endLine": 32,
+        "endChar": 15
+      },
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "41b77c2f_b49ea56a",
         "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
         "patchSetId": 2
@@ -155,6 +269,30 @@
       "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b718d13c_225c1dce",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-07-31T23:57:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "41b77c2f_b49ea56a",
+      "range": {
+        "startLine": 47,
+        "startChar": 0,
+        "endLine": 50,
+        "endChar": 19
+      },
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -221,6 +359,72 @@
     },
     {
       "key": {
+        "uuid": "48788b18_d9838bb8",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-07-31T23:57:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3aa94fe6_967a77fe",
+      "range": {
+        "startLine": 51,
+        "startChar": 24,
+        "endLine": 51,
+        "endChar": 31
+      },
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ccba1cdc_9b16feaa",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-07-31T23:57:26Z",
+      "side": 1,
+      "message": "punting for now",
+      "parentUuid": "99044524_636cb7ce",
+      "range": {
+        "startLine": 51,
+        "startChar": 48,
+        "endLine": 51,
+        "endChar": 70
+      },
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ed1e7222_fc766240",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-07-31T23:57:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f62e4fb4_60503fef",
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0bd1bf41_4346036d",
         "filename": "go/src/infra/qscheduler/qslib/types/account/account_test.go",
         "patchSetId": 2
@@ -244,6 +448,30 @@
     },
     {
       "key": {
+        "uuid": "95bfb872_316b7a2f",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-07-31T23:57:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0bd1bf41_4346036d",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 1
+      },
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6c52fac0_f959746e",
         "filename": "go/src/infra/qscheduler/qslib/types/account/account_test.go",
         "patchSetId": 2
@@ -264,6 +492,30 @@
       "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "298aa503_1b1ce166",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-07-31T23:57:26Z",
+      "side": 1,
+      "message": "I saw this on my previous attempt at this CL.\n\nIn general I agree, in this particular case I think the setup and the documentation around it is rather specific and wouldn\u0027t be as clear in tabulated test form.",
+      "parentUuid": "6c52fac0_f959746e",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 64,
+        "endChar": 1
+      },
+      "revId": "812fa0f6af53be7e105d688f1dbdc7152059d560",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
