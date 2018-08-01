@@ -266,6 +266,7 @@ def validate_builder_cfg(builder, mixin_names, final, ctx):
 
   cache_paths = set()
   cache_names = set()
+  using_cache_fallback = False
   for i, c in enumerate(builder.caches):
     with ctx.prefix('cache #%d: ', i + 1):
       validate_cache_entry(c, ctx)
@@ -279,7 +280,12 @@ def validate_builder_cfg(builder, mixin_names, final, ctx):
           ctx.error('duplicate path')
         else:
           cache_paths.add(c.path)
-
+      if c.wait_for_warm_cache_secs:
+        if using_cache_fallback:
+          ctx.error('wait_for_warm_cache_secs can only be used for one entry')
+        using_cache_fallback = True
+        if c.wait_for_warm_cache_secs < 60:
+          ctx.error('wait_for_warm_cache_secs must be at least 60 seconds')
   with ctx.prefix('recipe: '):
     validate_recipe_cfg(builder.recipe, ctx, final=final)
 

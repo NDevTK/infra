@@ -260,6 +260,33 @@ class ProjectCfgTest(testing.AppengineTestCase):
         '''
           hostname: "example.com"
           builders {
+            name: "rel"
+            caches { path: "a" name: "a" wait_for_warm_cache_secs: 120 }
+            caches { path: "b" name: "b" wait_for_warm_cache_secs: 120 }
+          }
+        ''', '', [
+            'builder rel: cache #2: wait_for_warm_cache_secs can only be used '
+            'for one entry'
+        ]
+    )
+
+    self.cfg_test(
+        '''
+          hostname: "example.com"
+          builders {
+            name: "rel"
+            caches { path: "a" name: "a" wait_for_warm_cache_secs: 59 }
+          }
+        ''', '', [
+            'builder rel: cache #1: wait_for_warm_cache_secs must be at least '
+            '60 seconds'
+        ]
+    )
+
+    self.cfg_test(
+        '''
+          hostname: "example.com"
+          builders {
             name: "b"
             service_account: "not an email"
           }
