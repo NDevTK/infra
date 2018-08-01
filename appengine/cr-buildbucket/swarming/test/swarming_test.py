@@ -301,6 +301,29 @@ class SwarmingTest(BaseTest):
         ]
     )
 
+  def test_shared_cache_wait_for(self):
+    builder_cfg = self.bucket_cfg.swarming.builders[0]
+    builder_cfg.caches.add(path='builder', name='shared_builder_cache')
+
+    # wait_for_warm_cache_secs=60,
+    build = mkBuild(
+        parameters={
+            model.BUILDER_PARAMETER: 'linux_chromium_rel_ng',
+        },
+        tags=['builder:linux_chromium_rel_ng'],
+    )
+
+    task_def = swarming.prepare_task_def_async(build).get_result()
+
+    self.assertEqual(
+        task_def['task_slices'][0]['properties']['caches'], [
+            {'path': 'cache/a', 'name': 'a'},
+            {'path': 'cache/builder', 'name': 'shared_builder_cache'},
+            {'path': 'cache/git_cache', 'name': 'git_chromium'},
+            {'path': 'cache/out', 'name': 'build_chromium'},
+        ]
+    )
+
   def test_recipe_cipd_package(self):
     build = mkBuild(
         parameters={
