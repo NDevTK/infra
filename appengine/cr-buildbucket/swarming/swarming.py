@@ -409,8 +409,15 @@ def _create_task_def_async(
   Raises:
     errors.InvalidInputError if build.parameters are invalid.
   """
+  assert isinstance(swarming_cfg,
+                    project_config_pb2.Swarming), type(swarming_cfg)
+  assert isinstance(builder_cfg, project_config_pb2.Builder), type(builder_cfg)
+  assert isinstance(build, model.Build), type(build)
   assert build.key and build.key.id(), build.key
   assert build.url, 'build.url should have been initialized'
+  assert isinstance(build_number,
+                    int) or build_number is None, type(build_number)
+  assert isinstance(fake_build, bool), type(fake_build)
   params = copy.deepcopy(build.parameters) or {}
   build.parameters_actual = params
   # params is an alias for build.parameters_actual.
@@ -604,6 +611,29 @@ def _create_task_def_async(
   for t in task['task_slices']:
     _setup_props(build, builder_cfg, extra_cipd_packages, t['properties'])
 
+  # Now take a look to generate a fallback! This is done by inspecting the named
+  # caches for a non-standard flag "wait_for_warm_cache_secs".
+  if len(task['task_slices']) == 1:
+    caches = task['task_slices'][0]['properties']['caches']
+    # TODO(maruel): Assert that only one 'wait_for_warm_cache_secs' can be used
+    # at a time.
+    for c in caches:
+      wait = c.get('wait_for_warm_cache_secs')
+      if wait:
+        # Create a fallback by copying the task slice, adding a dimension to the
+        # first one and a short expiration.
+        task['task_slices'].append(copy.deepcopy(task['task_slices'][0]))
+        task['task_slices'][0]['expiration'] = wait
+        task['task_slices'][0]['properties']['dimensions'].append({
+            'key': 'cache', 'value': c['name']
+        })
+        if task['task_slices'][1]['expiration'] > wait:
+          task['task_slices'][1]['expiration'] -= wait
+        break
+
+  # TODO(maruel): Enable task slice for optional named cache;
+  # https://crbug.com/847602.
+
   if not fake_build:  # pragma: no branch | covered by swarmbucketapi_test.py
     task['pubsub_topic'] = (
         'projects/%s/topics/%s' %
@@ -639,8 +669,6 @@ def _setup_props(build, builder_cfg, extra_cipd_packages, task_properties):
       'key': k, 'value': v
   } for k, v in swarmingcfg_module.read_dimensions(builder_cfg)]
 
-  # TODO(maruel): Enable task slice for optional named cache;
-  # https://crbug.com/847602.
   _add_named_caches(builder_cfg, task_properties)
 
   if builder_cfg.execution_timeout_secs > 0:
