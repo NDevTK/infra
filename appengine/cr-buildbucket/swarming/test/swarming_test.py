@@ -301,6 +301,62 @@ class SwarmingTest(BaseTest):
         ]
     )
 
+  def test_shared_cache_wait_for(self):
+    builder_cfg = self.bucket_cfg.swarming.builders[0]
+    builder_cfg.caches.add(
+        path='builder',
+        name='shared_builder_cache',
+        wait_for_warm_cache_secs=60
+    )
+
+    build = mkBuild(
+        parameters={
+            model.BUILDER_PARAMETER: 'linux_chromium_rel_ng',
+        },
+        tags=['builder:linux_chromium_rel_ng'],
+    )
+
+    task_def = swarming.prepare_task_def_async(build).get_result()
+
+    t_0 = task_def['task_slices'][0]
+    self.assertEqual(
+        t_0['properties']['caches'], [
+            {'path': 'cache/a', 'name': 'a'},
+            {'path': 'cache/builder', 'name': 'shared_builder_cache'},
+            {'path': 'cache/git_cache', 'name': 'git_chromium'},
+            {'path': 'cache/out', 'name': 'build_chromium'},
+        ]
+    )
+    # 'cache' is injected.
+    self.assertEqual(
+        t_0['properties']['dimensions'], [
+            {'key': u'cores', 'value': u'8'},
+            {'key': u'os', 'value': u'Ubuntu'},
+            {'key': u'pool', 'value': u'Chrome'},
+            {'key': 'cache', 'value': u'shared_builder_cache'},
+        ]
+    )
+    self.assertEqual(t_0['expiration_secs'], '60')
+
+    t_1 = task_def['task_slices'][1]
+    self.assertEqual(
+        t_1['properties']['caches'], [
+            {'path': 'cache/a', 'name': 'a'},
+            {'path': 'cache/builder', 'name': 'shared_builder_cache'},
+            {'path': 'cache/git_cache', 'name': 'git_chromium'},
+            {'path': 'cache/out', 'name': 'build_chromium'},
+        ]
+    )
+    # 'cache' is not injected.
+    self.assertEqual(
+        t_1['properties']['dimensions'], [
+            {'key': u'cores', 'value': u'8'},
+            {'key': u'os', 'value': u'Ubuntu'},
+            {'key': u'pool', 'value': u'Chrome'},
+        ]
+    )
+    self.assertEqual(t_1['expiration_secs'], '3540')
+
   def test_recipe_cipd_package(self):
     build = mkBuild(
         parameters={
