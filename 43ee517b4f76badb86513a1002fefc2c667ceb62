@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "ea4a1654_c640f315",
+        "filename": "go/src/infra/qscheduler/qslib/types/common.proto",
+        "patchSetId": 9
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T21:53:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3de61d9f_9c867fd4",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 6,
+        "endChar": 60
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ab4ec103_919aeda5",
         "filename": "go/src/infra/qscheduler/qslib/types/common.proto",
         "patchSetId": 9
@@ -36,6 +60,30 @@
       "writtenOn": "2018-08-02T21:13:17Z",
       "side": 1,
       "message": "comment about the overall algorithm: Our bots even within the cq/bvt pools may have different labels. The tests created from CQ may not use those labels to distinguish between them, but other tests (created via suite_scheduler, maybe some in bvt suite?) might.\n\nI\u0027m thinking of labels like cellular, wifi chip name etc.\nHow will qslib deal with this?\n\nMy understanding is:\n- a single account in qslib takes charge of a set of bots that matches the *exact* set of non-provisionable labels.\n- All tasks that ask for exactly this set of non-provisionable labels are assigned to that account of qslib.\n  - What about tasks that ask for a subset of non-provisionable labels for a given account (Swarming assigns a bot that has at least the dimensions requested in a task). If those tasks are also assigned to the account, does qslib guarantee that accounts use disjoint sets of non-provisionable labels for grabbing tasks (otherwise Swarming wouldn\u0027t know which account owns a task that asks for labels common to multiple qslib accounts).\n  \n\n(in this Swarming knows what qslib accounts exist, and knows to defer to qslib for exactly the non-provisionable labels corresponding to each of those accounts)\n\nIs this correct? If so, I haven\u0027t (yet) seen the description of these non-provisionable label sets anywhere that identify an account.",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 32
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "70a360fd_b27f3186",
+        "filename": "go/src/infra/qscheduler/qslib/types/common.proto",
+        "patchSetId": 9
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T21:53:23Z",
+      "side": 1,
+      "message": "Yes, qscheduler deals with a pool of homogenous devices, and only with tasks that are agnostic about which device within that pool they run on. Any non \"fungible\" device cannot be in a qslib pool.\n\nLet\u0027s move this discussion to design doc. I\u0027ll paste in your comments there and we can hash it out.",
+      "parentUuid": "ab4ec103_919aeda5",
       "range": {
         "startLine": 12,
         "startChar": 0,
