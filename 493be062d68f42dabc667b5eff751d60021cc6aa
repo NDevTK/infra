@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7058ef99_96fb26f7",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T23:45:12Z",
+      "side": 1,
+      "message": "Hmm. I see below that this does call m.Mutate()\nSo state is changed. The channel is really RO, for somebody to find out what was done.",
+      "parentUuid": "31f1a55a_c58937f0",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 72
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "866d13c0_7b71231c",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 14
@@ -41,6 +65,362 @@
         "startChar": 0,
         "endLine": 35,
         "endChar": 14
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "16ac4396_c3a3ca2b",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T23:45:12Z",
+      "side": 1,
+      "message": "I\u0027d swap these. Don\u0027t want to tell the world I Mutate()d state before I actually do it.",
+      "range": {
+        "startLine": 52,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 19
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6ab50057_dfe93601",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T23:45:12Z",
+      "side": 1,
+      "message": "update name.",
+      "range": {
+        "startLine": 61,
+        "startChar": 3,
+        "endLine": 61,
+        "endChar": 26
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dfd6bbef_57071711",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T23:45:12Z",
+      "side": 1,
+      "message": "This seems easy, I recommend just doing it now:\n- loop over state.Workers, getting just the ones with IsIdle()\n- then loop over jobsAtP and assign from filtered workers as we go.",
+      "range": {
+        "startLine": 70,
+        "startChar": 0,
+        "endLine": 71,
+        "endChar": 28
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "75b1eb19_c53a70e7",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T23:45:12Z",
+      "side": 1,
+      "message": "This is repeated between matchIdleBotsWithLabels and matchIdleBots. Extract into helper function.",
+      "range": {
+        "startLine": 74,
+        "startChar": 0,
+        "endLine": 81,
+        "endChar": 48
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c991c708_e86974e9",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T23:45:12Z",
+      "side": 1,
+      "message": "Unused.",
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "50d111f5_5df90c87",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T23:45:12Z",
+      "side": 1,
+      "message": "This function is rather long. I think it\u0027ll help readability to factor out functions with descriptive names.",
+      "range": {
+        "startLine": 95,
+        "startChar": 5,
+        "endLine": 95,
+        "endChar": 29
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "920f6634_ba394809",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T23:45:12Z",
+      "side": 1,
+      "message": "I recommend panic() instead.\nDefensive program doesn\u0027t work. fail fast and make sure all API calls are idempotent so they can be retried.\n\nIf you want to be able to recover from this condition automatically, kick out the state.Balances entry and then panic()",
+      "range": {
+        "startLine": 98,
+        "startChar": 1,
+        "endLine": 101,
+        "endChar": 3
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "04db45ac_6d4df4ba",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T23:45:12Z",
+      "side": 1,
+      "message": "extract into\n\n  func workersRunningAt(workers []*types.Worker, priority int) []*types.Worker",
+      "range": {
+        "startLine": 109,
+        "startChar": 2,
+        "endLine": 116,
+        "endChar": 3
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ef505dbe_b0bd5a1a",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T23:45:12Z",
+      "side": 1,
+      "message": "idiomatic and more readable:\n\n  switch {\n  case demote \u0026\u0026 chargeRate \u003c 0:\n    return demoteSome(...)\n  case promote \u0026\u0026 chargeRate \u003e 0:\n    return promoteSome(...)\n  default:\n    // We\u0027ve already returned above for performance reasons.\n    panic()\n  }",
+      "range": {
+        "startLine": 121,
+        "startChar": 0,
+        "endLine": 121,
+        "endChar": 31
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e8eee463_002da153",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T23:45:12Z",
+      "side": 1,
+      "message": "I hate this function. less is expected to work on the slice via a continuation, while we pass in the *same* slice into sort.SliceStable() to mutate as it goes.\nYuck.",
+      "range": {
+        "startLine": 126,
+        "startChar": 3,
+        "endLine": 126,
+        "endChar": 37
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "19bf7a55_62a3fea9",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T23:45:12Z",
+      "side": 1,
+      "message": "I keep forgetting that smaller priority number means higher priority. :(",
+      "range": {
+        "startLine": 142,
+        "startChar": 5,
+        "endLine": 142,
+        "endChar": 43
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "37c44f8c_13c4c61c",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T23:45:12Z",
+      "side": 1,
+      "message": "typo",
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b13b5ecc_f320db5a",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T23:45:12Z",
+      "side": 1,
+      "message": "This is the same as one of the two sorts above, but I\u0027m sure I\u0027ll point out the wrong one non-trivial number of times.\n\nCan you pull these out into named functions so I can forget how its down: sortRequestsHighestPriorityFirst() and sortRequestsHighestPriorityLast() or some such.",
+      "range": {
+        "startLine": 184,
+        "startChar": 1,
+        "endLine": 187,
+        "endChar": 35
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cc1e13f9_49478caa",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T23:45:12Z",
+      "side": 1,
+      "message": "assign within for block\n\n  for ri :\u003d 0, ci :\u003d 0; ri \u003c len(jobsAtP) \u0026\u0026 ci \u003c len(candidates); {\n    ...\n  }",
+      "range": {
+        "startLine": 191,
+        "startChar": 1,
+        "endLine": 191,
+        "endChar": 68
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b745fc77_4ac635e7",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T23:45:12Z",
+      "side": 1,
+      "message": "define within scope:\n\n  if _, ok :\u003d banned[requestAccountID]; ok {\n    ri++\n    continue\n  }\n\nAlso, personal style preference: I don\u0027t like loops with more than one / non-trival continue statements. It tells me that the loop body needs would be better as a separate function.\n\nIn this case, I\u0027d like a function:\n\n  // maybePreempt potentially preempts task running at cid with that at rid. \n  //\n  // maybePreempt returns true if a preemption was made, false otherwise.\n  func maybePreempt(rid, cid, ...) bool {\n    // main logic, early returns wherever we decide to not make a preemption.\n  }\n\n  for rid :\u003d 0, cid :\u003d 0; ri \u003c len(jobsAtP) \u0026\u0026 ci \u003c len(candidates) {\n    if maybePreempt(rid, cid, ...) {\n      cid++\n    }\n    rid++\n  }",
+      "range": {
+        "startLine": 199,
+        "startChar": 0,
+        "endLine": 203,
+        "endChar": 3
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8e531025_032a3107",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T23:45:12Z",
+      "side": 1,
+      "message": "nit: This comment doesn\u0027t add clarity for me. (It\u0027s saying what is being done, not why / how / why it\u0027s non-trivial).",
+      "range": {
+        "startLine": 207,
+        "startChar": 0,
+        "endLine": 208,
+        "endChar": 32
       },
       "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
