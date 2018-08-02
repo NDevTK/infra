@@ -119,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "722c3e3b_192cd342",
+        "filename": "go/src/infra/qscheduler/qslib/types/common.proto",
+        "patchSetId": 9
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T22:07:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d8fb3504_0b32c489",
+      "range": {
+        "startLine": 25,
+        "startChar": 3,
+        "endLine": 25,
+        "endChar": 58
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f3f97aa2_9ba96b86",
         "filename": "go/src/infra/qscheduler/qslib/types/common.proto",
         "patchSetId": 9
@@ -142,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "4f747f2d_d56bab74",
+        "filename": "go/src/infra/qscheduler/qslib/types/common.proto",
+        "patchSetId": 9
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T22:07:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f3f97aa2_9ba96b86",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 49
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b6854385_dd063768",
         "filename": "go/src/infra/qscheduler/qslib/types/common.proto",
         "patchSetId": 9
@@ -156,6 +204,24 @@
       "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5f1e3b8d_afeb355e",
+        "filename": "go/src/infra/qscheduler/qslib/types/common.proto",
+        "patchSetId": 9
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T22:07:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b6854385_dd063768",
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -182,6 +248,30 @@
     },
     {
       "key": {
+        "uuid": "5b1d3c9a_134b1192",
+        "filename": "go/src/infra/qscheduler/qslib/types/common.proto",
+        "patchSetId": 9
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T22:07:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f8fe9748_cb3425fb",
+      "range": {
+        "startLine": 43,
+        "startChar": 6,
+        "endLine": 43,
+        "endChar": 12
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "96d9f93b_f3f6195b",
         "filename": "go/src/infra/qscheduler/qslib/types/state.go",
         "patchSetId": 9
@@ -202,6 +292,30 @@
       "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "222a0e72_ac9015b3",
+        "filename": "go/src/infra/qscheduler/qslib/types/state.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T22:07:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "96d9f93b_f3f6195b",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 1
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -228,6 +342,30 @@
     },
     {
       "key": {
+        "uuid": "b5850d45_1079ca5c",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T22:07:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "06f93c72_60a3abf4",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 42
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f073067f_513830e1",
         "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
         "patchSetId": 9
@@ -248,6 +386,30 @@
       "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7ea150d7_cc7de178",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T22:07:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f073067f_513830e1",
+      "range": {
+        "startLine": 17,
+        "startChar": 18,
+        "endLine": 17,
+        "endChar": 24
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -274,6 +436,30 @@
     },
     {
       "key": {
+        "uuid": "b4364066_30aa2906",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.proto",
+        "patchSetId": 9
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T22:07:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a2a2f41e_7226db27",
+      "range": {
+        "startLine": 9,
+        "startChar": 37,
+        "endLine": 9,
+        "endChar": 41
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8a0f0cd2_acad8e3b",
         "filename": "go/src/infra/qscheduler/qslib/types/task/task.proto",
         "patchSetId": 9
@@ -285,6 +471,30 @@
       "writtenOn": "2018-08-02T21:13:17Z",
       "side": 1,
       "message": "Running is a verb form as opposed to Request.\nHow about Execution?",
+      "range": {
+        "startLine": 23,
+        "startChar": 8,
+        "endLine": 23,
+        "endChar": 15
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "412da8d8_37a14ea4",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.proto",
+        "patchSetId": 9
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T22:07:05Z",
+      "side": 1,
+      "message": "How about Run?",
+      "parentUuid": "8a0f0cd2_acad8e3b",
       "range": {
         "startLine": 23,
         "startChar": 8,
@@ -320,6 +530,30 @@
     },
     {
       "key": {
+        "uuid": "76201937_e6495337",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.proto",
+        "patchSetId": 9
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T22:07:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "58821474_d8978554",
+      "range": {
+        "startLine": 24,
+        "startChar": 15,
+        "endLine": 24,
+        "endChar": 40
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a1cbd039_3c9fa3fc",
         "filename": "go/src/infra/qscheduler/qslib/types/task/task_test.go",
         "patchSetId": 9
@@ -343,6 +577,30 @@
     },
     {
       "key": {
+        "uuid": "dc8b9063_8fac0f6c",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T22:07:05Z",
+      "side": 1,
+      "message": "punting. I re-use a and b in some cases.",
+      "parentUuid": "a1cbd039_3c9fa3fc",
+      "range": {
+        "startLine": 6,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 2
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f32c908f_3b513b26",
         "filename": "go/src/infra/qscheduler/qslib/types/task/task_test.go",
         "patchSetId": 9
@@ -354,6 +612,30 @@
       "writtenOn": "2018-08-02T21:13:17Z",
       "side": 1,
       "message": "go has opinions about test failure reporting: https://github.com/golang/go/wiki/CodeReviewComments#useful-test-failures",
+      "range": {
+        "startLine": 31,
+        "startChar": 2,
+        "endLine": 33,
+        "endChar": 3
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f8093ba2_6b503c60",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T22:07:05Z",
+      "side": 1,
+      "message": "Punting, but will do a follow-up in which I clean up all these to follow the opinion.",
+      "parentUuid": "f32c908f_3b513b26",
       "range": {
         "startLine": 31,
         "startChar": 2,
