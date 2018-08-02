@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "06d4a520_d1d63083",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T20:41:27Z",
+      "side": 1,
+      "message": "set request.Invalid \u003d 1; although that has no behavioral relevance because preemption is the last phase of scheduling (so no future pass is going to look atthis request) , it is still more correct.",
+      "revId": "f35dc5eb4be5d944b134cfd984659c69f36005f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
