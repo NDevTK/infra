@@ -176,7 +176,10 @@ BEGIN
       i.reporter_id, i.owner_id
     FROM Issue i
     JOIN StatusDef sd ON i.status_id = sd.id
-    WHERE i.id >= chunk_offset AND i.id < chunk_offset + chunk_size;
+    WHERE
+      i.id >= chunk_offset
+      AND i.id < chunk_offset + chunk_size
+      AND i.id NOT IN (SELECT issue_id FROM IssueSnapshot);
 
   DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
 
