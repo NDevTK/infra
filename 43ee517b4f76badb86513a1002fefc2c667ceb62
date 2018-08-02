@@ -2,6 +2,98 @@
   "comments": [
     {
       "key": {
+        "uuid": "3de61d9f_9c867fd4",
+        "filename": "go/src/infra/qscheduler/qslib/types/common.proto",
+        "patchSetId": 9
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T21:13:17Z",
+      "side": 1,
+      "message": "common.proto is a weird name for the file that pulls in various protos declared in sub-folders.\n\nI\u0027d expect common to be imported by various files.\n\nPerhaps you simply want types.proto. Or break this into worker.proto and state.proto\nI prefer types.proto.",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 6,
+        "endChar": 60
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ab4ec103_919aeda5",
+        "filename": "go/src/infra/qscheduler/qslib/types/common.proto",
+        "patchSetId": 9
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T21:13:17Z",
+      "side": 1,
+      "message": "comment about the overall algorithm: Our bots even within the cq/bvt pools may have different labels. The tests created from CQ may not use those labels to distinguish between them, but other tests (created via suite_scheduler, maybe some in bvt suite?) might.\n\nI\u0027m thinking of labels like cellular, wifi chip name etc.\nHow will qslib deal with this?\n\nMy understanding is:\n- a single account in qslib takes charge of a set of bots that matches the *exact* set of non-provisionable labels.\n- All tasks that ask for exactly this set of non-provisionable labels are assigned to that account of qslib.\n  - What about tasks that ask for a subset of non-provisionable labels for a given account (Swarming assigns a bot that has at least the dimensions requested in a task). If those tasks are also assigned to the account, does qslib guarantee that accounts use disjoint sets of non-provisionable labels for grabbing tasks (otherwise Swarming wouldn\u0027t know which account owns a task that asks for labels common to multiple qslib accounts).\n  \n\n(in this Swarming knows what qslib accounts exist, and knows to defer to qslib for exactly the non-provisionable labels corresponding to each of those accounts)\n\nIs this correct? If so, I haven\u0027t (yet) seen the description of these non-provisionable label sets anywhere that identify an account.",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 32
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d8fb3504_0b32c489",
+        "filename": "go/src/infra/qscheduler/qslib/types/common.proto",
+        "patchSetId": 9
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T21:13:17Z",
+      "side": 1,
+      "message": "Please document what the key is in this map.",
+      "range": {
+        "startLine": 25,
+        "startChar": 3,
+        "endLine": 25,
+        "endChar": 58
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f3f97aa2_9ba96b86",
+        "filename": "go/src/infra/qscheduler/qslib/types/common.proto",
+        "patchSetId": 9
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T21:13:17Z",
+      "side": 1,
+      "message": "Please document what the key is in this map.",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 49
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b6854385_dd063768",
         "filename": "go/src/infra/qscheduler/qslib/types/common.proto",
         "patchSetId": 9
@@ -13,6 +105,213 @@
       "writtenOn": "2018-08-02T17:56:39Z",
       "side": 1,
       "message": "fix whitespace",
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f8fe9748_cb3425fb",
+        "filename": "go/src/infra/qscheduler/qslib/types/common.proto",
+        "patchSetId": 9
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T21:13:17Z",
+      "side": 1,
+      "message": "Please document what the key is in this map.",
+      "range": {
+        "startLine": 43,
+        "startChar": 6,
+        "endLine": 43,
+        "endChar": 12
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "96d9f93b_f3f6195b",
+        "filename": "go/src/infra/qscheduler/qslib/types/state.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T21:13:17Z",
+      "side": 1,
+      "message": "Interfaces should be defined at the place-of-use rather than with the type that implements that interface (i.e., this belongs somewhere in the scheduler code).",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 1
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "06f93c72_60a3abf4",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T21:13:17Z",
+      "side": 1,
+      "message": "// LabelSet represents a set of provisionable labels.\n//\n// In pratice, ...",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 42
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f073067f_513830e1",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T21:13:17Z",
+      "side": 1,
+      "message": "Same comment Equals() vs Equal(). I seem to prefer Equal(), but either consistent choice is OK.",
+      "range": {
+        "startLine": 17,
+        "startChar": 18,
+        "endLine": 17,
+        "endChar": 24
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a2a2f41e_7226db27",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.proto",
+        "patchSetId": 9
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T21:13:17Z",
+      "side": 1,
+      "message": "nitty nit: I\u0027d drop \"true\" \n\"Swarming task request\" is enough.",
+      "range": {
+        "startLine": 9,
+        "startChar": 37,
+        "endLine": 9,
+        "endChar": 41
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8a0f0cd2_acad8e3b",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.proto",
+        "patchSetId": 9
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T21:13:17Z",
+      "side": 1,
+      "message": "Running is a verb form as opposed to Request.\nHow about Execution?",
+      "range": {
+        "startLine": 23,
+        "startChar": 8,
+        "endLine": 23,
+        "endChar": 15
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "58821474_d8978554",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.proto",
+        "patchSetId": 9
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T21:13:17Z",
+      "side": 1,
+      "message": "nitty nit: \"cost\" is not spent. How about \"cost incurred\"",
+      "range": {
+        "startLine": 24,
+        "startChar": 15,
+        "endLine": 24,
+        "endChar": 40
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a1cbd039_3c9fa3fc",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T21:13:17Z",
+      "side": 1,
+      "message": "I\u0027d advice merging this whole thing in one declaration (golang has some disdain for 80 char width limits): https://play.golang.org/p/1dQtC6YN8x6\n\nI don\u0027t have to track what a, b...i are in my head to understand what the test is doing.",
+      "range": {
+        "startLine": 6,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 2
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f32c908f_3b513b26",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T21:13:17Z",
+      "side": 1,
+      "message": "go has opinions about test failure reporting: https://github.com/golang/go/wiki/CodeReviewComments#useful-test-failures",
+      "range": {
+        "startLine": 31,
+        "startChar": 2,
+        "endLine": 33,
+        "endChar": 3
+      },
       "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
