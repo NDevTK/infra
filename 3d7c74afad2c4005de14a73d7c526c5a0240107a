@@ -16,6 +16,24 @@
       "revId": "3d7c74afad2c4005de14a73d7c526c5a0240107a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "94904f6f_236df411",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T23:04:13Z",
+      "side": 1,
+      "message": "Also, this is a leak in the abstraction.\nIf only scheduler cares about this field, then it doesn\u0027t belong in a struct defined in priority.\n\nLet scheduler keep track of scheduled / not-yet-scheduled requests in some other way (can keep map / array of booleans corresponding to the array of requests... or whatever scheduler is in the mood for).",
+      "parentUuid": "7e19146e_eda33cb3",
+      "revId": "3d7c74afad2c4005de14a73d7c526c5a0240107a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
