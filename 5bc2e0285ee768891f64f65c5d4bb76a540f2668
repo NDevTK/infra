@@ -2,6 +2,52 @@
   "comments": [
     {
       "key": {
+        "uuid": "e536b671_8954f0a4",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:28:53Z",
+      "side": 1,
+      "message": "Separate out imports: stdlib, almost-stdlib, chops-libraries, internal.\nOr,\nSeparate out imports: stdlib, almost-stdlib, all-chops-imports.",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 36
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a9761944_bccf3662",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:28:53Z",
+      "side": 1,
+      "message": "Prefer comments on their own line:\n\n  // Flag used ...\n  Invalid bool",
+      "range": {
+        "startLine": 17,
+        "startChar": 16,
+        "endLine": 17,
+        "endChar": 90
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "fd9cf17e_1314cd78",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
         "patchSetId": 9
@@ -34,6 +80,87 @@
       "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9b75898c_557e1ad8",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:28:53Z",
+      "side": 1,
+      "message": "It\u0027s usually better to pass around *[]Request than []*Request.\n\nAlso, why do you need a type for this? I\u0027d just use []Request in the function signatures everywhere. What do we gain by abstracting this type to List? The name List is actually worse than []Request which tells me what exactly this is.",
+      "parentUuid": "fd9cf17e_1314cd78",
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "713167db_c9db1832",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:28:53Z",
+      "side": 1,
+      "message": "nit: I like to order functions in a file such that a top-down reading is possible: public stuff on top, more detailed stuff lower as you go.",
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "87b875af_c1b4533c",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:28:53Z",
+      "side": 1,
+      "message": "Algorithm question: This and some other places make me think that you want to allow Running tasks that are not associated with any account. What will insert such tasks in our state? (i.e., if the scheduler isn\u0027t prioritizing these tasks, what is?)",
+      "range": {
+        "startLine": 28,
+        "startChar": 25,
+        "endLine": 28,
+        "endChar": 38
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df3acc31_655156d3",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:28:53Z",
+      "side": 1,
+      "message": "More idiomatic:\n\n  if count, ok :\u003d jobsPerAccount[running.Request.AccountId]; ok {\n    // can use count here.\n  }",
+      "range": {
+        "startLine": 29,
+        "startChar": 1,
+        "endLine": 29,
+        "endChar": 56
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     },
     {
       "key": {
@@ -72,6 +199,52 @@
     },
     {
       "key": {
+        "uuid": "1d5ed91a_8724a335",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:28:53Z",
+      "side": 1,
+      "message": "idiomatic:\n\n  if count, ok :\u003d jobsPerAccount[accountID]; ok {\n    // use count here.\n  }",
+      "range": {
+        "startLine": 37,
+        "startChar": 2,
+        "endLine": 38,
+        "endChar": 9
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8c4fe51c_098db55f",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:28:53Z",
+      "side": 1,
+      "message": "Once again, is it possible that keys of state.Balances are different from keys of config.AccountConfigs. If so why? (we should be tracking balances for exactly those accounts that have something configured for them).\n\nIf not, this should be an assert.",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 10
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8cbe6755_f87824ff",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
         "patchSetId": 9
@@ -104,6 +277,236 @@
       "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bbc6ba04_f27bde3e",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:28:53Z",
+      "side": 1,
+      "message": "// nit: A short one-line summary.\n//\n// followed by salient details makes for better godoc.",
+      "range": {
+        "startLine": 51,
+        "startChar": 0,
+        "endLine": 51,
+        "endChar": 62
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "86439c64_f18e2191",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:28:53Z",
+      "side": 1,
+      "message": "food for thought:\nReading this, I increasingly feel that you want s/State/Pool/\n\nAnd add a field Config within Pool\n\nPool.RequestQueue (instead of State.RequestQueue), Pool.Balances (instead of State.Balances) etc.\n... and Pool.Config (Instead of standalone Config and State)\n\nI know you want clear distinction between state and config, so one could even think if Pool.State.RequestQueue, but imo it\u0027s overkill. A separately attached Pool.Config ought to be enough to keep configuration separate. Everything else is State.",
+      "range": {
+        "startLine": 52,
+        "startChar": 3,
+        "endLine": 52,
+        "endChar": 21
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7b35782b_0865d350",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:28:53Z",
+      "side": 1,
+      "message": "make([]Request, 0, len(state.RequestQueue)\n  and use append() below, to avoid unnecessary 0-initialization of array here.",
+      "range": {
+        "startLine": 58,
+        "startChar": 24,
+        "endLine": 58,
+        "endChar": 70
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7c119c3c_9712b669",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:28:53Z",
+      "side": 1,
+      "message": "personal style nit: If naming a function, I\u0027d declare it at top level like normal functions (instead of creating a lambda and then naming it).",
+      "range": {
+        "startLine": 75,
+        "startChar": 1,
+        "endLine": 75,
+        "endChar": 5
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "46cc9fb5_3676237d",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:28:53Z",
+      "side": 1,
+      "message": "more idiomatic:\n\n  switch {\n  case a.Priority \u003c b.Priority:\n    return true\n  case a.Priority \u003c b.Priority:\n    return false\n  default:\n    a.Request.EnqueueTime.Before(b.Request.EnqueueTime)\n  }",
+      "range": {
+        "startLine": 78,
+        "startChar": 0,
+        "endLine": 83,
+        "endChar": 3
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "12e7c076_6319ddff",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:28:53Z",
+      "side": 1,
+      "message": "It\u0027d be better to store parsed time instead of timestamps that are parsed here.\n\n- All parsing errors can be handled at enqueue time, where reported error is likely to make more sense (why is my scheduler suddenly hitting parsing errors again?)\n- Doing it here means that you\u0027ll parse the same timestamps repeatedly (each tick)",
+      "range": {
+        "startLine": 85,
+        "startChar": 0,
+        "endLine": 85,
+        "endChar": 45
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "724a7f40_0fa70ba4",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:28:53Z",
+      "side": 1,
+      "message": "I don\u0027t see why prioritizedRequests has to be sorted before the call to demoteJobsBeyondFanout(). That function seems to walk down the whole list, independent of what order the requests currently are.",
+      "range": {
+        "startLine": 91,
+        "startChar": 1,
+        "endLine": 91,
+        "endChar": 44
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f1d7fa05_a6dd15d5",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:28:53Z",
+      "side": 1,
+      "message": "nitty nit: A good description why the receiver objects have such short names: https://github.com/golang/go/wiki/CodeReviewComments#receiver-names\n\nI\u0027d go so far as s/pR/pr/ (easier to type).",
+      "range": {
+        "startLine": 101,
+        "startChar": 6,
+        "endLine": 101,
+        "endChar": 8
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ef056747_da90554f",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:28:53Z",
+      "side": 1,
+      "message": "I\u0027d pull out corner case before the actual loop. Makes the flow easier to understand at the cost of one extra list indexing operation.\n prlen :\u003d len(pR)\n if prlen \u003d\u003d 0 || pR[0].Priority \u003e priority {\n    return []Requests{}\n }\n\n ...",
+      "range": {
+        "startLine": 110,
+        "startChar": 0,
+        "endLine": 112,
+        "endChar": 3
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "14f7a569_6f151773",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:28:53Z",
+      "side": 1,
+      "message": "separate out imports by stdlib, almost-stdlib, chops-infra.",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 1
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     },
     {
       "key": {
