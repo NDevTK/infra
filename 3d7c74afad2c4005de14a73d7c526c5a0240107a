@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7e19146e_eda33cb3",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T23:02:35Z",
+      "side": 1,
+      "message": "Use positive booleans: Valid instead of Invalid.\n\nBetter still, name it close to how it is used: Scheduled (then you get the default state of not-scheduled for free, which is what you were going for by using Invalid here, I guess).",
+      "revId": "3d7c74afad2c4005de14a73d7c526c5a0240107a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
