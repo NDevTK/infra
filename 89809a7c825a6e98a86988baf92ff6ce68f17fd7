@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "a8069d87_28feaf1a",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T20:35:41Z",
+      "side": 1,
+      "message": "Why cast? constants in golang are untyped. This will be automatically cast to int32 at point-of-use: https://play.golang.org/p/lOKZeYq2raQ",
+      "range": {
+        "startLine": 11,
+        "startChar": 19,
+        "endLine": 11,
+        "endChar": 46
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4d733c95_f22b3a86",
         "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
         "patchSetId": 7
@@ -19,6 +42,29 @@
     },
     {
       "key": {
+        "uuid": "236c473a_7adbc36b",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T20:35:41Z",
+      "side": 1,
+      "message": "nit: I\u0027d put these constants in a block, since they are related account knobs.\n\n  const(\n    // FreeBucket is ...\n    FreeBucket \u003d vector.NumPriorities\n    // PromoteThreshold is ...\n    PromoteThreshold \u003d 5.0\n    ...\n  )",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 28
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d7b9a581_7d99f66e",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
         "patchSetId": 7
@@ -30,6 +76,46 @@
       "writtenOn": "2018-08-02T17:52:35Z",
       "side": 1,
       "message": "s/QuotaVector/Vector",
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5f82ba78_e88c17db",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T20:35:41Z",
+      "side": 1,
+      "message": "- golang dislikes stutter in package.Function names. So: vector.Empty() instead of vector.EmptyVector()\n- It is standard in golang for all new things to be 0-initialized, and also vector.New() is the conventional function name for this.",
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d6a0625c_937c93e8",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T20:35:41Z",
+      "side": 1,
+      "message": "Do you _really_ need this?\nThis is introducing a non-trivial indirection in understanding vector.Vector (I have to understand both vector.Vector and vector.V in order to use them properly)\n\nI find using the raw type in Val()/Ref() more readable:\n\nfunc Val(values [NumPriorities]float64) Vector {\n  ...\n}",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 29
+      },
       "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -64,6 +150,144 @@
       "writtenOn": "2018-08-02T17:52:35Z",
       "side": 1,
       "message": "e.g. Ref(V{1, 2, 3})",
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f502520f_f2fcc15e",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T20:35:41Z",
+      "side": 1,
+      "message": "Why do you need this?\ni.e., why do you anticipate having to work with Vectors that are the wrong length at all? Since the purpose of Vector is to be fixed-length, it\u0027ll make understanding code easier if that is *always* the case.\n\nFrom a first look, this sounds to me like a place where fail-fast is better than be-robust. If you don\u0027t have good reasons to expect variable length Vectors, best panic() if you find that to be the case.",
+      "range": {
+        "startLine": 48,
+        "startChar": 5,
+        "endLine": 48,
+        "endChar": 8
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "44abdce1_ffcd60a6",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T20:35:41Z",
+      "side": 1,
+      "message": "This saves duplicate initialization of newSlice:\n\n  newSlice \u003d make([]float64, 0, NumPriorities)\n  newSlice \u003d append(newSlice, v.Values...)\n  v.Values \u003d newSlice",
+      "range": {
+        "startLine": 50,
+        "startChar": 1,
+        "endLine": 52,
+        "endChar": 21
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1ab848a5_a573d86d",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T20:35:41Z",
+      "side": 1,
+      "message": "Suggest Equal() instead, to match reflect.DeepEqual()",
+      "range": {
+        "startLine": 94,
+        "startChar": 16,
+        "endLine": 94,
+        "endChar": 22
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "02bee801_d32470f7",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.proto",
+        "patchSetId": 7
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T20:35:41Z",
+      "side": 1,
+      "message": "s/a//",
+      "range": {
+        "startLine": 4,
+        "startChar": 12,
+        "endLine": 4,
+        "endChar": 15
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "664b98c4_44899e5f",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T20:35:41Z",
+      "side": 1,
+      "message": "It is conventional to directly define a value if a struct will be used exactly once:\n\n    val cases []struct {\n      A      Vector\n      B      Vector\n      Expect bool\n    } {\n      {a, a, false},\n      {b, a, false},\n      ...\n    }",
+      "range": {
+        "startLine": 14,
+        "startChar": 1,
+        "endLine": 19,
+        "endChar": 8
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3af59b0b_8b03bcea",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T20:35:41Z",
+      "side": 1,
+      "message": "Please include an error message that tells you exactly which test case failed.\n\n t.Fail(\"%s \u003c %s, want true, got false\", expect.A, expect.B)",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 11
+      },
       "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
