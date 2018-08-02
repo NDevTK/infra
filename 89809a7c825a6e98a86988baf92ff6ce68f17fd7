@@ -42,6 +42,30 @@
     },
     {
       "key": {
+        "uuid": "a7760832_c8f61bc8",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T21:27:11Z",
+      "side": 1,
+      "message": "If I omit this, I get build errors such as pasted below unless I cast at point-of-use.\n\npriority/prioritize.go:67:12: cannot use priority (type int) as type int32 in field value",
+      "parentUuid": "a8069d87_28feaf1a",
+      "range": {
+        "startLine": 11,
+        "startChar": 19,
+        "endLine": 11,
+        "endChar": 46
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4d733c95_f22b3a86",
         "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
         "patchSetId": 7
@@ -56,6 +80,24 @@
       "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ba84a5eb_7e4ed76d",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T21:27:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4d733c95_f22b3a86",
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -82,6 +124,30 @@
     },
     {
       "key": {
+        "uuid": "bdc3ce51_8dd5f57a",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T21:27:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "236c473a_7adbc36b",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 28
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d7b9a581_7d99f66e",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
         "patchSetId": 7
@@ -96,6 +162,24 @@
       "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0ffd995b_dcbc0173",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T21:27:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d7b9a581_7d99f66e",
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -116,6 +200,24 @@
     },
     {
       "key": {
+        "uuid": "69aee792_69e2b9cc",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T21:27:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5f82ba78_e88c17db",
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d6a0625c_937c93e8",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
         "patchSetId": 7
@@ -127,6 +229,30 @@
       "writtenOn": "2018-08-02T20:35:41Z",
       "side": 1,
       "message": "Do you _really_ need this?\nThis is introducing a non-trivial indirection in understanding vector.Vector (I have to understand both vector.Vector and vector.V in order to use them properly)\n\nI find using the raw type in Val()/Ref() more readable:\n\nfunc Val(values [NumPriorities]float64) Vector {\n  ...\n}",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 29
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0b9757a0_52e0dc4a",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T21:27:11Z",
+      "side": 1,
+      "message": "It\u0027s a keystroke saver mainly used in test code. V{} is a lot simpler than [NumPriorities]float64{}\n\nI expected some controversy though. What if I annotate it with strongly worded warning that it is intended only for use within tests as a keystroke saver?\n\nRelated controversy: I also am dot-importing the vector package into some test modules, also as a keystroke saver.",
+      "parentUuid": "d6a0625c_937c93e8",
       "range": {
         "startLine": 22,
         "startChar": 0,
@@ -156,6 +282,24 @@
     },
     {
       "key": {
+        "uuid": "2ee343e8_20e7aca9",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T21:27:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b588e1e3_baa3caec",
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dedef61f_2b480956",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
         "patchSetId": 7
@@ -173,6 +317,24 @@
     },
     {
       "key": {
+        "uuid": "755a5e4c_2f053a95",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T21:27:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dedef61f_2b480956",
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f502520f_f2fcc15e",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
         "patchSetId": 7
@@ -184,6 +346,30 @@
       "writtenOn": "2018-08-02T20:35:41Z",
       "side": 1,
       "message": "Why do you need this?\ni.e., why do you anticipate having to work with Vectors that are the wrong length at all? Since the purpose of Vector is to be fixed-length, it\u0027ll make understanding code easier if that is *always* the case.\n\nFrom a first look, this sounds to me like a place where fail-fast is better than be-robust. If you don\u0027t have good reasons to expect variable length Vectors, best panic() if you find that to be the case.",
+      "range": {
+        "startLine": 48,
+        "startChar": 5,
+        "endLine": 48,
+        "endChar": 8
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d4cf1ed7_4635890f",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T21:27:11Z",
+      "side": 1,
+      "message": "makes sense, Done",
+      "parentUuid": "f502520f_f2fcc15e",
       "range": {
         "startLine": 48,
         "startChar": 5,
@@ -219,6 +405,30 @@
     },
     {
       "key": {
+        "uuid": "ef7117f4_21db4132",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T21:27:11Z",
+      "side": 1,
+      "message": "n/a, changed to a panic",
+      "parentUuid": "44abdce1_ffcd60a6",
+      "range": {
+        "startLine": 50,
+        "startChar": 1,
+        "endLine": 52,
+        "endChar": 21
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1ab848a5_a573d86d",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
         "patchSetId": 7
@@ -239,6 +449,30 @@
       "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d65315f7_42a27050",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T21:27:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1ab848a5_a573d86d",
+      "range": {
+        "startLine": 94,
+        "startChar": 16,
+        "endLine": 94,
+        "endChar": 22
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -265,6 +499,30 @@
     },
     {
       "key": {
+        "uuid": "e2ee94c5_6d0c3893",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.proto",
+        "patchSetId": 7
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T21:27:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "02bee801_d32470f7",
+      "range": {
+        "startLine": 4,
+        "startChar": 12,
+        "endLine": 4,
+        "endChar": 15
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "664b98c4_44899e5f",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector_test.go",
         "patchSetId": 7
@@ -288,6 +546,30 @@
     },
     {
       "key": {
+        "uuid": "8699df57_9a9de21f",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T21:27:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "664b98c4_44899e5f",
+      "range": {
+        "startLine": 14,
+        "startChar": 1,
+        "endLine": 19,
+        "endChar": 8
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3af59b0b_8b03bcea",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector_test.go",
         "patchSetId": 7
@@ -308,6 +590,30 @@
       "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "702f38ae_99634828",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T21:27:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3af59b0b_8b03bcea",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 11
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
