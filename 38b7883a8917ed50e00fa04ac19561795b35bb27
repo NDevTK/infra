@@ -1,0 +1,234 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cacb84af_9bfcd047",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 13
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:55:21Z",
+      "side": 1,
+      "message": "This is a lot of code. Can you file a bug for the initial effort and reference that from these CLs?",
+      "range": {
+        "startLine": 9,
+        "startChar": 4,
+        "endLine": 9,
+        "endChar": 8
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "79efc9cf_7832b8c4",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:55:21Z",
+      "side": 1,
+      "message": "I don\u0027t know of any convention here, but since interface implementation methods end up repeating the godoc from the interface methods, I tend to use the formula:\n\n  // Mutate implements Mutator.Mutate()\n\nso that I don\u0027t have to update all the docstrings when something changes in the method behaviour.",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 13
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7ef9460d_f5e0d375",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:55:21Z",
+      "side": 1,
+      "message": "personal style comment: I actually think that the variables creditAccountID and debitAccountID add indirection and make it harder to follow where credit/debit is occuring. I\u0027d be happier to see oldTask and newTask directly used where balances are mutated.",
+      "range": {
+        "startLine": 39,
+        "startChar": 1,
+        "endLine": 39,
+        "endChar": 16
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4c03ad0e_bc0ba54a",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:55:21Z",
+      "side": 1,
+      "message": "oldTask\n\nnit: idiomatic go is to use really short names for local variables of this kind,so ot and nt would do ;)\n\nI haven\u0027t decided yet if I like that or no.",
+      "range": {
+        "startLine": 39,
+        "startChar": 20,
+        "endLine": 39,
+        "endChar": 38
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c3791f13_3af8606c",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:55:21Z",
+      "side": 1,
+      "message": "nit: Used exactly once, and in the next line. Inline.",
+      "range": {
+        "startLine": 42,
+        "startChar": 1,
+        "endLine": 42,
+        "endChar": 17
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4bcf8fce_b7d9a4bb",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:55:21Z",
+      "side": 1,
+      "message": "nit: Used exactly once, and in the next line. Inline.",
+      "range": {
+        "startLine": 45,
+        "startChar": 1,
+        "endLine": 45,
+        "endChar": 16
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "88197bf0_db1e9f42",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:55:21Z",
+      "side": 1,
+      "message": "Should this be m.RequstId (or equivalently newTask.Request.Id)?",
+      "range": {
+        "startLine": 48,
+        "startChar": 20,
+        "endLine": 48,
+        "endChar": 38
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "61fea321_39253087",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.proto",
+        "patchSetId": 13
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:55:21Z",
+      "side": 1,
+      "message": "I wouldn\u0027t shorten to Mut in the name. I\u0027d instead create a package:\n\nscheduler.MutAssignRequestIdleWorker vs mutators.AssignIdleWorker (request is the only think that is assigned to workers, so elide that).",
+      "range": {
+        "startLine": 6,
+        "startChar": 8,
+        "endLine": 6,
+        "endChar": 34
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1fb8f223_259fa2fe",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.proto",
+        "patchSetId": 13
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:55:21Z",
+      "side": 1,
+      "message": "s/PreemptJob/PreemptRequest (consistently refer to request as request)",
+      "range": {
+        "startLine": 21,
+        "startChar": 8,
+        "endLine": 21,
+        "endChar": 21
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "35b38013_024de480",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.proto",
+        "patchSetId": 13
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:55:21Z",
+      "side": 1,
+      "message": "Is this the request_id of the preempted request or the preempting request? I think the latter. Please document.",
+      "range": {
+        "startLine": 23,
+        "startChar": 8,
+        "endLine": 23,
+        "endChar": 18
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

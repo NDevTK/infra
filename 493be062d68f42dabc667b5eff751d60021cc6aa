@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "31f1a55a_c58937f0",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:55:21Z",
+      "side": 1,
+      "message": "iiuc, this doesn\u0027t actually mutate state at all. I think this should be documented.\n\nAlso,\n\n// one line comment.\n//\n// then more, to make godoc glorious.",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 72
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "866d13c0_7b71231c",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T22:55:21Z",
+      "side": 1,
+      "message": "It looks like this function should always finish by closing output.\nSimply do this as the first thing in the function:\n\n  defer close(output)",
+      "range": {
+        "startLine": 35,
+        "startChar": 0,
+        "endLine": 35,
+        "endChar": 14
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
