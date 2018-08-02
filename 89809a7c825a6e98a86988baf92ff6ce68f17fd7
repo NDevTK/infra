@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "44006429_c6ab6cc8",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-02T20:58:50Z",
+      "side": 1,
+      "message": "All of these files (also in follow up CLs, need copyright header)",
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a8069d87_28feaf1a",
         "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
         "patchSetId": 7
