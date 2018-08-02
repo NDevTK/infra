@@ -50,6 +50,40 @@
       "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bd31c760_f1233492",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T20:30:41Z",
+      "side": 1,
+      "message": "s/not/no",
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ae04fdef_23567e5e",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-02T20:30:41Z",
+      "side": 1,
+      "message": "create a helper method for creating timestamps",
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
