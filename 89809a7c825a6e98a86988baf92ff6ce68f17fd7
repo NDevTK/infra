@@ -379,6 +379,30 @@
     },
     {
       "key": {
+        "uuid": "44af3b6e_42ffa4fc",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-03T23:10:57Z",
+      "side": 1,
+      "message": "nvm, I saw this is used elsewhere: https://chromium-review.googlesource.com/c/infra/infra/+/1157203/9..15/go/src/infra/qscheduler/qslib/priority/prioritize_test.go#23\n\nAdding a comment that this is for tests would be nice, but not really required.",
+      "parentUuid": "5174c6f1_a8014ddc",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 29
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b588e1e3_baa3caec",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
         "patchSetId": 7
