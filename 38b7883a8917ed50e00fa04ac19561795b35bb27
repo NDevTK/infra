@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "58da6227_e3a3bea9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 13
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T03:32:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cacb84af_9bfcd047",
+      "range": {
+        "startLine": 9,
+        "startChar": 4,
+        "endLine": 9,
+        "endChar": 8
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "79efc9cf_7832b8c4",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.go",
         "patchSetId": 13
@@ -45,6 +69,30 @@
       "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "14e5ab32_ec1e21a2",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T03:32:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "79efc9cf_7832b8c4",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 13
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -94,6 +142,54 @@
     },
     {
       "key": {
+        "uuid": "3700dfcc_45e38d90",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T03:32:51Z",
+      "side": 1,
+      "message": "Can\u0027t do, see below.",
+      "parentUuid": "7ef9460d_f5e0d375",
+      "range": {
+        "startLine": 39,
+        "startChar": 1,
+        "endLine": 39,
+        "endChar": 16
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0914bd2c_ecd43682",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T03:32:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4c03ad0e_bc0ba54a",
+      "range": {
+        "startLine": 39,
+        "startChar": 20,
+        "endLine": 39,
+        "endChar": 38
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c3791f13_3af8606c",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.go",
         "patchSetId": 13
@@ -105,6 +201,30 @@
       "writtenOn": "2018-08-02T22:55:21Z",
       "side": 1,
       "message": "nit: Used exactly once, and in the next line. Inline.",
+      "range": {
+        "startLine": 42,
+        "startChar": 1,
+        "endLine": 42,
+        "endChar": 17
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6d145d53_ff2842ed",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T03:32:51Z",
+      "side": 1,
+      "message": "Can\u0027t inline it, because the return value of .Plus() is not addressable\n\n(i.e. if Func() returns a Foo, then \u0026Func() is illegal)\n\nUnless you know of a clever trick that I don\u0027t.",
+      "parentUuid": "c3791f13_3af8606c",
       "range": {
         "startLine": 42,
         "startChar": 1,
@@ -140,6 +260,30 @@
     },
     {
       "key": {
+        "uuid": "2e7afcd4_a438fce4",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T03:32:51Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "4bcf8fce_b7d9a4bb",
+      "range": {
+        "startLine": 45,
+        "startChar": 1,
+        "endLine": 45,
+        "endChar": 16
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "88197bf0_db1e9f42",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.go",
         "patchSetId": 13
@@ -151,6 +295,30 @@
       "writtenOn": "2018-08-02T22:55:21Z",
       "side": 1,
       "message": "Should this be m.RequstId (or equivalently newTask.Request.Id)?",
+      "range": {
+        "startLine": 48,
+        "startChar": 20,
+        "endLine": 48,
+        "endChar": 38
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c1ad05b1_b7a972eb",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T03:32:51Z",
+      "side": 1,
+      "message": "No, this is correct. We are taking the old task out of the running set and putting it back in the queue.",
+      "parentUuid": "88197bf0_db1e9f42",
       "range": {
         "startLine": 48,
         "startChar": 20,
@@ -186,6 +354,30 @@
     },
     {
       "key": {
+        "uuid": "6157fd11_a6ca438a",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.proto",
+        "patchSetId": 13
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T03:32:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "61fea321_39253087",
+      "range": {
+        "startLine": 6,
+        "startChar": 8,
+        "endLine": 6,
+        "endChar": 34
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1fb8f223_259fa2fe",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.proto",
         "patchSetId": 13
@@ -209,6 +401,30 @@
     },
     {
       "key": {
+        "uuid": "319753b0_6c7e4c68",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.proto",
+        "patchSetId": 13
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T03:32:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1fb8f223_259fa2fe",
+      "range": {
+        "startLine": 21,
+        "startChar": 8,
+        "endLine": 21,
+        "endChar": 21
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "35b38013_024de480",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.proto",
         "patchSetId": 13
@@ -229,6 +445,30 @@
       "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ffc754c8_4b8b735b",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.proto",
+        "patchSetId": 13
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T03:32:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "35b38013_024de480",
+      "range": {
+        "startLine": 23,
+        "startChar": 8,
+        "endLine": 23,
+        "endChar": 18
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
