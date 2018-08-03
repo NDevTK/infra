@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1da50d98_3ce106a7",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T22:54:15Z",
+      "side": 1,
+      "message": "Ok, I stopped with the dot imports.",
+      "parentUuid": "8cbb4673_39103a83",
+      "range": {
+        "startLine": 4,
+        "startChar": 1,
+        "endLine": 4,
+        "endChar": 40
+      },
+      "revId": "6a74a2ddedbe4859c3193acdcb365d5075a190c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2a70ea80_35fd377f",
         "filename": "go/src/infra/qscheduler/qslib/types/account/account_test.go",
         "patchSetId": 10
@@ -45,6 +69,30 @@
       "revId": "6a74a2ddedbe4859c3193acdcb365d5075a190c9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2e350501_8f4e1f4a",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T22:54:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2a70ea80_35fd377f",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 49
+      },
+      "revId": "6a74a2ddedbe4859c3193acdcb365d5075a190c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "5231f82c_f2552f41",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T22:54:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4b8841f0_06fe72f9",
+      "range": {
+        "startLine": 50,
+        "startChar": 0,
+        "endLine": 51,
+        "endChar": 40
+      },
+      "revId": "6a74a2ddedbe4859c3193acdcb365d5075a190c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "507c2b69_cd378af7",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
         "patchSetId": 10
@@ -91,6 +163,30 @@
       "revId": "6a74a2ddedbe4859c3193acdcb365d5075a190c9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5f241d89_27ee8cf6",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T22:54:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "507c2b69_cd378af7",
+      "range": {
+        "startLine": 52,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 22
+      },
+      "revId": "6a74a2ddedbe4859c3193acdcb365d5075a190c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "01bfdb2d_2f74b138",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T22:54:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "05017a60_42fd524e",
+      "range": {
+        "startLine": 56,
+        "startChar": 21,
+        "endLine": 56,
+        "endChar": 31
+      },
+      "revId": "6a74a2ddedbe4859c3193acdcb365d5075a190c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8436e1fa_ba0b114d",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector_test.go",
         "patchSetId": 10
@@ -137,6 +257,30 @@
       "revId": "6a74a2ddedbe4859c3193acdcb365d5075a190c9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "80ab0116_963183e7",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T22:54:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8436e1fa_ba0b114d",
+      "range": {
+        "startLine": 28,
+        "startChar": 13,
+        "endLine": 28,
+        "endChar": 52
+      },
+      "revId": "6a74a2ddedbe4859c3193acdcb365d5075a190c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

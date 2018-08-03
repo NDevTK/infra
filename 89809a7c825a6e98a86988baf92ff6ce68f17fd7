@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "1a169df1_3bee6355",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T22:54:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "44006429_c6ab6cc8",
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a8069d87_28feaf1a",
         "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
         "patchSetId": 7
@@ -87,6 +105,30 @@
       "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ddee65a7_195d7f66",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T22:54:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "86c8807e_f7816b2c",
+      "range": {
+        "startLine": 11,
+        "startChar": 19,
+        "endLine": 11,
+        "endChar": 46
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -313,6 +355,30 @@
     },
     {
       "key": {
+        "uuid": "5174c6f1_a8014ddc",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T22:54:15Z",
+      "side": 1,
+      "message": "I stopped with the dot imports. I\u0027m leaving this as V because it is used by some other packages though.",
+      "parentUuid": "f748b7c4_b845017e",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 29
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b588e1e3_baa3caec",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
         "patchSetId": 7
@@ -430,6 +496,30 @@
     },
     {
       "key": {
+        "uuid": "f9b14877_17734ca2",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T22:54:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d4cf1ed7_4635890f",
+      "range": {
+        "startLine": 48,
+        "startChar": 5,
+        "endLine": 48,
+        "endChar": 8
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "44abdce1_ffcd60a6",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
         "patchSetId": 7
@@ -474,6 +564,30 @@
       "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0bb7448a_bb70fd53",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T22:54:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ef7117f4_21db4132",
+      "range": {
+        "startLine": 50,
+        "startChar": 1,
+        "endLine": 52,
+        "endChar": 21
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
