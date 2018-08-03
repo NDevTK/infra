@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "e171875c_0f156c61",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T08:30:28Z",
+      "side": 1,
+      "message": "Yep, restructured this a bit to be a proper generator of a RO channel.",
+      "parentUuid": "7058ef99_96fb26f7",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 72
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "866d13c0_7b71231c",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 14
@@ -72,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "350a70a3_a5bce88f",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T08:30:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "866d13c0_7b71231c",
+      "range": {
+        "startLine": 35,
+        "startChar": 0,
+        "endLine": 35,
+        "endChar": 14
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "16ac4396_c3a3ca2b",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 14
@@ -83,6 +131,30 @@
       "writtenOn": "2018-08-02T23:45:12Z",
       "side": 1,
       "message": "I\u0027d swap these. Don\u0027t want to tell the world I Mutate()d state before I actually do it.",
+      "range": {
+        "startLine": 52,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 19
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d9535a0c_efb60557",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T08:30:28Z",
+      "side": 1,
+      "message": "In the simulation I did this as written. It\u0027s makes it easier to breakpoint and read the \"next mutation\" rather than the previous mutation.\n\nIn practice, I think QuotaSchedule will operate on it\u0027s own copy of state, and nobody external to it should be inspecting it\u0027s copy of state.",
+      "parentUuid": "16ac4396_c3a3ca2b",
       "range": {
         "startLine": 52,
         "startChar": 0,
@@ -118,6 +190,30 @@
     },
     {
       "key": {
+        "uuid": "4a472804_7297030c",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T08:30:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6ab50057_dfe93601",
+      "range": {
+        "startLine": 61,
+        "startChar": 3,
+        "endLine": 61,
+        "endChar": 26
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dfd6bbef_57071711",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 14
@@ -138,6 +234,30 @@
       "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "57fd2c7b_851587a4",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T08:30:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dfd6bbef_57071711",
+      "range": {
+        "startLine": 70,
+        "startChar": 0,
+        "endLine": 71,
+        "endChar": 28
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -164,6 +284,30 @@
     },
     {
       "key": {
+        "uuid": "1dfa03e2_174468aa",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T08:30:28Z",
+      "side": 1,
+      "message": "Hmph. I would need to pass in the jobsAtP slice and have it be mutated in a helper function. That smells worse to me than a little bit of repeated code.",
+      "parentUuid": "75b1eb19_c53a70e7",
+      "range": {
+        "startLine": 74,
+        "startChar": 0,
+        "endLine": 81,
+        "endChar": 48
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c991c708_e86974e9",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 14
@@ -175,6 +319,24 @@
       "writtenOn": "2018-08-02T23:45:12Z",
       "side": 1,
       "message": "Unused.",
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "03aa48d5_9e82a6c2",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T08:30:28Z",
+      "side": 1,
+      "message": "This is the return value of the function. Maybe you prefer an explicit return to a named return?",
+      "parentUuid": "c991c708_e86974e9",
       "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -250,6 +412,30 @@
     },
     {
       "key": {
+        "uuid": "32625649_9661df93",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T08:30:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "04db45ac_6d4df4ba",
+      "range": {
+        "startLine": 109,
+        "startChar": 2,
+        "endLine": 116,
+        "endChar": 3
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ef505dbe_b0bd5a1a",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 14
@@ -261,6 +447,30 @@
       "writtenOn": "2018-08-02T23:45:12Z",
       "side": 1,
       "message": "idiomatic and more readable:\n\n  switch {\n  case demote \u0026\u0026 chargeRate \u003c 0:\n    return demoteSome(...)\n  case promote \u0026\u0026 chargeRate \u003e 0:\n    return promoteSome(...)\n  default:\n    // We\u0027ve already returned above for performance reasons.\n    panic()\n  }",
+      "range": {
+        "startLine": 121,
+        "startChar": 0,
+        "endLine": 121,
+        "endChar": 31
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f29f7cb_2f06498c",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T08:30:28Z",
+      "side": 1,
+      "message": "We don\u0027t want a default panic. It\u0027s possible for charge rate to have opposite sign of promote/demote.",
+      "parentUuid": "ef505dbe_b0bd5a1a",
       "range": {
         "startLine": 121,
         "startChar": 0,
@@ -293,6 +503,30 @@
       "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c17cc45a_6d7930eb",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T08:30:28Z",
+      "side": 1,
+      "message": "This is the standard expected way to use the sort library, afaik.",
+      "parentUuid": "e8eee463_002da153",
+      "range": {
+        "startLine": 126,
+        "startChar": 3,
+        "endLine": 126,
+        "endChar": 37
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     },
     {
       "key": {
@@ -336,6 +570,24 @@
     },
     {
       "key": {
+        "uuid": "bc96a058_5c23841a",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T08:30:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "37c44f8c_13c4c61c",
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b13b5ecc_f320db5a",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 14
@@ -356,6 +608,30 @@
       "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "028ba79c_9ed39875",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T08:30:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b13b5ecc_f320db5a",
+      "range": {
+        "startLine": 184,
+        "startChar": 1,
+        "endLine": 187,
+        "endChar": 35
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -382,6 +658,30 @@
     },
     {
       "key": {
+        "uuid": "99394d41_de0a9e6d",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T08:30:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cc1e13f9_49478caa",
+      "range": {
+        "startLine": 191,
+        "startChar": 1,
+        "endLine": 191,
+        "endChar": 68
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b745fc77_4ac635e7",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 14
@@ -405,6 +705,30 @@
     },
     {
       "key": {
+        "uuid": "d796383f_b451ccec",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T08:30:28Z",
+      "side": 1,
+      "message": "first suggestion done; second punting I like this form of looping-over-two-lists",
+      "parentUuid": "b745fc77_4ac635e7",
+      "range": {
+        "startLine": 199,
+        "startChar": 0,
+        "endLine": 203,
+        "endChar": 3
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8e531025_032a3107",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 14
@@ -416,6 +740,30 @@
       "writtenOn": "2018-08-02T23:45:12Z",
       "side": 1,
       "message": "nit: This comment doesn\u0027t add clarity for me. (It\u0027s saying what is being done, not why / how / why it\u0027s non-trivial).",
+      "range": {
+        "startLine": 207,
+        "startChar": 0,
+        "endLine": 208,
+        "endChar": 32
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "915067be_47ba5260",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T08:30:28Z",
+      "side": 1,
+      "message": "removed",
+      "parentUuid": "8e531025_032a3107",
       "range": {
         "startLine": 207,
         "startChar": 0,
