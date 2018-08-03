@@ -1,0 +1,228 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a90f440_1b1f7fc4",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-03T23:49:52Z",
+      "side": 1,
+      "message": "Continuing from comment thread before: can you add a comment above:\n\n// A Run may not have an associated account or the Run\u0027s associated account may have been deleted since it was scheduled.\n\nAlso, do you have to explicitly demote them to the FreeBucket here?\n\nEspecially because Run tracks what priority it is running at: https://chromium-review.googlesource.com/c/infra/infra/+/1157202/13/go/src/infra/qscheduler/qslib/types/task/task.proto#44 and we\u0027d want that to be correct for metrics / downstream effects.\n\n\nEDIT: I see from the unittests that if there was no account associated with the Run, it will already be in FreeBucket. If OTOH, the account was deleted after the Run started, it may be in any bucket. It is OK to let such tasks simply finish (instead of going through the work of demoting them), but document that behaviour here then.",
+      "range": {
+        "startLine": 120,
+        "startChar": 5,
+        "endLine": 120,
+        "endChar": 28
+      },
+      "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9bd48b1e_09615c9c",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-03T23:49:52Z",
+      "side": 1,
+      "message": "Still in the same block, like so: https://cs.chromium.org/chromium/infra/go/src/go.chromium.org/luci/milo/frontend/view_builders.go\n\nAlso, no . imports please.\ne.g.: I recommended renaming V --\u003e v in a separate CL. But now I see that you are using it from a test here. This wasn\u0027t clear because it wasn\u0027t using a package.Type reference.",
+      "range": {
+        "startLine": 8,
+        "startChar": 1,
+        "endLine": 17,
+        "endChar": 1
+      },
+      "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c593c278_cfe13c98",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-03T23:49:52Z",
+      "side": 1,
+      "message": "switch order actual, expected. Here and elsewhere.\n\n(or in a follow up CL in one fell swoop)",
+      "range": {
+        "startLine": 32,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 58
+      },
+      "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0912612a_791186a2",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-03T23:49:52Z",
+      "side": 1,
+      "message": "Setup failures like this should use t.Fatalf()\n\nAlso, I think it\u0027s clearer to do the whole computation together.\n\n  now \u003d time.Now()\n  ets, err :\u003d ptypes.TimestampProto(now)\n  if err !\u003d nil {\n    t.Fatalf((\"error when serializing timestamp: %+v\", err)\n  } \n  early \u003d task.Request{... ets}\n\n  lts, err :\u003d ptypes.TimestampProto(now + 10 * time.Second)\n  if err !\u003d nil {\n    t.Fatalf((\"error when serializing timestamp: %+v\", err)\n  } \n  later \u003d task.Request{... lts}\n\nIt is pretty standard to reuse |err| throughout the function.",
+      "range": {
+        "startLine": 57,
+        "startChar": 1,
+        "endLine": 59,
+        "endChar": 2
+      },
+      "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "de17162b_1fdf0069",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-03T23:49:52Z",
+      "side": 1,
+      "message": "This takes some getting used to but golang really prefers brevity in such local variables\n\nat least \"early\" and \"later\" rather than earlyRequest laterRequest. Most code will go so far as \"e\" and \"l\"\n\nI *think* I actually like this (at least early/later) because I\u0027ve found that the right size of functions + short names make for easier to understand code by making variables names invisible.",
+      "range": {
+        "startLine": 60,
+        "startChar": 1,
+        "endLine": 60,
+        "endChar": 13
+      },
+      "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b60ec371_32f0a8d3",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-03T23:49:52Z",
+      "side": 1,
+      "message": "This test has too much setup to understand.\nCan you point out which Run is beyond fanout and where it go demoted (in |expected|)?",
+      "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "54abc1cf_8c263903",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-03T23:49:52Z",
+      "side": 1,
+      "message": "nit: drop (variable name clear enough)",
+      "range": {
+        "startLine": 200,
+        "startChar": 1,
+        "endLine": 200,
+        "endChar": 16
+      },
+      "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5c3e549a_2ac66680",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-03T23:49:52Z",
+      "side": 1,
+      "message": "s/job/Request/ or s/job/Run (let\u0027s stick to those two terms throughout) job/task do not exist in qslib.",
+      "range": {
+        "startLine": 202,
+        "startChar": 28,
+        "endLine": 202,
+        "endChar": 31
+      },
+      "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "beabbccf_36d64236",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-03T23:49:52Z",
+      "side": 1,
+      "message": "This test has complicated expectations. It will be a lot better to incrementally test expectations, with meaningful error messages.\n\nOtherwise, you will make a change in the future and the test will fail with a bug dump of the actual (now you have to re-understand each time exactly what was wrong in actual). All of your comments in |expected| should be failure messages from separate checks here.",
+      "range": {
+        "startLine": 213,
+        "startChar": 0,
+        "endLine": 217,
+        "endChar": 2
+      },
+      "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f78f81b8_d046cc76",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-03T23:49:52Z",
+      "side": 1,
+      "message": "Include pRequests in the error message so I can visually see why expected is what it is.",
+      "range": {
+        "startLine": 243,
+        "startChar": 14,
+        "endLine": 243,
+        "endChar": 60
+      },
+      "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
