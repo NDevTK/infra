@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0505cf75_117b027c",
+        "filename": "appengine/findit/services/flake_failure/run_swarming_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-08-03T16:29:32Z",
+      "side": 1,
+      "message": "Not sure if this is a good checking, but double check: could elapsed_seconds be a float point number or it is always an integer? If it is the earlier, \u003d\u003d comparison is not reliable.",
+      "range": {
+        "startLine": 56,
+        "startChar": 24,
+        "endLine": 56,
+        "endChar": 55
+      },
+      "revId": "9818b8983509a29b2d70b761bb40db9031d51852",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
