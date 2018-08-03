@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1d4e4c8f_db9b2c9f",
+        "filename": "appengine/cr-buildbucket/swarming/swarming.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 625,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-08-03T21:52:12Z",
+      "side": 1,
+      "message": "i think this could be simpler. We essentially support either properties with no task slices, or 1 task slice. The error message \u0027task_slices and cache fallback are mutually exclusive\u0027 wouldn\u0027t be clear to user because it is unclear what exactly is cache fallback. This root cause of the such case is server misconfiguration.\n\nHow about we migrate https://chrome-internal.googlesource.com/infradata/config/+/master/configs/cr-buildbucket/swarming_task_template.json\nto exactly one task slice, assert here that there is exactly one task slice and then go from there? I think the code would be simpler then.",
+      "range": {
+        "startLine": 612,
+        "startChar": 0,
+        "endLine": 625,
+        "endChar": 7
+      },
+      "revId": "67be58404a6cf393552d453d07864fc43e07fbce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cda06be4_56d0d27c",
+        "filename": "appengine/cr-buildbucket/swarming/swarmingcfg.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 287,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-08-03T21:52:12Z",
+      "side": 1,
+      "message": "should it be minutes then?",
+      "range": {
+        "startLine": 284,
+        "startChar": 10,
+        "endLine": 287,
+        "endChar": 79
+      },
+      "revId": "67be58404a6cf393552d453d07864fc43e07fbce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c3141c4a_f70e4354",
+        "filename": "appengine/cr-buildbucket/swarming/swarmingcfg.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-08-03T21:52:12Z",
+      "side": 1,
+      "message": "please say that it is more than 7, otherwise a user wouldn\u0027t know how many is too many",
+      "range": {
+        "startLine": 291,
+        "startChar": 15,
+        "endLine": 291,
+        "endChar": 66
+      },
+      "revId": "67be58404a6cf393552d453d07864fc43e07fbce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
