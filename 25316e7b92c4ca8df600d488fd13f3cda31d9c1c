@@ -496,6 +496,30 @@
     },
     {
       "key": {
+        "uuid": "39ff45e8_caee8aea",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T22:57:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9b1aca6d_a3f790ee",
+      "range": {
+        "startLine": 22,
+        "startChar": 18,
+        "endLine": 22,
+        "endChar": 24
+      },
+      "revId": "25316e7b92c4ca8df600d488fd13f3cda31d9c1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a016ac9_e2c3b17b",
         "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
         "patchSetId": 2
