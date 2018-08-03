@@ -22,6 +22,30 @@
       "revId": "9818b8983509a29b2d70b761bb40db9031d51852",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3e62b7d5_820f9180",
+        "filename": "appengine/findit/services/flake_failure/run_swarming_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-08-03T16:31:56Z",
+      "side": 1,
+      "message": "elapsed_seconds is an IntegerProperty so this should be fine",
+      "parentUuid": "0505cf75_117b027c",
+      "range": {
+        "startLine": 56,
+        "startChar": 24,
+        "endLine": 56,
+        "endChar": 55
+      },
+      "revId": "9818b8983509a29b2d70b761bb40db9031d51852",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
