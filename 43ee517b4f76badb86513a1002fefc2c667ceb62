@@ -507,6 +507,30 @@
     },
     {
       "key": {
+        "uuid": "00b51cbc_f4db7d8b",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.proto",
+        "patchSetId": 9
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-03T22:25:31Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "412da8d8_37a14ea4",
+      "range": {
+        "startLine": 23,
+        "startChar": 8,
+        "endLine": 23,
+        "endChar": 15
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "58821474_d8978554",
         "filename": "go/src/infra/qscheduler/qslib/types/task/task.proto",
         "patchSetId": 9
@@ -645,6 +669,30 @@
       "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cb8f5517_6589daee",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-03T22:25:31Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f8093ba2_6b503c60",
+      "range": {
+        "startLine": 31,
+        "startChar": 2,
+        "endLine": 33,
+        "endChar": 3
+      },
+      "revId": "43ee517b4f76badb86513a1002fefc2c667ceb62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
