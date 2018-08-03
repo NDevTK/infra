@@ -34,6 +34,24 @@
       "revId": "3d7c74afad2c4005de14a73d7c526c5a0240107a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1aaa6352_05bece66",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T01:05:05Z",
+      "side": 1,
+      "message": "Done (renamed).\n\nAgreed it is a bit of a leak in the abstraction. Punting for now, adding TODO.",
+      "parentUuid": "94904f6f_236df411",
+      "revId": "3d7c74afad2c4005de14a73d7c526c5a0240107a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

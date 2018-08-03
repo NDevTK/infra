@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "2c3007c4_98581f61",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T01:05:05Z",
+      "side": 1,
+      "message": "Done, I think? Not 100% sure what you meant.",
+      "parentUuid": "e536b671_8954f0a4",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 36
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a9761944_bccf3662",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
         "patchSetId": 9
@@ -45,6 +69,30 @@
       "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6deef9e3_72e0d40f",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T01:05:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a9761944_bccf3662",
+      "range": {
+        "startLine": 17,
+        "startChar": 16,
+        "endLine": 17,
+        "endChar": 90
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -101,6 +149,24 @@
     },
     {
       "key": {
+        "uuid": "b99f2eaf_2961df36",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T01:05:05Z",
+      "side": 1,
+      "message": "Reasons I wanted this as a type of its own:\n\n1) I like that other packages refer to it as a priority.List , which is what it is.\n2) I wanted it to be a valid receiver for the ForPriority method, thus it needed a named type.\n\nDo you buy it?",
+      "parentUuid": "9b75898c_557e1ad8",
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "713167db_c9db1832",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
         "patchSetId": 9
@@ -118,6 +184,24 @@
     },
     {
       "key": {
+        "uuid": "fcc9adf3_b7d19aa1",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T01:05:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "713167db_c9db1832",
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "87b875af_c1b4533c",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
         "patchSetId": 9
@@ -129,6 +213,30 @@
       "writtenOn": "2018-08-02T22:28:53Z",
       "side": 1,
       "message": "Algorithm question: This and some other places make me think that you want to allow Running tasks that are not associated with any account. What will insert such tasks in our state? (i.e., if the scheduler isn\u0027t prioritizing these tasks, what is?)",
+      "range": {
+        "startLine": 28,
+        "startChar": 25,
+        "endLine": 28,
+        "endChar": 38
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "abd31a37_3f7f9ee5",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T01:05:05Z",
+      "side": 1,
+      "message": "There might be jobs running not associated with any account, either because they are:\n - started running and then their account got deleted out from under them\n - never had an account to run against in the first place\n\nin either case, the job will simply run in the Free bucket (lowest possible priority)",
+      "parentUuid": "87b875af_c1b4533c",
       "range": {
         "startLine": 28,
         "startChar": 25,
@@ -161,6 +269,30 @@
       "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "00e56a12_98636ff8",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T01:05:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "df3acc31_655156d3",
+      "range": {
+        "startLine": 29,
+        "startChar": 1,
+        "endLine": 29,
+        "endChar": 56
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -222,6 +354,30 @@
     },
     {
       "key": {
+        "uuid": "e0ec4fcf_55e06495",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T01:05:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1d5ed91a_8724a335",
+      "range": {
+        "startLine": 37,
+        "startChar": 2,
+        "endLine": 38,
+        "endChar": 9
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8c4fe51c_098db55f",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
         "patchSetId": 9
@@ -242,6 +398,30 @@
       "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e083b73a_6e1cfe76",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T01:05:05Z",
+      "side": 1,
+      "message": "Hmm. I think you are right, but I want to punt. Complication is that it involves a consistency between State and Config, which might be coming from different sources. Adding a TODO.",
+      "parentUuid": "8c4fe51c_098db55f",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 10
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -303,6 +483,30 @@
     },
     {
       "key": {
+        "uuid": "ca227bc3_e445e186",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T01:05:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bbc6ba04_f27bde3e",
+      "range": {
+        "startLine": 51,
+        "startChar": 0,
+        "endLine": 51,
+        "endChar": 62
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "86439c64_f18e2191",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
         "patchSetId": 9
@@ -314,6 +518,30 @@
       "writtenOn": "2018-08-02T22:28:53Z",
       "side": 1,
       "message": "food for thought:\nReading this, I increasingly feel that you want s/State/Pool/\n\nAnd add a field Config within Pool\n\nPool.RequestQueue (instead of State.RequestQueue), Pool.Balances (instead of State.Balances) etc.\n... and Pool.Config (Instead of standalone Config and State)\n\nI know you want clear distinction between state and config, so one could even think if Pool.State.RequestQueue, but imo it\u0027s overkill. A separately attached Pool.Config ought to be enough to keep configuration separate. Everything else is State.",
+      "range": {
+        "startLine": 52,
+        "startChar": 3,
+        "endLine": 52,
+        "endChar": 21
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce8ef9d4_42ea4bec",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T01:05:05Z",
+      "side": 1,
+      "message": "I want qslib to be unaware of the concept of pools. From qslib\u0027s perspective, there is only one quota scheduler in the universe.\n\nThe layer above this, which is the middleware between qslib and swarming, will orchestrate how many qschedulers exist and what view of the world they see (i.e. pools of devices, sets of quota account configuration).\n\nMake sense?",
+      "parentUuid": "86439c64_f18e2191",
       "range": {
         "startLine": 52,
         "startChar": 3,
@@ -349,6 +577,30 @@
     },
     {
       "key": {
+        "uuid": "7ffd76c3_a86a79a7",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T01:05:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7b35782b_0865d350",
+      "range": {
+        "startLine": 58,
+        "startChar": 24,
+        "endLine": 58,
+        "endChar": 70
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7c119c3c_9712b669",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
         "patchSetId": 9
@@ -369,6 +621,30 @@
       "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dd901170_619bab8d",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T01:05:05Z",
+      "side": 1,
+      "message": "Can\u0027t really do that, because this function has a closure over local variable prioritizedRequests.\n\n(by design, apparently, for sort-helper functions).",
+      "parentUuid": "7c119c3c_9712b669",
+      "range": {
+        "startLine": 75,
+        "startChar": 1,
+        "endLine": 75,
+        "endChar": 5
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -395,6 +671,30 @@
     },
     {
       "key": {
+        "uuid": "59a7a480_a7ec19f9",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T01:05:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "46cc9fb5_3676237d",
+      "range": {
+        "startLine": 78,
+        "startChar": 0,
+        "endLine": 83,
+        "endChar": 3
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "12e7c076_6319ddff",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
         "patchSetId": 9
@@ -406,6 +706,30 @@
       "writtenOn": "2018-08-02T22:28:53Z",
       "side": 1,
       "message": "It\u0027d be better to store parsed time instead of timestamps that are parsed here.\n\n- All parsing errors can be handled at enqueue time, where reported error is likely to make more sense (why is my scheduler suddenly hitting parsing errors again?)\n- Doing it here means that you\u0027ll parse the same timestamps repeatedly (each tick)",
+      "range": {
+        "startLine": 85,
+        "startChar": 0,
+        "endLine": 85,
+        "endChar": 45
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8088be8a_89bd9d2b",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T01:05:05Z",
+      "side": 1,
+      "message": "This is a side effect of defining enqueue_time as a   google.protobuf.Timestamp in task.proto, which seems to be the widely accepted practice.\n\nI don\u0027t want to store an additional field on it with parsed time, because that will be non authoritative.",
+      "parentUuid": "12e7c076_6319ddff",
       "range": {
         "startLine": 85,
         "startChar": 0,
@@ -441,6 +765,30 @@
     },
     {
       "key": {
+        "uuid": "9ca20fec_93a0735c",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T01:05:05Z",
+      "side": 1,
+      "message": "That function demotes jobs after it has seen more than |MaxFanout| for a particular account. We want to demote the lowest priority jobs that it can. That\u0027s why the list has to be sorted once prior to it walking the list, then sorted again after.\n\nThere are some possible optimizations, like sorting it once before into a heap, and then having it heap-and-fix, because most of the time it will demote only a fraction of jobs. But it feels too soon to optimize.",
+      "parentUuid": "724a7f40_0fa70ba4",
+      "range": {
+        "startLine": 91,
+        "startChar": 1,
+        "endLine": 91,
+        "endChar": 44
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f1d7fa05_a6dd15d5",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
         "patchSetId": 9
@@ -461,6 +809,30 @@
       "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d0da4e89_cfc59bcc",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T01:05:05Z",
+      "side": 1,
+      "message": "Renamed to \"s\"",
+      "parentUuid": "f1d7fa05_a6dd15d5",
+      "range": {
+        "startLine": 101,
+        "startChar": 6,
+        "endLine": 101,
+        "endChar": 8
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -487,6 +859,30 @@
     },
     {
       "key": {
+        "uuid": "f9df7bd5_67043501",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T01:05:05Z",
+      "side": 1,
+      "message": "I don\u0027t see how I can pull this out of the loop. I need to iterate beyond any job at priority p before I know that no jobs at p are present.\n\nHowever, I might return a slice that is still within the same array, which smells a little more correct to me.",
+      "parentUuid": "ef056747_da90554f",
+      "range": {
+        "startLine": 110,
+        "startChar": 0,
+        "endLine": 112,
+        "endChar": 3
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "14f7a569_6f151773",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
         "patchSetId": 9
@@ -507,6 +903,30 @@
       "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "13a7c2e3_7e4432e9",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-03T01:05:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "14f7a569_6f151773",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 1
+      },
+      "revId": "5bc2e0285ee768891f64f65c5d4bb76a540f2668",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
