@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8cbb4673_39103a83",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-03T20:50:44Z",
+      "side": 1,
+      "message": "Highly frowned upon. In my experience saving a few keystrokes in tests is not worth the difference between how tests and non-test code looks (I want the full references to the types/functions to look identical).\n\nThe extra keystrokes also pushes you to create smaller package / function / type names.\ntesting \u003d\u003e good prod code :)",
+      "range": {
+        "startLine": 4,
+        "startChar": 1,
+        "endLine": 4,
+        "endChar": 40
+      },
+      "revId": "6a74a2ddedbe4859c3193acdcb365d5075a190c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a70ea80_35fd377f",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-03T20:50:44Z",
+      "side": 1,
+      "message": "nit: golang likes \"got: %s, expected %s\" error messages.\nhttps://github.com/golang/go/wiki/CodeReviewComments#useful-test-failures",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 49
+      },
+      "revId": "6a74a2ddedbe4859c3193acdcb365d5075a190c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4b8841f0_06fe72f9",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-03T20:50:44Z",
+      "side": 1,
+      "message": "same nit as above: \n\n// consistent order of actual and expect.\nif actual !\u003d expect {\n  t.Errorf(actualExpect, actual, expect)\n}",
+      "range": {
+        "startLine": 50,
+        "startChar": 0,
+        "endLine": 51,
+        "endChar": 40
+      },
+      "revId": "6a74a2ddedbe4859c3193acdcb365d5075a190c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "507c2b69_cd378af7",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-03T20:50:44Z",
+      "side": 1,
+      "message": "nit: assert panic()s if v\u0027s underlying slice is the incorrect length.",
+      "range": {
+        "startLine": 52,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 22
+      },
+      "revId": "6a74a2ddedbe4859c3193acdcb365d5075a190c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "05017a60_42fd524e",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-03T20:50:44Z",
+      "side": 1,
+      "message": "nit: Instead use \"%#v\". This will print the full golang syntax, thus giving you \"Vector\"",
+      "range": {
+        "startLine": 56,
+        "startChar": 21,
+        "endLine": 56,
+        "endChar": 31
+      },
+      "revId": "6a74a2ddedbe4859c3193acdcb365d5075a190c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8436e1fa_ba0b114d",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-03T20:50:44Z",
+      "side": 1,
+      "message": "nit: Sorry, my message was wrong. got followed by expect everywhere in tests.",
+      "range": {
+        "startLine": 28,
+        "startChar": 13,
+        "endLine": 28,
+        "endChar": 52
+      },
+      "revId": "6a74a2ddedbe4859c3193acdcb365d5075a190c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

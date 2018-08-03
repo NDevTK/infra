@@ -66,6 +66,30 @@
     },
     {
       "key": {
+        "uuid": "86c8807e_f7816b2c",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-03T20:50:44Z",
+      "side": 1,
+      "message": "Ah, that\u0027s because you use :\u003d to declare and assign to priority without any type information, so golang picks int as the type for priority (which later causes problems when you try to assign an int32 value to priority). You must explicitly specify the type of priority, like so: https://play.golang.org/p/z56DrKgtFOo\n\nI think this is a legitimate reason to used typed constants. But prefer this:\n\nconst FreeBucket int32 \u003d vector.NumPriorities",
+      "parentUuid": "a7760832_c8f61bc8",
+      "range": {
+        "startLine": 11,
+        "startChar": 19,
+        "endLine": 11,
+        "endChar": 46
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4d733c95_f22b3a86",
         "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
         "patchSetId": 7
@@ -253,6 +277,30 @@
       "side": 1,
       "message": "It\u0027s a keystroke saver mainly used in test code. V{} is a lot simpler than [NumPriorities]float64{}\n\nI expected some controversy though. What if I annotate it with strongly worded warning that it is intended only for use within tests as a keystroke saver?\n\nRelated controversy: I also am dot-importing the vector package into some test modules, also as a keystroke saver.",
       "parentUuid": "d6a0625c_937c93e8",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 29
+      },
+      "revId": "89809a7c825a6e98a86988baf92ff6ce68f17fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f748b7c4_b845017e",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-08-03T20:50:44Z",
+      "side": 1,
+      "message": "Yeah, na-da for . importing packages (see comment there)\n\nFor tests, you can make this internal type (v vs V) since tests are in the same package, they have access to the internal type.",
+      "parentUuid": "0b9757a0_52e0dc4a",
       "range": {
         "startLine": 22,
         "startChar": 0,
