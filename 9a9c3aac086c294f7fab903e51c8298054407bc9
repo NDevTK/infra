@@ -1,0 +1,291 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e89a2ca0_aa3fed0c",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:02:59Z",
+      "side": 1,
+      "message": "Silly question, why is Vector a proto (and IntVector isn\u0027t)?",
+      "range": {
+        "startLine": 37,
+        "startChar": 9,
+        "endLine": 37,
+        "endChar": 15
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d6e5d9ca_43964482",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:02:59Z",
+      "side": 1,
+      "message": "A type alias is defined like\n\n  type V \u003d [NumPriorities]float64\n\nA type definition defines a new type, a type alias defines a new name for an existing type.",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 29
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "19209259_09e7a242",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:02:59Z",
+      "side": 1,
+      "message": "typo",
+      "range": {
+        "startLine": 45,
+        "startChar": 12,
+        "endLine": 45,
+        "endChar": 21
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8f19a2a8_649e0811",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:02:59Z",
+      "side": 1,
+      "message": "These are functions, methods have a receiver\n\n func (f *Foo) SomeMethod()",
+      "range": {
+        "startLine": 45,
+        "startChar": 22,
+        "endLine": 45,
+        "endChar": 28
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "decadaf0_78e772cb",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:02:59Z",
+      "side": 1,
+      "message": "I\u0027m not sold on the value that these convenience functions are providing.\n\nEdit: I see how they are used now.  I\u0027m still ambivalent on their value.",
+      "range": {
+        "startLine": 48,
+        "startChar": 5,
+        "endLine": 48,
+        "endChar": 8
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6e7ec79e_24f71f61",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:02:59Z",
+      "side": 1,
+      "message": "This makes a copy of the slice, but not the backing array.  This copy is pointless, since the parameter is already passed in as a copy.\n\n var foo V // this stores a slice value\n Val(foo) // this makes a copy of the slice value for the function call\n val[:] // this makes another copy of the slice value\n // There are three slice values here.\n\nA slice is basically a\n\n struct {\n   data *T // a raw pointer like in C\n   length int\n   capacity int  // size of allocated memory, to accommodate growing\n }",
+      "range": {
+        "startLine": 49,
+        "startChar": 23,
+        "endLine": 49,
+        "endChar": 29
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "67ab35f6_543ef3da",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:02:59Z",
+      "side": 1,
+      "message": "Assertions aren\u0027t idiomatic Go.  \nIf this check is going to exist, it should be done in the constructors (Val, Ref, etc), and it maybe should return an error instead of panicking.\n\n(See regexp.Compile and regexp.MustCompile for an example of both APIs.  The panic version is for literals, where a bad input is a programming error, the error version is for dynamic input, where a bad input is a regular error that needs to be handled.)",
+      "range": {
+        "startLine": 62,
+        "startChar": 1,
+        "endLine": 62,
+        "endChar": 11
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2ed0466e_69b362f6",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:02:59Z",
+      "side": 1,
+      "message": "Name is ambiguous, try assertLength, checkLength?",
+      "range": {
+        "startLine": 67,
+        "startChar": 5,
+        "endLine": 67,
+        "endChar": 11
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3875dd43_4096acf5",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:02:59Z",
+      "side": 1,
+      "message": "s/Plus/Add/",
+      "range": {
+        "startLine": 92,
+        "startChar": 16,
+        "endLine": 92,
+        "endChar": 20
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b7cb5056_e2383c4b",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:02:59Z",
+      "side": 1,
+      "message": "It seems more natural to me to skip the copy\n\n ans.Values[i] \u003d a.Values[i] + b.Values[i]",
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "51f60af2_690e8e9d",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:02:59Z",
+      "side": 1,
+      "message": "s/Minus/Subtract/\n\nplus/minus are nouns, add/subtract are verbs.",
+      "range": {
+        "startLine": 102,
+        "startChar": 16,
+        "endLine": 102,
+        "endChar": 21
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bc7d3e69_628f2bfb",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector_test.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:02:59Z",
+      "side": 1,
+      "message": "Need an empty line before the package line, or else the license gets interpreted as package documentation.",
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7c9be6ca_13ca41b3",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector_test.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:02:59Z",
+      "side": 1,
+      "message": "All of these test cases will need changing if you touch NumPriorities.  Maybe you want a private variadic constructor?\n\n func newVector(values ...float64)",
+      "range": {
+        "startLine": 23,
+        "startChar": 6,
+        "endLine": 23,
+        "endChar": 9
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
