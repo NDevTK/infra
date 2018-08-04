@@ -1,0 +1,204 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0fba142c_2e1a5398",
+        "filename": "go/src/infra/qscheduler/qslib/types/gen.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:37:43Z",
+      "side": 1,
+      "message": "Need empty line before",
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aeea309e_4e7059f1",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/gen.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:37:43Z",
+      "side": 1,
+      "message": "Empty line before.",
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "722720c0_436a51f2",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/gen.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:37:43Z",
+      "side": 1,
+      "message": "None of the other instances in the infra repo put go install before go:generate cproto, so I don\u0027t think you should do it either.  It\u0027s also an expensive operation to do multiple times, if you run go generate ./.. on qscheduler you end up running go install a half dozen times needlessly.",
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4024bb06_65f7c533",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:37:43Z",
+      "side": 1,
+      "message": "Empty line before",
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b918cf0c_ceff6a4a",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:37:43Z",
+      "side": 1,
+      "message": "Go is redundant, just slice is sufficient (also capitalize it if you do need to say Go)",
+      "range": {
+        "startLine": 27,
+        "startChar": 20,
+        "endLine": 27,
+        "endChar": 22
+      },
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1efd6097_91097320",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:37:43Z",
+      "side": 1,
+      "message": "You don\u0027t need to restate the type, since the doc comment always comes with the function signature.",
+      "range": {
+        "startLine": 30,
+        "startChar": 37,
+        "endLine": 30,
+        "endChar": 47
+      },
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "49afe877_78bbfcec",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.proto",
+        "patchSetId": 13
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:37:43Z",
+      "side": 1,
+      "message": "s/Running/Run/\n?\n\nIn any case, this name sucks.  Maybe something like RunningJob, RunningTask, ActiveTask, Task?",
+      "range": {
+        "startLine": 34,
+        "startChar": 3,
+        "endLine": 34,
+        "endChar": 10
+      },
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b9b21b7b_d88707ad",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task_test.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:37:43Z",
+      "side": 1,
+      "message": "I think you should inline these values.  Test code should prioritize readability of each test case standalone over reducing duplication between tests.  Also, I don\u0027t think the a, a; a, b test distinction is significant.\n\ni.e., reading these tests is annoying since I have to cross-reference each case with the letters.\n\nConsider using subtests (t.Run) to explicitly describe the scenario each case is testing.",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 21
+      },
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "100f2911_5326f695",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task_test.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:37:43Z",
+      "side": 1,
+      "message": "got before expected",
+      "range": {
+        "startLine": 45,
+        "startChar": 14,
+        "endLine": 45,
+        "endChar": 61
+      },
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "81c5acd0_732df7df",
+        "filename": "go/src/infra/qscheduler/qslib/types/worker.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-04T00:37:43Z",
+      "side": 1,
+      "message": "Empty line before",
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
