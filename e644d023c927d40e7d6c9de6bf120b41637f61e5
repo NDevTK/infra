@@ -22,6 +22,30 @@
       "revId": "e644d023c927d40e7d6c9de6bf120b41637f61e5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "afdd87c5_48bf3056",
+        "filename": "appengine/monorail/tools/backfill-issue-snapshots.sql",
+        "patchSetId": 3
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-08-06T21:13:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "35a39bba_93b38d37",
+      "range": {
+        "startLine": 173,
+        "startChar": 10,
+        "endLine": 173,
+        "endChar": 38
+      },
+      "revId": "e644d023c927d40e7d6c9de6bf120b41637f61e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
