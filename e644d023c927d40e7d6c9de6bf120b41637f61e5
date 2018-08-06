@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "35a39bba_93b38d37",
+        "filename": "appengine/monorail/tools/backfill-issue-snapshots.sql",
+        "patchSetId": 3
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-08-06T21:06:29Z",
+      "side": 1,
+      "message": "Oops, I\u0027ll uncomment this",
+      "range": {
+        "startLine": 173,
+        "startChar": 10,
+        "endLine": 173,
+        "endChar": 38
+      },
+      "revId": "e644d023c927d40e7d6c9de6bf120b41637f61e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
