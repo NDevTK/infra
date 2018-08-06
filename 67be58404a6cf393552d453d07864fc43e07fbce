@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "f7e35e54_56372b4b",
+        "filename": "appengine/cr-buildbucket/swarming/swarming.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 625,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2018-08-06T21:21:11Z",
+      "side": 1,
+      "message": "Ok will send CLs for this.",
+      "parentUuid": "1d4e4c8f_db9b2c9f",
+      "range": {
+        "startLine": 612,
+        "startChar": 0,
+        "endLine": 625,
+        "endChar": 7
+      },
+      "revId": "67be58404a6cf393552d453d07864fc43e07fbce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "cda06be4_56d0d27c",
         "filename": "appengine/cr-buildbucket/swarming/swarmingcfg.py",
         "patchSetId": 11
@@ -36,6 +60,30 @@
       "writtenOn": "2018-08-03T21:52:12Z",
       "side": 1,
       "message": "should it be minutes then?",
+      "range": {
+        "startLine": 284,
+        "startChar": 10,
+        "endLine": 287,
+        "endChar": 79
+      },
+      "revId": "67be58404a6cf393552d453d07864fc43e07fbce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1650c8c1_35fa5198",
+        "filename": "appengine/cr-buildbucket/swarming/swarmingcfg.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 287,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2018-08-06T21:21:11Z",
+      "side": 1,
+      "message": "No. time should always be in seconds. Otherwise people have to think about different units.\n\nThe reasons it\u0027s using 60s is due to an internal swarming design, which is out of scope here and could change (improve) in the future.",
+      "parentUuid": "cda06be4_56d0d27c",
       "range": {
         "startLine": 284,
         "startChar": 10,
@@ -68,6 +116,30 @@
       "revId": "67be58404a6cf393552d453d07864fc43e07fbce",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c9c223dd_15b7f100",
+        "filename": "appengine/cr-buildbucket/swarming/swarmingcfg.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2018-08-06T21:21:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c3141c4a_f70e4354",
+      "range": {
+        "startLine": 291,
+        "startChar": 15,
+        "endLine": 291,
+        "endChar": 66
+      },
+      "revId": "67be58404a6cf393552d453d07864fc43e07fbce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
