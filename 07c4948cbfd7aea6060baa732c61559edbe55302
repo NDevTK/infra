@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ea4d7486_88899ce4",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-06T19:37:32Z",
+      "side": 1,
+      "message": "Empty line before",
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "724660a0_b707177f",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-06T19:37:32Z",
+      "side": 1,
+      "message": "Use a single import block",
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "716f559e_b191f223",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-06T19:37:32Z",
+      "side": 1,
+      "message": "Premature optimization.  Using pointers means the GC will have to deal with a lot more small objects, which is potentially more expensive.",
+      "range": {
+        "startLine": 41,
+        "startChar": 47,
+        "endLine": 41,
+        "endChar": 70
+      },
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e4f1400a_89b485b5",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-06T19:37:32Z",
+      "side": 1,
+      "message": "This type definition seems pointless to me.  It\u0027s also a poor variable name; it\u0027s not obvious from the name what it is.",
+      "range": {
+        "startLine": 42,
+        "startChar": 5,
+        "endLine": 42,
+        "endChar": 9
+      },
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
