@@ -36,6 +36,23 @@
     },
     {
       "key": {
+        "uuid": "a30bbff0_299a1fe2",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "When viewed from outside the package, the package name is prepended:\n\n priority.Request\n task.Request\n\nWhen seen like this, I have no idea what the difference between the two might be.  Compare for example:\n\n http.Request\n rpc.Request\n\nThe package name provides enough information to understand the difference between the two Requests.\n\nAnother design consideration, let\u0027s not end up in Autotest\u0027s situation where there are a half dozen different Host or Task classes all with subtly different or wildly different meanings.",
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "716f559e_b191f223",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
         "patchSetId": 16
@@ -75,6 +92,498 @@
         "startChar": 5,
         "endLine": 42,
         "endChar": 9
+      },
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5fafb2e1_543b7e65",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "This name is pretty long for a local variable. Shorter variable names are more idiomatic, e.g., result.",
+      "range": {
+        "startLine": 52,
+        "startChar": 1,
+        "endLine": 52,
+        "endChar": 20
+      },
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9f00af1d_f1ea3963",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "This suggests to me that BestPriorityFor should be returning account.FreeBucket, instead of having to special-case it here.  It also seems to me that perhaps BestPriorityFor should live in this package, named priority, rather than the account package.\n\nSee my meta-comment about drawing the right lines between abstractions.",
+      "range": {
+        "startLine": 54,
+        "startChar": 2,
+        "endLine": 57,
+        "endChar": 3
+      },
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e439d59c_e25f8ec6",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "This could be moved out to a separate function (and thus tested separately):\n\n func requestSortFunc(r []Request) func(int, int) bool {\n    return func(i, j int) bool { ... }\n }\n sort.SliceStable(result, requestSortFunc(request))",
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0eba4de6_c7f580eb",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "(see also stable sort comment below)\n\nThis is just:\n\n if a.Priority \u003d\u003d b.Priority:\n    \u003cspecial case\u003e\n else:\n    return a.Priority \u003c b.Priority\n\nI think the switch case is harder to understand here.",
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "640b8e66_4c933a41",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "Since you\u0027re doing a stable sort, I think the logic is simpler if you just sort by timestamp first and then by priority.\n\nsort.SliceStable(result, timeSortFunc(request))\nsort.SliceStable(result, prioritySortFunc(request))",
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9de2bdac_4731f35d",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "I can\u0027t really tell how/why this is used.  It\u0027s not clear to me that this function should be defined here rather than where it will be used.",
+      "range": {
+        "startLine": 91,
+        "startChar": 3,
+        "endLine": 92,
+        "endChar": 61
+      },
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d5934bcd_50fa7584",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "I think there\u0027s a good argument to use binary search here, since we will presumably be scheduling a lot of tests.  (But I can\u0027t say without looking at the caller, my instinct is that the caller should just be iterating through the list of requests once and detect the priority in-line)",
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9b77eb35_54594274",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "This is just counting the number of jobs?  Is there a reason to use int32 specifically?",
+      "range": {
+        "startLine": 128,
+        "startChar": 35,
+        "endLine": 128,
+        "endChar": 40
+      },
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "01d1b7b2_d528eb09",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "just id is fine",
+      "range": {
+        "startLine": 129,
+        "startChar": 5,
+        "endLine": 129,
+        "endChar": 14
+      },
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5949ed27_b0167c37",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "The default value is zero already:\n\nhttps://play.golang.org/p/c7Z7S9PumB8\n\nSee also \n\nhttps://blog.golang.org/go-maps-in-action",
+      "range": {
+        "startLine": 130,
+        "startChar": 2,
+        "endLine": 130,
+        "endChar": 31
+      },
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "21239e2d_262a2a6a",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "This seems potentially expensive to calculate on every loop.",
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ad2c4cbb_7de9702c",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "Do you need to check membership?  Go maps have reasonable default behavior.",
+      "range": {
+        "startLine": 133,
+        "startChar": 14,
+        "endLine": 133,
+        "endChar": 55
+      },
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d07df872_91efa6a2",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "r is fine for a variable name, the scope is small enough to keep in the reviewer\u0027s/reader\u0027s mind.",
+      "range": {
+        "startLine": 138,
+        "startChar": 8,
+        "endLine": 138,
+        "endChar": 26
+      },
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fcfe044f_72d47daa",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "Go philosophy is to not rely on asserts.\n\nhttps://golang.org/doc/faq#assertions\n\nInstead, make it easy to tell whether the code is correct (and add tests), rather than using an assert (which is kind of like admitting that we don\u0027t know what the code will actually do).",
+      "range": {
+        "startLine": 141,
+        "startChar": 12,
+        "endLine": 141,
+        "endChar": 36
+      },
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9d7462a4_1c1d40d1",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "c is fine for a variable name",
+      "range": {
+        "startLine": 144,
+        "startChar": 6,
+        "endLine": 144,
+        "endChar": 19
+      },
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d0c714b5_00e3fdac",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "A large bulk of logic could be extracted out into functions:\n\n numRunningJobsForAccount()\n isAccountOverLimit()  # or GetAccountsOverLimit() for performance\n\nThen this function just becomes:\n\n # adapt pseudocode as needed\n for a in accounts:\n   if isAccountoverLimit(a):\n     for job in jobs[a]:\n       demoteJob(job)  # j.Priority \u003d FreeBucket",
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e521af32_f1b7658d",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "Empty line before",
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b5878a56_7efa6804",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "Use single import block",
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "84b8f494_0c917440",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "This test is hard to read.  This test especially could use a comment describing the case it is testing (the previous two tests could also use comments).",
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "70a3cfa0_5232c4ca",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "Use a constant so the test is reproducible.",
+      "range": {
+        "startLine": 66,
+        "startChar": 12,
+        "endLine": 66,
+        "endChar": 22
+      },
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fcedd784_28408b7c",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "All the tests below here are kind of bad.  It\u0027s not clear what exactly they are testing, and if they break, I don\u0027t think I could tell what exactly broke.  Instead of testing the \"full set of behaviors\", make separate tests for each single behavior, e.g.\n\n High priority job gets sorted before low priority job.\n When account exceeds max fanout, jobs are deprioritized.\n etc.",
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f409a17_b1669a13",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "You can just write these as pRequests[3:3] to be consistent visually.",
+      "range": {
+        "startLine": 246,
+        "startChar": 2,
+        "endLine": 246,
+        "endChar": 14
+      },
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "51d93f8e_b8da876f",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "I think it makes more sense to convert to int32 here instead of for each loop, since priority value is supposed to be int32.",
+      "range": {
+        "startLine": 252,
+        "startChar": 17,
+        "endLine": 252,
+        "endChar": 18
+      },
+      "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "62f6f240_212314e0",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-07T00:29:37Z",
+      "side": 1,
+      "message": "Bad function name, it\u0027s visually not distinguishable from ts (all lower case).  It\u0027s also a bit short.  Very short names like 1-2 chars are often used and preferred as local variables.",
+      "range": {
+        "startLine": 264,
+        "startChar": 5,
+        "endLine": 264,
+        "endChar": 7
       },
       "revId": "07c4948cbfd7aea6060baa732c61559edbe55302",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
