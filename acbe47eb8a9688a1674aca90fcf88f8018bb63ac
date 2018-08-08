@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "167e5bbb_5ac5fec8",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:36:26Z",
+      "side": 1,
+      "message": "This \"demote\" function deals only with the priority level of pending requests, not with changing the priority level of already-running ones.\n\nYou make a good point though that if an account is deleted while a job is running, that job should be demoted to the FreeBucket. I will add a TODO to add this in the scheduler CL.\n\nIn the meantime, I\u0027ve added a comment below explaining why we don\u0027t need to panic if !ok.",
+      "parentUuid": "9a90f440_1b1f7fc4",
+      "range": {
+        "startLine": 120,
+        "startChar": 5,
+        "endLine": 120,
+        "endChar": 28
+      },
+      "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9bd48b1e_09615c9c",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
         "patchSetId": 15
@@ -45,6 +69,30 @@
       "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "281d0bfb_c2ec4d31",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:36:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9bd48b1e_09615c9c",
+      "range": {
+        "startLine": 8,
+        "startChar": 1,
+        "endLine": 17,
+        "endChar": 1
+      },
+      "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "7b3357a0_fb23a093",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:36:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c593c278_cfe13c98",
+      "range": {
+        "startLine": 32,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 58
+      },
+      "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0912612a_791186a2",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
         "patchSetId": 15
@@ -91,6 +163,30 @@
       "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "20622996_e71ec73e",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:36:26Z",
+      "side": 1,
+      "message": "Moved the typecast to its own helper which panics if necessary.",
+      "parentUuid": "0912612a_791186a2",
+      "range": {
+        "startLine": 57,
+        "startChar": 1,
+        "endLine": 59,
+        "endChar": 2
+      },
+      "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "b0b8383a_cc49cdb7",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:36:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "de17162b_1fdf0069",
+      "range": {
+        "startLine": 60,
+        "startChar": 1,
+        "endLine": 60,
+        "endChar": 13
+      },
+      "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b60ec371_32f0a8d3",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
         "patchSetId": 15
@@ -131,6 +251,24 @@
       "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a3b26be6_c4220e75",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:36:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b60ec371_32f0a8d3",
+      "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -157,6 +295,30 @@
     },
     {
       "key": {
+        "uuid": "05f06d41_f334e43f",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:36:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "54abc1cf_8c263903",
+      "range": {
+        "startLine": 200,
+        "startChar": 1,
+        "endLine": 200,
+        "endChar": 16
+      },
+      "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5c3e549a_2ac66680",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
         "patchSetId": 15
@@ -177,6 +339,30 @@
       "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e27ea58c_f91eb2c1",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:36:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5c3e549a_2ac66680",
+      "range": {
+        "startLine": 202,
+        "startChar": 28,
+        "endLine": 202,
+        "endChar": 31
+      },
+      "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -203,6 +389,30 @@
     },
     {
       "key": {
+        "uuid": "dcc585c1_f90aa011",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:36:26Z",
+      "side": 1,
+      "message": "Changed to a item-by-item comparison, which should make the dump more intelligible if the behavior ever changes.",
+      "parentUuid": "beabbccf_36d64236",
+      "range": {
+        "startLine": 213,
+        "startChar": 0,
+        "endLine": 217,
+        "endChar": 2
+      },
+      "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f78f81b8_d046cc76",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
         "patchSetId": 15
@@ -223,6 +433,30 @@
       "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4b4122d3_6c8384c9",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:36:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f78f81b8_d046cc76",
+      "range": {
+        "startLine": 243,
+        "startChar": 14,
+        "endLine": 243,
+        "endChar": 60
+      },
+      "revId": "acbe47eb8a9688a1674aca90fcf88f8018bb63ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
