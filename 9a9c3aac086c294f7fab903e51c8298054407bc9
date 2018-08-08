@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "acba9510_b04c3ccc",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:14:18Z",
+      "side": 1,
+      "message": "Vector is part of the State proto which will eventually need to be persisted somewhere. IntVector is only used internally.",
+      "parentUuid": "e89a2ca0_aa3fed0c",
+      "range": {
+        "startLine": 37,
+        "startChar": 9,
+        "endLine": 37,
+        "endChar": 15
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d6e5d9ca_43964482",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
         "patchSetId": 11
@@ -45,6 +69,30 @@
       "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7d32be57_78c391b9",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:14:18Z",
+      "side": 1,
+      "message": "This is dropped in later patchsets.",
+      "parentUuid": "d6e5d9ca_43964482",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 29
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -94,6 +142,78 @@
     },
     {
       "key": {
+        "uuid": "6cf3e831_24dafc55",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:14:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8f19a2a8_649e0811",
+      "range": {
+        "startLine": 45,
+        "startChar": 22,
+        "endLine": 45,
+        "endChar": 28
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bed9d5e3_a0b059c6",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:14:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "eb3d1acb_1794c33e",
+      "range": {
+        "startLine": 45,
+        "startChar": 12,
+        "endLine": 45,
+        "endChar": 21
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e97d30d1_0ec733c1",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:14:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "19209259_09e7a242",
+      "range": {
+        "startLine": 45,
+        "startChar": 12,
+        "endLine": 45,
+        "endChar": 21
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "decadaf0_78e772cb",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
         "patchSetId": 11
@@ -114,6 +234,30 @@
       "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ea5e7949_fc41e6e6",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:14:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "decadaf0_78e772cb",
+      "range": {
+        "startLine": 48,
+        "startChar": 5,
+        "endLine": 48,
+        "endChar": 8
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -140,6 +284,30 @@
     },
     {
       "key": {
+        "uuid": "49029264_3bd8fd72",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:14:18Z",
+      "side": 1,
+      "message": "this is gone in next patchset.",
+      "parentUuid": "6e7ec79e_24f71f61",
+      "range": {
+        "startLine": 49,
+        "startChar": 23,
+        "endLine": 49,
+        "endChar": 29
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "67ab35f6_543ef3da",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
         "patchSetId": 11
@@ -163,6 +331,30 @@
     },
     {
       "key": {
+        "uuid": "1358991a_63d83343",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:14:18Z",
+      "side": 1,
+      "message": "This is here in case of Vectors that weren\u0027t created via the New constructor. I think it is worth it to ensure correctness.",
+      "parentUuid": "67ab35f6_543ef3da",
+      "range": {
+        "startLine": 62,
+        "startChar": 1,
+        "endLine": 62,
+        "endChar": 11
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2ed0466e_69b362f6",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
         "patchSetId": 11
@@ -174,6 +366,30 @@
       "writtenOn": "2018-08-04T00:02:59Z",
       "side": 1,
       "message": "Name is ambiguous, try assertLength, checkLength?",
+      "range": {
+        "startLine": 67,
+        "startChar": 5,
+        "endLine": 67,
+        "endChar": 11
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0b5fe07d_2ef4f410",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:14:18Z",
+      "side": 1,
+      "message": "Seems unnecessary for an unexported name in a small package.",
+      "parentUuid": "2ed0466e_69b362f6",
       "range": {
         "startLine": 67,
         "startChar": 5,
@@ -209,6 +425,30 @@
     },
     {
       "key": {
+        "uuid": "0f7d3d88_159c222b",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:14:18Z",
+      "side": 1,
+      "message": "I prefer Plus, which makes it more clear that it is retunring a new vector.",
+      "parentUuid": "3875dd43_4096acf5",
+      "range": {
+        "startLine": 92,
+        "startChar": 16,
+        "endLine": 92,
+        "endChar": 20
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b7cb5056_e2383c4b",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
         "patchSetId": 11
@@ -226,6 +466,24 @@
     },
     {
       "key": {
+        "uuid": "3e96d6a7_eba39753",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:14:18Z",
+      "side": 1,
+      "message": "This works even if a.Values or b.Values have the wrong length.",
+      "parentUuid": "b7cb5056_e2383c4b",
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "51f60af2_690e8e9d",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
         "patchSetId": 11
@@ -237,6 +495,30 @@
       "writtenOn": "2018-08-04T00:02:59Z",
       "side": 1,
       "message": "s/Minus/Subtract/\n\nplus/minus are nouns, add/subtract are verbs.",
+      "range": {
+        "startLine": 102,
+        "startChar": 16,
+        "endLine": 102,
+        "endChar": 21
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "067b74bc_7a0b9cd6",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:14:18Z",
+      "side": 1,
+      "message": "I prefer Minus for the same reason as Plus above. Makes it clear that a copy is returned.",
+      "parentUuid": "51f60af2_690e8e9d",
       "range": {
         "startLine": 102,
         "startChar": 16,
@@ -266,6 +548,24 @@
     },
     {
       "key": {
+        "uuid": "c8c1b23d_600ad5ce",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector_test.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:14:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bc7d3e69_628f2bfb",
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7c9be6ca_13ca41b3",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector_test.go",
         "patchSetId": 11
@@ -286,6 +586,30 @@
       "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e8497486_0854fd86",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector_test.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:14:18Z",
+      "side": 1,
+      "message": "Yep, I eventually came to this realization :)",
+      "parentUuid": "7c9be6ca_13ca41b3",
+      "range": {
+        "startLine": 23,
+        "startChar": 6,
+        "endLine": 23,
+        "endChar": 9
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

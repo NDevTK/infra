@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "faf1ef51_5ac0557c",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:14:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "21deb714_1bbb7d00",
+      "revId": "6a74a2ddedbe4859c3193acdcb365d5075a190c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fe729993_15fcf914",
         "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
         "patchSetId": 10
@@ -65,6 +83,30 @@
     },
     {
       "key": {
+        "uuid": "b0ffcb45_b091dc82",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:14:18Z",
+      "side": 1,
+      "message": "I want config and state information separate, because they may be stored separately.",
+      "parentUuid": "a835d78b_9937b57f",
+      "range": {
+        "startLine": 38,
+        "startChar": 19,
+        "endLine": 38,
+        "endChar": 51
+      },
+      "revId": "6a74a2ddedbe4859c3193acdcb365d5075a190c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "86bdbc86_1dbe4b67",
         "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
         "patchSetId": 10
@@ -76,6 +118,30 @@
       "writtenOn": "2018-08-04T00:02:59Z",
       "side": 1,
       "message": "I don\u0027t think this check is adding any value.  It adds an additional logic branch, and I don\u0027t think it increases performance (since balances will almost always be under the max).  Don\u0027t optimize prematurely.",
+      "range": {
+        "startLine": 43,
+        "startChar": 5,
+        "endLine": 43,
+        "endChar": 42
+      },
+      "revId": "6a74a2ddedbe4859c3193acdcb365d5075a190c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4b50ebfa_b5b7de06",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:14:18Z",
+      "side": 1,
+      "message": "I disagree. Simulations indicated the balances often temporarily exceeded max balance, when accounts got reimbursed for instance for expensive preempted jobs. This behavior is more correct, and the unit tests already cover it.",
+      "parentUuid": "86bdbc86_1dbe4b67",
       "range": {
         "startLine": 43,
         "startChar": 5,
