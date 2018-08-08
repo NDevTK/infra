@@ -107,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "2acf646c_245efa4b",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:54:09Z",
+      "side": 1,
+      "message": "Punting on moving this, but adding TODO to move it to scheduler package.",
+      "parentUuid": "b2acee08_9b170578",
+      "range": {
+        "startLine": 23,
+        "startChar": 17,
+        "endLine": 26,
+        "endChar": 1
+      },
+      "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b3ce996c_adb6defa",
         "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
         "patchSetId": 19
@@ -270,6 +294,54 @@
     },
     {
       "key": {
+        "uuid": "92a04463_67c6c066",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:54:09Z",
+      "side": 1,
+      "message": "Agreed, there are possible improvements. Don\u0027t want to optimize prematurely, but there are quite a number of candidates. Added TODO with one idea.",
+      "parentUuid": "42453904_42c648c2",
+      "range": {
+        "startLine": 36,
+        "startChar": 48,
+        "endLine": 36,
+        "endChar": 64
+      },
+      "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7703018d_a0ea910c",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:54:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "db79ce3c_fa8fef78",
+      "range": {
+        "startLine": 36,
+        "startChar": 17,
+        "endLine": 36,
+        "endChar": 19
+      },
+      "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e43b0dad_99159c9e",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 19
@@ -293,6 +365,30 @@
     },
     {
       "key": {
+        "uuid": "c433bc1f_9fbdc74f",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:54:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e43b0dad_99159c9e",
+      "range": {
+        "startLine": 93,
+        "startChar": 5,
+        "endLine": 93,
+        "endChar": 7
+      },
+      "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "225c6104_ee9cc856",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 19
@@ -307,6 +403,24 @@
       "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d0ffd954_8af6d979",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:54:09Z",
+      "side": 1,
+      "message": "Punting, with DOTO.",
+      "parentUuid": "225c6104_ee9cc856",
+      "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -398,6 +512,24 @@
     },
     {
       "key": {
+        "uuid": "a18602d7_9a8c479f",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:54:09Z",
+      "side": 1,
+      "message": "Agreed but don\u0027t want to optimize yet.",
+      "parentUuid": "dadea611_de529f1e",
+      "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8e3db910_39c6bfd7",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 19
@@ -438,6 +570,24 @@
     },
     {
       "key": {
+        "uuid": "ac3176fa_190f3110",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:54:09Z",
+      "side": 1,
+      "message": "punting.",
+      "parentUuid": "1ac5dfb8_506e17b4",
+      "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4bd93cf0_ecd81cae",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 19
@@ -461,6 +611,30 @@
     },
     {
       "key": {
+        "uuid": "bdf465f9_161b6f59",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:54:09Z",
+      "side": 1,
+      "message": "punting",
+      "parentUuid": "4bd93cf0_ecd81cae",
+      "range": {
+        "startLine": 224,
+        "startChar": 7,
+        "endLine": 224,
+        "endChar": 24
+      },
+      "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "03a8281e_e7181cd2",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 19
@@ -475,6 +649,24 @@
       "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5122101c_7a01b19e",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:54:09Z",
+      "side": 1,
+      "message": "punting",
+      "parentUuid": "03a8281e_e7181cd2",
+      "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -498,6 +690,30 @@
       "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b839825b_aa867d0b",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler_test.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:54:09Z",
+      "side": 1,
+      "message": "I think you are misunderstanding the purpose of Mutaters. Let\u0027s discuss offline.",
+      "parentUuid": "be4c164d_670f6cec",
+      "range": {
+        "startLine": 28,
+        "startChar": 5,
+        "endLine": 28,
+        "endChar": 20
+      },
+      "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -237,6 +237,30 @@
     },
     {
       "key": {
+        "uuid": "5ba90110_fb5451ca",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:54:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6d145d53_ff2842ed",
+      "range": {
+        "startLine": 42,
+        "startChar": 1,
+        "endLine": 42,
+        "endChar": 17
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4bcf8fce_b7d9a4bb",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.go",
         "patchSetId": 13
@@ -328,6 +352,30 @@
       "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6fa742ca_be42c80e",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/mutaters.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T22:54:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c1ad05b1_b7a972eb",
+      "range": {
+        "startLine": 48,
+        "startChar": 20,
+        "endLine": 48,
+        "endChar": 38
+      },
+      "revId": "38b7883a8917ed50e00fa04ac19561795b35bb27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
