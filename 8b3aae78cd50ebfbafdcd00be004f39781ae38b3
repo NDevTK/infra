@@ -357,6 +357,30 @@
     },
     {
       "key": {
+        "uuid": "c6988729_b0f72792",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-08T19:32:41Z",
+      "side": 1,
+      "message": "Thanks, it would be helpful to have a design doc to see the overall picture.\n\nI\u0027m still not convinced that the API complexity here is necessary for the overall design.\n\nThe protos are only needed if talking to a separate service.  Is the intent to make the middleware a separate service?  Normally, service middleware is just a library compiled into the same program (e.g. Django, web middleware that I\u0027m familiar with).  I think having a separate service for talking to swarming and passing protos back and forth is unnecessarily complicated.\n\nThere are other ways to achieve your channel goals 1 and 2 without using a channel-and-goroutine like the current code.  As you noted, you can\u0027t actually do 2 without leaking goroutines currently.\n\nWhat you really want is to be able to provide custom hooks for the various mutation steps.  This sounds like a good fit for using interfaces.  I commented on the tests about this approached.",
+      "parentUuid": "19458bca_d1055d28",
+      "range": {
+        "startLine": 161,
+        "startChar": 4,
+        "endLine": 162,
+        "endChar": 19
+      },
+      "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "dadea611_de529f1e",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 19
