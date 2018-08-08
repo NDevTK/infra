@@ -283,6 +283,30 @@
     },
     {
       "key": {
+        "uuid": "216f9f39_3881f7a2",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.proto",
+        "patchSetId": 13
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T19:27:34Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "cde57b58_fd6a5607",
+      "range": {
+        "startLine": 34,
+        "startChar": 3,
+        "endLine": 34,
+        "endChar": 10
+      },
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b9b21b7b_d88707ad",
         "filename": "go/src/infra/qscheduler/qslib/types/task/task_test.go",
         "patchSetId": 13
@@ -303,6 +327,30 @@
       "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c42160bf_97a02a60",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task_test.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T19:27:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b9b21b7b_d88707ad",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 21
+      },
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -329,6 +377,30 @@
     },
     {
       "key": {
+        "uuid": "5316b248_0b82fe18",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task_test.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T19:27:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "100f2911_5326f695",
+      "range": {
+        "startLine": 45,
+        "startChar": 14,
+        "endLine": 45,
+        "endChar": 61
+      },
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "47e39477_11957e6b",
         "filename": "go/src/infra/qscheduler/qslib/types/types.proto",
         "patchSetId": 13
@@ -349,6 +421,30 @@
       "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aba85ec7_5f6797b6",
+        "filename": "go/src/infra/qscheduler/qslib/types/types.proto",
+        "patchSetId": 13
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T19:27:34Z",
+      "side": 1,
+      "message": "Renamed to requests",
+      "parentUuid": "47e39477_11957e6b",
+      "range": {
+        "startLine": 40,
+        "startChar": 28,
+        "endLine": 40,
+        "endChar": 41
+      },
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
