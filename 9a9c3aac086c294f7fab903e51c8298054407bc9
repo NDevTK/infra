@@ -521,6 +521,30 @@
     },
     {
       "key": {
+        "uuid": "60a0432f_12a66c5b",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-08T19:43:50Z",
+      "side": 1,
+      "message": "Holding up the standard library as an authoritative example: https://godoc.org/time#Time.Add\n\nTime.Add also returns a new Time\n\n1 + 2 returns a new int, it doesn\u0027t change the first int in place.\n\"foo\" + \"bar\" returns a new string, it doesn\u0027t change the first string in place.\n\nI think by using Plus/Minus, you\u0027re betraying common programmer expectations.",
+      "parentUuid": "f1d81e86_1e9adc34",
+      "range": {
+        "startLine": 92,
+        "startChar": 16,
+        "endLine": 92,
+        "endChar": 20
+      },
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b7cb5056_e2383c4b",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
         "patchSetId": 11
@@ -550,6 +574,24 @@
       "side": 1,
       "message": "This works even if a.Values or b.Values have the wrong length.",
       "parentUuid": "b7cb5056_e2383c4b",
+      "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d39d8aa7_8f982ce2",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-08T19:43:50Z",
+      "side": 1,
+      "message": "I don\u0027t have a strong opinion on my suggestion, but I don\u0027t think this code should be written specifically to handle Vectors with the wrong length, given that you have random assertions sprinkled through the code to crash if Vectors are the wrong length.\n\nAssuming that you\u0027re only expecting to get bad Vectors from external input (e.g. RPC calls), those values should be verified and/or fixed up front, not leak through the code and randomly trigger assertions or special handling code.",
+      "parentUuid": "3e96d6a7_eba39753",
       "revId": "9a9c3aac086c294f7fab903e51c8298054407bc9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
