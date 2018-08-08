@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "512875dc_0be251b3",
+        "filename": "go/src/infra/qscheduler/qslib/types/gen.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:28:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0fba142c_2e1a5398",
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aeea309e_4e7059f1",
         "filename": "go/src/infra/qscheduler/qslib/types/task/gen.go",
         "patchSetId": 13
@@ -33,6 +51,24 @@
       "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e1b1d631_cb91ba63",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/gen.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:28:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aeea309e_4e7059f1",
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "b773b8c9_0aee4f2d",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/gen.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:28:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "722720c0_436a51f2",
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4024bb06_65f7c533",
         "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
         "patchSetId": 13
@@ -67,6 +121,24 @@
       "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d5941a14_cfcb1714",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:28:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4024bb06_65f7c533",
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -93,6 +165,30 @@
     },
     {
       "key": {
+        "uuid": "214e6c08_4a5ac716",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:28:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b918cf0c_ceff6a4a",
+      "range": {
+        "startLine": 27,
+        "startChar": 20,
+        "endLine": 27,
+        "endChar": 22
+      },
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1efd6097_91097320",
         "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
         "patchSetId": 13
@@ -116,6 +212,30 @@
     },
     {
       "key": {
+        "uuid": "60dc6af5_04ea4c54",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:28:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1efd6097_91097320",
+      "range": {
+        "startLine": 30,
+        "startChar": 37,
+        "endLine": 30,
+        "endChar": 47
+      },
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "49afe877_78bbfcec",
         "filename": "go/src/infra/qscheduler/qslib/types/task/task.proto",
         "patchSetId": 13
@@ -127,6 +247,30 @@
       "writtenOn": "2018-08-04T00:37:43Z",
       "side": 1,
       "message": "s/Running/Run/\n?\n\nIn any case, this name sucks.  Maybe something like RunningJob, RunningTask, ActiveTask, Task?",
+      "range": {
+        "startLine": 34,
+        "startChar": 3,
+        "endLine": 34,
+        "endChar": 10
+      },
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cde57b58_fd6a5607",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.proto",
+        "patchSetId": 13
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:28:35Z",
+      "side": 1,
+      "message": "Most of the code will refer to this as task.Run. I think this is clear and avoids stutter. And agrees with the part-of-speech of Request above. It was also in line with Prathmesh\u0027s preferences.",
+      "parentUuid": "49afe877_78bbfcec",
       "range": {
         "startLine": 34,
         "startChar": 3,
@@ -222,6 +366,24 @@
       "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "335d9ef7_10e41eea",
+        "filename": "go/src/infra/qscheduler/qslib/types/worker.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:28:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "81c5acd0_732df7df",
+      "revId": "1bc8ff3ff671ae268b3dbfe30f759deb76ff44e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
