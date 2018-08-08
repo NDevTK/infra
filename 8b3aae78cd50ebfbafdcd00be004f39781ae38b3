@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5937954b_91a7304e",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/gen.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:45:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "76f4d497_ff963924",
+      "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6f7e026e_207cca34",
         "filename": "go/src/infra/qscheduler/qslib/mutaters/gen.go",
         "patchSetId": 19
@@ -39,6 +57,30 @@
       "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df003e2a_60700cae",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/gen.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:45:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6f7e026e_207cca34",
+      "range": {
+        "startLine": 16,
+        "startChar": 14,
+        "endLine": 16,
+        "endChar": 61
+      },
+      "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -88,6 +130,30 @@
     },
     {
       "key": {
+        "uuid": "6171b070_ce3647d2",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:45:18Z",
+      "side": 1,
+      "message": "See other comment on the purpose of Mutaters.",
+      "parentUuid": "b3ce996c_adb6defa",
+      "range": {
+        "startLine": 29,
+        "startChar": 5,
+        "endLine": 29,
+        "endChar": 53
+      },
+      "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d65e9446_a2fe44bf",
         "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.proto",
         "patchSetId": 19
@@ -108,6 +174,30 @@
       "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f3ef1ec3_791de9c3",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.proto",
+        "patchSetId": 19
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:45:18Z",
+      "side": 1,
+      "message": "See other comment.",
+      "parentUuid": "d65e9446_a2fe44bf",
+      "range": {
+        "startLine": 21,
+        "startChar": 8,
+        "endLine": 21,
+        "endChar": 24
+      },
+      "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -231,6 +321,30 @@
       "writtenOn": "2018-08-07T01:26:28Z",
       "side": 1,
       "message": "What\u0027s the point of sending the muts out a channel?\n\nPresumably, this is for logging the changes.  However, it doesn\u0027t make sense in that case to use a Mutater interface, since the receiver isn\u0027t interested in calling the Mutate method.  Instead, it should probably be using something like an Event interface:\n\n type Event interface {\n    func EventString() string\n }\n\nThat way, the receiver can get a string representation without having to do a type assertion.\n\n(But either way, the caller is going to have to do type assertions to get back the original struct and access its fields.)",
+      "range": {
+        "startLine": 161,
+        "startChar": 4,
+        "endLine": 162,
+        "endChar": 19
+      },
+      "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "19458bca_d1055d28",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-08T01:45:18Z",
+      "side": 1,
+      "message": "The point of sending the Muts out a channel is more than logging, and is rather central to this entire library. I should clarify that, which I think will also address some of your other questions around why everything is a proto.\n\nThe point of the QuotaSchedule function is to generate a list of scheduler actions (which I am calling Mutations). Eventually, there will be middleware between this code and swarming, which feeds in swarming state to QuotaSchedule and translates those into the concrete swarming steps that are required (eg \"Prempt Job\" becomes a few coordinated swarming operations).\n\nWhy use a channel here instead of returning a list?\n1) Using a channel and emitting the mutations individually allows for the same libary to be used in a simulator, and for the simulator to support \"scheduler breakpoint\" in which one can pause the action at each individual scheduler decision. This turned out to be a handy feature of the javascript simulator, so I kept it here.\n2) Using a channel potentially allow us to bail out of the expensive calculation early, if the first few mutations indicate that we should/can. I probably need some more plumbing inside of scheduler logic (e.g. use of context.Context) to really support that.\n\nThis also should explain why all of the State and Config and Mutator types are protos -- they are going to form part of the schema that is used by this qscheduler \u003c-\u003e swarming middleware.",
+      "parentUuid": "026fa0aa_dfc67520",
       "range": {
         "startLine": 161,
         "startChar": 4,
