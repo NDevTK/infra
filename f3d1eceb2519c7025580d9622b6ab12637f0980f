@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "0b1f0aa8_4af5a7bc",
+        "filename": "recipes/recipe_modules/third_party_packages/examples/firebase.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1271098
+      },
+      "writtenOn": "2018-08-09T15:49:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "60deb23c_3e6c3dbd",
+      "range": {
+        "startLine": 8,
+        "startChar": 35,
+        "endLine": 8,
+        "endChar": 42
+      },
+      "revId": "f3d1eceb2519c7025580d9622b6ab12637f0980f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "75bfeaeb_ea519eaa",
         "filename": "recipes/recipe_modules/third_party_packages/examples/firebase.py",
         "patchSetId": 5
@@ -39,6 +63,24 @@
       "revId": "f3d1eceb2519c7025580d9622b6ab12637f0980f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bc38ef41_bb7b17f1",
+        "filename": "recipes/recipe_modules/third_party_packages/examples/firebase.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1271098
+      },
+      "writtenOn": "2018-08-09T15:49:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "75bfeaeb_ea519eaa",
+      "revId": "f3d1eceb2519c7025580d9622b6ab12637f0980f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
