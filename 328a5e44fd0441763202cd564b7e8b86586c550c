@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b8a37208_696ba3c9",
+        "filename": "appengine/cr-buildbucket/swarming/swarming.py",
+        "patchSetId": 15
+      },
+      "lineNbr": 638,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-08-09T21:53:10Z",
+      "side": 1,
+      "message": "this code still needs to be simplified, now that we assert that there is only one task slice. \n\nlet\u0027s add a new variable\n\n  base_task_slice \u003d task[\u0027task_slices\u0027][0]\n\nright after L597. From there, we can use the variable instead of task[\u0027task_slices\u0027][-1], and we no longer need long comment in L605 or the for loop in L604. Further we don\u0027t need L614-617. The \"final\" variable can be removed too, since it is the base_task_slice, or at least moved to L637",
+      "revId": "328a5e44fd0441763202cd564b7e8b86586c550c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
