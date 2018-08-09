@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "60deb23c_3e6c3dbd",
+        "filename": "recipes/recipe_modules/third_party_packages/examples/firebase.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2018-08-09T01:01:22Z",
+      "side": 1,
+      "message": "nix, just \u0027recipe\u0027 here",
+      "range": {
+        "startLine": 8,
+        "startChar": 35,
+        "endLine": 8,
+        "endChar": 42
+      },
+      "revId": "f3d1eceb2519c7025580d9622b6ab12637f0980f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "75bfeaeb_ea519eaa",
+        "filename": "recipes/recipe_modules/third_party_packages/examples/firebase.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2018-08-09T01:01:22Z",
+      "side": 1,
+      "message": "nit: newlines between packages (so, recipe_engine modules, then depot_tools, then local modules)",
+      "revId": "f3d1eceb2519c7025580d9622b6ab12637f0980f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
