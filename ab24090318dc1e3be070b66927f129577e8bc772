@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dad82f23_de05a57c",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/som/testexpectations/expectations.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1003232
+      },
+      "writtenOn": "2018-08-10T21:55:49Z",
+      "side": 1,
+      "message": "Nit: s/bulders.json/builders.json.",
+      "revId": "ab24090318dc1e3be070b66927f129577e8bc772",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
