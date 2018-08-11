@@ -22,6 +22,47 @@
       "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d3955894_9bf31cc4",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-11T00:58:20Z",
+      "side": 1,
+      "message": "err, but ignore. It seems godoc folks actually use /* all the time.\nhttps://github.com/golang/tools/blob/master/cmd/godoc/doc.go",
+      "parentUuid": "f16a5886_226aa0b6",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 2
+      },
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1d6d7d5d_637f0c77",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/gen.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-11T00:58:20Z",
+      "side": 1,
+      "message": "nit: add empty line.",
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
