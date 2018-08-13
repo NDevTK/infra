@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "32cdc966_d27be96f",
+        "filename": "appengine/monorail/elements/chdir/mr-commit-table/mr-commit-table.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-08-13T23:25:58Z",
+      "side": 1,
+      "message": "This isn\u0027t part of this change but I don\u0027t think this line goes \u003e80 chars.",
+      "range": {
+        "startLine": 86,
+        "startChar": 6,
+        "endLine": 86,
+        "endChar": 24
+      },
+      "revId": "6f1ebdb25ff2b1de09fa61107c9c79cf2a38dedf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
