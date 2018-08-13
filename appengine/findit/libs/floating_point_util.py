@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 """Utility functions for processing floating point operations."""
 
-import numpy
-
 ABSOLUTE_TOLERANCE = 0.000001
 
 
@@ -33,5 +31,6 @@ def AlmostEquals(float_a, float_b, tolerance=ABSOLUTE_TOLERANCE):
   percentage_same = (
       min(abs(float_a), abs(float_b)) / max(abs(float_a), abs(float_b)))
 
+  import numpy  # Workaround for running locally.
   return (numpy.sign(float_a) == numpy.sign(float_b) and
           1.0 - percentage_same <= tolerance)

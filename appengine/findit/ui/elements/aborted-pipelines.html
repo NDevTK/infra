@@ -1,0 +1,121 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="stylesheet" href="/common.css">
+
+<dom-module id="aborted-pipelines">
+  <template>
+    <style>
+      .scroll {
+        max-width: 600px;
+        max-height: 120px;
+        overflow-y: auto;
+      }
+    </style>
+
+    <table>
+      <thead>
+        <tr><th>Pipeline</th><th style="max-width: 400px">Bucket</th><th>Count</th><th>Aborted pipelines</th></tr>
+      </thead>
+      <tbody>
+        <template is="dom-repeat" items="[[_orderedPipelineNames(pipelineinfo)]]" as="pipelineName">
+          <template is="dom-repeat" items="[[_orderedBuckets(pipelineInfo, pipelineName)]]" as="bucket">
+            <tr>
+              <td>[[pipelineName]]</td>
+              <td>[[bucket]]</td>
+              <td>[[_CountErrorsInBucket(pipelineInfo, pipelineName, bucket)]]</td>
+              <td>
+                <ul>
+                  <template is="dom-repeat" items="[[_orderedErrors(pipelineInfo, pipelineName, bucket)]]" as="error">
+                    <li> [[error]]
+                      <div class="scroll">
+                        <template is="dom-repeat" items="[[_GetPipelineInstancesForError(pipelineInfo, pipelineName, bucket, error)]]" as="p">
+                          <a href="https://findit-for-me.appspot.com/_ah/pipeline/status?root=[[p.pipeline]]" target="_blank">#[[index]], </a>
+                        </template>
+                      </div>
+                    </li>
+                  </template>
+                </ul>
+              </td>
+            </tr>
+          </template>
+        </template>
+      </tbody>
+    </table>
+  </template>
+
+  <script>
+    (function() {
+      Polymer({
+        is: "aborted-pipelines",
+
+        properties: {
+          pipelineInfo: {
+            type: Object,
+            // Data structure:
+            // {'pipeline-name': {'error-bucket': {'error-message': [
+            //   {'master': 'master-name', 'builder': 'builder-name',
+            //    'build': 123, 'pipeline': 'id', 'type': 'waterfall'},
+            //   {'pipeline': 'id', 'type': 'flake', 'key': 'analysis-key'}
+            // ]}}}
+          },
+        },
+
+        _CountErrorsInPipeline: function(pipelineInfo, name) {
+          var count = 0;
+          var buckets = pipelineInfo[name];
+          for (var error in buckets) {
+            count += buckets[error].length;
+          }
+          return count;
+        },
+
+        _orderedPipelineNames: function(pipelineInfo) {
+
+          var pipelineNames = Object.keys(pipelineInfo);
+          pipelineNames.sort(function(a, b) {
+            // Reverse ordering.
+            return this._CountErrorsInPipeline(b) - this._CountErrorsInPipeline(a);
+          });
+
+          console.log('Ordered pipelines:' + pipelineNames);
+          return pipelineNames;
+        },
+
+        _CountErrorsInBucket: function(pipelineInfo, pipelineName, name) {
+          var count = 0;
+          var errors = pipelineInfo[pipelineName][name];
+          for (var error in errors) {
+            count += errors[error].length;
+          }
+          return count;
+        },
+
+        _orderedBuckets: function(pipelineInfo, pipelineName) {
+          var buckets = Object.keys(pipelineInfo[pipelineName]);
+          buckets.sort(function(a, b) {
+            // Reverse ordering.
+            return this._CountErrorsInBucket(pipelineInfo, pipelineName, b) - this._CountErrorsInBucket(pipelineInfo, pipelineName, a);
+          });
+          return buckets;
+        },
+
+        _CountInstancesForError: function(pipelineInfo, pipelineName, bucket, error) {
+          return pipelineInfo[pipelineName][bucket][error].length;
+        },
+
+        _orderedErrors: function(pipelineInfo, pipelineName, bucket) {
+          var errors = Object.keys(pipelineInfo[pipelineName][bucket]);
+          errors.sort(function(a, b) {
+            // Reverse ordering.
+            return (this._CountInstancesForError(pipelineInfo, pipelineName, bucket, b) -
+                    this._CountInstancesForError(pipelineInfo, pipelineName, bucket, a));
+          });
+          return errors;
+        },
+
+        _GetPipelineInstancesForError: function(pipelineInfo, pipelineName, bucket, error) {
+          return pipelineInfo[pipelineName][bucket][error];
+        },
+      });
+    })();
+  </script>
+</dom-module>

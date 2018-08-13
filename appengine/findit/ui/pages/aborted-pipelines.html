@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<head>
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <title>Aborted pipelines</title>
+  <meta charset="utf-8">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="/ui/pages/aborted-pipelines.js"></script>
+  <link rel="import" href="/ui/elements/aborted-pipelines.html">
+  <link rel="stylesheet" href="/common.css">
+  <script>
+    $(function() {
+      document.getElementById('aborted-pipelines').pipelineInfo = pipelines;
+    });
+  </script>
+</head>
+<body>
+  <aborted-pipelines id="aborted-pipelines"></aborted-pipelines>
+</body>
