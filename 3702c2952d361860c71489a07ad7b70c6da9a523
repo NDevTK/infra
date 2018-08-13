@@ -81,6 +81,24 @@
       "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "54c2c832_7fb8fb0d",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/gen.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-13T17:35:47Z",
+      "side": 1,
+      "message": "Actually, I think this is fixed later in the stack. It\u0027s a pain to split the fix back into this CL at this point.",
+      "parentUuid": "bcd00cec_7c656061",
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
