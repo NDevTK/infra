@@ -214,6 +214,30 @@
     },
     {
       "key": {
+        "uuid": "e60b92b9_cf1cbb8a",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T21:03:02Z",
+      "side": 1,
+      "message": "oh, i see. Consider adding a comment before this line then. It\u0027s not clear that this is the intent from godoc for this method.",
+      "parentUuid": "2e194831_2c16e7ad",
+      "range": {
+        "startLine": 57,
+        "startChar": 2,
+        "endLine": 57,
+        "endChar": 44
+      },
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aacd973a_bbd503fe",
         "filename": "go/src/infra/qscheduler/qslib/types/account/account.proto",
         "patchSetId": 14
@@ -528,6 +552,30 @@
       "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "641d2528_6bf3ba2e",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T21:03:02Z",
+      "side": 1,
+      "message": "TBH, i don\u0027t understand why you want to support vectors of different lengths.\nGiven New() func godoc \" with the correct underlying slice size.\", I\u0027d expect all Vectors to have length exactly NumPriorities. Is this not the case?",
+      "parentUuid": "85768fd8_563244b2",
+      "range": {
+        "startLine": 77,
+        "startChar": 1,
+        "endLine": 77,
+        "endChar": 27
+      },
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
