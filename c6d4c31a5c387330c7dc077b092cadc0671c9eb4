@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "ea1e4f83_51f277f1",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-13T20:38:13Z",
+      "side": 1,
+      "message": "Added comment.",
+      "parentUuid": "776dba42_97a1de10",
+      "range": {
+        "startLine": 27,
+        "startChar": 16,
+        "endLine": 27,
+        "endChar": 52
+      },
+      "revId": "c6d4c31a5c387330c7dc077b092cadc0671c9eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9c1c1cea_e4786b6c",
         "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
         "patchSetId": 16
@@ -45,6 +69,30 @@
       "revId": "c6d4c31a5c387330c7dc077b092cadc0671c9eb4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "95a2bb95_5ba5638e",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-13T20:38:13Z",
+      "side": 1,
+      "message": "Part of the \"overkill\" aspect is that if I use a map, it doesn\u0027t easily translate to a proto-serializable type. Whereas using a slice here translates directly to using a \"repeated string\" field for the proto.\n\nWill add a comment accordingly.",
+      "parentUuid": "9c1c1cea_e4786b6c",
+      "range": {
+        "startLine": 28,
+        "startChar": 37,
+        "endLine": 28,
+        "endChar": 64
+      },
+      "revId": "c6d4c31a5c387330c7dc077b092cadc0671c9eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "ba7412df_b2782e59",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-13T20:38:13Z",
+      "side": 1,
+      "message": "Used a copy of slices instead.",
+      "parentUuid": "f3e076fe_09aacebf",
+      "range": {
+        "startLine": 42,
+        "startChar": 1,
+        "endLine": 43,
+        "endChar": 16
+      },
+      "revId": "c6d4c31a5c387330c7dc077b092cadc0671c9eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d7da87e6_2febd595",
         "filename": "go/src/infra/qscheduler/qslib/types/task/task.proto",
         "patchSetId": 16
@@ -82,6 +154,24 @@
       "writtenOn": "2018-08-13T19:11:40Z",
       "side": 1,
       "message": "Aviv, I think you\u0027d be better taking all your .protos and sticking them into two packages:\n\nAPI: src/go/infra/qscheduler/api/v1/\n  structs that will be used by your RPCs definition (I suspect Request, Run, and hence Vector, will need to be there)\n  You can then still have a dedicated vector package for convenient math funcs on top proto.Vector. Ditto for account and other stuff.\n  (e.g. https://cs.chromium.org/chromium/infra/go/src/go.chromium.org/luci/scheduler/api/scheduler/v1/)\n\nInternal: src/go/infra/qscheduler/internal\n  (e.g., https://cs.chromium.org/chromium/infra/go/src/go.chromium.org/luci/scheduler/appengine/internal/?g\u003d0)\n  structs that are used by your app only. I haven\u0027t not seen any yet, but you know better.\n  Note that `internal` has special meaning in Golang: https://docs.google.com/document/d/1e8kOo3r51b2BWtTs_1uADIA5djfXhPT36s6eHVRIvaU/edit",
+      "revId": "c6d4c31a5c387330c7dc077b092cadc0671c9eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ed6af6fd_d3e6e3bf",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.proto",
+        "patchSetId": 16
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-13T20:38:13Z",
+      "side": 1,
+      "message": "I\u0027m starting to agree (pending figuring out the question of defining methods on protos), but can I punt on this? It would be quite difficult to apply that and split it within the CL stack as it stands.",
+      "parentUuid": "d7da87e6_2febd595",
       "revId": "c6d4c31a5c387330c7dc077b092cadc0671c9eb4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -111,6 +201,30 @@
     },
     {
       "key": {
+        "uuid": "f6c9c2f1_856d7f2f",
+        "filename": "go/src/infra/qscheduler/qslib/types/types.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-13T20:38:13Z",
+      "side": 1,
+      "message": "I had need for this in the simulator code that I was writing (CL is wip), to ensure that maps were non-nil.",
+      "parentUuid": "3500c719_366925c0",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 36,
+        "endChar": 1
+      },
+      "revId": "c6d4c31a5c387330c7dc077b092cadc0671c9eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c17603d2_078c3dfb",
         "filename": "go/src/infra/qscheduler/qslib/types/types.proto",
         "patchSetId": 16
@@ -122,6 +236,30 @@
       "writtenOn": "2018-08-13T19:11:40Z",
       "side": 1,
       "message": "who\u0027s intended user of this message? Do you intend to expose this as qscheduler API, or is this purely for internal use?",
+      "range": {
+        "startLine": 33,
+        "startChar": 3,
+        "endLine": 33,
+        "endChar": 8
+      },
+      "revId": "c6d4c31a5c387330c7dc077b092cadc0671c9eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3b84f544_88b9d07b",
+        "filename": "go/src/infra/qscheduler/qslib/types/types.proto",
+        "patchSetId": 16
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-13T20:38:13Z",
+      "side": 1,
+      "message": "This will be used for:\n1) Persisting and checkpointing scheduler\u0027s state to whatever storage engine we use, probably datastore.\n2) Possibly, a readonly API for a UI / dashboard to display the qscheduler state.\n\nDo you want that documented here?",
+      "parentUuid": "c17603d2_078c3dfb",
       "range": {
         "startLine": 33,
         "startChar": 3,
@@ -157,6 +295,30 @@
     },
     {
       "key": {
+        "uuid": "36a29951_de84088c",
+        "filename": "go/src/infra/qscheduler/qslib/types/types.proto",
+        "patchSetId": 16
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-13T20:38:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3fe7396a_55986c83",
+      "range": {
+        "startLine": 43,
+        "startChar": 2,
+        "endLine": 44,
+        "endChar": 45
+      },
+      "revId": "c6d4c31a5c387330c7dc077b092cadc0671c9eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "492c8166_e2982fc6",
         "filename": "go/src/infra/qscheduler/qslib/types/types.proto",
         "patchSetId": 16
@@ -168,6 +330,30 @@
       "writtenOn": "2018-08-13T19:11:40Z",
       "side": 1,
       "message": "how will this be provided to qscheduler? Through API calls, or do you intend to use LUCI config to discover these configs?",
+      "range": {
+        "startLine": 54,
+        "startChar": 3,
+        "endLine": 54,
+        "endChar": 9
+      },
+      "revId": "c6d4c31a5c387330c7dc077b092cadc0671c9eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e01798c5_70026f8a",
+        "filename": "go/src/infra/qscheduler/qslib/types/types.proto",
+        "patchSetId": 16
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-13T20:38:13Z",
+      "side": 1,
+      "message": "In production, this will come from luci-config.\n\nDo you want that documented here?",
+      "parentUuid": "492c8166_e2982fc6",
       "range": {
         "startLine": 54,
         "startChar": 3,
