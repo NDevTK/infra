@@ -1,0 +1,322 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e9cc7384_92a57a0d",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T23:10:56Z",
+      "side": 1,
+      "message": "missing godoc. Also, naming-wise, maybe prioritization is better because it\u0027s unlikely to overlap with variable name \"priority\" that you use, say, when iterating vectors?",
+      "range": {
+        "startLine": 15,
+        "startChar": 8,
+        "endLine": 15,
+        "endChar": 16
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0fbd457f_e260c676",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T23:10:56Z",
+      "side": 1,
+      "message": "maybe OrderedRequests?",
+      "range": {
+        "startLine": 40,
+        "startChar": 5,
+        "endLine": 40,
+        "endChar": 9
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fa86e710_ea1f0a76",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T23:10:56Z",
+      "side": 1,
+      "message": "priority",
+      "range": {
+        "startLine": 44,
+        "startChar": 16,
+        "endLine": 44,
+        "endChar": 23
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3e14821f_3ad747d9",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T23:10:56Z",
+      "side": 1,
+      "message": "the list part is not important to comparison. Why not pass list[i], list[j] here?",
+      "range": {
+        "startLine": 64,
+        "startChar": 55,
+        "endLine": 64,
+        "endChar": 65
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "82706351_0a54b603",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T23:10:56Z",
+      "side": 1,
+      "message": "+1 for this TODO, and I think it superseeds the above TODO.\nSurprisingly for Go, it\u0027s actually easy:\n  start :\u003d sort.Search(func(i) bool{ return s[i].Priority \u003e\u003d priority }\n  end :\u003d sort.Search(func(i) bool{ return s[i].Priority \u003e priority }",
+      "range": {
+        "startLine": 99,
+        "startChar": 1,
+        "endLine": 100,
+        "endChar": 15
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "13310eed_57aff8d1",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T23:10:56Z",
+      "side": 1,
+      "message": "please fix.",
+      "parentUuid": "87dd2a16_f01adeb5",
+      "range": {
+        "startLine": 137,
+        "startChar": 26,
+        "endLine": 137,
+        "endChar": 33
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8fca3adf_ed569224",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T23:10:56Z",
+      "side": 1,
+      "message": "nit: more canonical:\n\nif c, known :\u003d config.AccountConfigs[id]; known {\n}",
+      "range": {
+        "startLine": 136,
+        "startChar": 2,
+        "endLine": 139,
+        "endChar": 15
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e1df8fb0_bb2358ee",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T23:10:56Z",
+      "side": 1,
+      "message": "c.MaxFanout twice below is easier to read then recalling yet another variable.",
+      "range": {
+        "startLine": 140,
+        "startChar": 3,
+        "endLine": 140,
+        "endChar": 27
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d884d976_449283fd",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T23:10:56Z",
+      "side": 1,
+      "message": "do IIUC that if an account has maxFanout:\u003d3 but has steady stream of new tasks, then no task will \"starve\" forever in FreeBucket list because sort ordering by \"Tiebreaker: enqueue time.\"?",
+      "range": {
+        "startLine": 142,
+        "startChar": 3,
+        "endLine": 145,
+        "endChar": 24
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "54c15835_36c73e2f",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T23:10:56Z",
+      "side": 1,
+      "message": "here, GoConvey\u0027s ShouldResemble would render quite nicely a difference, if any. No pressure to use it, though.",
+      "range": {
+        "startLine": 64,
+        "startChar": 2,
+        "endLine": 64,
+        "endChar": 48
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9bfcafd0_3b7241ca",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T23:10:56Z",
+      "side": 1,
+      "message": "and here goes answer to my question above...",
+      "range": {
+        "startLine": 70,
+        "startChar": 0,
+        "endLine": 71,
+        "endChar": 43
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c7d4d54b_393c8836",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T23:10:56Z",
+      "side": 1,
+      "message": "please fix.",
+      "parentUuid": "91a3e73c_c78c7c53",
+      "range": {
+        "startLine": 101,
+        "startChar": 37,
+        "endLine": 101,
+        "endChar": 43
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bb7166e3_10ee4e25",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T23:10:56Z",
+      "side": 1,
+      "message": "t.Parallel",
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d396a8c8_39dd1939",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 287,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T23:10:56Z",
+      "side": 1,
+      "message": "I think we typically make this a const named \"epoch\" and assign readable time\nhttps://cs.chromium.org/chromium/infra/go/src/go.chromium.org/luci/scheduler/appengine/schedule/schedule_test.go?q\u003dscheduler+epoch\u0026sq\u003dpackage:chromium\u0026g\u003d0\u0026l\u003d25",
+      "range": {
+        "startLine": 286,
+        "startChar": 1,
+        "endLine": 287,
+        "endChar": 35
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
