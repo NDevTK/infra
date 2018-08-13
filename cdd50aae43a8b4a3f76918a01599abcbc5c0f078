@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "aca3e359_48c5493d",
+        "filename": "go/src/infra/qscheduler/qslib/generate.sh",
+        "patchSetId": 15
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T18:23:46Z",
+      "side": 1,
+      "message": "assuming your terminal is in this dir, you can run:\n\ngo test ./...\n\nor if you want more:\n\ngo test ./...\n\n\nFurthermore, in infra we\u0027re heavy users of goconvey (you don\u0027t have to use it), so many of us end up running `goconvey` in another terminal, which will automatically re-run tests as your editor flushes .go files to disk.",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 2,
+        "endChar": 38
+      },
+      "revId": "cdd50aae43a8b4a3f76918a01599abcbc5c0f078",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
