@@ -22,6 +22,30 @@
       "revId": "cdd50aae43a8b4a3f76918a01599abcbc5c0f078",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "85726f96_9da517b0",
+        "filename": "go/src/infra/qscheduler/qslib/generate.sh",
+        "patchSetId": 15
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-13T19:17:24Z",
+      "side": 1,
+      "message": "Ack.\n\ngoconvey looks interesting, but I don\u0027t want to go that way yet.\n\nI find these scripts convenient, as it is one less thing to remember.",
+      "parentUuid": "aca3e359_48c5493d",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 2,
+        "endChar": 38
+      },
+      "revId": "cdd50aae43a8b4a3f76918a01599abcbc5c0f078",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
