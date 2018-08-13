@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "b3d0d0c3_39349cd3",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-13T19:18:44Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "d3955894_9bf31cc4",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 2
+      },
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "45756f5f_951b509f",
         "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
         "patchSetId": 14
@@ -95,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "708485dc_6296edad",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-13T19:18:44Z",
+      "side": 1,
+      "message": "It\u0027s not in the current stack, because it requires more than the currently implemented primitives. Added clarification.",
+      "parentUuid": "40f9c121_3a5e7a12",
+      "range": {
+        "startLine": 54,
+        "startChar": 42,
+        "endLine": 54,
+        "endChar": 47
+      },
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "889c1bff_4d4653ad",
         "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
         "patchSetId": 14
@@ -118,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "2e194831_2c16e7ad",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-13T19:18:44Z",
+      "side": 1,
+      "message": "Nope, I want the value to not be latched back down to MaxBalance if it was above it prior to the update. There\u0027s a test for this already in fact.",
+      "parentUuid": "889c1bff_4d4653ad",
+      "range": {
+        "startLine": 57,
+        "startChar": 2,
+        "endLine": 57,
+        "endChar": 44
+      },
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aacd973a_bbd503fe",
         "filename": "go/src/infra/qscheduler/qslib/types/account/account.proto",
         "patchSetId": 14
@@ -138,6 +210,30 @@
       "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "19a9edf5_ab4f5c48",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.proto",
+        "patchSetId": 14
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-13T19:18:44Z",
+      "side": 1,
+      "message": "Some of the protos have method implemented on them, which (needs? should?) be in the same package as the struct definition. And not all of the proto-using packages depend on all the others, hence this separation.",
+      "parentUuid": "aacd973a_bbd503fe",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 58
+      },
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -235,6 +331,30 @@
     },
     {
       "key": {
+        "uuid": "ed91993f_b4a20ad1",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-13T19:18:44Z",
+      "side": 1,
+      "message": "added comment.",
+      "parentUuid": "e9439a28_a917d473",
+      "range": {
+        "startLine": 30,
+        "startChar": 27,
+        "endLine": 30,
+        "endChar": 48
+      },
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8d623a83_a8232a6e",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
         "patchSetId": 14
@@ -249,6 +369,24 @@
       "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9f0169a1_03ee94d1",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-13T19:18:44Z",
+      "side": 1,
+      "message": "Yep. Added comment.",
+      "parentUuid": "8d623a83_a8232a6e",
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -318,6 +456,30 @@
       "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "85768fd8_563244b2",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-13T19:18:44Z",
+      "side": 1,
+      "message": "This works even if a.Values or b.Values are not of the correct length.\n\nHowever, I can drop this line by passing a.Values to the New() constructor.",
+      "parentUuid": "0e267c2c_70e1d80f",
+      "range": {
+        "startLine": 77,
+        "startChar": 1,
+        "endLine": 77,
+        "endChar": 27
+      },
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
