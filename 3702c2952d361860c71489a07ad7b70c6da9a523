@@ -143,6 +143,30 @@
     },
     {
       "key": {
+        "uuid": "02a66fc3_6b923201",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-13T19:19:30Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "708485dc_6296edad",
+      "range": {
+        "startLine": 54,
+        "startChar": 42,
+        "endLine": 54,
+        "endChar": 47
+      },
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "889c1bff_4d4653ad",
         "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
         "patchSetId": 14
@@ -352,6 +376,30 @@
       "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "85ad549f_671ae3d9",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-13T19:19:30Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ed91993f_b4a20ad1",
+      "range": {
+        "startLine": 30,
+        "startChar": 27,
+        "endLine": 30,
+        "endChar": 48
+      },
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
