@@ -49,6 +49,98 @@
     },
     {
       "key": {
+        "uuid": "45756f5f_951b509f",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T18:19:02Z",
+      "side": 1,
+      "message": "👍",
+      "range": {
+        "startLine": 51,
+        "startChar": 0,
+        "endLine": 51,
+        "endChar": 72
+      },
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "40f9c121_3a5e7a12",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T18:19:02Z",
+      "side": 1,
+      "message": "i guess this is smth that will be added in later CLs, right?",
+      "range": {
+        "startLine": 54,
+        "startChar": 42,
+        "endLine": 54,
+        "endChar": 47
+      },
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "889c1bff_4d4653ad",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T18:19:02Z",
+      "side": 1,
+      "message": "I think this can actually be deleted (but maybe in later CL) and just cap by max in line 59.",
+      "range": {
+        "startLine": 57,
+        "startChar": 2,
+        "endLine": 57,
+        "endChar": 44
+      },
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aacd973a_bbd503fe",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.proto",
+        "patchSetId": 14
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T18:19:02Z",
+      "side": 1,
+      "message": "consider sticking all protos into one package or maybe even single file.\nie is there an intended use-case for just vector.proto w/o account config?\n\nof course, if you follow this, it\u0027s fine to do later to avoid excessive rebases.",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 58
+      },
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1d6d7d5d_637f0c77",
         "filename": "go/src/infra/qscheduler/qslib/types/vector/gen.go",
         "patchSetId": 14
@@ -99,6 +191,133 @@
       "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cf20d5e0_661d1ddd",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/gen.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T18:19:02Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "54c2c832_7fb8fb0d",
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e9439a28_a917d473",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T18:19:02Z",
+      "side": 1,
+      "message": "i see why you want it, but it\u0027s not equivalent -- IntVector is just a slice; it\u0027s not hiding a Proto inside. I haven\u0027t read all its usages yet, so I don\u0027t yet have concrete improvement proposals.",
+      "range": {
+        "startLine": 30,
+        "startChar": 27,
+        "endLine": 30,
+        "endChar": 48
+      },
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8d623a83_a8232a6e",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T18:19:02Z",
+      "side": 1,
+      "message": "i\u0027m confused here:\nif it\u0027s 0-initialized, why is there an input argument?\nand if len(v) is always 3, then you may just return \u0026Vector{Values: v}\n\nUpdate: ah, i see the intended usage is either len(v) is 0 or len(v) is 3. Then, perhaps:\n  for len(v) \u003c 3 { v \u003d append(v, 0) }\n  return \u0026Vector{Values: v}",
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "37fc4c01_e9e85aac",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T18:19:02Z",
+      "side": 1,
+      "message": "i\u0027d actually gamble that this is slightly slower than passing by value.",
+      "range": {
+        "startLine": 45,
+        "startChar": 11,
+        "endLine": 45,
+        "endChar": 12
+      },
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da51740e_f4677571",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T18:19:02Z",
+      "side": 1,
+      "message": "👍 I miss assertions in Go. For unknown to me reason, canonical Go stays clear of them.",
+      "range": {
+        "startLine": 49,
+        "startChar": 3,
+        "endLine": 49,
+        "endChar": 12
+      },
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0e267c2c_70e1d80f",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T18:19:02Z",
+      "side": 1,
+      "message": "why extra loop instead of ans.Values[i] \u003d a.Values[i] + b.Values[i]  below?",
+      "range": {
+        "startLine": 77,
+        "startChar": 1,
+        "endLine": 77,
+        "endChar": 27
+      },
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
