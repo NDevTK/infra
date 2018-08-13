@@ -96,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "da8ab0fe_6c0339e1",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T21:21:22Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "95a2bb95_5ba5638e",
+      "range": {
+        "startLine": 28,
+        "startChar": 37,
+        "endLine": 28,
+        "endChar": 64
+      },
+      "revId": "c6d4c31a5c387330c7dc077b092cadc0671c9eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f3e076fe_09aacebf",
         "filename": "go/src/infra/qscheduler/qslib/types/task/task.go",
         "patchSetId": 16
@@ -178,6 +202,24 @@
     },
     {
       "key": {
+        "uuid": "e71b4f61_df839a0d",
+        "filename": "go/src/infra/qscheduler/qslib/types/task/task.proto",
+        "patchSetId": 16
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T21:21:22Z",
+      "side": 1,
+      "message": "punting SGTM.",
+      "parentUuid": "ed6af6fd_d3e6e3bf",
+      "revId": "c6d4c31a5c387330c7dc077b092cadc0671c9eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3500c719_366925c0",
         "filename": "go/src/infra/qscheduler/qslib/types/types.go",
         "patchSetId": 16
@@ -225,6 +267,30 @@
     },
     {
       "key": {
+        "uuid": "286480eb_b7930c5b",
+        "filename": "go/src/infra/qscheduler/qslib/types/types.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T21:21:22Z",
+      "side": 1,
+      "message": "Let\u0027s punt on this.\nI guess (but can\u0027t be sure) is that your simulator initializes State in just one place, where it already knows the maps that it\u0027ll mutate, and so it can just as effectively initialize it in place, while keeping API of this package 1 function smaller.",
+      "parentUuid": "f6c9c2f1_856d7f2f",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 36,
+        "endChar": 1
+      },
+      "revId": "c6d4c31a5c387330c7dc077b092cadc0671c9eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c17603d2_078c3dfb",
         "filename": "go/src/infra/qscheduler/qslib/types/types.proto",
         "patchSetId": 16
@@ -260,6 +326,30 @@
       "side": 1,
       "message": "This will be used for:\n1) Persisting and checkpointing scheduler\u0027s state to whatever storage engine we use, probably datastore.\n2) Possibly, a readonly API for a UI / dashboard to display the qscheduler state.\n\nDo you want that documented here?",
       "parentUuid": "c17603d2_078c3dfb",
+      "range": {
+        "startLine": 33,
+        "startChar": 3,
+        "endLine": 33,
+        "endChar": 8
+      },
+      "revId": "c6d4c31a5c387330c7dc077b092cadc0671c9eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dd440783_ccb8b000",
+        "filename": "go/src/infra/qscheduler/qslib/types/types.proto",
+        "patchSetId": 16
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T21:21:22Z",
+      "side": 1,
+      "message": "Wanted to understand better myself. Intended use sgtm. Documenting is probably not necessary.",
+      "parentUuid": "3b84f544_88b9d07b",
       "range": {
         "startLine": 33,
         "startChar": 3,
@@ -354,6 +444,30 @@
       "side": 1,
       "message": "In production, this will come from luci-config.\n\nDo you want that documented here?",
       "parentUuid": "492c8166_e2982fc6",
+      "range": {
+        "startLine": 54,
+        "startChar": 3,
+        "endLine": 54,
+        "endChar": 9
+      },
+      "revId": "c6d4c31a5c387330c7dc077b092cadc0671c9eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e765a10e_da883d79",
+        "filename": "go/src/infra/qscheduler/qslib/types/types.proto",
+        "patchSetId": 16
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-13T21:21:22Z",
+      "side": 1,
+      "message": "consider separating Config into its own file (of course, in follow CL(s))\nfor easier reading by people who need to editing your config file. Then, tell luci-config to point to this .proto as a form of documentation, e.g., https://chromium.googlesource.com/chromium/src/+/master/infra/config/global/cr-buildbucket.cfg#4",
+      "parentUuid": "e01798c5_70026f8a",
       "range": {
         "startLine": 54,
         "startChar": 3,
