@@ -238,6 +238,30 @@
     },
     {
       "key": {
+        "uuid": "b802c0be_15dc9e7d",
+        "filename": "go/src/infra/qscheduler/qslib/types/account/account.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-13T21:07:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e60b92b9_cf1cbb8a",
+      "range": {
+        "startLine": 57,
+        "startChar": 2,
+        "endLine": 57,
+        "endChar": 44
+      },
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aacd973a_bbd503fe",
         "filename": "go/src/infra/qscheduler/qslib/types/account/account.proto",
         "patchSetId": 14
@@ -576,6 +600,30 @@
       "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e70a0286_86aad5ca",
+        "filename": "go/src/infra/qscheduler/qslib/types/vector/vector.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-13T21:07:53Z",
+      "side": 1,
+      "message": "I\u0027m being a bit defensive here, in case for instance one day NumPriorities is changed I can still deserialize old vector protos and they won\u0027t break here.",
+      "parentUuid": "641d2528_6bf3ba2e",
+      "range": {
+        "startLine": 77,
+        "startChar": 1,
+        "endLine": 77,
+        "endChar": 27
+      },
+      "revId": "3702c2952d361860c71489a07ad7b70c6da9a523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
