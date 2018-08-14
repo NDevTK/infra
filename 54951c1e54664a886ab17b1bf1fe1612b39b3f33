@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "1744ea97_c3e95076",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-14T00:13:03Z",
+      "side": 1,
+      "message": "ACK.\n\n\u003e Can I punt for now and return to this once a better name is agreed upon?\n\nOf course.",
+      "parentUuid": "38f5b6ca_ffa8afe1",
+      "range": {
+        "startLine": 15,
+        "startChar": 8,
+        "endLine": 15,
+        "endChar": 16
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0fbd457f_e260c676",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
         "patchSetId": 24
@@ -84,6 +108,30 @@
       "side": 1,
       "message": "To outside users, this appears as priority.List which I like, it is stutter free and concise.\n\npriority.OrderedRequests reads ok too, but I\u0027m not convinced it is clearer or worth the extra keystrokes.\n\nThoughts, compared to priority.List?",
       "parentUuid": "0fbd457f_e260c676",
+      "range": {
+        "startLine": 40,
+        "startChar": 5,
+        "endLine": 40,
+        "endChar": 9
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6403ec2e_02d27828",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-14T00:13:03Z",
+      "side": 1,
+      "message": "priority.List is concise, but reads to me as just a list with/of priorities. It\u0027s also not as clear that these are requests.",
+      "parentUuid": "d0fa0032_b625183c",
       "range": {
         "startLine": 40,
         "startChar": 5,
@@ -178,6 +226,30 @@
       "writtenOn": "2018-08-13T23:10:56Z",
       "side": 1,
       "message": "the list part is not important to comparison. Why not pass list[i], list[j] here?",
+      "range": {
+        "startLine": 64,
+        "startChar": 55,
+        "endLine": 64,
+        "endChar": 65
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9542f031_b5d2c5c0",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-14T00:13:03Z",
+      "side": 1,
+      "message": "ping",
+      "parentUuid": "3e14821f_3ad747d9",
       "range": {
         "startLine": 64,
         "startChar": 55,
@@ -423,6 +495,30 @@
       "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "893174ec_8e9f4a98",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-14T00:13:03Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "296e7767_d02d07c7",
+      "range": {
+        "startLine": 142,
+        "startChar": 3,
+        "endLine": 145,
+        "endChar": 24
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
