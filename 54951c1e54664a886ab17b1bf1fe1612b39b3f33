@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "38f5b6ca_ffa8afe1",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-14T00:07:56Z",
+      "side": 1,
+      "message": "Added godoc.\n\nAs for the name, makes sense. I want to rename this at some point. Other options I\u0027m considering:\n - prioritize (shorter and easier to type that prioritization)\n\nThat would also suggest renaming some of the other exported structs and types to reduce stutter. e.g. PrioritizeRequests -\u003e Requests.\n\nCan I punt for now and return to this once a better name is agreed upon?",
+      "parentUuid": "e9cc7384_92a57a0d",
+      "range": {
+        "startLine": 15,
+        "startChar": 8,
+        "endLine": 15,
+        "endChar": 16
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0fbd457f_e260c676",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
         "patchSetId": 24
@@ -36,6 +60,30 @@
       "writtenOn": "2018-08-13T23:10:56Z",
       "side": 1,
       "message": "maybe OrderedRequests?",
+      "range": {
+        "startLine": 40,
+        "startChar": 5,
+        "endLine": 40,
+        "endChar": 9
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d0fa0032_b625183c",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-14T00:07:56Z",
+      "side": 1,
+      "message": "To outside users, this appears as priority.List which I like, it is stutter free and concise.\n\npriority.OrderedRequests reads ok too, but I\u0027m not convinced it is clearer or worth the extra keystrokes.\n\nThoughts, compared to priority.List?",
+      "parentUuid": "0fbd457f_e260c676",
       "range": {
         "startLine": 40,
         "startChar": 5,
@@ -68,6 +116,54 @@
       "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c13767ee_4865ee54",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-14T00:07:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4857e73d_5da4c45a",
+      "range": {
+        "startLine": 44,
+        "startChar": 16,
+        "endLine": 44,
+        "endChar": 23
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e5a82624_f59a06cd",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-14T00:07:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fa86e710_ea1f0a76",
+      "range": {
+        "startLine": 44,
+        "startChar": 16,
+        "endLine": 44,
+        "endChar": 23
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "b2fffd01_029998af",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-14T00:07:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "82706351_0a54b603",
+      "range": {
+        "startLine": 99,
+        "startChar": 1,
+        "endLine": 100,
+        "endChar": 15
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "13310eed_57aff8d1",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
         "patchSetId": 24
@@ -138,6 +258,30 @@
       "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "52a16225_5740617f",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-14T00:07:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "13310eed_57aff8d1",
+      "range": {
+        "startLine": 137,
+        "startChar": 26,
+        "endLine": 137,
+        "endChar": 33
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -164,6 +308,30 @@
     },
     {
       "key": {
+        "uuid": "066a5757_f2baa06f",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-14T00:07:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8fca3adf_ed569224",
+      "range": {
+        "startLine": 136,
+        "startChar": 2,
+        "endLine": 139,
+        "endChar": 15
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e1df8fb0_bb2358ee",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
         "patchSetId": 24
@@ -187,6 +355,30 @@
     },
     {
       "key": {
+        "uuid": "82580fb5_081fd72e",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-14T00:07:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e1df8fb0_bb2358ee",
+      "range": {
+        "startLine": 140,
+        "startChar": 3,
+        "endLine": 140,
+        "endChar": 27
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d884d976_449283fd",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
         "patchSetId": 24
@@ -198,6 +390,30 @@
       "writtenOn": "2018-08-13T23:10:56Z",
       "side": 1,
       "message": "do IIUC that if an account has maxFanout:\u003d3 but has steady stream of new tasks, then no task will \"starve\" forever in FreeBucket list because sort ordering by \"Tiebreaker: enqueue time.\"?",
+      "range": {
+        "startLine": 142,
+        "startChar": 3,
+        "endLine": 145,
+        "endChar": 24
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "296e7767_d02d07c7",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-14T00:07:56Z",
+      "side": 1,
+      "message": "Yes, that is correct.",
+      "parentUuid": "d884d976_449283fd",
       "range": {
         "startLine": 142,
         "startChar": 3,
@@ -233,6 +449,30 @@
     },
     {
       "key": {
+        "uuid": "f07f914b_523c5942",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-14T00:07:56Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "54c15835_36c73e2f",
+      "range": {
+        "startLine": 64,
+        "startChar": 2,
+        "endLine": 64,
+        "endChar": 48
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9bfcafd0_3b7241ca",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
         "patchSetId": 24
@@ -244,6 +484,30 @@
       "writtenOn": "2018-08-13T23:10:56Z",
       "side": 1,
       "message": "and here goes answer to my question above...",
+      "range": {
+        "startLine": 70,
+        "startChar": 0,
+        "endLine": 71,
+        "endChar": 43
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b5a68aa1_8567af90",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-14T00:07:56Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "9bfcafd0_3b7241ca",
       "range": {
         "startLine": 70,
         "startChar": 0,
@@ -280,6 +544,30 @@
     },
     {
       "key": {
+        "uuid": "71ce384b_91033bbe",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-14T00:07:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c7d4d54b_393c8836",
+      "range": {
+        "startLine": 101,
+        "startChar": 37,
+        "endLine": 101,
+        "endChar": 43
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bb7166e3_10ee4e25",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
         "patchSetId": 24
@@ -294,6 +582,24 @@
       "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "82ae370f_05c643f7",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-14T00:07:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bb7166e3_10ee4e25",
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -317,6 +623,30 @@
       "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "75445e4f_770fde47",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize_test.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 287,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-14T00:07:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d396a8c8_39dd1939",
+      "range": {
+        "startLine": 286,
+        "startChar": 1,
+        "endLine": 287,
+        "endChar": 35
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
