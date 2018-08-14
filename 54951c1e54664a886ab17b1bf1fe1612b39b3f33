@@ -144,6 +144,30 @@
     },
     {
       "key": {
+        "uuid": "6ba4c655_1240ad2a",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-14T02:01:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6403ec2e_02d27828",
+      "range": {
+        "startLine": 40,
+        "startChar": 5,
+        "endLine": 40,
+        "endChar": 9
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa86e710_ea1f0a76",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
         "patchSetId": 24
@@ -250,6 +274,30 @@
       "side": 1,
       "message": "ping",
       "parentUuid": "3e14821f_3ad747d9",
+      "range": {
+        "startLine": 64,
+        "startChar": 55,
+        "endLine": 64,
+        "endChar": 65
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9f618d84_ecbeeb64",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-14T02:01:10Z",
+      "side": 1,
+      "message": "Hmm. Not sure I follow. the alternative here is to change requestListLess to take two Request arguments, and then\n\nless :\u003d func(i, j int) bool { return requestListLess(list[i], list[j]) }\n\nWhich doesn\u0027t hugely better better to me (and is more keystrokes). But if you prefer it I can do that.",
+      "parentUuid": "9542f031_b5d2c5c0",
       "range": {
         "startLine": 64,
         "startChar": 55,
