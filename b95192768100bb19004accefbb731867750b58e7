@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "05216347_ae99bdf6",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 28
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-15T02:01:54Z",
+      "side": 1,
+      "message": "style: always use periods, always use sentences.",
+      "range": {
+        "startLine": 49,
+        "startChar": 74,
+        "endLine": 49,
+        "endChar": 75
+      },
+      "revId": "b95192768100bb19004accefbb731867750b58e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "70eb363a_8abdc55e",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 28
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-15T02:01:54Z",
+      "side": 1,
+      "message": "I think this function needs beefier docs since it\u0027s the primary exported member in this package and it is packed full of logic.",
+      "range": {
+        "startLine": 51,
+        "startChar": 2,
+        "endLine": 51,
+        "endChar": 22
+      },
+      "revId": "b95192768100bb19004accefbb731867750b58e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9dc547d1_d0bff309",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 28
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-15T02:01:54Z",
+      "side": 1,
+      "message": "s/list/slice/",
+      "range": {
+        "startLine": 59,
+        "startChar": 1,
+        "endLine": 59,
+        "endChar": 5
+      },
+      "revId": "b95192768100bb19004accefbb731867750b58e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "21b213c7_c47074f0",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 28
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-15T02:01:54Z",
+      "side": 1,
+      "message": "Just make(OrderedRequests, ...)",
+      "range": {
+        "startLine": 59,
+        "startChar": 30,
+        "endLine": 59,
+        "endChar": 39
+      },
+      "revId": "b95192768100bb19004accefbb731867750b58e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "96e196a6_57d236d2",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 28
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-15T02:01:54Z",
+      "side": 1,
+      "message": "If AccountId is missing, then accountBalance defaults to nil.  If you define BestPriorityFor like this, you don\u0027t need special handling at all (BestpriorityFor already return FreeBucket):\n\n func BestPriorityFor(balance *vector.Vector) int32 {\n \tif balance \u003d\u003d nil {\n \t\treturn FreeBucket\n \t}\n \tfor priority, value :\u003d range balance.Values {\n \t\tif value \u003e 0 {\n \t\t\treturn int32(priority)\n \t\t}\n \t}\n \treturn FreeBucket\n }\n\nNaming: I think vector.Vector should have a descriptive name, then you could define a method:\n\n func (balance *AccountBalances) BestPriorityFor() int32 {\n \tif balance \u003d\u003d nil {\n \t\treturn FreeBucket\n \t}\n \tfor priority, value :\u003d range balance.Values {\n \t\tif value \u003e 0 {\n \t\t\treturn int32(priority)\n \t\t}\n \t}\n \treturn FreeBucket\n }",
+      "range": {
+        "startLine": 61,
+        "startChar": 7,
+        "endLine": 62,
+        "endChar": 23
+      },
+      "revId": "b95192768100bb19004accefbb731867750b58e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
