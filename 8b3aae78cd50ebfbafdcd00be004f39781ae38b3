@@ -248,6 +248,30 @@
     },
     {
       "key": {
+        "uuid": "111e292a_d32c5bda",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-15T22:51:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2be9d6f5_56ef2ed6",
+      "range": {
+        "startLine": 30,
+        "startChar": 60,
+        "endLine": 30,
+        "endChar": 85
+      },
+      "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "db79ce3c_fa8fef78",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 19
@@ -495,6 +519,30 @@
     },
     {
       "key": {
+        "uuid": "83ad16a1_9fbab9cc",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-15T22:51:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c6988729_b0f72792",
+      "range": {
+        "startLine": 161,
+        "startChar": 4,
+        "endLine": 162,
+        "endChar": 19
+      },
+      "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dadea611_de529f1e",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 19
@@ -550,6 +598,30 @@
       "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "de3e87d6_fd2aa5d1",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-15T22:51:23Z",
+      "side": 1,
+      "message": "Leaving as is for now, but ack.",
+      "parentUuid": "8e3db910_39c6bfd7",
+      "range": {
+        "startLine": 197,
+        "startChar": 6,
+        "endLine": 197,
+        "endChar": 21
+      },
+      "revId": "8b3aae78cd50ebfbafdcd00be004f39781ae38b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {

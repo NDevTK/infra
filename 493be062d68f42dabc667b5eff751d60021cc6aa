@@ -191,6 +191,30 @@
     },
     {
       "key": {
+        "uuid": "fd2607b2_fe398dea",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-15T22:51:23Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "d9535a0c_efb60557",
+      "range": {
+        "startLine": 52,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 19
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6ab50057_dfe93601",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 14
@@ -332,6 +356,30 @@
     },
     {
       "key": {
+        "uuid": "17aba208_097647cc",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-15T22:51:23Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "1dfa03e2_174468aa",
+      "range": {
+        "startLine": 74,
+        "startChar": 0,
+        "endLine": 81,
+        "endChar": 48
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c991c708_e86974e9",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 14
@@ -364,6 +412,24 @@
       "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a165cc3d_feabdcff",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-15T22:51:23Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "03aa48d5_9e82a6c2",
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -673,6 +739,30 @@
     },
     {
       "key": {
+        "uuid": "d83298a2_fa049e0d",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-15T22:51:23Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "19bf7a55_62a3fea9",
+      "range": {
+        "startLine": 142,
+        "startChar": 5,
+        "endLine": 142,
+        "endChar": 43
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "37c44f8c_13c4c61c",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 14
@@ -846,6 +936,30 @@
       "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "71b0ea88_1c76e32a",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-15T22:51:23Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "d796383f_b451ccec",
+      "range": {
+        "startLine": 199,
+        "startChar": 0,
+        "endLine": 203,
+        "endChar": 3
+      },
+      "revId": "493be062d68f42dabc667b5eff751d60021cc6aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
