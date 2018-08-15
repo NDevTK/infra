@@ -1,0 +1,118 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7d05104c_dc720295",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
+        "patchSetId": 32
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-08-15T03:22:26Z",
+      "side": 1,
+      "message": "Remove s to match type name exactly.",
+      "range": {
+        "startLine": 29,
+        "startChar": 28,
+        "endLine": 29,
+        "endChar": 29
+      },
+      "revId": "782da6e5f5a05148bb5c086eef966fdd902246cc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a869bb3e_8e816fe8",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.proto",
+        "patchSetId": 32
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-08-15T03:22:26Z",
+      "side": 1,
+      "message": "Remove blank line.",
+      "revId": "782da6e5f5a05148bb5c086eef966fdd902246cc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c4114152_b4317575",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 32
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-08-15T03:22:26Z",
+      "side": 1,
+      "message": "Slice. Here and elsewhere.",
+      "range": {
+        "startLine": 30,
+        "startChar": 46,
+        "endLine": 30,
+        "endChar": 50
+      },
+      "revId": "782da6e5f5a05148bb5c086eef966fdd902246cc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0104ef37_18bd9821",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 32
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-08-15T03:22:26Z",
+      "side": 1,
+      "message": "Seems like r is incremented no matter what, and the incremented r is never used on the same iteration after it\u0027s been incremented. Could move r++ into the post statement of the loop.",
+      "revId": "782da6e5f5a05148bb5c086eef966fdd902246cc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a29eafbb_56416346",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 32
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-08-15T03:22:26Z",
+      "side": 1,
+      "message": "Document all functions.",
+      "revId": "782da6e5f5a05148bb5c086eef966fdd902246cc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "129c4932_16a2bcda",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 32
+      },
+      "lineNbr": 268,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-08-15T03:22:26Z",
+      "side": 1,
+      "message": "rI seems incremented on every iteration, and is never used after being incremented in the same iteration, consider moving to the loop\u0027s post statement.",
+      "revId": "782da6e5f5a05148bb5c086eef966fdd902246cc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
