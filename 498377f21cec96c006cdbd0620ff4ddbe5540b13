@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f65f4a59_d445baf3",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 29
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-08-15T21:28:24Z",
+      "side": 1,
+      "message": "requestsLess",
+      "range": {
+        "startLine": 88,
+        "startChar": 3,
+        "endLine": 88,
+        "endChar": 18
+      },
+      "revId": "498377f21cec96c006cdbd0620ff4ddbe5540b13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
