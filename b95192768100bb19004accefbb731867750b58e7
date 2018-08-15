@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "d10cbfa7_58e8ebf2",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 28
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-15T07:17:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "05216347_ae99bdf6",
+      "range": {
+        "startLine": 49,
+        "startChar": 74,
+        "endLine": 49,
+        "endChar": 75
+      },
+      "revId": "b95192768100bb19004accefbb731867750b58e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "70eb363a_8abdc55e",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
         "patchSetId": 28
@@ -45,6 +69,30 @@
       "revId": "b95192768100bb19004accefbb731867750b58e7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3385fb1c_4630786d",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 28
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-15T07:17:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "70eb363a_8abdc55e",
+      "range": {
+        "startLine": 51,
+        "startChar": 2,
+        "endLine": 51,
+        "endChar": 22
+      },
+      "revId": "b95192768100bb19004accefbb731867750b58e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -94,6 +142,54 @@
     },
     {
       "key": {
+        "uuid": "2a27d8ae_5c55af8e",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 28
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-15T07:17:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "21b213c7_c47074f0",
+      "range": {
+        "startLine": 59,
+        "startChar": 30,
+        "endLine": 59,
+        "endChar": 39
+      },
+      "revId": "b95192768100bb19004accefbb731867750b58e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "157d52b7_01f76ea2",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 28
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-15T07:17:03Z",
+      "side": 1,
+      "message": "slice is a go-ism. Sure, it happens to be of go type slice, but that doesn\u0027t tell you janything about it.\n\nWhat this is is a list, in priority order, of requests. \"list\" makes more sense to me.",
+      "parentUuid": "9dc547d1_d0bff309",
+      "range": {
+        "startLine": 59,
+        "startChar": 1,
+        "endLine": 59,
+        "endChar": 5
+      },
+      "revId": "b95192768100bb19004accefbb731867750b58e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "96e196a6_57d236d2",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
         "patchSetId": 28
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "0989c238_63363943",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 28
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-15T07:17:03Z",
+      "side": 1,
+      "message": "1) Done.\n\n2) vector.Vector isn\u0027t used only for account balances, it is also used for recharge rate. I experimented earlier with having a dedicated type alias for balances that was an extension of vector.Vector, but didn\u0027t find this to be illuminating.",
+      "parentUuid": "96e196a6_57d236d2",
+      "range": {
+        "startLine": 61,
+        "startChar": 7,
+        "endLine": 62,
+        "endChar": 23
+      },
+      "revId": "b95192768100bb19004accefbb731867750b58e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "004a6ac1_74b19a16",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
         "patchSetId": 28
@@ -131,6 +251,24 @@
       "revId": "b95192768100bb19004accefbb731867750b58e7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a58db803_cb2a6fdf",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 28
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-15T07:17:03Z",
+      "side": 1,
+      "message": "I\u0027ve changed this function in accordance with tandrii\u0027s wishes, and now it no longer works as a method of OrderedRequests.",
+      "parentUuid": "004a6ac1_74b19a16",
+      "revId": "b95192768100bb19004accefbb731867750b58e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

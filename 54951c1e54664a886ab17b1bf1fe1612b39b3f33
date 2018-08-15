@@ -334,6 +334,30 @@
     },
     {
       "key": {
+        "uuid": "fefd23d0_7058f0d6",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-15T07:17:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a17329e0_25b57b26",
+      "range": {
+        "startLine": 64,
+        "startChar": 55,
+        "endLine": 64,
+        "endChar": 65
+      },
+      "revId": "54951c1e54664a886ab17b1bf1fe1612b39b3f33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "82706351_0a54b603",
         "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
         "patchSetId": 24
