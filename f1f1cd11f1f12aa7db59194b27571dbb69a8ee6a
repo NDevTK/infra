@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "07a9a78b_050a4e21",
+        "filename": "appengine/monorail/api/api_proto/features.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-08-15T00:43:04Z",
+      "side": 1,
+      "message": "Can we call this hotlist_ref?",
+      "range": {
+        "startLine": 49,
+        "startChar": 13,
+        "endLine": 49,
+        "endChar": 20
+      },
+      "revId": "f1f1cd11f1f12aa7db59194b27571dbb69a8ee6a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
