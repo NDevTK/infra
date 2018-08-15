@@ -114,6 +114,23 @@
       "revId": "b95192768100bb19004accefbb731867750b58e7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "004a6ac1_74b19a16",
+        "filename": "go/src/infra/qscheduler/qslib/priority/prioritize.go",
+        "patchSetId": 28
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-08-15T03:03:04Z",
+      "side": 1,
+      "message": "Conceptually, this function belongs to OrderedRequests. Consider defining this as a method of it:\nfunc (s OrderedRequests) less(i, j int) bool\n\nThen you can just call sort.SliceStable(slice, slice.less).",
+      "revId": "b95192768100bb19004accefbb731867750b58e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
