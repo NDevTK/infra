@@ -1,0 +1,222 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "645f12c3_895116b1",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/gen.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-16T21:13:40Z",
+      "side": 1,
+      "message": "mutators not mutaters",
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bc2a246a_9c379ce5",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-16T21:13:40Z",
+      "side": 1,
+      "message": "style: no parens when referring to functions.\n\nYou don\u0027t need to say \"implements Mutater.Mutate\", it can just be \"implements Mutater\".  You implement an entire interface, it doesn\u0027t really make sense to implement just one method in an interface.",
+      "range": {
+        "startLine": 31,
+        "startChar": 21,
+        "endLine": 31,
+        "endChar": 37
+      },
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0f8978aa_24f7adb5",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-16T21:13:40Z",
+      "side": 1,
+      "message": "I think the doc comments for these methods should explain what they\u0027re doing.  Usually the receiver type would be defined right next to the method which would make it easier to tell, but since the protos are somewhere else, it would be helpful to have useful doc comments here.",
+      "range": {
+        "startLine": 32,
+        "startChar": 27,
+        "endLine": 32,
+        "endChar": 33
+      },
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8a36252c_20a094c8",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-16T21:13:40Z",
+      "side": 1,
+      "message": "What happens if the worker is not idle?  Best to state assumptions in doc comment.",
+      "range": {
+        "startLine": 39,
+        "startChar": 14,
+        "endLine": 39,
+        "endChar": 27
+      },
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "741caff7_8bb5c737",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-16T21:13:40Z",
+      "side": 1,
+      "message": "I know it probably sounds contradictory, but I think these would be more readable as oldT, newT, etc.\n\nToo short vs too long varies on a case by case basis.  Generally, type information can be shortened more, (e.g. task Task -\u003e t Task), but non-type information should have fuller names (e.g. path string is better than p string, newT Task better than nT Task).  Since the compiler and Go tools/IDEs can track the type for you.",
+      "range": {
+        "startLine": 51,
+        "startChar": 1,
+        "endLine": 51,
+        "endChar": 3
+      },
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dd6dfcf8_aba8f6bf",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-16T21:13:40Z",
+      "side": 1,
+      "message": "I think this is more readable by getting rid of the oBal, nBal variables",
+      "range": {
+        "startLine": 56,
+        "startChar": 2,
+        "endLine": 57,
+        "endChar": 15
+      },
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bd960f21_2e24de5e",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.proto",
+        "patchSetId": 38
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-16T21:13:40Z",
+      "side": 1,
+      "message": "Space before?",
+      "range": {
+        "startLine": 21,
+        "startChar": 17,
+        "endLine": 21,
+        "endChar": 18
+      },
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "788d2c5d_ea9af406",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters_test.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-16T21:13:40Z",
+      "side": 1,
+      "message": "The Muts in the names in this file are kind of redundant since this is in the mutaters package",
+      "range": {
+        "startLine": 25,
+        "startChar": 13,
+        "endLine": 25,
+        "endChar": 16
+      },
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b73083df_0aa2aecf",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters_test.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-16T21:13:40Z",
+      "side": 1,
+      "message": "Add doc comments and make the test names more descriptive.\n\ne.g.\n\n // TestAssignIdleWorkers tests that AssignIdleWorker mutates the given state as expected.\n TestAssignIdleWorker_Mutate\n\nEdit: I guess these names are left over from the previous version, but needs fixing.",
+      "range": {
+        "startLine": 48,
+        "startChar": 6,
+        "endLine": 48,
+        "endChar": 15
+      },
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7eb8b496_de7b29dc",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters_test.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-16T21:13:40Z",
+      "side": 1,
+      "message": "Prefer comparing the entire state struct https://g3doc.corp.google.com/go/g3doc/go-unit-test-comments.md?cl\u003dhead#compare-full-structures",
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
