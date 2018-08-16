@@ -240,9 +240,11 @@ func writeDataEntries(c context.Context, r io.Reader) ([]*datastore.Key, error) 
 		}
 
 		if count > 0 {
+			copied := make([]byte, count)
+			copy(copied, buf)
 			dataEntries = append(dataEntries,
 				&DataEntry{
-					Data:    buf[:count],
+					Data:    copied,
 					Created: clock.Get(c).Now().UTC(),
 				})
 		}
