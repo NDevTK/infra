@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "3f92dd0f_ee4b88d8",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/gen.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-16T21:35:39Z",
+      "side": 1,
+      "message": "Nack. It\u0027s a choice between using a real english word, and following -er convention. Per pprabhu, I elected to do the latter. (e.g. Mutater is an interface of things that implement Mutate).",
+      "parentUuid": "645f12c3_895116b1",
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bc2a246a_9c379ce5",
         "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
         "patchSetId": 38
@@ -39,6 +57,30 @@
       "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "008767ec_b593951a",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-16T21:35:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bc2a246a_9c379ce5",
+      "range": {
+        "startLine": 31,
+        "startChar": 21,
+        "endLine": 31,
+        "endChar": 37
+      },
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -65,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "08f76229_c5082ddb",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-16T21:35:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0f8978aa_24f7adb5",
+      "range": {
+        "startLine": 32,
+        "startChar": 27,
+        "endLine": 32,
+        "endChar": 33
+      },
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8a36252c_20a094c8",
         "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
         "patchSetId": 38
@@ -85,6 +151,30 @@
       "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5457dc86_8083b333",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-16T21:35:39Z",
+      "side": 1,
+      "message": "Added a panic in that circumstance.",
+      "parentUuid": "8a36252c_20a094c8",
+      "range": {
+        "startLine": 39,
+        "startChar": 14,
+        "endLine": 39,
+        "endChar": 27
+      },
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -111,6 +201,30 @@
     },
     {
       "key": {
+        "uuid": "b5cb40dd_ee4220ce",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-16T21:35:39Z",
+      "side": 1,
+      "message": "Punting to https://chromium-review.googlesource.com/c/infra/infra/+/1176433 , it\u0027s becoming difficult to do refactors this far down in the cl stack.",
+      "parentUuid": "741caff7_8bb5c737",
+      "range": {
+        "startLine": 51,
+        "startChar": 1,
+        "endLine": 51,
+        "endChar": 3
+      },
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dd6dfcf8_aba8f6bf",
         "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
         "patchSetId": 38
@@ -131,6 +245,30 @@
       "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bd4ccadd_6b16dd46",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-16T21:35:39Z",
+      "side": 1,
+      "message": "punting, and possibly invalidated by subsequent cls in the stack.",
+      "parentUuid": "dd6dfcf8_aba8f6bf",
+      "range": {
+        "startLine": 56,
+        "startChar": 2,
+        "endLine": 57,
+        "endChar": 15
+      },
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -157,6 +295,30 @@
     },
     {
       "key": {
+        "uuid": "e84f9f91_41d4c00a",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.proto",
+        "patchSetId": 38
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-16T21:35:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bd960f21_2e24de5e",
+      "range": {
+        "startLine": 21,
+        "startChar": 17,
+        "endLine": 21,
+        "endChar": 18
+      },
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "788d2c5d_ea9af406",
         "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters_test.go",
         "patchSetId": 38
@@ -177,6 +339,30 @@
       "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f30f1e74_51965a13",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters_test.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-16T21:35:39Z",
+      "side": 1,
+      "message": "Punting to later in stack.",
+      "parentUuid": "788d2c5d_ea9af406",
+      "range": {
+        "startLine": 25,
+        "startChar": 13,
+        "endLine": 25,
+        "endChar": 16
+      },
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -203,6 +389,30 @@
     },
     {
       "key": {
+        "uuid": "052fdd1e_a6624fb8",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters_test.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-16T21:35:39Z",
+      "side": 1,
+      "message": "Docs are already coming later in the stack. I can look at renaming in that upcoming CL too.",
+      "parentUuid": "b73083df_0aa2aecf",
+      "range": {
+        "startLine": 48,
+        "startChar": 6,
+        "endLine": 48,
+        "endChar": 15
+      },
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7eb8b496_de7b29dc",
         "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters_test.go",
         "patchSetId": 38
@@ -217,6 +427,24 @@
       "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "07437334_6e602f94",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters_test.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-16T21:35:39Z",
+      "side": 1,
+      "message": "I\u0027ve made a node to examine messageDiff, punting this to later, there are already a few other test changes in the stack.",
+      "parentUuid": "7eb8b496_de7b29dc",
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -243,6 +471,30 @@
     },
     {
       "key": {
+        "uuid": "2cf7688e_d537082a",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-16T21:35:39Z",
+      "side": 1,
+      "message": "Punting till later.",
+      "parentUuid": "2abcd977_24c08748",
+      "range": {
+        "startLine": 34,
+        "startChar": 5,
+        "endLine": 34,
+        "endChar": 18
+      },
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3f647660_f7d86323",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 38
@@ -266,6 +518,30 @@
     },
     {
       "key": {
+        "uuid": "aa067e5b_b7c7fbfc",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-16T21:35:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3f647660_f7d86323",
+      "range": {
+        "startLine": 35,
+        "startChar": 1,
+        "endLine": 35,
+        "endChar": 7
+      },
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "11317f74_de3ca007",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
         "patchSetId": 38
@@ -277,6 +553,24 @@
       "writtenOn": "2018-08-16T21:22:22Z",
       "side": 1,
       "message": "idea: move the for loop body into a scheduleForPriority function, then the FreeBucket handling below becomes scheduleForPriority(..., FreeBucket).\n\nIt removes some duplicate code and makes FreeBucket less of a special case, and getting rid of special cases is good.",
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "97011f5f_93c76a4e",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-16T21:35:39Z",
+      "side": 1,
+      "message": "I don\u0027t follow. The FreeBucket is unavoidably a special case, because we don\u0027t try the reprioritize or preempt steps for it.",
+      "parentUuid": "11317f74_de3ca007",
       "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
