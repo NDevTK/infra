@@ -12,6 +12,7 @@ import (
 
 	"go.chromium.org/gae/impl/memory"
 	"go.chromium.org/gae/service/datastore"
+	"go.chromium.org/luci/common/clock"
 	"golang.org/x/net/context"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -91,6 +92,40 @@ func TestTestFile(t *testing.T) {
 				So(err, ShouldBeNil)
 				b, err := ioutil.ReadAll(reader)
 				So(err, ShouldBeNil)
+				So(b, ShouldResemble, data)
+			})
+
+			Convey("puts and retrieves DataEntry with smaller datastore buff", func() {
+				datastoreBlobLimitBackup := datastoreBlobLimit
+				defer func() {
+					datastoreBlobLimit = datastoreBlobLimitBackup
+				}()
+				// Set smaller limit so that parallelized datastore puts happen.
+				datastoreBlobLimit = 1 << 15
+
+				data, err := ioutil.ReadFile(filepath.Join("testdata", "results.json"))
+				So(err, ShouldBeNil)
+				tf := TestFile{
+					ID: 1,
+				}
+				So(tf.PutData(c, func(w io.Writer) error {
+					_, err := w.Write(data)
+					return err
+				}), ShouldBeNil)
+				So(datastore.Put(c, &tf), ShouldBeNil)
+
+				datastore.GetTestable(c).CatchupIndexes()
+
+				tf = TestFile{ID: 1}
+				So(datastore.Get(c, &tf), ShouldBeNil)
+				So(tf.ID, ShouldEqual, 1)
+
+				reader, err := tf.DataReader(c)
+				So(err, ShouldBeNil)
+				b, err := ioutil.ReadAll(reader)
+				So(err, ShouldBeNil)
+
+				clock.Get(c).Now().UTC()
 				So(b, ShouldResemble, data)
 			})
 
