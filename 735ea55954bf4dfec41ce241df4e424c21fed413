@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "97a98437_639f9b0c",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
+        "patchSetId": 37
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-16T06:30:26Z",
+      "side": 1,
+      "message": "Done in a forthcoming patchset to a follow-up CL. https://chromium-review.googlesource.com/c/infra/infra/+/1176433/4",
+      "parentUuid": "7f2b9bc1_90455375",
+      "revId": "735ea55954bf4dfec41ce241df4e424c21fed413",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5e56a876_745795a0",
         "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
         "patchSetId": 37
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "b3c1acee_1ba2dfb4",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
+        "patchSetId": 37
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-16T06:30:26Z",
+      "side": 1,
+      "message": "Done in later CL.",
+      "parentUuid": "5e56a876_745795a0",
+      "revId": "735ea55954bf4dfec41ce241df4e424c21fed413",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8555edaf_80c5b8ee",
         "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
         "patchSetId": 37
@@ -47,6 +83,24 @@
       "writtenOn": "2018-08-16T01:59:13Z",
       "side": 1,
       "message": "Isn\u0027t this the cost of the old task? Wouldn\u0027t the new task\u0027s cost be (cost of new task + cost of preempting old task)?",
+      "revId": "735ea55954bf4dfec41ce241df4e424c21fed413",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b9e798bf_5981e875",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
+        "patchSetId": 37
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-08-16T06:30:26Z",
+      "side": 1,
+      "message": "\"new tasks\" start with cost 0, and accumulate cost as they run and are charged to accounts. So, there\u0027s no additional \"initial cost\" here, just the cost that was paid for preemption. Make sense?",
+      "parentUuid": "8555edaf_80c5b8ee",
       "revId": "735ea55954bf4dfec41ce241df4e424c21fed413",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
