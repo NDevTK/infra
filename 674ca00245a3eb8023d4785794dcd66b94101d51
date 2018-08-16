@@ -217,6 +217,69 @@
       "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2abcd977_24c08748",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-16T21:22:22Z",
+      "side": 1,
+      "message": "name suggestion, ScheduleOnce.  QuotaSchedule sounds odd as a verb/function name, and it doesn\u0027t reflect the \"single round\" behavior.",
+      "range": {
+        "startLine": 34,
+        "startChar": 5,
+        "endLine": 34,
+        "endChar": 18
+      },
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3f647660_f7d86323",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-16T21:22:22Z",
+      "side": 1,
+      "message": "var output []mutaters.Mutater\n\nhttps://github.com/golang/go/wiki/CodeReviewComments#declaring-empty-slices",
+      "range": {
+        "startLine": 35,
+        "startChar": 1,
+        "endLine": 35,
+        "endChar": 7
+      },
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "11317f74_de3ca007",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-16T21:22:22Z",
+      "side": 1,
+      "message": "idea: move the for loop body into a scheduleForPriority function, then the FreeBucket handling below becomes scheduleForPriority(..., FreeBucket).\n\nIt removes some duplicate code and makes FreeBucket less of a special case, and getting rid of special cases is good.",
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
