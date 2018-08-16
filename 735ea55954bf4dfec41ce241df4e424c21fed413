@@ -1,0 +1,169 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7f2b9bc1_90455375",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
+        "patchSetId": 37
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-08-16T01:59:13Z",
+      "side": 1,
+      "message": "It\u0027s sort of obvious because I was in the meeting, but I\u0027d add a comment like:\n// Refund the cost of the preempted task.",
+      "revId": "735ea55954bf4dfec41ce241df4e424c21fed413",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5e56a876_745795a0",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
+        "patchSetId": 37
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-08-16T01:59:13Z",
+      "side": 1,
+      "message": "Same here:\n// Charge the preempting task account the cost of the preempted task.",
+      "revId": "735ea55954bf4dfec41ce241df4e424c21fed413",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8555edaf_80c5b8ee",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
+        "patchSetId": 37
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-08-16T01:59:13Z",
+      "side": 1,
+      "message": "Isn\u0027t this the cost of the old task? Wouldn\u0027t the new task\u0027s cost be (cost of new task + cost of preempting old task)?",
+      "revId": "735ea55954bf4dfec41ce241df4e424c21fed413",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4af7ad91_4d0452a5",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 37
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-08-16T01:59:13Z",
+      "side": 1,
+      "message": "If this is the main place where the algorithm is implemented, I think you should add more comments throughout the function explaining the algorithm.",
+      "revId": "735ea55954bf4dfec41ce241df4e424c21fed413",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "702f0ceb_eaefd4e1",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 37
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-08-16T01:59:13Z",
+      "side": 1,
+      "message": "requests",
+      "range": {
+        "startLine": 36,
+        "startChar": 1,
+        "endLine": 36,
+        "endChar": 5
+      },
+      "revId": "735ea55954bf4dfec41ce241df4e424c21fed413",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7a4bcf0a_6516d99b",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 37
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-08-16T01:59:13Z",
+      "side": 1,
+      "message": "It seems like i is never not 0.",
+      "revId": "735ea55954bf4dfec41ce241df4e424c21fed413",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e91b2be8_7da5a8c7",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 37
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-08-16T01:59:13Z",
+      "side": 1,
+      "message": "Maybe mention that demotions are to the next lowest priority. Worth mentioning because of asymmetry, if I understand correctly, jobs may be promoted from any lower priority up to the target priority, but jobs may only be demoted from the target priority down to one lower than the target priority.",
+      "revId": "735ea55954bf4dfec41ce241df4e424c21fed413",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1c9598ed_362550e3",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 37
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-08-16T01:59:13Z",
+      "side": 1,
+      "message": "Same here. It demotes specifically to the next lowest priority. I think it\u0027s worth mentioning because even after the demotion it may not be in a steady state, further iterations of the algorithm may demote it further.",
+      "revId": "735ea55954bf4dfec41ce241df4e424c21fed413",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cb83cedf_2a5a2d54",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 37
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-08-16T01:59:13Z",
+      "side": 1,
+      "message": "o",
+      "range": {
+        "startLine": 184,
+        "startChar": 4,
+        "endLine": 184,
+        "endChar": 5
+      },
+      "revId": "735ea55954bf4dfec41ce241df4e424c21fed413",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
