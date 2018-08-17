@@ -7,7 +7,6 @@ package model
 import (
 	"fmt"
 	"io"
-	"sync"
 	"time"
 
 	"golang.org/x/net/context"
@@ -35,6 +34,12 @@ func IsAggregateTestFile(filename string) bool {
 type BuildNum int64
 
 var _ datastore.PropertyConverter = (*BuildNum)(nil)
+
+// 1 megabyte is the maximum allowed length for a datastore
+// entity. But use a smaller value because App Engine errors
+// when we get close to the limit.
+// See https://code.googlesource.com/gocloud/+/master/datastore/prop.go#29.
+var datastoreBlobLimit = (1 << 20) - 2048
 
 // IsNil returns whether b had null value in datastore.
 func (b *BuildNum) IsNil() bool { return *b == -1 }
@@ -204,11 +209,6 @@ func (tf *TestFile) putDataEntries(c context.Context, dataFunc func(io.Writer) e
 }
 
 func writeDataEntries(c context.Context, r io.Reader) ([]*datastore.Key, error) {
-	// 1 megabyte is the maximum allowed length for a datastore
-	// entity. But use a smaller value because App Engine errors
-	// when we get close to the limit.
-	// See https://code.googlesource.com/gocloud/+/master/datastore/prop.go#29.
-	const maxBlobLen = (1 << 20) - 2048
 
 	// This may write a lot of entries, and so we do NOT want a transactional
 	// datastore handle here. This is fine, since each DataEntry will be a new
@@ -216,7 +216,7 @@ func writeDataEntries(c context.Context, r io.Reader) ([]*datastore.Key, error) 
 	c = datastore.WithoutTransaction(c)
 
 	// Read data from "r" one blob at a time.
-	buf := make([]byte, maxBlobLen)
+	buf := make([]byte, datastoreBlobLimit)
 
 	finished := false
 
@@ -240,38 +240,37 @@ func writeDataEntries(c context.Context, r io.Reader) ([]*datastore.Key, error) 
 		}
 
 		if count > 0 {
+			copied := make([]byte, count)
+			copy(copied, buf[:count])
 			dataEntries = append(dataEntries,
 				&DataEntry{
-					Data:    buf[:count],
+					Data:    copied,
 					Created: clock.Get(c).Now().UTC(),
 				})
 		}
 	}
 
-	var mu sync.Mutex
-	var keys []*datastore.Key
+	keys := make([]*datastore.Key, len(dataEntries))
 
 	const datastorePutWokers = 16
 
 	err := parallel.WorkPool(datastorePutWokers, func(workC chan<- func() error) {
-		for _, dataEntry := range dataEntries {
+		for i, dataEntry := range dataEntries {
 			dataEntry := dataEntry
+			i := i
 			workC <- func() error {
 				err := datastore.Put(c, dataEntry)
-
-				mu.Lock()
-				defer mu.Unlock()
 				if err != nil {
-					logging.WithError(err).Errorf(c, "Failed to put DataEntry #%d.", len(keys))
+					logging.WithError(err).Errorf(c, "Failed to put DataEntry #%d.", i)
 					return err
 				}
 
 				logging.Fields{
-					"index": len(keys),
+					"index": i,
 					"size":  len(dataEntry.Data),
 					"id":    dataEntry.ID,
 				}.Debugf(c, "Added data entry.")
-				keys = append(keys, datastore.KeyForObj(c, dataEntry))
+				keys[i] = datastore.KeyForObj(c, dataEntry)
 				return nil
 			}
 		}
