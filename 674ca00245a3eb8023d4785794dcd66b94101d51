@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "8a788c59_37633118",
+        "filename": "go/src/infra/qscheduler/qslib/mutaters/gen.go",
+        "patchSetId": 38
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-08-17T02:06:45Z",
+      "side": 1,
+      "message": "https://talks.golang.org/2014/names.slide#13\n\nI think this falls squarely into \"Sometimes we use English to make it nicer:\"\n\nI don\u0027t think there\u0027s any confusion that the Mutator interface provides a Mutate method, purposefully subtly misspelling it is bad.  It\u0027s a one letter off misspelling when there\u0027s a perfectly suitable correctly spelled word available.\n\nhttps://groups.google.com/forum/#!topic/golang-nuts/8xnggK1wo0U\n\n(Also, punting on all changes accepted, I know juggling a stack of changes is hard.)",
+      "parentUuid": "3f92dd0f_ee4b88d8",
+      "revId": "674ca00245a3eb8023d4785794dcd66b94101d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "bc2a246a_9c379ce5",
         "filename": "go/src/infra/qscheduler/qslib/mutaters/mutaters.go",
         "patchSetId": 38
