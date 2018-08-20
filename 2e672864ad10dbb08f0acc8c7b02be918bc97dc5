@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cfdb9833_e4581849",
+        "filename": "appengine/findit/services/flake_failure/flake_report_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-20T17:02:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6dabd71c_ea24ac70",
+      "range": {
+        "startLine": 47,
+        "startChar": 2,
+        "endLine": 47,
+        "endChar": 5
+      },
+      "revId": "2e672864ad10dbb08f0acc8c7b02be918bc97dc5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
