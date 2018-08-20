@@ -12,10 +12,23 @@ threadsafe: no
 
 default_expiration: "3600d"
 
+ifdef(`PROD', `
 instance_class: F4
 automatic_scaling:
-  min_idle_instances: 5
+  min_idle_instances: 40
   max_pending_latency: 0.2s
+')
+
+ifdef(`STAGING', `
+instance_class: F4
+automatic_scaling:
+  min_idle_instances: 40
+  max_pending_latency: 0.2s
+')
+
+ifdef(`DEMO', `
+instance_class: F4
+')
 
 handlers:
 - url: /_ah/warmup
@@ -40,7 +53,12 @@ handlers:
 inbound_services:
 - mail
 - mail_bounce
+ifdef(`PROD', `
 - warmup
+')
+ifdef(`STAGING', `
+- warmup
+')
 
 libraries:
 - name: endpoints
