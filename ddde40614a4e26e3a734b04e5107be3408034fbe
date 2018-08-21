@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "604cd4bc_ae874dd1",
+        "filename": "cr-buildbucket.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2018-08-21T01:31:25Z",
+      "side": 1,
+      "message": "I would prepend codesearch_ to each of these; the named cache names are unfortunately global",
+      "range": {
+        "startLine": 101,
+        "startChar": 11,
+        "endLine": 101,
+        "endChar": 28
+      },
+      "revId": "ddde40614a4e26e3a734b04e5107be3408034fbe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
