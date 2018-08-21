@@ -6,6 +6,7 @@ package ninjalog
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -13,6 +14,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/golang/protobuf/ptypes"
 )
 
 // Step is one step in ninja_log file.
@@ -449,4 +452,23 @@ func StatsByType(steps []Step, weighted map[string]time.Duration, typeOf func(St
 		return stats[i].Weighted > stats[j].Weighted
 	})
 	return stats
+}
+
+// ConvertNinjalog converts ninjalog to structs of protocol buffer
+func ConvertNinjalog(ctx context.Context, info NinjaLog) ([]*NinjaTask, error) {
+	var ninjatask []*NinjaTask
+	ninjatime := WeightedTime(info.Steps)
+	for _, s := range info.Steps {
+		ninjalog := &NinjaTask{
+			LogEntry: &NinjaTask_LogEntry{
+				Outputs:       s.Outs,
+				CommandHash:   s.CmdHash,
+				StartDuration: ptypes.DurationProto(s.Start),
+				EndDuration:   ptypes.DurationProto(s.End),
+			},
+			WeightedDuration: ptypes.DurationProto(ninjatime[s.Out]),
+		}
+		ninjatask = append(ninjatask, ninjalog)
+	}
+	return ninjatask, nil
 }
