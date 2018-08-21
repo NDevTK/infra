@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "666fdc66_01b83bc9",
+        "filename": "go/src/infra/appengine/chromium_build_stats/ninjalog/ninjalog.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 457,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2018-08-21T13:09:03Z",
+      "side": 1,
+      "message": "This become always nil, better to remove.",
+      "range": {
+        "startLine": 457,
+        "startChar": 51,
+        "endLine": 457,
+        "endChar": 56
+      },
+      "revId": "43bc3e0fe680b4c1a39ad32c6f5ff42974598daf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a3106409_718d4c0f",
+        "filename": "go/src/infra/appengine/chromium_build_stats/ninjalog/ninjalog.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 457,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2018-08-21T13:09:03Z",
+      "side": 1,
+      "message": "package name has ninjalog, so having ninjalog in function name is redundant.\nBetter to rename this to ConvertToNinjaTask or so?",
+      "range": {
+        "startLine": 457,
+        "startChar": 5,
+        "endLine": 457,
+        "endChar": 20
+      },
+      "revId": "43bc3e0fe680b4c1a39ad32c6f5ff42974598daf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5fb22804_ea225c45",
+        "filename": "go/src/infra/appengine/chromium_build_stats/ninjalog/ninjalog.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 457,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2018-08-21T13:09:03Z",
+      "side": 1,
+      "message": "Let\u0027s make a test for this function.",
+      "revId": "43bc3e0fe680b4c1a39ad32c6f5ff42974598daf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
