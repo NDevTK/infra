@@ -22,6 +22,30 @@
       "revId": "59d9b4ccc977acd070fb2e2fc3c2a6f39b736f5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ec97af42_32cbae9f",
+        "filename": "appengine/findit/services/issue_tracking_service.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-21T16:25:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6845afa9_6164c1f7",
+      "range": {
+        "startLine": 186,
+        "startChar": 25,
+        "endLine": 186,
+        "endChar": 28
+      },
+      "revId": "59d9b4ccc977acd070fb2e2fc3c2a6f39b736f5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
