@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"infra/appengine/chromium_build_stats/ninjalog"
 	"io/ioutil"
 	"net/http"
 
@@ -55,17 +56,23 @@ func pubsubHandler(w http.ResponseWriter, req *http.Request) {
 	bucketID := request.PubsubMessage.Attributes["bucketId"]
 	log.Debugf(ctx, "objectId: %v, bucketId: %v", filename, bucketID)
 
-	// TODO(namiko): Send the read file to bigquery.
-	if _, err := getFile(ctx, filename, bucketID); err != nil {
+	info, err := getFile(ctx, filename, bucketID)
+	if err != nil {
 		http.Error(w, "failed to get file", http.StatusInternalServerError)
 		log.Errorf(ctx, "failed to get file: %v", err)
+		return
+	}
+
+	if err := sendBigquery(ctx, *info); err != nil {
+		http.Error(w, "failed to send BigQuery", http.StatusInternalServerError)
+		log.Errorf(ctx, "failed to send BigQuery: %v", err)
 		return
 	}
 	fmt.Fprintln(w, "OK")
 }
 
 /* fetch gcs upload file */
-func getFile(ctx context.Context, filename string, bucketID string) ([]byte, error) {
+func getFile(ctx context.Context, filename string, bucketID string) (*ninjalog.NinjaLog, error) {
 	// Creates a client.
 	client, err := storage.NewClient(ctx)
 	if err != nil {
@@ -90,13 +97,10 @@ func getFile(ctx context.Context, filename string, bucketID string) ([]byte, err
 		}
 	}()
 
-	info, err := ioutil.ReadAll(r)
+	info, err := ninjalog.Parse(filename, r)
 	if err != nil {
-		log.Errorf(ctx, "failed to read file: %v", err)
+		log.Errorf(ctx, "failed to parse ninjalog: %v", err)
 		return nil, err
 	}
-	// TODO(namiko): Delete it later
-	log.Debugf(ctx, "info : %v", string(info))
-
 	return info, nil
 }

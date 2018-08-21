@@ -1,0 +1,8 @@
+gopath/bin/
+gopath/pkg/
+gopath/src/cloud.google.com/
+gopath/src/contrib.go.opencensus.io/
+gopath/src/github.com/
+gopath/src/go.opencensus.io/
+gopath/src/golang.org/
+gopath/src/google.golang.org/
