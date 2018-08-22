@@ -347,7 +347,6 @@ class IssueEntry(servlet.Servlet):
                 actionlimit.ISSUE_ATTACHMENT: len(parsed.attachments)}
       self.CountRateLimitedActions(mr, counts)
 
-    mr.template_name = parsed.template_name
     if mr.errors.AnyErrors():
       self.PleaseCorrect(
           mr, initial_summary=parsed.summary, initial_status=parsed.status,
@@ -355,7 +354,7 @@ class IssueEntry(servlet.Servlet):
           initial_cc=', '.join(parsed.users.cc_usernames),
           initial_components=', '.join(parsed.components.paths),
           initial_comment=parsed.comment, labels=bounce_labels,
-          fields=bounce_fields,
+          fields=bounce_fields, template_name=parsed.template_name,
           initial_blocked_on=parsed.blocked_on.entered_str,
           initial_blocking=parsed.blocking.entered_str,
           initial_hotlists=parsed.hotlists.entered_str,
