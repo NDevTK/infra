@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "38d83861_bf95a796",
+        "filename": "go/src/infra/appengine/chromium_build_stats/bigquery.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1298873
+      },
+      "writtenOn": "2018-08-22T05:46:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "eb976cd6_b98ecdb3",
+      "range": {
+        "startLine": 24,
+        "startChar": 5,
+        "endLine": 24,
+        "endChar": 17
+      },
+      "revId": "43bc3e0fe680b4c1a39ad32c6f5ff42974598daf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "666fdc66_01b83bc9",
         "filename": "go/src/infra/appengine/chromium_build_stats/ninjalog/ninjalog.go",
         "patchSetId": 5
@@ -130,6 +154,24 @@
         "endLine": 457,
         "endChar": 20
       },
+      "revId": "43bc3e0fe680b4c1a39ad32c6f5ff42974598daf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6a7a8652_bbd8c643",
+        "filename": "go/src/infra/appengine/chromium_build_stats/ninjalog/ninjalog.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 457,
+      "author": {
+        "id": 1298873
+      },
+      "writtenOn": "2018-08-22T05:46:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5fb22804_ea225c45",
       "revId": "43bc3e0fe680b4c1a39ad32c6f5ff42974598daf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
