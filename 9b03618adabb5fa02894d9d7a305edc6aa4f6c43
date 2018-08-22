@@ -22,6 +22,30 @@
       "revId": "9b03618adabb5fa02894d9d7a305edc6aa4f6c43",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c73eced5_9b6e778e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 8
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1298873
+      },
+      "writtenOn": "2018-08-22T08:07:39Z",
+      "side": 1,
+      "message": "Sorry, unchecked.\nBugs:873940",
+      "parentUuid": "a161c49b_c64de195",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 11
+      },
+      "revId": "9b03618adabb5fa02894d9d7a305edc6aa4f6c43",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
