@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bc362b52_7023009c",
+        "filename": "go/src/infra/appengine/chromium_build_stats/bigquery.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2018-08-22T07:48:49Z",
+      "side": 1,
+      "message": "might be better that this package be in infra/appengine/chromium_build_stats/app ?\n(like infra/appengine/cr-audit-commits)",
+      "revId": "7d43a7e1f94a44d23a494776460cd643ca906045",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7757c815_ac5cf496",
+        "filename": "go/src/infra/appengine/chromium_build_stats/ninjalog/ninjalog.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 456,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2018-08-22T07:48:49Z",
+      "side": 1,
+      "message": "period at the end.\n\nis NinjaTask protocol buffer?\nusually protocol buffer are put in own package.",
+      "revId": "7d43a7e1f94a44d23a494776460cd643ca906045",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fc4e0e63_6539ff44",
+        "filename": "go/src/infra/appengine/chromium_build_stats/ninjalog/ninjalog.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 457,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2018-08-22T07:48:49Z",
+      "side": 1,
+      "message": "func ToProto(\n\nor\nfunc (nl NinjaLog) ToProto(\n\n?",
+      "revId": "7d43a7e1f94a44d23a494776460cd643ca906045",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "235d4053_cab632ad",
+        "filename": "go/src/infra/appengine/chromium_build_stats/ninjalog/ninjalog_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 546,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2018-08-22T07:48:49Z",
+      "side": 1,
+      "message": "in google3, we\u0027ll use messagediff if data contains proto.\n\nuse github.com/google/go-cmp/cmp with cmp.Comparer(proto.Equal) ?",
+      "revId": "7d43a7e1f94a44d23a494776460cd643ca906045",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f71f838_238a4365",
+        "filename": "go/src/infra/appengine/chromium_build_stats/pubsub.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2018-08-22T07:48:49Z",
+      "side": 1,
+      "message": "why dereference info here?",
+      "revId": "7d43a7e1f94a44d23a494776460cd643ca906045",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
