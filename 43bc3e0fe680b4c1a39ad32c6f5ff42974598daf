@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "eb976cd6_b98ecdb3",
+        "filename": "go/src/infra/appengine/chromium_build_stats/bigquery.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1116017
+      },
+      "writtenOn": "2018-08-22T02:08:03Z",
+      "side": 1,
+      "message": "Could you rename this to `sendToBigquery`?\nSince we send ninjalog to bigquery, not we send bigquery to somewhere.",
+      "range": {
+        "startLine": 24,
+        "startChar": 5,
+        "endLine": 24,
+        "endChar": 17
+      },
+      "revId": "43bc3e0fe680b4c1a39ad32c6f5ff42974598daf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "666fdc66_01b83bc9",
         "filename": "go/src/infra/appengine/chromium_build_stats/ninjalog/ninjalog.go",
         "patchSetId": 5
