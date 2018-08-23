@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a3dd547_db34b073",
+        "filename": "appengine/findit/services/test_failure/test_culprit_action.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-23T23:24:43Z",
+      "side": 0,
+      "message": "Why do we drop the Returns?",
+      "range": {
+        "startLine": 109,
+        "startChar": 2,
+        "endLine": 111,
+        "endChar": 48
+      },
+      "revId": "d6166b17007e4b64a941422addb89ec3bf96697e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

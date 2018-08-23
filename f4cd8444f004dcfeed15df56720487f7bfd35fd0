@@ -1,0 +1,211 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "50cc0ab0_0d4f9017",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-23T23:24:43Z",
+      "side": 1,
+      "message": "What does this method return? Is it the log with string type or some dictionary after parsing the logs?",
+      "range": {
+        "startLine": 96,
+        "startChar": 5,
+        "endLine": 96,
+        "endChar": 28
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "32561c0d_d41ced61",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 324,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-23T23:24:43Z",
+      "side": 1,
+      "message": "Please also add a Returns. What gets returned seems to be a non-trivial map.",
+      "range": {
+        "startLine": 324,
+        "startChar": 1,
+        "endLine": 324,
+        "endChar": 5
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aede6aca_a869b3e1",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 327,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-23T23:24:43Z",
+      "side": 1,
+      "message": "Where is this defined? I couldn\u0027t find it.\nhttps://cs.chromium.org/chromium/infra/appengine/findit/services/ci_failure.py?q\u003dci_failure.py\u0026sq\u003dpackage:chromium\u0026g\u003d0\u0026l\u003d1",
+      "range": {
+        "startLine": 327,
+        "startChar": 17,
+        "endLine": 327,
+        "endChar": 53
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c343476a_5562bb94",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 334,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-23T23:24:43Z",
+      "side": 1,
+      "message": "I haven\u0027t been able to fully understand the algorithm yet, but I think this name is very confusing. The name indicates that it stores a list of succeeded tests or something a like, however, after reading the code, it seems that it\u0027s actually a map from steps to a set of \"failed\" tests.\n\nIf I understood correctly, it\u0027s better to be renamed.",
+      "range": {
+        "startLine": 334,
+        "startChar": 2,
+        "endLine": 334,
+        "endChar": 15
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "619ded05_fe7f1022",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 336,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-23T23:24:43Z",
+      "side": 1,
+      "message": "Move http_client closer to where it is used.",
+      "range": {
+        "startLine": 336,
+        "startChar": 2,
+        "endLine": 336,
+        "endChar": 34
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8ab0c358_98ef6da8",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 352,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-23T23:24:43Z",
+      "side": 1,
+      "message": "Something to consider for a follow-up CL, I think the failure_to_culprit_map is very hard to follow, if it\u0027s used a lot, it\u0027s better to create a class and encapsulates the map inside it. Something like:\n\nClass FailureToCulpritMap(object):\n  def GetAllSteps(self):\n  def GetAllFailedTestsForAStep(self, step_name):\n  ...",
+      "range": {
+        "startLine": 352,
+        "startChar": 10,
+        "endLine": 352,
+        "endChar": 64
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e7ef2cd1_1f5a93fa",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 355,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-23T23:24:43Z",
+      "side": 1,
+      "message": "remaining_steps_to_check has removed all the succeeded_steps, so it should be strictly a subset of faild_steps now.",
+      "range": {
+        "startLine": 355,
+        "startChar": 21,
+        "endLine": 355,
+        "endChar": 60
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "72551efb_61aa875e",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 360,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-23T23:24:43Z",
+      "side": 1,
+      "message": "Can we replace this with FindidHttpClient()?",
+      "range": {
+        "startLine": 360,
+        "startChar": 68,
+        "endLine": 360,
+        "endChar": 79
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fd4d6c8d_5cd9b7c5",
+        "filename": "appengine/findit/services/test_failure/test_culprit_action.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-23T23:24:43Z",
+      "side": 1,
+      "message": "This can be reduced to two lines:\n    logging.info(\n        \u0027No revert or notification needed for culprit(s) for %s/%s/%s since \u0027\n        \u0027the failure has stopped.\u0027, master_name, builder_name, build_number)",
+      "range": {
+        "startLine": 128,
+        "startChar": 0,
+        "endLine": 130,
+        "endChar": 21
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
