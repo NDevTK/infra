@@ -2565,7 +2565,7 @@ class IssueService(object):
     comment_pb = self.CreateIssueComment(
         cnxn, issue, modifier_id, comment_content, amendments=amendments,
         approval_id=approval.approval_id, is_description=is_description,
-        commit=False)
+        attachments=attachments, commit=False)
 
     if commit:
       cnxn.Commit()
