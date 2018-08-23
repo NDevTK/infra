@@ -62,12 +62,17 @@ class SendNotificationForCulpritParameters(StructuredObject):
   failure_type = int
 
 
+class FailureToCulpritMap(TypedDict):
+  _value_type = DictOfBasestring
+
+
 class CulpritActionParameters(StructuredObject):
   """Input for RevertAndNotifyCompileCulpritPipeline and
      RevertAndNotifyTestCulpritPipeline."""
   build_key = BuildKey
   culprits = DictOfBasestring
   heuristic_cls = ListOfBasestring
+  failure_to_culprit_map = FailureToCulpritMap
 
 
 class RunTryJobParameters(StructuredObject):
