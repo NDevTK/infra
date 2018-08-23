@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "82ed56e1_6de542e2",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2018-08-23T20:49:30Z",
+      "side": 1,
+      "message": "_GetTestLevelStepLog() \n\n\u0027FromABuild\u0027 seems obvious, right?",
+      "range": {
+        "startLine": 96,
+        "startChar": 4,
+        "endLine": 96,
+        "endChar": 38
+      },
+      "revId": "a1e953c97010df858ef82e97c8f499e674443568",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e78fefa5_b7c993ee",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 304,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2018-08-23T20:49:30Z",
+      "side": 1,
+      "message": "We should document the approach briefly in the docstring, this function is pretty involved and although it has good comments, it still is hard to grasp.\n\nAlso, it uses failure_to_culprit_map, but we are not documenting what it contains.",
+      "range": {
+        "startLine": 304,
+        "startChar": 5,
+        "endLine": 304,
+        "endChar": 53
+      },
+      "revId": "a1e953c97010df858ef82e97c8f499e674443568",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "460992cf_01a6931e",
+        "filename": "appengine/findit/services/test_failure/test_culprit_action.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2018-08-23T20:49:30Z",
+      "side": 1,
+      "message": "Are these the tests that were originally failing?",
+      "range": {
+        "startLine": 141,
+        "startChar": 4,
+        "endLine": 141,
+        "endChar": 16
+      },
+      "revId": "a1e953c97010df858ef82e97c8f499e674443568",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2169a18e_e979a1d6",
+        "filename": "appengine/findit/services/test_failure/test_culprit_action.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2018-08-23T20:49:30Z",
+      "side": 1,
+      "message": "And these are the tests that passed at some point after the culprit landed, right?",
+      "range": {
+        "startLine": 142,
+        "startChar": 4,
+        "endLine": 142,
+        "endChar": 16
+      },
+      "revId": "a1e953c97010df858ef82e97c8f499e674443568",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
