@@ -2,13 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import json
 import mock
 
 from google.appengine.api import datastore_errors
 
 from common.findit_http_client import FinditHttpClient
 from model.wf_step import WfStep
+from services import ci_failure
 from services import constants
 from services import swarmed_test_util
 from services import swarming
@@ -299,7 +299,7 @@ class CITestFailureTest(wf_testcase.WaterfallTestCase):
         master_name, builder_name, build_number, failure_info)
     self.assertEqual({}, failure_info.failed_steps.ToSerializable())
 
-  @mock.patch.object(ci_test_failure, '_GetLogForTheSameStepFromBuild')
+  @mock.patch.object(ci_test_failure, '_GetTestLevelLogForAStepFromABuild')
   def testUpdateFirstFailureOnTestLevelThenUpdateStepLevel(self, mock_steps):
     master_name = 'm'
     builder_name = 'b'
@@ -600,7 +600,7 @@ class CITestFailureTest(wf_testcase.WaterfallTestCase):
     build_number = 121
     step_name = 'atest'
     self.assertIsNone(
-        ci_test_failure._GetLogForTheSameStepFromBuild(
+        ci_test_failure._GetTestLevelLogForAStepFromABuild(
             master_name, builder_name, build_number, step_name, None))
 
   @mock.patch.object(
@@ -623,7 +623,7 @@ class CITestFailureTest(wf_testcase.WaterfallTestCase):
         'digest': 'isolatedhashabctest'
     }]
     self.assertIsNone(
-        ci_test_failure._GetLogForTheSameStepFromBuild(
+        ci_test_failure._GetTestLevelLogForAStepFromABuild(
             master_name, builder_name, build_number, step_name, None))
 
   def testGetLogForTheSameStepFromBuildNotNotJsonLoadable(self):
@@ -638,7 +638,7 @@ class CITestFailureTest(wf_testcase.WaterfallTestCase):
     step.put()
 
     self.assertIsNone(
-        ci_test_failure._GetLogForTheSameStepFromBuild(
+        ci_test_failure._GetTestLevelLogForAStepFromABuild(
             master_name, builder_name, build_number, step_name, None))
 
   @mock.patch.object(swarming, 'GetIsolatedDataForStep')
@@ -698,7 +698,7 @@ class CITestFailureTest(wf_testcase.WaterfallTestCase):
             'YS9iL3UzczIuY2M6MTEwOiBGYWlsdXJlXG4='
     }
 
-    failure_log = ci_test_failure._GetLogForTheSameStepFromBuild(
+    failure_log = ci_test_failure._GetTestLevelLogForAStepFromABuild(
         master_name, builder_name, build_number, step_name, None)
 
     self.assertEqual(failure_log, expected_failure_log)
@@ -856,3 +856,99 @@ class CITestFailureTest(wf_testcase.WaterfallTestCase):
     }
     self.assertFalse(result)
     self.assertEqual(expected_failed_steps, failed_steps.ToSerializable())
+
+  @mock.patch.object(
+      ci_failure,
+      'GetLaterBuildsWithAnySameStepFailure',
+      return_value={
+          124: ['a', 'b'],
+          125: ['a']
+      })
+  @mock.patch.object(ci_test_failure, '_GetTestLevelLogForAStepFromABuild')
+  def testGetLaterBuildsWithSameTestFailures(self, mock_log, _):
+    master_name = 'm'
+    builder_name = 'b'
+    build_number = 123
+    failure_to_culprit_map = {
+        'a': {
+            't1': 'r1',
+            't2': 'r1',
+            't3': 'r2',
+            't4': 'r2'
+        },
+        'b': {
+            't1': 'r3'
+        }
+    }
+
+    mock_log.side_effect = [{
+        't1': 'log',
+        't2': 'log',
+        't3': 'log'
+    }, {
+        't1': 'log'
+    }, {
+        't1': 'log',
+        't2': 'log',
+    }]
+
+    expected_result = {'a': set(['t1', 't2'])}
+
+    self.assertEqual(
+        expected_result,
+        ci_test_failure.GetContinuouslyFailedTestsInLaterBuilds(
+            master_name, builder_name, build_number, failure_to_culprit_map))
+
+  @mock.patch.object(
+      ci_failure,
+      'GetLaterBuildsWithAnySameStepFailure',
+      return_value={
+          124: ['a', 'b'],
+          125: ['a']
+      })
+  @mock.patch.object(ci_test_failure, '_GetTestLevelLogForAStepFromABuild')
+  def testGetLaterBuildsWithSameTestFailuresAllTestPass(self, mock_log, _):
+    master_name = 'm'
+    builder_name = 'b'
+    build_number = 123
+    failure_to_culprit_map = {
+        'a': {
+            't1': 'r1',
+            't2': 'r1',
+            't3': 'r2',
+            't4': 'r2'
+        },
+        'b': {
+            't1': 'r3'
+        }
+    }
+
+    mock_log.side_effect = [{'t5': 'log'}, None]
+
+    self.assertEqual({},
+                     ci_test_failure.GetContinuouslyFailedTestsInLaterBuilds(
+                         master_name, builder_name, build_number,
+                         failure_to_culprit_map))
+
+  @mock.patch.object(
+      ci_failure, 'GetLaterBuildsWithAnySameStepFailure', return_value={})
+  def testGetLaterBuildsWithSameTestFailuresAllStepsPass(self, _):
+    master_name = 'm'
+    builder_name = 'b'
+    build_number = 123
+    failure_to_culprit_map = {
+        'a': {
+            't1': 'r1',
+            't2': 'r1',
+            't3': 'r2',
+            't4': 'r2'
+        },
+        'b': {
+            't1': 'r3'
+        }
+    }
+
+    self.assertEqual({},
+                     ci_test_failure.GetContinuouslyFailedTestsInLaterBuilds(
+                         master_name, builder_name, build_number,
+                         failure_to_culprit_map))

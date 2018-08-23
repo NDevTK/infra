@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Logic related to examine builds and determine regression range."""
 
+from collections import defaultdict
 import json
 import logging
 
@@ -92,9 +93,11 @@ def _StartTestLevelCheckForFirstFailure(master_name, builder_name, build_number,
   return _InitiateTestLevelFirstFailure(reliable_failed_tests, failed_step)
 
 
-def _GetLogForTheSameStepFromBuild(master_name, builder_name, build_number,
-                                   step_name, http_client):
-  """Downloads swarming test results for a step from previous build."""
+def _GetTestLevelLogForAStepFromABuild(master_name, builder_name, build_number,
+                                       step_name, http_client):
+  """Downloads swarming test results for a step from a build and returns logs
+    for failed tests."""
+
   step = WfStep.Get(master_name, builder_name, build_number, step_name)
 
   if (step and step.isolated and step.log_data and
@@ -131,10 +134,6 @@ def _GetLogForTheSameStepFromBuild(master_name, builder_name, build_number,
   failed_test_log, _ = (
       test_results_service.GetFailedTestsInformationFromTestResult(test_results)
   )
-
-  _SaveIsolatedResultToStep(master_name, builder_name, build_number, step_name,
-                            failed_test_log)
-
   return failed_test_log
 
 
@@ -192,9 +191,10 @@ def _UpdateFirstFailureOnTestLevel(master_name, builder_name,
       continue
     # Checks back until farthest_first_failure or build 1, don't use build 0
     # since there might be some abnormalities in build 0.
-    failed_test_log = _GetLogForTheSameStepFromBuild(
+    failed_test_log = _GetTestLevelLogForAStepFromABuild(
         master_name, builder_name, build_number, step_name, http_client)
-
+    _SaveIsolatedResultToStep(master_name, builder_name, build_number,
+                              step_name, failed_test_log)
     if failed_test_log is None:
       # Step might not run in the build or run into an exception, keep
       # trying previous builds.
@@ -297,3 +297,69 @@ def AnyTestHasFirstTimeFailure(tests, build_number):
     if test_failure['first_failure'] == build_number:
       return True
   return False
+
+
+def GetContinuouslyFailedTestsInLaterBuilds(
+    master_name, builder_name, build_number, failure_to_culprit_map):
+  """Gets tests which continuously fail in all later builds
+  """
+  builds_with_same_failed_steps = (
+      ci_failure.GetLaterBuildsWithAnySameStepFailure(
+          master_name, builder_name, build_number,
+          failure_to_culprit_map.keys()))
+
+  if not builds_with_same_failed_steps:
+    return {}
+
+  succeed_tests = defaultdict(set)
+  remaining_steps_to_check = set(failure_to_culprit_map.keys())
+  http_client = FinditHttpClient()
+  for newer_build_number, failed_steps in (
+      builds_with_same_failed_steps.iteritems()):
+    failed_steps = set(failed_steps)
+    if not remaining_steps_to_check:
+      # Steps will still need to check if at least one of the failed tests is
+      # still failing.
+      # If all steps don't need to check, meaning all failed tests in all failed
+      # steps have passed in following builds.
+      return {}
+
+    succeeded_steps = remaining_steps_to_check - failed_steps
+    for succeeded_step in succeeded_steps:
+      # Keeps record on succeeded steps so that we don't need to check them
+      # further.
+      succeed_tests[succeeded_step] = set(
+          failure_to_culprit_map.get(succeeded_step, {}).keys())
+      remaining_steps_to_check.remove(succeeded_step)
+
+    for step_name in failed_steps & remaining_steps_to_check:
+      failed_tests_need_check = set(
+          failure_to_culprit_map.get(step_name, {}).keys())
+
+      failed_test_log = _GetTestLevelLogForAStepFromABuild(
+          master_name, builder_name, newer_build_number, step_name, http_client)
+      if not failed_test_log:
+        # Failed to get failed_tests for a failed step, treats this step as if
+        # it succeeded in the build.
+        succeed_tests[step_name] = failed_tests_need_check
+        remaining_steps_to_check.remove(step_name)
+        continue
+
+      failed_tests_in_newer_build = set(failed_test_log.keys())
+      checked_tests_that_succeeded_in_newer_build = (
+          failed_tests_need_check - failed_tests_in_newer_build)
+      if checked_tests_that_succeeded_in_newer_build:
+        succeed_tests[step_name] |= checked_tests_that_succeeded_in_newer_build
+
+      if succeed_tests[step_name] == failed_tests_need_check:
+        # All tests in the step has passed in following builds.
+        remaining_steps_to_check.remove(step_name)
+
+  tests_failing_continuously = {}
+  for step_name, test_map in failure_to_culprit_map.iteritems():
+    tests = set(test_map.keys())
+    tests_failed_all_time = tests - (succeed_tests.get(step_name) or set([]))
+    if tests_failed_all_time:
+      tests_failing_continuously[step_name] = tests_failed_all_time
+
+  return tests_failing_continuously
