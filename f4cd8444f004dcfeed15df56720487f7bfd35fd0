@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "4e212d7e_816a2950",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-08-24T21:08:13Z",
+      "side": 1,
+      "message": "Added docstring",
+      "parentUuid": "50cc0ab0_0d4f9017",
+      "range": {
+        "startLine": 96,
+        "startChar": 5,
+        "endLine": 96,
+        "endChar": 28
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "32561c0d_d41ced61",
         "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
         "patchSetId": 2
@@ -45,6 +69,30 @@
       "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c469ea06_b25277b5",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 324,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-08-24T21:08:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "32561c0d_d41ced61",
+      "range": {
+        "startLine": 324,
+        "startChar": 1,
+        "endLine": 324,
+        "endChar": 5
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "688624a9_69242cf3",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 327,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-08-24T21:08:13Z",
+      "side": 1,
+      "message": "This CL is depending on the other 2 CLs, and the function is added in https://chromium-review.googlesource.com/c/infra/infra/+/1154430/6",
+      "parentUuid": "aede6aca_a869b3e1",
+      "range": {
+        "startLine": 327,
+        "startChar": 17,
+        "endLine": 327,
+        "endChar": 53
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c343476a_5562bb94",
         "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
         "patchSetId": 2
@@ -82,6 +154,30 @@
       "writtenOn": "2018-08-23T23:24:43Z",
       "side": 1,
       "message": "I haven\u0027t been able to fully understand the algorithm yet, but I think this name is very confusing. The name indicates that it stores a list of succeeded tests or something a like, however, after reading the code, it seems that it\u0027s actually a map from steps to a set of \"failed\" tests.\n\nIf I understood correctly, it\u0027s better to be renamed.",
+      "range": {
+        "startLine": 334,
+        "startChar": 2,
+        "endLine": 334,
+        "endChar": 15
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9ffba674_77ffacc0",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 334,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-08-24T21:08:13Z",
+      "side": 1,
+      "message": "It really is succeeded tests to me. Could you tell me which part of the code makes you think it\u0027s for failed tests?",
+      "parentUuid": "c343476a_5562bb94",
       "range": {
         "startLine": 334,
         "startChar": 2,
@@ -141,6 +237,30 @@
     },
     {
       "key": {
+        "uuid": "d9f07395_ecd7bf93",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 336,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-08-24T21:08:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fe187362_ba9b62f4",
+      "range": {
+        "startLine": 336,
+        "startChar": 2,
+        "endLine": 336,
+        "endChar": 34
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8ab0c358_98ef6da8",
         "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
         "patchSetId": 2
@@ -188,6 +308,30 @@
     },
     {
       "key": {
+        "uuid": "0225d07d_5d5f8ee0",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 352,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-08-24T21:08:13Z",
+      "side": 1,
+      "message": "Good point. I\u0027ll make the check in the first CL of this chain of CLs.",
+      "parentUuid": "da5ea793_2d4f2c59",
+      "range": {
+        "startLine": 352,
+        "startChar": 10,
+        "endLine": 352,
+        "endChar": 64
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e7ef2cd1_1f5a93fa",
         "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
         "patchSetId": 2
@@ -211,6 +355,30 @@
     },
     {
       "key": {
+        "uuid": "97064915_a0500a75",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 355,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-08-24T21:08:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e7ef2cd1_1f5a93fa",
+      "range": {
+        "startLine": 355,
+        "startChar": 21,
+        "endLine": 355,
+        "endChar": 60
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "72551efb_61aa875e",
         "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
         "patchSetId": 2
@@ -222,6 +390,30 @@
       "writtenOn": "2018-08-23T23:24:43Z",
       "side": 1,
       "message": "Can we replace this with FindidHttpClient()?",
+      "range": {
+        "startLine": 360,
+        "startChar": 68,
+        "endLine": 360,
+        "endChar": 79
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9546f1e3_946c3f16",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 360,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-08-24T21:08:13Z",
+      "side": 1,
+      "message": "I\u0027d keep it as is because I use this for each build and step and I don\u0027t want to create a new instance every time",
+      "parentUuid": "72551efb_61aa875e",
       "range": {
         "startLine": 360,
         "startChar": 68,
@@ -254,6 +446,30 @@
       "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c880b6b5_3d3afb47",
+        "filename": "appengine/findit/services/test_failure/test_culprit_action.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-08-24T21:08:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fd4d6c8d_5cd9b7c5",
+      "range": {
+        "startLine": 128,
+        "startChar": 0,
+        "endLine": 130,
+        "endChar": 21
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
