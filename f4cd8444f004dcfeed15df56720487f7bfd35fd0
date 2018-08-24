@@ -117,6 +117,30 @@
     },
     {
       "key": {
+        "uuid": "fe187362_ba9b62f4",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 336,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2018-08-24T18:37:42Z",
+      "side": 1,
+      "message": "I think the point of having it here is to avoid creating it for every iteration of the loops inside. I\u0027d say we either go with the suggestion below (just inline the call to the constructor) or create a global singleton, private to this module `_HTTP_CLIENT \u003d FinditHttpClient()`\n\nI think instantiating the client is lightweight enough that we could do it at every iteration, OTOH, the http client is reusable and should not keep any state, furthermore, expensive behaviors could be later added to the instantiation code (e.g. for more detailed monitoring).\n\nI am okay with either approach, as long as we decide to stick to it going forward.",
+      "parentUuid": "619ded05_fe7f1022",
+      "range": {
+        "startLine": 336,
+        "startChar": 2,
+        "endLine": 336,
+        "endChar": 34
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8ab0c358_98ef6da8",
         "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
         "patchSetId": 2
@@ -128,6 +152,30 @@
       "writtenOn": "2018-08-23T23:24:43Z",
       "side": 1,
       "message": "Something to consider for a follow-up CL, I think the failure_to_culprit_map is very hard to follow, if it\u0027s used a lot, it\u0027s better to create a class and encapsulates the map inside it. Something like:\n\nClass FailureToCulpritMap(object):\n  def GetAllSteps(self):\n  def GetAllFailedTestsForAStep(self, step_name):\n  ...",
+      "range": {
+        "startLine": 352,
+        "startChar": 10,
+        "endLine": 352,
+        "endChar": 64
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "da5ea793_2d4f2c59",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 352,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2018-08-24T18:37:42Z",
+      "side": 1,
+      "message": "That\u0027d be good improvement for readability.",
+      "parentUuid": "8ab0c358_98ef6da8",
       "range": {
         "startLine": 352,
         "startChar": 10,
