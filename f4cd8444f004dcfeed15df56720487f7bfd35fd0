@@ -143,6 +143,30 @@
     },
     {
       "key": {
+        "uuid": "325f341c_2a02dec6",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 327,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-24T21:18:12Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "688624a9_69242cf3",
+      "range": {
+        "startLine": 327,
+        "startChar": 17,
+        "endLine": 327,
+        "endChar": 53
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c343476a_5562bb94",
         "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
         "patchSetId": 2
@@ -178,6 +202,30 @@
       "side": 1,
       "message": "It really is succeeded tests to me. Could you tell me which part of the code makes you think it\u0027s for failed tests?",
       "parentUuid": "c343476a_5562bb94",
+      "range": {
+        "startLine": 334,
+        "startChar": 2,
+        "endLine": 334,
+        "endChar": 15
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2652964b_870541d8",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 334,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-24T21:18:12Z",
+      "side": 1,
+      "message": "Maybe I\u0027m missing some context, but please see my other two comments.",
+      "parentUuid": "9ffba674_77ffacc0",
       "range": {
         "startLine": 334,
         "startChar": 2,
@@ -332,6 +380,53 @@
     },
     {
       "key": {
+        "uuid": "6d618e57_253b7762",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 352,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-24T21:18:12Z",
+      "side": 1,
+      "message": "I believe failure_to_culprit_map stores a lit of failed tests, so this essentially means:\nsucceed_tests[succeeded_step] \u003d # A set of failed tests in failure_to_culprit_map.",
+      "range": {
+        "startLine": 351,
+        "startChar": 6,
+        "endLine": 352,
+        "endChar": 64
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3073dae2_21bd22b9",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 352,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-24T21:18:12Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "0225d07d_5d5f8ee0",
+      "range": {
+        "startLine": 352,
+        "startChar": 10,
+        "endLine": 352,
+        "endChar": 64
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e7ef2cd1_1f5a93fa",
         "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
         "patchSetId": 2
@@ -419,6 +514,53 @@
         "startChar": 68,
         "endLine": 360,
         "endChar": 79
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8ad4511d_df04a87a",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 360,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-24T21:18:12Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "9546f1e3_946c3f16",
+      "range": {
+        "startLine": 360,
+        "startChar": 68,
+        "endLine": 360,
+        "endChar": 79
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d0545d0e_894c52f9",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 364,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-24T21:18:12Z",
+      "side": 1,
+      "message": "suceeded_tests[step_name] \u003d # failed tests.",
+      "range": {
+        "startLine": 364,
+        "startChar": 8,
+        "endLine": 364,
+        "endChar": 58
       },
       "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
