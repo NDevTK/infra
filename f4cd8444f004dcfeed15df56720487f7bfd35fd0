@@ -427,6 +427,30 @@
     },
     {
       "key": {
+        "uuid": "fad4e75d_a25f6c68",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 352,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-08-24T21:31:34Z",
+      "side": 1,
+      "message": "failure_to_culprit_map stores all originally failed tests, and in this function, I\u0027m comparing failures in newer builds to failure_to_culprit_map. And here, some steps in failure_to_culprit_map are not failed in in one of the newer build, so all originally failed tests in these steps succeed, so I move them to succeed_tests",
+      "parentUuid": "6d618e57_253b7762",
+      "range": {
+        "startLine": 351,
+        "startChar": 6,
+        "endLine": 352,
+        "endChar": 64
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e7ef2cd1_1f5a93fa",
         "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
         "patchSetId": 2
@@ -556,6 +580,30 @@
       "writtenOn": "2018-08-24T21:18:12Z",
       "side": 1,
       "message": "suceeded_tests[step_name] \u003d # failed tests.",
+      "range": {
+        "startLine": 364,
+        "startChar": 8,
+        "endLine": 364,
+        "endChar": 58
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a62acab5_76b47883",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 364,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-08-24T21:31:34Z",
+      "side": 1,
+      "message": "See comment above. I don\u0027t get the failure log, so I couldn\u0027t know whether the tests in this step pass or fail, or if they run at all. And to be safe, I just assume they pass and move them to succeed_tests",
+      "parentUuid": "d0545d0e_894c52f9",
       "range": {
         "startLine": 364,
         "startChar": 8,
