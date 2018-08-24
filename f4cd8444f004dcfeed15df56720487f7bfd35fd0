@@ -238,6 +238,30 @@
     },
     {
       "key": {
+        "uuid": "3e65f863_eab0e918",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 334,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-24T21:44:38Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "2652964b_870541d8",
+      "range": {
+        "startLine": 334,
+        "startChar": 2,
+        "endLine": 334,
+        "endChar": 15
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "619ded05_fe7f1022",
         "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
         "patchSetId": 2
@@ -451,6 +475,30 @@
     },
     {
       "key": {
+        "uuid": "87a94558_096190a1",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 352,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-24T21:44:38Z",
+      "side": 1,
+      "message": "Thanks for explaining, now I understand, but I did find it tricky to figure out how it works. What do you think of |failed_tests_that_succeeded_later|, or something along the line?",
+      "parentUuid": "fad4e75d_a25f6c68",
+      "range": {
+        "startLine": 351,
+        "startChar": 6,
+        "endLine": 352,
+        "endChar": 64
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e7ef2cd1_1f5a93fa",
         "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
         "patchSetId": 2
@@ -613,6 +661,30 @@
       "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4e97036_6eed532f",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 364,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-24T21:44:38Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "a62acab5_76b47883",
+      "range": {
+        "startLine": 364,
+        "startChar": 8,
+        "endLine": 364,
+        "endChar": 58
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
