@@ -499,6 +499,30 @@
     },
     {
       "key": {
+        "uuid": "e829e49a_035b2ff7",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 352,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-08-25T04:09:20Z",
+      "side": 1,
+      "message": "I agree this name should help remove confusions. Changed. Thanks",
+      "parentUuid": "87a94558_096190a1",
+      "range": {
+        "startLine": 351,
+        "startChar": 6,
+        "endLine": 352,
+        "endChar": 64
+      },
+      "revId": "f4cd8444f004dcfeed15df56720487f7bfd35fd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e7ef2cd1_1f5a93fa",
         "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
         "patchSetId": 2
