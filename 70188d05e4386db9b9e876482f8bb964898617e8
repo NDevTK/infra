@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3073afa5_36a1cb71",
+        "filename": "infra/tools/dockerbuild/dockcross.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 326,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-27T18:57:26Z",
+      "side": 1,
+      "message": "maybe link to github issue?",
+      "revId": "70188d05e4386db9b9e876482f8bb964898617e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a470cf14_c4e9a4ac",
+        "filename": "infra/tools/dockerbuild/resources/start.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-27T18:57:26Z",
+      "side": 1,
+      "message": "thanks for comments, but I still find shell not very readable. Is there a reason to prefer bash here over simple python script?",
+      "revId": "70188d05e4386db9b9e876482f8bb964898617e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b25cd0bb_b16604ae",
+        "filename": "infra/tools/dockerbuild/resources/start.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-08-27T18:57:26Z",
+      "side": 1,
+      "message": "8?",
+      "range": {
+        "startLine": 2,
+        "startChar": 15,
+        "endLine": 2,
+        "endChar": 16
+      },
+      "revId": "70188d05e4386db9b9e876482f8bb964898617e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
