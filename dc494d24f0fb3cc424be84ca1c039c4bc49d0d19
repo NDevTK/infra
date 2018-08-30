@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0b7eea50_5222029d",
+        "filename": "recipes/recipes/gsubtreed.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-08-30T01:51:15Z",
+      "side": 1,
+      "message": "Can you make these unique per repo by using buildername? I\u0027d also lose \"-work-dir\" suffix, cache/builder/\u003cbuildername\u003e. Even if they run on different VMs, cache name uniqueness will help for the persistent cache project.",
+      "range": {
+        "startLine": 61,
+        "startChar": 47,
+        "endLine": 61,
+        "endChar": 65
+      },
+      "revId": "dc494d24f0fb3cc424be84ca1c039c4bc49d0d19",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
