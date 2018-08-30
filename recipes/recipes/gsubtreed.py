@@ -57,7 +57,7 @@ def RunSteps(api):
             '--verbose',
             '--duration', str(CYCLE_TIME_SEC),
             '--max_errors', str(MAX_ERROR_COUNT),
-            '--repo_dir', api.path['start_dir'].join('gsubtreed-work-dir'),
+            '--repo_dir', api.path['cache'].join('builder', 'gsubtreed'),
             '--json_output', api.json.output(add_json_log=False),
             repo,
           ])
