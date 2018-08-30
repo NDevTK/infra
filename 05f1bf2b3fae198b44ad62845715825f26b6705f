@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b8b96382_a04ad4b4",
+        "filename": "appengine/monorail/static/js/tracker/tracker-ac.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 1053,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2018-08-30T18:26:53Z",
+      "side": 1,
+      "message": "What about this? Will it always be defined?",
+      "range": {
+        "startLine": 1053,
+        "startChar": 35,
+        "endLine": 1053,
+        "endChar": 45
+      },
+      "revId": "05f1bf2b3fae198b44ad62845715825f26b6705f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3a3aecac_94851320",
+        "filename": "appengine/monorail/static/js/tracker/tracker-ac.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 1082,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2018-08-30T18:26:53Z",
+      "side": 1,
+      "message": "Shouldn\u0027t componentDefs already be a list?",
+      "range": {
+        "startLine": 1082,
+        "startChar": 31,
+        "endLine": 1082,
+        "endChar": 37
+      },
+      "revId": "05f1bf2b3fae198b44ad62845715825f26b6705f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "297721cf_5478955f",
+        "filename": "appengine/monorail/static/js/tracker/tracker-ac.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 1125,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2018-08-30T18:26:53Z",
+      "side": 1,
+      "message": "nit: I think these extra parens are not needed",
+      "range": {
+        "startLine": 1125,
+        "startChar": 30,
+        "endLine": 1125,
+        "endChar": 31
+      },
+      "revId": "05f1bf2b3fae198b44ad62845715825f26b6705f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
