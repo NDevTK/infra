@@ -136,3 +136,26 @@ class MonitoringTest(wf_testcase.WaterfallTestCase):
         'operation': 'create',
     }
     mock_common_monitoring.assert_called_once_with(parameters)
+
+  @mock.patch.object(common_monitoring.swarming_task_durations, 'add')
+  def testRecordSwarmingTaskDuration(self, mock_mon):
+    master_name = 'm'
+    builder_name = 'b'
+    purpose = 'identify-flake'
+    status = 'pending'
+    canonical_step_name = 'a_test'
+    isolate_target_name = 'a_test'
+    duration = 100.00
+
+    monitoring.RecordSwarmingTaskDuration(master_name, builder_name, purpose,
+                                          status, canonical_step_name,
+                                          isolate_target_name, duration)
+    parameters = {
+        'master_name': master_name,
+        'builder_name': builder_name,
+        'purpose': purpose,
+        'status': status,
+        'canonical_step_name': canonical_step_name,
+        'isolate_target_name': isolate_target_name
+    }
+    mock_mon.assert_called_once_with(duration, parameters)

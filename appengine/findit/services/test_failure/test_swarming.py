@@ -26,6 +26,8 @@ from services import swarming
 from services.test_failure import test_failure_analysis
 from waterfall import waterfall_config
 
+_PURPOSE = 'identify-flake'
+
 
 @ndb.transactional
 def NeedANewSwarmingTask(master_name, builder_name, build_number, step_name,
@@ -60,7 +62,7 @@ def CreateNewSwarmingTaskRequest(runner_id, ref_task_id, ref_request,
 
   # Add additional tags.
   new_request.tags.append('ref_task_id:%s' % ref_task_id)
-  new_request.tags.append('purpose:identify-flake')
+  new_request.tags.append('purpose:%s' % _PURPOSE)
   new_request.tags.append('ref_buildnumber:%s' % build_number)
   return new_request
 
@@ -149,8 +151,30 @@ def OnSwarmingTaskTriggered(master_name, builder_name, build_number, step_name,
       task_id=task_id,
       parameters=parameters,
       canonical_step_name=canonical_step_name)
-  monitoring.OnSwarmingTaskStatusChange('trigger', 'identify-flake')
-  # TODO(crbug/869684): Use a gauge metric to track intermittent statuses.
+  monitoring.OnSwarmingTaskStatusChange('trigger', _PURPOSE)
+
+
+def _RecordWfSwarmingTaskDuration(master_name, builder_name, build_number,
+                                  step_name):
+  isolate_target_name = ci_failure.GetIsolateTargetName(
+      master_name, builder_name, build_number, step_name)
+
+  task = WfSwarmingTask.Get(master_name, builder_name, build_number, step_name)
+  canonical_step_name = (
+      task.canonical_step_name or ci_failure.GetCanonicalStepName(
+          master_name, builder_name, build_number, step_name))
+
+  if task.created_time and task.started_time:  # pragma: no branch
+    monitoring.RecordSwarmingTaskDuration(
+        master_name, builder_name, _PURPOSE, 'pending', canonical_step_name,
+        isolate_target_name,
+        (task.started_time - task.created_time).total_seconds())
+
+  if task.started_time and task.completed_time:  # pragma: no branch
+    monitoring.RecordSwarmingTaskDuration(
+        master_name, builder_name, _PURPOSE, 'running', canonical_step_name,
+        isolate_target_name,
+        (task.completed_time - task.started_time).total_seconds())
 
 
 def OnSwarmingTaskTimeout(run_swarming_task_params, task_id):
@@ -179,6 +203,8 @@ def OnSwarmingTaskTimeout(run_swarming_task_params, task_id):
     test_failure_analysis.RecordTestFailureAnalysisStateChange(
         master_name, builder_name, build_number, step_name,
         analysis_status.COMPLETED, analysis_approach_type.SWARMING)
+    _RecordWfSwarmingTaskDuration(master_name, builder_name, build_number,
+                                  step_name)
   else:
     _UpdateSwarmingTaskEntity(
         master_name,
@@ -238,6 +264,8 @@ def OnSwarmingTaskCompleted(master_name, builder_name, build_number, step_name,
   test_failure_analysis.RecordTestFailureAnalysisStateChange(
       master_name, builder_name, build_number, step_name,
       analysis_status.COMPLETED, analysis_approach_type.SWARMING)
+  _RecordWfSwarmingTaskDuration(master_name, builder_name, build_number,
+                                step_name)
   return True
 
 

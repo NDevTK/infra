@@ -131,3 +131,29 @@ def OnFlakeDetectionCreateOrUpdateIssues(operation):
     operation: Type of the operation: create and update.
   """
   monitoring.flake_detection_issues.increment({'operation': operation})
+
+
+def RecordSwarmingTaskDuration(master_name, builder_name, purpose, status,
+                               canonical_step_name, isolate_target_name,
+                               duration):
+  """Records durations of swarming tasks triggered by Findit.
+
+  Args:
+    master_name(str): Name of the master.
+    builder_name(str): Name of the builder.
+    purpose(str): Purpose of the task: identify-flake or
+      identify-regression-range.
+    status(str): Status of the task: pending or running.
+    canonical_step_name(str): canonical name of the step.
+    isolate_target_name(str): isolate target name.
+    duration(float): Duration (in seconds) of the task has been in the status.
+  """
+  monitoring.swarming_task_durations.add(
+      duration, {
+          'master_name': master_name,
+          'builder_name': builder_name,
+          'purpose': purpose,
+          'status': status,
+          'canonical_step_name': canonical_step_name,
+          'isolate_target_name': isolate_target_name
+      })
