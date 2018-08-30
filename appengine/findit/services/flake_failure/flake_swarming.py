@@ -10,6 +10,7 @@ from dto.flake_swarming_task_output import FlakeSwarmingTaskOutput
 from dto.swarming_task_error import SwarmingTaskError
 from infra_api_clients.swarming import swarming_util
 from libs import time_util
+from services import ci_failure
 from services import constants
 from services import monitoring
 from services import swarmed_test_util
@@ -17,6 +18,33 @@ from services import swarming
 from services.flake_failure import flake_test_results
 
 _FINDIT_HTTP_CLIENT = FinditHttpClient()
+_PURPOSE = 'identify-regression-range'
+
+
+def _RecordFlakeSwarmingTaskDuration(task_data, parameters):
+  master_name = parameters.master_name
+  builder_name = parameters.builder_name
+  reference_build_number = parameters.reference_build_number
+  step_name = parameters.step_name
+  isolate_target_name = ci_failure.GetIsolateTargetName(
+      master_name, builder_name, reference_build_number, step_name)
+
+  canonical_step_name = ci_failure.GetCanonicalStepName(
+      master_name, builder_name, reference_build_number, step_name)
+
+  created_time = time_util.DatetimeFromString(task_data.get('created_ts'))
+  started_time = time_util.DatetimeFromString(task_data.get('started_ts'))
+  completed_time = time_util.DatetimeFromString(task_data.get('completed_ts'))
+
+  if created_time and started_time:  # pragma: no branch
+    monitoring.RecordSwarmingTaskDuration(
+        master_name, builder_name, _PURPOSE, 'pending', canonical_step_name,
+        isolate_target_name, (started_time - created_time).total_seconds())
+
+  if started_time and completed_time:  # pragma: no branch
+    monitoring.RecordSwarmingTaskDuration(
+        master_name, builder_name, _PURPOSE, 'running', canonical_step_name,
+        isolate_target_name, (completed_time - started_time).total_seconds())
 
 
 def _ParseFlakeSwarmingTaskOutput(task_data, output_json, error, parameters):
@@ -27,6 +55,9 @@ def _ParseFlakeSwarmingTaskOutput(task_data, output_json, error, parameters):
   assert task_data
 
   iterations = parameters.iterations
+
+  # Records durations of the task.
+  _RecordFlakeSwarmingTaskDuration(task_data, parameters)
 
   if output_json:
     # Gets the total numbers of runs and number of successful runs from
@@ -138,7 +169,7 @@ def CreateNewSwarmingTaskRequest(
   new_request.properties.execution_timeout_secs = str(timeout_seconds)
 
   # Add additional tags.
-  new_request.tags.append('purpose:identify-regression-range')
+  new_request.tags.append('purpose:%s' % _PURPOSE)
 
   return new_request
 
@@ -181,6 +212,6 @@ def TriggerSwarmingTask(master_name, builder_name, reference_build_number,
       swarming.SwarmingHost(), new_request, _FINDIT_HTTP_CLIENT)
 
   # Monitoring.
-  monitoring.OnSwarmingTaskStatusChange('trigger', 'identify-regression-range')
+  monitoring.OnSwarmingTaskStatusChange('trigger', _PURPOSE)
 
   return task_id

@@ -239,6 +239,7 @@ class TestSwarmingTest(wf_testcase.WaterfallTestCase):
                               step_name)
     self.assertEqual(task.task_id, task_id)
 
+  @mock.patch.object(test_swarming, '_RecordWfSwarmingTaskDuration')
   @mock.patch.object(
       _GTEST_RESULTS, 'GetClassifiedTestResults', return_value={})
   @mock.patch.object(test_results_util, 'IsTestResultsValid', return_value=True)
@@ -282,13 +283,14 @@ class TestSwarmingTest(wf_testcase.WaterfallTestCase):
                                      step_name, analysis_status.COMPLETED,
                                      analysis_approach_type.SWARMING)
 
+  @mock.patch.object(test_swarming, '_RecordWfSwarmingTaskDuration')
   @mock.patch.object(
       swarmed_test_util,
       'GetSwarmingTaskDataAndResult',
       return_value=(None, None, 'error'))
   @mock.patch.object(test_failure_analysis,
                      'RecordTestFailureAnalysisStateChange')
-  def testOnSwarmingTaskTimeout(self, mock_mon, _):
+  def testOnSwarmingTaskTimeout(self, mock_mon, *_):
     master_name = 'm'
     builder_name = 'b'
     build_number = 16
@@ -316,6 +318,7 @@ class TestSwarmingTest(wf_testcase.WaterfallTestCase):
                                      step_name, analysis_status.ERROR,
                                      analysis_approach_type.SWARMING)
 
+  @mock.patch.object(test_swarming, '_RecordWfSwarmingTaskDuration')
   @mock.patch.object(
       _GTEST_RESULTS, 'GetClassifiedTestResults', return_value={})
   @mock.patch.object(
@@ -770,3 +773,28 @@ class TestSwarmingTest(wf_testcase.WaterfallTestCase):
     self.assertEqual(
         {}, test_swarming.GetFirstTimeTestFailuresToRunSwarmingTasks(params))
     self.assertFalse(mock_fn.called)
+
+  @mock.patch.object(ci_failure, 'GetIsolateTargetName', return_value='a_test')
+  @mock.patch.object(monitoring, 'RecordSwarmingTaskDuration')
+  def testRecordWfSwarmingTaskDuration(self, mock_mon, _):
+    master_name = 'm'
+    builder_name = 'b'
+    build_number = 15
+    step_name = 'a_test'
+    task = WfSwarmingTask.Create(master_name, builder_name, build_number,
+                                 step_name)
+    task.created_time = datetime.datetime(2018, 8, 30, 0, 0, 1)
+    task.started_time = datetime.datetime(2018, 8, 30, 0, 1, 5)
+    task.completed_time = datetime.datetime(2018, 8, 30, 0, 3, 0)
+    task.canonical_step_name = 'a_test'
+    task.put()
+
+    test_swarming._RecordWfSwarmingTaskDuration(master_name, builder_name,
+                                                build_number, step_name)
+
+    mock_mon.assert_has_calls([
+        mock.call(master_name, builder_name, 'identify-flake', 'pending',
+                  'a_test', 'a_test', 64.0),
+        mock.call(master_name, builder_name, 'identify-flake', 'running',
+                  'a_test', 'a_test', 115.0)
+    ])
