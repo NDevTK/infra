@@ -102,6 +102,8 @@
    };
 </script>
 
+[include "polymer-header.ezt"]
+
 [include "maintabs.ezt" arg0 arg1]
 
 [include "banner_message.ezt"]

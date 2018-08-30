@@ -59,6 +59,7 @@ def GenerateToken(user_id, servlet_path, token_time=None):
     ValueError: if the XSRF secret was not configured.
   """
   token_time = token_time or GetRoundedTime()
+  print secrets_svc.GetXSRFKey()
   digester = hmac.new(secrets_svc.GetXSRFKey())
   digester.update(str(user_id))
   digester.update(DELIMITER)
