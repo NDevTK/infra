@@ -47,6 +47,30 @@
       "revId": "dc494d24f0fb3cc424be84ca1c039c4bc49d0d19",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e77d29a1_06d2ffc1",
+        "filename": "recipes/recipes/gsubtreed.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-08-30T02:00:38Z",
+      "side": 1,
+      "message": "Oh, in that case work-dir was probably fine, sorry for the inconvenience.",
+      "parentUuid": "78a44fe4_a0fa99f8",
+      "range": {
+        "startLine": 61,
+        "startChar": 47,
+        "endLine": 61,
+        "endChar": 65
+      },
+      "revId": "dc494d24f0fb3cc424be84ca1c039c4bc49d0d19",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
