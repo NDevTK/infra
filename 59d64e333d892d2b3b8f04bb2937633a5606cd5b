@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bc6f1149_d8f7eaa0",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-08-30T23:31:43Z",
+      "side": 1,
+      "message": "Would you mind adding a description how these are going to be used? Is it possible to monitor on Swarming side?",
+      "range": {
+        "startLine": 7,
+        "startChar": 13,
+        "endLine": 7,
+        "endChar": 52
+      },
+      "revId": "59d64e333d892d2b3b8f04bb2937633a5606cd5b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
