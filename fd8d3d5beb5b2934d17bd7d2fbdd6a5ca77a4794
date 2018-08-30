@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "82c00eb2_03975ade",
+        "filename": "appengine/monorail/api/sitewide_servicer.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-08-30T22:35:56Z",
+      "side": 1,
+      "message": "Nit: Needs period at end of sentence.",
+      "revId": "fd8d3d5beb5b2934d17bd7d2fbdd6a5ca77a4794",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ac853fb3_ddc65b5b",
+        "filename": "appengine/monorail/api/sitewide_servicer.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-08-30T22:35:56Z",
+      "side": 1,
+      "message": "\"we token\" -\u003e \"the token\".\nI like this additional validation.  I don\u0027t think that was present in the old JSON servlet.",
+      "revId": "fd8d3d5beb5b2934d17bd7d2fbdd6a5ca77a4794",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
