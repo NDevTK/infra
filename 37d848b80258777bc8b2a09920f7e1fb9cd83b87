@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "062176ad_abd9ae72",
+        "filename": "appengine/findit/services/flake_detection/flake_report_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-08-30T17:25:50Z",
+      "side": 1,
+      "message": "Maybe just \"Wrong flake detection for test.name\"?\n\nWe need to make sure such bugs are filtered out when we search Monorail for existing flake bugs.",
+      "range": {
+        "startLine": 72,
+        "startChar": 13,
+        "endLine": 72,
+        "endChar": 75
+      },
+      "revId": "37d848b80258777bc8b2a09920f7e1fb9cd83b87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
