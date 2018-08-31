@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a7310e0_a065d44c",
+        "filename": "appengine/findit/services/flake_failure/flake_swarming.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-31T20:47:51Z",
+      "side": 1,
+      "message": "Unnecessary comment.",
+      "range": {
+        "startLine": 59,
+        "startChar": 0,
+        "endLine": 59,
+        "endChar": 33
+      },
+      "revId": "a922507cc386aa12ce85517ed0bfeb5aff0faf30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0f87dace_a23fc2df",
+        "filename": "appengine/findit/services/test_failure/test_swarming.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-08-31T20:47:51Z",
+      "side": 1,
+      "message": "These are duplicate logic between flake_swarming and test_swarming, should we move them to some common place?",
+      "range": {
+        "startLine": 163,
+        "startChar": 0,
+        "endLine": 177,
+        "endChar": 66
+      },
+      "revId": "a922507cc386aa12ce85517ed0bfeb5aff0faf30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
