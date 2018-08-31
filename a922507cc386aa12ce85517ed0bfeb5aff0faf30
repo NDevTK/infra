@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "e4864ad6_c4f6f2e7",
+        "filename": "appengine/findit/services/flake_failure/flake_swarming.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2018-08-31T21:16:32Z",
+      "side": 1,
+      "message": "Will this be called only once per task? Or once per state change of the task?",
+      "revId": "a922507cc386aa12ce85517ed0bfeb5aff0faf30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "9a7310e0_a065d44c",
         "filename": "appengine/findit/services/flake_failure/flake_swarming.py",
         "patchSetId": 2
