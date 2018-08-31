@@ -22,6 +22,30 @@
       "revId": "59d64e333d892d2b3b8f04bb2937633a5606cd5b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fa697739_2f9c6407",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-08-31T00:01:57Z",
+      "side": 1,
+      "message": "Description change done.\n\nFor getting metrics from swarming, there is a \u0027completed task durations\u0027 I can use, but there is not some info that might  be interesting for us:  what are the durations for tasks with different purpose, or what are durations for tasks for different step, etc.",
+      "parentUuid": "bc6f1149_d8f7eaa0",
+      "range": {
+        "startLine": 7,
+        "startChar": 13,
+        "endLine": 7,
+        "endChar": 52
+      },
+      "revId": "59d64e333d892d2b3b8f04bb2937633a5606cd5b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
