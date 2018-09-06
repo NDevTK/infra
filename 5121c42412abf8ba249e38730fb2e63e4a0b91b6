@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "668c47e6_c3db06a2",
+        "filename": "appengine/monorail/templates/framework/master-header.ezt",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-09-06T16:59:04Z",
+      "side": 1,
+      "message": "Could this be put back in the footer files rather than in \u003chead\u003e?  Loading a JS file in \u003chead\u003e blocks rendering of the page.  \n\nYou would also need to move the initialization of prpcClient to the footer. It would execute after the page is parsed, but if you keep it outside of a runOnLoad() call then it should execute before other blocks of code that might need prpcClient.",
+      "revId": "5121c42412abf8ba249e38730fb2e63e4a0b91b6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
