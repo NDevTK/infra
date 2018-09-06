@@ -2,6 +2,52 @@
   "comments": [
     {
       "key": {
+        "uuid": "22249918_6b538e91",
+        "filename": "appengine/monorail/static/js/prpc.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-09-06T17:25:00Z",
+      "side": 1,
+      "message": "IMO this library shouldn\u0027t handle UI - maybe it could emit an event that a root page handler could use and show a message?",
+      "range": {
+        "startLine": 43,
+        "startChar": 26,
+        "endLine": 43,
+        "endChar": 78
+      },
+      "revId": "5121c42412abf8ba249e38730fb2e63e4a0b91b6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8b557e7d_88f249c3",
+        "filename": "appengine/monorail/static/js/prpc.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-09-06T17:25:00Z",
+      "side": 1,
+      "message": "nit: trailing comma here",
+      "range": {
+        "startLine": 54,
+        "startChar": 25,
+        "endLine": 54,
+        "endChar": 26
+      },
+      "revId": "5121c42412abf8ba249e38730fb2e63e4a0b91b6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "668c47e6_c3db06a2",
         "filename": "appengine/monorail/templates/framework/master-header.ezt",
         "patchSetId": 2
@@ -13,6 +59,47 @@
       "writtenOn": "2018-09-06T16:59:04Z",
       "side": 1,
       "message": "Could this be put back in the footer files rather than in \u003chead\u003e?  Loading a JS file in \u003chead\u003e blocks rendering of the page.  \n\nYou would also need to move the initialization of prpcClient to the footer. It would execute after the page is parsed, but if you keep it outside of a runOnLoad() call then it should execute before other blocks of code that might need prpcClient.",
+      "revId": "5121c42412abf8ba249e38730fb2e63e4a0b91b6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "888aefa1_c64a127a",
+        "filename": "appengine/monorail/templates/framework/master-header.ezt",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-09-06T17:25:00Z",
+      "side": 1,
+      "message": "+1 these \u003cscripts\u003e should be back in the footer and please also add back `async` and `defer`",
+      "parentUuid": "668c47e6_c3db06a2",
+      "revId": "5121c42412abf8ba249e38730fb2e63e4a0b91b6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c4c93562_91dd6a22",
+        "filename": "appengine/monorail/templates/framework/polymer-header.ezt",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-09-06T17:25:00Z",
+      "side": 1,
+      "message": "nit: double space here",
+      "range": {
+        "startLine": 10,
+        "startChar": 30,
+        "endLine": 10,
+        "endChar": 32
+      },
       "revId": "5121c42412abf8ba249e38730fb2e63e4a0b91b6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
