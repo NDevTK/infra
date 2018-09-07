@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "ca09119c_71b56ca9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-09-07T22:15:47Z",
+      "side": 1,
+      "message": "Before deploying to prod, let\u0027s deploy to staging and check whether the endpoint path changes or not. I could verify that for you.\n\nFor prod, it is:\nhttps://apis-explorer.appspot.com/apis-explorer/?base\u003dhttps://findit-for-me.appspot.com/_ah/api#p/findit/v1/findit.buildfailure",
+      "parentUuid": "a6f47fab_617a6f32",
+      "range": {
+        "startLine": 9,
+        "startChar": 19,
+        "endLine": 9,
+        "endChar": 32
+      },
+      "revId": "2950e7a234abc6f7f4cc20b9655958ce1d5efc6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f747e6cb_b150ca46",
         "filename": "appengine/findit/services/apis.py",
         "patchSetId": 1
