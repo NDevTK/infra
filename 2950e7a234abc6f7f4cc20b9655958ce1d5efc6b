@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "a6f47fab_617a6f32",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-09-07T22:13:09Z",
+      "side": 1,
+      "message": "I plan to create a separate CL, but maybe it\u0027s better to just make the change in this one.",
+      "parentUuid": "0103ad51_b8113081",
+      "range": {
+        "startLine": 9,
+        "startChar": 19,
+        "endLine": 9,
+        "endChar": 32
+      },
+      "revId": "2950e7a234abc6f7f4cc20b9655958ce1d5efc6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f747e6cb_b150ca46",
         "filename": "appengine/findit/services/apis.py",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "431e5566_e6deff40",
+        "filename": "appengine/findit/services/apis.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-09-07T22:13:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f747e6cb_b150ca46",
+      "range": {
+        "startLine": 34,
+        "startChar": 61,
+        "endLine": 34,
+        "endChar": 62
+      },
+      "revId": "2950e7a234abc6f7f4cc20b9655958ce1d5efc6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c85d4896_62e11e38",
         "filename": "appengine/findit/services/apis.py",
         "patchSetId": 1
@@ -68,6 +116,30 @@
       "revId": "2950e7a234abc6f7f4cc20b9655958ce1d5efc6b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "06c80a75_3dfaaa91",
+        "filename": "appengine/findit/services/apis.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-09-07T22:13:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c85d4896_62e11e38",
+      "range": {
+        "startLine": 37,
+        "startChar": 26,
+        "endLine": 37,
+        "endChar": 31
+      },
+      "revId": "2950e7a234abc6f7f4cc20b9655958ce1d5efc6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
