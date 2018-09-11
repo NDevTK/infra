@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e5f8a74d_ff101f66",
+        "filename": "recipes/recipe_modules/third_party_packages_ng/build.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-09-11T23:59:55Z",
+      "side": 1,
+      "message": "spaces",
+      "range": {
+        "startLine": 30,
+        "startChar": 14,
+        "endLine": 30,
+        "endChar": 15
+      },
+      "revId": "f6220235e073bd7c27afd8d13e37ccc5648d99ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
