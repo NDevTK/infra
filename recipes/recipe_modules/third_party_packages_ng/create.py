@@ -5,6 +5,7 @@
 from . import spec_pb2
 
 from . import source
+from . import build
 
 from .workdir import Workdir
 
@@ -74,9 +75,18 @@ def build_resolved_spec(api, spec, version, spec_lookup, cache):
             lambda spec, version: build_resolved_spec(
               api, spec, version, spec_lookup, cache))
 
-        # TODO(iannucci): build
+        if spec.create_pb.HasField("build"):
+          with api.step.nest('run installation'):
+            build.run_installation(api, workdir, spec)
+          installed_prefix = workdir.output_prefix
+        else:
+          installed_prefix = workdir.checkout
 
-        # TODO(iannucci): package
+        # Package stage
+        cipd_spec.build(installed_prefix,
+                        spec_pb2.Spec.Create.Package.InstallMode.Name(
+                          spec.create_pb.package.install_mode),
+                        spec.create_pb.package.version_file)
 
         # TODO(iannucci): verify
 
