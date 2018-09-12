@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c647e696_9d5653b9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-09-12T05:58:53Z",
+      "side": 1,
+      "message": "would you mind updating on how it will be used?",
+      "range": {
+        "startLine": 9,
+        "startChar": 20,
+        "endLine": 9,
+        "endChar": 28
+      },
+      "revId": "abf5326cc1053bc4b813aa4a7c62c66dcd7f7265",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bc035b6b_017ed85e",
+        "filename": "appengine/findit/model/flake/analysis/master_flake_analysis.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 635,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-09-12T05:58:53Z",
+      "side": 1,
+      "message": "Is it the build id of the original build, or the mapped build on CI waterfall? Should it be added to BaseBuildModel instead?",
+      "range": {
+        "startLine": 634,
+        "startChar": 2,
+        "endLine": 635,
+        "endChar": 46
+      },
+      "revId": "abf5326cc1053bc4b813aa4a7c62c66dcd7f7265",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
