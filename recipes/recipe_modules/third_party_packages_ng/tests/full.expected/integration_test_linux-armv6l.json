@@ -17,6 +17,7 @@
       "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/[CACHE]/builder/package_repo/already_uploaded/3pp.pb@@@",
       "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/[CACHE]/builder/package_repo/bottom_dep/3pp.pb@@@",
       "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/[CACHE]/builder/package_repo/dep/3pp.pb@@@",
+      "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/[CACHE]/builder/package_repo/fetch_and_package/3pp.pb@@@",
       "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/[CACHE]/builder/package_repo/pkg/3pp.pb@@@",
       "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/[CACHE]/builder/package_repo/posix_tool/3pp.pb@@@",
       "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/[CACHE]/builder/package_repo/tool/3pp.pb@@@",
@@ -75,6 +76,23 @@
     ],
     "infra_step": true,
     "name": "load package specs.read 'dep'",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]/builder/package_repo/[CACHE]/builder/package_repo/fetch_and_package/3pp.pb",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "load package specs.read 'fetch_and_package'",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -257,7 +275,7 @@
       "_3PP_PLATFORM": "linux-armv6l",
       "_3PP_VERSION": "1.0"
     },
-    "name": "building bottom_dep.fetch sources",
+    "name": "building bottom_dep.prep checkout",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -280,7 +298,7 @@
       "_3PP_VERSION": "1.0"
     },
     "infra_step": true,
-    "name": "building bottom_dep.fetch sources.mkdir -p [workdir]/checkout/",
+    "name": "building bottom_dep.prep checkout.mkdir -p [workdir]/checkout/",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -301,7 +319,7 @@
       "_3PP_PLATFORM": "linux-armv6l",
       "_3PP_VERSION": "1.0"
     },
-    "name": "building bottom_dep.fetch sources.ensure_installed",
+    "name": "building bottom_dep.prep checkout.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -334,9 +352,340 @@
       "_3PP_VERSION": "1.0"
     },
     "infra_step": true,
-    "name": "building bottom_dep.fetch sources.copy package definition",
+    "name": "building bottom_dep.prep checkout.copy package definition",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "env": {
+      "_3PP_PACKAGE_NAME": "bottom_dep",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": "1.0"
+    },
+    "name": "building bottom_dep.run installation",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_PACKAGE_REPO[infra]/run.py",
+      "infra.tools.dockerbuild",
+      "run",
+      "--platform",
+      "linux-armv6",
+      "--workdir",
+      "[START_DIR]/3pp/wd/bottom_dep/linux-armv6l/1.0",
+      "--env-prefix",
+      "PATH",
+      "[START_DIR]/3pp/wd/bottom_dep/linux-armv6l/1.0/tools_prefix",
+      "--env",
+      "_3PP_PLATFORM",
+      "linux-armv6l",
+      "--env",
+      "_3PP_PACKAGE_NAME",
+      "bottom_dep",
+      "--env",
+      "_3PP_VERSION",
+      "1.0",
+      "--",
+      "bash",
+      "[START_DIR]/3pp/wd/bottom_dep/linux-armv6l/1.0/checkout/.3pp/bottom_dep/install.sh",
+      "[START_DIR]/3pp/wd/bottom_dep/linux-armv6l/1.0/out",
+      "[START_DIR]/3pp/wd/bottom_dep/linux-armv6l/1.0/deps_prefix"
+    ],
+    "cwd": "[START_DIR]/3pp/wd/bottom_dep/linux-armv6l/1.0/checkout",
+    "env": {
+      "_3PP_PACKAGE_NAME": "bottom_dep",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": "1.0"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/3pp/wd/bottom_dep/linux-armv6l/1.0/tools_prefix"
+      ]
+    },
+    "name": "building bottom_dep.run installation.do install",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-build",
+      "-pkg-def",
+      "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"prefix/deps/bottom_dep/linux-armv6l\", \"root\": \"[START_DIR]/3pp/wd/bottom_dep/linux-armv6l/1.0/out\"}",
+      "-out",
+      "[TMP_BASE]/tmp_tmp_1",
+      "-hash-algo",
+      "sha256",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "_3PP_PACKAGE_NAME": "bottom_dep",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": "1.0"
+    },
+    "name": "building bottom_dep.build prefix/deps/bottom_dep/linux-armv6l",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"prefix/deps/bottom_dep/linux-armv6l\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/3pp_cipd/prefix/deps/bottom_dep/linux-armv6l"
+    ],
+    "env": {
+      "_3PP_PACKAGE_NAME": "bottom_dep",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": "1.0"
+    },
+    "infra_step": true,
+    "name": "building bottom_dep.ensure cipd pkg cache exists",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "move",
+      "[TMP_BASE]/tmp_tmp_1",
+      "[CACHE]/3pp_cipd/prefix/deps/bottom_dep/linux-armv6l/40-chars-fake-of-the-package-instance_id"
+    ],
+    "env": {
+      "_3PP_PACKAGE_NAME": "bottom_dep",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": "1.0"
+    },
+    "infra_step": true,
+    "name": "building bottom_dep.mv built cipd pkg to cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "building fetch_and_package"
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "[CACHE]/builder/package_repo/fetch_and_package/fetch.py",
+      "latest"
+    ],
+    "env": {
+      "_3PP_PACKAGE_NAME": "fetch_and_package",
+      "_3PP_PLATFORM": "linux-armv6l"
+    },
+    "name": "building fetch_and_package.fetch.py latest",
+    "stdout": "/path/to/tmp/",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@resolved version: @@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "describe",
+      "tools/fetch_and_package/linux-armv6l",
+      "-version",
+      "version:",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "_3PP_PACKAGE_NAME": "fetch_and_package",
+      "_3PP_PLATFORM": "linux-armv6l"
+    },
+    "name": "building fetch_and_package.cipd describe tools/fetch_and_package/linux-armv6l",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "step returned non-zero exit code: 1",
+      "@@@STEP_TEXT@tag 'version:' not found@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"error\": \"no such tag\", @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": null@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/3pp/wd/fetch_and_package/linux-armv6l"
+    ],
+    "env": {
+      "_3PP_PACKAGE_NAME": "fetch_and_package",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": ""
+    },
+    "infra_step": true,
+    "name": "building fetch_and_package.mkdir -p [workdir]",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "env": {
+      "_3PP_PACKAGE_NAME": "fetch_and_package",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": ""
+    },
+    "name": "building fetch_and_package.prep checkout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/3pp/wd/fetch_and_package/linux-armv6l/checkout"
+    ],
+    "env": {
+      "_3PP_PACKAGE_NAME": "fetch_and_package",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": ""
+    },
+    "infra_step": true,
+    "name": "building fetch_and_package.prep checkout.mkdir -p [workdir]/checkout/",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "[CACHE]/builder/package_repo/fetch_and_package/fetch.py",
+      "checkout",
+      "[START_DIR]/3pp/wd/fetch_and_package/linux-armv6l/checkout"
+    ],
+    "env": {
+      "_3PP_PACKAGE_NAME": "fetch_and_package",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": ""
+    },
+    "name": "building fetch_and_package.prep checkout.fetch.py checkout [START_DIR]/3pp/wd/fetch_and_package/linux-armv6l/checkout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-build",
+      "-pkg-def",
+      "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"tools/fetch_and_package/linux-armv6l\", \"root\": \"[START_DIR]/3pp/wd/fetch_and_package/linux-armv6l/checkout\"}",
+      "-out",
+      "[TMP_BASE]/tmp_tmp_2",
+      "-hash-algo",
+      "sha256",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "_3PP_PACKAGE_NAME": "fetch_and_package",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": ""
+    },
+    "name": "building fetch_and_package.build tools/fetch_and_package/linux-armv6l",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"tools/fetch_and_package/linux-armv6l\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/3pp_cipd/tools/fetch_and_package/linux-armv6l"
+    ],
+    "env": {
+      "_3PP_PACKAGE_NAME": "fetch_and_package",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": ""
+    },
+    "infra_step": true,
+    "name": "building fetch_and_package.ensure cipd pkg cache exists",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "move",
+      "[TMP_BASE]/tmp_tmp_2",
+      "[CACHE]/3pp_cipd/tools/fetch_and_package/linux-armv6l/40-chars-fake-of-the-package-instance_id"
+    ],
+    "env": {
+      "_3PP_PACKAGE_NAME": "fetch_and_package",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": ""
+    },
+    "infra_step": true,
+    "name": "building fetch_and_package.mv built cipd pkg to cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
@@ -358,7 +707,7 @@
     "stdout": "/path/to/tmp/",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_TEXT@resolved version: 2.0.0@@@"
+      "@@@STEP_TEXT@resolved version: @@@"
     ]
   },
   {
@@ -367,7 +716,7 @@
       "describe",
       "prefix/tools/pkg/linux-armv6l",
       "-version",
-      "version:2.0.0",
+      "version:",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -379,7 +728,7 @@
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "step returned non-zero exit code: 1",
-      "@@@STEP_TEXT@tag 'version:2.0.0' not found@@@",
+      "@@@STEP_TEXT@tag 'version:' not found@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"error\": \"no such tag\", @@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": null@@@",
@@ -397,12 +746,12 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]/3pp/wd/pkg/linux-armv6l/2.0.0"
+      "[START_DIR]/3pp/wd/pkg/linux-armv6l"
     ],
     "env": {
       "_3PP_PACKAGE_NAME": "pkg",
       "_3PP_PLATFORM": "linux-armv6l",
-      "_3PP_VERSION": "2.0.0"
+      "_3PP_VERSION": ""
     },
     "infra_step": true,
     "name": "building pkg.mkdir -p [workdir]",
@@ -415,9 +764,9 @@
     "env": {
       "_3PP_PACKAGE_NAME": "pkg",
       "_3PP_PLATFORM": "linux-armv6l",
-      "_3PP_VERSION": "2.0.0"
+      "_3PP_VERSION": ""
     },
-    "name": "building pkg.fetch sources",
+    "name": "building pkg.prep checkout",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -427,9 +776,9 @@
     "env": {
       "_3PP_PACKAGE_NAME": "pkg",
       "_3PP_PLATFORM": "linux-armv6l",
-      "_3PP_VERSION": "2.0.0"
+      "_3PP_VERSION": ""
     },
-    "name": "building pkg.fetch sources.installing tools",
+    "name": "building pkg.prep checkout.installing tools",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -439,9 +788,9 @@
     "env": {
       "_3PP_PACKAGE_NAME": "pkg",
       "_3PP_PLATFORM": "linux-armv6l",
-      "_3PP_VERSION": "2.0.0"
+      "_3PP_VERSION": ""
     },
-    "name": "building pkg.fetch sources.installing tools.building tool",
+    "name": "building pkg.prep checkout.installing tools.building tool",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -458,10 +807,10 @@
       "_3PP_PACKAGE_NAME": "tool",
       "_3PP_PATCH_VERSION": "chops.1",
       "_3PP_PLATFORM": "linux-amd64",
-      "_3PP_VERSION": "2.0.0"
+      "_3PP_VERSION": ""
     },
     "infra_step": true,
-    "name": "building pkg.fetch sources.installing tools.building tool.git ls-remote",
+    "name": "building pkg.prep checkout.installing tools.building tool.git ls-remote",
     "stdout": "/path/to/tmp/",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@4@@@",
@@ -474,24 +823,24 @@
       "pkg-fetch",
       "prefix/build_tools/tool/linux-amd64",
       "-version",
-      "resolved-instance_id-of-1.4.1.chops.1---",
+      "40-chars-fake-of-the-package-instance_id",
       "-out",
-      "[CACHE]/3pp_cipd/prefix/build_tools/tool/linux-amd64/resolved-instance_id-of-1.4.1.chops.1---",
+      "[CACHE]/3pp_cipd/prefix/build_tools/tool/linux-amd64/40-chars-fake-of-the-package-instance_id",
       "-json-output",
       "/path/to/tmp/json"
     ],
     "env": {
       "_3PP_PACKAGE_NAME": "pkg",
       "_3PP_PLATFORM": "linux-armv6l",
-      "_3PP_VERSION": "2.0.0"
+      "_3PP_VERSION": ""
     },
-    "name": "building pkg.fetch sources.installing tools.cipd pkg-fetch prefix/build_tools/tool/linux-amd64",
+    "name": "building pkg.prep checkout.installing tools.cipd pkg-fetch prefix/build_tools/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
-      "@@@STEP_TEXT@prefix/build_tools/tool/linux-amd64 resolved-instance_id-of-1.4.1.chops.1---@@@",
+      "@@@STEP_TEXT@prefix/build_tools/tool/linux-amd64 40-chars-fake-of-the-package-instance_id@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-1.4.1.chops.1---\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
       "@@@STEP_LOG_LINE@json.output@    \"package\": \"prefix/build_tools/tool/linux-amd64\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
@@ -502,24 +851,24 @@
     "cmd": [
       "cipd",
       "pkg-deploy ",
-      "[CACHE]/3pp_cipd/prefix/build_tools/tool/linux-amd64/resolved-instance_id-of-1.4.1.chops.1---",
+      "[CACHE]/3pp_cipd/prefix/build_tools/tool/linux-amd64/40-chars-fake-of-the-package-instance_id",
       "-root",
-      "[START_DIR]/3pp/wd/pkg/linux-armv6l/2.0.0/tools_prefix",
+      "[START_DIR]/3pp/wd/pkg/linux-armv6l/tools_prefix",
       "-json-output",
       "/path/to/tmp/json"
     ],
     "env": {
       "_3PP_PACKAGE_NAME": "pkg",
       "_3PP_PLATFORM": "linux-armv6l",
-      "_3PP_VERSION": "2.0.0"
+      "_3PP_VERSION": ""
     },
-    "name": "building pkg.fetch sources.installing tools.cipd pkg-deploy [CACHE]/3pp_cipd/prefix/build_tools/tool/linux-amd64/resolved-instance_id-of-1.4.1.chops.1---",
+    "name": "building pkg.prep checkout.installing tools.cipd pkg-deploy [CACHE]/3pp_cipd/prefix/build_tools/tool/linux-amd64/40-chars-fake-of-the-package-instance_id",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-version/of/resol\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"pkg/name/of/resolved-instance_id-of-1.4.1.chops.1---\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-version/of/40-ch\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"pkg/name/of/40-chars-fake-of-the-package-instance_id\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
@@ -530,9 +879,9 @@
     "env": {
       "_3PP_PACKAGE_NAME": "pkg",
       "_3PP_PLATFORM": "linux-armv6l",
-      "_3PP_VERSION": "2.0.0"
+      "_3PP_VERSION": ""
     },
-    "name": "building pkg.fetch sources.installing deps",
+    "name": "building pkg.prep checkout.installing deps",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -542,9 +891,9 @@
     "env": {
       "_3PP_PACKAGE_NAME": "pkg",
       "_3PP_PLATFORM": "linux-armv6l",
-      "_3PP_VERSION": "2.0.0"
+      "_3PP_VERSION": ""
     },
-    "name": "building pkg.fetch sources.installing deps.building dep",
+    "name": "building pkg.prep checkout.installing deps.building dep",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -562,9 +911,9 @@
     "env": {
       "_3PP_PACKAGE_NAME": "dep",
       "_3PP_PLATFORM": "linux-armv6l",
-      "_3PP_VERSION": "2.0.0"
+      "_3PP_VERSION": ""
     },
-    "name": "building pkg.fetch sources.installing deps.building dep.cipd describe prefix/deps/dep/linux-armv6l",
+    "name": "building pkg.prep checkout.installing deps.building dep.cipd describe prefix/deps/dep/linux-armv6l",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@4@@@",
       "step returned non-zero exit code: 1",
@@ -594,7 +943,7 @@
       "_3PP_VERSION": "1.0.0"
     },
     "infra_step": true,
-    "name": "building pkg.fetch sources.installing deps.building dep.mkdir -p [workdir]",
+    "name": "building pkg.prep checkout.installing deps.building dep.mkdir -p [workdir]",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@4@@@"
     ]
@@ -606,7 +955,7 @@
       "_3PP_PLATFORM": "linux-armv6l",
       "_3PP_VERSION": "1.0.0"
     },
-    "name": "building pkg.fetch sources.installing deps.building dep.fetch sources",
+    "name": "building pkg.prep checkout.installing deps.building dep.prep checkout",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@4@@@"
     ]
@@ -618,7 +967,7 @@
       "_3PP_PLATFORM": "linux-armv6l",
       "_3PP_VERSION": "1.0.0"
     },
-    "name": "building pkg.fetch sources.installing deps.building dep.fetch sources.installing tools",
+    "name": "building pkg.prep checkout.installing deps.building dep.prep checkout.installing tools",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@5@@@"
     ]
@@ -627,7 +976,7 @@
     "cmd": [
       "cipd",
       "pkg-deploy ",
-      "[CACHE]/3pp_cipd/prefix/build_tools/tool/linux-amd64/resolved-instance_id-of-1.4.1.chops.1---",
+      "[CACHE]/3pp_cipd/prefix/build_tools/tool/linux-amd64/40-chars-fake-of-the-package-instance_id",
       "-root",
       "[START_DIR]/3pp/wd/dep/linux-armv6l/1.0.0/tools_prefix",
       "-json-output",
@@ -638,13 +987,13 @@
       "_3PP_PLATFORM": "linux-armv6l",
       "_3PP_VERSION": "1.0.0"
     },
-    "name": "building pkg.fetch sources.installing deps.building dep.fetch sources.installing tools.cipd pkg-deploy [CACHE]/3pp_cipd/prefix/build_tools/tool/linux-amd64/resolved-instance_id-of-1.4.1.chops.1---",
+    "name": "building pkg.prep checkout.installing deps.building dep.prep checkout.installing tools.cipd pkg-deploy [CACHE]/3pp_cipd/prefix/build_tools/tool/linux-amd64/40-chars-fake-of-the-package-instance_id",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@6@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-version/of/resol\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"pkg/name/of/resolved-instance_id-of-1.4.1.chops.1---\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-version/of/40-ch\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"pkg/name/of/40-chars-fake-of-the-package-instance_id\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
@@ -668,7 +1017,7 @@
       "_3PP_VERSION": "1.0.0"
     },
     "infra_step": true,
-    "name": "building pkg.fetch sources.installing deps.building dep.fetch sources.mkdir -p [workdir]/checkout/",
+    "name": "building pkg.prep checkout.installing deps.building dep.prep checkout.mkdir -p [workdir]/checkout/",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@5@@@"
     ]
@@ -689,7 +1038,7 @@
       "_3PP_PLATFORM": "linux-armv6l",
       "_3PP_VERSION": "1.0.0"
     },
-    "name": "building pkg.fetch sources.installing deps.building dep.fetch sources.ensure_installed",
+    "name": "building pkg.prep checkout.installing deps.building dep.prep checkout.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@5@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -722,7 +1071,64 @@
       "_3PP_VERSION": "1.0.0"
     },
     "infra_step": true,
-    "name": "building pkg.fetch sources.installing deps.building dep.fetch sources.copy package definition",
+    "name": "building pkg.prep checkout.installing deps.building dep.prep checkout.copy package definition",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@5@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "env": {
+      "_3PP_PACKAGE_NAME": "dep",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": "1.0.0"
+    },
+    "name": "building pkg.prep checkout.installing deps.building dep.run installation",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_PACKAGE_REPO[infra]/run.py",
+      "infra.tools.dockerbuild",
+      "run",
+      "--platform",
+      "linux-armv6",
+      "--workdir",
+      "[START_DIR]/3pp/wd/dep/linux-armv6l/1.0.0",
+      "--env-prefix",
+      "PATH",
+      "[START_DIR]/3pp/wd/dep/linux-armv6l/1.0.0/tools_prefix",
+      "--env",
+      "_3PP_PLATFORM",
+      "linux-armv6l",
+      "--env",
+      "_3PP_PACKAGE_NAME",
+      "dep",
+      "--env",
+      "_3PP_VERSION",
+      "1.0.0",
+      "--",
+      "bash",
+      "[START_DIR]/3pp/wd/dep/linux-armv6l/1.0.0/checkout/.3pp/dep/install.sh",
+      "[START_DIR]/3pp/wd/dep/linux-armv6l/1.0.0/out",
+      "[START_DIR]/3pp/wd/dep/linux-armv6l/1.0.0/deps_prefix"
+    ],
+    "cwd": "[START_DIR]/3pp/wd/dep/linux-armv6l/1.0.0/checkout",
+    "env": {
+      "_3PP_PACKAGE_NAME": "dep",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": "1.0.0"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/3pp/wd/dep/linux-armv6l/1.0.0/tools_prefix"
+      ]
+    },
+    "name": "building pkg.prep checkout.installing deps.building dep.run installation.do install",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@5@@@"
     ]
@@ -730,27 +1136,27 @@
   {
     "cmd": [
       "cipd",
-      "pkg-fetch",
-      "prefix/deps/dep/linux-armv6l",
-      "-version",
-      "1.0.0",
+      "pkg-build",
+      "-pkg-def",
+      "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"prefix/deps/dep/linux-armv6l\", \"root\": \"[START_DIR]/3pp/wd/dep/linux-armv6l/1.0.0/out\"}",
       "-out",
-      "[TMP_BASE]/tmp_tmp_1",
+      "[TMP_BASE]/tmp_tmp_3",
+      "-hash-algo",
+      "sha256",
       "-json-output",
       "/path/to/tmp/json"
     ],
     "env": {
-      "_3PP_PACKAGE_NAME": "pkg",
+      "_3PP_PACKAGE_NAME": "dep",
       "_3PP_PLATFORM": "linux-armv6l",
-      "_3PP_VERSION": "2.0.0"
+      "_3PP_VERSION": "1.0.0"
     },
-    "name": "building pkg.fetch sources.installing deps.cipd pkg-fetch prefix/deps/dep/linux-armv6l",
+    "name": "building pkg.prep checkout.installing deps.building dep.build prefix/deps/dep/linux-armv6l",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@",
-      "@@@STEP_TEXT@prefix/deps/dep/linux-armv6l resolved-instance_id-of-1.0.0-----------@@@",
+      "@@@STEP_NEST_LEVEL@4@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-1.0.0-----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
       "@@@STEP_LOG_LINE@json.output@    \"package\": \"prefix/deps/dep/linux-armv6l\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
@@ -770,14 +1176,14 @@
       "[CACHE]/3pp_cipd/prefix/deps/dep/linux-armv6l"
     ],
     "env": {
-      "_3PP_PACKAGE_NAME": "pkg",
+      "_3PP_PACKAGE_NAME": "dep",
       "_3PP_PLATFORM": "linux-armv6l",
-      "_3PP_VERSION": "2.0.0"
+      "_3PP_VERSION": "1.0.0"
     },
     "infra_step": true,
-    "name": "building pkg.fetch sources.installing deps.ensure cipd package cache exists",
+    "name": "building pkg.prep checkout.installing deps.building dep.ensure cipd pkg cache exists",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@"
+      "@@@STEP_NEST_LEVEL@4@@@"
     ]
   },
   {
@@ -788,42 +1194,42 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[TMP_BASE]/tmp_tmp_1",
-      "[CACHE]/3pp_cipd/prefix/deps/dep/linux-armv6l/resolved-instance_id-of-1.0.0-----------"
+      "[TMP_BASE]/tmp_tmp_3",
+      "[CACHE]/3pp_cipd/prefix/deps/dep/linux-armv6l/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
-      "_3PP_PACKAGE_NAME": "pkg",
+      "_3PP_PACKAGE_NAME": "dep",
       "_3PP_PLATFORM": "linux-armv6l",
-      "_3PP_VERSION": "2.0.0"
+      "_3PP_VERSION": "1.0.0"
     },
     "infra_step": true,
-    "name": "building pkg.fetch sources.installing deps.move fetched cipd package to cache",
+    "name": "building pkg.prep checkout.installing deps.building dep.mv built cipd pkg to cache",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@"
+      "@@@STEP_NEST_LEVEL@4@@@"
     ]
   },
   {
     "cmd": [
       "cipd",
       "pkg-deploy ",
-      "[CACHE]/3pp_cipd/prefix/deps/dep/linux-armv6l/resolved-instance_id-of-1.0.0-----------",
+      "[CACHE]/3pp_cipd/prefix/deps/dep/linux-armv6l/40-chars-fake-of-the-package-instance_id",
       "-root",
-      "[START_DIR]/3pp/wd/pkg/linux-armv6l/2.0.0/deps_prefix",
+      "[START_DIR]/3pp/wd/pkg/linux-armv6l/deps_prefix",
       "-json-output",
       "/path/to/tmp/json"
     ],
     "env": {
       "_3PP_PACKAGE_NAME": "pkg",
       "_3PP_PLATFORM": "linux-armv6l",
-      "_3PP_VERSION": "2.0.0"
+      "_3PP_VERSION": ""
     },
-    "name": "building pkg.fetch sources.installing deps.cipd pkg-deploy [CACHE]/3pp_cipd/prefix/deps/dep/linux-armv6l/resolved-instance_id-of-1.0.0-----------",
+    "name": "building pkg.prep checkout.installing deps.cipd pkg-deploy [CACHE]/3pp_cipd/prefix/deps/dep/linux-armv6l/40-chars-fake-of-the-package-instance_id",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-version/of/resol\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"pkg/name/of/resolved-instance_id-of-1.0.0-----------\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-version/of/40-ch\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"pkg/name/of/40-chars-fake-of-the-package-instance_id\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
@@ -839,15 +1245,15 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]/3pp/wd/pkg/linux-armv6l/2.0.0/checkout"
+      "[START_DIR]/3pp/wd/pkg/linux-armv6l/checkout"
     ],
     "env": {
       "_3PP_PACKAGE_NAME": "pkg",
       "_3PP_PLATFORM": "linux-armv6l",
-      "_3PP_VERSION": "2.0.0"
+      "_3PP_VERSION": ""
     },
     "infra_step": true,
-    "name": "building pkg.fetch sources.mkdir -p [workdir]/checkout/",
+    "name": "building pkg.prep checkout.mkdir -p [workdir]/checkout/",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -858,14 +1264,14 @@
       "-u",
       "[CACHE]/builder/package_repo/pkg/fetch.py",
       "checkout",
-      "[START_DIR]/3pp/wd/pkg/linux-armv6l/2.0.0/checkout"
+      "[START_DIR]/3pp/wd/pkg/linux-armv6l/checkout"
     ],
     "env": {
       "_3PP_PACKAGE_NAME": "pkg",
       "_3PP_PLATFORM": "linux-armv6l",
-      "_3PP_VERSION": "2.0.0"
+      "_3PP_VERSION": ""
     },
-    "name": "building pkg.fetch sources.fetch.py checkout [START_DIR]/3pp/wd/pkg/linux-armv6l/2.0.0/checkout",
+    "name": "building pkg.prep checkout.fetch.py checkout [START_DIR]/3pp/wd/pkg/linux-armv6l/checkout",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -879,17 +1285,149 @@
       "/path/to/tmp/json",
       "copytree",
       "[CACHE]/builder/package_repo",
-      "[START_DIR]/3pp/wd/pkg/linux-armv6l/2.0.0/checkout/.3pp"
+      "[START_DIR]/3pp/wd/pkg/linux-armv6l/checkout/.3pp"
     ],
     "env": {
       "_3PP_PACKAGE_NAME": "pkg",
       "_3PP_PLATFORM": "linux-armv6l",
-      "_3PP_VERSION": "2.0.0"
+      "_3PP_VERSION": ""
     },
     "infra_step": true,
-    "name": "building pkg.fetch sources.copy package definition",
+    "name": "building pkg.prep checkout.copy package definition",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "env": {
+      "_3PP_PACKAGE_NAME": "pkg",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": ""
+    },
+    "name": "building pkg.run installation",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_PACKAGE_REPO[infra]/run.py",
+      "infra.tools.dockerbuild",
+      "run",
+      "--platform",
+      "linux-armv6",
+      "--workdir",
+      "[START_DIR]/3pp/wd/pkg/linux-armv6l",
+      "--env-prefix",
+      "PATH",
+      "[START_DIR]/3pp/wd/pkg/linux-armv6l/tools_prefix",
+      "--env",
+      "_3PP_PLATFORM",
+      "linux-armv6l",
+      "--env",
+      "_3PP_PACKAGE_NAME",
+      "pkg",
+      "--env",
+      "_3PP_VERSION",
+      "",
+      "--",
+      "bash",
+      "[START_DIR]/3pp/wd/pkg/linux-armv6l/checkout/.3pp/pkg/install.sh",
+      "[START_DIR]/3pp/wd/pkg/linux-armv6l/out",
+      "[START_DIR]/3pp/wd/pkg/linux-armv6l/deps_prefix"
+    ],
+    "cwd": "[START_DIR]/3pp/wd/pkg/linux-armv6l/checkout",
+    "env": {
+      "_3PP_PACKAGE_NAME": "pkg",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": ""
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/3pp/wd/pkg/linux-armv6l/tools_prefix"
+      ]
+    },
+    "name": "building pkg.run installation.do install",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-build",
+      "-pkg-def",
+      "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"prefix/tools/pkg/linux-armv6l\", \"root\": \"[START_DIR]/3pp/wd/pkg/linux-armv6l/out\"}",
+      "-out",
+      "[TMP_BASE]/tmp_tmp_4",
+      "-hash-algo",
+      "sha256",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "_3PP_PACKAGE_NAME": "pkg",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": ""
+    },
+    "name": "building pkg.build prefix/tools/pkg/linux-armv6l",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"prefix/tools/pkg/linux-armv6l\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/3pp_cipd/prefix/tools/pkg/linux-armv6l"
+    ],
+    "env": {
+      "_3PP_PACKAGE_NAME": "pkg",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": ""
+    },
+    "infra_step": true,
+    "name": "building pkg.ensure cipd pkg cache exists",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "move",
+      "[TMP_BASE]/tmp_tmp_4",
+      "[CACHE]/3pp_cipd/prefix/tools/pkg/linux-armv6l/40-chars-fake-of-the-package-instance_id"
+    ],
+    "env": {
+      "_3PP_PACKAGE_NAME": "pkg",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": ""
+    },
+    "infra_step": true,
+    "name": "building pkg.mv built cipd pkg to cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
@@ -952,7 +1490,7 @@
       "_3PP_PLATFORM": "linux-armv6l",
       "_3PP_VERSION": "1.2.0"
     },
-    "name": "building posix_tool.fetch sources",
+    "name": "building posix_tool.prep checkout",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -975,7 +1513,7 @@
       "_3PP_VERSION": "1.2.0"
     },
     "infra_step": true,
-    "name": "building posix_tool.fetch sources.mkdir -p [workdir]/checkout/",
+    "name": "building posix_tool.prep checkout.mkdir -p [workdir]/checkout/",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -996,7 +1534,7 @@
       "_3PP_PLATFORM": "linux-armv6l",
       "_3PP_VERSION": "1.2.0"
     },
-    "name": "building posix_tool.fetch sources.ensure_installed",
+    "name": "building posix_tool.prep checkout.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -1019,7 +1557,7 @@
       "_3PP_PLATFORM": "linux-armv6l",
       "_3PP_VERSION": "1.2.0"
     },
-    "name": "building posix_tool.fetch sources.unpack_archive",
+    "name": "building posix_tool.prep checkout.unpack_archive",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1041,7 +1579,7 @@
       "_3PP_VERSION": "1.2.0"
     },
     "infra_step": true,
-    "name": "building posix_tool.fetch sources.unpack_archive.find archive to unpack",
+    "name": "building posix_tool.prep checkout.unpack_archive.find archive to unpack",
     "stdout": "/path/to/tmp/",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
@@ -1059,7 +1597,7 @@
       "/path/to/tmp/json",
       "copy",
       "[START_DIR]/3pp/wd/posix_tool/linux-armv6l/1.2.0/checkout/archive.tgz",
-      "[TMP_BASE]/tmp_tmp_2/archive.tgz"
+      "[TMP_BASE]/tmp_tmp_5/archive.tgz"
     ],
     "env": {
       "_3PP_PACKAGE_NAME": "posix_tool",
@@ -1067,7 +1605,7 @@
       "_3PP_VERSION": "1.2.0"
     },
     "infra_step": true,
-    "name": "building posix_tool.fetch sources.unpack_archive.cp 'archive.tgz' [tmpdir]",
+    "name": "building posix_tool.prep checkout.unpack_archive.cp 'archive.tgz' [tmpdir]",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -1088,7 +1626,7 @@
       "_3PP_VERSION": "1.2.0"
     },
     "infra_step": true,
-    "name": "building posix_tool.fetch sources.unpack_archive.rm -rf [checkout_dir]",
+    "name": "building posix_tool.prep checkout.unpack_archive.rm -rf [checkout_dir]",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -1099,7 +1637,7 @@
       "-u",
       "RECIPE_MODULE[recipe_engine::archive]/resources/extract.py",
       "--json-input",
-      "{\"archive_file\": \"[TMP_BASE]/tmp_tmp_2/archive.tgz\", \"output\": \"[START_DIR]/3pp/wd/posix_tool/linux-armv6l/1.2.0/checkout\", \"safe_mode\": true}",
+      "{\"archive_file\": \"[TMP_BASE]/tmp_tmp_5/archive.tgz\", \"output\": \"[START_DIR]/3pp/wd/posix_tool/linux-armv6l/1.2.0/checkout\", \"safe_mode\": true}",
       "--json-output",
       "/path/to/tmp/json"
     ],
@@ -1108,7 +1646,7 @@
       "_3PP_PLATFORM": "linux-armv6l",
       "_3PP_VERSION": "1.2.0"
     },
-    "name": "building posix_tool.fetch sources.unpack_archive.extracting [tmpdir]/archive.tgz",
+    "name": "building posix_tool.prep checkout.unpack_archive.extracting [tmpdir]/archive.tgz",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_TEXT@<br/>extracted 1337 files - 50159.75 MB@@@",
@@ -1137,7 +1675,7 @@
       "_3PP_VERSION": "1.2.0"
     },
     "infra_step": true,
-    "name": "building posix_tool.fetch sources.unpack_archive.prune archive subdirs",
+    "name": "building posix_tool.prep checkout.unpack_archive.prune archive subdirs",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -1159,9 +1697,141 @@
       "_3PP_VERSION": "1.2.0"
     },
     "infra_step": true,
-    "name": "building posix_tool.fetch sources.copy package definition",
+    "name": "building posix_tool.prep checkout.copy package definition",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "env": {
+      "_3PP_PACKAGE_NAME": "posix_tool",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": "1.2.0"
+    },
+    "name": "building posix_tool.run installation",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_PACKAGE_REPO[infra]/run.py",
+      "infra.tools.dockerbuild",
+      "run",
+      "--platform",
+      "linux-armv6",
+      "--workdir",
+      "[START_DIR]/3pp/wd/posix_tool/linux-armv6l/1.2.0",
+      "--env-prefix",
+      "PATH",
+      "[START_DIR]/3pp/wd/posix_tool/linux-armv6l/1.2.0/tools_prefix",
+      "--env",
+      "_3PP_PLATFORM",
+      "linux-armv6l",
+      "--env",
+      "_3PP_PACKAGE_NAME",
+      "posix_tool",
+      "--env",
+      "_3PP_VERSION",
+      "1.2.0",
+      "--",
+      "bash",
+      "[START_DIR]/3pp/wd/posix_tool/linux-armv6l/1.2.0/checkout/.3pp/posix_tool/install.sh",
+      "[START_DIR]/3pp/wd/posix_tool/linux-armv6l/1.2.0/out",
+      "[START_DIR]/3pp/wd/posix_tool/linux-armv6l/1.2.0/deps_prefix"
+    ],
+    "cwd": "[START_DIR]/3pp/wd/posix_tool/linux-armv6l/1.2.0/checkout",
+    "env": {
+      "_3PP_PACKAGE_NAME": "posix_tool",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": "1.2.0"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/3pp/wd/posix_tool/linux-armv6l/1.2.0/tools_prefix"
+      ]
+    },
+    "name": "building posix_tool.run installation.do install",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-build",
+      "-pkg-def",
+      "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"tools/posix_tool/linux-armv6l\", \"root\": \"[START_DIR]/3pp/wd/posix_tool/linux-armv6l/1.2.0/out\"}",
+      "-out",
+      "[TMP_BASE]/tmp_tmp_6",
+      "-hash-algo",
+      "sha256",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "_3PP_PACKAGE_NAME": "posix_tool",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": "1.2.0"
+    },
+    "name": "building posix_tool.build tools/posix_tool/linux-armv6l",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"tools/posix_tool/linux-armv6l\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/3pp_cipd/tools/posix_tool/linux-armv6l"
+    ],
+    "env": {
+      "_3PP_PACKAGE_NAME": "posix_tool",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": "1.2.0"
+    },
+    "infra_step": true,
+    "name": "building posix_tool.ensure cipd pkg cache exists",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "move",
+      "[TMP_BASE]/tmp_tmp_6",
+      "[CACHE]/3pp_cipd/tools/posix_tool/linux-armv6l/40-chars-fake-of-the-package-instance_id"
+    ],
+    "env": {
+      "_3PP_PACKAGE_NAME": "posix_tool",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": "1.2.0"
+    },
+    "infra_step": true,
+    "name": "building posix_tool.mv built cipd pkg to cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
@@ -1227,7 +1897,7 @@
       "_3PP_PLATFORM": "linux-armv6l",
       "_3PP_VERSION": "1.4.1"
     },
-    "name": "building tool.fetch sources",
+    "name": "building tool.prep checkout",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -1240,7 +1910,7 @@
       "_3PP_PLATFORM": "linux-armv6l",
       "_3PP_VERSION": "1.4.1"
     },
-    "name": "building tool.fetch sources.installing tools",
+    "name": "building tool.prep checkout.installing tools",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1251,9 +1921,9 @@
       "pkg-fetch",
       "prefix/build_tools/tool/linux-amd64",
       "-version",
-      "resolved-instance_id-of-0.9.0.chops.1---",
+      "resolved-instance_id-of-version:0.9.0.ch",
       "-out",
-      "[CACHE]/3pp_cipd/prefix/build_tools/tool/linux-amd64/resolved-instance_id-of-0.9.0.chops.1---",
+      "[CACHE]/3pp_cipd/prefix/build_tools/tool/linux-amd64/resolved-instance_id-of-version:0.9.0.ch",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -1263,13 +1933,13 @@
       "_3PP_PLATFORM": "linux-armv6l",
       "_3PP_VERSION": "1.4.1"
     },
-    "name": "building tool.fetch sources.installing tools.cipd pkg-fetch prefix/build_tools/tool/linux-amd64",
+    "name": "building tool.prep checkout.installing tools.cipd pkg-fetch prefix/build_tools/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
-      "@@@STEP_TEXT@prefix/build_tools/tool/linux-amd64 resolved-instance_id-of-0.9.0.chops.1---@@@",
+      "@@@STEP_TEXT@prefix/build_tools/tool/linux-amd64 resolved-instance_id-of-version:0.9.0.ch@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-0.9.0.chops.1---\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-version:0.9.0.ch\", @@@",
       "@@@STEP_LOG_LINE@json.output@    \"package\": \"prefix/build_tools/tool/linux-amd64\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
@@ -1280,7 +1950,7 @@
     "cmd": [
       "cipd",
       "pkg-deploy ",
-      "[CACHE]/3pp_cipd/prefix/build_tools/tool/linux-amd64/resolved-instance_id-of-0.9.0.chops.1---",
+      "[CACHE]/3pp_cipd/prefix/build_tools/tool/linux-amd64/resolved-instance_id-of-version:0.9.0.ch",
       "-root",
       "[START_DIR]/3pp/wd/tool/linux-armv6l/1.4.1/tools_prefix",
       "-json-output",
@@ -1292,13 +1962,13 @@
       "_3PP_PLATFORM": "linux-armv6l",
       "_3PP_VERSION": "1.4.1"
     },
-    "name": "building tool.fetch sources.installing tools.cipd pkg-deploy [CACHE]/3pp_cipd/prefix/build_tools/tool/linux-amd64/resolved-instance_id-of-0.9.0.chops.1---",
+    "name": "building tool.prep checkout.installing tools.cipd pkg-deploy [CACHE]/3pp_cipd/prefix/build_tools/tool/linux-amd64/resolved-instance_id-of-version:0.9.0.ch",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-version/of/resol\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"pkg/name/of/resolved-instance_id-of-0.9.0.chops.1---\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"pkg/name/of/resolved-instance_id-of-version:0.9.0.ch\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
@@ -1312,7 +1982,7 @@
       "_3PP_PLATFORM": "linux-armv6l",
       "_3PP_VERSION": "1.4.1"
     },
-    "name": "building tool.fetch sources.installing deps",
+    "name": "building tool.prep checkout.installing deps",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1320,86 +1990,8 @@
   {
     "cmd": [
       "cipd",
-      "pkg-fetch",
-      "prefix/deps/bottom_dep/linux-armv6l",
-      "-version",
-      "1.0",
-      "-out",
-      "[TMP_BASE]/tmp_tmp_3",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "env": {
-      "_3PP_PACKAGE_NAME": "tool",
-      "_3PP_PATCH_VERSION": "chops.1",
-      "_3PP_PLATFORM": "linux-armv6l",
-      "_3PP_VERSION": "1.4.1"
-    },
-    "name": "building tool.fetch sources.installing deps.cipd pkg-fetch prefix/deps/bottom_dep/linux-armv6l",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@",
-      "@@@STEP_TEXT@prefix/deps/bottom_dep/linux-armv6l resolved-instance_id-of-1.0-------------@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-1.0-------------\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"prefix/deps/bottom_dep/linux-armv6l\"@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "python",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[CACHE]/3pp_cipd/prefix/deps/bottom_dep/linux-armv6l"
-    ],
-    "env": {
-      "_3PP_PACKAGE_NAME": "tool",
-      "_3PP_PATCH_VERSION": "chops.1",
-      "_3PP_PLATFORM": "linux-armv6l",
-      "_3PP_VERSION": "1.4.1"
-    },
-    "infra_step": true,
-    "name": "building tool.fetch sources.installing deps.ensure cipd package cache exists",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "python",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "move",
-      "[TMP_BASE]/tmp_tmp_3",
-      "[CACHE]/3pp_cipd/prefix/deps/bottom_dep/linux-armv6l/resolved-instance_id-of-1.0-------------"
-    ],
-    "env": {
-      "_3PP_PACKAGE_NAME": "tool",
-      "_3PP_PATCH_VERSION": "chops.1",
-      "_3PP_PLATFORM": "linux-armv6l",
-      "_3PP_VERSION": "1.4.1"
-    },
-    "infra_step": true,
-    "name": "building tool.fetch sources.installing deps.move fetched cipd package to cache",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "cipd",
       "pkg-deploy ",
-      "[CACHE]/3pp_cipd/prefix/deps/bottom_dep/linux-armv6l/resolved-instance_id-of-1.0-------------",
+      "[CACHE]/3pp_cipd/prefix/deps/bottom_dep/linux-armv6l/40-chars-fake-of-the-package-instance_id",
       "-root",
       "[START_DIR]/3pp/wd/tool/linux-armv6l/1.4.1/deps_prefix",
       "-json-output",
@@ -1411,13 +2003,13 @@
       "_3PP_PLATFORM": "linux-armv6l",
       "_3PP_VERSION": "1.4.1"
     },
-    "name": "building tool.fetch sources.installing deps.cipd pkg-deploy [CACHE]/3pp_cipd/prefix/deps/bottom_dep/linux-armv6l/resolved-instance_id-of-1.0-------------",
+    "name": "building tool.prep checkout.installing deps.cipd pkg-deploy [CACHE]/3pp_cipd/prefix/deps/bottom_dep/linux-armv6l/40-chars-fake-of-the-package-instance_id",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-version/of/resol\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"pkg/name/of/resolved-instance_id-of-1.0-------------\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-version/of/40-ch\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"pkg/name/of/40-chars-fake-of-the-package-instance_id\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
@@ -1442,7 +2034,7 @@
       "_3PP_VERSION": "1.4.1"
     },
     "infra_step": true,
-    "name": "building tool.fetch sources.mkdir -p [workdir]/checkout/src/go.repo/tool",
+    "name": "building tool.prep checkout.mkdir -p [workdir]/checkout/src/go.repo/tool",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1463,7 +2055,7 @@
       "_3PP_PLATFORM": "linux-armv6l",
       "_3PP_VERSION": "1.4.1"
     },
-    "name": "building tool.fetch sources.git setup",
+    "name": "building tool.prep checkout.git setup",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1486,7 +2078,7 @@
       "_3PP_VERSION": "1.4.1"
     },
     "infra_step": true,
-    "name": "building tool.fetch sources.git fetch",
+    "name": "building tool.prep checkout.git fetch",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1506,7 +2098,7 @@
       "_3PP_VERSION": "1.4.1"
     },
     "infra_step": true,
-    "name": "building tool.fetch sources.git checkout",
+    "name": "building tool.prep checkout.git checkout",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1525,7 +2117,7 @@
       "_3PP_VERSION": "1.4.1"
     },
     "infra_step": true,
-    "name": "building tool.fetch sources.read revision",
+    "name": "building tool.prep checkout.read revision",
     "stdout": "/path/to/tmp/",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -1548,7 +2140,7 @@
       "_3PP_VERSION": "1.4.1"
     },
     "infra_step": true,
-    "name": "building tool.fetch sources.git clean",
+    "name": "building tool.prep checkout.git clean",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1567,7 +2159,7 @@
       "_3PP_VERSION": "1.4.1"
     },
     "infra_step": true,
-    "name": "building tool.fetch sources.submodule sync",
+    "name": "building tool.prep checkout.submodule sync",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1588,7 +2180,7 @@
       "_3PP_VERSION": "1.4.1"
     },
     "infra_step": true,
-    "name": "building tool.fetch sources.submodule update",
+    "name": "building tool.prep checkout.submodule update",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1609,7 +2201,7 @@
       "_3PP_VERSION": "1.4.1"
     },
     "infra_step": true,
-    "name": "building tool.fetch sources.git -C",
+    "name": "building tool.prep checkout.git -C",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1632,9 +2224,150 @@
       "_3PP_VERSION": "1.4.1"
     },
     "infra_step": true,
-    "name": "building tool.fetch sources.copy package definition",
+    "name": "building tool.prep checkout.copy package definition",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "env": {
+      "_3PP_PACKAGE_NAME": "tool",
+      "_3PP_PATCH_VERSION": "chops.1",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": "1.4.1"
+    },
+    "name": "building tool.run installation",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_PACKAGE_REPO[infra]/run.py",
+      "infra.tools.dockerbuild",
+      "run",
+      "--platform",
+      "linux-armv6",
+      "--workdir",
+      "[START_DIR]/3pp/wd/tool/linux-armv6l/1.4.1",
+      "--env-prefix",
+      "PATH",
+      "[START_DIR]/3pp/wd/tool/linux-armv6l/1.4.1/tools_prefix",
+      "--env",
+      "_3PP_PATCH_VERSION",
+      "chops.1",
+      "--env",
+      "_3PP_PLATFORM",
+      "linux-armv6l",
+      "--env",
+      "_3PP_PACKAGE_NAME",
+      "tool",
+      "--env",
+      "_3PP_VERSION",
+      "1.4.1",
+      "--",
+      "bash",
+      "[START_DIR]/3pp/wd/tool/linux-armv6l/1.4.1/checkout/.3pp/tool/install.sh",
+      "arm",
+      "[START_DIR]/3pp/wd/tool/linux-armv6l/1.4.1/out",
+      "[START_DIR]/3pp/wd/tool/linux-armv6l/1.4.1/deps_prefix"
+    ],
+    "cwd": "[START_DIR]/3pp/wd/tool/linux-armv6l/1.4.1/checkout",
+    "env": {
+      "_3PP_PACKAGE_NAME": "tool",
+      "_3PP_PATCH_VERSION": "chops.1",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": "1.4.1"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/3pp/wd/tool/linux-armv6l/1.4.1/tools_prefix"
+      ]
+    },
+    "name": "building tool.run installation.do install",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-build",
+      "-pkg-def",
+      "{\"data\": [{\"dir\": \".\", \"exclude\": []}, {\"version_file\": \".versions/tool.cipd_version\"}], \"install_mode\": \"copy\", \"package\": \"prefix/build_tools/tool/linux-armv6l\", \"root\": \"[START_DIR]/3pp/wd/tool/linux-armv6l/1.4.1/out\"}",
+      "-out",
+      "[TMP_BASE]/tmp_tmp_7",
+      "-hash-algo",
+      "sha256",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "_3PP_PACKAGE_NAME": "tool",
+      "_3PP_PATCH_VERSION": "chops.1",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": "1.4.1"
+    },
+    "name": "building tool.build prefix/build_tools/tool/linux-armv6l",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"prefix/build_tools/tool/linux-armv6l\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/3pp_cipd/prefix/build_tools/tool/linux-armv6l"
+    ],
+    "env": {
+      "_3PP_PACKAGE_NAME": "tool",
+      "_3PP_PATCH_VERSION": "chops.1",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": "1.4.1"
+    },
+    "infra_step": true,
+    "name": "building tool.ensure cipd pkg cache exists",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "move",
+      "[TMP_BASE]/tmp_tmp_7",
+      "[CACHE]/3pp_cipd/prefix/build_tools/tool/linux-armv6l/40-chars-fake-of-the-package-instance_id"
+    ],
+    "env": {
+      "_3PP_PACKAGE_NAME": "tool",
+      "_3PP_PATCH_VERSION": "chops.1",
+      "_3PP_PLATFORM": "linux-armv6l",
+      "_3PP_VERSION": "1.4.1"
+    },
+    "infra_step": true,
+    "name": "building tool.mv built cipd pkg to cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {

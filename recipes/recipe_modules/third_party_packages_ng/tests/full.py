@@ -164,6 +164,13 @@ def GenTests(api):
     }
     upload { pkg_prefix: "tools" }
     ''',
+
+    # This doesn't have a 'build' step. It just fetches something (e.g. gcloud
+    # SDK), and then re-uploads it.
+    fetch_and_package='''
+    create { source { script {name: "fetch.py"} } }
+    upload { pkg_prefix: "tools" }
+    ''',
   ).items())
 
   def mk_name(*parts):
@@ -197,7 +204,7 @@ def GenTests(api):
     if plat_name != 'win':
       # posix_tool says it needs an archive unpacking.
       test += api.step_data(mk_name(
-        'building posix_tool', 'fetch sources', 'unpack_archive',
+        'building posix_tool', 'prep checkout', 'unpack_archive',
         'find archive to unpack',
       ), api.file.glob_paths(['archive.tgz']))
 

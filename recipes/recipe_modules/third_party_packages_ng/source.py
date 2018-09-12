@@ -2,14 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Implements the source version checking and acquisition logic."""
-
-
 from pkg_resources import parse_version
 import re
 
 from .run_script import run_script
-
 
 def resolve_latest(api, spec):
   """Resolves the latest available version given a ResolvedSpec.
@@ -24,14 +20,11 @@ def resolve_latest(api, spec):
   Returns (str) the symver for the latest version of this package, e.g.
   '1.2.3'. This should always use '.' as the digit separator.
   """
-  # TODO(iannucci): when we can put annotations on nest steps, put the 'resolved
+  # TODO(iannucci): when we can put annoations on nest steps, put the 'resolved
   # version' there.
 
   method_name, source_method_pb = spec.source_method
   if method_name == 'git':
-    # We need to transform the tag_pattern (which is a python format-string
-    # lookalike with `%s` in it) into a regex which we can use to scan over the
-    # repo's tags.
     tag_re = re.escape(
       source_method_pb.tag_pattern if source_method_pb.tag_pattern else '%s')
     tag_re = '^%s$' % (tag_re.replace('\\%s', '(.*)'),)
@@ -69,9 +62,7 @@ def resolve_latest(api, spec):
   elif method_name == 'script':
     version = run_script(api,
       spec.host_dir.join(source_method_pb.name), 'latest',
-      stdout=api.raw_io.output(),
-      step_test_data=lambda: api.raw_io.test_api.stream_output('2.0.0'),
-    ).stdout.strip()
+      stdout=api.raw_io.output()).stdout.strip()
     api.step.active_result.presentation.step_text = (
       'resolved version: %s' % (version,))
 
@@ -86,7 +77,7 @@ def resolve_latest(api, spec):
   return version
 
 
-def fetch_source(api, workdir, spec, version, spec_lookup, ensure_built):
+def prep_checkout(api, workdir, spec, version, spec_lookup, ensure_built):
   """Prepares a checkout in `workdir` to build `spec` at `version`.
 
   Args:
@@ -103,8 +94,7 @@ def fetch_source(api, workdir, spec, version, spec_lookup, ensure_built):
       retrieve it's output package.
   """
   def _ensure_installed(root, cipd_pkgs):
-    # TODO(iannucci): once `cipd ensure` supports local package installation,
-    # use that.
+    # TODO: once `cipd ensure` supports local package installation, use that.
     for pkg in cipd_pkgs:
       pkg.deploy(root)
 
@@ -129,11 +119,16 @@ def fetch_source(api, workdir, spec, version, spec_lookup, ensure_built):
 
   _do_checkout(api, workdir, spec, version)
 
-  # Copy all package definition stuff into the checkout
-  api.file.copytree(
-    'copy package definition',
-    spec.base_path,
-    workdir.script_dir_base)
+  # Iff we are going to do the 'build' operation, copy all the package
+  # definition scripts into the checkout. If no build message is provided, then
+  # we're planning to directly package the result of the checkout, and we don't
+  # want to include these scripts.
+  if spec.create_pb.HasField("build"):
+    # Copy all package definition stuff into the checkout
+    api.file.copytree(
+      'copy package definition',
+      spec.base_path,
+      workdir.script_dir_base)
 
 
 #### Private stuff
@@ -193,8 +188,8 @@ def _do_checkout(api, workdir, spec, version):
       # Use copy instead of move because archive might be a symlink (e.g. when
       # using a "cipd" source mode).
       #
-      # TODO(iannucci): Have a way for `cipd pkg-deploy` to always deploy in
-      # copy mode and change this to a move.
+      # TODO: Have a way for `cipd pkg-deploy` to always deploy in copy mode and
+      # change this to a move.
       api.file.copy('cp %r [tmpdir]' % archive_name,
                     archive, tmpdir.join(archive_name))
 

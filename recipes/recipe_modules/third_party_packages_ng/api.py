@@ -406,10 +406,10 @@ class ThirdPartyPackagesNGApi(recipe_api.RecipeApi):
     packages listed, targeting the given platform.
 
     Args:
-      * packages (seq[str]) - A sequence of packages to ensure are
+      * packages (seq[str]) - A list of packages to ensure are
         uploaded. Packages must be listed as either 'pkgname' or
         'pkgname@version'. If empty, builds all loaded packages.
-      * platform (str) - If specified, the CIPD ${platform} to build for.
+      * platform (str) - If specified, the CPID ${platform} to build for.
         If unspecified, this will be the appropriate CIPD ${platform} for the
         current host machine.
 

@@ -161,11 +161,7 @@ class ResolvedSpec(object):
     """Yields all the package names that this ResolvedSpec depends on, which
     includes both `deps` and `tools`.
 
-    Used internally by the __cmp__ function.
-
-    Infinite recursion is prevented by the _resolve_for function (which
-    constructs all of the ResolvedSpec instances).
-    """
+    Used internally by the __cmp__ function."""
     for dep in self._deps:
       for subdep in dep._all_possible_deps:
         yield subdep
@@ -186,8 +182,8 @@ class ResolvedSpec(object):
     pkg_name = '%s/%s/%s' % (self.upload_pb.pkg_prefix,
                              self.name, self.platform)
     patch_ver = self.create_pb.source.patch_version
-    symver = '%s%s' % (version, '.'+patch_ver if patch_ver else '')
-    return CIPDSpec(self._api, pkg_name, symver)
+    tag = 'version:%s%s' % (version, '.'+patch_ver if patch_ver else '')
+    return CIPDSpec(self._api, pkg_name, tag)
 
   def __cmp__(self, other):
     """This allows ResolvedSpec's to be sorted.
