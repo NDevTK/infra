@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "797b2b46_3398699e",
+        "filename": "go/src/infra/tools/led/job.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-09-12T17:41:32Z",
+      "side": 1,
+      "message": "it almost feels like there is no point in this indirection, i.e. why not embed it. This was done for S and U.\n\nnot a big deal though",
+      "range": {
+        "startLine": 59,
+        "startChar": 23,
+        "endLine": 59,
+        "endChar": 24
+      },
+      "revId": "84f78232be0eb3138a8f7c840cd7ed4520b1f89d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f9c8d434_93c4bfcd",
+        "filename": "go/src/infra/tools/led/job.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-09-12T17:41:32Z",
+      "side": 1,
+      "message": "why not just add them to st.Tags right here?\ni am not sure about the if statement in L200 either",
+      "revId": "84f78232be0eb3138a8f7c840cd7ed4520b1f89d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ea6ee756_d1d3a6ed",
+        "filename": "go/src/infra/tools/led/job_def.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-09-12T17:41:32Z",
+      "side": 1,
+      "message": "slice?",
+      "range": {
+        "startLine": 14,
+        "startChar": 3,
+        "endLine": 14,
+        "endChar": 17
+      },
+      "revId": "84f78232be0eb3138a8f7c840cd7ed4520b1f89d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
