@@ -26,6 +26,7 @@ def _build_default_field_paths(prefix=''):  # pragma: no cover
       'input.gitiles_commit',
       'input.gerrit_changes',
       'input.experimental',
+      'cancel_reason',
       # TODO(nodir): add the following fields when they are defined in the
       # proto:
       # 'user_duration',
