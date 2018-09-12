@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "556e9589_b05fecd6",
+        "filename": "appengine/monorail/api/features_servicer.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-09-12T15:53:20Z",
+      "side": 1,
+      "message": "Needs docstring.",
+      "revId": "8354f003cc048ae1c22a80b9c05ac67f7f09ec93",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
