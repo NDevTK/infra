@@ -22,6 +22,30 @@
       "revId": "df1a30fc8bed51494df6d9b5e3ccf3cacc0abf42",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "20c7096f_6e543783",
+        "filename": "appengine/findit/waterfall/flake/initialize_flake_pipeline.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-09-14T01:18:50Z",
+      "side": 0,
+      "message": "Indeed, this has already been cleaned up.",
+      "parentUuid": "3b5e579f_9a9f13e1",
+      "range": {
+        "startLine": 175,
+        "startChar": 43,
+        "endLine": 175,
+        "endChar": 69
+      },
+      "revId": "df1a30fc8bed51494df6d9b5e3ccf3cacc0abf42",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

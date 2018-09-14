@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "035560c7_50fd636f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-09-14T01:18:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c647e696_9d5653b9",
+      "range": {
+        "startLine": 9,
+        "startChar": 20,
+        "endLine": 9,
+        "endChar": 28
+      },
+      "revId": "abf5326cc1053bc4b813aa4a7c62c66dcd7f7265",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bc035b6b_017ed85e",
         "filename": "appengine/findit/model/flake/analysis/master_flake_analysis.py",
         "patchSetId": 5
@@ -45,6 +69,30 @@
       "revId": "abf5326cc1053bc4b813aa4a7c62c66dcd7f7265",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a62a9124_7294d717",
+        "filename": "appengine/findit/model/flake/analysis/master_flake_analysis.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 635,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-09-14T01:18:50Z",
+      "side": 1,
+      "message": "build_id will be the mapped one, while original_build_id will be the one that triggered the analysis.",
+      "parentUuid": "bc035b6b_017ed85e",
+      "range": {
+        "startLine": 634,
+        "startChar": 2,
+        "endLine": 635,
+        "endChar": 46
+      },
+      "revId": "abf5326cc1053bc4b813aa4a7c62c66dcd7f7265",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

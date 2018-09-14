@@ -1,0 +1,22 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a2c28418_e400d9dc",
+        "filename": "appengine/findit/model/flake/analysis/master_flake_analysis.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 384,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-09-14T01:18:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bd68e7c2_528a5077",
+      "revId": "573ef4a9a45606c545d8cea064ebf056f8b07c36",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
