@@ -381,6 +381,7 @@ class MasterFlakeAnalysis(BaseAnalysis, BaseBuildModel, VersionedModel,
     self.original_step_name = None
     self.original_test_name = None
     self.bug_id = None
+    self.build_id = None
     self.error = None
     self.correct_regression_range = None
     self.correct_culprit = None
@@ -630,8 +631,6 @@ class MasterFlakeAnalysis(BaseAnalysis, BaseBuildModel, VersionedModel,
     if any_changes:
       self.put()
 
-  # TODO(crbug.com/881920): Capture and store build_id to replace build_number.
-
   # The original build/step/test in which a flake actually occurred.
   # A CQ trybot step has to be mapped to a Waterfall buildbot step.
   # A gtest suite.PRE_PRE_test has to be normalized to suite.test.
@@ -640,6 +639,7 @@ class MasterFlakeAnalysis(BaseAnalysis, BaseBuildModel, VersionedModel,
   original_build_number = ndb.IntegerProperty(indexed=True)
   original_step_name = ndb.StringProperty(indexed=True)
   original_test_name = ndb.StringProperty(indexed=True)
+  original_build_id = ndb.StringProperty(indexed=False)
 
   # The bug id in which this flake is reported.
   bug_id = ndb.IntegerProperty(indexed=True)
