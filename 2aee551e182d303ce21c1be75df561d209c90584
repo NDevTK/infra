@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "33993fc2_ccbd0f27",
+        "filename": "appengine/cr-buildbucket/v2/default_field_masks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-09-14T21:51:07Z",
+      "side": 1,
+      "message": "nit: maybe sort this list?",
+      "revId": "2aee551e182d303ce21c1be75df561d209c90584",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
