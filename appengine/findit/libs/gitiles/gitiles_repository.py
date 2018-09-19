@@ -279,3 +279,7 @@ class GitilesRepository(GitRepository):
       result.append(self._ParseChangeLogFromLogData(log))
 
     return result, data.get('next')
+
+  def GetCommittedTime(self, revision):
+    """Returns the datetime the revision was committed."""
+    return self.GetChangeLog(revision).author.time
