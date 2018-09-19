@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "30032d52_1a31e9f8",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-09-19T16:22:24Z",
+      "side": 1,
+      "message": "Should we use the commit timestamp for the commit position in the card instead? The last check time could be far behind the commit time of that revision.",
+      "range": {
+        "startLine": 10,
+        "startChar": 19,
+        "endLine": 10,
+        "endChar": 56
+      },
+      "revId": "ec412a635cee315a6dd3dc7d3136606853b05adf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d312d34d_f426f4b1",
         "filename": "appengine/findit/model/flake/analysis/master_flake_analysis.py",
         "patchSetId": 2
