@@ -2,7 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import mock
+from datetime import datetime
 from dto.flakiness import Flakiness
+from libs import time_util
 from libs.list_of_basestring import ListOfBasestring
 from model.flake.analysis.master_flake_analysis import DataPoint
 from services.flake_failure import data_point_util
@@ -11,7 +14,8 @@ from waterfall.test import wf_testcase
 
 class DataPointUtilTest(wf_testcase.WaterfallTestCase):
 
-  def testConvertFlakinessToDataPoint(self):
+  @mock.patch.object(time_util, 'GetUTCNow')
+  def testConvertFlakinessToDataPoint(self, mocked_updated_time):
     build_url = 'url'
     commit_position = 1000
     total_test_run_seconds = 60
@@ -21,6 +25,8 @@ class DataPointUtilTest(wf_testcase.WaterfallTestCase):
     revision = 'r1000'
     try_job_url = None
     task_id = 'task_id'
+    expected_updated_time = datetime(2018, 9, 18, 0, 0, 0)
+    mocked_updated_time.return_value = expected_updated_time
 
     flakiness = Flakiness(
         build_number=None,
@@ -44,7 +50,8 @@ class DataPointUtilTest(wf_testcase.WaterfallTestCase):
         pass_rate=pass_rate,
         git_hash=revision,
         try_job_url=try_job_url,
-        task_ids=[task_id])
+        task_ids=[task_id],
+        updated_time=expected_updated_time)
 
     data_point = data_point_util.ConvertFlakinessToDataPoint(flakiness)
     self.assertEqual(expected_data_point, data_point)

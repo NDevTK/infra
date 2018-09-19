@@ -81,6 +81,10 @@ class DataPoint(ndb.Model):
   # data point.
   failed_swarming_task_attempts = ndb.IntegerProperty(indexed=False, default=0)
 
+  # The timestamp the data point was last updated with flakiness information
+  # (pass_rate/iterations).
+  updated_time = ndb.DateTimeProperty(indexed=False)
+
   @staticmethod
   def Create(build_number=None,
              build_url=None,
@@ -96,6 +100,7 @@ class DataPoint(ndb.Model):
              iterations=None,
              elapsed_seconds=0,
              error=None,
+             updated_time=None,
              failed_swarming_task_attempts=0):
     data_point = DataPoint()
     data_point.build_url = build_url
@@ -114,6 +119,7 @@ class DataPoint(ndb.Model):
     data_point.elapsed_seconds = elapsed_seconds
     data_point.error = error
     data_point.failed_swarming_task_attempts = failed_swarming_task_attempts
+    data_point.updated_time = updated_time
     return data_point
 
   def GetSwarmingTaskId(self):

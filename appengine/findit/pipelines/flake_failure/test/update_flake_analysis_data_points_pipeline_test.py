@@ -2,10 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from datetime import datetime
 import mock
 
 from dto.flakiness import Flakiness
 from gae_libs.pipeline_wrapper import pipeline_handlers
+from libs import time_util
 from libs.list_of_basestring import ListOfBasestring
 from model.flake.analysis.master_flake_analysis import DataPoint
 from model.flake.analysis.master_flake_analysis import MasterFlakeAnalysis
@@ -21,12 +23,15 @@ from waterfall.test.wf_testcase import WaterfallTestCase
 class UpdateFlakeAnalysisDataPointsPipelineTest(WaterfallTestCase):
   app_module = pipeline_handlers._APP
 
-  def testUpdateFlakeAnalysisDataPointsPipeline(self):
+  @mock.patch.object(time_util, 'GetUTCNow')
+  def testUpdateFlakeAnalysisDataPointsPipeline(self, mock_updated_time):
     analysis = MasterFlakeAnalysis.Create('m', 'b', 123, 's', 't')
     analysis.Save()
 
     commit_position = 1000
     pass_rate = 0.5
+    expected_updated_time = datetime(2018, 9, 18, 0, 0, 0)
+    mock_updated_time.return_value = expected_updated_time
 
     flakiness = Flakiness(
         build_number=123,
@@ -52,7 +57,8 @@ class UpdateFlakeAnalysisDataPointsPipelineTest(WaterfallTestCase):
         pass_rate=pass_rate,
         git_hash='r1000',
         try_job_url=None,
-        task_ids=['task_id'])
+        task_ids=['task_id'],
+        updated_time=expected_updated_time)
 
     update_data_points_input = UpdateFlakeAnalysisDataPointsInput(
         analysis_urlsafe_key=analysis.key.urlsafe(), flakiness=flakiness)

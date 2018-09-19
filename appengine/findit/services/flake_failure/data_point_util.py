@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Functions to assist in operations on DataPoint objects."""
 
+from libs import time_util
 from model.flake.analysis.master_flake_analysis import DataPoint
 from services.flake_failure import pass_rate_util
 
@@ -20,7 +21,8 @@ def ConvertFlakinessToDataPoint(flakiness):
       iterations=flakiness.iterations,
       pass_rate=flakiness.pass_rate,
       task_ids=flakiness.task_ids.ToSerializable(),
-      try_job_url=flakiness.try_job_url)
+      try_job_url=flakiness.try_job_url,
+      updated_time=time_util.GetUTCNow())
 
 
 def HasSeriesOfFullyStablePointsPrecedingCommitPosition(
