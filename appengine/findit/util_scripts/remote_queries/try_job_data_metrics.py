@@ -611,19 +611,19 @@ def GetArgsInOrder():
 
   return ordered_args
 
+from common.findit_http_client import FinditHttpClient
+from gae_libs.gitiles.cached_gitiles_repository import CachedGitilesRepository
+from libs import analysis_status
+from model.flake.analysis.flake_culprit import FlakeCulprit
+from services import constants
+from services import git
 
 if __name__ == '__main__':
-  START_DATE = datetime.datetime(2016, 4, 17)
-  END_DATE = datetime.datetime(2016, 7, 15)
-
-  try_job_data_query = WfTryJobData.query(
-      WfTryJobData.request_time >= START_DATE,
-      WfTryJobData.request_time < END_DATE)
-  categorized_data = try_job_data_query.fetch()
-
-  args = GetArgsInOrder()
-  for arg in args:
-    categorized_data = SplitStructByOption(categorized_data, arg)
-
-  # TODO(lijeffrey): Display data in an html page instead of printing.
-  PrettyPrint(categorized_data, START_DATE, END_DATE)
+  revision = '68da3cf8d8b28f325bbb79fff94f5fdd52d5c02b'
+  git_repo = CachedGitilesRepository(FinditHttpClient(),
+                                     constants.CHROMIUM_GIT_REPOSITORY_URL)
+  change_log = git_repo.GetChangeLog(revision)
+  import pdb
+  pdb.set_trace()
+  print change_log.author.time
+  

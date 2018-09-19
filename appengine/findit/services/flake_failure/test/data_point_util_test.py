@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import mock
 from dto.flakiness import Flakiness
 from libs.list_of_basestring import ListOfBasestring
 from model.flake.analysis.master_flake_analysis import DataPoint
