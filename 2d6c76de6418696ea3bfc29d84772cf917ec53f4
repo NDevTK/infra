@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7ebf4711_151302d0",
+        "filename": "appengine/findit/libs/gitiles/gitiles_repository.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 285,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-09-19T23:19:58Z",
+      "side": 1,
+      "message": "I would not add this API here, since it is not an API provided by gitiles.",
+      "range": {
+        "startLine": 282,
+        "startChar": 0,
+        "endLine": 285,
+        "endChar": 50
+      },
+      "revId": "2d6c76de6418696ea3bfc29d84772cf917ec53f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "842340f2_c73d4104",
+        "filename": "appengine/findit/pipelines/flake_failure/save_flakiness_verification_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-09-19T23:19:58Z",
+      "side": 1,
+      "message": "Strictly speaking, only the data point of the checking flakiness need this timestamp, while all others don\u0027t need that.\n\nIs there an easy way to avoid the overhead for all other data points?",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 39,
+        "endChar": 67
+      },
+      "revId": "2d6c76de6418696ea3bfc29d84772cf917ec53f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9cce7e9d_7a24792d",
+        "filename": "appengine/findit/pipelines/flake_failure/save_flakiness_verification_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-09-19T23:19:58Z",
+      "side": 1,
+      "message": "use committer.time instead\n\nAuthor time is when the patchset code was last changed, not when the patchset code was landed",
+      "range": {
+        "startLine": 39,
+        "startChar": 56,
+        "endLine": 39,
+        "endChar": 62
+      },
+      "revId": "2d6c76de6418696ea3bfc29d84772cf917ec53f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5b69ac9f_0703aa47",
+        "filename": "appengine/findit/pipelines/flake_failure/update_flake_analysis_data_points_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-09-19T23:19:58Z",
+      "side": 1,
+      "message": "don\u0027t use author time.",
+      "range": {
+        "startLine": 52,
+        "startChar": 56,
+        "endLine": 52,
+        "endChar": 62
+      },
+      "revId": "2d6c76de6418696ea3bfc29d84772cf917ec53f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
