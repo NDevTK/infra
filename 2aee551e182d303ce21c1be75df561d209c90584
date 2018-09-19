@@ -16,6 +16,24 @@
       "revId": "2aee551e182d303ce21c1be75df561d209c90584",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0e00bb20_626baa35",
+        "filename": "appengine/cr-buildbucket/v2/default_field_masks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2018-09-19T19:04:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "33993fc2_ccbd0f27",
+      "revId": "2aee551e182d303ce21c1be75df561d209c90584",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
