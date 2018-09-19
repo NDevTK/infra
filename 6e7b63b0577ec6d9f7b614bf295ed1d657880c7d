@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "b2c67e7c_2259522f",
+        "filename": "third_party_packages/cmake/3pp.pb",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2018-09-19T01:28:51Z",
+      "side": 1,
+      "message": "No, it affects the latest tagged versions of CMake",
+      "parentUuid": "9cc7da52_f60c680c",
+      "revId": "6e7b63b0577ec6d9f7b614bf295ed1d657880c7d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "03d9f7c7_8e156e4a",
         "filename": "third_party_packages/cmake/patches/0001-Port-curl-curl-2443-to-allow-cross-compile.patch",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2018-09-19T01:08:51Z",
       "side": 1,
       "message": "Is this upstreamable?",
+      "revId": "6e7b63b0577ec6d9f7b614bf295ed1d657880c7d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ad6eee64_667a25c2",
+        "filename": "third_party_packages/cmake/patches/0001-Port-curl-curl-2443-to-allow-cross-compile.patch",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2018-09-19T01:28:51Z",
+      "side": 1,
+      "message": "Yes",
+      "parentUuid": "03d9f7c7_8e156e4a",
       "revId": "6e7b63b0577ec6d9f7b614bf295ed1d657880c7d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
