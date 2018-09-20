@@ -143,6 +143,30 @@
     },
     {
       "key": {
+        "uuid": "06866073_0d25973c",
+        "filename": "appengine/findit/pipelines/flake_failure/save_flakiness_verification_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-09-20T15:17:54Z",
+      "side": 1,
+      "message": "Regarding commit position\u0027s readability, it depends on the context. For a time series of data to show on diagram, it is pretty good enough.\n\nTo show a single commit position, it is a different story.\n\nI would not add it unless there is a immediate use on UI or backend data processing. More code means more maintenance and potentially more bugs.",
+      "parentUuid": "f612ecda_77bad440",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 39,
+        "endChar": 67
+      },
+      "revId": "2d6c76de6418696ea3bfc29d84772cf917ec53f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5b69ac9f_0703aa47",
         "filename": "appengine/findit/pipelines/flake_failure/update_flake_analysis_data_points_pipeline.py",
         "patchSetId": 6
