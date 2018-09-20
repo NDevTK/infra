@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "9503282f_eaf9ed8b",
+        "filename": "appengine/findit/libs/gitiles/gitiles_repository.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 285,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-09-20T01:16:55Z",
+      "side": 1,
+      "message": "Oops, this was unintended. Removed.",
+      "parentUuid": "7ebf4711_151302d0",
+      "range": {
+        "startLine": 282,
+        "startChar": 0,
+        "endLine": 285,
+        "endChar": 50
+      },
+      "revId": "2d6c76de6418696ea3bfc29d84772cf917ec53f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "842340f2_c73d4104",
         "filename": "appengine/findit/pipelines/flake_failure/save_flakiness_verification_pipeline.py",
         "patchSetId": 6
@@ -71,6 +95,54 @@
     },
     {
       "key": {
+        "uuid": "f612ecda_77bad440",
+        "filename": "appengine/findit/pipelines/flake_failure/save_flakiness_verification_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-09-20T01:16:55Z",
+      "side": 1,
+      "message": "Yes that is true for now, but I\u0027d prefer to have each data point track a time stamp as well. As discussed with dtu@ commit positions in general aren\u0027t human-friendly to read. Having a timestamp associated with each data point\u0027s commit position may be useful down the line if we want to show other relative times as well, either in the graph or in other places, but worst case is we just don\u0027t display them.",
+      "parentUuid": "842340f2_c73d4104",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 39,
+        "endChar": 67
+      },
+      "revId": "2d6c76de6418696ea3bfc29d84772cf917ec53f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "942d0934_70a8df30",
+        "filename": "appengine/findit/pipelines/flake_failure/save_flakiness_verification_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-09-20T01:16:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9cce7e9d_7a24792d",
+      "range": {
+        "startLine": 39,
+        "startChar": 56,
+        "endLine": 39,
+        "endChar": 62
+      },
+      "revId": "2d6c76de6418696ea3bfc29d84772cf917ec53f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5b69ac9f_0703aa47",
         "filename": "appengine/findit/pipelines/flake_failure/update_flake_analysis_data_points_pipeline.py",
         "patchSetId": 6
@@ -91,6 +163,30 @@
       "revId": "2d6c76de6418696ea3bfc29d84772cf917ec53f4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cc921b0b_77f978bf",
+        "filename": "appengine/findit/pipelines/flake_failure/update_flake_analysis_data_points_pipeline.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-09-20T01:16:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5b69ac9f_0703aa47",
+      "range": {
+        "startLine": 52,
+        "startChar": 56,
+        "endLine": 52,
+        "endChar": 62
+      },
+      "revId": "2d6c76de6418696ea3bfc29d84772cf917ec53f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
