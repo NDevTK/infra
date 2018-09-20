@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "cf2433b2_9f8634c2",
+        "filename": "appengine/monorail/static/js/tracker/tracker-ac.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 1053,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-09-20T17:46:23Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "b8b96382_a04ad4b4",
+      "range": {
+        "startLine": 1053,
+        "startChar": 35,
+        "endLine": 1053,
+        "endChar": 45
+      },
+      "revId": "05f1bf2b3fae198b44ad62845715825f26b6705f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3a3aecac_94851320",
         "filename": "appengine/monorail/static/js/tracker/tracker-ac.js",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2018-08-30T18:26:53Z",
       "side": 1,
       "message": "Shouldn\u0027t componentDefs already be a list?",
+      "range": {
+        "startLine": 1082,
+        "startChar": 31,
+        "endLine": 1082,
+        "endChar": 37
+      },
+      "revId": "05f1bf2b3fae198b44ad62845715825f26b6705f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "202954fc_a307fdc2",
+        "filename": "appengine/monorail/static/js/tracker/tracker-ac.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 1082,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-09-20T17:46:23Z",
+      "side": 1,
+      "message": "Gone.  That was left over from an earlier draft of this CL.",
+      "parentUuid": "3a3aecac_94851320",
       "range": {
         "startLine": 1082,
         "startChar": 31,
@@ -68,6 +116,30 @@
       "revId": "05f1bf2b3fae198b44ad62845715825f26b6705f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f5557117_c252d0a6",
+        "filename": "appengine/monorail/static/js/tracker/tracker-ac.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 1125,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-09-20T17:46:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "297721cf_5478955f",
+      "range": {
+        "startLine": 1125,
+        "startChar": 30,
+        "endLine": 1125,
+        "endChar": 31
+      },
+      "revId": "05f1bf2b3fae198b44ad62845715825f26b6705f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
