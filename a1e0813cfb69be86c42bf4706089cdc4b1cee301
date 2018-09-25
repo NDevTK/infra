@@ -1,0 +1,95 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "89981088_13ee704b",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2018-09-25T11:14:26Z",
+      "side": 1,
+      "message": "remove this empty line",
+      "revId": "a1e0813cfb69be86c42bf4706089cdc4b1cee301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1350601b_2dc63150",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2018-09-25T11:14:26Z",
+      "side": 1,
+      "message": "Not used?",
+      "revId": "a1e0813cfb69be86c42bf4706089cdc4b1cee301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3575d9f5_6e27c6ad",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2018-09-25T11:14:26Z",
+      "side": 1,
+      "message": "can be removed?",
+      "revId": "a1e0813cfb69be86c42bf4706089cdc4b1cee301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6902fb98_f5a8b956",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2018-09-25T11:14:26Z",
+      "side": 1,
+      "message": "remove this empty line?",
+      "revId": "a1e0813cfb69be86c42bf4706089cdc4b1cee301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9b611b71_32271fad",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2018-09-25T11:14:26Z",
+      "side": 1,
+      "message": "You can just return this.",
+      "range": {
+        "startLine": 198,
+        "startChar": 11,
+        "endLine": 198,
+        "endChar": 24
+      },
+      "revId": "a1e0813cfb69be86c42bf4706089cdc4b1cee301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
