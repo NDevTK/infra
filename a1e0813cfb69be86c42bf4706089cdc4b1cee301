@@ -65,6 +65,29 @@
     },
     {
       "key": {
+        "uuid": "24c19864_0c0ef89f",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1116017
+      },
+      "writtenOn": "2018-09-25T11:31:41Z",
+      "side": 1,
+      "message": "Is this creating `AdaptClient`, right? If so, `createAdaptClient` seems better.",
+      "range": {
+        "startLine": 96,
+        "startChar": 4,
+        "endLine": 96,
+        "endChar": 43
+      },
+      "revId": "a1e0813cfb69be86c42bf4706089cdc4b1cee301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1350601b_2dc63150",
         "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
         "patchSetId": 4
@@ -132,6 +155,29 @@
         "startChar": 11,
         "endLine": 198,
         "endChar": 24
+      },
+      "revId": "a1e0813cfb69be86c42bf4706089cdc4b1cee301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fdb4bddc_2cdfbe81",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1116017
+      },
+      "writtenOn": "2018-09-25T11:31:41Z",
+      "side": 1,
+      "message": "Parse() is not found... maybe getFile.\n\nDefine `want` in earlier, and do the following:\n\ngot, err :\u003d getFile(ctx, testName, testID)\ngot.Metadata.Raw \u003d \"\" // (I\u0027m not sure this is necessary, but this is necessary, right?)\nif err !\u003d nil || !reflect.DeepEqual(got, want) {\n   t.Errorf(\"getFile(ctx, %q, %q)\u003d%v, %v; want %v, nil\", testName, testID, got, err, want)\n}\n\nThis is much go-like.",
+      "range": {
+        "startLine": 226,
+        "startChar": 12,
+        "endLine": 226,
+        "endChar": 19
       },
       "revId": "a1e0813cfb69be86c42bf4706089cdc4b1cee301",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
