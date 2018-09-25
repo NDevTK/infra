@@ -13,6 +13,8 @@ import (
 	"golang.org/x/net/context"
 )
 
+const templatesLocation = "../app/templates"
+
 func TestNew(t *testing.T) {
 
 	tests := []struct {

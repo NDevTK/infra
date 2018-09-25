@@ -27,8 +27,6 @@ import (
 	"google.golang.org/appengine/user"
 )
 
-const templatesLocation = "templates"
-
 const (
 	jsonRotation = `
 		{

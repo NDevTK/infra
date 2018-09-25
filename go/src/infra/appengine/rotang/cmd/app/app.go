@@ -52,7 +52,7 @@ func init() {
 	middleware := standard.Base()
 
 	tmw := middleware.Extend(templates.WithTemplates(&templates.Bundle{
-		Loader: templates.FileSystemLoader("../handlers/templates"),
+		Loader: templates.FileSystemLoader("templates"),
 	}), auth.Authenticate(server.UsersAPIAuthMethod{}))
 
 	// Sort out the generators.

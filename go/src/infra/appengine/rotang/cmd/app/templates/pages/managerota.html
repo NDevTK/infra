@@ -29,7 +29,7 @@
          </form>
        </td>
        <td>
-         <form action="deleterota" method="post">
+         <form action="deleterota" method="post" onclick="return confirm('Are you sure?')">
             <button type="submit" name="name" value="{{$c.Config.Name}}">Delete</button>
          </form>
        </td>
