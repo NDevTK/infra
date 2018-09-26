@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b12c3334_762da0be",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1116017
+      },
+      "writtenOn": "2018-09-26T04:39:50Z",
+      "side": 1,
+      "message": "failing on mac and win since ctx is not App Engine context.\n\nhttps://logs.chromium.org/logs/infra/buildbucket/cr-buildbucket.appspot.com/8934416333662329872/+/steps/go_tests/0/stdout\n\nMaybe, you need to abstract storage.NewClient(ctx), too.\n\nvar createClient \u003d storage.NewClient (in L96)\n\nand also set createClient in your test.",
+      "revId": "1c55b56303540cdddd92133e773af07d84ae7b45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3733f968_955af06c",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1116017
+      },
+      "writtenOn": "2018-09-26T04:39:50Z",
+      "side": 1,
+      "message": "This case is covered in L162. So you can remove this sentence.",
+      "range": {
+        "startLine": 152,
+        "startChar": 0,
+        "endLine": 154,
+        "endChar": 2
+      },
+      "revId": "1c55b56303540cdddd92133e773af07d84ae7b45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
