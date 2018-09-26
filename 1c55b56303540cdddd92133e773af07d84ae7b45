@@ -83,6 +83,24 @@
     },
     {
       "key": {
+        "uuid": "03c8f9a2_bff1bcee",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1116017
+      },
+      "writtenOn": "2018-09-26T05:41:46Z",
+      "side": 1,
+      "message": "Even so, leaving bot fail does not seem good.",
+      "parentUuid": "2bb98e0b_8350cf95",
+      "revId": "1c55b56303540cdddd92133e773af07d84ae7b45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "164d6d98_b9cf4ac9",
         "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
         "patchSetId": 6
