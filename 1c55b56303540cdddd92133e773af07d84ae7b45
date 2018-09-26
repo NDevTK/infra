@@ -65,6 +65,75 @@
     },
     {
       "key": {
+        "uuid": "2bb98e0b_8350cf95",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2018-09-26T05:03:47Z",
+      "side": 1,
+      "message": "need to run test on mac and win for appengine code?",
+      "parentUuid": "b12c3334_762da0be",
+      "revId": "1c55b56303540cdddd92133e773af07d84ae7b45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "164d6d98_b9cf4ac9",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2018-09-26T05:03:47Z",
+      "side": 1,
+      "message": "no receiver name is needed if it is not used\n\nfunc (client) Bucket(",
+      "revId": "1c55b56303540cdddd92133e773af07d84ae7b45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e0cae13d_9219339e",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2018-09-26T05:03:47Z",
+      "side": 1,
+      "message": "func (bucketHandle) Object(\n?",
+      "revId": "1c55b56303540cdddd92133e773af07d84ae7b45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6470ed46_3494a816",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2018-09-26T05:03:47Z",
+      "side": 1,
+      "message": "nit: might be better to return content for name specified by Object\nand gzip only if compressed sets true?",
+      "revId": "1c55b56303540cdddd92133e773af07d84ae7b45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3733f968_955af06c",
         "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
         "patchSetId": 6
