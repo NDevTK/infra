@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "b985d35c_a8e34953",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1298873
+      },
+      "writtenOn": "2018-09-26T04:18:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "81bcbc52_bb0669e6",
+      "range": {
+        "startLine": 7,
+        "startChar": 4,
+        "endLine": 7,
+        "endChar": 16
+      },
+      "revId": "a1e0813cfb69be86c42bf4706089cdc4b1cee301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "60bc69c5_bf6d2649",
         "filename": "/COMMIT_MSG",
         "patchSetId": 4
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "5a60d9dd_ceaabbad",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1298873
+      },
+      "writtenOn": "2018-09-26T04:18:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "60bc69c5_bf6d2649",
+      "range": {
+        "startLine": 9,
+        "startChar": 52,
+        "endLine": 9,
+        "endChar": 61
+      },
+      "revId": "a1e0813cfb69be86c42bf4706089cdc4b1cee301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "89981088_13ee704b",
         "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub.go",
         "patchSetId": 4
@@ -62,6 +110,24 @@
       "revId": "a1e0813cfb69be86c42bf4706089cdc4b1cee301",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3f441d65_1d690f2e",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1298873
+      },
+      "writtenOn": "2018-09-26T04:18:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "89981088_13ee704b",
+      "revId": "a1e0813cfb69be86c42bf4706089cdc4b1cee301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -88,6 +154,30 @@
     },
     {
       "key": {
+        "uuid": "1ca443ba_e05ddcf1",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1298873
+      },
+      "writtenOn": "2018-09-26T04:18:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "24c19864_0c0ef89f",
+      "range": {
+        "startLine": 96,
+        "startChar": 4,
+        "endLine": 96,
+        "endChar": 43
+      },
+      "revId": "a1e0813cfb69be86c42bf4706089cdc4b1cee301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1350601b_2dc63150",
         "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
         "patchSetId": 4
@@ -102,6 +192,24 @@
       "revId": "a1e0813cfb69be86c42bf4706089cdc4b1cee301",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b345f90d_d8adc4b6",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1298873
+      },
+      "writtenOn": "2018-09-26T04:18:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1350601b_2dc63150",
+      "revId": "a1e0813cfb69be86c42bf4706089cdc4b1cee301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -122,6 +230,24 @@
     },
     {
       "key": {
+        "uuid": "d93f1926_209f6791",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1298873
+      },
+      "writtenOn": "2018-09-26T04:18:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3575d9f5_6e27c6ad",
+      "revId": "a1e0813cfb69be86c42bf4706089cdc4b1cee301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6902fb98_f5a8b956",
         "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
         "patchSetId": 4
@@ -136,6 +262,24 @@
       "revId": "a1e0813cfb69be86c42bf4706089cdc4b1cee301",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8daeda9c_881540b8",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1298873
+      },
+      "writtenOn": "2018-09-26T04:18:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6902fb98_f5a8b956",
+      "revId": "a1e0813cfb69be86c42bf4706089cdc4b1cee301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -162,6 +306,30 @@
     },
     {
       "key": {
+        "uuid": "26238ca1_7f58ab1d",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 1298873
+      },
+      "writtenOn": "2018-09-26T04:18:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9b611b71_32271fad",
+      "range": {
+        "startLine": 198,
+        "startChar": 11,
+        "endLine": 198,
+        "endChar": 24
+      },
+      "revId": "a1e0813cfb69be86c42bf4706089cdc4b1cee301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fdb4bddc_2cdfbe81",
         "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
         "patchSetId": 4
@@ -182,6 +350,30 @@
       "revId": "a1e0813cfb69be86c42bf4706089cdc4b1cee301",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "148cde27_0ab59624",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1298873
+      },
+      "writtenOn": "2018-09-26T04:18:45Z",
+      "side": 1,
+      "message": "Done.\nI changed metadata.raw too.",
+      "parentUuid": "fdb4bddc_2cdfbe81",
+      "range": {
+        "startLine": 226,
+        "startChar": 12,
+        "endLine": 226,
+        "endChar": 19
+      },
+      "revId": "a1e0813cfb69be86c42bf4706089cdc4b1cee301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
