@@ -1,0 +1,22 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7db81a93_024654f5",
+        "filename": "appengine/monorail/services/test/issue_svc_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-09-27T20:50:27Z",
+      "side": 1,
+      "message": "Removed",
+      "parentUuid": "674f9d2d_c7836714",
+      "revId": "59d01ef89ab816a210b0f118ab8381ea64623593",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
