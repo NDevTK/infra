@@ -1,0 +1,22 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "405d9703_083d4ae2",
+        "filename": "appengine/findit/ui/elements/analysis/flake/flake-analysis-info.html",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-09-28T21:11:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b0c15af7_5b8d5ae7",
+      "revId": "0898e6b368f5c5dc5498376b49ab13199b1119e6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

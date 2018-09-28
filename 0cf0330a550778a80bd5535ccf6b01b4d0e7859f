@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "12d12d54_4d144315",
+        "filename": "appengine/findit/handlers/flake/check_flake.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-09-28T21:11:46Z",
+      "side": 1,
+      "message": "total_seconds will give us a float and need to be converted further, while this approach will already convert d:h:m:s for us which is what we want",
+      "parentUuid": "53de6e62_f48caaf4",
+      "range": {
+        "startLine": 228,
+        "startChar": 6,
+        "endLine": 228,
+        "endChar": 76
+      },
+      "revId": "0cf0330a550778a80bd5535ccf6b01b4d0e7859f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "fef8c817_ae3faa82",
         "filename": "appengine/findit/ui/elements/analysis/flake/flake-analysis-info.html",
         "patchSetId": 2
@@ -63,6 +87,24 @@
       "revId": "0cf0330a550778a80bd5535ccf6b01b4d0e7859f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4adc98ca_d346f8ce",
+        "filename": "appengine/findit/ui/elements/analysis/flake/flake-analysis-info.html",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-09-28T21:11:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fef8c817_ae3faa82",
+      "revId": "0cf0330a550778a80bd5535ccf6b01b4d0e7859f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
