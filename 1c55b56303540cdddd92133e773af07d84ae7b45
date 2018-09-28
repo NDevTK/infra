@@ -167,6 +167,24 @@
     },
     {
       "key": {
+        "uuid": "483f7420_ae88d081",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1298873
+      },
+      "writtenOn": "2018-09-28T03:49:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e2960938_0fb8f106",
+      "revId": "1c55b56303540cdddd92133e773af07d84ae7b45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "164d6d98_b9cf4ac9",
         "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
         "patchSetId": 6
