@@ -71,7 +71,7 @@ class SwarmbucketApiTest(testing.EndpointsTestCase):
         }
       }
     '''
-    config.Bucket(
+    config.LegacyBucket(
         id='luci.chromium.try',
         project_id='chromium',
         revision='deadbeef',
@@ -86,7 +86,7 @@ class SwarmbucketApiTest(testing.EndpointsTestCase):
         group: "all"
       }
     '''
-    config.Bucket(
+    config.LegacyBucket(
         id='luci.v8.try',
         project_id='v8',
         revision='deadbeef',
@@ -148,7 +148,7 @@ class SwarmbucketApiTest(testing.EndpointsTestCase):
 
   def test_get_builders(self):
     secret_cfg = 'name: "secret"'
-    config.Bucket(
+    config.LegacyBucket(
         id='secret',
         project_id='secret',
         revision='deadbeef',
@@ -203,7 +203,7 @@ class SwarmbucketApiTest(testing.EndpointsTestCase):
         }
       }
     '''
-    config.Bucket(
+    config.LegacyBucket(
         id='luci.other.try',
         project_id='other',
         revision='deadbeef',

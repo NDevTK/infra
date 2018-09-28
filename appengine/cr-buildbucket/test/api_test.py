@@ -62,7 +62,7 @@ class EndpointsApiTest(testing.EndpointsTestCase):
             'buildername': 'linux_rel',
         },
     )
-    self.test_bucket = config.Bucket(
+    self.test_bucket = config.LegacyBucket(
         id='chromium',
         entity_schema_version=config.CURRENT_BUCKET_SCHEMA_VERSION,
         project_id='test',
@@ -228,7 +228,7 @@ class EndpointsApiTest(testing.EndpointsTestCase):
     self.test_build.tags = ['owner:ivan']
 
     build2 = model.Build(id=2, bucket='v8')
-    config.Bucket(
+    config.LegacyBucket(
         id='v8',
         entity_schema_version=config.CURRENT_BUCKET_SCHEMA_VERSION,
         project_id=self.test_bucket.project_id,
@@ -706,7 +706,7 @@ class EndpointsApiTest(testing.EndpointsTestCase):
       }
     '''
 
-    config.Bucket(
+    config.LegacyBucket(
         id='master.tryserver.chromium.linux',
         project_id='chromium',
         revision='deadbeef',
