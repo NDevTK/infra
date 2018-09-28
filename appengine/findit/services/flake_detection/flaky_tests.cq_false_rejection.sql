@@ -1,4 +1,4 @@
-# To detect flaky tests causing Chromium CQ false rejections in the past 1 days.
+# To detect flaky tests causing Chromium CQ false rejections in the past 2 days.
 #
 # Assumptions for the flake detection in this query are:
 # 1. In the same build of the same CL/patchset/builder_id (a bulid id is a tuple
@@ -61,7 +61,7 @@ WITH
       UNNEST(ca.contributing_buildbucket_ids) AS build_id
   WHERE
     # cq_events table is not partitioned.
-    ca.attempt_start_usec >= UNIX_MICROS(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 day))
+    ca.attempt_start_usec >= UNIX_MICROS(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 day))
     AND ca.cq_name in (
       'chromium/chromium/src' # iOS does not support (without patch) yet.
       #, 'chromium/angle/angle' # Projects other than Chromium are not supported for now.
@@ -127,7 +127,7 @@ WITH
         UNNEST(build.input.gerrit_changes) AS gerrit_change
     WHERE
       # cr-buildbucket is a partitioned table, but not by ingestion time.
-      build.create_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 day)
+      build.create_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 day)
       # Chromium CQ builds should have only one patchset, thus the arrary
       # cr-buildbucket.builds.completed_BETA.input.gerrit_changes would
       # effectively have only one element. But still check just in case.
@@ -231,9 +231,9 @@ WITH
   WHERE
     # According to https://cloud.google.com/bigquery/docs/partitioned-tables,
     # _PARTITIONTIME is always the start of each day, so to make sure all data
-    # within the past 1 day is included, _PARTITIONTIME needs to be greater than
-    # the timestamp of 2 days ago.
-    _PARTITIONTIME >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 day)
+    # within the past 2 day is included, _PARTITIONTIME needs to be greater than
+    # the timestamp of 3 days ago.
+    _PARTITIONTIME >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 3 day)
     # Only builds going through buildbucket have build ids, including:
     # 1. All Luci-based builds.
     # 2. A subset of buildbot-based builds, e.g. all CQ builds.
