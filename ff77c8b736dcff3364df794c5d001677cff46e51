@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "31909bed_cb1699d5",
+        "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2018-09-28T01:11:29Z",
+      "side": 1,
+      "message": "Sorry, createClient needs to return \u0026storage.Client{} as *Client",
+      "parentUuid": "376fd734_a3df2fa7",
+      "revId": "ff77c8b736dcff3364df794c5d001677cff46e51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3fd7dd45_5740b98d",
         "filename": "go/src/infra/appengine/chromium_build_stats/app/pubsub_test.go",
         "patchSetId": 9
