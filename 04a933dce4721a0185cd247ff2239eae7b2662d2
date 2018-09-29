@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fc6aca7b_ee827c13",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-09-29T01:50:15Z",
+      "side": 1,
+      "message": "which reaps",
+      "range": {
+        "startLine": 40,
+        "startChar": 66,
+        "endLine": 40,
+        "endChar": 71
+      },
+      "revId": "04a933dce4721a0185cd247ff2239eae7b2662d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df46d968_0bed764b",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-09-29T01:50:15Z",
+      "side": 1,
+      "message": "typo",
+      "range": {
+        "startLine": 41,
+        "startChar": 25,
+        "endLine": 41,
+        "endChar": 36
+      },
+      "revId": "04a933dce4721a0185cd247ff2239eae7b2662d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ddb8339e_9910caa4",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2018-09-29T01:50:15Z",
+      "side": 1,
+      "message": "to",
+      "range": {
+        "startLine": 43,
+        "startChar": 40,
+        "endLine": 43,
+        "endChar": 43
+      },
+      "revId": "04a933dce4721a0185cd247ff2239eae7b2662d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
