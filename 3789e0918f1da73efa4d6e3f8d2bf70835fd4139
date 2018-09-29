@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "5c12051e_f8ac3958",
+        "filename": "appengine/findit/templates/flake/result.html",
+        "patchSetId": 4
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-09-29T01:00:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6bbdca7f_a6e17f8c",
+      "range": {
+        "startLine": 100,
+        "startChar": 4,
+        "endLine": 100,
+        "endChar": 23
+      },
+      "revId": "3789e0918f1da73efa4d6e3f8d2bf70835fd4139",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1e3bef2e_8f8bb6b0",
         "filename": "appengine/findit/templates/flake/result.html",
         "patchSetId": 4
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "079b3102_75dde85e",
+        "filename": "appengine/findit/templates/flake/result.html",
+        "patchSetId": 4
+      },
+      "lineNbr": 454,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-09-29T01:00:59Z",
+      "side": 1,
+      "message": "The sample page is outdated",
+      "parentUuid": "1e3bef2e_8f8bb6b0",
+      "range": {
+        "startLine": 454,
+        "startChar": 10,
+        "endLine": 454,
+        "endChar": 28
+      },
+      "revId": "3789e0918f1da73efa4d6e3f8d2bf70835fd4139",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "518b7307_baf0bd81",
         "filename": "appengine/findit/templates/flake/result.html",
         "patchSetId": 4
@@ -59,6 +107,30 @@
       "writtenOn": "2018-09-28T22:29:55Z",
       "side": 1,
       "message": "Other components adjust sizes when this card is expanded/collapsed",
+      "range": {
+        "startLine": 456,
+        "startChar": 9,
+        "endLine": 456,
+        "endChar": 31
+      },
+      "revId": "3789e0918f1da73efa4d6e3f8d2bf70835fd4139",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "201d916c_d46fec1b",
+        "filename": "appengine/findit/templates/flake/result.html",
+        "patchSetId": 4
+      },
+      "lineNbr": 456,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-09-29T01:00:59Z",
+      "side": 1,
+      "message": "Aren\u0027t they supposed to?",
+      "parentUuid": "518b7307_baf0bd81",
       "range": {
         "startLine": 456,
         "startChar": 9,
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "d067cfde_1f76cade",
+        "filename": "appengine/findit/ui/elements/analysis/flake/check-recent-flakiness.html",
+        "patchSetId": 4
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-09-29T01:00:59Z",
+      "side": 1,
+      "message": "Hm I\u0027m not sure this actually saves anything, the idea here is to use \"unknown age\" if the data point doesn\u0027t have a timestamp saved (legacy data), due to there being no \"dom-else\" AFAIK?",
+      "parentUuid": "d76add38_1b937b90",
+      "range": {
+        "startLine": 106,
+        "startChar": 0,
+        "endLine": 112,
+        "endChar": 10
+      },
+      "revId": "3789e0918f1da73efa4d6e3f8d2bf70835fd4139",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4a09a195_a6ec4470",
         "filename": "appengine/findit/ui/elements/analysis/flake/flake-analysis-info.html",
         "patchSetId": 4
@@ -112,6 +208,24 @@
     },
     {
       "key": {
+        "uuid": "06f9ae8a_8d43b07d",
+        "filename": "appengine/findit/ui/elements/analysis/flake/flake-analysis-info.html",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-09-29T01:00:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4a09a195_a6ec4470",
+      "revId": "3789e0918f1da73efa4d6e3f8d2bf70835fd4139",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6f8beafb_a3f79acf",
         "filename": "appengine/findit/ui/elements/analysis/flake/flake-analysis-info.html",
         "patchSetId": 4
@@ -123,6 +237,30 @@
       "writtenOn": "2018-09-28T22:29:55Z",
       "side": 1,
       "message": "Also use Polymer more for this big function?",
+      "range": {
+        "startLine": 157,
+        "startChar": 0,
+        "endLine": 184,
+        "endChar": 59
+      },
+      "revId": "3789e0918f1da73efa4d6e3f8d2bf70835fd4139",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d9be4b2b_32ca5fcf",
+        "filename": "appengine/findit/ui/elements/analysis/flake/flake-analysis-info.html",
+        "patchSetId": 4
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-09-29T01:00:59Z",
+      "side": 1,
+      "message": "I\u0027m not sure this is doable due to the various cases? There\u0027s no dom-else AFAIK, unless I\u0027m not understanding Polymer correctly (which I\u0027m probably not)",
+      "parentUuid": "6f8beafb_a3f79acf",
       "range": {
         "startLine": 157,
         "startChar": 0,
