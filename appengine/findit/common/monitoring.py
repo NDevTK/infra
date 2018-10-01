@@ -54,6 +54,20 @@ analysis_durations = gae_ts_mon.CumulativeDistributionMetric(
         gae_ts_mon.StringField('result'),
     ])
 
+swarming_task_durations = gae_ts_mon.CumulativeDistributionMetric(
+    'findit/swarming-task-durations',
+    'Durations of swarming tasks triggered by Findit',
+    [
+        gae_ts_mon.StringField('master_name'),
+        gae_ts_mon.StringField('builder_name'),
+        # Purpose of the task: identify-flake or identify-regression-range.
+        gae_ts_mon.StringField('purpose'),
+        # pending or running.
+        gae_ts_mon.StringField('status'),
+        gae_ts_mon.StringField('canonical_step_name'),
+        gae_ts_mon.StringField('isolate_target_name')
+    ])
+
 culprit_found = gae_ts_mon.CounterMetric(
     'findit/culprits',
     'Culprits identified by findit',

@@ -12,11 +12,42 @@ from infra_api_clients.swarming import swarming_util
 from libs import time_util
 from services import constants
 from services import monitoring
+from services import step_util
 from services import swarmed_test_util
 from services import swarming
 from services.flake_failure import flake_test_results
 
 _FINDIT_HTTP_CLIENT = FinditHttpClient()
+_PURPOSE = 'identify-regression-range'
+
+
+def _RecordFlakeSwarmingTaskDuration(task_data, parameters):
+  if not task_data:
+    return
+
+  master_name = parameters.master_name
+  builder_name = parameters.builder_name
+  reference_build_number = parameters.reference_build_number
+  step_name = parameters.step_name
+  isolate_target_name = step_util.GetIsolateTargetName(
+      master_name, builder_name, reference_build_number, step_name)
+
+  canonical_step_name = step_util.GetCanonicalStepName(
+      master_name, builder_name, reference_build_number, step_name)
+
+  created_time = time_util.DatetimeFromString(task_data.get('created_ts'))
+  started_time = time_util.DatetimeFromString(task_data.get('started_ts'))
+  completed_time = time_util.DatetimeFromString(task_data.get('completed_ts'))
+
+  if created_time and started_time:  # pragma: no branch
+    monitoring.RecordSwarmingTaskDuration(
+        master_name, builder_name, _PURPOSE, 'pending', canonical_step_name,
+        isolate_target_name, (started_time - created_time).total_seconds())
+
+  if started_time and completed_time:  # pragma: no branch
+    monitoring.RecordSwarmingTaskDuration(
+        master_name, builder_name, _PURPOSE, 'running', canonical_step_name,
+        isolate_target_name, (completed_time - started_time).total_seconds())
 
 
 def _ParseFlakeSwarmingTaskOutput(task_data, output_json, error, parameters):
@@ -77,11 +108,13 @@ def OnSwarmingTaskTimeout(parameters, task_id):
 
   if not task_id:
     # The pipeline timedout without successfully triggering a task.
+    _RecordFlakeSwarmingTaskDuration(None, parameters)
     return OnSwarmingTaskError(None, timeout_error)
 
   task_data, output_json, error = (
       swarmed_test_util.GetSwarmingTaskDataAndResult(task_id))
 
+  _RecordFlakeSwarmingTaskDuration(task_data, parameters)
   if not task_data or not task_data.get('state'):
     return OnSwarmingTaskError(task_id, error or timeout_error)
 
@@ -109,12 +142,14 @@ def OnSwarmingTaskStateChanged(parameters, task_id):
 
   if not task_data or not task_data.get('state'):
     # Something went wrong trying to get task data or state.
+    _RecordFlakeSwarmingTaskDuration(task_data, parameters)
     return OnSwarmingTaskError(task_id, error)
 
   if task_data['state'] in constants.STATE_NOT_STOP:
     # The task is in progress. No results to return yet.
     return None
 
+  _RecordFlakeSwarmingTaskDuration(task_data, parameters)
   # The task is completed e.g. task_state == constants.STATE_COMPLETED. Even
   # if there is an error, attempt to salvage any usable information, but
   # still report the error.
@@ -138,7 +173,7 @@ def CreateNewSwarmingTaskRequest(
   new_request.properties.execution_timeout_secs = str(timeout_seconds)
 
   # Add additional tags.
-  new_request.tags.append('purpose:identify-regression-range')
+  new_request.tags.append('purpose:%s' % _PURPOSE)
 
   return new_request
 
@@ -181,6 +216,6 @@ def TriggerSwarmingTask(master_name, builder_name, reference_build_number,
       swarming.SwarmingHost(), new_request, _FINDIT_HTTP_CLIENT)
 
   # Monitoring.
-  monitoring.OnSwarmingTaskStatusChange('trigger', 'identify-regression-range')
+  monitoring.OnSwarmingTaskStatusChange('trigger', _PURPOSE)
 
   return task_id
