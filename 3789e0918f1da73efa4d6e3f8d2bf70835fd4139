@@ -167,6 +167,30 @@
     },
     {
       "key": {
+        "uuid": "e3c6ba4e_8aa6a940",
+        "filename": "appengine/findit/templates/flake/result.html",
+        "patchSetId": 4
+      },
+      "lineNbr": 456,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-10-01T23:17:30Z",
+      "side": 1,
+      "message": "Per discussion offline this is not related to my change - the cause of the resizing is due to the scroll bar appearing as a result of the UI elements being taller. This will no longer be an issue once switching from an expandable card to a regular table.",
+      "parentUuid": "200ad1ac_b6ac78f2",
+      "range": {
+        "startLine": 456,
+        "startChar": 9,
+        "endLine": 456,
+        "endChar": 31
+      },
+      "revId": "3789e0918f1da73efa4d6e3f8d2bf70835fd4139",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d76add38_1b937b90",
         "filename": "appengine/findit/ui/elements/analysis/flake/check-recent-flakiness.html",
         "patchSetId": 4
@@ -235,6 +259,30 @@
       "revId": "3789e0918f1da73efa4d6e3f8d2bf70835fd4139",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f9908623_01f984b5",
+        "filename": "appengine/findit/ui/elements/analysis/flake/check-recent-flakiness.html",
+        "patchSetId": 4
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-10-01T23:17:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1bf8a469_86f23ebb",
+      "range": {
+        "startLine": 106,
+        "startChar": 0,
+        "endLine": 112,
+        "endChar": 10
+      },
+      "revId": "3789e0918f1da73efa4d6e3f8d2bf70835fd4139",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -318,6 +366,30 @@
       "revId": "3789e0918f1da73efa4d6e3f8d2bf70835fd4139",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1d5a1cf9_2a4a1204",
+        "filename": "appengine/findit/ui/elements/analysis/flake/flake-analysis-info.html",
+        "patchSetId": 4
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-10-01T23:17:30Z",
+      "side": 1,
+      "message": "I think for this one it\u0027s easier to control in the computeAnalysisResults function than using dom-if and dom-if not branches for now, as there are more sophisticated cases (e.g. regression range available but no culprit) that would make the template hard to follow, so I will keep this as is.",
+      "parentUuid": "d9be4b2b_32ca5fcf",
+      "range": {
+        "startLine": 157,
+        "startChar": 0,
+        "endLine": 184,
+        "endChar": 59
+      },
+      "revId": "3789e0918f1da73efa4d6e3f8d2bf70835fd4139",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
