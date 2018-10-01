@@ -143,6 +143,30 @@
     },
     {
       "key": {
+        "uuid": "200ad1ac_b6ac78f2",
+        "filename": "appengine/findit/templates/flake/result.html",
+        "patchSetId": 4
+      },
+      "lineNbr": 456,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-10-01T16:47:20Z",
+      "side": 1,
+      "message": "Maybe it\u0027ll be easier if we discuss this offline and I can show you what I observed.",
+      "parentUuid": "201d916c_d46fec1b",
+      "range": {
+        "startLine": 456,
+        "startChar": 9,
+        "endLine": 456,
+        "endChar": 31
+      },
+      "revId": "3789e0918f1da73efa4d6e3f8d2bf70835fd4139",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d76add38_1b937b90",
         "filename": "appengine/findit/ui/elements/analysis/flake/check-recent-flakiness.html",
         "patchSetId": 4
@@ -178,6 +202,30 @@
       "side": 1,
       "message": "Hm I\u0027m not sure this actually saves anything, the idea here is to use \"unknown age\" if the data point doesn\u0027t have a timestamp saved (legacy data), due to there being no \"dom-else\" AFAIK?",
       "parentUuid": "d76add38_1b937b90",
+      "range": {
+        "startLine": 106,
+        "startChar": 0,
+        "endLine": 112,
+        "endChar": 10
+      },
+      "revId": "3789e0918f1da73efa4d6e3f8d2bf70835fd4139",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1bf8a469_86f23ebb",
+        "filename": "appengine/findit/ui/elements/analysis/flake/check-recent-flakiness.html",
+        "patchSetId": 4
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-10-01T16:47:20Z",
+      "side": 1,
+      "message": "Yes there is no else, so we can use 2 \u0027dom-if\u0027s.",
+      "parentUuid": "d067cfde_1f76cade",
       "range": {
         "startLine": 106,
         "startChar": 0,
