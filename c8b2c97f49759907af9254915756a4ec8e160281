@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "67af8696_17a50d9d",
+        "filename": "appengine/findit/ui/elements/analysis/flake/check-recent-flakiness.html",
+        "patchSetId": 8
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-10-01T23:28:49Z",
+      "side": 1,
+      "message": "th?",
+      "range": {
+        "startLine": 60,
+        "startChar": 15,
+        "endLine": 60,
+        "endChar": 37
+      },
+      "revId": "c8b2c97f49759907af9254915756a4ec8e160281",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
