@@ -820,6 +820,30 @@
       "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a2c6c5e_24641c5d",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/assignment.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-10-02T17:50:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "94ac188a_305c9cb4",
+      "range": {
+        "startLine": 44,
+        "startChar": 0,
+        "endLine": 44,
+        "endChar": 2
+      },
+      "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
