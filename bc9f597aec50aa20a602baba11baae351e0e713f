@@ -1,0 +1,417 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e5da1087_e7b20c85",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-10-02T01:26:40Z",
+      "side": 1,
+      "message": "style: uppercase API",
+      "range": {
+        "startLine": 15,
+        "startChar": 62,
+        "endLine": 15,
+        "endChar": 65
+      },
+      "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2184d38f_79ba7ea2",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-10-02T01:26:40Z",
+      "side": 1,
+      "message": "Possibly clearer to name EnqueueTime?  For someone new to the codebase:\n\n var wq WorkerQueue\n wq.Time\n wq.EnqueueTime\n\nIt gives more useful context.",
+      "range": {
+        "startLine": 43,
+        "startChar": 1,
+        "endLine": 43,
+        "endChar": 5
+      },
+      "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0e1db4df_0d0fcfe5",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-10-02T01:26:40Z",
+      "side": 1,
+      "message": "Should just be New so it\u0027s called like:\n\n reconciler.New()",
+      "range": {
+        "startLine": 73,
+        "startChar": 5,
+        "endLine": 73,
+        "endChar": 13
+      },
+      "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6cc37884_1e071a0e",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-10-02T01:26:40Z",
+      "side": 1,
+      "message": "Is it too late to change the terminology?  I think \"reap\" is very confusing.  I know that there\u0027s a corresponding function call with that name in Swarming, but from the point of view of qscheduler \"reap\" suggests cleaning up dead workers or jobs.",
+      "range": {
+        "startLine": 80,
+        "startChar": 63,
+        "endLine": 80,
+        "endChar": 67
+      },
+      "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "72db4184_faae7a07",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-10-02T01:26:40Z",
+      "side": 1,
+      "message": "Be consistent with id vs ID (Go style recommends ID).",
+      "range": {
+        "startLine": 91,
+        "startChar": 20,
+        "endLine": 91,
+        "endChar": 22
+      },
+      "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a2142085_e624aeb1",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-10-02T01:26:40Z",
+      "side": 1,
+      "message": "idleWorkerLabels is redundant?  This line could just be replaced with the s.MarkIdle call?",
+      "range": {
+        "startLine": 127,
+        "startChar": 3,
+        "endLine": 127,
+        "endChar": 19
+      },
+      "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4cc92764_92f21c05",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-10-02T01:26:40Z",
+      "side": 1,
+      "message": "can just get rid of the newAssignments intermediate variable and inline RunOnce()",
+      "range": {
+        "startLine": 136,
+        "startChar": 1,
+        "endLine": 136,
+        "endChar": 15
+      },
+      "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f623880d_21f1144e",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-10-02T01:26:40Z",
+      "side": 1,
+      "message": "Why is this a pointer?  This makes work for the GC.",
+      "range": {
+        "startLine": 143,
+        "startChar": 35,
+        "endLine": 143,
+        "endChar": 46
+      },
+      "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "da34eb9e_92b1a409",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-10-02T01:26:40Z",
+      "side": 1,
+      "message": "Does this need to be a pointer?  (Take GC impact into consideration, each heap object needs collection.)",
+      "range": {
+        "startLine": 151,
+        "startChar": 23,
+        "endLine": 151,
+        "endChar": 34
+      },
+      "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a50edd10_b817a6b0",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-10-02T01:26:40Z",
+      "side": 1,
+      "message": "Is it really necessary to make a global epoch var?  I prefer the times just being hard-coded in the tests so that there\u0027s one less external reference I need to check when reading the tests (and the tests do not appear to need a specific timestamp so just time.Unix(0, 0) will do).",
+      "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8cdd7e48_cc39dd25",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-10-02T01:26:40Z",
+      "side": 1,
+      "message": "I think tests are only compiled when running tests.  So this would only be checked for go test and not go build (sorry if I\u0027m wrong).",
+      "range": {
+        "startLine": 33,
+        "startChar": 36,
+        "endLine": 33,
+        "endChar": 43
+      },
+      "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "87bc2549_19205cce",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-10-02T01:26:40Z",
+      "side": 1,
+      "message": "I think it\u0027s better that this is an explicit check with error rather than a compile time thing:\n\n if _, ok :\u003d (\u0026scheduler.Scheduler{}).(Scheduler); !ok {\n     t.Errorf(\"Scheduler interface should be satisfied by ...\")\n }",
+      "range": {
+        "startLine": 37,
+        "startChar": 1,
+        "endLine": 37,
+        "endChar": 41
+      },
+      "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "08729b62_8c5bb97c",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-10-02T01:26:40Z",
+      "side": 1,
+      "message": "Use field names here.",
+      "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "166fd458_56c53cef",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-10-02T01:26:40Z",
+      "side": 1,
+      "message": "Shorter parameter names:\n\ndesc, got, want",
+      "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5ced94ee_4ed51004",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-10-02T01:26:40Z",
+      "side": 1,
+      "message": "This function needs a t.Helper() call.",
+      "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7c80dda1_11bda4af",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-10-02T01:26:40Z",
+      "side": 1,
+      "message": "nit: fakeSch feels kind of awkward to read to me (since Sch at the end is hard to pronounce except for Germans perhaps).  Just s or fs maybe?",
+      "range": {
+        "startLine": 99,
+        "startChar": 1,
+        "endLine": 99,
+        "endChar": 8
+      },
+      "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bba9e7af_b949e847",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-10-02T01:26:40Z",
+      "side": 1,
+      "message": "style: I prefer got, want since they\u0027re shorter and seem to be commonly used in Go (unless another style or policy exists here).",
+      "range": {
+        "startLine": 115,
+        "startChar": 1,
+        "endLine": 115,
+        "endChar": 7
+      },
+      "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a049705e_63d23909",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-10-02T01:26:40Z",
+      "side": 1,
+      "message": "better name just w1, w2?",
+      "range": {
+        "startLine": 135,
+        "startChar": 1,
+        "endLine": 135,
+        "endChar": 10
+      },
+      "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "94ac188a_305c9cb4",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/assignment.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-10-02T01:26:40Z",
+      "side": 1,
+      "message": "Whitespace error, should be tab?",
+      "range": {
+        "startLine": 44,
+        "startChar": 0,
+        "endLine": 44,
+        "endChar": 2
+      },
+      "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
