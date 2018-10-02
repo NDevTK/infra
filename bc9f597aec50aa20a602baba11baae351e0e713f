@@ -214,6 +214,30 @@
     },
     {
       "key": {
+        "uuid": "e303b675_a359e6c6",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-10-02T21:35:44Z",
+      "side": 1,
+      "message": "Renamed to IdleWorker\n\nRenamed to AssignTasks\n\nFixed a variety of comments and test names.",
+      "parentUuid": "370b4a66_9020b178",
+      "range": {
+        "startLine": 80,
+        "startChar": 63,
+        "endLine": 80,
+        "endChar": 67
+      },
+      "revId": "bc9f597aec50aa20a602baba11baae351e0e713f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "72db4184_faae7a07",
         "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
         "patchSetId": 4
