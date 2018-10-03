@@ -69,6 +69,30 @@
       "revId": "2221e6a97f9180ef454fbb9137f699da02123988",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3eac6f68_fad46b7a",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/assignment.proto",
+        "patchSetId": 7
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-10-03T17:11:49Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "209c408d_0076d8d0",
+      "range": {
+        "startLine": 47,
+        "startChar": 59,
+        "endLine": 47,
+        "endChar": 65
+      },
+      "revId": "2221e6a97f9180ef454fbb9137f699da02123988",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
