@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "14b429a9_40da337c",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2018-10-03T15:28:09Z",
+      "side": 1,
+      "message": "[optional] You should probably use Bot instead of Worker, just for consistency with Swarming glossary.",
+      "range": {
+        "startLine": 80,
+        "startChar": 7,
+        "endLine": 80,
+        "endChar": 13
+      },
+      "revId": "2221e6a97f9180ef454fbb9137f699da02123988",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "209c408d_0076d8d0",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/assignment.proto",
+        "patchSetId": 7
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2018-10-03T15:28:09Z",
+      "side": 1,
+      "message": "If you decide to s/worker/bot/, don\u0027t forget here too.",
+      "range": {
+        "startLine": 47,
+        "startChar": 59,
+        "endLine": 47,
+        "endChar": 65
+      },
+      "revId": "2221e6a97f9180ef454fbb9137f699da02123988",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
