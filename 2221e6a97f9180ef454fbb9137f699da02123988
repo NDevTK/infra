@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "e12131a2_93b58e5f",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-10-03T17:11:28Z",
+      "side": 1,
+      "message": "Inside of qscheduler I\u0027m referring to them as Workers; it feels a bit more generic to call them Workers than Bots. I\u0027d rather be consistent internally within qslib here.\n\nCan revisit later...",
+      "parentUuid": "14b429a9_40da337c",
+      "range": {
+        "startLine": 80,
+        "startChar": 7,
+        "endLine": 80,
+        "endChar": 13
+      },
+      "revId": "2221e6a97f9180ef454fbb9137f699da02123988",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "209c408d_0076d8d0",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/assignment.proto",
         "patchSetId": 7
