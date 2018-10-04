@@ -130,7 +130,7 @@ func respondTestFileList(ctx *router.Context, params URLParams) {
 	}
 
 	if params.Callback != "" {
-		b, err := keysJSON(c, testFiles)
+		b, err := json.Marshal(testFiles)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			logging.Errorf(c, "failed to create callback JSON: %v: %v", testFiles, err)
@@ -148,17 +148,6 @@ func respondTestFileList(ctx *router.Context, params URLParams) {
 		"Name":        params.Name,
 		"Files":       testFiles,
 	})
-}
-
-func keysJSON(c context.Context, tfiles []*model.TestFile) ([]byte, error) {
-	type K struct {
-		Key string `json:"key"`
-	}
-	keys := make([]K, len(tfiles))
-	for i, tf := range tfiles {
-		keys[i] = K{datastore.KeyForObj(c, tf).Encode()}
-	}
-	return json.Marshal(keys)
 }
 
 func respondTestFileDefault(ctx *router.Context, params URLParams) {
