@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dfcdcfde_264a79b0",
+        "filename": "appengine/monorail/static/js/autolink.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-10-12T19:49:06Z",
+      "side": 1,
+      "message": "Could we add a quick test case for these changes here:\n\nhttps://cs.chromium.org/chromium/infra/appengine/monorail/elements/test/autolink_test.html?sq\u003dpackage:chromium\u0026dr\u003dC\u0026q\u003dmarkupautol+file:%5Einfra/appengine/monorail/+package:%5Echromium$\u0026g\u003d0\u0026l\u003d351",
+      "revId": "2fbf9cc040ff576a1c523abf44ba7fb8f3238086",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
