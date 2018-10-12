@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f8c9656c_5bef27dd",
+        "filename": "appengine/monorail/tracker/fltconversion.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-10-12T17:22:37Z",
+      "side": 1,
+      "message": "I checked chromium\u0027s derived labels rules. No pm- tl- lest- derived labels are being added there.",
+      "range": {
+        "startLine": 106,
+        "startChar": 53,
+        "endLine": 106,
+        "endChar": 66
+      },
+      "revId": "17c6b07c4700d46bb92f30ac5481f268a5848a82",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
