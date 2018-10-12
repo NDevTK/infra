@@ -39,6 +39,20 @@ VALUE_TO_STATUS = {
 # Adding '^' before each label prefix to ensure Blah-Launch-UI-Yes is ignored
 REVIEW_LABELS_RE = re.compile('^' + '|^'.join(APPROVALS_TO_LABELS.values()))
 
+# Maps template phases to channel names in 'Launch-M-Target-80-[Channel]' labels
+PHASE_MAP = {
+    'beta': 'beta',
+    'stable': 'stable',
+    'stable-full': 'stable',
+    'stable-exp': 'stable-exp',
+    }
+
+# Matches launch milestone labels, eg. Launch-M-Target-70-Stable-Exp
+M_LABELS_RE = re.compile(
+    r'^Launch-M-(?P<type>Approved|Target)-(?P<m>\d\d)-'
+    r'(?P<channel>%s)' % '$|'.join(PHASE_MAP.values()) + '$',
+    re.IGNORECASE)
+
 
 class FLTConvertTask(jsonfeed.InternalTask):
   """FLTConvert converts current Type=Launch issues into Type=FLT-Launch."""
@@ -95,6 +109,31 @@ class FLTConvertTask(jsonfeed.InternalTask):
         config, issue, delta, comment=CONVERSION_COMMENT)
 
     return amendments
+
+
+# TODO(jojwang): before calling ConvertMLabels, check that all phases
+# can be found in PHASE_MAP and M-Target and M-Approved are phase fields
+# and multi-valued.
+def ConvertMLabels(labels, phases, m_target_id, m_approved_id):
+  field_values = []
+  for label in labels:
+    match = re.match(M_LABELS_RE, label)
+    if match:
+      milestone = match.group('m')
+      m_type = match.group('type')
+      channel = match.group('channel')
+      for phase in phases:
+        # We know get(phase) will return something because
+        # we're checking before ConvertMLabels, that all phases
+        # exist in PHASE_MAP
+        if PHASE_MAP.get(phase.name.lower()) == channel.lower():
+          field_id = m_target_id if (
+              m_type.lower() == 'target') else m_approved_id
+          field_values.append(tracker_bizobj.MakeFieldValue(
+              field_id, int(milestone), None, None, None, None, False,
+              phase_id=phase.phase_id))
+          break  # exit phase loop if match is found.
+  return field_values
 
 
 def ConvertLaunchLabels(issue, approvals, project_fds):
