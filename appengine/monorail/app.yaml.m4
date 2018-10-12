@@ -45,6 +45,10 @@ handlers:
   static_dir: bower_components
   secure: always
 
+- url: /node_modules
+  static_dir: node_modules
+  secure: always
+
 - url: /deployed_node_modules
   static_dir: deployed_node_modules
   secure: always
