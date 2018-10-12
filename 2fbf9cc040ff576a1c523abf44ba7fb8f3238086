@@ -16,6 +16,24 @@
       "revId": "2fbf9cc040ff576a1c523abf44ba7fb8f3238086",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "45d0f99a_d76bca9d",
+        "filename": "appengine/monorail/static/js/autolink.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-10-12T20:15:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dfcdcfde_264a79b0",
+      "revId": "2fbf9cc040ff576a1c523abf44ba7fb8f3238086",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
