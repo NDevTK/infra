@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f173a568_fe9714ab",
+        "filename": "appengine/monorail/app.yaml.m4",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2018-10-12T18:51:16Z",
+      "side": 1,
+      "message": "This should also have\n\n  mime_type: application/javascript",
+      "revId": "4064ad264b0f10235ad071e5841911f7057be8f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
