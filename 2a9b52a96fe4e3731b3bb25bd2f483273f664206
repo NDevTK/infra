@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5f5e8e5a_daf67352",
+        "filename": "appengine/monorail/tracker/fltconversion.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-10-15T17:46:19Z",
+      "side": 1,
+      "message": "This might be more clear as\nPHASE_PAT \u003d \u0027|\u0027.join(PHASE_MAP.values())\nand then use it like\n r\u0027(?P\u003cchannel\u003e(%s)$)\u0027 % PHASE_PAT,",
+      "revId": "2a9b52a96fe4e3731b3bb25bd2f483273f664206",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
