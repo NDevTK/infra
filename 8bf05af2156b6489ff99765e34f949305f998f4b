@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0eb7f4c9_84610587",
+        "filename": "appengine/monorail/api/issues_servicer.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 498,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-10-18T16:57:31Z",
+      "side": 1,
+      "message": "pluralize",
+      "range": {
+        "startLine": 498,
+        "startChar": 32,
+        "endLine": 498,
+        "endChar": 37
+      },
+      "revId": "8bf05af2156b6489ff99765e34f949305f998f4b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "054b3c84_2866680e",
+        "filename": "appengine/monorail/api/issues_servicer.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 500,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-10-18T16:57:31Z",
+      "side": 1,
+      "message": "nit for readability:\nwe want len(project_names) \u003d\u003d 1\nSo I would check the opposite:\nif len(project_names) !\u003d 1",
+      "range": {
+        "startLine": 500,
+        "startChar": 26,
+        "endLine": 500,
+        "endChar": 27
+      },
+      "revId": "8bf05af2156b6489ff99765e34f949305f998f4b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7775689d_dd0ce96f",
+        "filename": "appengine/monorail/api/issues_servicer.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 502,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2018-10-18T16:57:31Z",
+      "side": 1,
+      "message": "Cros -\u003e Cross",
+      "range": {
+        "startLine": 502,
+        "startChar": 11,
+        "endLine": 502,
+        "endChar": 15
+      },
+      "revId": "8bf05af2156b6489ff99765e34f949305f998f4b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
