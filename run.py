@@ -26,4 +26,6 @@ ENV_PATH = os.path.join(ROOT_PATH, 'ENV')
 run_helper = imp.load_source(
     'run_helper', os.path.join(ROOT_PATH, 'bootstrap', 'run_helper.py'))
 
+# booo
+
 sys.exit(run_helper.run_py_main(sys.argv[1:], RUNPY_PATH, ENV_PATH, 'infra'))
