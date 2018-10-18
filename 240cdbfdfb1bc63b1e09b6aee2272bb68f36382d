@@ -46,6 +46,30 @@
       "revId": "240cdbfdfb1bc63b1e09b6aee2272bb68f36382d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fafe837b_8245a222",
+        "filename": "go/src/infra/appengine/depot_tools_metrics/metrics/metrics_schema.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-10-18T21:23:18Z",
+      "side": 1,
+      "message": "ah, understood. So, then isn\u0027t the idea to eventually delete this after a couple of weeks?",
+      "parentUuid": "5fa65273_7496931d",
+      "range": {
+        "startLine": 254,
+        "startChar": 9,
+        "endLine": 254,
+        "endChar": 14
+      },
+      "revId": "240cdbfdfb1bc63b1e09b6aee2272bb68f36382d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
