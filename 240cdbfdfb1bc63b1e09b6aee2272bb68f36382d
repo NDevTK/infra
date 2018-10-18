@@ -22,6 +22,30 @@
       "revId": "240cdbfdfb1bc63b1e09b6aee2272bb68f36382d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5fa65273_7496931d",
+        "filename": "go/src/infra/appengine/depot_tools_metrics/metrics/metrics_schema.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2018-10-18T21:21:56Z",
+      "side": 1,
+      "message": "Nope.\nIf you run platform.machine() on Python on Windows, it returns that.\nFor developers without the fix, that\u0027s what metrics would report.\nWith the fix, this shouldn\u0027t even be here, since depot_tools will convert it to x86 or x64.",
+      "parentUuid": "69885b19_41ef9afa",
+      "range": {
+        "startLine": 254,
+        "startChar": 9,
+        "endLine": 254,
+        "endChar": 14
+      },
+      "revId": "240cdbfdfb1bc63b1e09b6aee2272bb68f36382d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
