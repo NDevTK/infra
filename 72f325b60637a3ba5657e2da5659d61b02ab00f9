@@ -16,6 +16,24 @@
       "revId": "72f325b60637a3ba5657e2da5659d61b02ab00f9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b241524c_d7980ef9",
+        "filename": "appengine/monorail/tracker/fltconversion.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-10-18T21:51:48Z",
+      "side": 1,
+      "message": "Usually we do have longer variable names, but there are a few idiomatic names that are used throughout the code, including fv for field value.   I\u0027ll spend a few minutes making a doc/glossary.md file with some of them so that they are consistent.",
+      "parentUuid": "9168b5be_0f7405c4",
+      "revId": "72f325b60637a3ba5657e2da5659d61b02ab00f9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
