@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9168b5be_0f7405c4",
+        "filename": "appengine/monorail/tracker/fltconversion.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1303432
+      },
+      "writtenOn": "2018-10-18T01:08:19Z",
+      "side": 1,
+      "message": "I hope we don\u0027t keep this around for ever for it to be a huge deal, but I think your abbreviations are hurting readability. By which I mean, I have no idea what \u0027FVS\u0027 means and it doesn\u0027t help me understand the code.\n\nCode search reveals: https://cs.chromium.org/chromium/infra/appengine/monorail/api/converters.py?type\u003dcs\u0026q\u003dmonorail+fvs\u0026g\u003d0\u0026l\u003d210 which makes me think this is \"Field Values\"\n\n\n_fieldVals or _fieldValues would be clearer. Though the same could be said for fid, etc. Perhaps I should just be more familiar with the protos such that I\u0027d get it. A little bit of code searching did get me there.",
+      "revId": "72f325b60637a3ba5657e2da5659d61b02ab00f9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
