@@ -84,6 +84,12 @@ message BotSummary {
 
     // Subset of Swarming dimensions for the current bot.
     BotDimensions dimensions = 4;
+
+    // health_status is the history aware health status of the bot.
+    //
+    // A healthy bot is safe to use for external workload. For unhealthy bots,
+    // the status captures the required action to fix the bot.
+    HealthStatus health_status = 5;
 }
 
 enum DutState {
@@ -93,4 +99,19 @@ enum DutState {
     NeedsRepair = 3;
     NeedsReset = 4;
     RepairFailed = 5;
+}
+
+enum HealthStatus {
+    HealthStatusInvalid = 0;
+
+    // A Healthy bot may be used for external workload.
+    Healthy = 1;
+
+    // An Unhealthy bot is not usable for external workload.
+    // Further classification of the problem is not available.
+    Unhealthy = 2;
+
+    // Coming soon ?...
+    //   UnhealthyStuckInProvisionRepairLoop
+    //   UnhealthyFailingProvisionFrequently
 }
