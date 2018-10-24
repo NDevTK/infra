@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c12fc550_6a9e4b2d",
+        "filename": "3pp/run_locally.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-10-24T21:11:25Z",
+      "side": 1,
+      "message": "nit: echo this, so users know why root is required",
+      "range": {
+        "startLine": 72,
+        "startChar": 2,
+        "endLine": 72,
+        "endChar": 80
+      },
+      "revId": "1625910132e3468b5c2776ae12d3b75e7553d001",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
