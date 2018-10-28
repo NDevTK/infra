@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "891bdcc1_873fb4fb",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tracker_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-10-28T02:08:03Z",
+      "side": 1,
+      "message": "nit: i dunno why, but we typically wrap text comment lines by 80 chars.",
+      "range": {
+        "startLine": 85,
+        "startChar": 80,
+        "endLine": 85,
+        "endChar": 104
+      },
+      "revId": "bb7f648c6e25494489a8ee9f8215f367cf0ab893",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
