@@ -22,6 +22,30 @@
       "revId": "bb7f648c6e25494489a8ee9f8215f367cf0ab893",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e33459dd_314b7f07",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tracker_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2018-10-30T03:47:16Z",
+      "side": 1,
+      "message": "Handled comments uniformly in https://chromium-review.googlesource.com/c/infra/infra/+/1305794",
+      "parentUuid": "891bdcc1_873fb4fb",
+      "range": {
+        "startLine": 85,
+        "startChar": 80,
+        "endLine": 85,
+        "endChar": 104
+      },
+      "revId": "bb7f648c6e25494489a8ee9f8215f367cf0ab893",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
