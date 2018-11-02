@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "259a63b9_f2891683",
+        "filename": "go/src/infra/appengine/crosskylabadmin/api/fleet/v1/tracker.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-11-02T22:35:26Z",
+      "side": 1,
+      "message": "maybe started_ts ?\n\n\u0027started\u0027 seems like a boolean flag.",
+      "range": {
+        "startLine": 131,
+        "startChar": 28,
+        "endLine": 131,
+        "endChar": 35
+      },
+      "revId": "d99a2183959f62c20221cccf639ade3f37f9c142",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
