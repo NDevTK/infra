@@ -22,6 +22,30 @@
       "revId": "d99a2183959f62c20221cccf639ade3f37f9c142",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "36545025_b2a29fdc",
+        "filename": "go/src/infra/appengine/crosskylabadmin/api/fleet/v1/tracker.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-11-06T00:10:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "259a63b9_f2891683",
+      "range": {
+        "startLine": 131,
+        "startChar": 28,
+        "endLine": 131,
+        "endChar": 35
+      },
+      "revId": "d99a2183959f62c20221cccf639ade3f37f9c142",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
