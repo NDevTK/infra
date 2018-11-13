@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bdc224f3_d4cf5b57",
+        "filename": "appengine/monorail/services/test/api_svc_v1_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 1044,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2018-11-13T18:00:59Z",
+      "side": 1,
+      "message": "I think this leads to flakey tests because it replaces a real method with a mock and then later unit tests might fail to find the original method.  Instead, you need to use @patch() or a patcher object set up in setUp() and removed in tearDown().  Or, use the self.mock() method defined in auto_stub.py that seems to do that tearDown() logic for you.",
+      "revId": "ba13fcdb4aa60805364bd66d232a8f763c55ec71",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
