@@ -20,7 +20,9 @@ import (
 	qscheduler "infra/appengine/qscheduler-swarming/api/qscheduler/v1"
 	"infra/swarming"
 
-	"github.com/pkg/errors"
+	// This import will be restored once TODO in NotifyTasks is addressed.
+	_ "github.com/pkg/errors"
+	
 	"go.chromium.org/gae/service/datastore"
 
 	"infra/qscheduler/qslib/reconciler"
@@ -122,13 +124,12 @@ func (s *QSchedulerServerImpl) NotifyTasks(ctx context.Context, r *swarming.Noti
 			case swarming.TaskState_RUNNING:
 				t = reconciler.TaskUpdate_ASSIGNED
 			default:
-				return errors.Errorf("unknown or not handleable swarming state %s", n.Task.State)
+				continue
+				// TODO(akeshet): return an error for unexpected state, once all the expected states
+				// are handled. e.g.
+				// return errors.Errorf("unknown or not handleable swarming state %s", n.Task.State)
 			}
-			if n.Task.State == swarming.TaskState_PENDING {
-				t = reconciler.TaskUpdate_NEW
-			} else if n.Task.State == swarming.TaskState_RUNNING {
-				t = reconciler.TaskUpdate_ASSIGNED
-			}
+
 			// TODO(akeshet): Validate that new tasks have dimensions that match the
 			// worker pool dimensions for this scheduler pool.
 			update := &reconciler.TaskUpdate{
