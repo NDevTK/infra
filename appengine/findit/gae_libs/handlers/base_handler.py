@@ -103,6 +103,8 @@ class BaseHandler(webapp2.RequestHandler):
         'data': data to feed the template or as the response if no template,
         'return_code': the HTTP status code for the response,
         'cache_expiry': how many seconds to set for cache control,
+        'allow_origin': whether the response can be shared with requesting code
+                        from the given origin.
       }
       If None or empty dict is returned, the overriding method should send the
       response to the client by itself.
@@ -117,7 +119,8 @@ class BaseHandler(webapp2.RequestHandler):
     """
     return BaseHandler.CreateError('Not implemented yet!', 501)
 
-  def _SendResponse(self, template, data, return_code, cache_expiry=None):
+  def _SendResponse(self, template, data, return_code, cache_expiry=None,
+                    allow_origin=False):
     """Sends the response to the client in json or html as requested.
 
     Args:
@@ -125,6 +128,8 @@ class BaseHandler(webapp2.RequestHandler):
       data: the data to feed the template or as the response if no template.
       return_code: the http status code for the response.
       cache_expiry: (optional) max-age for public cache-control in seconds.
+      allow_origin: whether the response can be shared with requesting code
+                    from the given origin.
     """
     self.response.clear()
     self.response.set_status(return_code)
@@ -165,6 +170,14 @@ class BaseHandler(webapp2.RequestHandler):
     if cache_expiry is not None:
       self.response.headers['cache-control'] = (
           'max-age=%s, public' % cache_expiry)
+
+    if allow_origin:
+      self.response.headers['Access-Control-Allow-Origin'] = '*'
+      self.response.headers['Access-Control-Allow-Headers'] = (
+          'Origin, Authorization, Content-Type, Accept')
+      self.response.headers['Access-Control-Allow-Methods'] = (
+          'DELETE, GET, OPTIONS, POST, PUT')
+
     self.response.headers['Content-Type'] = content_type
     # Set X-Frame-Options to prevent Clickjacking.
     self.response.headers['X-Frame-Options'] = 'SAMEORIGIN'
@@ -182,6 +195,7 @@ class BaseHandler(webapp2.RequestHandler):
         return_code = 401
         redirect_url = None
         cache_expiry = None
+        allow_origin = False
       else:
         result = handler_func() or {}
         redirect_url = result.get('redirect_url')
@@ -190,6 +204,8 @@ class BaseHandler(webapp2.RequestHandler):
         data = result.get('data', {})
         return_code = result.get('return_code', 200)
         cache_expiry = result.get('cache_expiry', None)
+        allow_origin = result.get('allow_origin', False)
+
     except Exception as e:
       user_agent = self.request.headers.get('user-agent')
       if not (user_agent and 'GoogleSecurityScanner' in user_agent):
@@ -200,6 +216,7 @@ class BaseHandler(webapp2.RequestHandler):
       return_code = 500
       redirect_url = None
       cache_expiry = None
+      allow_origin = False
 
     if redirect_url is not None:
       self.response.clear()
@@ -217,7 +234,7 @@ class BaseHandler(webapp2.RequestHandler):
                                                      data.get('user_info',
                                                               {}).get('email'))
 
-    self._SendResponse(template, data, return_code, cache_expiry)
+    self._SendResponse(template, data, return_code, cache_expiry, allow_origin)
 
   def get(self):
     self._Handle(self.HandleGet)

@@ -24,7 +24,7 @@ from model.code_coverage import PresubmitReport
 
 
 class ProcessCodeCoverageData(BaseHandler):  # pragma: no cover.
-  PERMISSION_LEVEL = Permission.APP_SELF
+  PERMISSION_LEVEL = Permission.ANYONE
 
   def _ProcessFullRepositoryData(self, commit, data, gs_url, build_id):
     # Load the commit log first so that we could fail fast before redo all.
@@ -212,7 +212,8 @@ class ServeCodeCoverageData(BaseHandler):
               'change': change,
               'patchset': patchset,
               'data': data,
-          }
+          },
+          'allow_origin': True,
       }
     elif project:
       logging.info('Servicing coverage data for postsubmit')
@@ -243,7 +244,8 @@ class ServeCodeCoverageData(BaseHandler):
             'data_type': data_type,
             'path': path,
             'data': data,
-          }
+          },
+          'allow_origin': True,
       }
     else:
       return BaseHandler.CreateError(
