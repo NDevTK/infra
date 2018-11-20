@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "29ff620e_5de7c1a2",
+        "filename": "appengine/findit/gae_libs/handlers/base_handler.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-11-20T22:58:36Z",
+      "side": 1,
+      "message": "Good idea!",
+      "parentUuid": "8092d99d_ffc14f0f",
+      "range": {
+        "startLine": 106,
+        "startChar": 8,
+        "endLine": 107,
+        "endChar": 46
+      },
+      "revId": "4f5debb26ccbccddf03ac0e50d7811c6ad3f5e5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "21ab8ed0_7d938466",
         "filename": "appengine/findit/gae_libs/handlers/base_handler.py",
         "patchSetId": 2
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "21da255f_3a46465b",
+        "filename": "appengine/findit/gae_libs/handlers/base_handler.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-11-20T22:58:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "21ab8ed0_7d938466",
+      "range": {
+        "startLine": 179,
+        "startChar": 11,
+        "endLine": 179,
+        "endChar": 42
+      },
+      "revId": "4f5debb26ccbccddf03ac0e50d7811c6ad3f5e5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1c244260_c8cf74fc",
         "filename": "appengine/findit/handlers/code_coverage.py",
         "patchSetId": 2
@@ -68,6 +116,30 @@
       "revId": "4f5debb26ccbccddf03ac0e50d7811c6ad3f5e5d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "39d55949_32dd0bc8",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-11-20T22:58:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1c244260_c8cf74fc",
+      "range": {
+        "startLine": 248,
+        "startChar": 10,
+        "endLine": 248,
+        "endChar": 31
+      },
+      "revId": "4f5debb26ccbccddf03ac0e50d7811c6ad3f5e5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
