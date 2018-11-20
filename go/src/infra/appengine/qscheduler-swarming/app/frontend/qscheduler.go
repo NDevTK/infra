@@ -22,7 +22,7 @@ import (
 
 	// This import will be restored once TODO in NotifyTasks is addressed.
 	_ "github.com/pkg/errors"
-	
+
 	"go.chromium.org/gae/service/datastore"
 
 	"infra/qscheduler/qslib/reconciler"
@@ -157,4 +157,35 @@ func (s *QSchedulerServerImpl) NotifyTasks(ctx context.Context, r *swarming.Noti
 		return nil, err
 	}
 	return &swarming.NotifyTasksResponse{}, nil
+}
+
+func toTaskState(s swarming.TaskState) (reconciler.TaskUpdate_Type, bool) {
+	// These cases appear the same order as they are defined in swarming/proto/tasks.proto
+	// If you add any cases here, please preserve their in-order appearance.
+	switch s {
+	case swarming.TaskState_RUNNING:
+		return reconciler.TaskUpdate_ASSIGNED, true
+	case swarming.TaskState_PENDING:
+		return reconciler.TaskUpdate_NEW, true
+	// The following states all translate to to "ABORTED", because they are all equivalent
+	// to the task being neither running nor enqueued.
+	case swarming.TaskState_EXPIRED:
+		fallthrough
+	case swarming.TaskState_TIMED_OUT:
+		fallthrough
+	case swarming.TaskState_BOT_DIED:
+		fallthrough
+	case swarming.TaskState_CANCELED:
+		fallthrough
+	case swarming.TaskState_COMPLETED:
+		fallthrough
+	case swarming.TaskState_KILLED:
+		fallthrough
+	case swarming.TaskState_NO_RESOURCE:
+		return reconciler.TaskUpdate_ABORTED, true
+
+	// Invalid state.
+	default:
+		return reconciler.TaskUpdate_NULL, false
+	}
 }
