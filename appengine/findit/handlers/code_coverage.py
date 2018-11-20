@@ -212,7 +212,8 @@ class ServeCodeCoverageData(BaseHandler):
               'change': change,
               'patchset': patchset,
               'data': data,
-          }
+          },
+          'allow_origin': True,
       }
     elif project:
       logging.info('Servicing coverage data for postsubmit')
@@ -243,7 +244,8 @@ class ServeCodeCoverageData(BaseHandler):
             'data_type': data_type,
             'path': path,
             'data': data,
-          }
+          },
+          'allow_origin': True,
       }
     else:
       return BaseHandler.CreateError(
