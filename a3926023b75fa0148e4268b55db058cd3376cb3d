@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "93a52491_7e7813f2",
+        "filename": "crdx/chopsui-npm/package.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1115874
+      },
+      "writtenOn": "2018-11-22T04:59:15Z",
+      "side": 1,
+      "message": "These components won\u0027t use html imports, and lit-element doesn\u0027t use \u003ctemplate\u003e, right? So what browser features need to be polyfilled here?",
+      "revId": "a3926023b75fa0148e4268b55db058cd3376cb3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
