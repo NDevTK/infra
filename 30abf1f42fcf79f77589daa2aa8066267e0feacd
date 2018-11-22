@@ -22,6 +22,30 @@
       "revId": "30abf1f42fcf79f77589daa2aa8066267e0feacd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8f076d40_05bc1f1b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2018-11-22T01:28:59Z",
+      "side": 1,
+      "message": "The current version is a source distribution from the libffi repo, but the version originally uploaded for dockerbuild was a \u0027dist\u0027 tarball (I think) from the libffi site.",
+      "parentUuid": "5f0dc165_fc5b3d7b",
+      "range": {
+        "startLine": 12,
+        "startChar": 34,
+        "endLine": 14,
+        "endChar": 30
+      },
+      "revId": "30abf1f42fcf79f77589daa2aa8066267e0feacd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
