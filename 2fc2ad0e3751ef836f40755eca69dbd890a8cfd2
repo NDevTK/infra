@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "af54bbf1_d616ca97",
+        "filename": "appengine/findit/model/wf_config.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-11-24T22:10:48Z",
+      "side": 1,
+      "message": "Nit: also add another new config?",
+      "range": {
+        "startLine": 123,
+        "startChar": 9,
+        "endLine": 123,
+        "endChar": 49
+      },
+      "revId": "2fc2ad0e3751ef836f40755eca69dbd890a8cfd2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1e53c2cb_23345c46",
+        "filename": "appengine/findit/services/flake_failure/culprit_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-11-24T22:10:48Z",
+      "side": 1,
+      "message": "To double check, currently we set the same limit for creating and committing reverts for flake, right?",
+      "range": {
+        "startLine": 148,
+        "startChar": 1,
+        "endLine": 148,
+        "endChar": 73
+      },
+      "revId": "2fc2ad0e3751ef836f40755eca69dbd890a8cfd2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
