@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "fe772162_515357da",
+        "filename": "appengine/findit/model/wf_config.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-11-26T18:38:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "af54bbf1_d616ca97",
+      "range": {
+        "startLine": 123,
+        "startChar": 9,
+        "endLine": 123,
+        "endChar": 49
+      },
+      "revId": "2fc2ad0e3751ef836f40755eca69dbd890a8cfd2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1e53c2cb_23345c46",
         "filename": "appengine/findit/services/flake_failure/culprit_util.py",
         "patchSetId": 2
@@ -45,6 +69,30 @@
       "revId": "2fc2ad0e3751ef836f40755eca69dbd890a8cfd2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2e363499_548b42a7",
+        "filename": "appengine/findit/services/flake_failure/culprit_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-11-26T18:38:42Z",
+      "side": 1,
+      "message": "To start, yes, since create isn\u0027t used yet (only commit) for now but soon we will want to allow create without commit, in which case we will want to align with compile/test",
+      "parentUuid": "1e53c2cb_23345c46",
+      "range": {
+        "startLine": 148,
+        "startChar": 1,
+        "endLine": 148,
+        "endChar": 73
+      },
+      "revId": "2fc2ad0e3751ef836f40755eca69dbd890a8cfd2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
