@@ -231,7 +231,7 @@ class FlakeReportUtilTest(WaterfallTestCase):
         'https://bugs.chromium.org/p/chromium/issues/entry?status=Unconfirmed&'
         'labels=Pri-1,Test-Findit-Wrong&components=Tools%3ETest%3EFindit%3E'
         'Flakiness&summary=%5BFindit%5D%20Flake%20Detection%20-%20Wrong%20'
-        'result%20for%20test&comment=Link%20to%20flake%20occurrences%3A%20'
+        'result%3A%20test&comment=Link%20to%20flake%20details%3A%20'
         'https://findit-for-me.appspot.com/flake/occurrences?key={}').format(
             flake.key.urlsafe())
 
@@ -329,7 +329,7 @@ Automatically posted by the findit-for-me app (https://goo.gl/Ot9f7N)."""
         'https://bugs.chromium.org/p/chromium/issues/entry?status=Unconfirmed&'
         'labels=Pri-1,Test-Findit-Wrong&components=Tools%3ETest%3EFindit%3E'
         'Flakiness&summary=%5BFindit%5D%20Flake%20Detection%20-%20Wrong%20'
-        'result%20for%20test&comment=Link%20to%20flake%20occurrences%3A%20'
+        'result%3A%20test&comment=Link%20to%20flake%20details%3A%20'
         'https://findit-for-me.appspot.com/flake/occurrences?key={}').format(
             flake.key.urlsafe())
 
