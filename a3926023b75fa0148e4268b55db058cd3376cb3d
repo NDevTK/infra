@@ -16,6 +16,24 @@
       "revId": "a3926023b75fa0148e4268b55db058cd3376cb3d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ebf79a99_ef93d432",
+        "filename": "crdx/chopsui-npm/package.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-11-26T17:11:12Z",
+      "side": 1,
+      "message": "I planned on using the Webcomponents polyfill for the demo pages for the components. Not all browsers implement web components (custom elements, shadow dom, slots) yet, so polyfills are still a good idea.",
+      "parentUuid": "93a52491_7e7813f2",
+      "revId": "a3926023b75fa0148e4268b55db058cd3376cb3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
