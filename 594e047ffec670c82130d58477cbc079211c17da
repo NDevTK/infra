@@ -1,0 +1,297 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3bfc47e7_f46ba0b1",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-11-27T18:36:21Z",
+      "side": 1,
+      "message": "nit: add a message in here e.g. \u0027AddFlake should be implemented in the child class\u0027 or something",
+      "range": {
+        "startLine": 39,
+        "startChar": 30,
+        "endLine": 39,
+        "endChar": 31
+      },
+      "revId": "594e047ffec670c82130d58477cbc079211c17da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0b98d1a8_f2a46a02",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-11-27T18:36:21Z",
+      "side": 1,
+      "message": "nit: move this comment to where it\u0027s implemented in the code",
+      "range": {
+        "startLine": 42,
+        "startChar": 46,
+        "endLine": 44,
+        "endChar": 68
+      },
+      "revId": "594e047ffec670c82130d58477cbc079211c17da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a9e9b525_025bec64",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-11-27T18:36:21Z",
+      "side": 1,
+      "message": "would it make more sense to make this a class? Also just for my understanding, if we go that route, why not use FlakeOccurrence, as it appears to have these fields?",
+      "range": {
+        "startLine": 58,
+        "startChar": 31,
+        "endLine": 60,
+        "endChar": 75
+      },
+      "revId": "594e047ffec670c82130d58477cbc079211c17da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8e901185_d2cd6320",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-11-27T18:36:21Z",
+      "side": 1,
+      "message": "nit: move this to another function to generate this",
+      "range": {
+        "startLine": 58,
+        "startChar": 30,
+        "endLine": 60,
+        "endChar": 74
+      },
+      "revId": "594e047ffec670c82130d58477cbc079211c17da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c2fc8c2b_3b99cdc7",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-11-27T18:36:21Z",
+      "side": 1,
+      "message": "add flake and occurrences to docstring args",
+      "revId": "594e047ffec670c82130d58477cbc079211c17da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b379720a_9c03579c",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-11-27T18:36:21Z",
+      "side": 1,
+      "message": "can you please add a comment for why this check is here, e.g. is this one of the heuristics?",
+      "range": {
+        "startLine": 69,
+        "startChar": 4,
+        "endLine": 70,
+        "endChar": 18
+      },
+      "revId": "594e047ffec670c82130d58477cbc079211c17da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3227a541_79de5dd7",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-11-27T18:36:21Z",
+      "side": 1,
+      "message": "add args section",
+      "range": {
+        "startLine": 107,
+        "startChar": 4,
+        "endLine": 108,
+        "endChar": 35
+      },
+      "revId": "594e047ffec670c82130d58477cbc079211c17da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "20709a57_f8f5aaa7",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 344,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-11-27T18:36:21Z",
+      "side": 1,
+      "message": "I wonder if it\u0027s better to make this a public function, as it looks useful later for deduplication",
+      "range": {
+        "startLine": 331,
+        "startChar": 0,
+        "endLine": 344,
+        "endChar": 21
+      },
+      "revId": "594e047ffec670c82130d58477cbc079211c17da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "980b7736_a6135e5f",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 348,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-11-27T18:36:21Z",
+      "side": 1,
+      "message": "what?",
+      "range": {
+        "startLine": 348,
+        "startChar": 49,
+        "endLine": 348,
+        "endChar": 77
+      },
+      "revId": "594e047ffec670c82130d58477cbc079211c17da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "de3ce309_bafd28e0",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 352,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-11-27T18:36:21Z",
+      "side": 1,
+      "message": "for return type use ([FlakeGroupByOccurrence], [FlakeGroupByFlakeIssue]): ...",
+      "range": {
+        "startLine": 352,
+        "startChar": 4,
+        "endLine": 352,
+        "endChar": 16
+      },
+      "revId": "594e047ffec670c82130d58477cbc079211c17da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6121a6cd_a91767d3",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 376,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-11-27T18:36:21Z",
+      "side": 1,
+      "message": "I\u0027m not sure I understand why you need both merged_issue and merged_flake_issue, shouldn\u0027t they be the same at this point?",
+      "range": {
+        "startLine": 372,
+        "startChar": 8,
+        "endLine": 376,
+        "endChar": 64
+      },
+      "revId": "594e047ffec670c82130d58477cbc079211c17da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6dfe875e_71475aa9",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 389,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-11-27T18:36:21Z",
+      "side": 1,
+      "message": "this seems fragile, I think better to use the class as mentioned in the above comment",
+      "range": {
+        "startLine": 388,
+        "startChar": 4,
+        "endLine": 389,
+        "endChar": 78
+      },
+      "revId": "594e047ffec670c82130d58477cbc079211c17da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7be21170_2f436d6d",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 403,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-11-27T18:36:21Z",
+      "side": 1,
+      "message": "this looks like it can live in its own function specifically for getting heuristically grouped flakes",
+      "range": {
+        "startLine": 391,
+        "startChar": 3,
+        "endLine": 403,
+        "endChar": 59
+      },
+      "revId": "594e047ffec670c82130d58477cbc079211c17da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
