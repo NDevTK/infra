@@ -22,6 +22,30 @@
       "revId": "19af01d72c9e66fb2d7eff44ce0e0cd90af0b5d0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "01a0bbfb_49a4f382",
+        "filename": "appengine/findit/templates/flake/detection/rank_flakes.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-11-28T18:42:37Z",
+      "side": 1,
+      "message": "This is to provide urls that\u0027ll be included in bug description, but not for users to search on UI.",
+      "parentUuid": "8f64bc1a_b491c28c",
+      "range": {
+        "startLine": 126,
+        "startChar": 6,
+        "endLine": 127,
+        "endChar": 115
+      },
+      "revId": "19af01d72c9e66fb2d7eff44ce0e0cd90af0b5d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
