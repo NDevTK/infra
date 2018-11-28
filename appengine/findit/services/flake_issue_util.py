@@ -23,6 +23,118 @@ from services.issue_generator import FlakeDetectionIssueGenerator
 from waterfall import waterfall_config
 
 
+class FlakeGroup(object):
+
+  def __init__(self, occurrences, flake_luci_project):
+    self.flakes = []
+    self.num_occurrences = len(occurrences)
+    self.luci_project = flake_luci_project
+
+  def AddFlake(self, flake, occurrences):
+    """Tries to add a flake to group if it can belong.
+
+    Returns:
+      (bool), if the flake is added to the group.
+    """
+    raise NotImplementedError(
+        'AddFlake should be implemented in the child class')
+
+
+# Group of flakes that need the same new bug.
+class FlakeGroupByOccurrences(FlakeGroup):
+
+  def __init__(self, flake, occurrences):
+    super(FlakeGroupByOccurrences, self).__init__(occurrences,
+                                                  flake.luci_project)
+    self.normalized_step_name = flake.normalized_step_name
+    self.test_suite_name = flake.GetTestSuiteName()
+    self.flakes.append(flake)
+    self.builds = self._GetBuildsList(occurrences)
+
+  def _GetBuildsList(self, occurrences):
+    occurrence_builds = []
+    for occurrence in occurrences:
+      build_key = '{}@{}@{}'.format(occurrence.build_configuration.luci_project,
+                                    occurrence.build_configuration.luci_bucket,
+                                    occurrence.build_id)
+      occurrence_builds.append(build_key)
+    return occurrence_builds
+
+  def AddFlake(self, flake, occurrences):
+    """Adds the flake if it happens at the same builds as other flakes in group.
+
+    Args:
+      flake (Flake): Flake entity to be added in the group.
+      occurrences (list): A list of occurrences of the flake.
+
+    Returns:
+      (bool), if the flake is added to the group.
+    """
+    if len(occurrences) != len(self.builds):
+      return False
+
+    occurrence_builds = self._GetBuildsList(occurrences)
+
+    if sorted(occurrence_builds) == sorted(self.builds):
+      self.flakes.append(flake)
+      return True
+
+    return False
+
+  def ToDict(self):
+    # For unittest purpose.
+    return {
+        'normalized_step_name': self.normalized_step_name,
+        'test_suite_name': self.test_suite_name,
+        'flakes': self.flakes,
+        'builds': self.flakes,
+        'num_occurrences': self.num_occurrences
+    }
+
+
+# Group of flakes that are already linked to the same issue directly or
+# indirectly. The flakes will only be grouped by the issue in this case, and
+# they may not meet the heuristic rules as FlakeGroupByOccurrences.
+class FlakeGroupByFlakeIssue(FlakeGroup):
+
+  def __init__(self, flake_issue, flake, occurrences, previous_flake_issue):
+    super(FlakeGroupByFlakeIssue, self).__init__(occurrences,
+                                                 flake.luci_project)
+    self.flake_issue = flake_issue
+    self.flakes_with_same_occurrences = True
+    self.flakes.append(flake)
+
+    if flake_issue.issue_id != previous_flake_issue.issue_id:
+      self.previous_issue_id = previous_flake_issue.issue_id
+
+  def AddFlake(self, flake, occurrences):
+    """Adds the flake, also updates flakes_with_same_occurrences and
+      num_occurrences if needed.
+
+    Args:
+      flake (Flake): Flake entity to be added in the group.
+      occurrences (list): A list of occurrences of the flake.
+
+    Returns:
+      (bool), if the flake is added to the group.
+    """
+    self.flakes.append(flake)
+    if len(occurrences) < self.num_occurrences:
+      # Only maintains a minimum num_occurrences to show in bug comments.
+      self.num_occurrences = len(occurrences)
+      self.flakes_with_same_occurrences = False
+    return True
+
+  def ToDict(self):
+    # For unittest purpose.
+    return {
+        'flake_issue': self.flake_issue,
+        'flakes': self.flakes,
+        'flakes_with_same_occurrences': self.flakes_with_same_occurrences,
+        'num_occurrences': self.num_occurrences
+    }
+
+
 def _GetOpenIssueIdForFlakyTestByCustomizedField(test_name,
                                                  monorail_project='chromium'):
   """Returns flaky tests related issue by searching customized field.
@@ -176,8 +288,9 @@ def GetFlakesWithEnoughOccurrences():
   flakes that need to be fetched.
 
   Returns:
-    A list of tuples whose first element is a flake entity and second element is
-    number of corresponding recent and unreported occurrences.
+    A list of tuples whose first element is a flake entity, second element is
+    number of corresponding recent and unreported occurrences, third element is
+    the flake issue the flake links to if exist.
   """
   utc_one_day_ago = time_util.GetUTCNow() - datetime.timedelta(days=1)
   occurrences = FlakeOccurrence.query(
@@ -194,40 +307,138 @@ def GetFlakesWithEnoughOccurrences():
 
   unique_flake_keys = flake_key_to_occurrences.keys()
   flakes = ndb.get_multi(unique_flake_keys)
-  flakes = [flake for flake in flakes if flake is not None]
+
+  key_to_flake = dict(zip(unique_flake_keys, flakes))
 
   # Filter out occurrences that have already been reported according to the
   # last update time of the associated flake issue.
-  flake_key_to_unreported_occurrences = {}
+  flake_key_to_enough_unreported_occurrences = {}
   for flake_key, occurrences in flake_key_to_occurrences.iteritems():
+    if not key_to_flake[flake_key]:
+      logging.error('Flake not found for key %s', flake_key.urlsafe())
+      continue
+
+    if not _FlakeHasEnoughOccurrences(occurrences):
+      continue
+
     flake_issue = GetFlakeIssue(flake_key.get())
     last_updated_time_by_flake_detection = (
         flake_issue.last_updated_time_by_flake_detection
         if flake_issue else None)
-
     if (last_updated_time_by_flake_detection and
         last_updated_time_by_flake_detection > utc_one_day_ago):
       # An issue can be updated at most once in any 24h window avoid noises.
       continue
 
-    flake_key_to_unreported_occurrences[flake_key] = occurrences
+    flake_key_to_enough_unreported_occurrences[flake_key] = {
+        'occurrences': occurrences,
+        'flake_issue': flake_issue
+    }
 
-  # Set to None to avoid being mistakenly used in following code.
-  flake_key_to_occurrences = None
+  return [(key_to_flake[flake_key], info['occurrences'], info['flake_issue'])
+          for flake_key, info in flake_key_to_enough_unreported_occurrences
+          .iteritems()]
 
-  flakes_with_enough_occurrences = [
-      flake for flake in flakes
-      if flake.key in flake_key_to_unreported_occurrences and
-      _FlakeHasEnoughOccurrences(flake_key_to_unreported_occurrences[flake.key])
-  ]
 
-  # Cannot use a dictionary because Model is not immutable.
-  flake_and_occurrences_tuples = []
-  for flake in flakes_with_enough_occurrences:
-    flake_and_occurrences_tuples.append(
-        (flake, flake_key_to_unreported_occurrences[flake.key]))
+def GetAndUpdateMergedIssue(flake_issue):
+  """Gets the most up-to-date merged issue and update data in data store.
 
-  return flake_and_occurrences_tuples
+  Args:
+    flake_issue (FlakeIssue): FlakeIssue to check its merge destination and
+       update.
+
+  Returns:
+    merged_issue (monorail_api.Issue): Merge destination of the flake_issue.
+  """
+  monorail_project = flake_issue.monorail_project
+  merged_issue = monorail_util.GetMergedDestinationIssueForId(
+      flake_issue.issue_id, monorail_project)
+  if flake_issue.issue_id != merged_issue.id:
+    logging.info(
+        'Flake issue %s was merged to %s, updates this issue and'
+        ' all issues were merged into it.',
+        FlakeIssue.GetLinkForIssue(monorail_project, flake_issue.issue_id),
+        FlakeIssue.GetLinkForIssue(monorail_project, merged_issue.id))
+    _UpdateMergeDestination(flake_issue, merged_issue.id)
+
+  return merged_issue
+
+
+def _AddFlakeToGroupWithIssue(flake_groups_with_issue, flake_issue, flake,
+                              occurrences):
+  flake_group = flake_groups_with_issue.get(flake_issue.issue_id)
+
+  if flake_group:
+    flake_group.AddFlake(flake, occurrences)
+    return True
+
+  merged_monorail_issue = GetAndUpdateMergedIssue(flake_issue)
+  if not merged_monorail_issue.open:
+    return False
+
+  # Only creates new group of flakes by FlakeIssue if the issue is still
+  # open.
+  updated_flake_issue = flake_issue.GetMostUpdatedIssue()
+
+  flake_group = FlakeGroupByFlakeIssue(updated_flake_issue, flake, occurrences,
+                                       flake_issue)
+  flake_groups_with_issue[updated_flake_issue.issue_id] = flake_group
+  return True
+
+
+def _AddFlakeToGroupWithoutIssue(flake_groups_without_issue, flake,
+                                 occurrences):
+  basic_group_key = '{}@{}@{}'.format(flake.luci_project,
+                                      flake.normalized_step_name,
+                                      flake.GetTestSuiteName())
+
+  grouped = False
+  for flake_group in flake_groups_without_issue[basic_group_key]:
+    grouped = flake_group.AddFlake(flake, occurrences)
+    if grouped:
+      break
+
+  if not grouped:
+    flake_group = FlakeGroupByOccurrences(flake, occurrences)
+    flake_groups_without_issue[basic_group_key].append(flake_group)
+
+
+def GetFlakeGroupsForActionsOnBugs(flake_tuples_to_report):
+  """Groups the flakes either by heuristic rules (if they linked to no issue)
+    or by issue (if they have linked to an issue).
+
+  Returns:
+     ([FlakeGroupByOccurrence], [FlakeGroupByFlakeIssue]): groups of flakes.
+  """
+  # Groups of flakes that need the same new bug.
+  # Keyed by normalized_step_name and test_suite_name.
+  # Since we will group flakes only when they happen at the same builds,
+  # it's possible to have different FlakeGroupByOccurrences with the same key,
+  # so use a list to save them.
+  flake_groups_without_issue = defaultdict(list)
+  # Groups of flakes that are already linked to issues.
+  flake_groups_with_issue = {}
+
+  for flake_tuple in flake_tuples_to_report:
+    flake = flake_tuple[0]
+    occurrences = flake_tuple[1]
+    flake_issue = flake_tuple[2]
+
+    if flake_issue:
+      added_to_group = _AddFlakeToGroupWithIssue(
+          flake_groups_with_issue, flake_issue, flake, occurrences)
+      if added_to_group:
+        continue
+
+    # Group by heuristic for flakes not linked to any issue or the issue has
+    # been closed.
+    _AddFlakeToGroupWithoutIssue(flake_groups_without_issue, flake, occurrences)
+
+  flake_groups_without_issue_list = []
+  for heuristic_groups in flake_groups_without_issue.values():
+    flake_groups_without_issue_list.extend(heuristic_groups)
+
+  return flake_groups_without_issue_list, flake_groups_with_issue.values()
 
 
 # TODO(crbug.com/903459): Move ReportFlakesToMonorail and
@@ -269,7 +480,6 @@ def ReportFlakesToMonorail(flake_tuples_to_report):
     issue_generator = FlakeDetectionIssueGenerator(flake, len(occurrences))
     try:
       CreateOrUpdateIssue(issue_generator, flake.luci_project)
-
       # Update FlakeIssue's last_updated_time_by_flake_detection property. This
       # property is only applicable to Flake Detection because Flake Detection
       # can update an issue at most once every 24 hours.
@@ -334,22 +544,19 @@ def _GetOrCreateFlakeIssue(issue_id, monorail_project):
   return flake_issue
 
 
-def _UpdateMergeDestination(flake_issue, merged_issue_id, flake_luci_project):
+def _UpdateMergeDestination(flake_issue, merged_issue_id):
   """Updates flake_issue and all other issues that are merged into it to
     store the new merging_destination.
 
   Args:
     flake_issue (FlakeIssue): A FlakeIssue to update.
     merged_issue_id (int): Id of the merged_issue.
-    flake_luci_project (str): Luci project of the flake.
   """
-  monorail_project = FlakeIssue.GetMonorailProjectFromLuciProject(
-      flake_luci_project)
   merged_flake_issue = _GetOrCreateFlakeIssue(merged_issue_id,
-                                              flake_luci_project)
+                                              flake_issue.monorail_project)
   assert merged_flake_issue, (
       'Failed to get or create FlakeIssue for merged_issue %s' %
-      FlakeIssue.GetLinkForIssue(monorail_project, merged_issue_id))
+      FlakeIssue.GetLinkForIssue(flake_issue.monorail_project, merged_issue_id))
 
   merged_flake_issue_key = merged_flake_issue.key
   flake_issue.merge_destination_key = merged_flake_issue_key
@@ -397,17 +604,9 @@ def CreateOrUpdateIssue(issue_generator, luci_project='chromium'):
   previous_tracking_bug_id = None
 
   if flake_issue:
-    merged_issue = monorail_util.GetMergedDestinationIssueForId(
-        flake_issue.issue_id, monorail_project)
+    merged_issue = GetAndUpdateMergedIssue(flake_issue)
     if flake_issue.issue_id != merged_issue.id:
-      logging.info(
-          'Currently attached issue %s was merged to %s, updates this issue and'
-          ' all issues were merged into it.',
-          FlakeIssue.GetLinkForIssue(monorail_project, flake_issue.issue_id),
-          FlakeIssue.GetLinkForIssue(monorail_project, merged_issue.id))
       previous_tracking_bug_id = flake_issue.issue_id
-      _UpdateMergeDestination(flake_issue, merged_issue.id,
-                              target_flake.luci_project)
 
     if merged_issue.open:
       logging.info(

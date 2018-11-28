@@ -233,3 +233,18 @@ class FlakeTest(wf_testcase.WaterfallTestCase):
         test_label_name=test_label_name)
 
     self.assertIsNone(flake.GetIssue())
+
+  def testGetTestSuiteName(self):
+    luci_project = 'chromium'
+    normalized_step_name = 'normalized_step'
+    normalized_test_name = 'a/b.html'
+    test_label_name = 'test_label'
+
+    flake = Flake.Create(
+        luci_project=luci_project,
+        normalized_step_name=normalized_step_name,
+        normalized_test_name=normalized_test_name,
+        test_label_name=test_label_name)
+    flake.tags.append('suite::ABCTest')
+    flake.put()
+    self.assertEqual('ABCTest', flake.GetTestSuiteName())
