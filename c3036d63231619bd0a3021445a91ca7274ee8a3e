@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "47838bf8_19a4ded3",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/frontend/qscheduler.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-11-29T20:38:03Z",
+      "side": 1,
+      "message": "The notification will be sent asynchronously from swarming, so returning it directly on this rpc call isn\u0027t really going to tell swarming what we want.\n\nInstead, we need to tell swarming that the task is cancelled due to malformed notification. The work for task cancellations is ongoing on a separate swarming CL stack.",
+      "parentUuid": "3627b927_a5421794",
+      "range": {
+        "startLine": 124,
+        "startChar": 4,
+        "endLine": 124,
+        "endChar": 71
+      },
+      "revId": "c3036d63231619bd0a3021445a91ca7274ee8a3e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aa792a9e_88d12188",
         "filename": "go/src/infra/appengine/qscheduler-swarming/app/frontend/qscheduler.go",
         "patchSetId": 2
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "43225935_b6f6c00e",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/frontend/qscheduler.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-11-29T20:38:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aa792a9e_88d12188",
+      "range": {
+        "startLine": 161,
+        "startChar": 22,
+        "endLine": 161,
+        "endChar": 23
+      },
+      "revId": "c3036d63231619bd0a3021445a91ca7274ee8a3e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "68eeaa7e_3ae5bc80",
         "filename": "go/src/infra/appengine/qscheduler-swarming/app/frontend/qscheduler.go",
         "patchSetId": 2
@@ -68,6 +116,30 @@
       "revId": "c3036d63231619bd0a3021445a91ca7274ee8a3e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4deda3a1_c5389137",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/frontend/qscheduler.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-11-29T20:38:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "68eeaa7e_3ae5bc80",
+      "range": {
+        "startLine": 168,
+        "startChar": 42,
+        "endLine": 168,
+        "endChar": 44
+      },
+      "revId": "c3036d63231619bd0a3021445a91ca7274ee8a3e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
