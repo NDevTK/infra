@@ -413,6 +413,30 @@
     },
     {
       "key": {
+        "uuid": "79baa12e_fe238be0",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 348,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-11-29T01:39:02Z",
+      "side": 1,
+      "message": "I\u0027m not sure I understand this docstring, do you mean to say\n\n\"Groups the flakes either by heuristic rules if they are not already linked by issue, or by issue if they are\" ?",
+      "parentUuid": "0ee3ed29_1244ec17",
+      "range": {
+        "startLine": 348,
+        "startChar": 49,
+        "endLine": 348,
+        "endChar": 77
+      },
+      "revId": "594e047ffec670c82130d58477cbc079211c17da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "de3ce309_bafd28e0",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 1
@@ -551,6 +575,30 @@
       "revId": "594e047ffec670c82130d58477cbc079211c17da",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b5d7a744_29d74cc2",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 389,
+      "author": {
+        "id": 1119424
+      },
+      "writtenOn": "2018-11-29T01:39:02Z",
+      "side": 1,
+      "message": "nevermind, my other comment was to use a hidden class or something other than \u0027{}@{}@{}\u0027 to pass grouped flakes around but that seems like overkill for now",
+      "parentUuid": "6be8f010_0ed1ce93",
+      "range": {
+        "startLine": 388,
+        "startChar": 4,
+        "endLine": 389,
+        "endChar": 78
+      },
+      "revId": "594e047ffec670c82130d58477cbc079211c17da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
