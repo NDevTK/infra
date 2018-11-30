@@ -223,6 +223,7 @@ class PermissionSet(object):
       perm_name: string name of permission, e.g., 'EditIssue'.
       user_id: int user id of the user, or None if user is not signed in.
       project: Project PB for the project being accessed, or None if not
+
           in a project.
       extra_perms: list of extra perms. If not given, GetExtraPerms will be
           called to get them.
