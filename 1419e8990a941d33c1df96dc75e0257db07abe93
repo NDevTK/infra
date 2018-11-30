@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "6dd1f8a3_fc6626ea",
+        "filename": "appengine/findit/model/proto/code_coverage.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-11-30T23:50:26Z",
+      "side": 1,
+      "message": "For such cases, my thoughts was that we\u0027d better not save them at all. Since they are not useful.\n\nAlso wrong wording here: it should be \"impossible\" instead of \"not ...\". Mind updating?\n\nMy fault again. I should revert my recent change around that line in generate_coverage_metadata.py\n\nI will double check, fix it, and add more comments there.",
+      "parentUuid": "9c5e6c7d_8b2550bc",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 40
+      },
+      "revId": "1419e8990a941d33c1df96dc75e0257db07abe93",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "36c2773e_8eda3bd5",
         "filename": "appengine/findit/model/proto/code_coverage.proto",
         "patchSetId": 4
@@ -36,6 +60,30 @@
       "writtenOn": "2018-11-30T19:35:47Z",
       "side": 1,
       "message": "I\u0027m not sure I understand the difference between Metric and CoverageSummary, looks like CoverageSummary just wraps around Metric, would it be possible get rid of one of them? I think that can help simplify the structure.",
+      "range": {
+        "startLine": 74,
+        "startChar": 0,
+        "endLine": 74,
+        "endChar": 16
+      },
+      "revId": "1419e8990a941d33c1df96dc75e0257db07abe93",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "780fb5af_f2a55fe1",
+        "filename": "appengine/findit/model/proto/code_coverage.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-11-30T23:50:26Z",
+      "side": 1,
+      "message": "It seems impossible.\n\nCoverageSummary is to represent the coverage summaries for a single file for example. And A single file could have multiple metrics for coverage. So the metric has to be a repeated field, and as a sibling field of the file path for example.",
+      "parentUuid": "36c2773e_8eda3bd5",
       "range": {
         "startLine": 74,
         "startChar": 0,
