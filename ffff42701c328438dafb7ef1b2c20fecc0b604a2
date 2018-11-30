@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f0952e84_243ba266",
+        "filename": "infra/config/global/refs.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2018-11-30T01:14:34Z",
+      "side": 1,
+      "message": "looks good.",
+      "revId": "ffff42701c328438dafb7ef1b2c20fecc0b604a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
