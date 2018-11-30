@@ -8,10 +8,10 @@ package codecoverage;
 
 // Represents the code coverage for multiple full lines in the file.
 message LineRange {
-  // The first line in the range.
+  // The first line in the range. Inclusive.
   int32 first = 1;
 
-  // The last line in the range.
+  // The last line in the range. Inclusive.
   // If not set, it is the same as `first` above.
   int32 last = 2;
 
