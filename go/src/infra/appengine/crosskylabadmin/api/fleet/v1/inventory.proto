@@ -59,6 +59,11 @@ message EnsurePoolHealthyResponse {
     // Target pool had more than max_unhealthy_duts unhealthy duts before any
     // action was taken.
     TOO_MANY_UNHEALTHY_DUTS = 1;
+
+    // Spare pool did not have enough healthy DUTs to make sure all DUTs in
+    // target pool are healthy. In this failure mode, the available healthy
+    // spare DUTs do get transferred to the target pool.
+    NOT_ENOUGH_HEALTHY_SPARES = 2;
   }
 
   // Failures encountered during pool balancing.
