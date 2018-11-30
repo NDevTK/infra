@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "06f857c7_4770f8e1",
+        "filename": "infra/config/global/tricium-dev.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2018-11-30T18:15:59Z",
+      "side": 1,
+      "message": "Maybe keep sorted ?",
+      "revId": "303ed5cc9656eb0a7115b03cca12ecf8dc16575a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
