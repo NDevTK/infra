@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "1d12847c_49c792c0",
+        "filename": "appengine/findit/model/proto/code_coverage.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-01T01:11:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cc68351a_eb1bb500",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 40
+      },
+      "revId": "1419e8990a941d33c1df96dc75e0257db07abe93",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "36c2773e_8eda3bd5",
         "filename": "appengine/findit/model/proto/code_coverage.proto",
         "patchSetId": 4
@@ -117,6 +141,30 @@
       "revId": "1419e8990a941d33c1df96dc75e0257db07abe93",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "59737db6_8e4e5ff4",
+        "filename": "appengine/findit/model/proto/code_coverage.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-01T01:11:28Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "780fb5af_f2a55fe1",
+      "range": {
+        "startLine": 74,
+        "startChar": 0,
+        "endLine": 74,
+        "endChar": 16
+      },
+      "revId": "1419e8990a941d33c1df96dc75e0257db07abe93",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
