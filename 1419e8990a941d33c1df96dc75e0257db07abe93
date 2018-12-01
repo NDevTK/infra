@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "cc68351a_eb1bb500",
+        "filename": "appengine/findit/model/proto/code_coverage.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-12-01T00:47:36Z",
+      "side": 1,
+      "message": "After thinking more, let\u0027s record -1 for uninstrumented lines, since such info could be useful for later analysis.\n\nNo revert needed for generate_coverage_metadata.py\nThe current code is correct. I\u0027m adding comments there now. https://chromium-review.googlesource.com/c/chromium/tools/build/+/1356527",
+      "parentUuid": "6dd1f8a3_fc6626ea",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 40
+      },
+      "revId": "1419e8990a941d33c1df96dc75e0257db07abe93",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "36c2773e_8eda3bd5",
         "filename": "appengine/findit/model/proto/code_coverage.proto",
         "patchSetId": 4
