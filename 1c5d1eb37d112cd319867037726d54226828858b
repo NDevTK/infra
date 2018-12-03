@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8e1e08a4_45544ca2",
+        "filename": "appengine/findit/model/flake/flake.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-12-03T23:46:47Z",
+      "side": 1,
+      "message": "could be simplify by:\n\nfor tag in (self.tags or []):",
+      "range": {
+        "startLine": 261,
+        "startChar": 4,
+        "endLine": 263,
+        "endChar": 0
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "96ae3b54_d2fcbbd2",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-12-03T23:46:47Z",
+      "side": 1,
+      "message": "Since we only care about the number of occurrences, how about only passing in the number directly?",
+      "range": {
+        "startLine": 28,
+        "startChar": 21,
+        "endLine": 28,
+        "endChar": 32
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "15ba551e_04cf52ba",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-12-03T23:46:47Z",
+      "side": 1,
+      "message": "True if ...; otherwise False.",
+      "range": {
+        "startLine": 37,
+        "startChar": 6,
+        "endLine": 37,
+        "endChar": 14
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "689935f2_cdc15944",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-12-03T23:46:47Z",
+      "side": 1,
+      "message": "Do we have an estimation on how this will affect bug filing? e.g. how many flakes will be merged and the number of bugs that are NOT filed due to this change?\n\nMaybe a dry-run of the logic will help?",
+      "range": {
+        "startLine": 44,
+        "startChar": 6,
+        "endLine": 44,
+        "endChar": 29
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8cbeaa76_ac4e7a83",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-12-03T23:46:47Z",
+      "side": 1,
+      "message": "should we loose this condition a little bit? e.g. if not exactly the same, the delta is less than 5 builds while the total number of builds are 10+",
+      "range": {
+        "startLine": 73,
+        "startChar": 4,
+        "endLine": 80,
+        "endChar": 17
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c2b3da7d_ff975dcf",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-12-03T23:46:47Z",
+      "side": 1,
+      "message": "add an else branch to set it to None; otherwise accessing it might cause exception when it is not set.",
+      "range": {
+        "startLine": 109,
+        "startChar": 6,
+        "endLine": 109,
+        "endChar": 28
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b84251e5_6acda35f",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-12-03T23:46:47Z",
+      "side": 1,
+      "message": "Should we check whether they are with the same issue or add an assertion here?",
+      "range": {
+        "startLine": 122,
+        "startChar": 4,
+        "endLine": 122,
+        "endChar": 29
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "11978257_8fc372db",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 397,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-12-03T23:46:47Z",
+      "side": 1,
+      "message": "does it always exist?",
+      "range": {
+        "startLine": 397,
+        "startChar": 21,
+        "endLine": 397,
+        "endChar": 64
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "fc8bc262_8830ad33",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-12-03T23:46:47Z",
+      "side": 1,
+      "message": "pass in the length instead of the list since the list is not used?",
+      "range": {
+        "startLine": 28,
+        "startChar": 21,
+        "endLine": 28,
+        "endChar": 32
+      },
+      "revId": "7a8d2096c88e5f19a3cb931e02250f330c16b626",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "95386947_6c809404",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 2
