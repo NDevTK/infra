@@ -2,11 +2,12 @@
 
 ## Deploying a new version to an existing instance
 
-If any step below fails. Halt deploy and ping Monorail chat.
+If any step below fails. Stop the deploy and ping [Monorail
+chat](http://chat/room/AAAACV9ZZ8k).
 
 1. Prequalify
     1. Check for signs of trouble
-        1. [go/cit-hangout](http://go/devx-pages)
+        1. [go/cit-hangout](http://go/cit-hangout)
         1. [Viceroy](http://go/monorail-prod-viceroy)
         1. [go/devx-pages](http://go/devx-pages)
         1. [GAE dashboard](https://console.cloud.google.com/appengine?project=monorail-prod&duration=PT1H)
