@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "1118e061_7054ea14",
+        "filename": "appengine/findit/model/flake/flake.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 261,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-04T05:39:34Z",
+      "side": 1,
+      "message": "Please add docstring.",
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8e1e08a4_45544ca2",
         "filename": "appengine/findit/model/flake/flake.py",
         "patchSetId": 4
@@ -18,6 +35,29 @@
         "startChar": 4,
         "endLine": 263,
         "endChar": 0
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "00bfbdc0_e10cecc5",
+        "filename": "appengine/findit/model/flake/test/flake_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-04T05:39:34Z",
+      "side": 1,
+      "message": "I would use a real example, and in this case, it should a, is that correct? It doesn\u0027t make a different regarding the test results, but it could help avoid some confusions.",
+      "range": {
+        "startLine": 248,
+        "startChar": 23,
+        "endLine": 248,
+        "endChar": 37
       },
       "revId": "1c5d1eb37d112cd319867037726d54226828858b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
@@ -71,6 +111,29 @@
     },
     {
       "key": {
+        "uuid": "8d0cfada_8162c555",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-04T05:39:34Z",
+      "side": 1,
+      "message": "Please add a more descriptive comments to explain the criteria of grouping them together and why the criteria makes sense.",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 45
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "689935f2_cdc15944",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 4
@@ -110,6 +173,69 @@
         "startChar": 4,
         "endLine": 80,
         "endChar": 17
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "666e4a81_ed4d9acf",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-04T05:39:34Z",
+      "side": 1,
+      "message": "builds?",
+      "range": {
+        "startLine": 90,
+        "startChar": 23,
+        "endLine": 90,
+        "endChar": 29
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6d7b22a0_64c53107",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-04T05:39:34Z",
+      "side": 1,
+      "message": "I don\u0027t think I fully understood the criteria, can you add an example to the comments?",
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "be03bdcd_1cd32bf5",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-04T05:39:34Z",
+      "side": 1,
+      "message": "Could previous_flake_issue be None?",
+      "range": {
+        "startLine": 108,
+        "startChar": 31,
+        "endLine": 108,
+        "endChar": 51
       },
       "revId": "1c5d1eb37d112cd319867037726d54226828858b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
