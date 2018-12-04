@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "edda7e0c_f238a880",
+        "filename": "appengine/findit/model/flake/flake.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 261,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-04T23:44:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1118e061_7054ea14",
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8e1e08a4_45544ca2",
         "filename": "appengine/findit/model/flake/flake.py",
         "patchSetId": 4
@@ -42,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "f589d403_f1de324d",
+        "filename": "appengine/findit/model/flake/flake.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-04T23:44:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8e1e08a4_45544ca2",
+      "range": {
+        "startLine": 261,
+        "startChar": 4,
+        "endLine": 263,
+        "endChar": 0
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "00bfbdc0_e10cecc5",
         "filename": "appengine/findit/model/flake/test/flake_test.py",
         "patchSetId": 4
@@ -53,6 +95,30 @@
       "writtenOn": "2018-12-04T05:39:34Z",
       "side": 1,
       "message": "I would use a real example, and in this case, it should a, is that correct? It doesn\u0027t make a different regarding the test results, but it could help avoid some confusions.",
+      "range": {
+        "startLine": 248,
+        "startChar": 23,
+        "endLine": 248,
+        "endChar": 37
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "266d9202_e8f97dd2",
+        "filename": "appengine/findit/model/flake/test/flake_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-04T23:44:59Z",
+      "side": 1,
+      "message": "I\u0027m not sure I understand your comment... Is the first sentence completed?",
+      "parentUuid": "00bfbdc0_e10cecc5",
       "range": {
         "startLine": 248,
         "startChar": 23,
@@ -88,6 +154,30 @@
     },
     {
       "key": {
+        "uuid": "51214e72_02418ca0",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-04T23:44:59Z",
+      "side": 1,
+      "message": "Occurrences are needed in FlakeGroupByOccurrences, so number alone is not enough.",
+      "parentUuid": "96ae3b54_d2fcbbd2",
+      "range": {
+        "startLine": 28,
+        "startChar": 21,
+        "endLine": 28,
+        "endChar": 32
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ab93697c_df63c8f1",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 4
@@ -99,6 +189,30 @@
       "writtenOn": "2018-12-04T07:47:11Z",
       "side": 1,
       "message": "I think the name is a little bit confusing, wdyt of the following:\ndef IsFlakeBelongsToThisGroup(flake, ...):\n  raise NotImplementedError()\n\nAnd then the caller can just do:\nif flake_group.IsFlakeBelongsToThisGroup(flake, ...):\n  flake_group.flakes.append(flake)",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 14
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "39a658e2_5b607c9c",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-04T23:44:59Z",
+      "side": 1,
+      "message": "I personally prefer to wrap the logic. But I don\u0027t insist. Changed the method name.",
+      "parentUuid": "ab93697c_df63c8f1",
       "range": {
         "startLine": 33,
         "startChar": 0,
@@ -134,6 +248,30 @@
     },
     {
       "key": {
+        "uuid": "7dfcd880_b28c8192",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-04T23:44:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "15ba551e_04cf52ba",
+      "range": {
+        "startLine": 37,
+        "startChar": 6,
+        "endLine": 37,
+        "endChar": 14
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8d0cfada_8162c555",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 4
@@ -154,6 +292,30 @@
       "revId": "1c5d1eb37d112cd319867037726d54226828858b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c88df07a_19cd7542",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-04T23:44:59Z",
+      "side": 1,
+      "message": "See the comment in GetFlakeGroupsForActionsOnBugs",
+      "parentUuid": "8d0cfada_8162c555",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 45
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -180,6 +342,30 @@
     },
     {
       "key": {
+        "uuid": "dca6e1ab_e31c8d23",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-04T23:44:59Z",
+      "side": 1,
+      "message": "I\u0027ve run this for 5 days and looks grouping can help us to reduce about 2/3 bugs.",
+      "parentUuid": "689935f2_cdc15944",
+      "range": {
+        "startLine": 44,
+        "startChar": 6,
+        "endLine": 44,
+        "endChar": 29
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8cbeaa76_ac4e7a83",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 4
@@ -191,6 +377,30 @@
       "writtenOn": "2018-12-03T23:46:47Z",
       "side": 1,
       "message": "should we loose this condition a little bit? e.g. if not exactly the same, the delta is less than 5 builds while the total number of builds are 10+",
+      "range": {
+        "startLine": 73,
+        "startChar": 4,
+        "endLine": 80,
+        "endChar": 17
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "90914d30_197c9c6f",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-04T23:44:59Z",
+      "side": 1,
+      "message": "Ran the function with both heuristic rules and the results are the same. So I guess we can keep it as is.",
+      "parentUuid": "8cbeaa76_ac4e7a83",
       "range": {
         "startLine": 73,
         "startChar": 4,
@@ -226,6 +436,30 @@
     },
     {
       "key": {
+        "uuid": "14c000d4_a6e58c9e",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-04T23:44:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "666e4a81_ed4d9acf",
+      "range": {
+        "startLine": 90,
+        "startChar": 23,
+        "endLine": 90,
+        "endChar": 29
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6d7b22a0_64c53107",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 4
@@ -240,6 +474,24 @@
       "revId": "1c5d1eb37d112cd319867037726d54226828858b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "96cde24e_c6516fc6",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-04T23:44:59Z",
+      "side": 1,
+      "message": "Added details in GetFlakeGroupsForActionsOnBugs",
+      "parentUuid": "6d7b22a0_64c53107",
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -289,6 +541,54 @@
     },
     {
       "key": {
+        "uuid": "77747e7a_f9c31fd9",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-04T23:44:59Z",
+      "side": 1,
+      "message": "It should not be possible. See _AddFlakeToGroupWithIssue(), if previous_flake_issue is None, there would be an error before init a FlakeGroupByFlakeIssue",
+      "parentUuid": "be03bdcd_1cd32bf5",
+      "range": {
+        "startLine": 108,
+        "startChar": 31,
+        "endLine": 108,
+        "endChar": 51
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f5fb9659_9aaf82f0",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-04T23:44:59Z",
+      "side": 1,
+      "message": "As discussed before, when merge happens, we will update a flake_issue\u0027s merge_destination_key to point to the merge_destination. The flake_issue\u0027s issue_id will not be updated.",
+      "parentUuid": "577abf04_eed57f18",
+      "range": {
+        "startLine": 108,
+        "startChar": 0,
+        "endLine": 108,
+        "endChar": 61
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c2b3da7d_ff975dcf",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 4
@@ -309,6 +609,30 @@
       "revId": "1c5d1eb37d112cd319867037726d54226828858b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1788a8bc_e136699f",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-04T23:44:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c2b3da7d_ff975dcf",
+      "range": {
+        "startLine": 109,
+        "startChar": 6,
+        "endLine": 109,
+        "endChar": 28
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -335,6 +659,30 @@
     },
     {
       "key": {
+        "uuid": "36c55ce0_2edcaf29",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-04T23:44:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b84251e5_6acda35f",
+      "range": {
+        "startLine": 122,
+        "startChar": 4,
+        "endLine": 122,
+        "endChar": 29
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5c7280d4_a1aa8151",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 4
@@ -355,6 +703,30 @@
       "revId": "1c5d1eb37d112cd319867037726d54226828858b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "db23ec0a_00ee9832",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-04T23:44:59Z",
+      "side": 1,
+      "message": "For bug comments, we will post something like \u0027Findit found n+ new occurrences\u0027",
+      "parentUuid": "5c7280d4_a1aa8151",
+      "range": {
+        "startLine": 124,
+        "startChar": 8,
+        "endLine": 124,
+        "endChar": 73
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -381,6 +753,30 @@
     },
     {
       "key": {
+        "uuid": "0fb68605_f61db3bc",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 397,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-04T23:44:59Z",
+      "side": 1,
+      "message": "flake_groups_without_issue is defaultdict(list)",
+      "parentUuid": "11978257_8fc372db",
+      "range": {
+        "startLine": 397,
+        "startChar": 21,
+        "endLine": 397,
+        "endChar": 64
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3418c246_c321af8b",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 4
@@ -401,6 +797,30 @@
       "revId": "1c5d1eb37d112cd319867037726d54226828858b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4ff21bc2_539372b2",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 432,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-04T23:44:59Z",
+      "side": 1,
+      "message": "A flake should either links to an open bug (so it belongs to FlakeGroupByFlakeIssue) or not (FlakeGroupByOccurrence). It should not be possible for a flake to belong to both types of groups",
+      "parentUuid": "3418c246_c321af8b",
+      "range": {
+        "startLine": 428,
+        "startChar": 0,
+        "endLine": 432,
+        "endChar": 16
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
