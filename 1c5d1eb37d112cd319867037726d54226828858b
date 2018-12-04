@@ -88,6 +88,29 @@
     },
     {
       "key": {
+        "uuid": "ab93697c_df63c8f1",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-04T07:47:11Z",
+      "side": 1,
+      "message": "I think the name is a little bit confusing, wdyt of the following:\ndef IsFlakeBelongsToThisGroup(flake, ...):\n  raise NotImplementedError()\n\nAnd then the caller can just do:\nif flake_group.IsFlakeBelongsToThisGroup(flake, ...):\n  flake_group.flakes.append(flake)",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 14
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "15ba551e_04cf52ba",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 4
@@ -243,6 +266,29 @@
     },
     {
       "key": {
+        "uuid": "577abf04_eed57f18",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-04T07:47:11Z",
+      "side": 1,
+      "message": "I think I\u0027m still pretty confused about this if condition, how could |flake_issue| and |previous_flake_issue| have different issue_ids? My understanding is that, the only time we make changes to a flake\u0027s flake_issue is when the id of the bug has changed (for example, due to merge), so the issue id of the current flake_issue should be different from that of the previous_flake_issue.",
+      "range": {
+        "startLine": 108,
+        "startChar": 0,
+        "endLine": 108,
+        "endChar": 61
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c2b3da7d_ff975dcf",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 4
@@ -289,6 +335,29 @@
     },
     {
       "key": {
+        "uuid": "5c7280d4_a1aa8151",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-04T07:47:11Z",
+      "side": 1,
+      "message": "Why is that?",
+      "range": {
+        "startLine": 124,
+        "startChar": 8,
+        "endLine": 124,
+        "endChar": 73
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "11978257_8fc372db",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 4
@@ -305,6 +374,29 @@
         "startChar": 21,
         "endLine": 397,
         "endChar": 64
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3418c246_c321af8b",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 432,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-04T07:47:11Z",
+      "side": 1,
+      "message": "Is it possible for a flake to belong to both FlakeGroupByFlakeIssue and FlakeGroupByOccurrence? If that happens, it seems that we prefer grouping by issue, that sg, but I\u0027m just curious about the reason and your thoughts on it.",
+      "range": {
+        "startLine": 428,
+        "startChar": 0,
+        "endLine": 432,
+        "endChar": 16
       },
       "revId": "1c5d1eb37d112cd319867037726d54226828858b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
