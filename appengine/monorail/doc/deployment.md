@@ -2,18 +2,21 @@
 
 ## Deploying a new version to an existing instance
 
-If any step below fails. Halt deploy and ping Monorail chat.
+If any step below fails. Stop the deploy and ping [Monorail
+chat](http://chat/room/AAAACV9ZZ8k).
 
 1. Prequalify
     1. Check for signs of trouble
-        1. [go/cit-hangout](http://go/devx-pages)
+        1. [go/cit-hangout](http://go/cit-hangout)
         1. [Viceroy](http://go/monorail-prod-viceroy)
         1. [go/devx-pages](http://go/devx-pages)
         1. [GAE dashboard](https://console.cloud.google.com/appengine?project=monorail-prod&duration=PT1H)
         1. [Error Reporting](http://console.cloud.google.com/errors?time=P1D&order=COUNT_DESC&resolution=OPEN&resolution=ACKNOWLEDGED&project=monorail-prod)
     1. If there are any significant operational problems with Monorail or ChOps
        in general, halt deploy.
-    1. Run `gclient sync`.
+    1. `git pull`
+    1. `gclient sync`
+    1. `gcloud init` to your Google user and project `monorail-staging`.
 1. Update Schema
     1. Check for changes since last deploy: `tail -30 schema/alter-table-log.txt`
     1. Copy and paste the new changes into the master DB in staging.
