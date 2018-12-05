@@ -256,3 +256,11 @@ class Flake(ndb.Model):
   def GetIssue(self):
     """Returns the associated FlakeIssue."""
     return self.flake_issue_key.get() if self.flake_issue_key else None
+
+  def GetTestSuiteName(self):
+    """Gets suite name of the test from tags."""
+    for tag in (self.tags or []):
+      if tag.startswith('suite::'):
+        return tag.split('::')[1]
+
+    return None
