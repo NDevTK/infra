@@ -510,6 +510,30 @@
     },
     {
       "key": {
+        "uuid": "f57ea238_b1146f10",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-05T18:29:28Z",
+      "side": 1,
+      "message": "I think 107 is a lot, we should be careful with it, and after https://chromium-review.googlesource.com/c/infra/infra/+/1362523 deploys, there might be more.\n\nBased on the numbers, I think this is a very impactful change (could potentially both in good and bad ways), so I\u0027d suggest enabling it on staging first and call for a team meeting to review the results together before enabling on prod.",
+      "parentUuid": "9f9fdefb_30fc1b71",
+      "range": {
+        "startLine": 44,
+        "startChar": 6,
+        "endLine": 44,
+        "endChar": 29
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8cbeaa76_ac4e7a83",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 4
@@ -1061,6 +1085,30 @@
       "revId": "1c5d1eb37d112cd319867037726d54226828858b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "36358349_96dc1cee",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 432,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-05T18:29:28Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "e7033652_27e2b7aa",
+      "range": {
+        "startLine": 428,
+        "startChar": 0,
+        "endLine": 432,
+        "endChar": 16
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
