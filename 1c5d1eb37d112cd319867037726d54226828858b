@@ -131,6 +131,30 @@
     },
     {
       "key": {
+        "uuid": "45cc20e5_e1175ddf",
+        "filename": "appengine/findit/model/flake/test/flake_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-05T00:01:11Z",
+      "side": 1,
+      "message": "Sorry for the confusions. I was suggesting changing it to \u0027suite::a\u0027 so that it matches \u0027a/b.html\u0027, but it\u0027s just a nit, so, your call.",
+      "parentUuid": "266d9202_e8f97dd2",
+      "range": {
+        "startLine": 248,
+        "startChar": 23,
+        "endLine": 248,
+        "endChar": 37
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "96ae3b54_d2fcbbd2",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 4
@@ -222,6 +246,30 @@
       "revId": "1c5d1eb37d112cd319867037726d54226828858b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fe00b8a5_146f4846",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-05T00:01:11Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "39a658e2_5b607c9c",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 14
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -319,6 +367,30 @@
     },
     {
       "key": {
+        "uuid": "8bd95ce8_7ba897fc",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-05T00:01:11Z",
+      "side": 1,
+      "message": "Thanks!",
+      "parentUuid": "c88df07a_19cd7542",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 45
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "689935f2_cdc15944",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 4
@@ -363,6 +435,30 @@
       "revId": "1c5d1eb37d112cd319867037726d54226828858b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "10a887ad_bdb9df3f",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-05T00:01:11Z",
+      "side": 1,
+      "message": "That\u0027s great! Just curious, 2/3 of how many?",
+      "parentUuid": "dca6e1ab_e31c8d23",
+      "range": {
+        "startLine": 44,
+        "startChar": 6,
+        "endLine": 44,
+        "endChar": 29
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     },
     {
       "key": {
@@ -589,6 +685,30 @@
     },
     {
       "key": {
+        "uuid": "0fcba360_26129b39",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-05T00:01:11Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f5fb9659_9aaf82f0",
+      "range": {
+        "startLine": 108,
+        "startChar": 0,
+        "endLine": 108,
+        "endChar": 61
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c2b3da7d_ff975dcf",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 4
@@ -730,6 +850,30 @@
     },
     {
       "key": {
+        "uuid": "4dd8ce5f_1c81055b",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-05T00:01:11Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "db23ec0a_00ee9832",
+      "range": {
+        "startLine": 124,
+        "startChar": 8,
+        "endLine": 124,
+        "endChar": 73
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "11978257_8fc372db",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 4
@@ -821,6 +965,30 @@
       "revId": "1c5d1eb37d112cd319867037726d54226828858b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "471cb141_02de3a66",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 432,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-05T00:01:11Z",
+      "side": 1,
+      "message": "How about the following scenario:\ntest1, test2 was flaky two weeks ago, and bug: 123 was filed for it, and the flakiness was fixed, but the bug was left open.\n\ntwo weeks later, test1, test3, test4 start flaky (due to a different reason from two weeks ago) at the same time within the same build, and in this case, test1 could either belong to FlakeGroupByFlakeIssue (bug id: 123) or FlakeGroupByOccurrence (test{1,3,4}) depending on the processing order.",
+      "parentUuid": "4ff21bc2_539372b2",
+      "range": {
+        "startLine": 428,
+        "startChar": 0,
+        "endLine": 432,
+        "endChar": 16
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

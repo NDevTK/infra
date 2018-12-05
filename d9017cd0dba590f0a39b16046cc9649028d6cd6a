@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bebcf0be_31b2324d",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 421,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2018-12-05T00:01:11Z",
+      "side": 1,
+      "message": "This is great! Thanks for adding it.",
+      "revId": "d9017cd0dba590f0a39b16046cc9649028d6cd6a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
