@@ -155,6 +155,30 @@
     },
     {
       "key": {
+        "uuid": "1d336cbf_12c44813",
+        "filename": "appengine/findit/model/flake/test/flake_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-05T03:43:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45cc20e5_e1175ddf",
+      "range": {
+        "startLine": 248,
+        "startChar": 23,
+        "endLine": 248,
+        "endChar": 37
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "96ae3b54_d2fcbbd2",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 4
@@ -450,6 +474,30 @@
       "side": 1,
       "message": "That\u0027s great! Just curious, 2/3 of how many?",
       "parentUuid": "dca6e1ab_e31c8d23",
+      "range": {
+        "startLine": 44,
+        "startChar": 6,
+        "endLine": 44,
+        "endChar": 29
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9f9fdefb_30fc1b71",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-05T03:43:59Z",
+      "side": 1,
+      "message": "The number differs day by day. \n\nI got 27 vs 13, 232 cvs 74 and 286 vs 107 (checking both false rejection and retry with patch).",
+      "parentUuid": "10a887ad_bdb9df3f",
       "range": {
         "startLine": 44,
         "startChar": 6,
@@ -980,6 +1028,30 @@
       "side": 1,
       "message": "How about the following scenario:\ntest1, test2 was flaky two weeks ago, and bug: 123 was filed for it, and the flakiness was fixed, but the bug was left open.\n\ntwo weeks later, test1, test3, test4 start flaky (due to a different reason from two weeks ago) at the same time within the same build, and in this case, test1 could either belong to FlakeGroupByFlakeIssue (bug id: 123) or FlakeGroupByOccurrence (test{1,3,4}) depending on the processing order.",
       "parentUuid": "4ff21bc2_539372b2",
+      "range": {
+        "startLine": 428,
+        "startChar": 0,
+        "endLine": 432,
+        "endChar": 16
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e7033652_27e2b7aa",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 432,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-05T03:43:59Z",
+      "side": 1,
+      "message": "If the bug 123 is still open, test1, test2 will still be grouped by it.\n\nSay there\u0027s a culprit associated with 123, and since new flakes of test1, test2 are caused by another culprit, when FA completes it can split the bug. But at the stage of detection, there\u0027s no reliable way to tell if flakes have same cause or not.",
+      "parentUuid": "471cb141_02de3a66",
       "range": {
         "startLine": 428,
         "startChar": 0,
