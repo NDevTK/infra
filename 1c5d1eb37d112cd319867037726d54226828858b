@@ -534,6 +534,30 @@
     },
     {
       "key": {
+        "uuid": "568b3cb7_d06fd89a",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-06T17:50:30Z",
+      "side": 1,
+      "message": "That\u0027s a good idea.",
+      "parentUuid": "f57ea238_b1146f10",
+      "range": {
+        "startLine": 44,
+        "startChar": 6,
+        "endLine": 44,
+        "endChar": 29
+      },
+      "revId": "1c5d1eb37d112cd319867037726d54226828858b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8cbeaa76_ac4e7a83",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 4
