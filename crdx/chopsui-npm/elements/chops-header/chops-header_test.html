@@ -1,0 +1,30 @@
+<meta charset="utf-8">
+<script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+<script src="/node_modules/web-component-tester/browser.js"></script>
+<script src="/elements/chops-header.js"></script>
+
+<test-fixture id="basic">
+  <template>
+    <chops-header></chops-header>
+  </template>
+</test-fixture>
+<script>
+(function() {
+  'use strict';
+
+  suite('basic tests', function() {
+    var element;
+
+    setup(function() {
+      element = fixture('basic');
+    });
+
+    test('renders', function(done) {
+      flush(() => {
+        assert.isDefined(element, 'element is defined');
+        done();
+      });
+    });
+  });
+})();
+</script>
