@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3b633fa4_e613d434",
+        "filename": "crdx/chopsui-npm/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-12-11T16:09:06Z",
+      "side": 1,
+      "message": "Does webpack dev server (no polymer cli) work? I think I tried it out when working with a lit-element demo app and it seemed to do the @polymer/foo path rewriting correctly. Ex: https://chromium-review.googlesource.com/c/infra/infra/+/1362520/2/crdx/appshell/package.json#8",
+      "revId": "43870b59b8333409afa6c9ec585427e6115bb3b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2cf96837_3094421e",
+        "filename": "crdx/chopsui-npm/demos/chops-header.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-12-11T16:09:06Z",
+      "side": 1,
+      "message": "More descriptive text?",
+      "range": {
+        "startLine": 20,
+        "startChar": 4,
+        "endLine": 20,
+        "endChar": 7
+      },
+      "revId": "43870b59b8333409afa6c9ec585427e6115bb3b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2d3434c3_e2d474a2",
+        "filename": "crdx/chopsui-npm/elements/chops-header/chops-header.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-12-11T16:09:06Z",
+      "side": 1,
+      "message": "Would \u003cscope or project picker\u003e, \u003csearch\u003e or \u003cfilter\u003e, and/or \u003ctoolbar icons\u003e all go in this section?\n\nWondering if they should be mentioned here specifically so they get arranged the same way across apps too.",
+      "revId": "43870b59b8333409afa6c9ec585427e6115bb3b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
