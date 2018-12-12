@@ -36,3 +36,8 @@ def update_struct(dest, src):  # pragma: no cover
   for key, value in src.fields.iteritems():
     # This will create a new struct_pb2.Value if one does not exist.
     dest.fields[key].CopyFrom(value)
+
+
+def struct_to_dict(s):  # pragma: no cover
+  """Converts a google.protobuf.Struct to dict."""
+  return json_format.MessageToDict(s)
