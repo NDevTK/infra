@@ -52,13 +52,14 @@
       }
     </style>
     <div class="anchor" on-click="toggle">
-      <iron-icon class="expand-icon" icon="expand-more"></iron-icon>
+      <iron-icon class="expand-icon" icon="[[icon]]"></iron-icon>
       [[text]]
     </div>
     <div class="menu">
       <template is="dom-repeat" items="[[items]]">
         <hr hidden$="[[!item.separator]]" />
-        <a href$="[[item.url]]" hidden$="[[item.separator]]">
+        <a href$="[[item.url]]" hidden$="[[item.separator]]"
+           on-click="_onClick" data-idx$="[[item.idx]]">
           [[item.text]]
         </a>
       </template>
