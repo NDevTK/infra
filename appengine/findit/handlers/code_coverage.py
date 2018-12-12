@@ -480,14 +480,15 @@ class ServeCodeCoverageData(BaseHandler):
         elif data_type == 'components':
           path = path or '>>'
         else:
-          if path.startswith('//'):
-            # For file, the path in datastore doesn't start with '//'.
-            path = path[2:]
           template = 'coverage/file_view.html'
         assert data_type, 'Unknown data_type'
 
         code_revision_index = '%s-%s' % (project, revision)
         entity = CoverageData.Get(host, code_revision_index, data_type, path)
+        if not entity and path.startswith('//'):
+          # For legacy data, the path in datastore doesn't start with '//'.
+          path = path[2:]
+          entity = CoverageData.Get(host, code_revision_index, data_type, path)
         metadata = entity.data if entity else None
         data = {
             'commit_position': report.commit_position,
@@ -514,7 +515,8 @@ class ServeCodeCoverageData(BaseHandler):
           line_to_data.sort(key=lambda x: x[0])
           data['line_to_data'] = line_to_data
 
-          path = '//' + path
+          if not path.startswith('//'):
+            path = '//' + path
 
       # Compute the mapping of the name->path mappings in order.
       path_parts = _GetNameToPathSeparator(path, data_type)
