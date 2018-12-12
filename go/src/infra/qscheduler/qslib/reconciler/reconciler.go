@@ -61,6 +61,11 @@ type Assignment struct {
 
 	// RequestID is the ID of the task request that is being assigned.
 	RequestID string
+
+	// ProvisionRequired indicates whether the worker needs to be provisioned (in other
+	// words, it if true if the worker does not possess the request's provisionable
+	// labels.)
+	ProvisionRequired bool
 }
 
 // Scheduler is the interface with which reconciler interacts with a scheduler.
@@ -93,6 +98,10 @@ type Scheduler interface {
 	//
 	// Note: calls to NotifyRequest come from task update pubsub messages from swarming.
 	NotifyRequest(ctx context.Context, requestID string, workerID string, t time.Time) error
+
+	// GetRequest returns the request for a given ID, whether it is
+	// queued or running, if it exists.
+	GetRequest(rid string) (*scheduler.TaskRequest, bool)
 
 	// AbortRequest informs the scheduler authoritatively that the given request
 	// is stopped (not running on a worker, and not in the queue) at the given time.
@@ -151,7 +160,20 @@ func (state *State) AssignTasks(ctx context.Context, s Scheduler, t time.Time, w
 	assignments := make([]Assignment, 0, len(workers))
 	for _, w := range workers {
 		if q, ok := state.WorkerQueues[w.ID]; ok {
-			assignments = append(assignments, Assignment{RequestID: q.TaskToAssign, WorkerID: w.ID})
+			// Note: The reader may wonder why we are calculating whether provision was
+			// required here, rather than inside the Scheduler class where provision-affinity
+			// matching is implemented. The reason is that the AssignTasks call that we are
+			// in has the most up-to-date state of the worker dimensions, whereas
+			// the assigment in WorkerQueues may be older, and have come from a previous
+			// scheduler call with out of date worker dimensions.
+			r, _ := s.GetRequest(q.TaskToAssign)
+			provisionRequired := !w.ProvisionableLabels.Contains(r.Labels)
+
+			assignments = append(assignments, Assignment{
+				RequestID:         q.TaskToAssign,
+				WorkerID:          w.ID,
+				ProvisionRequired: provisionRequired,
+			})
 			// TODO: If q was a preempt-type assignment, then turn it into assign_idle
 			// type assignment now (as the worker already became idle) and log that
 			// we no longer need to abort the previous task.
