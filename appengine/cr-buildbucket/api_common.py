@@ -2,9 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import copy
 import json
 
 from google.appengine.ext import ndb
+from google.protobuf import json_format
 from protorpc import messages
 
 from components import utils
@@ -118,12 +120,17 @@ def build_to_message(build, include_lease_key=False):
 
   project_id, _ = config.parse_bucket_id(build.bucket_id)
 
+  v1_parameters = copy.deepcopy(build.parameters or {})
+  v1_parameters['properties'] = json_format.MessageToDict(
+      build.input_properties
+  )
+
   msg = BuildMessage(
       id=build.key.id(),
       project=project_id,
       bucket=legacy_bucket_name(build.bucket_id, build.is_luci),
       tags=build.tags,
-      parameters_json=json.dumps(build.parameters or {}, sort_keys=True),
+      parameters_json=json.dumps(v1_parameters, sort_keys=True),
       status=build.status,
       result=build.result,
       result_details_json=json.dumps(build.result_details),
