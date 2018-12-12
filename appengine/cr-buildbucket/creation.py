@@ -106,6 +106,7 @@ class BuildRequest(_BuildRequestBase):
     if self.parameters is not None:
       if not isinstance(self.parameters, dict):
         raise errors.InvalidInputError('parameters must be a dict or None')
+
       props = self.parameters.get(model.PROPERTIES_PARAMETER)
       if props is not None and not isinstance(props, dict):
         raise errors.InvalidInputError(

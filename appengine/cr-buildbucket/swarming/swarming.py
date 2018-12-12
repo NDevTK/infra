@@ -71,7 +71,6 @@ import model
 import user
 
 _PUBSUB_TOPIC = 'swarming'
-_PARAM_PROPERTIES = 'properties'
 _PARAM_SWARMING = 'swarming'
 _PARAM_CHANGES = 'changes'
 
@@ -217,23 +216,6 @@ def validate_build_parameters(builder_name, params):
       if not email:
         bad('change author email not specified')
 
-  properties = params.pop(_PARAM_PROPERTIES, None)
-  if properties is not None:  # pragma: no cover. TODO(nodir): remove this code.
-    assert_object('properties', properties)
-    if properties.pop('buildername', builder_name) != builder_name:
-      bad('inconsistent builder name')
-    expected_emails = [c['author']['email'] for c in (changes or [])]
-    if properties.pop('blamelist', None) not in (None, expected_emails):
-      bad(
-          'inconsistent blamelist property; blamelist must not be set or '
-          'it must match the emails in the "changes" build parameter'
-      )
-    # Validate the rest of the properties using common logic.
-    ctx = validation.Context.raise_on_error(exc_type=errors.InvalidInputError)
-    for k, v in properties.iteritems():
-      with ctx.prefix('property %r:', k):
-        swarmingcfg_module.validate_recipe_property(k, v, ctx)
-
   swarming = params.pop(_PARAM_SWARMING, None)
   if swarming is not None:
     assert_object('swarming', swarming)
@@ -269,6 +251,13 @@ def validate_build_parameters(builder_name, params):
 
     if swarming:
       bad('unrecognized keys in swarming param: %r', swarming.keys())
+
+
+def validate_input_properties(properties):
+  ctx = validation.Context.raise_on_error(exc_type=errors.InvalidInputError)
+  for k, v in bbutil.struct_to_dict(properties).iteritems():
+    with ctx.prefix('property %r:', k):
+      swarmingcfg_module.validate_recipe_property(k, v, ctx)
 
 
 # Mocked in tests.
@@ -374,18 +363,22 @@ def _is_migrating_builder_prod_async(builder_cfg, build):
 
   If unknown, returns None.
   On failures, logs them and returns None.
+
+  TODO(nodir): remove this function when Buildbot is turned down.
   """
   ret = None
 
   master = None
   props_list = (
-      build.parameters.get(_PARAM_PROPERTIES) or {},
-      flatten_swarmingcfg.read_properties(builder_cfg.recipe),
+      build.input_properties,
+      bbutil.dict_to_struct(
+          flatten_swarmingcfg.read_properties(builder_cfg.recipe)
+      ),
   )
   for prop_name in ('luci_migration_master_name', 'mastername'):
     for props in props_list:
-      master = props.get(prop_name)
-      if master:
+      if prop_name in props:
+        master = props[prop_name]
         break
     if master:  # pragma: no branch
       break
@@ -437,6 +430,7 @@ def _create_task_def_async(
   assert isinstance(fake_build, bool), type(fake_build)
   params = build.parameters or {}
   validate_build_parameters(builder_cfg.name, params)
+  validate_input_properties(build.input_properties)
   swarming_param = params.get(_PARAM_SWARMING) or {}
 
   # Use canary template?
@@ -1277,7 +1271,6 @@ def _sync_build_async(build_id, task_result, bucket_id, builder):
 
   build_key = ndb.Key(model.Build, build_id)
 
-  # TODO(nodir): accept build steps via a separate RPC.
   step_container = build_pb2.Build(steps=_extract_build_steps(build_run_result))
   step_byte_size = step_container.ByteSize()
   _BUILD_STEPS_SIZE_METRIC.add(
