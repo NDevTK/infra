@@ -1,0 +1,189 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c3548fe9_2c3fb6ca",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-13T23:19:45Z",
+      "side": 1,
+      "message": "typo",
+      "range": {
+        "startLine": 66,
+        "startChar": 11,
+        "endLine": 66,
+        "endChar": 37
+      },
+      "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "92f94fc0_8c6be777",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-13T23:19:45Z",
+      "side": 1,
+      "message": "Use named return values for documentation.  I don\u0027t know if it\u0027s queued bool or running bool, i.e. what true means.\n\nI don\u0027t like returning multiple items from a single function, it\u0027s a code smell that a function is trying to do too much.\n\nIt also doesn\u0027t look like this value is used; don\u0027t add complexity for a hypothetical future need unless you plan to use it immediately, e.g. next CL.\n\nEdit: Oh, reading the final getRequest function, this is supposed to be ok bool, whether a request was found.  The doc comment is misleading.",
+      "range": {
+        "startLine": 102,
+        "startChar": 51,
+        "endLine": 103,
+        "endChar": 36
+      },
+      "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "77935a9e_a19d3cf8",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-13T23:19:45Z",
+      "side": 1,
+      "message": "Too wordy\n\nThe reader may wonder why we FOO.  The reason is BAR\n\nvs\n\nWe Foo because BAR",
+      "range": {
+        "startLine": 163,
+        "startChar": 6,
+        "endLine": 165,
+        "endChar": 50
+      },
+      "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7bc25ea9_db04196f",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-13T23:19:45Z",
+      "side": 1,
+      "message": "All this lengthy comment is saying is:\n\nWe determine whether provision is needed here rather than inside the Scheduler because we have the newest info about worker state here.",
+      "range": {
+        "startLine": 166,
+        "startChar": 32,
+        "endLine": 166,
+        "endChar": 47
+      },
+      "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3a6734ba_e4844655",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-13T23:19:45Z",
+      "side": 1,
+      "message": "\u003e \"assigment\" is a possible misspelling of \"assignment\".\n\nPlease Fix",
+      "parentUuid": "000aa86a_b0983063",
+      "range": {
+        "startLine": 167,
+        "startChar": 10,
+        "endLine": 167,
+        "endChar": 19
+      },
+      "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d0c3c324_35deb5a2",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-13T23:19:45Z",
+      "side": 1,
+      "message": "parens are not really needed?",
+      "range": {
+        "startLine": 77,
+        "startChar": 51,
+        "endLine": 77,
+        "endChar": 52
+      },
+      "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2e53c612_e0a0cc74",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-13T23:19:45Z",
+      "side": 1,
+      "message": "same comments as Scheduler interface",
+      "range": {
+        "startLine": 247,
+        "startChar": 44,
+        "endLine": 247,
+        "endChar": 62
+      },
+      "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a0f3b6aa_7d30967d",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/task.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-13T23:19:45Z",
+      "side": 1,
+      "message": "Need len() \u003d\u003d 1 check?\n\nOtherwise you\u0027re not checking for order.\n\nAlso please add regression tests for this case \u003d)\n\n{\"foo\", \"bar\"} contains {\"bar\", \"foo\"} \u003d\u003d true",
+      "range": {
+        "startLine": 74,
+        "startChar": 13,
+        "endLine": 74,
+        "endChar": 20
+      },
+      "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
