@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "3fcd1be8_c4dd7790",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-12-14T18:40:24Z",
+      "side": 1,
+      "message": "Ah, gotcha. I considered adding a check, but r should never by nil in this circumstance, if so it indicates some weird corruption or inconsistency between reconciler and scheduler state, so panic is appropriate.",
+      "parentUuid": "049439d4_7b014275",
+      "range": {
+        "startLine": 166,
+        "startChar": 58,
+        "endLine": 166,
+        "endChar": 65
+      },
+      "revId": "a7acb5b845bf7f3246dde4ad61f0d580a43a769e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cd0b8162_2defa349",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/task_test.go",
         "patchSetId": 7
