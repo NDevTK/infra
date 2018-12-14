@@ -69,6 +69,30 @@
       "revId": "a7acb5b845bf7f3246dde4ad61f0d580a43a769e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "afbe2ed6_5755c2ce",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/task_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-12-14T18:24:51Z",
+      "side": 1,
+      "message": "Yeah I know I cheated a bit. I really just wanted goconvey\u0027s nice assertions. This test is too simple to need all the convey nesting imo.",
+      "parentUuid": "cd0b8162_2defa349",
+      "range": {
+        "startLine": 49,
+        "startChar": 2,
+        "endLine": 54,
+        "endChar": 34
+      },
+      "revId": "a7acb5b845bf7f3246dde4ad61f0d580a43a769e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
