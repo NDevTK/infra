@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "022aef14_31153941",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-12-14T00:02:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c3548fe9_2c3fb6ca",
+      "range": {
+        "startLine": 66,
+        "startChar": 11,
+        "endLine": 66,
+        "endChar": 37
+      },
+      "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "92f94fc0_8c6be777",
         "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
         "patchSetId": 3
@@ -45,6 +69,30 @@
       "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d37f7c0f_0190f2df",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-12-14T00:02:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "92f94fc0_8c6be777",
+      "range": {
+        "startLine": 102,
+        "startChar": 51,
+        "endLine": 103,
+        "endChar": 36
+      },
+      "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "b0eef8f1_69e2e866",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-12-14T00:02:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "77935a9e_a19d3cf8",
+      "range": {
+        "startLine": 163,
+        "startChar": 6,
+        "endLine": 165,
+        "endChar": 50
+      },
+      "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7bc25ea9_db04196f",
         "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
         "patchSetId": 3
@@ -91,6 +163,30 @@
       "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "50b51254_98a976f3",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-12-14T00:02:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7bc25ea9_db04196f",
+      "range": {
+        "startLine": 166,
+        "startChar": 32,
+        "endLine": 166,
+        "endChar": 47
+      },
+      "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -118,6 +214,30 @@
     },
     {
       "key": {
+        "uuid": "bf08ea86_cc3eff37",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-12-14T00:02:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3a6734ba_e4844655",
+      "range": {
+        "startLine": 167,
+        "startChar": 10,
+        "endLine": 167,
+        "endChar": 19
+      },
+      "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d0c3c324_35deb5a2",
         "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler_test.go",
         "patchSetId": 3
@@ -138,6 +258,30 @@
       "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a80f5b90_555665d3",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-12-14T00:02:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d0c3c324_35deb5a2",
+      "range": {
+        "startLine": 77,
+        "startChar": 51,
+        "endLine": 77,
+        "endChar": 52
+      },
+      "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -164,6 +308,30 @@
     },
     {
       "key": {
+        "uuid": "63616286_90cdc76c",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-12-14T00:02:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2e53c612_e0a0cc74",
+      "range": {
+        "startLine": 247,
+        "startChar": 44,
+        "endLine": 247,
+        "endChar": 62
+      },
+      "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a0f3b6aa_7d30967d",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/task.go",
         "patchSetId": 3
@@ -184,6 +352,30 @@
       "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cf8b50a8_42c33d0d",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/task.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-12-14T00:02:37Z",
+      "side": 1,
+      "message": "will do, but I don\u0027t think this regressed. Equal is defined above, and is set-equal not array-equal, as desired.",
+      "parentUuid": "a0f3b6aa_7d30967d",
+      "range": {
+        "startLine": 74,
+        "startChar": 13,
+        "endLine": 74,
+        "endChar": 20
+      },
+      "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
