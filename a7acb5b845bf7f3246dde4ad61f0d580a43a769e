@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0cf2d59d_450cabda",
+        "filename": "go/src/infra/qscheduler/qslib/reconciler/reconciler.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-14T02:44:21Z",
+      "side": 1,
+      "message": "r.GetLabels(), otherwise you\u0027re ignoring if r is a nil pointer (or check for nil pointer/ok)",
+      "range": {
+        "startLine": 166,
+        "startChar": 58,
+        "endLine": 166,
+        "endChar": 65
+      },
+      "revId": "a7acb5b845bf7f3246dde4ad61f0d580a43a769e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cd0b8162_2defa349",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/task_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-14T02:44:21Z",
+      "side": 1,
+      "message": "You skimped on describing all the cases.  There aren\u0027t many here so I don\u0027t think it needs to be added now, but if more are added in the future all of the cases should be separated and described with convey.",
+      "range": {
+        "startLine": 49,
+        "startChar": 2,
+        "endLine": 54,
+        "endChar": 34
+      },
+      "revId": "a7acb5b845bf7f3246dde4ad61f0d580a43a769e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

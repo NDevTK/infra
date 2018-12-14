@@ -376,6 +376,30 @@
       "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "558c7316_bfeeec37",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/task.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-14T02:44:21Z",
+      "side": 1,
+      "message": "Ack, mentally read that as DeepEqual.",
+      "parentUuid": "cf8b50a8_42c33d0d",
+      "range": {
+        "startLine": 74,
+        "startChar": 13,
+        "endLine": 74,
+        "endChar": 20
+      },
+      "revId": "dc0d483758d75619252375b95d76e4c8562cc46c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
