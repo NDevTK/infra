@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d0c4ec9c_77e6e7b8",
+        "filename": "appengine/cr-buildbucket/swarming/swarming.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2018-12-17T19:54:32Z",
+      "side": 1,
+      "message": "nit: this makes order of errors non-deterministic, consider sorting by keys",
+      "range": {
+        "startLine": 259,
+        "startChar": 47,
+        "endLine": 259,
+        "endChar": 59
+      },
+      "revId": "a8da32e9178cab957ce1843afa4fe42ec6b7a175",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
