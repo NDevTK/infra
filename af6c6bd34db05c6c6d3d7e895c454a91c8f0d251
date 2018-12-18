@@ -25,6 +25,52 @@
     },
     {
       "key": {
+        "uuid": "07868355_1b82fd46",
+        "filename": "appengine/findit/services/flake_detection/flaky_tests.hidden_flakes.sql",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-18T22:24:00Z",
+      "side": 1,
+      "message": "For blink tests, we only consider unexpected fails as failures and ignore unexpected passes.",
+      "range": {
+        "startLine": 5,
+        "startChar": 7,
+        "endLine": 6,
+        "endChar": 54
+      },
+      "revId": "af6c6bd34db05c6c6d3d7e895c454a91c8f0d251",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "611d7071_78072816",
+        "filename": "appengine/findit/services/flake_detection/flaky_tests.hidden_flakes.sql",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2018-12-18T22:24:00Z",
+      "side": 1,
+      "message": "expected or actual?",
+      "range": {
+        "startLine": 11,
+        "startChar": 32,
+        "endLine": 11,
+        "endChar": 38
+      },
+      "revId": "af6c6bd34db05c6c6d3d7e895c454a91c8f0d251",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "49181863_f41f41d3",
         "filename": "appengine/findit/services/flake_detection/flaky_tests.hidden_flakes.sql",
         "patchSetId": 1
