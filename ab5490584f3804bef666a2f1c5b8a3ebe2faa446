@@ -22,6 +22,30 @@
       "revId": "ab5490584f3804bef666a2f1c5b8a3ebe2faa446",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0400a7fc_cc4ced25",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2018-12-18T22:05:19Z",
+      "side": 1,
+      "message": "No dependency on the chromium recipe. I\u0027ll move them over.",
+      "parentUuid": "99a41a78_e5b86bc6",
+      "range": {
+        "startLine": 10,
+        "startChar": 62,
+        "endLine": 11,
+        "endChar": 52
+      },
+      "revId": "ab5490584f3804bef666a2f1c5b8a3ebe2faa446",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
