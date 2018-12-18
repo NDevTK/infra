@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "49181863_f41f41d3",
+        "filename": "appengine/findit/services/flake_detection/flaky_tests.hidden_flakes.sql",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-12-18T19:53:03Z",
+      "side": 1,
+      "message": "@chanli: you may use a parameterized query (set this as a parameter) to set the timestamp here so that we can reduce the data volume pulling from BigQuery. Hidden flakes are in big volume, so avoiding duplicate data would be better, or at least making the overlap smaller to like 30 minutes. A small amount of data loss is fine, since we have big volume of data here.",
+      "range": {
+        "startLine": 55,
+        "startChar": 6,
+        "endLine": 55,
+        "endChar": 56
+      },
+      "revId": "af6c6bd34db05c6c6d3d7e895c454a91c8f0d251",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
