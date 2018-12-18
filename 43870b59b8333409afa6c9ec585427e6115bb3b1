@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "8cc8d17a_7c4051ff",
+        "filename": "crdx/chopsui-npm/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-12-18T02:41:15Z",
+      "side": 1,
+      "message": "After some munging around with config settings, it worked! the nice thing is that we\u0027ll be able to use the same build rules for bundling for prod.",
+      "parentUuid": "3b633fa4_e613d434",
+      "revId": "43870b59b8333409afa6c9ec585427e6115bb3b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d3ba8346_fd94d9d4",
         "filename": "crdx/chopsui-npm/README.md",
         "patchSetId": 1
@@ -39,6 +57,30 @@
       "revId": "43870b59b8333409afa6c9ec585427e6115bb3b1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "270b3e34_fd2e8ae1",
+        "filename": "crdx/chopsui-npm/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-12-18T02:41:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d3ba8346_fd94d9d4",
+      "range": {
+        "startLine": 36,
+        "startChar": 0,
+        "endLine": 36,
+        "endChar": 13
+      },
+      "revId": "43870b59b8333409afa6c9ec585427e6115bb3b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -65,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "dd541898_61ff2a18",
+        "filename": "crdx/chopsui-npm/demos/chops-header.html",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-12-18T02:41:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2cf96837_3094421e",
+      "range": {
+        "startLine": 20,
+        "startChar": 4,
+        "endLine": 20,
+        "endChar": 7
+      },
+      "revId": "43870b59b8333409afa6c9ec585427e6115bb3b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2d3434c3_e2d474a2",
         "filename": "crdx/chopsui-npm/elements/chops-header/chops-header.js",
         "patchSetId": 1
@@ -76,6 +142,24 @@
       "writtenOn": "2018-12-11T16:09:06Z",
       "side": 1,
       "message": "Would \u003cscope or project picker\u003e, \u003csearch\u003e or \u003cfilter\u003e, and/or \u003ctoolbar icons\u003e all go in this section?\n\nWondering if they should be mentioned here specifically so they get arranged the same way across apps too.",
+      "revId": "43870b59b8333409afa6c9ec585427e6115bb3b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b05b288d_014047bf",
+        "filename": "crdx/chopsui-npm/elements/chops-header/chops-header.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-12-18T02:41:15Z",
+      "side": 1,
+      "message": "I\u0027m imaginining \u003cscope-picker\u003e, \u003csearch\u003e, and \u003cfilter\u003e going here. \u003ctoolbar-icons\u003e, I think, should probably be a separate slot or maybe even baked into the component. One general decision to think about is whether we want sub-components to manage their positioning or for the main header element to manage positioning. I think having components manage their own sizing will probably allow more flexibility, but then again we might want to intentionally limit flexibility. \n\nAnother possibility I haven\u0027t yet explored much but do want to think about is that in a lit-element world, we do now have the option of using class extension to compose templates separately for different elements instead of using only slots. Not completely sure yet that there are major advantages to this, but it might have potential to offer some increased flexbility.",
+      "parentUuid": "2d3434c3_e2d474a2",
       "revId": "43870b59b8333409afa6c9ec585427e6115bb3b1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
