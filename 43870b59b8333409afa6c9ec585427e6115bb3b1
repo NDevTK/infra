@@ -181,6 +181,24 @@
       "revId": "43870b59b8333409afa6c9ec585427e6115bb3b1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "30eda74b_7ae97390",
+        "filename": "crdx/chopsui-npm/elements/chops-header/chops-header.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2018-12-18T19:35:26Z",
+      "side": 1,
+      "message": "Makes sense. I think it\u0027s less standard anyways so probably best to avoid unless we come up with reasons it could offer significant benefits later on. But it was something that occurred to me is now an option.",
+      "parentUuid": "47ec963e_a3f04446",
+      "revId": "43870b59b8333409afa6c9ec585427e6115bb3b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
