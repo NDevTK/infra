@@ -163,6 +163,24 @@
       "revId": "43870b59b8333409afa6c9ec585427e6115bb3b1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "47ec963e_a3f04446",
+        "filename": "crdx/chopsui-npm/elements/chops-header/chops-header.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2018-12-18T16:50:23Z",
+      "side": 1,
+      "message": "Oh interesting, I hadn\u0027t considered extending via class extension instead of slots. In principle, I think composition is preferable to inheritance (if that\u0027s what you mean by class extension).",
+      "parentUuid": "b05b288d_014047bf",
+      "revId": "43870b59b8333409afa6c9ec585427e6115bb3b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
