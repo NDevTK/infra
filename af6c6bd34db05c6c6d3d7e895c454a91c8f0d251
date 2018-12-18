@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "df1bf599_708424c0",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-12-18T22:24:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5dd9a491_318f94b2",
+      "range": {
+        "startLine": 9,
+        "startChar": 19,
+        "endLine": 9,
+        "endChar": 20
+      },
+      "revId": "af6c6bd34db05c6c6d3d7e895c454a91c8f0d251",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "07868355_1b82fd46",
         "filename": "appengine/findit/services/flake_detection/flaky_tests.hidden_flakes.sql",
         "patchSetId": 1
@@ -94,6 +118,30 @@
     },
     {
       "key": {
+        "uuid": "d8e39fa5_1fd07378",
+        "filename": "appengine/findit/services/flake_detection/flaky_tests.hidden_flakes.sql",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-12-18T22:24:02Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "49181863_f41f41d3",
+      "range": {
+        "startLine": 55,
+        "startChar": 6,
+        "endLine": 55,
+        "endChar": 56
+      },
+      "revId": "af6c6bd34db05c6c6d3d7e895c454a91c8f0d251",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5ff3b602_dc67a007",
         "filename": "appengine/findit/services/flake_detection/flaky_tests.hidden_flakes.sql",
         "patchSetId": 1
@@ -108,6 +156,24 @@
       "revId": "af6c6bd34db05c6c6d3d7e895c454a91c8f0d251",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "121631af_df95dda6",
+        "filename": "appengine/findit/services/flake_detection/flaky_tests.hidden_flakes.sql",
+        "patchSetId": 1
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-12-18T22:24:02Z",
+      "side": 1,
+      "message": "Yes, and we should include them too and the data from \"without patch\" are of high quality -- not affected by the patch.",
+      "parentUuid": "5ff3b602_dc67a007",
+      "revId": "af6c6bd34db05c6c6d3d7e895c454a91c8f0d251",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -134,6 +200,30 @@
     },
     {
       "key": {
+        "uuid": "4dd4dde9_54d9864d",
+        "filename": "appengine/findit/services/flake_detection/flaky_tests.hidden_flakes.sql",
+        "patchSetId": 1
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-12-18T22:24:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dadef083_92372826",
+      "range": {
+        "startLine": 150,
+        "startChar": 18,
+        "endLine": 150,
+        "endChar": 33
+      },
+      "revId": "af6c6bd34db05c6c6d3d7e895c454a91c8f0d251",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d8e700a0_c4c98330",
         "filename": "appengine/findit/services/flake_detection/flaky_tests.hidden_flakes.sql",
         "patchSetId": 1
@@ -157,6 +247,30 @@
     },
     {
       "key": {
+        "uuid": "b93e0d0d_c0f5aeca",
+        "filename": "appengine/findit/services/flake_detection/flaky_tests.hidden_flakes.sql",
+        "patchSetId": 1
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-12-18T22:24:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d8e700a0_c4c98330",
+      "range": {
+        "startLine": 184,
+        "startChar": 41,
+        "endLine": 184,
+        "endChar": 54
+      },
+      "revId": "af6c6bd34db05c6c6d3d7e895c454a91c8f0d251",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "99458903_579d444b",
         "filename": "appengine/findit/services/flake_detection/flaky_tests.hidden_flakes.sql",
         "patchSetId": 1
@@ -177,6 +291,30 @@
       "revId": "af6c6bd34db05c6c6d3d7e895c454a91c8f0d251",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d5516b66_8461638b",
+        "filename": "appengine/findit/services/flake_detection/flaky_tests.hidden_flakes.sql",
+        "patchSetId": 1
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-12-18T22:24:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "99458903_579d444b",
+      "range": {
+        "startLine": 194,
+        "startChar": 68,
+        "endLine": 194,
+        "endChar": 69
+      },
+      "revId": "af6c6bd34db05c6c6d3d7e895c454a91c8f0d251",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
