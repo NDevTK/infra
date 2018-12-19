@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8a4e5b25_13966c96",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/frontend/qscheduler.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-12-19T18:20:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5442cdd5_eee2cbf9",
+      "range": {
+        "startLine": 228,
+        "startChar": 25,
+        "endLine": 228,
+        "endChar": 31
+      },
+      "revId": "65abf18f7fa4b36b3fb71694f136cd34087e1b65",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
