@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8cee8d3e_091af110",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/frontend/qscheduler.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2018-12-19T18:40:45Z",
+      "side": 1,
+      "message": "case swarming.TaskStateCategory_CATEGORY_TRANSIENT_DONE,\n  swarming.TaskStateCategory_CATEGORY_EXECUTION_DONE,\n  swarming.TaskStateCategory_CATEGORY_NEVER_RAN_DONE:\n\nwould be the normal way.",
+      "revId": "d1febcbc567460562673a02d6b36757b71d96d32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
