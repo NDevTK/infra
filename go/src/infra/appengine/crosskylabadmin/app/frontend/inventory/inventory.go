@@ -178,6 +178,14 @@ func (is *ServerImpl) fetchLabInventory(ctx context.Context, inventoryConfig *co
 	return fetchLabInventory(ctx, gc)
 }
 
+func (is *ServerImpl) fetchInfrastructureInventory(ctx context.Context, inventoryConfig *config.Inventory) (*inventory.Infrastructure, error) {
+	gc, err := is.newGitilesClient(ctx, inventoryConfig.GitilesHost)
+	if err != nil {
+		return nil, errors.Annotate(err, "create gitiles client").Err()
+	}
+	return fetchInfrastructureInventory(ctx, gc)
+}
+
 func (is *ServerImpl) initializedPoolBalancer(ctx context.Context, req *fleet.EnsurePoolHealthyRequest, duts []*inventory.DeviceUnderTest) (*poolBalancer, error) {
 	pb, err := newPoolBalancer(duts, req.TargetPool, req.SparePool)
 	if err != nil {
@@ -203,7 +211,7 @@ func (is *ServerImpl) commitChanges(ctx context.Context, inventoryConfig *config
 	if err != nil {
 		return "", errors.Annotate(err, "create gerrit client").Err()
 	}
-	return commitInventory(ctx, gerritC, lab)
+	return commitLabInventory(ctx, gerritC, lab)
 }
 
 func applyChanges(lab *inventory.Lab, changes []*fleet.PoolChange) error {
@@ -245,7 +253,65 @@ func (is *ServerImpl) RemoveDutsFromDrones(ctx context.Context, req *fleet.Remov
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	return nil, status.Error(codes.Unimplemented, "")
+
+	if err := req.Validate(); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, err.Error())
+	}
+
+	inventoryConfig := config.Get(ctx).Inventory
+
+	infra, err := is.fetchInfrastructureInventory(ctx, inventoryConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	resp = &fleet.RemoveDutsFromDronesResponse{
+		Removed: make([]*fleet.RemoveDutsFromDronesResponse_Item, 0, len(req.Removals)),
+	}
+
+	for _, removal := range req.Removals {
+		serverToRemove := removal.DroneHostname
+		dutToRemove := removal.DutId
+		if serverIndex, dutIndex, serverHostname, ok := findDutOnServers(infra.Servers, dutToRemove); ok {
+			if serverToRemove == "" || serverToRemove == serverHostname {
+				server := infra.Servers[serverIndex]
+				server.DutUids = append(server.DutUids[:dutIndex], server.DutUids[dutIndex+1:]...)
+				resp.Removed = append(resp.Removed, &fleet.RemoveDutsFromDronesResponse_Item{DutId: dutToRemove, DroneHostname: serverHostname})
+			}
+		}
+	}
+
+	if len(resp.Removed) == 0 {
+		return resp, nil
+	}
+
+	// TODO(akeshet): Move client creation and infra committing to helper method.
+	gerritC, err := is.newGerritClient(ctx, inventoryConfig.GerritHost)
+	if err != nil {
+		return nil, errors.Annotate(err, "create gerrit client").Err()
+	}
+	resp.Url, err = commitInfraInventory(ctx, gerritC, infra)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func findDutOnServers(servers []*inventory.Server, dutID string) (serverIndex int, dutIndex int, hostname string, ok bool) {
+	ok = false
+	var server *inventory.Server
+	for serverIndex, server = range servers {
+		var dut string
+		for dutIndex, dut = range server.DutUids {
+			if dut == dutID {
+				hostname = *server.Hostname
+				ok = true
+				return
+			}
+		}
+	}
+	return 0, 0, "", false
 }
 
 // AssignDutsToDrones implements the method from fleet.InventoryServer interface.
@@ -253,5 +319,10 @@ func (is *ServerImpl) AssignDutsToDrones(ctx context.Context, req *fleet.AssignD
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
+
+	if err := req.Validate(); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, err.Error())
+	}
+
 	return nil, status.Error(codes.Unimplemented, "")
 }
