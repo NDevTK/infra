@@ -63,10 +63,16 @@ Already scheduled shifts will be unaffected , you'll have to swap  with someone 
 - Follow link [Manage Rotations](https://rota-ng.appspot.com/managerota) and click `Modify` for one of your existing rotations.
 - Change the rotation name to the name of the new rotation.
 - Modify and submit with the new changes.
+- See the `New from scratch` section on how to generate shifts and `Enable` the rotation.
 
 #### New from scratch
 
-- Follow link [Manage Rotations](https://rota-ng.appspot.com/managerota) and click `Create  new rotation`.
+- Follow link [Manage Rotations](https://rota-ng.appspot.com/managerota) and click `Create new rotation`.
+- With the rotation configured go back to [Manage Rotations](https://rota-ng.appspot.com/managerota) and now click `Shifts` for the new rotation.
+- Generate and submit initial shifts.
+- With configuration and shifts submitted the rotations needs to be `Enabled`
+  - Go back to [Manage Rotations](https://rota-ng.appspot.com/managerota) and click `Enable`.
+  - When first enabled it can take up to 1 hour for the shifts to show up in the shared calendar.
 
 #### Configuration Options
 
