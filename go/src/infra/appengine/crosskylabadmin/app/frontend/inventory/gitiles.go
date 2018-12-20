@@ -42,8 +42,42 @@ func fetchLabInventory(ctx context.Context, gc gitiles.GitilesClient) (*inventor
 	return &lab, nil
 }
 
+// fetchInfrastructureInventory fetches and parses the inventory data from gitiles.
+func fetchInfrastructureInventory(ctx context.Context, gc gitiles.GitilesClient) (*inventory.Infrastructure, error) {
+	lData, err := fetchLabInventoryData(ctx, gc)
+	if err != nil {
+		return nil, err
+	}
+	var lab inventory.Infrastructure
+	if err := inventory.LoadInfrastructureFromString(lData, &lab); err != nil {
+		return nil, err
+	}
+	return &lab, nil
+}
+
 func fetchLabInventoryData(ctx context.Context, gc gitiles.GitilesClient) (string, error) {
 	ic := config.Get(ctx).Inventory
+
+	contents, err := obtainGitilesBytes(ctx, gc, ic)
+	if err != nil {
+		return "", err
+	}
+
+	return extractGitilesArchive(ctx, contents, ic.DataPath)
+}
+
+func fetchInfraInventoryData(ctx context.Context, gc gitiles.GitilesClient) (string, error) {
+	ic := config.Get(ctx).Inventory
+
+	contents, err := obtainGitilesBytes(ctx, gc, ic)
+	if err != nil {
+		return "", err
+	}
+
+	return extractGitilesArchive(ctx, contents, ic.InfrastructureDataPath)
+}
+
+func obtainGitilesBytes(ctx context.Context, gc gitiles.GitilesClient, ic *config.Inventory) (contents []byte, err error) {
 	req := &gitiles.ArchiveRequest{
 		Project: ic.Project,
 		Ref:     ic.Branch,
@@ -51,11 +85,11 @@ func fetchLabInventoryData(ctx context.Context, gc gitiles.GitilesClient) (strin
 	}
 	a, err := gc.Archive(ctx, req)
 	if err != nil {
-		return "", errors.Annotate(err, "obtain gitiles archive").Err()
+		return nil, errors.Annotate(err, "obtain gitiles archive").Err()
 	}
 	logging.Debugf(ctx, "Gitiles archive %+v size: %s", req, humanize.Bytes(uint64(len(a.Contents))))
 
-	return extractGitilesArchive(ctx, a.Contents, ic.DataPath)
+	return a.Contents, nil
 }
 
 // extractGitilesArchive extracts file at path filePath from the given

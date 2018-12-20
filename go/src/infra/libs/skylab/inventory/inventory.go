@@ -86,7 +86,11 @@ func LoadInfrastructure(dataDir string) (*Infrastructure, error) {
 		return nil, errors.Annotate(err, "load infrastructure inventory %s", dataDir).Err()
 	}
 	return &infrastructure, nil
+}
 
+// LoadInfrastructureFromString loads infrastructure inventory information from the given string.
+func LoadInfrastructureFromString(text string, infra *Infrastructure) error {
+	return proto.UnmarshalText(text, infra)
 }
 
 // WriteInfrastructure writes infrastructure information to the inventory data directory.
