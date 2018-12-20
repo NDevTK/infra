@@ -178,6 +178,14 @@ func (is *ServerImpl) fetchLabInventory(ctx context.Context, inventoryConfig *co
 	return fetchLabInventory(ctx, gc)
 }
 
+func (is *ServerImpl) fetchInfrastructureInventory(ctx context.Context, inventoryConfig *config.Inventory) (*inventory.Infrastructure, error) {
+	gc, err := is.newGitilesClient(ctx, inventoryConfig.GitilesHost)
+	if err != nil {
+		return nil, errors.Annotate(err, "create gitiles client").Err()
+	}
+	return fetchInfrastructureInventory(ctx, gc)
+}
+
 func (is *ServerImpl) initializedPoolBalancer(ctx context.Context, req *fleet.EnsurePoolHealthyRequest, duts []*inventory.DeviceUnderTest) (*poolBalancer, error) {
 	pb, err := newPoolBalancer(duts, req.TargetPool, req.SparePool)
 	if err != nil {
@@ -203,7 +211,7 @@ func (is *ServerImpl) commitChanges(ctx context.Context, inventoryConfig *config
 	if err != nil {
 		return "", errors.Annotate(err, "create gerrit client").Err()
 	}
-	return commitInventory(ctx, gerritC, lab)
+	return commitLabInventory(ctx, gerritC, lab)
 }
 
 func applyChanges(lab *inventory.Lab, changes []*fleet.PoolChange) error {
@@ -245,7 +253,39 @@ func (is *ServerImpl) DeactivateDut(ctx context.Context, req *fleet.DeactivateDu
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	return nil, status.Error(codes.Unimplemented, "")
+
+	if err := req.Validate(); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, err.Error())
+	}
+
+	inventoryConfig := config.Get(ctx).Inventory
+
+	infra, err := is.fetchInfrastructureInventory(ctx, inventoryConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, server := range infra.Servers {
+		for i, dutID := range server.DutUids {
+			if req.DutId == dutID {
+				newArray := append(server.DutUids[:i], server.DutUids[i+1:]...)
+				server.DutUids = newArray
+
+				// TODO(akeshet): Move client creation and infra committing to helper method.
+				gerritC, err := is.newGerritClient(ctx, inventoryConfig.GerritHost)
+				if err != nil {
+					return nil, errors.Annotate(err, "create gerrit client").Err()
+				}
+				commitURL, err := commitInfraInventory(ctx, gerritC, infra)
+				if err != nil {
+					return nil, err
+				}
+				return &fleet.DeactivateDutResponse{DroneHostname: *server.Hostname, Url: commitURL}, nil
+			}
+		}
+	}
+
+	return nil, status.Error(codes.NotFound, "dut with given id didn't exist or was not active")
 }
 
 // ActivateDut implements the method from fleet.InventoryServer interface.
@@ -253,5 +293,10 @@ func (is *ServerImpl) ActivateDut(ctx context.Context, req *fleet.ActivateDutReq
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
+
+	if err := req.Validate(); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, err.Error())
+	}
+
 	return nil, status.Error(codes.Unimplemented, "")
 }
