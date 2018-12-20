@@ -29,6 +29,15 @@ service Inventory {
   // ResizePool never makes partial changes. In case of an error, no inventory
   // changes are made.
   rpc ResizePool(ResizePoolRequest) returns (ResizePoolResponse);
+
+  // DeactivateDut deactivates a device indefinitely, for manual maintenance.
+  //
+  // TODO(akeshet/ayatane/pprabhu/xixuan): Open question: Is this also intended
+  // for use when rebalancing DUTs among drones, or when migrating DUTs?
+  rpc DeactivateDut(DeactivateDutRequest) returns (DeactivateDutResponse);
+
+  // ActivateDut activates a previously deactivated device.
+  rpc ActivateDut(ActivateDutRequest) returns (ActivateDutResponse);
 }
 
 message EnsurePoolHealthyRequest {
@@ -163,4 +172,43 @@ message PoolChange {
 
   // new_pool is the pool the DUT was moved to.
   string new_pool = 3;
+}
+
+message DeactivateDutRequest {
+  // dut_id is the inventory ID of the DUT to deactivate.
+  string dut_id = 1;
+
+  // TODO(akeshet): Add arguments and features like:
+  // - deactivation rationale.
+  // - contact person.
+  // - nag/reminder interval.
+}
+
+message DeactivateDutResponse {
+  // drone_hostname is the hostname of the drone that the DUT was removed from.
+  string drone_hostname = 1;
+
+  // url is an opaque URL for this inventory change.
+  //
+  // It is intended to be the gerrit CL corresponding to the change, or the
+  // gitiles path for a committed changelist for the change.
+  string url = 2;
+}
+
+message ActivateDutRequest {
+  // dut_id is the inventory ID of the DUT to activate.
+  // This must correspond to an existing DUT in the inventory, that doesn't
+  // have a drone.
+  string dut_id = 1;
+}
+
+message ActivateDutResponse {
+  // drone_hostname is the hostname of the drone that the DUT was assigned to.
+  string drone_hostname = 1;
+
+  // url is an opaque URL for this inventory change.
+  //
+  // It is intended to be the gerrit CL corresponding to the change, or the
+  // gitiles path for a committed changelist for the change.
+  string url = 2;
 }

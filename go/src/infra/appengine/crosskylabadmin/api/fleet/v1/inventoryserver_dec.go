@@ -56,3 +56,37 @@ func (s *DecoratedInventory) ResizePool(c context.Context, req *ResizePoolReques
 	}
 	return
 }
+
+func (s *DecoratedInventory) DeactivateDut(c context.Context, req *DeactivateDutRequest) (rsp *DeactivateDutResponse, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(c, "DeactivateDut", req)
+		if err == nil {
+			c = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.DeactivateDut(c, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(c, "DeactivateDut", rsp, err)
+	}
+	return
+}
+
+func (s *DecoratedInventory) ActivateDut(c context.Context, req *ActivateDutRequest) (rsp *ActivateDutResponse, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(c, "ActivateDut", req)
+		if err == nil {
+			c = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.ActivateDut(c, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(c, "ActivateDut", rsp, err)
+	}
+	return
+}
