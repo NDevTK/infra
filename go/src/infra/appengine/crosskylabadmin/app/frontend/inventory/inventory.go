@@ -239,3 +239,19 @@ func removeOld(ls []inventory.SchedulableLabels_DUTPool, old inventory.Schedulab
 	}
 	return ls
 }
+
+// DeactivateDut implements the method from fleet.InventoryServer interface.
+func (is *ServerImpl) DeactivateDut(ctx context.Context, req *fleet.DeactivateDutRequest) (resp *fleet.DeactivateDutResponse, err error) {
+	defer func() {
+		err = grpcutil.GRPCifyAndLogErr(ctx, err)
+	}()
+	return nil, status.Error(codes.Unimplemented, "")
+}
+
+// ActivateDut implements the method from fleet.InventoryServer interface.
+func (is *ServerImpl) ActivateDut(ctx context.Context, req *fleet.ActivateDutRequest) (resp *fleet.ActivateDutResponse, err error) {
+	defer func() {
+		err = grpcutil.GRPCifyAndLogErr(ctx, err)
+	}()
+	return nil, status.Error(codes.Unimplemented, "")
+}

@@ -70,6 +70,42 @@ func (mr *MockInventoryClientMockRecorder) ResizePool(ctx, in interface{}, opts 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ResizePool", reflect.TypeOf((*MockInventoryClient)(nil).ResizePool), varargs...)
 }
 
+// DeactivateDut mocks base method
+func (m *MockInventoryClient) DeactivateDut(ctx context.Context, in *DeactivateDutRequest, opts ...grpc.CallOption) (*DeactivateDutResponse, error) {
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "DeactivateDut", varargs...)
+	ret0, _ := ret[0].(*DeactivateDutResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeactivateDut indicates an expected call of DeactivateDut
+func (mr *MockInventoryClientMockRecorder) DeactivateDut(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeactivateDut", reflect.TypeOf((*MockInventoryClient)(nil).DeactivateDut), varargs...)
+}
+
+// ActivateDut mocks base method
+func (m *MockInventoryClient) ActivateDut(ctx context.Context, in *ActivateDutRequest, opts ...grpc.CallOption) (*ActivateDutResponse, error) {
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "ActivateDut", varargs...)
+	ret0, _ := ret[0].(*ActivateDutResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ActivateDut indicates an expected call of ActivateDut
+func (mr *MockInventoryClientMockRecorder) ActivateDut(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ActivateDut", reflect.TypeOf((*MockInventoryClient)(nil).ActivateDut), varargs...)
+}
+
 // MockInventoryServer is a mock of InventoryServer interface
 type MockInventoryServer struct {
 	ctrl     *gomock.Controller
@@ -117,4 +153,30 @@ func (m *MockInventoryServer) ResizePool(arg0 context.Context, arg1 *ResizePoolR
 // ResizePool indicates an expected call of ResizePool
 func (mr *MockInventoryServerMockRecorder) ResizePool(arg0, arg1 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ResizePool", reflect.TypeOf((*MockInventoryServer)(nil).ResizePool), arg0, arg1)
+}
+
+// DeactivateDut mocks base method
+func (m *MockInventoryServer) DeactivateDut(arg0 context.Context, arg1 *DeactivateDutRequest) (*DeactivateDutResponse, error) {
+	ret := m.ctrl.Call(m, "DeactivateDut", arg0, arg1)
+	ret0, _ := ret[0].(*DeactivateDutResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeactivateDut indicates an expected call of DeactivateDut
+func (mr *MockInventoryServerMockRecorder) DeactivateDut(arg0, arg1 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeactivateDut", reflect.TypeOf((*MockInventoryServer)(nil).DeactivateDut), arg0, arg1)
+}
+
+// ActivateDut mocks base method
+func (m *MockInventoryServer) ActivateDut(arg0 context.Context, arg1 *ActivateDutRequest) (*ActivateDutResponse, error) {
+	ret := m.ctrl.Call(m, "ActivateDut", arg0, arg1)
+	ret0, _ := ret[0].(*ActivateDutResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ActivateDut indicates an expected call of ActivateDut
+func (mr *MockInventoryServerMockRecorder) ActivateDut(arg0, arg1 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ActivateDut", reflect.TypeOf((*MockInventoryServer)(nil).ActivateDut), arg0, arg1)
 }
