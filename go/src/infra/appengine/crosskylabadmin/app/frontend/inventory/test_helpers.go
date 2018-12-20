@@ -87,12 +87,13 @@ func testingContext() context.Context {
 	c = config.Use(c, &config.Config{
 		AccessGroup: "fake-access-group",
 		Inventory: &config.Inventory{
-			GitilesHost: "some-gitiles-host",
-			GerritHost:  "some-gerrit-host",
-			Project:     "some-project",
-			Branch:      "master",
-			LabDataPath: "data/skylab/lab.textpb",
-			Environment: "ENVIRONMENT_STAGING",
+			GitilesHost:            "some-gitiles-host",
+			GerritHost:             "some-gerrit-host",
+			Project:                "some-project",
+			Branch:                 "master",
+			LabDataPath:            "data/skylab/lab.textpb",
+			InfrastructureDataPath: "data/skylab/server_db.textpb",
+			Environment:            "ENVIRONMENT_STAGING",
 		},
 	})
 	datastore.GetTestable(c).Consistent(true)
@@ -130,7 +131,7 @@ func (g *fakeGitilesClient) Archive(ctx context.Context, in *gitiles.ArchiveRequ
 	}, nil
 }
 
-func (g *fakeGitilesClient) addArchive(ic *config.Inventory, data []byte) error {
+func (g *fakeGitilesClient) addArchive(ic *config.Inventory, labData []byte, inventoryDate []byte) error {
 	var buf bytes.Buffer
 	gw := gzip.NewWriter(&buf)
 	tw := tar.NewWriter(gw)
@@ -138,11 +139,21 @@ func (g *fakeGitilesClient) addArchive(ic *config.Inventory, data []byte) error 
 	if err := tw.WriteHeader(&tar.Header{
 		Name: ic.LabDataPath,
 		Mode: 0777,
-		Size: int64(len(data)),
+		Size: int64(len(labData)),
 	}); err != nil {
 		return err
 	}
-	if _, err := tw.Write(data); err != nil {
+	if _, err := tw.Write(labData); err != nil {
+		return err
+	}
+	if err := tw.WriteHeader(&tar.Header{
+		Name: ic.InfrastructureDataPath,
+		Mode: 0777,
+		Size: int64(len(inventoryDate)),
+	}); err != nil {
+		return err
+	}
+	if _, err := tw.Write(inventoryDate); err != nil {
 		return err
 	}
 	if err := tw.Close(); err != nil {
