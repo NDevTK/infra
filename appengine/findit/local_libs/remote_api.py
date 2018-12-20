@@ -53,7 +53,7 @@ def EnableRemoteApi(app_id='findit-for-me'):  # pragma: no cover
   setattr(EnableRemoteApi, app_id, True)
 
 
-def EnableFinditRemoteApi():  # pragma: no cover
+def EnableFinditRemoteApi(app_id='findit-for-me'):  # pragma: no cover
   # Use infra/ENV/bin/python if not.
   infra_ENV_bin_python = os.path.abspath(
       os.path.join(
@@ -65,4 +65,4 @@ def EnableFinditRemoteApi():  # pragma: no cover
 
   # Set up sys.path properly.
   script_util.SetUpSystemPaths()
-  EnableRemoteApi(app_id='findit-for-me')
+  EnableRemoteApi(app_id=app_id)
