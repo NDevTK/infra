@@ -271,7 +271,7 @@ func TestEnsurePoolHealthyDryrun(t *testing.T) {
 				}
 			}
 		`
-		So(tf.FakeGitiles.addArchive(config.Get(tf.C).Inventory, []byte(ptext)), ShouldBeNil)
+		So(tf.FakeGitiles.addArchive(config.Get(tf.C).Inventory, []byte(ptext), nil), ShouldBeNil)
 		expectDutsWithHealth(tf.MockTracker, map[string]fleet.Health{
 			"dut_in_env":    fleet.Health_Healthy,
 			"dut_no_in_env": fleet.Health_Healthy,
@@ -333,6 +333,11 @@ type testInventoryDut struct {
 	pool  string
 }
 
+type testDutOnServer struct {
+	id     string
+	server string
+}
+
 func TestEnsurePoolHealthyCommit(t *testing.T) {
 	Convey("EnsurePoolHealthy commits expected changes to gerrit", t, func(c C) {
 		tf, validate := newTestFixture(t)
@@ -357,7 +362,7 @@ func TestEnsurePoolHealthyCommit(t *testing.T) {
 		})
 		So(err, ShouldBeNil)
 
-		assertInventoryChange(c, tf.FakeGerrit, []testInventoryDut{
+		assertLabInventoryChange(c, tf.FakeGerrit, []testInventoryDut{
 			{"link_cq_unhealthy", "link", "DUT_POOL_SUITES"},
 			{"link_suites_healthy", "link", "DUT_POOL_CQ"},
 		})
@@ -518,7 +523,7 @@ func TestResizePoolCommit(t *testing.T) {
 				TargetPoolSize: 1,
 			})
 			So(err, ShouldBeNil)
-			assertInventoryChange(c, tf.FakeGerrit, []testInventoryDut{
+			assertLabInventoryChange(c, tf.FakeGerrit, []testInventoryDut{
 				{"link_suites_0", "link", "DUT_POOL_CQ"},
 			})
 		})
@@ -538,15 +543,55 @@ func TestResizePoolCommit(t *testing.T) {
 	})
 }
 
+func TestDeactiveateDut(t *testing.T) {
+	Convey("With 1 DUT assigned to a drone", t, func() {
+		tf, validate := newTestFixture(t)
+		defer validate()
+
+		dutID := "dut_id"
+		serverID := "server_id"
+		err := setupInfraInventoryArchive(tf.C, tf.FakeGitiles, []testDutOnServer{
+			{dutID, serverID},
+		})
+		So(err, ShouldBeNil)
+
+		Convey("DeactivateDut for that dut removes it from drone.", func() {
+			resp, err := tf.Inventory.DeactivateDut(tf.C, &fleet.DeactivateDutRequest{DutId: dutID})
+			So(err, ShouldBeNil)
+			So(resp.DroneHostname, ShouldEqual, serverID)
+
+			So(tf.FakeGerrit.Changes, ShouldHaveLength, 1)
+			change := tf.FakeGerrit.Changes[0]
+			So(change.Path, ShouldEqual, "data/skylab/server_db.textpb")
+
+			contents := change.Content
+			infra := &inventory.Infrastructure{}
+			err = inventory.LoadInfrastructureFromString(contents, infra)
+			So(err, ShouldBeNil)
+			So(infra.Servers, ShouldHaveLength, 1)
+			So(infra.Servers[0].DutUids, ShouldBeEmpty)
+		})
+
+		Convey("DeactivateDut for a nonexistant dut returns an error.", func() {
+			_, err := tf.Inventory.DeactivateDut(tf.C, &fleet.DeactivateDutRequest{DutId: "foo"})
+			So(err, ShouldNotBeNil)
+		})
+	})
+}
+
 // setupLabInventoryArchive sets up fake gitiles to return the inventory of
 // duts provided.
 func setupLabInventoryArchive(c context.Context, g *fakeGitilesClient, duts []testInventoryDut) error {
-	return g.addArchive(config.Get(c).Inventory, []byte(labInventoryStrFromDuts(duts)))
+	return g.addArchive(config.Get(c).Inventory, []byte(labInventoryStrFromDuts(duts)), nil)
 }
 
-// assertInventoryChange verifies that the CL uploaded to gerrit contains the
+func setupInfraInventoryArchive(c context.Context, g *fakeGitilesClient, duts []testDutOnServer) error {
+	return g.addArchive(config.Get(c).Inventory, nil, []byte(infraInventoryStrFromDuts(duts)))
+}
+
+// assertLabInventoryChange verifies that the CL uploaded to gerrit contains the
 // inventory of duts provided.
-func assertInventoryChange(c C, fg *fakeGerritClient, duts []testInventoryDut) {
+func assertLabInventoryChange(c C, fg *fakeGerritClient, duts []testInventoryDut) {
 	changes := fg.Changes
 	So(changes, ShouldHaveLength, 1)
 	change := changes[0]
@@ -583,6 +628,31 @@ func labInventoryStrFromDuts(duts []testInventoryDut) string {
 		)
 	}
 	return ptext
+}
+
+func infraInventoryStrFromDuts(duts []testDutOnServer) string {
+	infra := &inventory.Infrastructure{}
+	serversByName := make(map[string]*inventory.Server)
+	for _, d := range duts {
+		server, ok := serversByName[d.server]
+		if !ok {
+			env := inventory.Environment_ENVIRONMENT_STAGING
+			status := inventory.Server_STATUS_PRIMARY
+			server = &inventory.Server{
+				Hostname:    &d.server,
+				Environment: &env,
+				Status:      &status,
+			}
+			serversByName[d.server] = server
+		}
+		server.DutUids = append(server.DutUids, d.id)
+	}
+	infra.Servers = make([]*inventory.Server, 0, len(serversByName))
+	for _, s := range serversByName {
+		infra.Servers = append(infra.Servers, s)
+	}
+
+	return proto.MarshalTextString(infra)
 }
 
 func expectDutsWithHealth(t *fleet.MockTrackerServer, dutHealths map[string]fleet.Health) {

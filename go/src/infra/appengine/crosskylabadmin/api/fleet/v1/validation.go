@@ -67,3 +67,19 @@ func (r *ResizePoolRequest) Validate() error {
 	}
 	return nil
 }
+
+// Validate returns an error if r is invalid.
+func (r *DeactivateDutRequest) Validate() error {
+	if r.DutId == "" {
+		return errors.New("must set dut_id")
+	}
+	return nil
+}
+
+// Validate returns an error if r is invalid.
+func (r *ActivateDutRequest) Validate() error {
+	if r.DutId == "" {
+		return errors.New("must set dut_id")
+	}
+	return nil
+}
