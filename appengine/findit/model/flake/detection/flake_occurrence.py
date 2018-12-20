@@ -110,3 +110,57 @@ class FlakeOccurrence(ndb.Model):
         id=flake_occurrence_id,
         parent=parent_flake_key,
         tags=tags or [])
+
+
+class LightWeightOccurrence(ndb.Model):
+  """Light weight entity to save distinctive information about an occurrence."""
+  # The time the flake occurrence happened (test start time).
+  time_happened = ndb.DateTimeProperty(required=True)
+  # The id of the gerrit cl this occurrence is associated with.
+  gerrit_cl_id = ndb.IntegerProperty(required=True)
+
+
+class CQHiddenFlakeOccurrence(FlakeOccurrence):
+  """Tracks flake occurrences that caused test level retries on CQ.
+
+  Because we expecting a large amount of hidden flake occurrences, so we will
+  not store each and every such occurrences to data store. Instead, we will
+  use one entity to store a group of occurrences if they:
+  1. are detected within the same cron job,
+  2. are for the same test, meaning they have the same step_ui_name and
+    test_name,
+  3. are on the same builder.
+
+  Full information of one occurrence in the group will be stored as a sample,
+  while others will be consolidated and only save their distinctive information.
+  """
+  occurrences = ndb.StructuredProperty(LightWeightOccurrence, repeated=True)
+
+  # Time happened of the first occurrence in group.
+  first_occurrence_time_happened = ndb.DateTimeProperty()
+  # Time happened of the last occurrence in group.
+  last_occurrence_time_happened = ndb.DateTimeProperty()
+
+  @classmethod
+  def Create(cls,
+             flake_type,
+             build_id,
+             step_ui_name,
+             test_name,
+             luci_project,
+             luci_bucket,
+             luci_builder,
+             legacy_master_name,
+             legacy_build_number,
+             time_happened,
+             gerrit_cl_id,
+             parent_flake_key,
+             tags=None):
+    occurrence = super(CQHiddenFlakeOccurrence, cls).Create(
+        flake_type, build_id, step_ui_name, test_name, luci_project,
+        luci_bucket, luci_builder, legacy_master_name, legacy_build_number,
+        time_happened, gerrit_cl_id, parent_flake_key, tags)
+
+    occurrence.first_occurrence_time_happened = time_happened
+    occurrence.last_occurrence_time_happened = time_happened
+    return occurrence
