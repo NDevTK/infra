@@ -4,6 +4,7 @@
 
 import ast
 import collections
+from datetime import timedelta
 import json
 import logging
 import os
@@ -18,6 +19,7 @@ from gae_libs.gitiles.cached_gitiles_repository import CachedGitilesRepository
 from libs import test_name_util
 from libs import time_util
 from libs.cache_decorator import Cached
+from model.flake.detection.flake_occurrence import CQHiddenFlakeOccurrence
 from model.flake.detection.flake_occurrence import FlakeOccurrence
 from model.flake.flake import Flake
 from model.flake.flake import TestLocation
@@ -36,7 +38,11 @@ _MAP_FLAKY_TESTS_QUERY_PATH = {
     FlakeType.RETRY_WITH_PATCH:
         os.path.realpath(
             os.path.join(__file__, os.path.pardir,
-                         'flaky_tests.retry_with_patch.sql'))
+                         'flaky_tests.retry_with_patch.sql')),
+    FlakeType.CQ_HIDDEN_FLAKE:
+        os.path.realpath(
+            os.path.join(__file__, os.path.pardir,
+                         'flaky_tests.hidden_flakes.sql'))
 }
 
 # Url to the file with the mapping from the directories to crbug components.
@@ -63,6 +69,12 @@ SUPPORTED_TAGS = (
     'source',
 )
 
+# Runs query for cq hidden flakes every 2 hours.
+_CQ_HIDDEN_FLAKE_QUERY_HOUR_INTERVAL = 2
+
+# Some overlap time between queries to cover some data loss.
+_CQ_HIDDEN_FLAKE_MINUTES_OVERLAP = 20
+
 
 def _CreateFlakeFromRow(row):
   """Creates a Flake entity from a row fetched from BigQuery."""
@@ -88,8 +100,14 @@ def _CreateFlakeFromRow(row):
       test_label_name=test_label_name)
 
 
-def _CreateFlakeOccurrenceFromRow(row, flake_type_enum):
+def _CreateFlakeOccurrenceFromRow(row,
+                                  flake_type_enum,
+                                  entity_class=FlakeOccurrence):
   """Creates a FlakeOccurrence from a row fetched from BigQuery."""
+  assert issubclass(entity_class, FlakeOccurrence), (
+      '_CreateFlakeOccurrenceFromRow is using class {} which is not a'
+      'subclass of FlakeOccurrence'.format(entity_class.__name__))
+
   gerrit_project = row['gerrit_project']
   luci_project = row['luci_project']
   luci_bucket = row['luci_bucket']
@@ -136,7 +154,7 @@ def _CreateFlakeOccurrenceFromRow(row, flake_type_enum):
     tags.append('suite::%s' % suite)
   tags.sort()
 
-  flake_occurrence = FlakeOccurrence.Create(
+  flake_occurrence = entity_class.Create(
       flake_type=flake_type_enum,
       build_id=build_id,
       step_ui_name=step_ui_name,
@@ -152,6 +170,47 @@ def _CreateFlakeOccurrenceFromRow(row, flake_type_enum):
       tags=tags)
 
   return flake_occurrence
+
+
+def _CreateCQHiddenFlakeOccurrences(rows):
+  """Creates CQHiddenFlakeOccurrence entities for newly detected hidden flakes.
+
+  Each CQHiddenFlakeOccurrence will have data for a group of hidden flakes if:
+  1. they are for the same test, meaning they have the same step_ui_name and
+    test_name,
+  2. they all happen on the same build configuration.
+
+  Full information of the first occurrence in the group will be stored as a
+  sample, while others will be consolidated.
+  """
+
+  # Key is a tuple (luci_project, luci_bucket, luci_builder, step_ui_name,
+  # test_name), value is a CQHiddenFlakeOccurrence entity.
+  group_info_occurrence = {}
+
+  for row in rows:
+    luci_project = row['luci_project']
+    luci_bucket = row['luci_bucket']
+    luci_builder = row['luci_builder']
+    step_ui_name = row['step_ui_name']
+    test_name = row['test_name']
+    gerrit_cl_id = row['gerrit_cl_id']
+    time_happened = row['test_start_msec']
+
+    group_info = (luci_project, luci_bucket, luci_builder, step_ui_name,
+                  test_name)
+    occurrence = group_info_occurrence.get(group_info)
+
+    if occurrence:
+      occurrence.AddOccurrence(time_happened, gerrit_cl_id)
+      continue
+
+    # Creates a CQHiddenFlakeOccurrence entity for the group.
+    occurrence = _CreateFlakeOccurrenceFromRow(
+        row, FlakeType.CQ_HIDDEN_FLAKE, entity_class=CQHiddenFlakeOccurrence)
+    group_info_occurrence[group_info] = occurrence
+
+  return group_info_occurrence.values()
 
 
 def _StoreMultipleLocalEntities(local_entities):
@@ -385,17 +444,68 @@ def _UpdateFlakeMetadata(all_occurrences):
       flake.put()
 
 
+def _GetCQHiddenFlakeQueryStartTime():
+  """Gets the latest happen time of cq hidden flakes.
+
+  Uses this time to decide if we should run the query for cq hidden flakes.
+  And also uses this time to decides the start time of the query.
+
+  Returns:
+    (str): String representation of a datetime in the format
+      %Y-%m-%d %H:%M:%S UTC.
+  """
+  latest_occurrences = CQHiddenFlakeOccurrence.query().order(
+      -CQHiddenFlakeOccurrence.last_occurrence_time_happened).fetch(1)
+
+  latest_hidden_flake_time = (
+      latest_occurrences[0].last_occurrence_time_happened
+      if latest_occurrences else time_util.GetUTCNow())
+
+  return time_util.FormatDatetime(latest_hidden_flake_time - timedelta(
+      minutes=_CQ_HIDDEN_FLAKE_MINUTES_OVERLAP))
+
+
+def _ShouldRunCQHiddenFlakeQuery():
+  """Uses the latest time_detected to decide whether should run the query."""
+  last_detected_occurrences = CQHiddenFlakeOccurrence.query().order(
+      -CQHiddenFlakeOccurrence.time_detected).fetch(1)
+
+  if not last_detected_occurrences:
+    # Should only happen before the first time query.
+    return True
+
+  latest_detected_time = last_detected_occurrences[0].time_detected
+
+  if latest_detected_time <= time_util.GetUTCNow() - timedelta(
+      hours=_CQ_HIDDEN_FLAKE_QUERY_HOUR_INTERVAL):
+    return True
+  return False
+
+
 def QueryAndStoreFlakes(flake_type_enum):
   """Runs the query to fetch flake occurrences and store them."""
+  if (flake_type_enum == FlakeType.CQ_HIDDEN_FLAKE and
+      not _ShouldRunCQHiddenFlakeQuery()):
+    # Only runs this query every 2 hours.
+    return
+
   path = _MAP_FLAKY_TESTS_QUERY_PATH[flake_type_enum]
-  flake_type_desc = flake_type.FLAKE_TYPE_DESCRIPTIONS.get(
-      flake_type_enum, 'N/A')
   with open(path) as f:
     query = f.read()
 
-  success, rows = bigquery_helper.ExecuteQuery(
-      appengine_util.GetApplicationId(), query)
+  if flake_type_enum == FlakeType.CQ_HIDDEN_FLAKE:
+    start_time_string = _GetCQHiddenFlakeQueryStartTime()
+    success, rows = bigquery_helper.ExecuteQuery(
+        appengine_util.GetApplicationId(),
+        query,
+        parameters=[('hidden_flake_start_time', 'TIMESTAMP',
+                     start_time_string)])
+  else:
+    success, rows = bigquery_helper.ExecuteQuery(
+        appengine_util.GetApplicationId(), query)
 
+  flake_type_desc = flake_type.FLAKE_TYPE_DESCRIPTIONS.get(
+      flake_type_enum, 'N/A')
   if not success:
     logging.error('Failed executing the query to detect %s flakes.',
                   flake_type_desc)
@@ -408,9 +518,12 @@ def QueryAndStoreFlakes(flake_type_enum):
   local_flakes = [_CreateFlakeFromRow(row) for row in rows]
   _StoreMultipleLocalEntities(local_flakes)
 
-  local_flake_occurrences = [
-      _CreateFlakeOccurrenceFromRow(row, flake_type_enum) for row in rows
-  ]
+  if flake_type_enum == FlakeType.CQ_HIDDEN_FLAKE:
+    local_flake_occurrences = _CreateCQHiddenFlakeOccurrences(rows)
+  else:
+    local_flake_occurrences = [
+        _CreateFlakeOccurrenceFromRow(row, flake_type_enum) for row in rows
+    ]
   new_occurrences = _StoreMultipleLocalEntities(local_flake_occurrences)
   _UpdateFlakeMetadata(new_occurrences)
   monitoring.OnFlakeDetectionDetectNewOccurrences(
