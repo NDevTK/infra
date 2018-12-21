@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "0af3d133_5329a761",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-12-21T04:57:14Z",
+      "side": 1,
+      "message": "I would suggest that simpler approach first. And if it doesn\u0027t work out eventually, we could implement more advanced approach.\n\nAdvanced approach usually comes with complexity, and it doesn\u0027t worth it if it is not necessary.\nOne model and one code path are better than two, if it works out.",
+      "parentUuid": "1f616946_3178dc7b",
+      "range": {
+        "startLine": 10,
+        "startChar": 2,
+        "endLine": 14,
+        "endChar": 0
+      },
+      "revId": "866f2c704283455d1e6ec69343006cbc02f183e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c3ca01fa_80a9642c",
         "filename": "appengine/findit/model/flake/detection/flake_occurrence.py",
         "patchSetId": 1
