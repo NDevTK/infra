@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b5bbe0a7_02698f44",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-12-21T00:28:28Z",
+      "side": 1,
+      "message": "NDB should be able to handle the volume if we save one in a separate entity. Maybe we\u0027d better try that first for simplicity.",
+      "range": {
+        "startLine": 10,
+        "startChar": 2,
+        "endLine": 14,
+        "endChar": 0
+      },
+      "revId": "866f2c704283455d1e6ec69343006cbc02f183e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c3ca01fa_80a9642c",
+        "filename": "appengine/findit/model/flake/detection/flake_occurrence.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-12-21T00:28:28Z",
+      "side": 1,
+      "message": "How about build id etc?",
+      "range": {
+        "startLine": 115,
+        "startChar": 6,
+        "endLine": 115,
+        "endChar": 27
+      },
+      "revId": "866f2c704283455d1e6ec69343006cbc02f183e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f630fb37_7d74912b",
+        "filename": "appengine/findit/model/flake/detection/flake_occurrence.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2018-12-21T00:28:28Z",
+      "side": 1,
+      "message": "I would just name it HiddenFlakeOccurrence so that later on we can add hidden flakes from CI by reusing this model.",
+      "range": {
+        "startLine": 123,
+        "startChar": 6,
+        "endLine": 123,
+        "endChar": 29
+      },
+      "revId": "866f2c704283455d1e6ec69343006cbc02f183e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
