@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "adfc529c_ac666bc8",
+        "filename": "go/src/infra/appengine/crosskylabadmin/api/fleet/v1/inventory.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-12-21T23:25:50Z",
+      "side": 1,
+      "message": "I think having this option is prudent, for instance to prevent races between two different autobalancers.\n\nundecided if we should error out or should just ignore dut if it isn\u0027t on this drone.",
+      "parentUuid": "fcbf9b7b_752bc651",
+      "range": {
+        "startLine": 182,
+        "startChar": 7,
+        "endLine": 182,
+        "endChar": 72
+      },
+      "revId": "ec90201ba95e1cc2c0b4fcae7af676a5dc4335d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fad5f633_5648018d",
         "filename": "go/src/infra/appengine/crosskylabadmin/api/fleet/v1/inventory.proto",
         "patchSetId": 3
@@ -45,6 +69,30 @@
       "revId": "ec90201ba95e1cc2c0b4fcae7af676a5dc4335d7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aba5316c_d5a2315e",
+        "filename": "go/src/infra/appengine/crosskylabadmin/api/fleet/v1/inventory.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-12-21T23:25:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fad5f633_5648018d",
+      "range": {
+        "startLine": 230,
+        "startChar": 5,
+        "endLine": 230,
+        "endChar": 12
+      },
+      "revId": "ec90201ba95e1cc2c0b4fcae7af676a5dc4335d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
