@@ -34,6 +34,24 @@
       "revId": "fa5a55b44ff5ca275de8699c5e5624a01db340e1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "88c973d2_593384b1",
+        "filename": "go/src/infra/appengine/crosskylabadmin/api/fleet/v1/inventory.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-21T22:22:40Z",
+      "side": 1,
+      "message": "Sure, as long as it is not difficult to explicitly add and remove DUTs to a specific drone.\n\nI\u0027d prefer not putting any drone assignment logic in the admin service, but I can see a case for putting some basic logic in here for convenience.  The key point is that it be possible to implement more complex assignment logic externally, since a drone reprovisioning service should be implementable as a separate service rather than jamming all of that domain specific logic into the admin service.",
+      "parentUuid": "69f9b707_582a92a6",
+      "revId": "fa5a55b44ff5ca275de8699c5e5624a01db340e1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
