@@ -16,6 +16,24 @@
       "revId": "fa5a55b44ff5ca275de8699c5e5624a01db340e1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "69f9b707_582a92a6",
+        "filename": "go/src/infra/appengine/crosskylabadmin/api/fleet/v1/inventory.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2018-12-21T21:07:59Z",
+      "side": 1,
+      "message": "How about:\n - RemoveDutsFromDrones\n - AssignDutsToDrones (internally uses a heuristic to pick a drone for DUT is drone for it is not supplied)\n - ListDrones",
+      "parentUuid": "92e68957_ba0cab1e",
+      "revId": "fa5a55b44ff5ca275de8699c5e5624a01db340e1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
