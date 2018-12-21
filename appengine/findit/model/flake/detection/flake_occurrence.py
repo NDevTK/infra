@@ -80,7 +80,7 @@ class FlakeOccurrence(ndb.Model):
              gerrit_cl_id,
              parent_flake_key,
              tags=None):
-    """Creates a cq false rejection flake occurrence.
+    """Creates a flake occurrence.
 
     Args:
       step_ui_name: The original displayed name of a step in a given build.
@@ -126,10 +126,11 @@ class CQHiddenFlakeOccurrence(FlakeOccurrence):
   Because we expecting a large amount of hidden flake occurrences, so we will
   not store each and every such occurrences to data store. Instead, we will
   use one entity to store a group of occurrences if they:
+
   1. are detected within the same cron job,
   2. are for the same test, meaning they have the same step_ui_name and
     test_name,
-  3. are on the same builder.
+  3. all happen on the same build configuration.
 
   Full information of one occurrence in the group will be stored as a sample,
   while others will be consolidated and only save their distinctive information.
@@ -160,7 +161,60 @@ class CQHiddenFlakeOccurrence(FlakeOccurrence):
         flake_type, build_id, step_ui_name, test_name, luci_project,
         luci_bucket, luci_builder, legacy_master_name, legacy_build_number,
         time_happened, gerrit_cl_id, parent_flake_key, tags)
-
-    occurrence.first_occurrence_time_happened = time_happened
-    occurrence.last_occurrence_time_happened = time_happened
+    occurrence.AddOccurrence(time_happened, gerrit_cl_id)
     return occurrence
+
+  def AddOccurrence(self, time_happened, gerrit_cl_id):
+    new_light_occurrence = LightWeightOccurrence(
+        time_happened=time_happened, gerrit_cl_id=gerrit_cl_id)
+    self.occurrences = self.occurrences or []
+    self.occurrences.append(new_light_occurrence)
+
+    self.first_occurrence_time_happened = (
+        min(self.first_occurrence_time_happened, time_happened)
+        if self.first_occurrence_time_happened else time_happened)
+    self.last_occurrence_time_happened = (
+        max(self.last_occurrence_time_happened, time_happened)
+        if self.last_occurrence_time_happened else time_happened)
+
+  def GetGerritCLIds(self, start_time=None, end_time=None):
+    """Gets distinct gerrit_cl_ids.
+
+    Args:
+      start_time (datetime): Minimum time of occurrences' time_happened,
+        included.
+      end_time (datetime):  Maximum time of occurrences' time_happened,
+        excluded.
+    """
+    gerrit_cl_ids = set()
+    for o in self.occurrences or []:
+      if (start_time and
+          o.time_happened < start_time) or (end_time and
+                                            o.time_happened >= end_time):
+        continue
+
+      gerrit_cl_ids.add(o.gerrit_cl_id)
+
+    return list(gerrit_cl_ids)
+
+  def GetOccurrenceCount(self, start_time=None, end_time=None):
+    """ Gets the count of occurrences stored in this entity.
+    Args:
+      start_time (datetime): Minimum time of occurrences' time_happened,
+        included.
+      end_time (datetime):  Maximum time of occurrences' time_happened,
+        excluded.
+    """
+    if not start_time and not end_time:
+      return len(self.occurrences)
+
+    occurrence_count = 0
+    for o in self.occurrences or []:
+      if (start_time and
+          o.time_happened < start_time) or (end_time and
+                                            o.time_happened >= end_time):
+        continue
+
+      occurrence_count += 1
+
+    return occurrence_count
