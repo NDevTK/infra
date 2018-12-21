@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fcbf9b7b_752bc651",
+        "filename": "go/src/infra/appengine/crosskylabadmin/api/fleet/v1/inventory.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-21T23:07:50Z",
+      "side": 1,
+      "message": "Is this necessary?  What\u0027s the behavior if the DUT is not on that drone?",
+      "range": {
+        "startLine": 182,
+        "startChar": 7,
+        "endLine": 182,
+        "endChar": 72
+      },
+      "revId": "ec90201ba95e1cc2c0b4fcae7af676a5dc4335d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fad5f633_5648018d",
+        "filename": "go/src/infra/appengine/crosskylabadmin/api/fleet/v1/inventory.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-21T23:07:50Z",
+      "side": 1,
+      "message": "typoo",
+      "range": {
+        "startLine": 230,
+        "startChar": 5,
+        "endLine": 230,
+        "endChar": 12
+      },
+      "revId": "ec90201ba95e1cc2c0b4fcae7af676a5dc4335d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
