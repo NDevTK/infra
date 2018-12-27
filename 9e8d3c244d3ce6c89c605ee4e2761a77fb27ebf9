@@ -1,0 +1,227 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8edca785_5c38f579",
+        "filename": "go/src/infra/appengine/crosskylabadmin/api/fleet/v1/inventory.proto",
+        "patchSetId": 5
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-27T20:23:23Z",
+      "side": 1,
+      "message": "s//URL associated with this change",
+      "range": {
+        "startLine": 204,
+        "startChar": 15,
+        "endLine": 204,
+        "endChar": 21
+      },
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b447170c_421caaf9",
+        "filename": "go/src/infra/appengine/crosskylabadmin/api/fleet/v1/validation.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-27T20:23:23Z",
+      "side": 1,
+      "message": "Add todos",
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "79ff0036_53f3cf9c",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/gerrit.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-27T20:23:23Z",
+      "side": 1,
+      "message": "I would expect filename to come first.\n\nfileName capitalization is weird.\n\nshould be path rather than filename\n\npath: foo/bar/baz\nfilenames: foo, bar, baz\n\na file has a name in a directory listing.",
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d81cff54_1b08eba3",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 276,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-27T20:23:23Z",
+      "side": 1,
+      "message": "this can be merged with the previous if statement.",
+      "range": {
+        "startLine": 276,
+        "startChar": 4,
+        "endLine": 276,
+        "endChar": 53
+      },
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "88b7efe4_de133b69",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 310,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-27T20:23:23Z",
+      "side": 1,
+      "message": "Don\u0027t use bare return\n\nThis function is returning too many things.\n\nYou can use -1 for missing like with strings.Index(), just mention in doc comment.",
+      "range": {
+        "startLine": 310,
+        "startChar": 4,
+        "endLine": 310,
+        "endChar": 10
+      },
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a086f7dd_ee859dbc",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 598,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-27T20:23:23Z",
+      "side": 1,
+      "message": "This suggests that addArchive should be split into two methods since you never use both paths at the same time, and having to keep track of the order of the two parameters is unnecessary.",
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9fab6f43_7937fb77",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 642,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-27T20:23:23Z",
+      "side": 1,
+      "message": "I think you can just marshal directly into a byte buffer instead of round-tripping to a string (through addArchive)",
+      "range": {
+        "startLine": 642,
+        "startChar": 5,
+        "endLine": 642,
+        "endChar": 61
+      },
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1b432ae1_ea6dc80b",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 655,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-27T20:23:23Z",
+      "side": 1,
+      "message": "this should be a helper function\n\n serversByName[d.server] \u003d dutTestServer(d)",
+      "range": {
+        "startLine": 648,
+        "startChar": 0,
+        "endLine": 655,
+        "endChar": 35
+      },
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a502f8b6_3f4ec072",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 659,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-27T20:23:23Z",
+      "side": 1,
+      "message": "Since you already know the length you don\u0027t need to append, you can just copy() or assign to indices directly.  That way you avoid changing the slice N times.",
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c4c7de59_e48505da",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/test_helpers.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-27T20:23:23Z",
+      "side": 1,
+      "message": "typo date?\n\nSlightly prefer making a struct hold the two data instead of passing two []byte as adjacent arguments to avoid messing up the order (and conceptually the two data come together as a set, as one archive).",
+      "range": {
+        "startLine": 134,
+        "startChar": 77,
+        "endLine": 134,
+        "endChar": 90
+      },
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3c4ffddc_e0335625",
+        "filename": "go/src/infra/libs/skylab/inventory/inventory.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2018-12-27T20:23:23Z",
+      "side": 1,
+      "message": "This is pretty important, otherwise the commits are too noisy and merge conflicts will be messy.",
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
