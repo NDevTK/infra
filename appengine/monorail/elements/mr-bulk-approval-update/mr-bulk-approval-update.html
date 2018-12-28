@@ -1,0 +1,47 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../flt/mr-edit-metadata/mr-edit-field.html">
+
+<dom-module id="mr-bulk-approval-update">
+  <template>
+    <style>
+      button.clickable-text {
+          background: none;
+          border: 0;
+          color: hsl(0, 0%, 39%);
+          cursor: pointer;
+          text-decoration: underline;
+      }
+      .hidden {
+          display: none; !important;
+      }
+    </style>
+    <button class="clickable-text" on-click="fetchApprovals">Show Approvals</button>
+    <div id="js-noApprovals" class="hidden">These issues don't have approvals.</div>
+    <template is="dom-if" if="[[approvals.length]]">
+      <select id="approvalSelect">
+        <template is="dom-repeat" items="[[approvals]]" as="approval">
+          <option value="[[approval.fieldRef.fieldName]]">[[  approval.fieldRef.fieldName  ]]</option>
+        </template>
+      </select>
+      <label for="approversInput">Approvers:</label>
+      <mr-edit-field
+        id="approversInput"
+        type="USER_TYPE"
+        multi
+        ></mr-edit-field>
+      <label for "statusInput">Status:</label>
+      <select id="statusInput">
+        <option>---</option>
+        <template is="dom-repeat" items="[[statusOptions]]" as="status">
+          <option value="[[status]]">[[  status  ]]</option>
+        </template>
+      </select>
+      <textarea id="commentText" placeholder="Add an approval comment"></textarea>
+      <div>
+        <button on-click="save">Update Approvals</button>
+      </div>
+    </template>
+  </template>
+  <script src="./mr-bulk-approval-update.js"></script>
+</dom-module>

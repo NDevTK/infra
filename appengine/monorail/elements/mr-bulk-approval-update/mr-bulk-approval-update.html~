@@ -1,0 +1,9 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<dom-module id="mr-bulk-approval-update">
+  <template>
+    <style>
+    </style>
+    <div></div>
+  </template>
+  <script src="./mr-bulk-approval-update.js"></script>
+</dom-module>

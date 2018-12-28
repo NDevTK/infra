@@ -1,0 +1,30 @@
+class MrFltFlipper extends Polymer.Element {
+  static get is() {
+    return 'mr-flt-flipper';
+  }
+
+  static get properties() {
+    return {
+      count: Number,
+      index: Number,
+      prevUrl: String,
+      nextUrl: String,
+    };
+  }
+
+  firePrevClick(evt) {
+    this.dispatchEvent(new CustomEvent('click-prev'));
+    if (this.prevUrl) {
+      window.location.href = this.prevUrl;
+    }
+  }
+
+  fireNextClick(evt) {
+    this.dispatchEvent(new CustomEvent('click-next'));
+    if (this.nextUrl) {
+      window.location.href = this.nextUrl;
+    }
+  }
+}
+
+customElements.define(MrBulkApprovalUpdate.is, MrBulkApprovalUpdate);
