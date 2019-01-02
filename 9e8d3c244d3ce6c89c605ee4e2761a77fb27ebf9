@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "2fbf1343_0b5c5370",
+        "filename": "go/src/infra/appengine/crosskylabadmin/api/fleet/v1/inventory.proto",
+        "patchSetId": 5
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-01-02T20:00:02Z",
+      "side": 1,
+      "message": "This is consistent with the other preexisting docstrings in this file.",
+      "parentUuid": "8edca785_5c38f579",
+      "range": {
+        "startLine": 204,
+        "startChar": 15,
+        "endLine": 204,
+        "endChar": 21
+      },
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b447170c_421caaf9",
         "filename": "go/src/infra/appengine/crosskylabadmin/api/fleet/v1/validation.go",
         "patchSetId": 5
@@ -59,6 +83,24 @@
     },
     {
       "key": {
+        "uuid": "892ec268_4a2b1250",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/gerrit.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-01-02T20:00:02Z",
+      "side": 1,
+      "message": "Renamed to path.\n\ncommitStringToFile names \"String\" and then \"File\" hence the argument order.",
+      "parentUuid": "79ff0036_53f3cf9c",
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d81cff54_1b08eba3",
         "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory.go",
         "patchSetId": 5
@@ -79,6 +121,30 @@
       "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4778b493_45585576",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 276,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-01-02T20:00:02Z",
+      "side": 1,
+      "message": "That seems less readable to me.",
+      "parentUuid": "d81cff54_1b08eba3",
+      "range": {
+        "startLine": 276,
+        "startChar": 4,
+        "endLine": 276,
+        "endChar": 53
+      },
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -105,6 +171,30 @@
     },
     {
       "key": {
+        "uuid": "3e4028c1_fb84db40",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 310,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-01-02T20:00:02Z",
+      "side": 1,
+      "message": "Disagreed on the number of returned values. Got rid of the bare return.\n\nUsing -1 would reduce the number of arguments by 1 (no more ok value); but the final ok return value seems very consistent with go practice, doesn\u0027t seem worth much of a readability sacrifice to avoid an ok return. \n\nThe return values are also named in a way that I feel makes this function effectively self-documenting. Removing an argument and treating -1 as special would require a docstring to explain.",
+      "parentUuid": "88b7efe4_de133b69",
+      "range": {
+        "startLine": 310,
+        "startChar": 4,
+        "endLine": 310,
+        "endChar": 10
+      },
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a086f7dd_ee859dbc",
         "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory_test.go",
         "patchSetId": 5
@@ -119,6 +209,24 @@
       "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f4675361_c57dd8e8",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 598,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-01-02T20:00:02Z",
+      "side": 1,
+      "message": "Added a TODO. I think it is possible that future tests will require setup for both lab and inventory data though.",
+      "parentUuid": "a086f7dd_ee859dbc",
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -145,6 +253,30 @@
     },
     {
       "key": {
+        "uuid": "6f2fdc7d_9387b233",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 642,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-01-02T20:00:02Z",
+      "side": 1,
+      "message": "This is consistent with the existing test helpers (see labInventoryStrFromDuts) above.\n\nWill add a TODO.",
+      "parentUuid": "9fab6f43_7937fb77",
+      "range": {
+        "startLine": 642,
+        "startChar": 5,
+        "endLine": 642,
+        "endChar": 61
+      },
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1b432ae1_ea6dc80b",
         "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory_test.go",
         "patchSetId": 5
@@ -168,6 +300,30 @@
     },
     {
       "key": {
+        "uuid": "d97f767d_24f7f403",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 655,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-01-02T20:00:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1b432ae1_ea6dc80b",
+      "range": {
+        "startLine": 648,
+        "startChar": 0,
+        "endLine": 655,
+        "endChar": 35
+      },
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a502f8b6_3f4ec072",
         "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory_test.go",
         "patchSetId": 5
@@ -182,6 +338,24 @@
       "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "78527faf_61122336",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 659,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-01-02T20:00:02Z",
+      "side": 1,
+      "message": "I can\u0027t copy() because the source is a map, not a slice.\n\nI could do a index-by-index assignment, but that would require adding a helper variable to keep track of current index inside my loop below, which is extra complexity.\n\nappending to a slice that has sufficient capacity is very cheap afaik, basically equivalent to direct indexed assignment.",
+      "parentUuid": "a502f8b6_3f4ec072",
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -208,6 +382,30 @@
     },
     {
       "key": {
+        "uuid": "eb9f13bb_a7d49eca",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/test_helpers.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-01-02T20:00:02Z",
+      "side": 1,
+      "message": "fixed typo. added TODO",
+      "parentUuid": "c4c7de59_e48505da",
+      "range": {
+        "startLine": 134,
+        "startChar": 77,
+        "endLine": 134,
+        "endChar": 90
+      },
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3c4ffddc_e0335625",
         "filename": "go/src/infra/libs/skylab/inventory/inventory.go",
         "patchSetId": 5
@@ -222,6 +420,24 @@
       "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "614b2847_3a9d1619",
+        "filename": "go/src/infra/libs/skylab/inventory/inventory.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-01-02T20:00:02Z",
+      "side": 1,
+      "message": "ACK, will take as a follow up.",
+      "parentUuid": "3c4ffddc_e0335625",
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
