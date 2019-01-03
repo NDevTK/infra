@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9c49a5c4_9e2ede39",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 663,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-01-03T02:15:12Z",
+      "side": 1,
+      "message": "typo?",
+      "range": {
+        "startLine": 663,
+        "startChar": 5,
+        "endLine": 663,
+        "endChar": 18
+      },
+      "revId": "af229d906de1f3c57a11983ce3ad0a849e3a815f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

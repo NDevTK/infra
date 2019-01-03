@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "4356576d_52fed586",
+        "filename": "go/src/infra/appengine/crosskylabadmin/api/fleet/v1/inventory.proto",
+        "patchSetId": 5
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-01-03T02:15:12Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "2fbf1343_0b5c5370",
+      "range": {
+        "startLine": 204,
+        "startChar": 15,
+        "endLine": 204,
+        "endChar": 21
+      },
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b447170c_421caaf9",
         "filename": "go/src/infra/appengine/crosskylabadmin/api/fleet/v1/validation.go",
         "patchSetId": 5
@@ -60,6 +84,24 @@
       "writtenOn": "2018-12-27T20:23:23Z",
       "side": 1,
       "message": "Add todos",
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "00b622a1_cf79b191",
+        "filename": "go/src/infra/appengine/crosskylabadmin/api/fleet/v1/validation.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-01-03T02:15:12Z",
+      "side": 1,
+      "message": "ping?  I assume we should do some checks, like make sure ids aren\u0027t empty strings or malformed/dut hostnames/etc.",
+      "parentUuid": "b447170c_421caaf9",
       "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -145,6 +187,29 @@
       "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "20319e4b_c58af0cf",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 301,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-01-03T02:15:12Z",
+      "side": 1,
+      "message": "I strongly dislike this returning four things.  Two is the tasteful limit, where the second return value is ok/err.\n\nI\u0027m sure there are good alternative ways for this code to be shaped that don\u0027t involve returning four things.\n\nAlso, since this isn\u0027t temporary code, I\u0027m against it and will need to be convinced otherwise that adding a four value return function to brand new permanent code is a good idea.",
+      "range": {
+        "startLine": 301,
+        "startChar": 5,
+        "endLine": 301,
+        "endChar": 21
+      },
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     },
     {
       "key": {
@@ -277,6 +342,30 @@
     },
     {
       "key": {
+        "uuid": "68c2480c_33df1abb",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 642,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-01-03T02:15:12Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "6f2fdc7d_9387b233",
+      "range": {
+        "startLine": 642,
+        "startChar": 5,
+        "endLine": 642,
+        "endChar": 61
+      },
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1b432ae1_ea6dc80b",
         "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory_test.go",
         "patchSetId": 5
@@ -353,6 +442,24 @@
       "side": 1,
       "message": "I can\u0027t copy() because the source is a map, not a slice.\n\nI could do a index-by-index assignment, but that would require adding a helper variable to keep track of current index inside my loop below, which is extra complexity.\n\nappending to a slice that has sufficient capacity is very cheap afaik, basically equivalent to direct indexed assignment.",
       "parentUuid": "a502f8b6_3f4ec072",
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c5944859_62a0d5e5",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 659,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-01-03T02:15:12Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "78527faf_61122336",
       "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
