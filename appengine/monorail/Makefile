@@ -97,6 +97,7 @@ vulcanize: clean_vulcanized
 	$(call VULCANIZE, elements/flt/mr-approval-page/mr-approval-page)
 	$(call VULCANIZE, elements/chdir/mr-profile-page/mr-profile-page)
 	$(call VULCANIZE, elements/mr-bar-chart/mr-bar-chart)
+	$(call VULCANIZE, elemnts/mr-bulk-update-approval/mr-bulk-update-approval)
 
 clean_vulcanized:
 	find . -name "*.vulcanized.*" -delete
