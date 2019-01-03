@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "79144d5a_3e0b2bfa",
+        "filename": "appengine/monorail/elements/mr-bulk-approval-update/mr-bulk-approval-update.js",
+        "patchSetId": 19
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-01-03T21:21:51Z",
+      "side": 1,
+      "message": "Please replace tabs with spaces.  Here, and on a few other lines.",
+      "revId": "0dbee0cc537ea86895d2fa633125d5dd789bd4cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1b181016_7f838348",
+        "filename": "appengine/monorail/elements/mr-bulk-approval-update/mr-bulk-approval-update.js",
+        "patchSetId": 19
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-01-03T21:21:51Z",
+      "side": 1,
+      "message": "Would it be better to use a \u003cform\u003e element and call form.reset()?",
+      "revId": "0dbee0cc537ea86895d2fa633125d5dd789bd4cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "16752c20_50e281d3",
+        "filename": "appengine/monorail/tracker/issuebulkedit.py",
+        "patchSetId": 19
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-01-03T21:21:51Z",
+      "side": 1,
+      "message": "There is already a EZT variable \"projectname\" that is set on every page by servelet.py.",
+      "revId": "0dbee0cc537ea86895d2fa633125d5dd789bd4cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
