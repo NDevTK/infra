@@ -261,6 +261,30 @@
     },
     {
       "key": {
+        "uuid": "f046363c_a7d974cc",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 301,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-03T21:11:24Z",
+      "side": 1,
+      "message": "tl;dr I side with Allen, but Aviv gets to decide whether he\u0027s convinced or not and take a call on what to do.\n-------------------\n\nIn practice, if we find having to return multiple return values, even from helper functions, it is a smell that we need slightly different boundaries in the code. Taking the performance hit of an extra slice walk, or a new map, as suggested here seem better than multi-valued returns.\n\nI think multi-valued returns are OK when the returned items are semantically related (like Read() returning data and the number of bytes read etc.)\n\nAnother option:\n\n// RemoveDut removes the DUT with given dutID from whatever server it is on.\nfunc RemoveDut(servers []*inventory.Server, dutID string) error {...}\n\n// RemoveDutFromServer removes the DUT with the given dut ID, only if it is on the given server\nfunc RemoveDutFromServer(servers []*inventory.Server, dutID string, serverID string) error {...}\n\nand then call the right one from the top-level function based on whether you have a specific serverID in the request or not. The implementation of each of these will have the two loops and then call (possibly a common helper) to splice out the dut from the right index.\n--------------------\n\nThat said, I tend to think of stylistic requests in code-reviews to be suggestions and recommendations that I trust the author to consider and take a call on. At the end of the day, we\u0027re not trying to sculpt the entire codebase to look and feel exactly how a particular reviewer likes. That\u0027s what linters and explicit coding standards are for. \n\nRemember that code-reviews are like a goal assist, not like goal-keeping. It is the author who needs to be convinced by the reviewer that their comments are valid. The author does not need to convince the reviewer that their CL is worth submitting.",
+      "parentUuid": "c082ed17_8e2c8787",
+      "range": {
+        "startLine": 301,
+        "startChar": 5,
+        "endLine": 301,
+        "endChar": 21
+      },
+      "revId": "9e8d3c244d3ce6c89c605ee4e2761a77fb27ebf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "88b7efe4_de133b69",
         "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory.go",
         "patchSetId": 5
