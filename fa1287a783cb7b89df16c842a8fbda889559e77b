@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1fafb1bf_851773dc",
+        "filename": "appengine/monorail/elements/mr-bulk-approval-update/mr-bulk-approval-update.js",
+        "patchSetId": 16
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2019-01-03T20:21:07Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "3b01b8ce_846ad4a4",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 1
+      },
+      "revId": "fa1287a783cb7b89df16c842a8fbda889559e77b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
