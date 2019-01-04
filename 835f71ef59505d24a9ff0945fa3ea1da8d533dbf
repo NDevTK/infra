@@ -22,6 +22,30 @@
       "revId": "835f71ef59505d24a9ff0945fa3ea1da8d533dbf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8363b5c_91b1b151",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 278,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-01-04T01:18:37Z",
+      "side": 1,
+      "message": "findDutServer is a moderately expensive function, it needs to iterate through all assigned duts (potentially several thousand). \n\nIn the current implementation, if serverToRemove was specified then findDutServer is elided.\n\nI can reduce the nesting though.",
+      "parentUuid": "8be916d2_d5303095",
+      "range": {
+        "startLine": 278,
+        "startChar": 16,
+        "endLine": 278,
+        "endChar": 29
+      },
+      "revId": "835f71ef59505d24a9ff0945fa3ea1da8d533dbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
