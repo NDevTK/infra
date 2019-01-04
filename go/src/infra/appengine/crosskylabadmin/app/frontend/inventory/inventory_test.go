@@ -15,11 +15,9 @@
 package inventory
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 
-	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -327,12 +325,6 @@ func TestEnsurePoolHealthyDryrun(t *testing.T) {
 	})
 }
 
-type testInventoryDut struct {
-	id    string
-	model string
-	pool  string
-}
-
 func TestEnsurePoolHealthyCommit(t *testing.T) {
 	Convey("EnsurePoolHealthy commits expected changes to gerrit", t, func(c C) {
 		tf, validate := newTestFixture(t)
@@ -538,12 +530,6 @@ func TestResizePoolCommit(t *testing.T) {
 	})
 }
 
-// setupLabInventoryArchive sets up fake gitiles to return the inventory of
-// duts provided.
-func setupLabInventoryArchive(c context.Context, g *fakeGitilesClient, duts []testInventoryDut) error {
-	return g.addArchive(config.Get(c).Inventory, []byte(labInventoryStrFromDuts(duts)))
-}
-
 // assertInventoryChange verifies that the CL uploaded to gerrit contains the
 // inventory of duts provided.
 func assertInventoryChange(c C, fg *fakeGerritClient, duts []testInventoryDut) {
@@ -561,28 +547,6 @@ func assertInventoryChange(c C, fg *fakeGerritClient, duts []testInventoryDut) {
 		prettyPrintLabDiff(c, &expectedLab, &actualLab)
 		So(proto.Equal(&actualLab, &expectedLab), ShouldBeTrue)
 	}
-}
-
-func labInventoryStrFromDuts(duts []testInventoryDut) string {
-	ptext := ""
-	for _, dut := range duts {
-		ptext = fmt.Sprintf(`%s
-			duts {
-				common {
-					id: "%s"
-					hostname: "%s"
-					labels {
-						model: "%s"
-						critical_pools: %s
-					}
-					environment: ENVIRONMENT_STAGING
-				}
-			}`,
-			ptext,
-			dut.id, dut.id, dut.model, dut.pool,
-		)
-	}
-	return ptext
 }
 
 func expectDutsWithHealth(t *fleet.MockTrackerServer, dutHealths map[string]fleet.Health) {
