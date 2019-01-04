@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "510b9018_d8d0fe22",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/store.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-01-04T02:07:24Z",
+      "side": 1,
+      "message": "this is going to need *inventory.Infrastructure almost immediately; why not add it from the get-go?",
+      "revId": "87a191b6d132a2e143b46164cee134369115a7c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
