@@ -34,6 +34,24 @@
       "revId": "87a191b6d132a2e143b46164cee134369115a7c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3d3bcc80_fa70610d",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/store.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-01-04T18:22:34Z",
+      "side": 1,
+      "message": "Yep, my (first) CL landed, so will need some updates after this lands.",
+      "parentUuid": "efe402a6_c532a485",
+      "revId": "87a191b6d132a2e143b46164cee134369115a7c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
