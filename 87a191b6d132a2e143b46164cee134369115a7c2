@@ -16,6 +16,24 @@
       "revId": "87a191b6d132a2e143b46164cee134369115a7c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "efe402a6_c532a485",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/store.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-04T18:13:54Z",
+      "side": 1,
+      "message": "Because this is a refactor CL and I didn\u0027t refactor the code that needs *invntory.Infrastructure\n\nPlease add that in a follow up CL, or I might. (Has your CL that needs inventory.Infrastructure landed already?)\n\nIn any case, refactor CL.",
+      "parentUuid": "510b9018_d8d0fe22",
+      "revId": "87a191b6d132a2e143b46164cee134369115a7c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
