@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8be916d2_d5303095",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/inventory.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 278,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-01-04T00:05:58Z",
+      "side": 1,
+      "message": "Just a comment about how this is implemented.  I think this can be simplified if you check serverToRemove afterward.\n\n server, ok :\u003d findDutServer(...)\n if !ok { continue }\n if serverToRemove !\u003d \"\" \u0026\u0026 server.Hostname !\u003d serverToRemove {\n    continue\n }\n ...",
+      "range": {
+        "startLine": 278,
+        "startChar": 16,
+        "endLine": 278,
+        "endChar": 29
+      },
+      "revId": "835f71ef59505d24a9ff0945fa3ea1da8d533dbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
