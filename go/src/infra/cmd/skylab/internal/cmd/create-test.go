@@ -122,12 +122,7 @@ func (c *createTestRun) innerRun(a subcommands.Application, args []string, env s
 
 	tags := append(c.tags, "skylab-tool:create-test")
 
-	req := &swarming.SwarmingRpcsNewTaskRequest{
-		Name:       taskName,
-		Tags:       tags,
-		TaskSlices: slices,
-		Priority:   1,
-	}
+	req := testTaskRequest(taskName, tags, slices)
 
 	ctx := cli.GetContext(a, c, env)
 	s, err := newSwarmingService(ctx, c.authFlags, e)

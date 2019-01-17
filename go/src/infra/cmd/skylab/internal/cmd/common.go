@@ -138,3 +138,13 @@ func generateAnnotationURL(e site.Environment) string {
 	return fmt.Sprintf("logdog://%s/%s/skylab/%s/+/annotations",
 		e.LogDogHost, e.LUCIProject, u.String())
 }
+
+// testTaskRequest creates a new swarming task request for a skylab test.
+func testTaskRequest(taskName string, tags []string, slices []*swarming.SwarmingRpcsTaskSlice) *swarming.SwarmingRpcsNewTaskRequest {
+	return &swarming.SwarmingRpcsNewTaskRequest{
+		Name:       taskName,
+		Tags:       tags,
+		TaskSlices: slices,
+		Priority:   1,
+	}
+}
