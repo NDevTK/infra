@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b17dd0e8_d9d1d07e",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/create-test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-18T17:09:21Z",
+      "side": 1,
+      "message": "the summand without any intervening space looks weird to me. Doesn\u0027t gofmt inject spaces?",
+      "range": {
+        "startLine": 123,
+        "startChar": 51,
+        "endLine": 123,
+        "endChar": 76
+      },
+      "revId": "7a4afd82dc42de4e5dd6fd8724825156c9190a51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
