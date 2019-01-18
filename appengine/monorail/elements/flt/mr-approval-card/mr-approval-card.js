@@ -195,13 +195,14 @@ class MrApprovalCard extends ReduxMixin(Polymer.Element) {
   save() {
     const form = this.$.metadataForm;
     const data = form.getDelta();
+    const sendEmail = form.sendEmail;
     const loads = form.loadAttachments();
     const delta = this._generateDelta(data);
 
     Promise.all(loads).then((uploads) => {
       if (data.comment || Object.keys(delta).length > 0 ||
           uploads.length > 0) {
-        this._updateApproval(data.comment, delta, uploads);
+        this._updateApproval(data.comment, delta, uploads, sendEmail);
       }
     }).catch((reason) => {
       console.error('loading file for attachment: ', reason);
@@ -249,7 +250,7 @@ class MrApprovalCard extends ReduxMixin(Polymer.Element) {
     this.opened = !this.opened;
   }
 
-  _updateApproval(commentData, delta, uploads, isDescription) {
+  _updateApproval(commentData, delta, uploads, isDescription, sendEmail) {
     const baseMessage = {
       issueRef: {
         projectName: this.projectName,
@@ -270,14 +271,15 @@ class MrApprovalCard extends ReduxMixin(Polymer.Element) {
       message.isDescription = true;
     }
 
+    if (sendEmail) {
+      message.sendEmail = true;
+    }
+
     if (uploads && uploads.length) {
       message.uploads = uploads;
     }
 
     this.dispatch({type: actionType.UPDATE_APPROVAL_START});
-
-    // TODO(zhangtiff): monorail:4418, allow option of not sending email
-    message.sendEmail = true;
 
     window.prpcCall(
       'monorail.Issues', 'UpdateApproval', message
@@ -385,8 +387,8 @@ class MrApprovalCard extends ReduxMixin(Polymer.Element) {
     }
   }
 
-  _updateSurveyHandler(content) {
-    this._updateApproval(content, null, null, true);
+  _updateSurveyHandler(content, sendEmail) {
+    this._updateApproval(content, null, null, true, sendEmail);
   }
 
   _toString(bool) {
