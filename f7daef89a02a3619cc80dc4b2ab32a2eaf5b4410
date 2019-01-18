@@ -1,0 +1,313 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fdae1d71_23b55274",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/create-test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-18T01:03:12Z",
+      "side": 1,
+      "message": "This is not possible.\nNormal users can\u0027t create tasks with priority \u003c 25\n\nHere\u0027s the \"official\" definition of priorities in skylab: https://bugs.chromium.org/p/chromium/issues/detail?id\u003d863236#c10\n\nAs suggeted there, user generated tasks should use priority 140\n\nI need to enshrine this in docs somewhere. Ideas?",
+      "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b64f33fb_b79f6779",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/retry-task.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-18T01:03:12Z",
+      "side": 1,
+      "message": "Please name this file retry-tasks.go to match the command name.",
+      "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aa0f5697_a05e6a00",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/retry-task.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-18T01:03:12Z",
+      "side": 1,
+      "message": "retry suggests that the first try failed. Let\u0027s do do one of the following:\n[1] make retry-tasks only create new tasks if the provided task failed.\n[2] rename this to rerun-tasks.\n\nI prefer [2].",
+      "range": {
+        "startLine": 23,
+        "startChar": 13,
+        "endLine": 23,
+        "endChar": 18
+      },
+      "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e22c613f_9052e794",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/retry-task.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-18T01:03:12Z",
+      "side": 1,
+      "message": "check there\u0027s at least one, else print a UserError.",
+      "range": {
+        "startLine": 49,
+        "startChar": 1,
+        "endLine": 49,
+        "endChar": 34
+      },
+      "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "68e28df1_afc890d6",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/retry-task.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-18T01:03:12Z",
+      "side": 1,
+      "message": "Please handle this handled in the current CL, either via a batch call, or by using a parallel.WorkPool to make N concurrent Swarming calls.",
+      "range": {
+        "startLine": 57,
+        "startChar": 4,
+        "endLine": 57,
+        "endChar": 24
+      },
+      "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d8ea7adf_24dab6f1",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/retry-task.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-18T01:03:12Z",
+      "side": 1,
+      "message": "Please extract the logic to getSwarmingRequestsForIDs() in a helper function. It makes reading innerRun a lot clearer.",
+      "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "531cb6e6_ebfaa32b",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/retry-task.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-18T01:03:12Z",
+      "side": 1,
+      "message": "This cancellation function will only be called when you return from innerRun, i.e., after you\u0027ve created the new tasks as well.\nDo you really want a 60 second timeout for *all of the following swarming calls*?\n\nThat\u0027s basically a timeout for all of `skylab retry-tasks`.\n\nI think you want to set a timeout only for getting the tasks for the given ids (or even just per task id)\n\nAgain, this will work as intended if you extract a function to get swarming requests from id.",
+      "range": {
+        "startLine": 62,
+        "startChar": 1,
+        "endLine": 62,
+        "endChar": 11
+      },
+      "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7fdb1e4e_8dbefc78",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/retry-task.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-18T01:03:12Z",
+      "side": 1,
+      "message": "The single letter variable `e` is used too far from definition (I had to go up to check what it is).\nThis is either mitigated by a longer name or (preferably) by making innerRun shorter by extracting helper functions.\n\nIf you extract getSwarmingRequestsForIDs, you could also extract a createRetryRequests() here.",
+      "range": {
+        "startLine": 69,
+        "startChar": 49,
+        "endLine": 69,
+        "endChar": 50
+      },
+      "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e212129a_9fcc4534",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/retry-task.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-18T01:03:12Z",
+      "side": 1,
+      "message": "ditto. Please handle in this CL.",
+      "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6c7f8e6d_fb302892",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/retry-task.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-18T01:03:12Z",
+      "side": 1,
+      "message": "Consider using tabs like other subcommand to better format the output.",
+      "range": {
+        "startLine": 83,
+        "startChar": 27,
+        "endLine": 83,
+        "endChar": 66
+      },
+      "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "64ea10a1_955dd3e5",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/retry-task.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-18T01:03:12Z",
+      "side": 1,
+      "message": "I\u0027d drop the (...) as that is implementation detail that I don\u0027t need to know as a caller. It only says what the code says, and is likely to become stale.",
+      "range": {
+        "startLine": 89,
+        "startChar": 75,
+        "endLine": 90,
+        "endChar": 23
+      },
+      "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b0d7a97a_c2195a66",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/retry-task.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-18T01:03:12Z",
+      "side": 1,
+      "message": "s/with//",
+      "range": {
+        "startLine": 97,
+        "startChar": 32,
+        "endLine": 97,
+        "endChar": 36
+      },
+      "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c5b7fa57_9b7c7c87",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/retry-task.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-18T01:03:12Z",
+      "side": 1,
+      "message": "This will modify s.Properties.Command as well.\nYou\u0027re creating newSlice so that you don\u0027t have to modify the source struct, but this line thwarts that attempt.",
+      "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c4a8c4b7_a3344f29",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/retry-task.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-18T01:03:12Z",
+      "side": 1,
+      "message": "priority is 1?\n\nIn swarming, lower numeric value means higher priority.\nIn fact, normal users can\u0027t generate any tasks below priority 25.\n\nYou should use the same priority as the original task.",
+      "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c2f62420_0f032bf9",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/retry-task.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-18T01:03:12Z",
+      "side": 1,
+      "message": "This drops a bunch of fields from the original task, like PubsubTopic, User.\n\nNone of those are used currently so perhaps we don\u0027t care.\nAlso, we\u0027re likely to have to update `create-task` when we do start using a new field in the CreateTask call, so I guess this will also get updated.",
+      "range": {
+        "startLine": 120,
+        "startChar": 8,
+        "endLine": 120,
+        "endChar": 22
+      },
+      "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
