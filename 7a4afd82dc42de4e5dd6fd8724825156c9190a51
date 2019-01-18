@@ -22,6 +22,30 @@
       "revId": "7a4afd82dc42de4e5dd6fd8724825156c9190a51",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d3d06318_7cf3f6a1",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/create-test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-01-18T18:12:26Z",
+      "side": 1,
+      "message": "nope, gofmt likes it like this. I think it even trims spaces.",
+      "parentUuid": "b17dd0e8_d9d1d07e",
+      "range": {
+        "startLine": 123,
+        "startChar": 51,
+        "endLine": 123,
+        "endChar": 76
+      },
+      "revId": "7a4afd82dc42de4e5dd6fd8724825156c9190a51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
