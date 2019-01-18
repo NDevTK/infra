@@ -271,6 +271,30 @@
     },
     {
       "key": {
+        "uuid": "6d732a07_7058a03d",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/retry-task.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-01-18T18:54:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "531cb6e6_ebfaa32b",
+      "range": {
+        "startLine": 62,
+        "startChar": 1,
+        "endLine": 62,
+        "endChar": 11
+      },
+      "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7fdb1e4e_8dbefc78",
         "filename": "go/src/infra/cmd/skylab/internal/cmd/retry-task.go",
         "patchSetId": 3
@@ -291,6 +315,30 @@
       "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e23e57da_2d16074c",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/retry-task.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-01-18T18:54:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7fdb1e4e_8dbefc78",
+      "range": {
+        "startLine": 69,
+        "startChar": 49,
+        "endLine": 69,
+        "endChar": 50
+      },
+      "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -466,6 +514,24 @@
       "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9f1f71ed_a85b2295",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/retry-task.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-01-18T18:54:35Z",
+      "side": 1,
+      "message": "Yep. I think I\u0027ve decided this is inevitable, as there is no slice Clone method that I can find. Will restructure this to make it look like I\u0027m, not trying to avoid modifying the slice, and document accordingly.",
+      "parentUuid": "c5b7fa57_9b7c7c87",
+      "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
