@@ -343,6 +343,7 @@ _CONFIG_SPEC = {  # yapf: disable
     'flake_detection_settings': (dict, True, {
         'report_flakes_to_flake_analyzer': bool,
         'min_required_impacted_cls_per_day': int,
+        'min_required_ci_occurrences_per_day': int,
     }),
     'code_coverage_settings': (dict, True, {
         'serve_presubmit_coverage_data': bool,
