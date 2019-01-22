@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "bb0e1d38_507fe5d7",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/create-test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-22T17:03:42Z",
+      "side": 1,
+      "message": "I think it\u0027s been working because we\u0027re all admins of the chromeos-swarming.appspot.com instance.\n\nThis should fail if you try to create a task on the staging instance, if I\u0027m right.",
+      "parentUuid": "8ab8fc1e_78a859b6",
+      "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b64f33fb_b79f6779",
         "filename": "go/src/infra/cmd/skylab/internal/cmd/retry-task.go",
         "patchSetId": 3
@@ -210,6 +228,30 @@
       "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0670e96e_55efcf13",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/retry-task.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-22T17:03:42Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "8e75d41c_624d8034",
+      "range": {
+        "startLine": 57,
+        "startChar": 4,
+        "endLine": 57,
+        "endChar": 24
+      },
+      "revId": "f7daef89a02a3619cc80dc4b2ab32a2eaf5b4410",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {

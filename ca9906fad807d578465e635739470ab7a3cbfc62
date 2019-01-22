@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f1d7933f_b539b445",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/rerun-tasks.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-22T17:03:42Z",
+      "side": 1,
+      "message": "nit: If you\u0027re not looking to add a batched / concurrent implementation in this CL (which is OK, as you noted in your comment), please drop this TODO. As before, this TODO does not tell the reader anything useful and does not point to a bug / blocker after which a feature can get added.",
+      "range": {
+        "startLine": 68,
+        "startChar": 1,
+        "endLine": 68,
+        "endChar": 71
+      },
+      "revId": "ca9906fad807d578465e635739470ab7a3cbfc62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e6859e99_8a1dafa1",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/rerun-tasks.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-22T17:03:42Z",
+      "side": 1,
+      "message": "nit: Drop this TODO. This is a legitimate codereview comment, but is simply noise when reading code.",
+      "range": {
+        "startLine": 89,
+        "startChar": 0,
+        "endLine": 90,
+        "endChar": 68
+      },
+      "revId": "ca9906fad807d578465e635739470ab7a3cbfc62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "84a69358_0e5eeb81",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/rerun-tasks.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-22T17:03:42Z",
+      "side": 1,
+      "message": "nitty nit: The whole docstring is a note. I\u0027d just say \"createRerunRequest  modifies the original request parameter.\"",
+      "range": {
+        "startLine": 104,
+        "startChar": 3,
+        "endLine": 104,
+        "endChar": 65
+      },
+      "revId": "ca9906fad807d578465e635739470ab7a3cbfc62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b9c237a2_a5b8c530",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/rerun-tasks.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-01-22T17:03:42Z",
+      "side": 1,
+      "message": "ah, missed this in last patchset :)",
+      "range": {
+        "startLine": 130,
+        "startChar": 5,
+        "endLine": 130,
+        "endChar": 18
+      },
+      "revId": "ca9906fad807d578465e635739470ab7a3cbfc62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
