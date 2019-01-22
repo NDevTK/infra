@@ -1,0 +1,46 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "be3220ad_82f5d7b4",
+        "filename": "appengine/monorail/elements/flt/mr-inline-editor/mr-inline-editor.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-01-22T18:59:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fff0c70f_7ef22566",
+      "range": {
+        "startLine": 90,
+        "startChar": 8,
+        "endLine": 90,
+        "endChar": 19
+      },
+      "revId": "ef1a6bb0a517ac36eb3d42d5bb27c1356090ef65",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "afa28b27_4d0e0e26",
+        "filename": "appengine/monorail/elements/flt/mr-inline-editor/mr-inline-editor.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-01-22T18:59:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e9b6bb4d_d13f88e5",
+      "revId": "ef1a6bb0a517ac36eb3d42d5bb27c1356090ef65",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
