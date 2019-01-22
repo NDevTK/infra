@@ -125,6 +125,7 @@ _MOCK_CHECK_FLAKE_SETTINGS = {
 _MOCK_FLAKE_DETECTION_SETTINGS = {
     'report_flakes_to_flake_analyzer': True,
     'min_required_impacted_cls_per_day': 3,
+    'min_required_ci_occurrences_per_day': 3,
 }
 
 _MOCK_CODE_COVERAGE_SETTINGS = {
