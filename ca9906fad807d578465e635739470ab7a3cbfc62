@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "cc4fe60f_7cf27e51",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/rerun-tasks.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-01-24T01:54:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f1d7933f_b539b445",
+      "range": {
+        "startLine": 68,
+        "startChar": 1,
+        "endLine": 68,
+        "endChar": 71
+      },
+      "revId": "ca9906fad807d578465e635739470ab7a3cbfc62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e6859e99_8a1dafa1",
         "filename": "go/src/infra/cmd/skylab/internal/cmd/rerun-tasks.go",
         "patchSetId": 5
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "9910e516_6900534a",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/rerun-tasks.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-01-24T01:54:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e6859e99_8a1dafa1",
+      "range": {
+        "startLine": 89,
+        "startChar": 0,
+        "endLine": 90,
+        "endChar": 68
+      },
+      "revId": "ca9906fad807d578465e635739470ab7a3cbfc62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "84a69358_0e5eeb81",
         "filename": "go/src/infra/cmd/skylab/internal/cmd/rerun-tasks.go",
         "patchSetId": 5
@@ -68,6 +116,30 @@
       "revId": "ca9906fad807d578465e635739470ab7a3cbfc62",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a7395140_6dd9a63c",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/rerun-tasks.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-01-24T01:54:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "84a69358_0e5eeb81",
+      "range": {
+        "startLine": 104,
+        "startChar": 3,
+        "endLine": 104,
+        "endChar": 65
+      },
+      "revId": "ca9906fad807d578465e635739470ab7a3cbfc62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
