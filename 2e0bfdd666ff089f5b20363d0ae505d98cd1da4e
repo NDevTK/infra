@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8b21d0a2_8fc5e557",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swarming/harness/harness.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-01-25T22:59:49Z",
+      "side": 1,
+      "message": "can you comment if this is relevant?",
+      "parentUuid": "a1e84c9c_abfebd73",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 68,
+        "endChar": 1
+      },
+      "revId": "2e0bfdd666ff089f5b20363d0ae505d98cd1da4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
