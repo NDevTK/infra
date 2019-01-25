@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "aa297496_70796692",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-01-25T06:47:47Z",
+      "side": 1,
+      "message": "Add a space before.",
+      "range": {
+        "startLine": 7,
+        "startChar": 8,
+        "endLine": 7,
+        "endChar": 14
+      },
+      "revId": "734cd548e219174a9d41e7e4e1298e256c3d1a57",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0d18270b_b3a7a92d",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 272,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-01-25T06:47:47Z",
+      "side": 1,
+      "message": "Have we tested this on staging? How many new bugs will be filed due to CI flakes? We may need to tune the threshold accordingly.",
+      "range": {
+        "startLine": 272,
+        "startChar": 21,
+        "endLine": 272,
+        "endChar": 61
+      },
+      "revId": "734cd548e219174a9d41e7e4e1298e256c3d1a57",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "05d3b0cd_3a472b06",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-01-25T06:47:47Z",
+      "side": 1,
+      "message": "Unnecessary new line?",
+      "revId": "734cd548e219174a9d41e7e4e1298e256c3d1a57",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
