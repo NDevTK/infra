@@ -143,7 +143,7 @@ class ChartService(object):
       where.append((forbidden_label_clause, []))
 
     if group_by == 'component':
-      cols = ['Comp.path', 'COUNT(DISTINCT(IssueSnapshot.issue_id))']
+      cols = ['Comp.path', 'IssueSnapshot.issue_id']
       left_joins.extend([
         (('IssueSnapshot2Component AS Is2c ON'
           ' Is2c.issuesnapshot_id = IssueSnapshot.id'), []),
@@ -151,7 +151,7 @@ class ChartService(object):
       ])
       group_by = ['Comp.path']
     elif group_by == 'label':
-      cols = ['Lab.label', 'COUNT(DISTINCT(IssueSnapshot.issue_id))']
+      cols = ['Lab.label', 'IssueSnapshot.issue_id']
       left_joins.extend([
         (('IssueSnapshot2Label AS Is2l'
           ' ON Is2l.issuesnapshot_id = IssueSnapshot.id'), []),
@@ -166,7 +166,7 @@ class ChartService(object):
       where.append(('LOWER(Lab.label) LIKE %s', [label_prefix.lower() + '-%']))
       group_by = ['Lab.label']
     elif not group_by:
-      cols = ['COUNT(DISTINCT(IssueSnapshot.issue_id))']
+      cols = ['IssueSnapshot.issue_id']
     else:
       raise ValueError('`group_by` must be label, component, or None.')
 
@@ -177,17 +177,46 @@ class ChartService(object):
       where.extend(query_where)
 
     promises = []
+
+
     for shard_id in range(settings.num_logical_shards):
       thread_where = where + [('IssueSnapshot.shard = %s', [shard_id])]
+
+      '''
       p = framework_helpers.Promise(self.issuesnapshot_tbl.Select,
         cnxn=cnxn, cols=cols, left_joins=left_joins, where=thread_where,
         group_by=group_by, shard_id=shard_id)
+      '''
+
+      # DEBUGGING ================== 
+      stmt = sql.Statement.MakeSelect('IssueSnapshot', cols, distinct=True)
+      stmt.AddJoinClauses(left_joins, left=True)
+      stmt.AddWhereTerms(thread_where)
+      stmt.AddGroupByTerms(group_by)
+      limit = settings.chart_query_max_rows
+      stmt.SetLimitAndOffset(limit, offset=0)
+
+      stmt_str, stmt_args = stmt.Generate()
+      print 'FIRST STATEMENT -----------'
+      print stmt_str, stmt_args
+
+      real_stmt = 'SELECT COUNT(results.issue_id) FROM (%s) AS results' % stmt_str
+      print 'FINAL STATEMENT -----------'
+      print real_stmt
+
+      # result = cnxn.Execute(real_stmt, stmt_args)
+      p = framework_helpers.Promise(cnxn.Execute, real_stmt, stmt_args, shard_id=shard_id)
       promises.append(p)
+
+      # import sys; sys.exit()
+      # DEBUGGING ================== 
+
 
     shard_values_dict = {}
     for promise in promises:
       # Wait for each query to complete and add it to the dict.
-      shard_values = promise.WaitAndGetValue()
+      shard_values = list(promise.WaitAndGetValue())
+
       if not shard_values:
         continue
       if group_by:
@@ -203,6 +232,9 @@ class ChartService(object):
         for cond in unsupported_conds
         for field in cond.field_defs
     ]))
+
+    print 'RESULT -----------'
+    print shard_values_dict
 
     return shard_values_dict, unsupported_field_names
 
