@@ -1,6 +1,10 @@
 <p><small>
-  Supported query parameters:<br />
-  cc, component, hotlist_id, label, owner, reporter, status
+  Supported query parameters:
+  <span style="font-family: monospace">
+    cc, component, hotlist_id, label, owner,
+    reporter, status
+  </span><br />
+  Queries are truncated at 100K results.
 </small></p>
 
 <mr-chart project-name="[projectname]"></mr-chart>
