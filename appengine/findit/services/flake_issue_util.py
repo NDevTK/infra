@@ -264,20 +264,31 @@ def _FlakeHasEnoughOccurrences(unreported_occurrences):
   """Returns True if there are enough occurrences to worth reporting the flake.
 
   A flake has enough occurrences if the occurrences cover at least 3 different
-  CLs.
+  CLs for CQ flakes, or has occurred on CI.
 
   Args:
     unreported_occurrences: A list of occurrence that share the same parent
                             flake and haven't been reported yet.
                             The caller is responsible for making sure of it.
   """
+  ci_occurrences = [
+      occurrence for occurrence in unreported_occurrences
+      if occurrence.flake_type == FlakeType.CI_FAILED_STEP
+  ]
+  if ci_occurrences:
+    return True
+
   flake_detection_settings = waterfall_config.GetFlakeDetectionSettings()
-  required_falsely_rejected_cls = flake_detection_settings.get(
+  required_non_hidden_impacted_cls = flake_detection_settings.get(
       'min_required_impacted_cls_per_day',
       flake_constants.DEFAULT_MINIMUM_REQUIRED_IMPACTED_CLS_PER_DAY)
-  cl_ids = [occurrence.gerrit_cl_id for occurrence in unreported_occurrences]
+  cl_ids = [
+      occurrence.gerrit_cl_id
+      for occurrence in unreported_occurrences
+      if occurrence.flake_type != FlakeType.CI_FAILED_STEP
+  ]
   unique_cl_ids = set(cl_ids)
-  return len(unique_cl_ids) >= required_falsely_rejected_cls
+  return len(unique_cl_ids) >= required_non_hidden_impacted_cls
 
 
 def GetFlakesWithEnoughOccurrences():
@@ -301,12 +312,14 @@ def GetFlakesWithEnoughOccurrences():
   """
   utc_one_day_ago = time_util.GetUTCNow() - datetime.timedelta(days=1)
   occurrences = FlakeOccurrence.query(
-      ndb.AND(FlakeOccurrence.flake_type == FlakeType.CQ_FALSE_REJECTION,
-              FlakeOccurrence.time_happened > utc_one_day_ago)).fetch()
+      ndb.AND(
+          FlakeOccurrence.flake_type.IN([
+              FlakeType.CQ_FALSE_REJECTION, FlakeType.RETRY_WITH_PATCH,
+              FlakeType.CI_FAILED_STEP
+          ]), FlakeOccurrence.time_happened > utc_one_day_ago)).fetch()
 
-  logging.info(
-      'There are %d cq false rejection occurrences within the past 24h.' %
-      len(occurrences))
+  logging.info('There are %d non cq hidden occurrences within the past 24h.' %
+               len(occurrences))
 
   flake_key_to_occurrences = defaultdict(list)
   for occurrence in occurrences:

@@ -5,6 +5,8 @@ import datetime
 import mock
 import textwrap
 
+from google.appengine.ext import ndb
+
 from googleapiclient.errors import HttpError
 from libs import time_util
 from model.flake.analysis.data_point import DataPoint
@@ -93,10 +95,15 @@ class FlakeReportUtilTest(WaterfallTestCase):
     flake.put()
     return flake
 
-  def _CreateFlakeOccurrence(self, build_id, step_ui_name, test_name,
-                             gerrit_cl_id, parent_flake_key):
+  def _CreateFlakeOccurrence(self,
+                             build_id,
+                             step_ui_name,
+                             test_name,
+                             gerrit_cl_id,
+                             parent_flake_key,
+                             flake_type=FlakeType.CQ_FALSE_REJECTION):
     flake_occurrence = FlakeOccurrence.Create(
-        flake_type=FlakeType.CQ_FALSE_REJECTION,
+        flake_type=flake_type,
         build_id=build_id,
         step_ui_name=step_ui_name,
         test_name=test_name,
@@ -126,7 +133,13 @@ class FlakeReportUtilTest(WaterfallTestCase):
 
     self.flake = self._CreateFlake('step', 'test', 'test_label')
     self._CreateFlakeOccurrence(111, 'step1', 'test1', 98765, self.flake.key)
-    self._CreateFlakeOccurrence(222, 'step2', 'test2', 98764, self.flake.key)
+    self._CreateFlakeOccurrence(
+        222,
+        'step2',
+        'test2',
+        98764,
+        self.flake.key,
+        flake_type=FlakeType.RETRY_WITH_PATCH)
     self._CreateFlakeOccurrence(333, 'step3', 'test3', 98763, self.flake.key)
 
   # This test tests that getting flakes with enough occurrences works properly.
@@ -148,12 +161,15 @@ class FlakeReportUtilTest(WaterfallTestCase):
                      flakes_with_occurrences[0][0].key)
 
   # This test tests that in order for a flake to have enough occurrences, there
-  # needs to be at least 3 (_MIN_REQUIRED_FALSELY_REJECTED_CLS_24H) occurrences
+  # needs to be at least 3 (min_required_impacted_cls_per_day) occurrences
   # with different CLs, and different patchsets of the same CL are only counted
   # once.
   def testMinimumRequiredFalselyRejectedCLs(self):
     occurrences = FlakeOccurrence.query(
-        FlakeOccurrence.flake_type == FlakeType.CQ_FALSE_REJECTION).fetch()
+        FlakeOccurrence.flake_type.IN([
+            FlakeType.CQ_FALSE_REJECTION, FlakeType.RETRY_WITH_PATCH,
+            FlakeType.CI_FAILED_STEP
+        ])).fetch()
     for occurrence in occurrences:
       occurrence.gerrit_cl_id = 565656
       occurrence.put()
@@ -164,7 +180,10 @@ class FlakeReportUtilTest(WaterfallTestCase):
   # This test tests that occurrences happened more than one day ago are ignored.
   def testIgnoreOutdatedOccurrences(self):
     occurrences = FlakeOccurrence.query(
-        FlakeOccurrence.flake_type == FlakeType.CQ_FALSE_REJECTION).fetch()
+        FlakeOccurrence.flake_type.IN([
+            FlakeType.CQ_FALSE_REJECTION, FlakeType.RETRY_WITH_PATCH,
+            FlakeType.CI_FAILED_STEP
+        ])).fetch()
     occurrences[2].time_happened = self._GetDatetimeHoursAgo(25)
     occurrences[2].put()
 
@@ -198,7 +217,10 @@ class FlakeReportUtilTest(WaterfallTestCase):
     flake.put()
 
     occurrences = FlakeOccurrence.query(
-        FlakeOccurrence.flake_type == FlakeType.CQ_FALSE_REJECTION).fetch()
+        FlakeOccurrence.flake_type.IN([
+            FlakeType.CQ_FALSE_REJECTION, FlakeType.RETRY_WITH_PATCH,
+            FlakeType.CI_FAILED_STEP
+        ])).fetch()
     occurrences[2].time_detected = self._GetDatetimeHoursAgo(10)
     occurrences[2].put()
 
@@ -217,7 +239,10 @@ class FlakeReportUtilTest(WaterfallTestCase):
     flake.put()
 
     occurrences = FlakeOccurrence.query(
-        FlakeOccurrence.flake_type == FlakeType.CQ_FALSE_REJECTION).fetch()
+        FlakeOccurrence.flake_type.IN([
+            FlakeType.CQ_FALSE_REJECTION, FlakeType.RETRY_WITH_PATCH,
+            FlakeType.CI_FAILED_STEP
+        ])).fetch()
     for occurrence in occurrences:
       occurrence.time_detected = self._GetDatetimeHoursAgo(10)
       occurrence.put()
@@ -236,7 +261,10 @@ class FlakeReportUtilTest(WaterfallTestCase):
     flake.put()
 
     occurrences = FlakeOccurrence.query(
-        FlakeOccurrence.flake_type == FlakeType.CQ_FALSE_REJECTION).fetch()
+        FlakeOccurrence.flake_type.IN([
+            FlakeType.CQ_FALSE_REJECTION, FlakeType.RETRY_WITH_PATCH,
+            FlakeType.CI_FAILED_STEP
+        ])).fetch()
     for occurrence in occurrences:
       occurrence.time_detected = self._GetDatetimeHoursAgo(10)
       occurrence.put()
@@ -256,7 +284,10 @@ class FlakeReportUtilTest(WaterfallTestCase):
 
     flake = Flake.query().fetch()[0]
     occurrences = FlakeOccurrence.query(
-        FlakeOccurrence.flake_type == FlakeType.CQ_FALSE_REJECTION).fetch()
+        FlakeOccurrence.flake_type.IN([
+            FlakeType.CQ_FALSE_REJECTION, FlakeType.RETRY_WITH_PATCH,
+            FlakeType.CI_FAILED_STEP
+        ])).fetch()
     groups_wo_issue, groups_w_issue = (
         flake_issue_util.GetFlakeGroupsForActionsOnBugs([(flake, occurrences,
                                                           None)]))
@@ -281,7 +312,10 @@ class FlakeReportUtilTest(WaterfallTestCase):
     })
     flake = Flake.query().fetch()[0]
     occurrences = FlakeOccurrence.query(
-        FlakeOccurrence.flake_type == FlakeType.CQ_FALSE_REJECTION).fetch()
+        FlakeOccurrence.flake_type.IN([
+            FlakeType.CQ_FALSE_REJECTION, FlakeType.RETRY_WITH_PATCH,
+            FlakeType.CI_FAILED_STEP
+        ])).fetch()
     groups_wo_issue, groups_w_issue = (
         flake_issue_util.GetFlakeGroupsForActionsOnBugs([(flake, occurrences,
                                                           None)]))
@@ -355,7 +389,10 @@ Automatically posted by the findit-for-me app (https://goo.gl/Ot9f7N)."""
     flake.flake_issue_key = flake_issue.key
     flake.put()
     occurrences = FlakeOccurrence.query(
-        FlakeOccurrence.flake_type == FlakeType.CQ_FALSE_REJECTION).fetch()
+        FlakeOccurrence.flake_type.IN([
+            FlakeType.CQ_FALSE_REJECTION, FlakeType.RETRY_WITH_PATCH,
+            FlakeType.CI_FAILED_STEP
+        ])).fetch()
     mock_get_merged_issue.return_value.id = 12345
     mock_get_merged_issue.return_value.open = True
     groups_wo_issue, groups_w_issue = (
@@ -430,7 +467,10 @@ Automatically posted by the findit-for-me app (https://goo.gl/Ot9f7N)."""
         'id': '56789',
     })
     occurrences = FlakeOccurrence.query(
-        FlakeOccurrence.flake_type == FlakeType.CQ_FALSE_REJECTION).fetch()
+        FlakeOccurrence.flake_type.IN([
+            FlakeType.CQ_FALSE_REJECTION, FlakeType.RETRY_WITH_PATCH,
+            FlakeType.CI_FAILED_STEP
+        ])).fetch()
     mock_get_merged_issue.return_value.id = 56789
     mock_get_merged_issue.return_value.open = True
     groups_wo_issue, groups_w_issue = (
@@ -456,7 +496,10 @@ Automatically posted by the findit-for-me app (https://goo.gl/Ot9f7N)."""
 
     flake1 = Flake.query().fetch()[0]
     occurrences1 = FlakeOccurrence.query(ancestor=flake1.key).filter(
-        FlakeOccurrence.flake_type == FlakeType.CQ_FALSE_REJECTION).fetch()
+        FlakeOccurrence.flake_type.IN([
+            FlakeType.CQ_FALSE_REJECTION, FlakeType.RETRY_WITH_PATCH,
+            FlakeType.CI_FAILED_STEP
+        ])).fetch()
     flake2 = self._CreateFlake('step_other', 'test_other', 'test_label_other')
     self._CreateFlakeOccurrence(777, 'step1_other', 'test1_other', 54321,
                                 flake2.key)
@@ -465,7 +508,10 @@ Automatically posted by the findit-for-me app (https://goo.gl/Ot9f7N)."""
     self._CreateFlakeOccurrence(999, 'step3_other', 'test3_other', 54323,
                                 flake2.key)
     occurrences2 = FlakeOccurrence.query(ancestor=flake2.key).filter(
-        FlakeOccurrence.flake_type == FlakeType.CQ_FALSE_REJECTION).fetch()
+        FlakeOccurrence.flake_type.IN([
+            FlakeType.CQ_FALSE_REJECTION, FlakeType.RETRY_WITH_PATCH,
+            FlakeType.CI_FAILED_STEP
+        ])).fetch()
 
     groups_wo_issue, groups_w_issue = (
         flake_issue_util.GetFlakeGroupsForActionsOnBugs(
@@ -482,7 +528,10 @@ Automatically posted by the findit-for-me app (https://goo.gl/Ot9f7N)."""
 
     flake = Flake.query().fetch()[0]
     occurrences = FlakeOccurrence.query(
-        FlakeOccurrence.flake_type == FlakeType.CQ_FALSE_REJECTION).fetch()
+        FlakeOccurrence.flake_type.IN([
+            FlakeType.CQ_FALSE_REJECTION, FlakeType.RETRY_WITH_PATCH,
+            FlakeType.CI_FAILED_STEP
+        ])).fetch()
     flake_issue_util.ReportFlakesToFlakeAnalyzer([(flake, occurrences, None)])
     self.assertFalse(mock_analyze_flake_occurrence.called)
 
@@ -494,7 +543,10 @@ Automatically posted by the findit-for-me app (https://goo.gl/Ot9f7N)."""
     flake.flake_issue_key = flake_issue.key
     flake.put()
     occurrences = FlakeOccurrence.query(
-        FlakeOccurrence.flake_type == FlakeType.CQ_FALSE_REJECTION).fetch()
+        FlakeOccurrence.flake_type.IN([
+            FlakeType.CQ_FALSE_REJECTION, FlakeType.RETRY_WITH_PATCH,
+            FlakeType.CI_FAILED_STEP
+        ])).fetch()
 
     flake_issue_util.ReportFlakesToFlakeAnalyzer([(flake, occurrences,
                                                    flake_issue)])
@@ -1597,3 +1649,22 @@ Automatically posted by the findit-for-me app (https://goo.gl/Ot9f7N)."""
         2018, 12, 18, 12, 0, 0)  # Over 24 hours old.
     flake_issue_3.put()
     self.assertEqual(3, flake_issue_util.GetRemainingDailyUpdatesCount())
+
+  def testFlakeHasEnoughCIOccurrences(self):
+    flake_issue = FlakeIssue.Create('chromium', 1)
+    flake_issue.put()
+
+    flake = self._CreateFlake('s', 'suite.t', 'suite.t')
+    flake.flake_issue_key = flake_issue.key
+    flake.put()
+
+    occurrences = [
+        self._CreateFlakeOccurrence(1, 's', 'suite.t', -1, flake.key,
+                                    FlakeType.CI_FAILED_STEP),
+        self._CreateFlakeOccurrence(2, 's', 'suite.t', -1, flake.key,
+                                    FlakeType.CI_FAILED_STEP),
+        self._CreateFlakeOccurrence(3, 's', 'suite.t', -1, flake.key,
+                                    FlakeType.CI_FAILED_STEP),
+    ]
+
+    self.assertTrue(flake_issue_util._FlakeHasEnoughOccurrences(occurrences))
