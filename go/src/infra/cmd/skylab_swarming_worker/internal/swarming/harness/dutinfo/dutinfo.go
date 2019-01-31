@@ -41,10 +41,7 @@ func (s *Store) Close() error {
 // to the loaded DUT info.
 type UpdateFunc func(old, new *inventory.DeviceUnderTest) error
 
-// Load loads the bot's DUT's info from the inventory.  This function
-// returns a Store that should be closed to update the inventory with
-// any changes to the info, using a supplied UpdateFunc.  If
-// UpdateFunc is nil, the inventory is not updated.
+// Load loads the bot's DUT's info from the inventory.
 func Load(b *swarming.Bot, f UpdateFunc) (*Store, error) {
 	ddir, err := inventory.ReadSymlink(b.Inventory.DataDir)
 	if err != nil {
