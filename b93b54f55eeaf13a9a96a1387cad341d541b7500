@@ -16,6 +16,24 @@
       "revId": "b93b54f55eeaf13a9a96a1387cad341d541b7500",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3d0b698d_fabc248f",
+        "filename": "go/src/infra/libs/skylab/inventory/autotest/labels/basic.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-01-31T22:59:12Z",
+      "side": 0,
+      "message": "Ack",
+      "parentUuid": "c4014e6c_9b4e7e2d",
+      "revId": "b93b54f55eeaf13a9a96a1387cad341d541b7500",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

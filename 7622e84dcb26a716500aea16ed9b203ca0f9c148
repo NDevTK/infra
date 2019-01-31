@@ -16,6 +16,24 @@
       "revId": "7622e84dcb26a716500aea16ed9b203ca0f9c148",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4395143c_e2ab345b",
+        "filename": "go/src/infra/libs/skylab/inventory/autotest/labels/arc.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-01-31T22:59:12Z",
+      "side": 1,
+      "message": "Doesn\u0027t matter, because multiple copies of this label would be interpreted the same as one copy (Arc gets set to true)",
+      "parentUuid": "4e175179_9c3e8446",
+      "revId": "7622e84dcb26a716500aea16ed9b203ca0f9c148",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
