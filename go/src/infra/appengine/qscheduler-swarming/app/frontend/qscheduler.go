@@ -23,6 +23,8 @@ import (
 
 	"go.chromium.org/gae/service/datastore"
 	"go.chromium.org/luci/grpc/grpcutil"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"infra/qscheduler/qslib/scheduler"
 )
@@ -71,6 +73,9 @@ func (s *QSchedulerServerImpl) AssignTasks(ctx context.Context, r *swarming.Assi
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
+	if err := r.Validate(); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, err.Error())
+	}
 
 	op, result := operations.AssignTasks(r)
 
@@ -86,6 +91,9 @@ func (s *QSchedulerServerImpl) GetCancellations(ctx context.Context, r *swarming
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
+	if err := r.Validate(); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, err.Error())
+	}
 
 	sp, err := entities.Load(ctx, r.SchedulerId)
 	if err != nil {
@@ -105,6 +113,9 @@ func (s *QSchedulerServerImpl) NotifyTasks(ctx context.Context, r *swarming.Noti
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
+	if err := r.Validate(); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, err.Error())
+	}
 
 	op, result := operations.NotifyTasks(r)
 
