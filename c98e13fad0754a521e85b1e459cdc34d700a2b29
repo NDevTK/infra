@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "11e9bfd6_01cead3e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-02-05T15:26:13Z",
+      "side": 1,
+      "message": "Priority is not a type alias. It is a new type.\nIn fact, type alias wouldn\u0027t give you any extra type safety, and shouldn\u0027t be used except for refactoring.\n\nSee https://yourbasic.org/golang/type-alias/",
+      "range": {
+        "startLine": 7,
+        "startChar": 17,
+        "endLine": 7,
+        "endChar": 28
+      },
+      "revId": "c98e13fad0754a521e85b1e459cdc34d700a2b29",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
