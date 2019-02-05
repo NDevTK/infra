@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0fb0f8fc_e139d73f",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/merge_approval_rules.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-02-05T18:08:08Z",
+      "side": 1,
+      "message": "Please indent using all tabs.",
+      "revId": "40497dac60b988f28e5bd026d52d64b91eeb0f13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f9e3b60c_fa2373d3",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/merge_approval_rules.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-02-05T18:08:08Z",
+      "side": 1,
+      "message": "Please remove trailing spaces.",
+      "range": {
+        "startLine": 25,
+        "startChar": 70,
+        "endLine": 25,
+        "endChar": 71
+      },
+      "revId": "40497dac60b988f28e5bd026d52d64b91eeb0f13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
