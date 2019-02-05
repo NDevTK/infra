@@ -15,7 +15,11 @@
 package scheduler
 
 import (
+	"sort"
+	"time"
+
 	"infra/qscheduler/qslib/metrics"
+	"infra/qscheduler/qslib/tutils"
 )
 
 // MetricsSink defines the interface for a class that records scheduler
@@ -33,3 +37,51 @@ func (m *nullMetricsSink) AddEvent(_ *metrics.TaskEvent) {}
 
 // NullMetricsSink is a trivial MetricsSink that discards metrics.
 var NullMetricsSink MetricsSink = &nullMetricsSink{}
+
+func eventCommon(request *TaskRequest, w *worker, s *state, t time.Time) *metrics.TaskEvent {
+	var baseLabels sort.StringSlice = request.BaseLabels.ToSlice()
+	var provLabels sort.StringSlice = request.ProvisionableLabels.ToSlice()
+	var botID string
+	var botLabels sort.StringSlice
+	if w != nil {
+		botID = string(w.ID)
+		botLabels = w.labels.ToSlice()
+		botLabels.Sort()
+	}
+	baseLabels.Sort()
+	provLabels.Sort()
+	accountBalance, accountValid := s.balances[request.AccountID]
+	accountBalance = accountBalance.Copy()
+	return &metrics.TaskEvent{
+		AccountBalance:      accountBalance[:],
+		AccountId:           string(request.AccountID),
+		AccountValid:        accountValid,
+		BaseLabels:          baseLabels,
+		BotId:               botID,
+		BotDimensions:       botLabels,
+		ProvisionableLabels: provLabels,
+		TaskId:              string(request.ID),
+		Time:                tutils.TimestampProto(t),
+	}
+}
+
+func eventEnqueued(request *TaskRequest, s *state, t time.Time) *metrics.TaskEvent {
+	e := eventCommon(request, nil, s, t)
+	e.EventType = metrics.TaskEvent_ENQUEUED
+	return e
+}
+
+func eventAssigned(request *TaskRequest, w *worker, preempting bool, preemptionCost balance, p int32,
+	provisionRequred bool, s *state, t time.Time) *metrics.TaskEvent {
+	e := eventCommon(request, w, s, t)
+	e.EventType = metrics.TaskEvent_ASSIGNED
+	e.Details = &metrics.TaskEvent_AssignedDetails_{
+		&metrics.TaskEvent_AssignedDetails{
+			Preempting:        preempting,
+			PreemptionCost:    preemptionCost[:],
+			Priority:          p,
+			ProvisionRequired: provisionRequred,
+		},
+	}
+	return e
+}

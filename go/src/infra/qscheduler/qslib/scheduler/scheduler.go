@@ -141,7 +141,7 @@ func (s *Scheduler) AddRequest(ctx context.Context, request *TaskRequest, t time
 	if request.ID == "" {
 		return errors.New("empty request id")
 	}
-	s.state.addRequest(ctx, request, t)
+	s.state.addRequest(ctx, request, t, m)
 	return nil
 }
 
@@ -259,7 +259,7 @@ func (s *Scheduler) AbortRequest(ctx context.Context, requestID RequestID, t tim
 // calculation.
 func (s *Scheduler) RunOnce(ctx context.Context, m MetricsSink) ([]*Assignment, error) {
 	pass := s.newRun()
-	return pass.Run()
+	return pass.Run(m)
 }
 
 // GetRequest returns the (waiting or running) request for a given ID.
@@ -286,7 +286,7 @@ type schedulerRun struct {
 	scheduler *Scheduler
 }
 
-func (run *schedulerRun) Run() ([]*Assignment, error) {
+func (run *schedulerRun) Run(m MetricsSink) ([]*Assignment, error) {
 	var output []*Assignment
 	// Proceed through multiple passes of the scheduling algorithm, from highest
 	// to lowest priority requests (high priority = low p).
@@ -426,7 +426,7 @@ func computeWorkerMatch(w *worker, requests requestList, mf matcher) []matchList
 }
 
 // matchIdleBots matches requests with idle workers.
-func (run *schedulerRun) matchIdleBots(priority int, mf matcher) []*Assignment {
+func (run *schedulerRun) matchIdleBots(priority int, mf matcher, metrics MetricsSink) []*Assignment {
 	var output []*Assignment
 	for wid, w := range run.idleWorkers {
 		// Try to match.
@@ -449,6 +449,9 @@ func (run *schedulerRun) matchIdleBots(priority int, mf matcher) []*Assignment {
 			run.assignRequestToWorker(wid, match.node, priority)
 			run.scheduler.state.applyAssignment(m)
 			output = append(output, m)
+			metrics.AddEvent(eventAssigned(match.request, w, false, balance{},
+				int32(priority), false /* TODO calculate provision_required */, run.scheduler.state,
+				run.scheduler.state.lastUpdateTime))
 			break
 		}
 
