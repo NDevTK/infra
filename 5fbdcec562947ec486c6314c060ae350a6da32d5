@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dea22fc3_9b870b74",
+        "filename": "appengine/monorail/static/js/elements/mr-chart.js",
+        "patchSetId": 8
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-02-06T18:40:52Z",
+      "side": 1,
+      "message": "\"params\" is jargon.  You could explain it differently, or just delete that one word.",
+      "revId": "5fbdcec562947ec486c6314c060ae350a6da32d5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "45aa8d03_5e510f7d",
+        "filename": "appengine/monorail/static/js/elements/mr-chart_test.html",
+        "patchSetId": 8
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-02-06T18:40:52Z",
+      "side": 1,
+      "message": "Should this be \"false\" rather than an empty list?",
+      "revId": "5fbdcec562947ec486c6314c060ae350a6da32d5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
