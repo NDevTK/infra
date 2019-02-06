@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5bc1dc44_8b8d9cff",
+        "filename": "crdx/packages/prpc-client/.gitignore",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2019-02-06T22:39:03Z",
+      "side": 1,
+      "message": "I\u0027m not sure if it makes a difference but I wouldn\u0027t put this slash here in case it gets confused somewhere with the filesystem root",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 1
+      },
+      "revId": "52b734c75780579596cab2400095328200af2bf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
