@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "02eb78d5_07142fc2",
+        "filename": "appengine/findit/docs/flake_detector.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-02-06T22:18:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8a504e5b_62671b27",
+      "range": {
+        "startLine": 71,
+        "startChar": 24,
+        "endLine": 71,
+        "endChar": 37
+      },
+      "revId": "ff4a89375518484f283fdfebd6ef7e84c60b125d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba8e40e5_e722dcdb",
         "filename": "appengine/findit/docs/flake_detector.md",
         "patchSetId": 3
@@ -42,6 +66,24 @@
     },
     {
       "key": {
+        "uuid": "63c20089_25da7abb",
+        "filename": "appengine/findit/docs/flake_detector.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-02-06T22:18:50Z",
+      "side": 1,
+      "message": "When Flake Detection files bugs, there\u0027s no flake analysis yet.",
+      "parentUuid": "ba8e40e5_e722dcdb",
+      "revId": "ff4a89375518484f283fdfebd6ef7e84c60b125d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b0a14022_5cf5b8c9",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 3
@@ -53,6 +95,30 @@
       "writtenOn": "2019-02-06T00:32:30Z",
       "side": 1,
       "message": "should we have a limit here too?\n\nOr should we count CI flakes the same as \"CQ false rejects\" and \"retry with patch\" flakes?",
+      "range": {
+        "startLine": 297,
+        "startChar": 24,
+        "endLine": 297,
+        "endChar": 42
+      },
+      "revId": "ff4a89375518484f283fdfebd6ef7e84c60b125d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e942a02b_9e679f77",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 297,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-02-06T22:18:50Z",
+      "side": 1,
+      "message": "I had the same limit on CI flakes before. But after discussing with liaoyuke@, CI flakes should be real flakes since we have run 30 reruns on the test and there\u0027s no bad CL involved.",
+      "parentUuid": "b0a14022_5cf5b8c9",
       "range": {
         "startLine": 297,
         "startChar": 24,
@@ -88,6 +154,30 @@
     },
     {
       "key": {
+        "uuid": "a27b7720_99305b1c",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 300,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-02-06T22:18:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e1551f52_7fae1a84",
+      "range": {
+        "startLine": 300,
+        "startChar": 4,
+        "endLine": 300,
+        "endChar": 26
+      },
+      "revId": "ff4a89375518484f283fdfebd6ef7e84c60b125d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a74b4a55_1f0f03e5",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 3
@@ -111,6 +201,30 @@
     },
     {
       "key": {
+        "uuid": "85198837_f4e20282",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 309,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-02-06T22:18:50Z",
+      "side": 1,
+      "message": "Basically this means each CI flake is eligible to have a bug. Though Findit will not do so because of daily limit and filing bugs with higher score first.",
+      "parentUuid": "a74b4a55_1f0f03e5",
+      "range": {
+        "startLine": 308,
+        "startChar": 2,
+        "endLine": 309,
+        "endChar": 15
+      },
+      "revId": "ff4a89375518484f283fdfebd6ef7e84c60b125d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "545012db_1697ca21",
         "filename": "appengine/findit/services/flake_issue_util.py",
         "patchSetId": 3
@@ -122,6 +236,30 @@
       "writtenOn": "2019-02-06T00:32:30Z",
       "side": 1,
       "message": "This condition is True for \"CQ false rejects\", \"retry with patch\", and \"CQ hidden flakes\", right?",
+      "range": {
+        "startLine": 318,
+        "startChar": 9,
+        "endLine": 318,
+        "endChar": 58
+      },
+      "revId": "ff4a89375518484f283fdfebd6ef7e84c60b125d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5a565a64_f986af7b",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 318,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-02-06T22:18:50Z",
+      "side": 1,
+      "message": "No, only \"CQ false rejects\" and \"retry with patch\". See https://chromium-review.googlesource.com/c/infra/infra/+/1441606/3/appengine/findit/services/flake_issue_util.py#344",
+      "parentUuid": "545012db_1697ca21",
       "range": {
         "startLine": 318,
         "startChar": 9,
