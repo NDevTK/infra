@@ -1,0 +1,22 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7531d52e_67f1f502",
+        "filename": "appengine/monorail/static/js/elements/mr-chart.js",
+        "patchSetId": 7
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2019-02-06T00:59:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d2ae67fd_0dc9279d",
+      "revId": "49321a0f5e3eafa7f2096625d8464071db1e21e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
