@@ -1,0 +1,136 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8a504e5b_62671b27",
+        "filename": "appengine/findit/docs/flake_detector.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2019-02-06T00:32:30Z",
+      "side": 1,
+      "message": "how about a whitelist instead?",
+      "range": {
+        "startLine": 71,
+        "startChar": 24,
+        "endLine": 71,
+        "endChar": 37
+      },
+      "revId": "ff4a89375518484f283fdfebd6ef7e84c60b125d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ba8e40e5_e722dcdb",
+        "filename": "appengine/findit/docs/flake_detector.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2019-02-06T00:32:30Z",
+      "side": 1,
+      "message": "with a culprit\n\nOnce a CI flake is detected, it seems not great to file a bug immediately?",
+      "revId": "ff4a89375518484f283fdfebd6ef7e84c60b125d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b0a14022_5cf5b8c9",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 297,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2019-02-06T00:32:30Z",
+      "side": 1,
+      "message": "should we have a limit here too?\n\nOr should we count CI flakes the same as \"CQ false rejects\" and \"retry with patch\" flakes?",
+      "range": {
+        "startLine": 297,
+        "startChar": 24,
+        "endLine": 297,
+        "endChar": 42
+      },
+      "revId": "ff4a89375518484f283fdfebd6ef7e84c60b125d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e1551f52_7fae1a84",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 300,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2019-02-06T00:32:30Z",
+      "side": 1,
+      "message": "Make it clear about the types of those flakes.\nThey seem to exclude \"CQ hidden flakes\".",
+      "range": {
+        "startLine": 300,
+        "startChar": 4,
+        "endLine": 300,
+        "endChar": 26
+      },
+      "revId": "ff4a89375518484f283fdfebd6ef7e84c60b125d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a74b4a55_1f0f03e5",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 309,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2019-02-06T00:32:30Z",
+      "side": 1,
+      "message": "Do we really want to file a bug for every CI flake before kicking off an analysis first?\n\nIIUC, historical data shows that the majority of CI flakes are not reproducible.",
+      "range": {
+        "startLine": 308,
+        "startChar": 2,
+        "endLine": 309,
+        "endChar": 15
+      },
+      "revId": "ff4a89375518484f283fdfebd6ef7e84c60b125d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "545012db_1697ca21",
+        "filename": "appengine/findit/services/flake_issue_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 318,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2019-02-06T00:32:30Z",
+      "side": 1,
+      "message": "This condition is True for \"CQ false rejects\", \"retry with patch\", and \"CQ hidden flakes\", right?",
+      "range": {
+        "startLine": 318,
+        "startChar": 9,
+        "endLine": 318,
+        "endChar": 58
+      },
+      "revId": "ff4a89375518484f283fdfebd6ef7e84c60b125d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
