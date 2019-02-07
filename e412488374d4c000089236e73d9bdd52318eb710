@@ -22,6 +22,30 @@
       "revId": "e412488374d4c000089236e73d9bdd52318eb710",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "76a853cf_d8b9f28f",
+        "filename": "go/src/infra/tricium/appengine/common/isolate.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2019-02-07T01:42:32Z",
+      "side": 1,
+      "message": "Select a namespace once and then persist and pass it, it\u0027s going to be important once we switch to sha256, as you want to not break pending runs.",
+      "parentUuid": "c599e000_8ec73077",
+      "range": {
+        "startLine": 88,
+        "startChar": 1,
+        "endLine": 88,
+        "endChar": 25
+      },
+      "revId": "e412488374d4c000089236e73d9bdd52318eb710",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
