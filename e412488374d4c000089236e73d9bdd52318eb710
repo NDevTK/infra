@@ -46,6 +46,30 @@
       "revId": "e412488374d4c000089236e73d9bdd52318eb710",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4297c904_09239abe",
+        "filename": "go/src/infra/tricium/appengine/common/isolate.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-02-07T19:19:52Z",
+      "side": 1,
+      "message": "Ah, I see - the namespace could be a constant in this package, and sha256 might be a reasonable default choice, right?",
+      "parentUuid": "76a853cf_d8b9f28f",
+      "range": {
+        "startLine": 88,
+        "startChar": 1,
+        "endLine": 88,
+        "endChar": 25
+      },
+      "revId": "e412488374d4c000089236e73d9bdd52318eb710",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
