@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "145b0df4_83bf9e4d",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/metrics.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-02-07T20:57:23Z",
+      "side": 1,
+      "message": "nit: metrics.TaskEvent (I expected to find a type declared in this package from your docstring)",
+      "revId": "2610ad1ed695d9841109b0b36ae0919de6c0cb01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0b98b3fc_d7ef68ea",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/metrics.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-02-07T20:57:23Z",
+      "side": 1,
+      "message": "Simply use sort.Strings(request.BaseLabels.ToSlice()) \n\nApplies to all uses of sort.StringSlice here.",
+      "range": {
+        "startLine": 44,
+        "startChar": 1,
+        "endLine": 44,
+        "endChar": 63
+      },
+      "revId": "2610ad1ed695d9841109b0b36ae0919de6c0cb01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "93252f30_5934ce8d",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/metrics.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-02-07T20:57:23Z",
+      "side": 1,
+      "message": "Why do you need a copy? Will metrics.TaskEvent modify its argument?",
+      "range": {
+        "startLine": 56,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 39
+      },
+      "revId": "2610ad1ed695d9841109b0b36ae0919de6c0cb01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "85298977_663403fe",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/metrics.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-02-07T20:57:23Z",
+      "side": 1,
+      "message": "oh wow that\u0027s a long argument list. Don\u0027t know if there is a best practice about breaking overly long lines like this. You may want to define a struct type to contain all these arguments so it\u0027s easy to only provide non empty values for some of them.",
+      "range": {
+        "startLine": 78,
+        "startChar": 20,
+        "endLine": 79,
+        "endChar": 45
+      },
+      "revId": "2610ad1ed695d9841109b0b36ae0919de6c0cb01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e5b108d1_e1886739",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 457,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-02-07T20:57:23Z",
+      "side": 1,
+      "message": "again, overly long line (for the same reason).\n\nThis will read a lot better if you use a struct type, and use the standard struct literal with one field on a line.\nA struct literal will also help because it looks like keyword arguments. Currently, it\u0027s very hard to know what the 7th argument means in the long list.\n\nAlso, the inline comment in the middle of the arglist is yucky.",
+      "range": {
+        "startLine": 455,
+        "startChar": 20,
+        "endLine": 457,
+        "endChar": 40
+      },
+      "revId": "2610ad1ed695d9841109b0b36ae0919de6c0cb01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
