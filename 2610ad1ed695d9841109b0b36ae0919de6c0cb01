@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "c251f1d7_6fd5babd",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/metrics.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-02-07T22:15:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "145b0df4_83bf9e4d",
+      "revId": "2610ad1ed695d9841109b0b36ae0919de6c0cb01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0b98b3fc_d7ef68ea",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/metrics.go",
         "patchSetId": 7
@@ -89,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "788d54bb_6e2b08e9",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/metrics.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-02-07T22:15:59Z",
+      "side": 1,
+      "message": "I don\u0027t want to emit a proto that has a slice referencing to the same underlying accountBalance array as the state is tracking (that accountBalance is mutable).",
+      "parentUuid": "93252f30_5934ce8d",
+      "range": {
+        "startLine": 56,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 39
+      },
+      "revId": "2610ad1ed695d9841109b0b36ae0919de6c0cb01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "85298977_663403fe",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/metrics.go",
         "patchSetId": 7
@@ -109,6 +151,30 @@
       "revId": "2610ad1ed695d9841109b0b36ae0919de6c0cb01",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e72ee199_f885b028",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/metrics.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-02-07T22:15:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "85298977_663403fe",
+      "range": {
+        "startLine": 78,
+        "startChar": 20,
+        "endLine": 79,
+        "endChar": 45
+      },
+      "revId": "2610ad1ed695d9841109b0b36ae0919de6c0cb01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
