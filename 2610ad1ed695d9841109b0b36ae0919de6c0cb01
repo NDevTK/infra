@@ -156,6 +156,30 @@
     },
     {
       "key": {
+        "uuid": "d91f88c9_1c1fab4b",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/metrics.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-02-08T19:21:18Z",
+      "side": 1,
+      "message": "lines of code is not a great indicator of complexity.\n\nUnderstanding a new type and its methods is a lot more work than reading an extra line.",
+      "parentUuid": "3d90df80_5d3676a8",
+      "range": {
+        "startLine": 44,
+        "startChar": 1,
+        "endLine": 44,
+        "endChar": 63
+      },
+      "revId": "2610ad1ed695d9841109b0b36ae0919de6c0cb01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "93252f30_5934ce8d",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/metrics.go",
         "patchSetId": 7
