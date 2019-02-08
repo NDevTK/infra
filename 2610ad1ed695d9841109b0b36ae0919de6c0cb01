@@ -132,6 +132,30 @@
     },
     {
       "key": {
+        "uuid": "3d90df80_5d3676a8",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/metrics.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-02-08T18:40:37Z",
+      "side": 1,
+      "message": "Why? That\u0027s an extra line of code. I think the way I\u0027m using sort.StringSlice is precisely the way it wants to be used.",
+      "parentUuid": "28e6da81_8fd3b4cf",
+      "range": {
+        "startLine": 44,
+        "startChar": 1,
+        "endLine": 44,
+        "endChar": 63
+      },
+      "revId": "2610ad1ed695d9841109b0b36ae0919de6c0cb01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "93252f30_5934ce8d",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/metrics.go",
         "patchSetId": 7
@@ -191,6 +215,30 @@
       "side": 1,
       "message": "Ack",
       "parentUuid": "788d54bb_6e2b08e9",
+      "range": {
+        "startLine": 56,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 39
+      },
+      "revId": "2610ad1ed695d9841109b0b36ae0919de6c0cb01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a8a6b29f_5c647cc5",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/metrics.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-02-08T18:40:37Z",
+      "side": 1,
+      "message": "Actually, balances are arrays, which are a value type, so this copy is unnecessary. Will fix in followup.",
+      "parentUuid": "7f24b717_63ee957d",
       "range": {
         "startLine": 56,
         "startChar": 0,
