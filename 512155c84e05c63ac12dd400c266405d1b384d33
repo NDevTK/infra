@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5ab43bbe_a2522f74",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/metrics.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-02-08T16:30:26Z",
+      "side": 1,
+      "message": "Can you point me to the CL that changed the metrics.TaskEvent_AssignDetails_ struct.\n\nAlso, why does your type name have a trailing underscore?",
+      "range": {
+        "startLine": 81,
+        "startChar": 49,
+        "endLine": 81,
+        "endChar": 64
+      },
+      "revId": "512155c84e05c63ac12dd400c266405d1b384d33",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -108,6 +108,30 @@
     },
     {
       "key": {
+        "uuid": "28e6da81_8fd3b4cf",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/metrics.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-02-08T16:30:26Z",
+      "side": 1,
+      "message": "Oh.\n\nI still slightly prefer https://play.golang.org/p/-iqguzQBRRj\n\n\tb :\u003d make([]string, len(a))\n\tcopy(b, a)\n        sort.Strings(b)",
+      "parentUuid": "39f565d9_0c2f6a8c",
+      "range": {
+        "startLine": 44,
+        "startChar": 1,
+        "endLine": 44,
+        "endChar": 63
+      },
+      "revId": "2610ad1ed695d9841109b0b36ae0919de6c0cb01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "93252f30_5934ce8d",
         "filename": "go/src/infra/qscheduler/qslib/scheduler/metrics.go",
         "patchSetId": 7
@@ -143,6 +167,30 @@
       "side": 1,
       "message": "I don\u0027t want to emit a proto that has a slice referencing to the same underlying accountBalance array as the state is tracking (that accountBalance is mutable).",
       "parentUuid": "93252f30_5934ce8d",
+      "range": {
+        "startLine": 56,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 39
+      },
+      "revId": "2610ad1ed695d9841109b0b36ae0919de6c0cb01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7f24b717_63ee957d",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/metrics.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-02-08T16:30:26Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "788d54bb_6e2b08e9",
       "range": {
         "startLine": 56,
         "startChar": 0,
