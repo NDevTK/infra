@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "163bd739_70019d91",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/state.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-02-11T22:31:43Z",
+      "side": 1,
+      "message": "This rename is unrelated the meat of this CL.",
+      "range": {
+        "startLine": 212,
+        "startChar": 4,
+        "endLine": 212,
+        "endChar": 35
+      },
+      "revId": "3d318fef2dd5cbff1e95ed0f33c4c09353154a60",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
