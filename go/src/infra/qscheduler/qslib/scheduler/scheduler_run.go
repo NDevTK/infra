@@ -207,10 +207,9 @@ func (run *schedulerRun) matchIdleBots(priority Priority, mf matcher, mSink Metr
 			mSink.AddEvent(
 				eventAssigned(match.request, w, run.scheduler.state, run.scheduler.state.lastUpdateTime,
 					&metrics.TaskEvent_AssignedDetails{
-						Preempting: false,
-						Priority:   int32(priority),
-						// TODO(akeshet): Calculate this properly.
-						ProvisionRequired: false,
+						Preempting:        false,
+						Priority:          int32(priority),
+						ProvisionRequired: !w.labels.Contains(match.request.ProvisionableLabels),
 					}))
 			break
 		}
@@ -385,8 +384,7 @@ func (run *schedulerRun) preemptRunningTasks(priority Priority, mSink MetricsSin
 						Preempting:     true,
 						PreemptionCost: worker.runningTask.cost[:],
 						Priority:       int32(priority),
-						// TODO(akeshet): Compute this properly.
-						ProvisionRequired: false,
+						ProvisionRequired: !worker.labels.Contains(r.ProvisionableLabels),
 					}))
 			mSink.AddEvent(
 				eventPreempted(worker.runningTask.request, worker, state, state.lastUpdateTime,
