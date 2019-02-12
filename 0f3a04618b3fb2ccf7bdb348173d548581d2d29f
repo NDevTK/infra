@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "189fe607_809ca739",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/state.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-02-12T20:25:54Z",
+      "side": 1,
+      "message": "I\u0027d still prefer if you can dedupe these lines.\n\nHow confident are you that a new reader would update these lines and not forget to update the above lines?  Code review might catch the mistake, but if possible the code should be structured to not make that possible.\n\n    func (s *state) addRequest(ctx context.Context, r *TaskRequest, t time.Time, m MetricsSink) {\n\t    if r.ID \u003d\u003d \"\" {\n\t\t    panic(\"empty request id\")\n\t    }\n\t    rid :\u003d r.ID\n\n\t    knownRequest, alreadyKnown :\u003d s.getRequest(rid)\n\t    if !alreadyKnown {\n\t\t    // Request is not already known. Add it.\n\t\t    goto addNewRequest\n\t    }\n\n\t    // Request is already known.\n\t    {\n\t\t    wid, running :\u003d s.runningRequestsCache[rid]\n\t\t    if !running {\n\t\t\t    // Request was already idle. Just update request\u0027s confirmed time.\n\t\t\t    knownRequest.confirm(t)\n\t\t\t    return\n\t\t    }\n\n\t\t    // Request was running.\n\t\t    w :\u003d s.workers[wid]\n\t\t    if !(t.Before(knownRequest.confirmedTime) || !t.Before(w.confirmedTime)) {\n\t\t\t    // This notification is older than the known state, so ignore it.\n\t\t\t    return\n\t\t    }\n\t\t    s.deleteWorker(wid)\n\t    }\n    addNewRequest:\n\t    r.confirm(t)\n\t    s.queuedRequests[r.ID] \u003d r\n\t    m.AddEvent(eventEnqueued(r, s, t))\n    }\n\n(The nested block is because Go doesn\u0027t (currently?) allow goto to jump over variable declarations.  You could also pre-declare variables before the goto.  https://github.com/golang/go/issues/26058)\n\nThis is basically syntactic sugar for pulling addNewRequest out into a helper function.  I don\u0027t have a strong opinion about how to solve this, but I\u0027d like the duplication removed if possible.",
+      "revId": "0f3a04618b3fb2ccf7bdb348173d548581d2d29f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
