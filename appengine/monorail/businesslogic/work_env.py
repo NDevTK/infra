@@ -1027,8 +1027,8 @@ class WorkEnv(object):
 
     issue.approval_values = new_issue_approvals
     issue.phases = template.phases
-    # TODO(jojwang): remove '_' from method name below.
-    self.services.issue._UpdateIssuesApprovals(self.mc.cnxn, issue)
+
+    self.services.issue.UpdateIssueStructure(self.mc.cnxn, issue)
 
   def UpdateIssue(
       self, issue, delta, comment_content, attachments=None, send_email=True,

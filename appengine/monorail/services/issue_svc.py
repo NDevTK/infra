@@ -1288,6 +1288,33 @@ class IssueService(object):
     self.issueapproval2approver_tbl.InsertRows(
         cnxn, ISSUEAPPROVAL2APPROVER_COLS, approver_rows, commit=commit)
 
+  def UpdateIssueStructure(self, cnxn, issue, _comment=None, commit=True):
+    config = self._config_services.GetProjectConfig(cnxn, issue.project_id)
+    approval_defs_by_id = {ad.approval_id: ad for ad in config.approval_defs}
+    new_approval_surveys = []
+    # Update all approval surveys so latest ApprovalDef survey changes
+    # appear in the converted issue's approval values.
+    for av in issue.approval_values:
+      ad = approval_defs_by_id.get(av.approval_id)
+      if ad:
+        new_approval_surveys.append(
+            self._MakeIssueComment(
+                issue.project_id, cnxn.auth.user_id, ad.survey,
+                is_description=True, approval_id=ad.approval_id))
+      else:
+        logging.info('ApprovalDef not found for approval %r', av)
+
+    for survey in new_approval_surveys:
+      survey.issue_id = issue.issue_id
+      self.InsertComment(cnxn, survey, commit=False)
+    self._UpdateIssuesApprovals(cnxn, issue, commit=False)
+
+    if commit:
+      cnxn.Commit()
+
+    # TODO(jojwang): monorail:4693, pass in comment for entire conversion,
+    # insert here, and return so it can be used to creat notifications.
+
   def DeltaUpdateIssue(
       self, cnxn, services, reporter_id, project_id,
       config, issue, delta, index_now=False, comment=None, attachments=None,
