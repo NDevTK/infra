@@ -1153,11 +1153,13 @@ class IssuesServicerTest(unittest.TestCase):
         auth=self.auth)
     request = issues_pb2.ConvertIssueApprovalsTemplateRequest(
         issue_ref=common_pb2.IssueRef(project_name='proj', local_id=1),
-        template_name='template_name')
+        template_name='template_name', comment_content='CHICKEN',
+        send_email=True)
     response = self.CallWrapped(
         self.issues_svcr.ConvertIssueApprovalsTemplate, mc, request)
     mockWorkEnvConvertApprovals.assert_called_once_with(
-        self.issue_1, 'template_name')
+        self.issue_1, 'template_name', request.comment_content,
+        send_email=request.send_email)
     self.assertEqual(
         response.issue,
         issue_objects_pb2.Issue(

@@ -1084,7 +1084,6 @@ class WorkEnvTest(unittest.TestCase):
         tracker_pb2.Phase(name='Expired', phase_id=4),
         tracker_pb2.Phase(name='Canary', phase_id=5)]
 
-
     self.services.issue._UpdateIssuesApprovals = mock.Mock()
     self.SignIn()
 
@@ -1106,7 +1105,7 @@ class WorkEnvTest(unittest.TestCase):
                        tracker_pb2.Phase(name='Stable-Exp', phase_id=6)]
     self.services.template.GetTemplateByName.return_value = template
 
-    self.work_env.ConvertIssueApprovalsTemplate(issue, 'template_name')
+    self.work_env.ConvertIssueApprovalsTemplate(issue, 'template_name', None)
 
     expected_avs = [
       tracker_pb2.ApprovalValue(
@@ -1134,7 +1133,7 @@ class WorkEnvTest(unittest.TestCase):
     issue = fake.MakeTestIssue(789, 1, 'sum', 'New', 111L, issue_id=78901)
     self.services.template.GetTemplateByName.return_value = None
     with self.assertRaises(exceptions.NoSuchTemplateException):
-      self.work_env.ConvertIssueApprovalsTemplate(issue, 'template_name')
+      self.work_env.ConvertIssueApprovalsTemplate(issue, 'template_name', None)
 
   @mock.patch(
       'features.send_notifications.PrepareAndSendIssueChangeNotification')
