@@ -243,9 +243,11 @@ message ConvertIssueApprovalsTemplateRequest {
 }
 
 
-// Next available tag: 2
+// Next available tag: 4
 message ConvertIssueApprovalsTemplateResponse {
   Issue issue = 1;
+  string comment_content = 2;
+  bool send_email = 3;
 }
 
 

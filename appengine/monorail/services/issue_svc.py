@@ -1288,6 +1288,57 @@ class IssueService(object):
     self.issueapproval2approver_tbl.InsertRows(
         cnxn, ISSUEAPPROVAL2APPROVER_COLS, approver_rows, commit=commit)
 
+  def UpdateIssueStructure(
+      self, cnxn, issue, template, reporter_id,
+      comment_content=None, commit=True):
+    config = self._config_services.GetProjectConfig(cnxn, issue.project_id)
+    approval_defs_by_id = {ad.approval_id: ad for ad in config.approval_defs}
+    issue_avs_by_id = {av.approval_id: av for av in issue.approval_values}
+
+    new_approval_surveys = []
+    new_issue_approvals = []
+
+    for template_av in template.approval_values:
+      existing_issue_av = issue_avs_by_id.get(template_av.approval_id)
+      # Keep approval values as-if fi it exists in issue and template
+      if existing_issue_av:
+        existing_issue_av.phase_id = template_av.phase_id
+        new_issue_approvals.append(existing_issue_av)
+      else:
+        new_issue_approvals.append(template_av)
+
+      # Update all approval surveys so latest ApprovalDef survey changes
+      # appear in the converted issue's approval values.
+      ad = approval_defs_by_id.get(av.approval_id)
+      if ad:
+        new_approval_surveys.append(
+            self._MakeIssueComment(
+                issue.project_id, reporter_id, ad.survey,
+                is_description=True, approval_id=ad.approval_id))
+      else:
+        logging.info('ApprovalDef not found for approval %r', av)
+
+    amendment = tracker_bizobj.MakeApprovalStructureAmendment(
+        new_issue_approvals, issue.approval_values)
+
+    # Update issue structure in RAM.
+    issue.approval_values = new_issue_approvals
+    issue.phases = template.phases
+
+    # Update issue structure in DB.
+    for survey in new_approval_surveys:
+      survey.issue_id = issue.issue_id
+      self.InsertComment(cnxn, survey, commit=False)
+    self._UpdateIssuesApprovals(cnxn, issue, commit=False)
+    comment_pb = self.CreateIssueComment(
+        cnxn, issue, reporter_id, comment_content,
+        amendments=[amendment], commit=False)
+
+    if commit:
+      cnxn.Commit()
+
+    return comment_pb
+
   def DeltaUpdateIssue(
       self, cnxn, services, reporter_id, project_id,
       config, issue, delta, index_now=False, comment=None, attachments=None,
