@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "db480ecf_853d4877",
+        "filename": "appengine/monorail/services/issue_svc.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 1291,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-02-15T21:21:28Z",
+      "side": 1,
+      "message": "Needs doc string.",
+      "revId": "f67658fe800ce94df6d546eef3e81e80c8f546e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
