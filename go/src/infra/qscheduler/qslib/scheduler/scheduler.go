@@ -89,10 +89,10 @@ type Assignment struct {
 }
 
 // New returns a newly initialized Scheduler.
-func New(t time.Time) *Scheduler {
+func New(t time.Time, c *protos.SchedulerConfig) *Scheduler {
 	return &Scheduler{
 		state:  newState(t),
-		config: NewConfig(),
+		config: c,
 	}
 }
 

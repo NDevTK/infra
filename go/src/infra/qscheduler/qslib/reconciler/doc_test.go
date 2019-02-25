@@ -29,7 +29,7 @@ func Example() {
 	ctx := context.Background()
 
 	// Create a scheduler and reconciler.
-	s := scheduler.New(time.Now())
+	s := scheduler.New(time.Now(), scheduler.NewConfig())
 	r := reconciler.New()
 
 	// Notify the reconciler of a newly enqueued task request.

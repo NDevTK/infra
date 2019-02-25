@@ -38,7 +38,7 @@ func TestSchedulerReprioritize(t *testing.T) {
 	Convey("Given two running requests with different costs for an account that needs 1 demotion from P0, and supports 1 additional P1 job", t, func() {
 		ctx := context.Background()
 		tm0 := time.Unix(0, 0)
-		s := New(tm0)
+		s := New(tm0, NewConfig())
 		aid := AccountID("a1")
 		s.AddAccount(ctx, aid, NewAccountConfig(0, 0, []float32{1.1, 0.9}), []float32{2 * DemoteThreshold, 2 * PromoteThreshold})
 
@@ -81,7 +81,7 @@ func TestSchedulerPreempt(t *testing.T) {
 	Convey("Given a state with two running P1 tasks", t, func() {
 		ctx := context.Background()
 		tm0 := time.Unix(0, 0)
-		s := New(tm0)
+		s := New(tm0, NewConfig())
 		s.AddAccount(ctx, "a1", NewAccountConfig(0, 0, []float32{1, 1, 1}), []float32{0.5 * PromoteThreshold, 1})
 		for _, i := range []int{1, 2} {
 			rid := RequestID(fmt.Sprintf("r%d", i))
@@ -172,7 +172,7 @@ func TestUpdateBalance(t *testing.T) {
 	aID := AccountID("accountID")
 	Convey("Given a scheduler with an added account config", t, func() {
 		ctx := context.Background()
-		s := New(t0)
+		s := New(t0, NewConfig())
 		var maxTime float32 = 2.0
 		s.AddAccount(ctx, aID, NewAccountConfig(0, maxTime, []float32{1, 2, 3}), nil)
 

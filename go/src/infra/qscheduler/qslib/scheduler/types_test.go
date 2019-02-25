@@ -34,7 +34,7 @@ func TestClone(t *testing.T) {
 	Convey("Given a state with some balances, accounts, and requests", t, func() {
 		ctx := context.Background()
 		tm := time.Unix(10, 10).UTC()
-		s := New(tm)
+		s := New(tm, NewConfig())
 		s.AddAccount(ctx, "aid", NewAccountConfig(1, 1, []float32{2, 3, 4}), nil)
 		s.AddRequest(ctx, NewTaskRequest("req1", "a1", stringset.NewFromSlice("provision 1", "provision 2"), stringset.NewFromSlice("base 1", "base 2"), tm), tm, NullEventSink)
 		s.AddRequest(ctx, NewTaskRequest("req2", "a1", stringset.NewFromSlice("provision 3", "provision 4"), stringset.NewFromSlice("base 3", "base 4"), tm), tm, NullEventSink)

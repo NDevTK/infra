@@ -47,7 +47,7 @@ func (s *QSchedulerAdminServerImpl) CreateSchedulerPool(ctx context.Context, r *
 	sp := types.QScheduler{
 		SchedulerID: r.PoolId,
 		Reconciler:  reconciler.New(),
-		Scheduler:   scheduler.New(time.Now()),
+		Scheduler:   scheduler.New(time.Now(), scheduler.NewConfig()),
 		Config:      r.Config,
 	}
 	store := state.NewStore(r.PoolId)
@@ -93,7 +93,7 @@ func (s *QSchedulerAdminServerImpl) Wipe(ctx context.Context, r *qscheduler.Wipe
 		if err != nil {
 			return err
 		}
-		sp.Scheduler = scheduler.New(time.Now())
+		sp.Scheduler = scheduler.New(time.Now(), scheduler.NewConfig())
 		sp.Reconciler = reconciler.New()
 		return store.Save(ctx, sp)
 	}

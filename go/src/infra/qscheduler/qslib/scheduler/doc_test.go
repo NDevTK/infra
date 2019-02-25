@@ -34,7 +34,7 @@ func Example() {
 	ctx := context.Background()
 
 	// Create a scheduler.
-	s := scheduler.New(time.Now())
+	s := scheduler.New(time.Now(), scheduler.NewConfig())
 
 	// Create a quota account with no initial balance.
 	accountConfig := scheduler.NewAccountConfig(0, 1, []float32{1, 2, 3})

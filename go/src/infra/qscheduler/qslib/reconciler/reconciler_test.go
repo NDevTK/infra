@@ -46,7 +46,7 @@ func TestOneAssignment(t *testing.T) {
 		t0 := time.Unix(0, 0)
 		t1 := time.Unix(1, 0)
 		t2 := time.Unix(2, 0)
-		s := scheduler.New(t0)
+		s := scheduler.New(t0, scheduler.NewConfig())
 		r := New()
 
 		Convey("given an idle task has been notified", func() {
@@ -177,7 +177,7 @@ func TestQueuedAssignment(t *testing.T) {
 		ctx := context.Background()
 		t0 := time.Unix(0, 0)
 		r := New()
-		s := scheduler.New(t0)
+		s := scheduler.New(t0, scheduler.NewConfig())
 		Convey("given a worker with a label is idle", func() {
 			wid := scheduler.WorkerID("Worker1")
 			labels := stringset.NewFromSlice("Label1")
@@ -219,7 +219,7 @@ func TestPreemption(t *testing.T) {
 		ctx := context.Background()
 		t0 := time.Unix(0, 0)
 		r := New()
-		s := scheduler.New(t0)
+		s := scheduler.New(t0, scheduler.NewConfig())
 
 		Convey("given a task and an idle worker, and that AssignTasks has been called and the worker is running that task", func() {
 			oldRequest := scheduler.RequestID("Request1")
@@ -344,7 +344,7 @@ func TestTaskError(t *testing.T) {
 		ctx := context.Background()
 		t0 := time.Unix(0, 0)
 		r := New()
-		s := scheduler.New(t0)
+		s := scheduler.New(t0, scheduler.NewConfig())
 
 		Convey("when TaskError is called for a new task", func() {
 			taskID := scheduler.RequestID("Task1")
