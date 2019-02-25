@@ -46,7 +46,7 @@ message CreateSchedulerPoolRequest {
     string pool_id = 1;
 
     // Config is the scheduler configuration for the scheduler to create.
-    SchedulerPoolConfig config = 2;
+    protos.SchedulerConfig config = 2;
 }
 
 message CreateSchedulerPoolResponse {}
@@ -78,13 +78,6 @@ message ListAccountsRequest {
 
 message ListAccountsResponse {
     map<string, protos.AccountConfig> accounts = 1;
-}
-
-message SchedulerPoolConfig{
-    // Labels is a list of swarming dimensions in "key:value" form. This corresponds
-    // to swarming.ExternalSchedulerConfig.dimensionsions; it is the minimal set
-    // of dimensions for tasks or bots that will use this scheduler.
-    repeated string labels = 1;
 }
 
 message InspectPoolRequest {
