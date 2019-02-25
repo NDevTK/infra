@@ -113,6 +113,11 @@ func (s *Scheduler) ToProto() *protos.Scheduler {
 	}
 }
 
+// GetConfig gets the scheduler config.
+func (s *Scheduler) GetConfig() *protos.SchedulerConfig {
+	return s.config
+}
+
 // UpdateOrderError is an error that indicates that UpdateAccounts attempted to update a state
 // backwards in time.
 type UpdateOrderError struct {
