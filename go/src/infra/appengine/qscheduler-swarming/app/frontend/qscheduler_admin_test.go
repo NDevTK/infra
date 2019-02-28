@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package frontend
+package frontend_test
 
 import (
 	"testing"
@@ -24,13 +24,14 @@ import (
 	"go.chromium.org/luci/appengine/gaetesting"
 
 	qscheduler "infra/appengine/qscheduler-swarming/api/qscheduler/v1"
+	"infra/appengine/qscheduler-swarming/app/frontend"
 	"infra/qscheduler/qslib/protos"
 )
 
 func TestCreateScheduler(t *testing.T) {
 	Convey("Given an admin server running in a test context", t, func() {
 		ctx := gaetesting.TestingContext()
-		admin := &QSchedulerAdminServerImpl{}
+		admin := &frontend.QSchedulerAdminServerImpl{}
 		poolID := "Pool 1"
 		req := qscheduler.CreateSchedulerPoolRequest{
 			PoolId: poolID,
@@ -63,8 +64,8 @@ func TestCreateListAccount(t *testing.T) {
 	poolID := "Pool1"
 	Convey("Given an admin server running in a test context", t, func() {
 		ctx := gaetesting.TestingContext()
-		admin := &QSchedulerAdminServerImpl{}
-		view := &QSchedulerViewServerImpl{}
+		admin := &frontend.QSchedulerAdminServerImpl{}
+		view := &frontend.QSchedulerViewServerImpl{}
 		Convey("when CreateAccount is called with a nonexistent pool", func() {
 			req := qscheduler.CreateAccountRequest{
 				PoolId: poolID,
