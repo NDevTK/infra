@@ -154,6 +154,11 @@ class FinditConfig(VersionedConfig):
   # A dict containing settings for Code Coverage. For example,
   # {
   #     'serve_presubmit_coverage_data': True,
+  #     'project_banners': {
+  #       'chromium/src':
+  #         '<b>Notice:</b> browser_tests has been disabled due to '
+  #         '<a href="crbug.com/937521"> crbug/937521</a>.',
+  #     },
   # }
   code_coverage_settings = ndb.JsonProperty(indexed=False, default={})
 

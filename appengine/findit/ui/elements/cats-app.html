@@ -101,6 +101,17 @@
       .group-name: hover {
         color: black;
       }
+      .hidden {
+        display: none;
+      }
+      .banner {
+        background-color: lightgoldenrodyellow;
+        padding: 10px;
+        margin: 10px;
+        border-radius: 5px;
+        font-family: sans-serif;
+        font-style: italic;
+      }
     </style>
 
     <app-messages></app-messages>
@@ -152,6 +163,7 @@
           </paper-tabs>
         </app-toolbar>
       </app-header>
+      <div id="banner" class$="{{_bannerClass(banner)}}">[[banner]]</div>
       <div id="main-content">
         <template is="dom-if" if="[[pageHeader]]">
           <h2>[[pageHeader]]</h2>
@@ -186,6 +198,18 @@
            type: String,
            value: undefined,
          },
+         banner: {
+           type: String,
+           value: undefined,
+         },
+       },
+
+       _bannerClass : function (msg) {
+         // CSS class for the div containing the message given.
+         if (typeof(msg) == "undefined" || msg == null || msg == "") {
+           return "hidden";
+         }
+         return "banner";
        },
 
        ready : function () {

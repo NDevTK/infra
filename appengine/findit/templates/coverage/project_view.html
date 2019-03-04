@@ -14,14 +14,6 @@
       font-weight: bold;
       font-size: 18px;
     }
-    .banner {
-      background-color: lightgoldenrodyellow;
-      padding: 10px;
-      margin: 10px;
-      border-radius: 5px;
-      font-family: sans-serif;
-      font-style: italic;
-    }
   </style>
   <script src="/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <link rel="import" href="/ui/elements/cats-app.html">
@@ -34,9 +26,8 @@
 </head>
 
 <body>
-  <cats-app id="app" components="Tools>CodeCoverage" page-header="Code Coverage: summary by revisions (Chrome Browser on Linux)">
+  <cats-app id="app" components="Tools>CodeCoverage" page-header="Code Coverage: summary by revisions (Chrome Browser on Linux)" banner="{{banner}}">
     <div>
-      <div class="banner"><b> Notice: </b> Reports newer than 2/25 are not shown here. We are currently investigating. More information at <a href="http://crbug.com/936997">crbug/936997</a>.</div>
       <table>
         <thead>
           <tr class="coverage-header">
