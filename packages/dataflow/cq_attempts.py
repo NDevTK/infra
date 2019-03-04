@@ -133,6 +133,22 @@ class CombineEventsToAttempt(beam.CombineFn):
         attempt.failure_reason = event.failure_reason
         attempt.max_failure_msec = event.timestamp_millis
         attempt.fail_type = attempt.failure_reason['fail_type']
+
+        # If the only builder that fails is 'chromium_presubmit', then set the
+        # fail_type to PRESUBMIT_FAILURE. This is used by the false rejects SLO
+        # as a proxy for finding CQ attempts that failed due to missing LGTM.
+        # https://crbug.com/937519.
+        presubmit_failure_count = 0
+        other_failure_count = 0
+        for job in event.failure_reason.get('failed_try_jobs', []):
+          if job.get('builder', None) == 'chromium_presubmit':
+            presubmit_failure_count += 1
+          else:
+            other_failure_count += 1
+        if (presubmit_failure_count >= 1 and other_failure_count == 0 and
+            event.failure_reason['fail_type'] == 'FAILED_JOBS'):
+          attempt.fail_type = 'PRESUBMIT_FAILURE'
+
       if (event.contributing_buildbucket_ids and
           (attempt.max_bbucket_ids_msec is None or
            event.timestamp_millis > attempt.max_bbucket_ids_msec)):
@@ -205,6 +221,7 @@ class CombineEventsToAttempt(beam.CombineFn):
           attempt.invalid_test_results_failures += 1
         if fail_type == self.FAIL_TYPE_PATCH:
           attempt.patch_failures += 1
+
     return attempt.as_bigquery_row()
 
 

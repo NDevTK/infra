@@ -238,6 +238,40 @@ class TestCQAttemptAccumulator(unittest.TestCase):
     attempt = self.combFn.extract_output([event])
     self.assertEqual(attempt['earliest_equivalent_patchset'], 455)
 
+  def make_event_with_failed_builders(self, builders):
+    event = self.basic_event()
+    event.failure_reason = {
+        'fail_type': 'FAILED_JOBS',
+        'failed_try_jobs': [
+            {
+                'fail_type': 'UNUSED',
+                'builder': x
+            } for x in builders
+        ]
+    }
+    return event
+
+  def test_failure_no_builder(self):
+    event = self.make_event_with_failed_builders([])
+    attempt = self.combFn.extract_output([event])
+    self.assertEqual(attempt['fail_type'], 'FAILED_JOBS')
+
+  def test_failure_in_presubmit(self):
+    event = self.make_event_with_failed_builders(['chromium_presubmit'])
+    attempt = self.combFn.extract_output([event])
+    self.assertEqual(attempt['fail_type'], 'PRESUBMIT_FAILURE')
+
+  def test_failure_not_in_presubmit(self):
+    event = self.make_event_with_failed_builders(['win-7'])
+    attempt = self.combFn.extract_output([event])
+    self.assertEqual(attempt['fail_type'], 'FAILED_JOBS')
+
+  def test_failure_in_presubmit_and_other_build(self):
+    event = self.make_event_with_failed_builders(
+        ['chromium_presubmit', 'win-7'])
+    attempt = self.combFn.extract_output([event])
+    self.assertEqual(attempt['fail_type'], 'FAILED_JOBS')
+
   def test_extract_consistent_field(self):
     event = self.basic_event()
     attempt = self.combFn.extract_output([event])
