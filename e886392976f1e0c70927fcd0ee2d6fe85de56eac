@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d9a47ef5_b8c62661",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 663,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-03-04T22:07:10Z",
+      "side": 1,
+      "message": "What is default? I have a hard time understanding why a default banner is needed.",
+      "range": {
+        "startLine": 663,
+        "startChar": 43,
+        "endLine": 663,
+        "endChar": 50
+      },
+      "revId": "e886392976f1e0c70927fcd0ee2d6fe85de56eac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
