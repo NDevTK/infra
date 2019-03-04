@@ -36,7 +36,9 @@
 <body>
   <cats-app id="app" components="Tools>CodeCoverage" page-header="Code Coverage: summary by revisions (Chrome Browser on Linux)">
     <div>
-      <div class="banner"><b> Notice: </b> Reports newer than 2/25 are not shown here. We are currently investigating. More information at <a href="http://crbug.com/936997">crbug/936997</a>.</div>
+      {% if banner %}
+        <div class="banner">{{banner}} </div>
+      {% endif %}
       <table>
         <thead>
           <tr class="coverage-header">
