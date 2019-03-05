@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "53f0d461_7457a579",
+        "filename": "appengine/monorail/static_src/prpc-client-instance.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-03-05T22:10:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "88ef6fb7_d59a8900",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 1
+      },
+      "revId": "f0a267218ce2cd3fad7e0fc4d1db6943e86e2031",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
