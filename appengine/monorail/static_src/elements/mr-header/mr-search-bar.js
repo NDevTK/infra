@@ -5,6 +5,8 @@
 import '@polymer/polymer/polymer-legacy.js';
 import {PolymerElement, html} from '@polymer/polymer';
 import '../mr-dropdown/mr-dropdown.js';
+import {prpcClient} from '../../prpc-client-instance.js';
+import ClientLogger from '../../monitoring/client-logger';
 
 /**
  * `<mr-search-bar>`
@@ -225,6 +227,32 @@ export class MrSearchBar extends PolymerElement {
     };
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+
+    const searchq = this.shadowRoot.querySelector('#searchq');
+
+    // TODO(zhangtiff): Merge with this.clientLogger later. For now,
+    //   we're keeping this the same, so the metrics can have the
+    //   same name as before.
+    const cl = new ClientLogger('issues');
+
+    searchq.addEventListener('focus', () => {
+      cl.logStart('query-edit', 'user-time');
+      cl.logStart('issue-search', 'user-time');
+    });
+
+    searchq.addEventListener('blur', () => {
+      cl.logEnd('query-edit');
+    });
+
+    searchq.form.addEventListener('submit', () => {
+      cl.logEnd('query-edit');
+      cl.logPause('issue-search', 'user-time');
+      cl.logStart('issue-search', 'computer-time');
+    });
+  }
+
   _computeSearchMenuItems(projectName) {
     return [
       {
@@ -248,7 +276,7 @@ export class MrSearchBar extends PolymerElement {
   }
 
   _userChanged(userDisplayName) {
-    const userSavedQueriesPromise = window.prpcClient.call('monorail.Users',
+    const userSavedQueriesPromise = prpcClient.call('monorail.Users',
       'GetSavedQueries', {});
     userSavedQueriesPromise.then((resp) => {
       this.userSavedQueries = resp.savedQueries;
