@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "07f90178_a18ef2fd",
+        "filename": "appengine/findit/model/wf_config.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2019-03-05T17:56:58Z",
+      "side": 1,
+      "message": "Should we make it not to include html tags?\n\nMaybe format it into {\u0027message\u0027: \u0027....\u0027, \u0027bug-link\u0027: \u0027....\u0027}",
+      "range": {
+        "startLine": 159,
+        "startChar": 12,
+        "endLine": 160,
+        "endChar": 60
+      },
+      "revId": "a9f7f4bf4f0b26763a7d7af5fae4a1749cfe8b3e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a24eecd3_7aa673df",
+        "filename": "appengine/findit/ui/elements/cats-app.html",
+        "patchSetId": 2
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2019-03-05T17:56:58Z",
+      "side": 1,
+      "message": "! msg",
+      "range": {
+        "startLine": 209,
+        "startChar": 13,
+        "endLine": 209,
+        "endChar": 67
+      },
+      "revId": "a9f7f4bf4f0b26763a7d7af5fae4a1749cfe8b3e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
