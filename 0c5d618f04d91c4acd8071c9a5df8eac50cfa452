@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "41777d25_f7bb0d92",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2019-03-05T20:53:40Z",
+      "side": 1,
+      "message": "i\u0027ve just explicitly responded on the bug that i\u0027m against this solution,\ntl;dr this adds tech debt that CQ owners (today \u003d my team) has to migrate away from.",
+      "revId": "0c5d618f04d91c4acd8071c9a5df8eac50cfa452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
