@@ -26,23 +26,40 @@ class TriciumRun extends LitElement {
       <p>
         <b>Run ID: ${data.runId}</b> (State: ${data.state})
       </p>
-      ${repeat(data.functionProgress, f => f.name, this._renderFunction)}
+      ${repeat(data.functionProgress, (f) => f.name, this._renderFunction)}
     `;
   }
 
   _renderFunction(f) {
     return html`
-      <p>
-        <b>${f.name}</b>
+      <b>${f.name}</b>
         (State: ${f.state || 'PENDING'},
-        <a href$="${f.swarmingUrl}/task?id=${f.swarmingTaskId}">Swarming task</a>,
+        ${this._renderLink(f)},
         comments: ${f.numComments || 0})
       </p>
     `;
   }
 
-  _url(f) {
-    return `${f.swarmingUrl}/task?id=${f.swarmingTaskId}`;
+  _renderLink(f) {
+    if (f.swarmingTaskId) {
+      return html`
+        <a href$=${f.swarmingUrl}/task?id=${f.swarmingTaskId}
+          task ${f.swarmingTaskId}
+        </a>`;
+    } else if (f.buildbucketBuildId) {
+      return html`
+        <a href$=https://${this._miloHost(f.buildbucketHost)}/b/${f.buildbucketBuildId}
+          build ${f.buildbucketBuildId}
+        </a>`;
+    }
+    return html`no link`;
+  }
+
+  _miloHost(buildbucketHost) {
+    if (buildbucketHost == 'cr-buildbucket-dev.appspot.com') {
+      return 'luci-milo-dev.appspot.com';
+    }
+    return 'ci.chromium.org';
   }
 
   connectedCallback() {
