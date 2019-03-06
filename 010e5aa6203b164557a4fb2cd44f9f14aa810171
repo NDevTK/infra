@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "366a227d_0d22f460",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2019-03-06T00:13:02Z",
+      "side": 1,
+      "message": "Maybe just \"project-scoped\" pages?",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 46
+      },
+      "revId": "010e5aa6203b164557a4fb2cd44f9f14aa810171",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "75e0cd99_bd33468a",
+        "filename": "appengine/monorail/static_src/elements/mr-header/mr-header.js",
+        "patchSetId": 6
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2019-03-06T00:13:02Z",
+      "side": 1,
+      "message": "Just curious: Why use hidden\\$\u003d... instead of a dom-if template?",
+      "range": {
+        "startLine": 104,
+        "startChar": 8,
+        "endLine": 104,
+        "endChar": 10
+      },
+      "revId": "010e5aa6203b164557a4fb2cd44f9f14aa810171",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c16b27de_d434a525",
+        "filename": "appengine/monorail/templates/framework/maintabs.ezt",
+        "patchSetId": 6
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2019-03-06T00:13:02Z",
+      "side": 1,
+      "message": "Just an opinion: I\u0027d put this on the line below, so it\u0027s clearer than the if is only for that line.",
+      "range": {
+        "startLine": 9,
+        "startChar": 11,
+        "endLine": 9,
+        "endChar": 34
+      },
+      "revId": "010e5aa6203b164557a4fb2cd44f9f14aa810171",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
