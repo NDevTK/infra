@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "732815b7_9377b542",
+        "filename": "appengine/findit/libs/time_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1002882
+      },
+      "writtenOn": "2019-03-06T17:24:34Z",
+      "side": 1,
+      "message": "For the purpose of UI, it seems enough to round up to days/hours like \"X days Y hours\" for UI text. If X \u003e\u003d 2, hours can be skipped too.\n\nAt the same time, it seems helpful to add alt for accurate timestamp. You may check the timestamp for a crbug.\n\nSo it seems better to do this on the UI side instead of the server side.",
+      "range": {
+        "startLine": 75,
+        "startChar": 2,
+        "endLine": 81,
+        "endChar": 66
+      },
+      "revId": "4841f8dec87ddd370c130e02cf5c6a488ae94c44",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
