@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "26313feb_122fd7eb",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-03-06T00:26:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "366a227d_0d22f460",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 46
+      },
+      "revId": "010e5aa6203b164557a4fb2cd44f9f14aa810171",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "75e0cd99_bd33468a",
         "filename": "appengine/monorail/static_src/elements/mr-header/mr-header.js",
         "patchSetId": 6
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "ed36a53c_142fb969",
+        "filename": "appengine/monorail/static_src/elements/mr-header/mr-header.js",
+        "patchSetId": 6
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-03-06T00:26:14Z",
+      "side": 1,
+      "message": "In this case I did it because using !projectThumbnailUrl didn\u0027t really interact with types as expected - if the string is empty, it would negate the value to false, which meant that the home icon never showed. \n\nI could have added a custom function to handle computing, but using an opposite hidden seemed a bit easier/cleaner.",
+      "parentUuid": "75e0cd99_bd33468a",
+      "range": {
+        "startLine": 104,
+        "startChar": 8,
+        "endLine": 104,
+        "endChar": 10
+      },
+      "revId": "010e5aa6203b164557a4fb2cd44f9f14aa810171",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c16b27de_d434a525",
         "filename": "appengine/monorail/templates/framework/maintabs.ezt",
         "patchSetId": 6
@@ -68,6 +116,30 @@
       "revId": "010e5aa6203b164557a4fb2cd44f9f14aa810171",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "514657c4_f3f3bf3a",
+        "filename": "appengine/monorail/templates/framework/maintabs.ezt",
+        "patchSetId": 6
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-03-06T00:26:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c16b27de_d434a525",
+      "range": {
+        "startLine": 9,
+        "startChar": 11,
+        "endLine": 9,
+        "endChar": 34
+      },
+      "revId": "010e5aa6203b164557a4fb2cd44f9f14aa810171",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
