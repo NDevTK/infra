@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e4de8014_cafcf2c9",
+        "filename": "go/src/infra/tricium/appengine/frontend/ui/src/tricium-run.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2019-03-06T14:41:44Z",
+      "side": 1,
+      "message": "Isn\u0027t it weird?",
+      "revId": "4523452317ca072aea01c11ae2846cd46c82a3d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e4f6f908_fdfa96fa",
+        "filename": "go/src/infra/tricium/appengine/frontend/ui/src/tricium-run.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2019-03-06T14:41:44Z",
+      "side": 1,
+      "message": "For chromium-specific code paths, I like to include \"Chromium\" in the function name to:\n- make it clear to the reader that this code path is not generic\n- make it easier to grep",
+      "revId": "4523452317ca072aea01c11ae2846cd46c82a3d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
