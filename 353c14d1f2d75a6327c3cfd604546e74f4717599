@@ -22,6 +22,30 @@
       "revId": "353c14d1f2d75a6327c3cfd604546e74f4717599",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5a18f2d4_0a49d3a9",
+        "filename": "appengine/monorail/templates/tracker/issue-search-form.ezt",
+        "patchSetId": 8
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-03-06T21:29:16Z",
+      "side": 0,
+      "message": "Great catch. I added these back as an explicit list of query params that are directly passed back into the form in mr-search-bar.",
+      "parentUuid": "d5a82cab_add6c81d",
+      "range": {
+        "startLine": 23,
+        "startChar": 7,
+        "endLine": 30,
+        "endChar": 0
+      },
+      "revId": "353c14d1f2d75a6327c3cfd604546e74f4717599",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
