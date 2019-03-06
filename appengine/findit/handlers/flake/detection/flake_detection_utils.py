@@ -231,7 +231,7 @@ def _GetLastUpdatedTimeDelta(flake_issue):
   """Uses the latest update time we can get as last_updated_time_in_monorail."""
   last_updated_time = flake_issue.last_updated_time_in_monorail or None
   return (time_util.FormatTimedelta(
-      time_util.GetUTCNow() - last_updated_time, with_days=True)
+      time_util.GetUTCNow() - last_updated_time, with_days=True, round_up=True)
           if last_updated_time else None)
 
 
@@ -450,7 +450,9 @@ def GenerateFlakesData(flakes, include_closed_bug=False):
 
     flake_dict['flake_urlsafe_key'] = flake.key.urlsafe()
     flake_dict['time_delta'] = time_util.FormatTimedelta(
-        time_util.GetUTCNow() - flake.last_occurred_time, with_days=True)
+        time_util.GetUTCNow() - flake.last_occurred_time,
+        with_days=True,
+        round_up=True)
 
     flake_dict['flake_counts_last_week'] = _GetFlakeCountsList(
         flake.flake_counts_last_week)

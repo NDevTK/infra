@@ -104,7 +104,7 @@ class RankFlakesTest(WaterfallTestCase):
     flake_issue0_dict = self.flake_issue0.to_dict()
     flake_issue0_dict['issue_link'] = FlakeIssue.GetLinkForIssue(
         self.flake_issue0.monorail_project, self.flake_issue0.issue_id)
-    flake_issue0_dict['last_updated_time_in_monorail'] = ('274 days, 01:00:00')
+    flake_issue0_dict['last_updated_time_in_monorail'] = ('274 days')
     flake_issue0_dict['status'] = 'Assigned'
 
     self.flake1_dict = self.flake1.to_dict()
@@ -123,7 +123,7 @@ class RankFlakesTest(WaterfallTestCase):
                         (self.flake4_dict, self.flake4), (self.flake5_dict,
                                                           self.flake5)):
       data['flake_urlsafe_key'] = flake.key.urlsafe()
-      data['time_delta'] = '1 day, 01:00:00'
+      data['time_delta'] = '1 day'
       data['flake_counts_last_week'] = [
           {
               'flake_type': 'cq false rejection',

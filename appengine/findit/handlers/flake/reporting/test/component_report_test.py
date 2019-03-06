@@ -95,7 +95,7 @@ class ComponentReportTest(wf_testcase.WaterfallTestCase):
     flake1_dict = flake1.to_dict()
     flake1_dict['flake_urlsafe_key'] = flake1.key.urlsafe()
     flake1_dict['flake_counts_last_week'] = flake_counts_last_week
-    flake1_dict['time_delta'] = '1 day, 01:00:00'
+    flake1_dict['time_delta'] = '1 day'
 
     flake2 = Flake.Create(
         luci_project=luci_project,
@@ -111,7 +111,7 @@ class ComponentReportTest(wf_testcase.WaterfallTestCase):
     flake2_dict = flake2.to_dict()
     flake2_dict['flake_urlsafe_key'] = flake2.key.urlsafe()
     flake2_dict['flake_counts_last_week'] = flake_counts_last_week
-    flake2_dict['time_delta'] = '1 day, 01:00:00'
+    flake2_dict['time_delta'] = '1 day'
 
     mock_top_flakes.return_value = ([flake1, flake2], True, None)
 

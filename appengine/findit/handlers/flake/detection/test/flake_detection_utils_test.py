@@ -214,7 +214,7 @@ class FlakeDetectionUtilsTest(WaterfallTestCase):
             'merge_destination_key':
                 None,
             'last_updated_time_in_monorail':
-                '1 day, 00:00:00',
+                '1 day',
             'last_updated_time_with_analysis_results':
                 None,
             'create_time_in_monorail':
