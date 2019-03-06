@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d5a82cab_add6c81d",
+        "filename": "appengine/monorail/templates/tracker/issue-search-form.ezt",
+        "patchSetId": 8
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-03-06T17:30:05Z",
+      "side": 0,
+      "message": "We actually need all these contextual URL parameters.  In fact, we might as well keep num\u003d too.  The one contextual parameter that the search box should not maintain is start\u003d.",
+      "range": {
+        "startLine": 23,
+        "startChar": 7,
+        "endLine": 30,
+        "endChar": 0
+      },
+      "revId": "353c14d1f2d75a6327c3cfd604546e74f4717599",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
