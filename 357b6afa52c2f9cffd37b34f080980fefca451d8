@@ -16,6 +16,24 @@
       "revId": "357b6afa52c2f9cffd37b34f080980fefca451d8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6e37d099_2fbcd1cc",
+        "filename": "go/src/infra/tricium/appengine/frontend/ui/src/tricium-run.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-03-06T23:08:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aab645ec_d9564eb2",
+      "revId": "357b6afa52c2f9cffd37b34f080980fefca451d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
