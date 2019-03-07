@@ -16,6 +16,47 @@
       "revId": "ed9cdfbec4a68b7952717ca14daad93c4d6c6dad",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a4f7c3f_249f9093",
+        "filename": "go/src/infra/tricium/appengine/frontend/ui/src/tricium-run.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-03-07T22:00:05Z",
+      "side": 1,
+      "message": "Oh, nope! Thanks for pointing that out. Done.",
+      "parentUuid": "a2f524ac_effa108e",
+      "revId": "ed9cdfbec4a68b7952717ca14daad93c4d6c6dad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b700d364_36328b2f",
+        "filename": "go/src/infra/tricium/appengine/frontend/ui/src/tricium-run.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-03-07T22:00:05Z",
+      "side": 1,
+      "message": "Side note about what I was debugging here: as it was before, I couldn\u0027t call this._renderLink below because there was no `this` bound for this function call.",
+      "range": {
+        "startLine": 31,
+        "startChar": 73,
+        "endLine": 31,
+        "endChar": 84
+      },
+      "revId": "ed9cdfbec4a68b7952717ca14daad93c4d6c6dad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
