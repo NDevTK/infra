@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a56a2f57_f20f2727",
+        "filename": "appengine/monorail/static/js/tracker/tracker-nav.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-03-07T23:27:37Z",
+      "side": 1,
+      "message": "We ended up doing the same fix separately. :) https://chromium-review.googlesource.com/c/infra/infra/+/1509619/3/appengine/monorail/static/js/tracker/tracker-nav.js#74 - No strong opinion on which one we go with but there will probably be merge conflicts one way or another.",
+      "revId": "9ae9e59e99bdd76eb10570160c3e09339a5fe4c4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
