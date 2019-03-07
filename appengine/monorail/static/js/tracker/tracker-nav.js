@@ -69,8 +69,10 @@ function TKR_getSearchColspecElement() {
  * @return {Element} artifact query form field, or undefined.
  */
 function TKR_getArtifactSearchField() {
-  let qq = document.getElementById('qq');
-  return qq ? qq.firstChild : undefined;
+    let el = (document.querySelector('mr-header').shadowRoot
+              .querySelector('mr-search-bar').shadowRoot
+              .querySelector('#searchq'));
+    return el;
 }
 
 
