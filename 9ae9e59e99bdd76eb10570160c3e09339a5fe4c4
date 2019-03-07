@@ -16,6 +16,24 @@
       "revId": "9ae9e59e99bdd76eb10570160c3e09339a5fe4c4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b6bd9931_3d19994b",
+        "filename": "appengine/monorail/static/js/tracker/tracker-nav.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-03-07T23:34:16Z",
+      "side": 1,
+      "message": "Your\u0027s is better, I\u0027ll merge in yours.",
+      "parentUuid": "a56a2f57_f20f2727",
+      "revId": "9ae9e59e99bdd76eb10570160c3e09339a5fe4c4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
