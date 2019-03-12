@@ -28,7 +28,7 @@ import (
 
 // DutInfo subcommand: Get DUT inventory information
 var DutInfo = &subcommands.Command{
-	UsageLine: "dut-info [-json] HOSTNAME",
+	UsageLine: "dut-info [-json] [-short] HOSTNAME",
 	ShortDesc: "print Device Under Test inventory information",
 	LongDesc: `Print Device Under Test inventory information.
 
@@ -50,6 +50,8 @@ https://chromium.googlesource.com/infra/infra/+/refs/heads/master/go/src/infra/
 		c.envFlags.Register(&c.Flags)
 
 		c.Flags.BoolVar(&c.asJSON, "json", false, "Print inventory as JSON-encoded protobuf.")
+		c.Flags.BoolVar(&c.short, "short", false, `Print only the most frequently used information.
+Incompatible with -json`)
 		return c
 	},
 }
@@ -60,6 +62,7 @@ type dutInfoRun struct {
 	envFlags  envFlags
 
 	asJSON bool
+	short  bool
 }
 
 func (c *dutInfoRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -73,6 +76,9 @@ func (c *dutInfoRun) Run(a subcommands.Application, args []string, env subcomman
 func (c *dutInfoRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
 	if len(args) != 1 {
 		return NewUsageError(c.Flags, "want 1 argument, have %d", len(args))
+	}
+	if c.short && c.asJSON {
+		return NewUsageError(c.Flags, "can not use -short with -json")
 	}
 
 	ctx := cli.GetContext(a, c, env)
@@ -97,7 +103,7 @@ func (c *dutInfoRun) innerRun(a subcommands.Application, args []string, env subc
 	if c.asJSON {
 		return printProtoJSON(bw, dut)
 	}
-	return printHumanizedInfo(bw, dut)
+	return printHumanizedInfo(bw, dut, c.short)
 }
 
 func getDutInfo(ctx context.Context, ic fleet.InventoryClient, hostname string) (*inventory.DeviceUnderTest, error) {
@@ -112,7 +118,10 @@ func getDutInfo(ctx context.Context, ic fleet.InventoryClient, hostname string) 
 	return &dut, nil
 }
 
-func printHumanizedInfo(w io.Writer, dut *inventory.DeviceUnderTest) error {
+// printHumanizedInfo prints dut in a human-readable format.
+//
+// If short is true, only the most-commonly used fields are printed.
+func printHumanizedInfo(w io.Writer, dut *inventory.DeviceUnderTest, short bool) error {
 	tw := tabwriter.NewWriter(w, 0, 2, 2, ' ', 0)
 	defer tw.Flush()
 
@@ -146,6 +155,10 @@ func printHumanizedInfo(w io.Writer, dut *inventory.DeviceUnderTest) error {
 		for k, v := range sa {
 			fmt.Fprintf(tw, "\t%s\t%s\n", k, v)
 		}
+	}
+
+	if short {
+		return nil
 	}
 
 	fmt.Fprintf(tw, "\nOther inventory data:\n")
