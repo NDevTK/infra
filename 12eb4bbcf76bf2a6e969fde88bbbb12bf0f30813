@@ -46,6 +46,30 @@
       "revId": "12eb4bbcf76bf2a6e969fde88bbbb12bf0f30813",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dbe1a270_97d1e376",
+        "filename": "appengine/monorail/static_src/elements/mr-flipper.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-03-13T18:21:19Z",
+      "side": 1,
+      "message": "Thanks for the info. TIL. I got used to using super.connectedCallback with using Polymer components, which makes sense since I think Polymer probably overrides connectedCallback itself",
+      "parentUuid": "fcebddc8_3671f160",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 18
+      },
+      "revId": "12eb4bbcf76bf2a6e969fde88bbbb12bf0f30813",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
