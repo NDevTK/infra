@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f7eedd8d_9abcb21d",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-03-13T23:25:19Z",
+      "side": 1,
+      "message": ".../\u003cbuilder_name\u003e",
+      "range": {
+        "startLine": 221,
+        "startChar": 20,
+        "endLine": 221,
+        "endChar": 46
+      },
+      "revId": "9f1f48080f253c778aa816d0f04d36c4fd2f38a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
