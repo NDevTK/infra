@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "06f61a6a_d984d752",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/dut-info.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-03-13T22:46:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aba631b2_5a4d7ace",
+      "range": {
+        "startLine": 31,
+        "startChar": 32,
+        "endLine": 31,
+        "endChar": 37
+      },
+      "revId": "2e33d734e167a1e3f1d6296aa8679ada87b1d121",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "501c951f_a14560e5",
         "filename": "go/src/infra/cmd/skylab/internal/cmd/dut-info.go",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "2e33d734e167a1e3f1d6296aa8679ada87b1d121",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c46751b9_5f29e31c",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/dut-info.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-03-13T22:46:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "501c951f_a14560e5",
+      "range": {
+        "startLine": 124,
+        "startChar": 69,
+        "endLine": 124,
+        "endChar": 79
+      },
+      "revId": "2e33d734e167a1e3f1d6296aa8679ada87b1d121",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
