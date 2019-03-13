@@ -22,6 +22,30 @@
       "revId": "4c45bb1e7c26182cdd285d478ec0228d5a2e984f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3b6fa13d_5c8abc63",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/internal/metrics/utilization/utilization.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2019-03-13T23:05:20Z",
+      "side": 1,
+      "message": "Note that a bot may still be dead and have a task associated, it happens if the bot disappears as it was running a task. You already check this in isBotHealthy() so this should be fine.",
+      "parentUuid": "16734b44_12d22016",
+      "range": {
+        "startLine": 133,
+        "startChar": 1,
+        "endLine": 133,
+        "endChar": 8
+      },
+      "revId": "4c45bb1e7c26182cdd285d478ec0228d5a2e984f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
