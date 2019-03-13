@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "aba631b2_5a4d7ace",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/dut-info.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-03-13T18:57:46Z",
+      "side": 1,
+      "message": "I think this should be flipped (e.g. -long with -json implying -long).  By default we shouldn\u0027t spam users, esp since short is supposed to be what\u0027s most frequently needed.",
+      "range": {
+        "startLine": 31,
+        "startChar": 32,
+        "endLine": 31,
+        "endChar": 37
+      },
+      "revId": "2e33d734e167a1e3f1d6296aa8679ada87b1d121",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "501c951f_a14560e5",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/dut-info.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-03-13T18:57:46Z",
+      "side": 1,
+      "message": "Prefer a separate function rather than using a switch variable\n\n func printShortInfo\n\n func printLongInfo() {\n     printShortInfo()\n     // more stuff\n }\n\nBasically a bool switch is just a fancy\n\n func DoIf(test bool) error {\n    if test {\n       do A\n     } else {\n       do B\n    }\n }\n\nwhich should just be\n\n  if test {\n     DoA()\n  } else {\n     DoB()\n  }\n\nThe conditional should be checked by the caller, instead of passing into a function for the sole purpose of participating in an if.",
+      "range": {
+        "startLine": 124,
+        "startChar": 69,
+        "endLine": 124,
+        "endChar": 79
+      },
+      "revId": "2e33d734e167a1e3f1d6296aa8679ada87b1d121",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
