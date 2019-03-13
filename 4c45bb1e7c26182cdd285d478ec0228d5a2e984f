@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "16734b44_12d22016",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/internal/metrics/utilization/utilization.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-03-13T22:37:16Z",
+      "side": 1,
+      "message": "Same as http://shortn/_P0wQjMsfII",
+      "range": {
+        "startLine": 133,
+        "startChar": 1,
+        "endLine": 133,
+        "endChar": 8
+      },
+      "revId": "4c45bb1e7c26182cdd285d478ec0228d5a2e984f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
