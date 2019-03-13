@@ -22,6 +22,30 @@
       "revId": "a280ddd530e27c4ba1f7f8015c95c4a9ad639343",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0163b74c_0b620a4c",
+        "filename": "appengine/cr-buildbucket/handlers.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-03-13T17:43:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b6901f76_a67db9de",
+      "range": {
+        "startLine": 74,
+        "startChar": 29,
+        "endLine": 74,
+        "endChar": 73
+      },
+      "revId": "a280ddd530e27c4ba1f7f8015c95c4a9ad639343",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
