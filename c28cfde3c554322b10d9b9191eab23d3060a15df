@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3b2c761c_b302df8b",
+        "filename": "infra/tools/dockerbuild/README.wheels.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-03-13T17:02:09Z",
+      "side": 1,
+      "message": "SourceOrPrebuilt",
+      "range": {
+        "startLine": 28,
+        "startChar": 6,
+        "endLine": 28,
+        "endChar": 22
+      },
+      "revId": "c28cfde3c554322b10d9b9191eab23d3060a15df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "906e7e65_67d3d2a2",
+        "filename": "infra/tools/dockerbuild/README.wheels.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-03-13T17:02:09Z",
+      "side": 1,
+      "message": "C extensions is written with capitalized C below, it could be capitalized everywhere for consistency.",
+      "range": {
+        "startLine": 29,
+        "startChar": 26,
+        "endLine": 29,
+        "endChar": 38
+      },
+      "revId": "c28cfde3c554322b10d9b9191eab23d3060a15df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "13fdddc7_ea3948ce",
+        "filename": "infra/tools/dockerbuild/README.wheels.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-03-13T17:02:09Z",
+      "side": 1,
+      "message": "First time I\u0027ve seen this term -- is symver the same as semantic version / semver? we could also just say \"ordered by wheel name and then by version\".",
+      "range": {
+        "startLine": 52,
+        "startChar": 68,
+        "endLine": 52,
+        "endChar": 74
+      },
+      "revId": "c28cfde3c554322b10d9b9191eab23d3060a15df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "64216598_46eaf0dd",
+        "filename": "infra/tools/dockerbuild/README.wheels.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-03-13T17:02:09Z",
+      "side": 1,
+      "message": "Here and elsewhere: Optionally: Capitalize OS names like Linux, Mac, and Windows.",
+      "revId": "c28cfde3c554322b10d9b9191eab23d3060a15df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cb56ee05_312e6421",
+        "filename": "infra/tools/dockerbuild/README.wheels.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-03-13T17:02:09Z",
+      "side": 1,
+      "message": "Is the fact that it\u0027s executed locally the reason why we typically TBR these changes? Or is it because adding a (non-special) vpython wheel has become routine and is low-risk?",
+      "range": {
+        "startLine": 124,
+        "startChar": 1,
+        "endLine": 125,
+        "endChar": 39
+      },
+      "revId": "c28cfde3c554322b10d9b9191eab23d3060a15df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
