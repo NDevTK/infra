@@ -22,6 +22,30 @@
       "revId": "12eb4bbcf76bf2a6e969fde88bbbb12bf0f30813",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fcebddc8_3671f160",
+        "filename": "appengine/monorail/static_src/elements/mr-flipper.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2019-03-13T18:19:13Z",
+      "side": 1,
+      "message": "From what I understand it isn\u0027t necessary / doesn\u0027t exist for web components:\nUncaught TypeError: (intermediate value).connectedCallback is not a function\n\nhttps://html.spec.whatwg.org/multipage/custom-elements.html#custom-elements-autonomous-example",
+      "parentUuid": "890ff976_62497bfc",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 18
+      },
+      "revId": "12eb4bbcf76bf2a6e969fde88bbbb12bf0f30813",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
