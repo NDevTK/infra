@@ -58,11 +58,12 @@ includes:
 - components/ereporter2
 
 skip_files:
+- \.pyc
 - ^(.*/)?.*\.(orig|rej|py[co])
 - ^(.*/)?#.*#
 - ^(.*/)?.*~
 - ^(.*/)?\..*
-- ^test.*
 - ^tools.*
 - ^[A-Z]+(\.[a-z]+)?
 - .+\.md
+- test
