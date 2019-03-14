@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "10287a24_b3d4b046",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/dut-info.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-03-14T00:45:33Z",
+      "side": 1,
+      "message": "A switch case may be easier to understand?",
+      "revId": "1cecf225625225bfb7c2d6502ac87018932d18fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c239c2cd_ddca0d85",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/dut-info.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-03-14T00:45:33Z",
+      "side": 1,
+      "message": "This doesn\u0027t return an error ever\n\nnit: for printing, slightly prefer returning int, error like all fmt functions (or just error if the bytes written doesn\u0027t make sense).  It means passing the print error up the stack and discarding it, but the higher up the error is discarded, the easier it is to see that discarding the error makes sense.  Print/Write *can* error, and in a random helper function it\u0027s harder to tell if throwing away the error is actually correct, and if one of the grandparent callers is actually writing into a file and not knowing about any errors.\n\nbufio.Writer simplifies the error checking since you only need to check the error of the final Flush",
+      "range": {
+        "startLine": 123,
+        "startChar": 74,
+        "endLine": 123,
+        "endChar": 79
+      },
+      "revId": "1cecf225625225bfb7c2d6502ac87018932d18fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
