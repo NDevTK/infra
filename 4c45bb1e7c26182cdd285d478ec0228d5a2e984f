@@ -46,6 +46,30 @@
       "revId": "4c45bb1e7c26182cdd285d478ec0228d5a2e984f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "357b2cd8_72384620",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/internal/metrics/utilization/utilization.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-03-14T14:56:31Z",
+      "side": 1,
+      "message": "Thanks. Added a comment for posterity.",
+      "parentUuid": "3b6fa13d_5c8abc63",
+      "range": {
+        "startLine": 133,
+        "startChar": 1,
+        "endLine": 133,
+        "endChar": 8
+      },
+      "revId": "4c45bb1e7c26182cdd285d478ec0228d5a2e984f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
