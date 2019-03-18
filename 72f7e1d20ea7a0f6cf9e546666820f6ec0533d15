@@ -22,6 +22,30 @@
       "revId": "72f7e1d20ea7a0f6cf9e546666820f6ec0533d15",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5df96a31_a80b37da",
+        "filename": "go/src/infra/tools/kitchen/cook.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-03-18T19:37:56Z",
+      "side": 1,
+      "message": "done",
+      "parentUuid": "f26fc1b0_51ad88b8",
+      "range": {
+        "startLine": 201,
+        "startChar": 4,
+        "endLine": 201,
+        "endChar": 8
+      },
+      "revId": "72f7e1d20ea7a0f6cf9e546666820f6ec0533d15",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
