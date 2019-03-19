@@ -34,14 +34,7 @@ class NotificationsTest(testing.AppengineTestCase):
     )
 
     self.patch(
-        'notifications.enqueue_tasks_async',
-        autospec=True,
-        return_value=test_util.future(None)
-    )
-    self.patch(
-        'bq.enqueue_pull_task_async',
-        autospec=True,
-        return_value=test_util.future(None)
+        'tq.enqueue_async', autospec=True, return_value=test_util.future(None)
     )
 
     self.patch(
@@ -86,7 +79,7 @@ class NotificationsTest(testing.AppengineTestCase):
         'id': 1,
         'mode': 'callback',
     }
-    notifications.enqueue_tasks_async.assert_called_with(
+    tq.enqueue_tasks_async.assert_called_with(
         'backend-default', [
             {
                 'url': '/internal/task/buildbucket/notify/1',
