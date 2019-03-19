@@ -25,3 +25,30 @@ function displayMessage(messageId, content, title, preFormat) {
   console.log(event);
   document.dispatchEvent(event);
 }
+
+function shortenTimeDelta(long_time_delta) {
+  var pattern = /(\d day[s]?)?,?\s?(\d*):(\d*):(\d*)/;
+  // [full match, n day(s), HH, MM, SS]
+  var res = long_time_delta.match(pattern);
+
+  if (typeof(res[1]) != 'undefined') {
+    return res[1];
+  }
+
+  var index_to_rep = {
+    2: 'hour',
+    3: 'minute',
+    4: 'second'
+  };
+
+  for (var i=2; i<res.length; i++) {
+      var int_rep = parseInt(res[i]);
+      if ( int_rep == 1) {
+        return int_rep + ' ' + index_to_rep[i];
+      }
+      if ( int_rep > 1) {
+        return int_rep + ' ' + index_to_rep[i] + 's';
+      }
+  }
+  return 'just now';
+}

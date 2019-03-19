@@ -31,7 +31,9 @@
         <a target="_blank" href="/p/chromium/flake-portal/flakes/occurrences?key=[[flake.flake_urlsafe_key]]">[[flake.test_label_name]]</a>
         <paper-tooltip position="bottom" offset="0" fit-to-visible-bounds="true">[[flake.test_label_name]]</paper-tooltip>
       </td>
-      <td>[[flake.time_delta]] ago</td>
+      <td>[[_shortenTimeDelta(flake.time_delta)]] ago
+      <paper-tooltip position="bottom" offset="0" fit-to-visible-bounds="true">[[flake.time_delta]]</paper-tooltip>
+      </td>
       <template is="dom-if" if="[[hasBug(flake)]]">
         <td width="10%">
           <a href="[[flake.flake_issue.issue_link]]">[[flake.flake_issue.issue_id]]</a>
@@ -50,6 +52,8 @@
         <td width="15%"></td>
       </template>
     </template>
+
+  <script src="../../js/common.js"></script>
   <script>
     (function () {
       "use strict";
@@ -73,6 +77,10 @@
         _hasBugUpdateTime: function(flake) {
           return (flake.flake_issue != null &&
           flake.flake_issue.last_updated_time_in_monorail != null);
+        },
+
+        _shortenTimeDelta: function (delta) {
+          return shortenTimeDelta(delta);
         },
 
         showDialog: function (e) {
