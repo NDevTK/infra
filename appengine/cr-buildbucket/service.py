@@ -16,7 +16,6 @@ from components import auth
 from components import utils
 import gae_ts_mon
 
-from proto import build_pb2
 from proto import common_pb2
 import buildtags
 import config
@@ -102,6 +101,8 @@ def peek(bucket_ids, max_builds=None, start_cursor=None):
   if not bucket_ids:
     raise errors.InvalidInputError('No buckets specified')
   bucket_ids = sorted(set(bucket_ids))
+  for bid in bucket_ids:
+    _check_swarming_bucket(bid)
   search.check_acls_async(
       bucket_ids, inc_metric=PEEK_ACCESS_DENIED_ERROR_COUNTER
   ).get_result()
@@ -146,6 +147,8 @@ def _get_leasable_build(build_id):
     raise errors.BuildNotFoundError()
   if not user.can_lease_build_async(build).get_result():
     raise user.current_identity_cannot('lease build %s', build.key.id())
+  if build.is_luci:
+    raise errors.InvalidInputError('cannot lease a swarmbucket build')
   return build
 
 
@@ -602,15 +605,19 @@ def _task_delete_many_builds(bucket_id, status, tags=None, created_by=None):
   q.map(del_if_unchanged, keys_only=True)
 
 
-def pause(bucket_id, is_paused):
-  if not user.can_pause_buckets_async(bucket_id).get_result():
-    raise user.current_identity_cannot('pause bucket of %s', bucket_id)
-
+def _check_swarming_bucket(bucket_id):
   config.validate_bucket_id(bucket_id)
   _, cfg = config.get_bucket(bucket_id)
   assert cfg, 'permission check should have failed'
   if config.is_swarming_config(cfg):
-    raise errors.InvalidInputError('Cannot pause a Swarming bucket')
+    raise errors.InvalidInputError('Invalid operation on a Swarming bucket')
+
+
+def pause(bucket_id, is_paused):
+  if not user.can_pause_buckets_async(bucket_id).get_result():
+    raise user.current_identity_cannot('pause bucket of %s', bucket_id)
+
+  _check_swarming_bucket(bucket_id)
 
   @ndb.transactional
   def try_set_pause():
