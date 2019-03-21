@@ -504,24 +504,30 @@ def cancel_async(build_id, summary_markdown='', result_details=None):
     Canceled Build.
   """
 
-  @ndb.transactional_tasklet
-  def txn_async():
-    identity_str = auth.get_current_identity().to_bytes()
-
+  @ndb.tasklet
+  def get_build_async(check_access):
     build = yield model.Build.get_by_id_async(build_id)
     if build is None:
       raise errors.BuildNotFoundError()
-    if not (yield user.can_cancel_build_async(build)):
+    if check_access and not (yield user.can_cancel_build_async(build)):
       raise user.current_identity_cannot('cancel build %s', build.key.id())
     if build.proto.status == common_pb2.CANCELED:
-      raise ndb.Return(False, build)
+      raise ndb.Return(build, False)
     if build.is_ended:
       raise errors.BuildIsCompletedError('Cannot cancel a completed build')
+    raise ndb.Return(build, True)
+
+  @ndb.transactional_tasklet
+  def txn_async():
+    build, should_update = yield get_build_async(False)
+    if not should_update:  # pragma: no cover
+      raise ndb.Return(build, False)
     now = utils.utcnow()
     build.proto.status = common_pb2.CANCELED
     build.status_changed_time = now
     build.result_details = result_details
     build.proto.summary_markdown = summary_markdown
+    identity_str = auth.get_current_identity().to_bytes()
     build.proto.cancel_reason.canceled_by = identity_str
     build.proto.end_time.FromDatetime(now)
     build.clear_lease()
@@ -537,11 +543,13 @@ def cancel_async(build_id, summary_markdown='', result_details=None):
           swarming.cancel_task_transactionally_async(sw.hostname, sw.task_id)
       )
     yield futs
-    raise ndb.Return(True, build)
+    raise ndb.Return(build, build)
 
-  updated, build = yield txn_async()
-  if updated:
-    events.on_build_completed(build)
+  build, should_update = yield get_build_async(True)
+  if should_update:
+    updated, build = yield txn_async()
+    if updated:  # pragma: no branch
+      events.on_build_completed(build)
   raise ndb.Return(build)
 
 
