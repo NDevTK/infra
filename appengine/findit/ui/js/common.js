@@ -14,14 +14,42 @@
  * @param {boolean} preFormat If true, show the message in a <pre> tag.
  */
 function displayMessage(messageId, content, title, preFormat) {
-  var detail = {
+  let detail = {
     'messageId': messageId,
     'content': content,
     'title': title,
     'preFormat': preFormat,
   };
-  var event = new CustomEvent('message', {'detail': detail});
+  let event = new CustomEvent('message', {'detail': detail});
   console.log('Dispatching message event:');
   console.log(event);
   document.dispatchEvent(event);
+}
+
+function shortenTimeDelta(
+    longTimeDelta) {  // eslint-disable-line no-unused-vars
+  let pattern = /(\d day[s]?)?,?\s?(\d*):(\d*):(\d*)/;
+  // [full match, n day(s), HH, MM, SS]
+  let res = longTimeDelta.match(pattern);
+
+  if (typeof(res[1]) != 'undefined') {
+    return res[1];
+  }
+
+  let timeDeltaParts = {
+    2: 'hour',
+    3: 'minute',
+    4: 'second',
+  };
+
+  for (let i=2; i<res.length; i++) {
+    let intTimeDelta = parseInt(res[i]);
+    if ( intTimeDelta == 1) {
+      return intTimeDelta + ' ' + timeDeltaParts[i];
+    }
+    if ( intTimeDelta > 1) {
+      return intTimeDelta + ' ' + timeDeltaParts[i] + 's';
+    }
+  }
+  return 'just now';
 }
