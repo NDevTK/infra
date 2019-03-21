@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e0266c13_02297fa0",
+        "filename": "go/src/infra/libs/skylab/inventory/device.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-03-21T21:46:58Z",
+      "side": 1,
+      "message": "Is this any more \"required\" than the other two fields? The comment above already says Required :)",
+      "revId": "f7b3c99fc2643efe0095d35c025a03121b16f12b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
