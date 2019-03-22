@@ -1,0 +1,97 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ed75b81a_729ce82f",
+        "filename": "appengine/findit/ui/js/common.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-03-22T17:20:56Z",
+      "side": 1,
+      "message": "Chan, is this comment correct? If so, let\u0027s use const, and the same for others.",
+      "parentUuid": "5b9391a7_a0101713",
+      "range": {
+        "startLine": 17,
+        "startChar": 6,
+        "endLine": 17,
+        "endChar": 12
+      },
+      "revId": "be83a60d436ff116006d0c77310a35ec0ea89726",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "08978211_7d4c3856",
+        "filename": "appengine/findit/ui/js/common.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-03-22T17:20:56Z",
+      "side": 1,
+      "message": "The intention of this function is not immediately obvious, could you please add some comment to explain for example: if days presents, we ignore the hour/minutes/seconds parts.",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 8
+      },
+      "revId": "be83a60d436ff116006d0c77310a35ec0ea89726",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "898d9116_a6d6dfd9",
+        "filename": "appengine/findit/ui/js/common.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-03-22T17:20:56Z",
+      "side": 1,
+      "message": "Should the parameter be on the same line with the function name?",
+      "range": {
+        "startLine": 30,
+        "startChar": 4,
+        "endLine": 30,
+        "endChar": 17
+      },
+      "revId": "be83a60d436ff116006d0c77310a35ec0ea89726",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "46089288_c469d48e",
+        "filename": "appengine/findit/ui/js/common.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-03-22T17:20:56Z",
+      "side": 1,
+      "message": "This regular expression is not that accurate because \u0027, 18:53:24 ago\u0027 will match.\n\nHow about: \u0027^(?:(\\d day[s]?),\\s)?(\\d*):(\\d*):(\\d*)\u0027",
+      "range": {
+        "startLine": 31,
+        "startChar": 16,
+        "endLine": 31,
+        "endChar": 38
+      },
+      "revId": "be83a60d436ff116006d0c77310a35ec0ea89726",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
