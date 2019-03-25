@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "6125ccbc_6d60e66b",
+        "filename": "appengine/monorail/static_src/elements/flt/mr-issue-page/mr-issue-header.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2019-03-25T18:43:10Z",
+      "side": 1,
+      "message": "You could remove this, make the div you introduced have a style of \"display: flex; justify-content: space-between;\", and maybe modify .code-font-and-description-edit with \"align-items: center\".",
+      "parentUuid": "a80ba898_e907bcb6",
+      "revId": "56ad4bfb0cbd29a768aa43d1be821f5f07a6958e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d9108951_1713ea51",
         "filename": "appengine/monorail/static_src/elements/links/mr-crbug-link/mr-crbug-link.js",
         "patchSetId": 2

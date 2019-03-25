@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "28d763cd_76842b02",
+        "filename": "appengine/monorail/static_src/elements/links/mr-crbug-link/mr-crbug-link.test.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2019-03-25T18:43:10Z",
+      "side": 1,
+      "message": "\u003e \u0027flush\u0027 is defined but never used.\n\u003e To disable, add: // eslint-disable-line no-unused-vars\n\nPlease Fix :)",
+      "parentUuid": "0a338b34_e2239d53",
+      "range": {
+        "startLine": 7,
+        "startChar": 8,
+        "endLine": 7,
+        "endChar": 13
+      },
+      "revId": "a0862593fcaae240a7f96ea53f618b0c7744f550",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
