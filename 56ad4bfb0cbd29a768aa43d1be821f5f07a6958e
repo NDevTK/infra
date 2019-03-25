@@ -73,6 +73,24 @@
     },
     {
       "key": {
+        "uuid": "7d6485f9_fe6d88c7",
+        "filename": "appengine/monorail/static_src/elements/flt/mr-issue-page/mr-issue-header.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-03-25T19:08:48Z",
+      "side": 1,
+      "message": "Done.  I don\u0027t think that justify-content:space-between produced any visual difference for me, but I put it in anyway.  I didn\u0027t like the look of align-items:center, so I skipped that part.",
+      "parentUuid": "6125ccbc_6d60e66b",
+      "revId": "56ad4bfb0cbd29a768aa43d1be821f5f07a6958e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d9108951_1713ea51",
         "filename": "appengine/monorail/static_src/elements/links/mr-crbug-link/mr-crbug-link.js",
         "patchSetId": 2
