@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fe1c7c82_5baf7ac1",
+        "filename": "appengine/monorail/static_src/elements/flt/mr-issue-page/mr-issue-header.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-03-25T18:18:07Z",
+      "side": 1,
+      "message": "This is a hack to work around the disappearance of the right border on the code font toggle button.  I must be missing something about how borders and flex interact.  Let me know if you know the right way to avoid having it look like this:\nhttps://screenshot.googleplex.com/tKyGKDO1awJ.png",
+      "revId": "56ad4bfb0cbd29a768aa43d1be821f5f07a6958e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
