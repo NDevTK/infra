@@ -9,8 +9,7 @@ import '../../chops/chops-dialog/chops-dialog.js';
 import '../../chops/chops-timestamp/chops-timestamp.js';
 import '../../mr-bug-link/mr-bug-link.js';
 import '../../mr-user-link/mr-user-link.js';
-import {actionCreator} from '../../redux/redux-mixin.js';
-import {selectors} from '../../redux/selectors.js';
+import * as issue from '../../redux/issue.js';
 import * as user from '../../redux/user.js';
 import {MetadataMixin} from '../shared/metadata-mixin.js';
 import '../../shared/mr-shared-styles.js';
@@ -398,7 +397,7 @@ export class MrMetadata extends MetadataMixin(PolymerElement) {
       issuePermissions: state.issuePermissions,
       blockerReferences: state.blockerReferences,
       issueHotlists: state.issueHotlists,
-      fieldValueMap: selectors.issueFieldValueMap(state),
+      fieldValueMap: issue.fieldValueMap(state),
     };
   }
 
@@ -541,7 +540,7 @@ export class MrMetadata extends MetadataMixin(PolymerElement) {
     }
 
     Promise.all(promises).then((results) => {
-      this.dispatchAction(actionCreator.fetchIssueHotlists(issueRef));
+      this.dispatchAction(issue.fetchIssueHotlists(issueRef));
       this.dispatchAction(user.fetchHotlists(this.user.email));
       this.$.updateHotlistsDialog.close();
     }, (error) => {
@@ -576,7 +575,7 @@ export class MrMetadata extends MetadataMixin(PolymerElement) {
       });
 
     reorderRequest.then((response) => {
-      this.dispatchAction(actionCreator.fetchIssue({
+      this.dispatchAction(issue.fetchIssue({
         issueRef: {
           projectName: this.projectName,
           localId: this.issueId,

@@ -6,7 +6,6 @@ import '@polymer/polymer/polymer-legacy.js';
 import {PolymerElement, html} from '@polymer/polymer';
 
 import '../../mr-bug-link/mr-bug-link.js';
-import {selectors} from '../../redux/selectors.js';
 import {ReduxMixin} from '../../redux/redux-mixin.js';
 import '../../shared/mr-shared-styles.js';
 

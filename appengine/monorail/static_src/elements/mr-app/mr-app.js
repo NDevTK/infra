@@ -9,6 +9,7 @@ import page from 'page';
 import qs from 'qs';
 
 import {ReduxMixin, actionType} from '../redux/redux-mixin.js';
+import * as issue from '../redux/issue.js';
 import {arrayToEnglish} from '../shared/helpers.js';
 import '../flt/mr-issue-page/mr-issue-page.js';
 import '../mr-header/mr-header.js';
@@ -150,11 +151,8 @@ export class MrApp extends ReduxMixin(PolymerElement) {
   }
 
   _loadApprovalPage(ctx, next) {
-    this.dispatchAction({
-      type: actionType.UPDATE_ISSUE_REF,
-      issueId: Number.parseInt(ctx.query.id),
-      projectName: ctx.params.project,
-    });
+    this.dispatchAction(issue.updateRef(
+      Number.parseInt(ctx.query.id), ctx.params.project));
 
     this.projectName = ctx.params.project;
 

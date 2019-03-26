@@ -5,6 +5,7 @@
 import {assert} from 'chai';
 import {MrIssueHeader} from './mr-issue-header.js';
 import {store, actionType} from '../../redux/redux-mixin.js';
+import * as issue from '../../redux/issue.js';
 import {flush} from '@polymer/polymer/lib/utils/flush.js';
 import {ISSUE_EDIT_PERMISSION,
   ISSUE_FLAGSPAM_PERMISSION} from '../../shared/permissions.js';
@@ -34,10 +35,7 @@ suite('mr-issue-header', () => {
   test('updating issue id changes header', function() {
     assert.equal(store.getState().issueId, 0);
 
-    store.dispatch({
-      type: actionType.UPDATE_ISSUE_REF,
-      issueId: 1,
-    });
+    store.dispatch(issue.updateRef(1));
 
     assert.equal(store.getState().issueId, 1);
 

@@ -54,13 +54,9 @@ const currentUserReducer = createReducer(USER_DEFAULT, {
 });
 
 const requestsReducer = combineReducers({
-  // Request for getting backend metadata related to a user, such as
-  // which groups they belong to and whether they're a site admin.
   fetch: createRequestReducer(FETCH_START, FETCH_SUCCESS, FETCH_FAILURE),
-  // Request for getting a user's hotlists.
   fetchHotlists: createRequestReducer(
     FETCH_HOTLISTS_START, FETCH_HOTLISTS_SUCCESS, FETCH_HOTLISTS_FAILURE),
-  // Request for getting a user's prefs.
   fetchPrefs: createRequestReducer(
     FETCH_PREFS_START, FETCH_PREFS_SUCCESS, FETCH_PREFS_FAILURE),
 });

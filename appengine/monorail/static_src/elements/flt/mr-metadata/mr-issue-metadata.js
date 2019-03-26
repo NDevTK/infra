@@ -5,10 +5,9 @@
 import '@polymer/polymer/polymer-legacy.js';
 import {PolymerElement, html} from '@polymer/polymer';
 import '../../chops/chops-timestamp/chops-timestamp.js';
-import {selectors} from '../../redux/selectors.js';
+import {ReduxMixin, actionType} from '../../redux/redux-mixin.js';
+import * as issue from '../../redux/issue.js';
 import * as project from '../../redux/project.js';
-import {ReduxMixin, actionType, actionCreator} from
-  '../../redux/redux-mixin.js';
 import '../../mr-user-link/mr-user-link.js';
 import '../../shared/mr-shared-styles.js';
 import './mr-metadata.js';
@@ -154,9 +153,9 @@ class MrIssueMetadata extends ReduxMixin(PolymerElement) {
       isStarred: state.isStarred,
       fetchingIsStarred: state.requests.fetchIsStarred.requesting,
       starringIssue: state.requests.starIssue.requesting,
-      _components: selectors.componentsForIssue(state),
-      _fieldDefs: selectors.fieldDefsForIssue(state),
-      _type: selectors.issueType(state),
+      _components: issue.components(state),
+      _fieldDefs: issue.fieldDefs(state),
+      _type: issue.type(state),
     };
   }
 
@@ -176,7 +175,7 @@ class MrIssueMetadata extends ReduxMixin(PolymerElement) {
       localId: this.issueId,
     };
 
-    this.dispatchAction(actionCreator.starIssue(issueRef, newIsStarred));
+    this.dispatchAction(issue.starIssue(issueRef, newIsStarred));
   }
 
   _computeCanStar(fetching, starring) {

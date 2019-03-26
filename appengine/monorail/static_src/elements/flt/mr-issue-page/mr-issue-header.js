@@ -8,9 +8,9 @@ import {PolymerElement, html} from '@polymer/polymer';
 import '../../mr-flipper.js';
 import '../../chops/chops-dialog/chops-dialog.js';
 import '../../chops/chops-timestamp/chops-timestamp.js';
-import {ReduxMixin, actionCreator} from '../../redux/redux-mixin.js';
+import {ReduxMixin} from '../../redux/redux-mixin.js';
+import * as issue from '../../redux/issue.js';
 import * as project from '../../redux/project.js';
-import {selectors} from '../../redux/selectors.js';
 import {arrayToEnglish} from '../../shared/helpers.js';
 import '../../mr-user-link/mr-user-link.js';
 import '../../mr-code-font-toggle/mr-code-font-toggle.js';
@@ -240,9 +240,9 @@ export class MrIssueHeader extends ReduxMixin(PolymerElement) {
     return {
       issue: state.issue,
       issuePermissions: state.issuePermissions,
-      issueClosed: !selectors.issueIsOpen(state),
-      restrictions: selectors.issueRestrictions(state),
-      isRestricted: selectors.issueIsRestricted(state),
+      issueClosed: !issue.isOpen(state),
+      restrictions: issue.restrictions(state),
+      isRestricted: issue.isRestricted(state),
       projectTemplates: project.project(state).templates,
     };
   }
@@ -335,7 +335,7 @@ export class MrIssueHeader extends ReduxMixin(PolymerElement) {
           localId: this.issue.localId,
         },
       };
-      this.dispatchAction(actionCreator.fetchIssue(message));
+      this.dispatchAction(issue.fetchIssue(message));
     });
   }
 
@@ -355,7 +355,7 @@ export class MrIssueHeader extends ReduxMixin(PolymerElement) {
             localId: this.issue.localId,
           },
         };
-        this.dispatchAction(actionCreator.fetchIssue(message));
+        this.dispatchAction(issue.fetchIssue(message));
       });
     }
   }

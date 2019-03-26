@@ -8,7 +8,8 @@ import {PolymerElement, html} from '@polymer/polymer';
 import '@vaadin/vaadin-upload/vaadin-upload.js';
 import '@vaadin/vaadin-upload/theme/lumo/vaadin-upload.js';
 import {fieldTypes} from '../../shared/field-types.js';
-import {ReduxMixin, actionCreator} from '../../redux/redux-mixin.js';
+import {ReduxMixin} from '../../redux/redux-mixin.js';
+import * as issue from '../../redux/issue.js';
 import '../../chops/chops-checkbox/chops-checkbox.js';
 import '../../chops/chops-dialog/chops-dialog.js';
 import {loadAttachments} from '../../shared/helpers.js';
@@ -278,13 +279,13 @@ export class MrEditDescription extends ReduxMixin(PolymerElement) {
       }
 
       if (!this._fieldName) {
-        this.dispatchAction(actionCreator.updateIssue(message));
+        this.dispatchAction(issue.updateIssue(message));
       } else {
         message.fieldRef = {
           type: fieldTypes.APPROVAL_TYPE,
           fieldName: this._fieldName,
         };
-        this.dispatchAction(actionCreator.updateApproval(message));
+        this.dispatchAction(issue.updateApproval(message));
       }
       this.$.dialog.close();
     }).catch((reason) => {
