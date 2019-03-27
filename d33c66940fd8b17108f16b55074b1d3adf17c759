@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f7860b6e_44957baa",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-checkbox/chops-checkbox.test.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-03-27T21:39:35Z",
+      "side": 1,
+      "message": "Huh, ES Lint made these changes.",
+      "revId": "d33c66940fd8b17108f16b55074b1d3adf17c759",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
