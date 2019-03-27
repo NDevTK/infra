@@ -9,7 +9,6 @@ import {ChopsCheckbox} from './chops-checkbox.js';
 let element;
 
 suite('chops-checkbox', () => {
-
   setup(() => {
     element = document.createElement('chops-checkbox');
     document.body.appendChild(element);
