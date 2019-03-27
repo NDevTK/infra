@@ -83,7 +83,7 @@ const updateIssueApproval = (issue, approval) => {
     return item;
   });
   return {...issue, approvalValues: newApprovals};
-}
+};
 
 const issueIdReducer = createReducer(0, {
   [actionType.UPDATE_ISSUE_REF]: (state, action) => action.issueId || state,
