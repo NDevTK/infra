@@ -16,6 +16,24 @@
       "revId": "1fbc4eeb2f402e40a1c15f480a221fa8a90b08aa",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "57728c23_cf92dde1",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/config/tree-builders.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2019-03-28T20:11:20Z",
+      "side": 1,
+      "message": "yep. I\u0027d leave a comment to that effect but This Is JSON.",
+      "parentUuid": "8685b438_44bf41dc",
+      "revId": "1fbc4eeb2f402e40a1c15f480a221fa8a90b08aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
