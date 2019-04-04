@@ -11,8 +11,6 @@ threadsafe: no
 
 default_expiration: "3600d"
 
-define(`SCRIPT_PREFIX_DIR', `syscmd(`git rev-parse HEAD | head -c 7')')
-
 ifdef(`PROD', `
 instance_class: F4
 automatic_scaling:
@@ -95,9 +93,6 @@ libraries:
 
 includes:
 - gae_ts_mon
-
-env_variables:
-  SCRIPT_FILE_PREFIX_DIR: 'SCRIPT_PREFIX_DIR'
 
 skip_files:
 - ^(.*/)?#.*#$
