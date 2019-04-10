@@ -27,6 +27,10 @@ _REGISTRY_URL = 'gcr.io'
 # container's shutdown file as returned by its descriptor class.
 BOT_SHUTDOWN_FILE = '/b/shutdown.stamp'
 
+# Similar to BOT_SHUTDOWN_FILE, but if this file is found then host is
+# restarted
+BOT_REBOOT_FILE = '/b/reboot.stamp'
+
 # Minimum time a host must be up before it can be restarted again.
 _MIN_HOST_UPTIME = 60
 
@@ -176,6 +180,7 @@ def reboot_gracefully(args, running_containers):
 
 def launch_containers(
     docker_client, container_descriptors, args):  # pragma: no cover
+  restart_host = os.path.exists(BOT_REBOOT_FILE)
   draining_host = os.path.exists(BOT_SHUTDOWN_FILE)
   draining_container_descriptors = [
       cd for cd in container_descriptors if os.path.exists(cd.shutdown_file)
@@ -190,9 +195,14 @@ def launch_containers(
         'be restarted automatically.',
         [cd.name for cd in draining_container_descriptors],
         [cd.shutdown_file for cd in draining_container_descriptors])
+  elif restart_host:
+    logging.info(
+        'In draining stae due to existence of %s. No new containers will be '
+        'created and host will be restarted', BOT_REBOOT_FILE)
 
   running_containers = docker_client.get_running_containers()
-  if not draining_host and reboot_gracefully(args, running_containers):
+  if (not draining_host and not restart_host
+      and reboot_gracefully(args, running_containers)):
     return
 
   # Fetch the image from the registry if it's not present locally.
@@ -214,9 +224,12 @@ def launch_containers(
   # to associated devices missing, so we need to examine *all* containers here
   # instead of doing that inside the per-container flock below.
   current_cipd_version = get_cipd_version()
-  if draining_host:
+  if draining_host or restart_host:
     for c in running_containers:
       c.kill_swarming_bot()
+    if restart_host:
+      os.remove(BOT_REBOOT_FILE)
+      reboot_host(args.canary)
   else:
     for cd in draining_container_descriptors:
       c = docker_client.get_container(cd)
