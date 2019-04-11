@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2d9dd75e_57226456",
+        "filename": "infra/services/swarm_docker/main_helpers.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2019-04-11T02:02:23Z",
+      "side": 1,
+      "message": "nit: reword, eg:\n# Similar to BOT_SHUTDOWN_FILE, but triggers a host reboot after all containers\n# have been drained.",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 11
+      },
+      "revId": "7a0939375a5b6031c3ae5afa5188ccd4f5a51204",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "73643497_8ac8e6aa",
+        "filename": "infra/services/swarm_docker/main_helpers.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2019-04-11T02:02:23Z",
+      "side": 1,
+      "message": "nit: we refer to it as \"reboot\" everywhere in this file when it comes to the host machine, so change the name here to \u0027rebooting_host\u0027",
+      "range": {
+        "startLine": 183,
+        "startChar": 2,
+        "endLine": 183,
+        "endChar": 14
+      },
+      "revId": "7a0939375a5b6031c3ae5afa5188ccd4f5a51204",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a9aa1c87_121441bd",
+        "filename": "infra/services/swarm_docker/main_helpers.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2019-04-11T02:02:23Z",
+      "side": 1,
+      "message": "nit: add a period",
+      "range": {
+        "startLine": 195,
+        "startChar": 42,
+        "endLine": 195,
+        "endChar": 44
+      },
+      "revId": "7a0939375a5b6031c3ae5afa5188ccd4f5a51204",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ec791e7a_a9e21855",
+        "filename": "infra/services/swarm_docker/main_helpers.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2019-04-11T02:02:23Z",
+      "side": 1,
+      "message": "There might still be running containers, so only reboot if len(running_containers) is 0",
+      "revId": "7a0939375a5b6031c3ae5afa5188ccd4f5a51204",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
