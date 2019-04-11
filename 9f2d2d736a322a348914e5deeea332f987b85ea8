@@ -1,0 +1,22 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "20f1c523_49873b06",
+        "filename": "infra/services/swarm_docker/main_helpers.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2019-04-11T20:43:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aed9ee71_2705fd6a",
+      "revId": "9f2d2d736a322a348914e5deeea332f987b85ea8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
