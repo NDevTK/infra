@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2203b4e8_1cf3d151",
+        "filename": "appengine/monorail/static_src/elements/flt/mr-issue-page/mr-restriction-indicator.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-04-11T00:29:43Z",
+      "side": 1,
+      "message": "Let\u0027s change \"see\" to \"view\" to help align it with the terms used in the restriction labels.",
+      "revId": "10bac4878412e9bf691b4ba84d0193b1d142e53b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
