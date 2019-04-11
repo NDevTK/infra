@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "944c8202_2873fd24",
+        "filename": "appengine/monorail/static_src/elements/flt/mr-issue-page/mr-restriction-indicator.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-04-11T17:45:45Z",
+      "side": 1,
+      "message": "Removed this since the parent hides the icon. This was old code from when the lock icon was the main component.",
+      "parentUuid": "8d78ee9e_dcd2e11c",
+      "range": {
+        "startLine": 51,
+        "startChar": 20,
+        "endLine": 51,
+        "endChar": 33
+      },
+      "revId": "10bac4878412e9bf691b4ba84d0193b1d142e53b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2203b4e8_1cf3d151",
         "filename": "appengine/monorail/static_src/elements/flt/mr-issue-page/mr-restriction-indicator.js",
         "patchSetId": 1
@@ -39,6 +63,24 @@
       "revId": "10bac4878412e9bf691b4ba84d0193b1d142e53b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4b6f8a0_92de367a",
+        "filename": "appengine/monorail/static_src/elements/flt/mr-issue-page/mr-restriction-indicator.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-04-11T17:45:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2203b4e8_1cf3d151",
+      "revId": "10bac4878412e9bf691b4ba84d0193b1d142e53b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
