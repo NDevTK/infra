@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7d65de0e_ec8b3380",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-04-12T19:06:54Z",
+      "side": 1,
+      "message": "What do you mean by this?  We can\u0027t easily change the Swarming regexp.  If you just change the regexp in the sanitation library you will bring down the lab.",
+      "range": {
+        "startLine": 9,
+        "startChar": 69,
+        "endLine": 10,
+        "endChar": 27
+      },
+      "revId": "06d197e498494b394d6a49de117ba09d8f6e7c06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
