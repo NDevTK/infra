@@ -45,6 +45,30 @@
       "revId": "59c13616082c211a541c24da9b0cf2a61e5abb1b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b2803c22_6f58ca2f",
+        "filename": "infra/services/swarm_docker/main_helpers.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2019-04-12T23:01:35Z",
+      "side": 1,
+      "message": "Yes, But then on the first run it would never reboot the host because the list isn\u0027t being updated after killing all the containers",
+      "parentUuid": "e869662d_bd40e2e5",
+      "range": {
+        "startLine": 235,
+        "startChar": 0,
+        "endLine": 235,
+        "endChar": 63
+      },
+      "revId": "59c13616082c211a541c24da9b0cf2a61e5abb1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
