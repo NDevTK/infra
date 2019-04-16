@@ -81,7 +81,6 @@ suite('mr-comment-list', () => {
     sinon.stub(commentElement, 'scrollIntoView');
 
     element.focusId = 'c3';
-    element.focusedComment = 2;
 
     flush();
 
@@ -98,7 +97,6 @@ suite('mr-comment-list', () => {
     sinon.stub(commentElement, 'scrollIntoView');
 
     element.focusId = 'c1';
-    element.focusedComment = 0;
 
     flush();
 
