@@ -69,6 +69,22 @@ func UpdateAssigners(c context.Context, cfgs []*config.Assigner, rev string) err
 	return model.UpdateAssigners(c, cfgs, rev)
 }
 
+// GetAssignerWithTasks returns up to |limit| of Task entities for
+// the Assigner in ExpectedStart desc order.
+//
+// If includeNoopSuccess is true, the return includes the Task entities
+// that were completed successfully without issue updates.
+func GetAssignerWithTasks(c context.Context, assignerID string, limit int32, includeNoopSuccess bool) (assigner *model.Assigner, tasks []*model.Task, err error) {
+	err = datastore.RunInTransaction(c, func(c context.Context) error {
+		if assigner, err = model.GetAssigner(c, assignerID); err != nil {
+			return err
+		}
+		tasks, err = model.GetTasks(c, assigner, limit, includeNoopSuccess)
+		return err
+	}, &datastore.TransactionOptions{})
+	return
+}
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // TaskQueue handlers
