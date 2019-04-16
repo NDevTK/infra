@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "a102022c_97f4c43a",
+        "filename": "appengine/monorail/static_src/elements/flt/mr-approval-card/mr-approval-card.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 517,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2019-04-16T23:41:03Z",
+      "side": 1,
+      "message": "Oh, I see. Yes, I think that would make it clearer.",
+      "parentUuid": "be9ab7b6_b7fdf4d8",
+      "revId": "404e1ca01668cf8d5a74cfcda2546691d2c1a8e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "efd75075_935cd80a",
         "filename": "appengine/monorail/static_src/elements/flt/mr-comment-list/mr-comment-list.js",
         "patchSetId": 3
