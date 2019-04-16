@@ -218,8 +218,6 @@ export class MrApprovalCard extends ReduxMixin(PolymerElement) {
         ></mr-description>
         <mr-comment-list
           heading-level=4
-          focus-id="[[focusId]]"
-          focused-comment="[[_focusedComment]]"
           comments="[[_comments]]"
         >
           <h4 id$="[[_editId]]" class="medium-heading">
@@ -335,11 +333,13 @@ export class MrApprovalCard extends ReduxMixin(PolymerElement) {
         type: String,
         computed: '_computeStatusIcon(class)',
       },
-      _focusedComment: {
-        type: Number,
-        computed: '_computeFocusedComment(_comments, focusId)',
-      },
     };
+  }
+
+  static get observers() {
+    return [
+      '_onFocusId(_comments, focusId)',
+    ];
   }
 
   static mapStateToProps(state, element) {
@@ -509,17 +509,14 @@ export class MrApprovalCard extends ReduxMixin(PolymerElement) {
     }));
   }
 
-  _computeFocusedComment(comments, focusId) {
-    const index = (comments || []).findIndex((comment) => {
+  _onFocusId(comments, focusId) {
+    (comments || []).some((comment) => {
       const commentId = 'c' + comment.sequenceNum;
       if (commentId === focusId) {
+        this.opened = true;
         return true;
       }
     });
-    if (index !== -1) {
-      this.opened = true;
-    }
-    return index;
   }
 }
 
