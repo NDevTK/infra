@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "be9ab7b6_b7fdf4d8",
+        "filename": "appengine/monorail/static_src/elements/flt/mr-approval-card/mr-approval-card.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 517,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2019-04-16T17:58:51Z",
+      "side": 1,
+      "message": "Or what about a for .. of, or for .. in loop?",
+      "parentUuid": "918f735f_5beb2d5f",
+      "revId": "404e1ca01668cf8d5a74cfcda2546691d2c1a8e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "efd75075_935cd80a",
         "filename": "appengine/monorail/static_src/elements/flt/mr-comment-list/mr-comment-list.js",
         "patchSetId": 3
