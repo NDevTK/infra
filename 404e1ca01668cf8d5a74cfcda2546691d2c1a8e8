@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6cb09251_3c236981",
+        "filename": "appengine/monorail/static_src/elements/flt/mr-approval-card/mr-approval-card.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 517,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2019-04-16T17:50:18Z",
+      "side": 1,
+      "message": "nit: If you use `forEach()` instead of `some()`, you don\u0027t need to return anything.",
+      "revId": "404e1ca01668cf8d5a74cfcda2546691d2c1a8e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "efd75075_935cd80a",
+        "filename": "appengine/monorail/static_src/elements/flt/mr-comment-list/mr-comment-list.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2019-04-16T17:50:18Z",
+      "side": 1,
+      "message": "nit: Seems like you can merge this block with the `if (commentId \u003d\u003d\u003d focusId)` block above.",
+      "revId": "404e1ca01668cf8d5a74cfcda2546691d2c1a8e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
