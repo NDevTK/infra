@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5f1f869e_e30258c1",
+        "filename": "go/src/infra/appengine/arquebus/app/backend/backend.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2019-04-17T14:28:08Z",
+      "side": 1,
+      "message": "Transactions are kinda expensive. If you expect this call to be made close to ~1QPS, this will cause you high error rate due to transaction contention.\n\nFor use-cases like listing recent tasks, transaction is definitely not needed.",
+      "range": {
+        "startLine": 78,
+        "startChar": 1,
+        "endLine": 78,
+        "endChar": 68
+      },
+      "revId": "7f58862c7c61ed62449fe7f5622cdfe4f590c5e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
