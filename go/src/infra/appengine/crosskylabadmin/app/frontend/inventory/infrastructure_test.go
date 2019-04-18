@@ -31,40 +31,51 @@ func TestRemoveDutsFromDrones(t *testing.T) {
 		tf, validate := newTestFixture(t)
 		defer validate()
 
-		dutID := "dut_id"
-		dutHostname := "dut_hostname"
-		serverID := "server_id"
-		wrongEnvDutID := "wrong_env_dut"
-		wrongEnvDutHostname := "wrong_env_dut_hostname"
-		wrongEnvServer := "wrong_env_server"
+		stagingDut1 := testInventoryDut{
+			"staging_dut_id1",
+			"staging_dut_hostname1",
+			"model",
+			"DUT_POOL_SUITES",
+		}
+		stagingDut2 := testInventoryDut{
+			"staging_dut_id2",
+			"staging_dut_hostname2",
+			"model",
+			"DUT_POOL_SUITES",
+		}
+		prodDut := testInventoryDut{
+			"prod_dut_id",
+			"prod_dut_hostname",
+			"model",
+			"DUT_POOL_SUITES",
+		}
+		stagingServerHostname := "staging_server"
+		prodServerHostname := "prod_server"
 		err := tf.FakeGitiles.SetInventory(config.Get(tf.C).Inventory, fakes.InventoryData{
-			Lab: inventoryBytesFromDUTs([]testInventoryDut{
-				{dutID, dutHostname, "link", "DUT_POOL_SUITES"},
-				{wrongEnvDutID, wrongEnvDutHostname, "link", "DUT_POOL_SUITES"},
-			}),
+			Lab: inventoryBytesFromDUTs([]testInventoryDut{stagingDut1, prodDut}),
 			Infrastructure: inventoryBytesFromServers([]testInventoryServer{
 				{
-					hostname:    serverID,
+					hostname:    stagingServerHostname,
 					environment: inventory.Environment_ENVIRONMENT_STAGING,
-					dutIDs:      []string{dutID},
+					dutIDs:      []string{stagingDut1.id, stagingDut2.id},
 				},
 				{
-					hostname:    wrongEnvServer,
+					hostname:    prodServerHostname,
 					environment: inventory.Environment_ENVIRONMENT_PROD,
-					dutIDs:      []string{wrongEnvDutID},
+					dutIDs:      []string{prodDut.id},
 				},
 			}),
 		})
 		So(err, ShouldBeNil)
 
-		Convey("RemoveDutsFromdrone for the staging dut removes it from drone.", func() {
+		Convey("RemoveDutsFromDrones for a staging dut removes it from drone.", func() {
 			req := &fleet.RemoveDutsFromDronesRequest{
-				Removals: []*fleet.RemoveDutsFromDronesRequest_Item{{DutId: dutID}},
+				Removals: []*fleet.RemoveDutsFromDronesRequest_Item{{DutId: stagingDut1.id}},
 			}
 			resp, err := tf.Inventory.RemoveDutsFromDrones(tf.C, req)
 			So(err, ShouldBeNil)
 			So(resp.Removed, ShouldHaveLength, 1)
-			So(resp.Removed[0].DutId, ShouldEqual, dutID)
+			So(resp.Removed[0].DutId, ShouldEqual, stagingDut1.id)
 
 			So(tf.FakeGerrit.Changes, ShouldHaveLength, 1)
 			change := tf.FakeGerrit.Changes[0]
@@ -80,22 +91,22 @@ func TestRemoveDutsFromDrones(t *testing.T) {
 
 			var server *inventory.Server
 			for _, s := range infra.Servers {
-				if s.GetHostname() == serverID {
+				if s.GetHostname() == stagingServerHostname {
 					server = s
 					break
 				}
 			}
-			So(server.DutUids, ShouldBeEmpty)
+			So(server.DutUids, ShouldResemble, []string{stagingDut2.id})
 		})
 
-		Convey("RemoveDutsFromdrone for the staging dut by name removes it from drone.", func() {
+		Convey("RemoveDutsFromDrones for the staging dut by name removes it from drone.", func() {
 			req := &fleet.RemoveDutsFromDronesRequest{
-				Removals: []*fleet.RemoveDutsFromDronesRequest_Item{{DutHostname: dutHostname}},
+				Removals: []*fleet.RemoveDutsFromDronesRequest_Item{{DutHostname: stagingDut1.hostname}},
 			}
 			resp, err := tf.Inventory.RemoveDutsFromDrones(tf.C, req)
 			So(err, ShouldBeNil)
 			So(resp.Removed, ShouldHaveLength, 1)
-			So(resp.Removed[0].DutId, ShouldEqual, dutID)
+			So(resp.Removed[0].DutId, ShouldEqual, stagingDut1.id)
 
 			So(tf.FakeGerrit.Changes, ShouldHaveLength, 1)
 			change := tf.FakeGerrit.Changes[0]
@@ -111,15 +122,15 @@ func TestRemoveDutsFromDrones(t *testing.T) {
 
 			var server *inventory.Server
 			for _, s := range infra.Servers {
-				if s.GetHostname() == serverID {
+				if s.GetHostname() == stagingServerHostname {
 					server = s
 					break
 				}
 			}
-			So(server.DutUids, ShouldBeEmpty)
+			So(server.DutUids, ShouldResemble, []string{stagingDut2.id})
 		})
 
-		Convey("RemoveDutsFromdrone for a nonexistant dut returns no results.", func() {
+		Convey("RemoveDutsFromDrones for a nonexistant dut returns no results.", func() {
 			req := &fleet.RemoveDutsFromDronesRequest{
 				Removals: []*fleet.RemoveDutsFromDronesRequest_Item{{DutId: "foo"}},
 			}
@@ -129,9 +140,9 @@ func TestRemoveDutsFromDrones(t *testing.T) {
 			So(resp.Url, ShouldEqual, "")
 		})
 
-		Convey("RemoveDutsFromdrone for prod dut returns no results.", func() {
+		Convey("RemoveDutsFromDrones for prod dut returns no results.", func() {
 			req := &fleet.RemoveDutsFromDronesRequest{
-				Removals: []*fleet.RemoveDutsFromDronesRequest_Item{{DutId: wrongEnvDutID}},
+				Removals: []*fleet.RemoveDutsFromDronesRequest_Item{{DutId: prodDut.id}},
 			}
 			resp, err := tf.Inventory.RemoveDutsFromDrones(tf.C, req)
 			So(err, ShouldBeNil)
