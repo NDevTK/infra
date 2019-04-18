@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f870f6e8_dcf6b27c",
+        "filename": "appengine/monorail/webpack.config.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-04-18T23:31:22Z",
+      "side": 1,
+      "message": "Thanks for simplifying this. This is a lot nicer.",
+      "revId": "0193c05213d1c5789355586740c3dbf80acd2d13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
