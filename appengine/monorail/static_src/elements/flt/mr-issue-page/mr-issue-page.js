@@ -179,6 +179,16 @@ export class MrIssuePage extends ReduxMixin(PolymerElement) {
           </template>
         </div>
       </template>
+      <template is="dom-if" if="[[_issueIsMoved(issue.movedToRef)]]">
+        <div class="container-no-issue" id="moved">
+          <h2>Issue has moved.</h2>
+          <p>
+            This issue was moved to [[issue.movedToRef.projectName]].
+            <a class="new-location" href$="/p/[[issue.movedToRef.projectName]]/issues/detail?id=[[issue.movedToRef.localId]]">
+              Go to issue</a>.
+          </p>
+        </div>
+      </template>
       <template is="dom-if" if="[[!_issueIsEmpty(issue)]]">
         <div
           class="container-outside"
@@ -334,6 +344,9 @@ export class MrIssuePage extends ReduxMixin(PolymerElement) {
     return issue && issue.isDeleted;
   }
 
+  _issueIsMoved(ref) {
+    return ref && ref.projectName && ref.localId;
+  }
 
   _showLoading(fetchingIssue, issue) {
     return fetchingIssue && this._issueIsEmpty(issue);

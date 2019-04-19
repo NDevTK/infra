@@ -48,9 +48,14 @@ class IssuesServicer(monorail_servicer.MonorailServicer):
       mc.LookupLoggedInUserPerms(project)
       config = we.GetProjectConfig(project.project_id, use_cache=use_cache)
       if issue_required or issue_ref.local_id:
-        issue = we.GetIssueByLocalID(
-            project.project_id, issue_ref.local_id, use_cache=use_cache,
-            allow_viewing_deleted=view_deleted)
+        try:
+          issue = we.GetIssueByLocalID(
+              project.project_id, issue_ref.local_id, use_cache=use_cache,
+              allow_viewing_deleted=view_deleted)
+        except exceptions.NoSuchIssueException:
+          issue = None
+          if issue_required:
+            raise exceptions.NoSuchIssueException()
     return project, issue, config
 
   def _GetProjectIssueIDsAndConfig(
@@ -90,8 +95,27 @@ class IssuesServicer(monorail_servicer.MonorailServicer):
   @monorail_servicer.PRPCMethod
   def GetIssue(self, mc, request):
     """Return the specified issue in a response proto."""
+    issue_ref = request.issue_ref
     project, issue, config = self._GetProjectIssueAndConfig(
-        mc, request.issue_ref, view_deleted=True)
+        mc, issue_ref, view_deleted=True, issue_required=False)
+
+    if issue is None:
+      missing = issue_ref.local_id <= self.services.issue.GetHighestLocalID(
+          mc.cnxn, project.project_id)
+      if missing:
+        moved_to_ref = self.services.issue.GetCurrentLocationOfMovedIssue(
+            mc.cnxn, project.project_id, issue_ref.local_id)
+        moved_to_project_id, moved_to_id = moved_to_ref
+        moved_to_project_name = None
+
+        if moved_to_project_id is not None:
+          with work_env.WorkEnv(mc, self.services) as we:
+            moved_to_project = we.GetProject(moved_to_project_id)
+            moved_to_project_name = moved_to_project.project_name
+        return issues_pb2.IssueResponse(moved_to_ref=converters.ConvertIssueRef(
+            (moved_to_project_name, moved_to_id)))
+
+      raise exceptions.NoSuchIssueException()
 
     if issue.deleted:
       return issues_pb2.IssueResponse(
