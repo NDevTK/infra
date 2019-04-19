@@ -48,6 +48,23 @@
     },
     {
       "key": {
+        "uuid": "a6bf87ef_bf112d2c",
+        "filename": "appengine/monorail/api/issues_servicer.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-04-19T23:41:19Z",
+      "side": 1,
+      "message": "Please add a comment to describe the purpose of this block of code, or use a profile phase with a descriptive name.",
+      "revId": "5b7c75b0bf5c09515d8cfd23da40964dfa5f7e44",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "610f6ec1_e9c3767f",
         "filename": "appengine/monorail/api/issues_servicer.py",
         "patchSetId": 1
