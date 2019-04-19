@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "61ca663f_34d2d919",
+        "filename": "appengine/monorail/api/api_proto/issues.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2019-04-19T23:30:37Z",
+      "side": 1,
+      "message": "What about making this part of Issue?",
+      "range": {
+        "startLine": 64,
+        "startChar": 2,
+        "endLine": 64,
+        "endChar": 27
+      },
+      "revId": "5b7c75b0bf5c09515d8cfd23da40964dfa5f7e44",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "de44d0b3_ddcf4661",
+        "filename": "appengine/monorail/api/issues_servicer.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2019-04-19T23:30:37Z",
+      "side": 1,
+      "message": "To preserve the stack trace:\n\n  except exceptions.NoSuchIssueException as e:\n    if issue_required:\n      raise e",
+      "range": {
+        "startLine": 55,
+        "startChar": 8,
+        "endLine": 55,
+        "endChar": 46
+      },
+      "revId": "5b7c75b0bf5c09515d8cfd23da40964dfa5f7e44",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "610f6ec1_e9c3767f",
+        "filename": "appengine/monorail/api/issues_servicer.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2019-04-19T23:30:37Z",
+      "side": 1,
+      "message": "GetCurrentLocationOfMovedIssue returns None, None if the issue has not been moved, so I don\u0027t think we need this.",
+      "range": {
+        "startLine": 103,
+        "startChar": 0,
+        "endLine": 103,
+        "endChar": 76
+      },
+      "revId": "5b7c75b0bf5c09515d8cfd23da40964dfa5f7e44",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
