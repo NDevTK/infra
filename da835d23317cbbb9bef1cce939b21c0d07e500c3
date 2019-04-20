@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9e83c995_f5a256a5",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/infrastructure_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-04-20T00:42:31Z",
+      "side": 1,
+      "message": "I don\u0027t like how goconvey encourages sharing setup like this.\n\nSince this is shared between four tests, I need to think about how this fixture change affects all four tests.  If all four tests were self-contained, I would only have to think about how the fixture change affects the one test.\n\nOn a similar note, it\u0027s hard to tell what exactly it is the new version of the four tests is exercising that is an improvement.\n\nIf we\u0027re trying to add coverage of a specific behavior (removing multiple DUTs), we should add a new test that tests that exact behavior, and nothing else.  We should not be doing it by changing the test fixture and also making the existing tests implicitly also include test coverage for this new behavior to test.\n\nIf I break a test \"RemoveDutsFromDrones for a staging dut removes it from drone\", it\u0027s not immediately obvious to me that it\u0027s because I broke how remove duts works on multiple DUTs and I may go on a futile hunt in the staging/environment code.",
+      "revId": "da835d23317cbbb9bef1cce939b21c0d07e500c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
