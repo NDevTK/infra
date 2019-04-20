@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "5bb35694_34486872",
+        "filename": "appengine/monorail/api/api_proto/issues.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-04-20T00:18:06Z",
+      "side": 1,
+      "message": "So I tried this and then I realized that moved_to_ref didn\u0027t really feel right being part of issue since moved_to_ref for an issue object would always be the same data as the issue\u0027s local_id and project_name.",
+      "parentUuid": "61ca663f_34d2d919",
+      "range": {
+        "startLine": 64,
+        "startChar": 2,
+        "endLine": 64,
+        "endChar": 27
+      },
+      "revId": "5b7c75b0bf5c09515d8cfd23da40964dfa5f7e44",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "de44d0b3_ddcf4661",
         "filename": "appengine/monorail/api/issues_servicer.py",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "9cc0cc0c_409fa86e",
+        "filename": "appengine/monorail/api/issues_servicer.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-04-20T00:18:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "de44d0b3_ddcf4661",
+      "range": {
+        "startLine": 55,
+        "startChar": 8,
+        "endLine": 55,
+        "endChar": 46
+      },
+      "revId": "5b7c75b0bf5c09515d8cfd23da40964dfa5f7e44",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a6bf87ef_bf112d2c",
         "filename": "appengine/monorail/api/issues_servicer.py",
         "patchSetId": 1
@@ -62,6 +110,24 @@
       "revId": "5b7c75b0bf5c09515d8cfd23da40964dfa5f7e44",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "82f46adb_1a56a9ea",
+        "filename": "appengine/monorail/api/issues_servicer.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-04-20T00:18:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a6bf87ef_bf112d2c",
+      "revId": "5b7c75b0bf5c09515d8cfd23da40964dfa5f7e44",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -85,6 +151,30 @@
       "revId": "5b7c75b0bf5c09515d8cfd23da40964dfa5f7e44",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5bb4edf9_bec0e7bd",
+        "filename": "appengine/monorail/api/issues_servicer.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-04-20T00:18:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "610f6ec1_e9c3767f",
+      "range": {
+        "startLine": 103,
+        "startChar": 0,
+        "endLine": 103,
+        "endChar": 76
+      },
+      "revId": "5b7c75b0bf5c09515d8cfd23da40964dfa5f7e44",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
