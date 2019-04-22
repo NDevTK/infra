@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "86d064e1_298f220c",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/create-test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-04-22T16:57:34Z",
+      "side": 1,
+      "message": "Worth noting also that if the task runs in a quotascheduler controlled pool, then this value will be ignored.",
+      "revId": "9fd46fbe737a09f3709c424b0d7dddb77a363279",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
