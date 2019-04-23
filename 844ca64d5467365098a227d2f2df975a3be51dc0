@@ -22,6 +22,30 @@
       "revId": "844ca64d5467365098a227d2f2df975a3be51dc0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "26d45636_b4ec69a1",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-collapse/chops-collapse.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-04-23T23:37:34Z",
+      "side": 1,
+      "message": "Yup, we now initialize property values in the constructor. I think this was a compromise Polyemr team chose to allow making the library code lighter. There\u0027s a bit more detail in the doc here: https://docs.google.com/document/d/1wUNmPQDrQCg0pnUOwd68os0MXIse6iwYFErR8h8YppA/edit#heading\u003dh.ugvvhxe3q08y \n\nopened is intializeed as undefined which evaluates the same as false, but I went ahead and explicitly made it false.",
+      "parentUuid": "ff1c356f_1534d871",
+      "range": {
+        "startLine": 50,
+        "startChar": 4,
+        "endLine": 50,
+        "endChar": 26
+      },
+      "revId": "844ca64d5467365098a227d2f2df975a3be51dc0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
