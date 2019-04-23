@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ff1c356f_1534d871",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-collapse/chops-collapse.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2019-04-23T23:28:15Z",
+      "side": 1,
+      "message": "Just checking: So we cannot set \u0027value: true\u0027 in properties() anymore?\nAlso, what is opened initialized as?",
+      "range": {
+        "startLine": 50,
+        "startChar": 4,
+        "endLine": 50,
+        "endChar": 26
+      },
+      "revId": "844ca64d5467365098a227d2f2df975a3be51dc0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
