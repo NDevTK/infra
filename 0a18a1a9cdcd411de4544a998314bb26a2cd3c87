@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "31044a45_b52b936e",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-collapse/chops-collapse.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2019-04-24T23:20:32Z",
+      "side": 1,
+      "message": "Also need to update this to \u0027chops-collapse\u0027.",
+      "revId": "0a18a1a9cdcd411de4544a998314bb26a2cd3c87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
