@@ -16,6 +16,24 @@
       "revId": "b781afd65e8ed8b68607c9774365b97aa7360663",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f32f53b1_f78d9cbc",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-collapse/chops-collapse.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-04-24T18:18:47Z",
+      "side": 1,
+      "message": "Thanks! Yeah, I didn\u0027t realize this and carried over old habits. Thanks for pointing this out before I accidentally did this for a bunch more code. :)",
+      "parentUuid": "fe55c0e0_b1b0241c",
+      "revId": "b781afd65e8ed8b68607c9774365b97aa7360663",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
