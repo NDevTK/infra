@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "955ce4ac_e99c1f88",
+        "filename": "recipes/recipes/infra_frontend_tester.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-04-29T18:18:07Z",
+      "side": 1,
+      "message": "This name doesn\u0027t reference frontend tests in any way. Would it make sense to rename it to RunInfraInternalFrontendTests or something similar?",
+      "range": {
+        "startLine": 45,
+        "startChar": 4,
+        "endLine": 45,
+        "endChar": 25
+      },
+      "revId": "f6643255e089deb94b6fd24782deb354d9e0a3f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9d047c55_db3da8f6",
+        "filename": "recipes/recipes/infra_frontend_tester.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-04-29T18:18:07Z",
+      "side": 1,
+      "message": "Same q as above",
+      "range": {
+        "startLine": 55,
+        "startChar": 4,
+        "endLine": 55,
+        "endChar": 17
+      },
+      "revId": "f6643255e089deb94b6fd24782deb354d9e0a3f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
