@@ -27,26 +27,23 @@ suite('mr-comment', () => {
       timestamp: 1549319989,
     };
     document.body.appendChild(element);
-
-    sinon.stub(window, 'requestAnimationFrame').callsFake((func) => func());
   });
 
   teardown(() => {
     document.body.removeChild(element);
-
-    window.requestAnimationFrame.restore();
   });
 
   test('initializes', () => {
     assert.instanceOf(element, MrComment);
   });
 
-  test('scrolls to comment', () => {
+  test('scrolls to comment', async () => {
     flush();
 
     sinon.stub(element, 'scrollIntoView');
 
-    element.focusId = 'c3';
+    element.highlighted = true;
+    await element.updateComplete;
 
     assert.isTrue(element.scrollIntoView.calledOnce);
 
