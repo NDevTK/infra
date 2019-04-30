@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "0e71087d_d36ed855",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/mr-comment-list/mr-comment.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2019-04-30T19:47:29Z",
+      "side": 1,
+      "message": "Stylistically, I disagree with this naming scheme. A function name should only begin with a verb if it mutates state.",
+      "parentUuid": "b675afdb_26816527",
+      "range": {
+        "startLine": 101,
+        "startChar": 8,
+        "endLine": 101,
+        "endChar": 22
+      },
+      "revId": "1e269cf7123d7929d57d3da25b70f6fd2a6b496e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e99fca04_895dd755",
         "filename": "appengine/monorail/static_src/elements/issue-detail/mr-comment-list/mr-comment.js",
         "patchSetId": 3
@@ -45,6 +69,30 @@
       "revId": "1e269cf7123d7929d57d3da25b70f6fd2a6b496e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d5cc8366_9f60bc62",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/mr-comment-list/mr-comment.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2019-04-30T19:47:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e99fca04_895dd755",
+      "range": {
+        "startLine": 102,
+        "startChar": 0,
+        "endLine": 102,
+        "endChar": 21
+      },
+      "revId": "1e269cf7123d7929d57d3da25b70f6fd2a6b496e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
