@@ -23,6 +23,30 @@
       "revId": "8338c67b29721bdb3e7c2d36ba52da55bfcdf1f6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "36e5cc07_cc7d1e63",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/mr-comment-list/mr-comment.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2019-04-30T23:07:24Z",
+      "side": 1,
+      "message": "Eslint is wrong here. It seems to have trouble with JS in templates.",
+      "parentUuid": "87940eb9_283d7061",
+      "range": {
+        "startLine": 136,
+        "startChar": 0,
+        "endLine": 136,
+        "endChar": 18
+      },
+      "revId": "8338c67b29721bdb3e7c2d36ba52da55bfcdf1f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

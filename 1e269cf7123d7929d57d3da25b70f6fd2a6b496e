@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "7245ec7d_c2280452",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/mr-comment-list/mr-comment.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2019-04-30T23:07:24Z",
+      "side": 1,
+      "message": "Yes! It\u0027s not a Google style guideline, but an Apple one:\nhttps://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/CodingGuidelines/Articles/NamingMethods.html\n\nThe Google naming guidelines are at: https://go/longnamesarelong\n\nPrefixing with \"_compute\" was a Polymer style convention and, I would argue, not a particularly good one. Both of the guidelines above ask you to omit such boilerplate words.\n\nSome boolean rules are at http://wiki.c2.com/?GoodVariableNames (linked from go/longnamesarelong)\nIn practice, most boolean methods will end up starting with a modal verb, e.g.: can, has, is, must, needs, should, will.",
+      "parentUuid": "5ff9df39_ac092cda",
+      "range": {
+        "startLine": 101,
+        "startChar": 8,
+        "endLine": 101,
+        "endChar": 22
+      },
+      "revId": "1e269cf7123d7929d57d3da25b70f6fd2a6b496e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e99fca04_895dd755",
         "filename": "appengine/monorail/static_src/elements/issue-detail/mr-comment-list/mr-comment.js",
         "patchSetId": 3
