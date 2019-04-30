@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "5ff9df39_ac092cda",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/mr-comment-list/mr-comment.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-04-30T20:19:40Z",
+      "side": 1,
+      "message": "I don\u0027t have a super strong opinion here, so that\u0027s fine. But, as a followup question, is the principle of having function names only beginning with verbs when they mutate state documented anywhere? \n\nThis convention seems to suggest that getters with prefixes are named wrong and, more immediately, that all of our _compute functions should have their prefixes removed when transitioning. I also sort of wonder about boolean values with names that often start with verbs (ie: showComments), which I think might become confusing. I\u0027m definitely okay with making these changes if we feel it\u0027s better, but I\u0027d like to have a bit more context on this style rule.",
+      "parentUuid": "0e71087d_d36ed855",
+      "range": {
+        "startLine": 101,
+        "startChar": 8,
+        "endLine": 101,
+        "endChar": 22
+      },
+      "revId": "1e269cf7123d7929d57d3da25b70f6fd2a6b496e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e99fca04_895dd755",
         "filename": "appengine/monorail/static_src/elements/issue-detail/mr-comment-list/mr-comment.js",
         "patchSetId": 3
