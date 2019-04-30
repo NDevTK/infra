@@ -97,6 +97,30 @@
     },
     {
       "key": {
+        "uuid": "b31c2bf6_dc5dd8d3",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/mr-comment-list/mr-comment.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-04-30T23:17:11Z",
+      "side": 1,
+      "message": "Thanks for the links! Great reads. I like the rationale. \n\nI can see your point about _compute - it gets pretty boilerplate-y and often isn\u0027t a super useful function name. I\u0027d be happy to drop prefixes like _compute in favor of instead describing what the computed data is as we go forward.",
+      "parentUuid": "7245ec7d_c2280452",
+      "range": {
+        "startLine": 101,
+        "startChar": 8,
+        "endLine": 101,
+        "endChar": 22
+      },
+      "revId": "1e269cf7123d7929d57d3da25b70f6fd2a6b496e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e99fca04_895dd755",
         "filename": "appengine/monorail/static_src/elements/issue-detail/mr-comment-list/mr-comment.js",
         "patchSetId": 3
