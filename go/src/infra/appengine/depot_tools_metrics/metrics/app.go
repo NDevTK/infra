@@ -17,9 +17,11 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"github.com/xeipuuv/gojsonschema"
+	"go.chromium.org/luci/appengine/gaemiddleware/standard"
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/server/router"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine"
-	"google.golang.org/appengine/log"
 )
 
 const (
@@ -41,25 +43,30 @@ func (m Metrics) Save() (map[string]bigquery.Value, string, error) {
 }
 
 func init() {
-	http.HandleFunc("/should-upload", shouldUploadHandler)
-	http.HandleFunc("/upload", uploadHandler)
+	r := router.New()
+	standard.InstallHandlers(r)
+
+	r.GET("/should-upload", standard.Base(), shouldUploadHandler)
+	r.POST("/upload", standard.Base(), uploadHandler)
+
+	http.DefaultServeMux.Handle("/", r)
 }
 
 // shouldUploadHandler handles the '/should-upload' endpoint, which is used by
 // depot_tools to check whether it should collect and upload metrics.
 // It returns 200 if the request in coming from a corp machine, and thus a
 // Googler, and 403 otherwise.
-func shouldUploadHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/should-upload" {
-		http.NotFound(w, r)
+func shouldUploadHandler(c *router.Context) {
+	if c.Request.URL.Path != "/should-upload" {
+		http.NotFound(c.Writer, c.Request)
 		return
 	}
 	// TRUSTED_IP_REQUEST=1 means the request is coming from a corp machine.
-	if r.Header.Get("X-AppEngine-Trusted-IP-Request") != "1" {
-		http.Error(w, "Access Denied: You're not on corp.", http.StatusForbidden)
+	if c.Request.Header.Get("X-AppEngine-Trusted-IP-Request") != "1" {
+		http.Error(c.Writer, "Access Denied: You're not on corp.", http.StatusForbidden)
 		return
 	}
-	fmt.Fprintf(w, "Success")
+	fmt.Fprintf(c.Writer, "Success")
 }
 
 // uploadHandler handles the '/upload' endpoint, which is used by depot_tools
@@ -68,35 +75,33 @@ func shouldUploadHandler(w http.ResponseWriter, r *http.Request) {
 // projectID.datasetID.tableID.
 // It returns 200 if the request suceeds, 300 if there was an internal error
 // and 403 if the connection is not coming from a corp machine.
-func uploadHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/upload" {
-		http.NotFound(w, r)
+func uploadHandler(c *router.Context) {
+	if c.Request.URL.Path != "/upload" {
+		http.NotFound(c.Writer, c.Request)
 		return
 	}
 	// TRUSTED_IP_REQUEST=1 means the request is comming from a corp machine.
-	if r.Header.Get("X-AppEngine-Trusted-IP-Request") != "1" {
-		http.Error(w, "Access Denied: You're not on corp.", http.StatusForbidden)
+	if c.Request.Header.Get("X-AppEngine-Trusted-IP-Request") != "1" {
+		http.Error(c.Writer, "Access Denied: You're not on corp.", http.StatusForbidden)
 		return
 	}
 
-	// Create a new App Engine context from the request.
-	ctx := appengine.NewContext(r)
-
-	metrics, err := extractMetrics(r.Body)
+	metrics, err := extractMetrics(c.Request.Body)
 	if err != nil {
-		log.Errorf(ctx, "Could not extract metrics: %v", err)
-		log.Errorf(ctx, "Reported metrics: %v", metrics)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		logging.Errorf(c.Context, "Could not extract metrics: %v", err)
+		logging.Errorf(c.Context, "Reported metrics: %v", metrics)
+		http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	ctx := appengine.WithContext(c.Context, c.Request)
 	err = putMetrics(ctx, metrics)
 	if err != nil {
-		log.Errorf(ctx, "Could not write to BQ: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		logging.Errorf(c.Context, "Could not write to BQ: %v", err)
+		http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Fprintf(w, "Success")
+	fmt.Fprintf(c.Writer, "Success")
 }
 
 // extractMetrics extracts the Metrics from the request, and enforces the JSON
