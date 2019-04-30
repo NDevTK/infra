@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "b675afdb_26816527",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/mr-comment-list/mr-comment.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-04-30T00:30:47Z",
+      "side": 1,
+      "message": "Optional nit: Consider prefixing these functions with _renderHeading, etc to make it easier to immediately scan what they do and to make it more immediately obvious that they\u0027re grouped with render()",
+      "range": {
+        "startLine": 101,
+        "startChar": 8,
+        "endLine": 101,
+        "endChar": 22
+      },
+      "revId": "1e269cf7123d7929d57d3da25b70f6fd2a6b496e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e99fca04_895dd755",
         "filename": "appengine/monorail/static_src/elements/issue-detail/mr-comment-list/mr-comment.js",
         "patchSetId": 3
