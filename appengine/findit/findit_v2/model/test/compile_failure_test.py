@@ -15,6 +15,7 @@ from findit_v2.model.compile_failure import CompileRerunBuild
 from findit_v2.model.gitiles_commit import GitilesCommit
 from findit_v2.model.luci_build import LuciFailedBuild
 from findit_v2.services.failure_type import StepTypeEnum
+from libs import analysis_status
 from waterfall.test import wf_testcase
 
 
@@ -56,7 +57,7 @@ class CompileFailureTest(wf_testcase.WaterfallTestCase):
     failures_in_build = CompileFailure.query(ancestor=build_key).fetch()
     self.assertEqual(2, len(failures_in_build))
     self.assertItemsEqual([['target1.o'], ['target2.o']],
-                          [f.output_targets for f in failures_in_build])
+                          [f.GetFailureIdentifier() for f in failures_in_build])
 
   def testCompileFailureGroup(self):
     CompileFailureGroup.Create(
@@ -99,6 +100,9 @@ class CompileFailureTest(wf_testcase.WaterfallTestCase):
     self._CreateCompileFailureAnalysis()
     analysis = CompileFailureAnalysis.GetVersion(self.build_id)
     self.assertIsNotNone(analysis)
+    self.assertItemsEqual({
+        'compile': ['target1.o', 'target2.o']
+    }, analysis.failed_targets)
 
   def _CreateCompileRerunBuild(self, build_id, commit_position, analysis_key):
     build = CompileRerunBuild.Create(
