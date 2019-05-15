@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chai';
-import {MrEditStatus} from './mr-edit-status.js';
+import {MrEditStatus, INVALID_MERGED_INTO_INPUT} from './mr-edit-status.js';
 
 
 let element;
@@ -28,7 +28,7 @@ describe('mr-edit-status', () => {
   });
 
   it('delta empty when no changes', () => {
-    assert.deepEqual(element.getDelta(), {});
+    assert.deepEqual(element.getDelta(), {result: {}, error: null});
   });
 
   it('change status', async () => {
@@ -43,7 +43,8 @@ describe('mr-edit-status', () => {
     await element.updateComplete;
 
     assert.deepEqual(element.getDelta(), {
-      status: 'Old',
+      result: {status: 'Old'},
+      error: null,
     });
   });
 
@@ -58,13 +59,16 @@ describe('mr-edit-status', () => {
 
     await element.updateComplete;
 
-    element.shadowRoot.querySelector('#mergedIntoInput').setValue('chromium:123');
+    element.shadowRoot.querySelector('#mergedIntoInput').setValue('proj:123');
     assert.deepEqual(element.getDelta(), {
-      status: 'Duplicate',
-      mergedIntoRef: {
-        projectName: 'chromium',
-        localId: 123,
+      result: {
+        status: 'Duplicate',
+        mergedIntoRef: {
+          projectName: 'proj',
+          localId: 123,
+        },
       },
+      error: null,
     });
   });
 
@@ -81,8 +85,29 @@ describe('mr-edit-status', () => {
     await element.updateComplete;
 
     assert.deepEqual(element.getDelta(), {
-      status: 'New',
-      mergedIntoRef: {},
+      result: {
+        status: 'New',
+        mergedIntoRef: {},
+      },
+      error: null,
+    });
+  });
+
+  it('invalid merged into ref', async () => {
+    element.initialStatus = 'New';
+
+    await element.updateComplete;
+
+    const statusInput = element.shadowRoot.querySelector('select');
+    statusInput.value = 'Duplicate';
+    statusInput.dispatchEvent(new Event('change'));
+
+    await element.updateComplete;
+
+    element.shadowRoot.querySelector('#mergedIntoInput').setValue('foo');
+    assert.deepEqual(element.getDelta(), {
+      result: null,
+      error: INVALID_MERGED_INTO_INPUT,
     });
   });
 });
