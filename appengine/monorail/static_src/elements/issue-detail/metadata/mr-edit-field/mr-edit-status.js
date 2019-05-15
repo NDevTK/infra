@@ -9,6 +9,8 @@ import {SHARED_STYLES} from 'elements/shared/shared-styles';
 import './mr-edit-field.js';
 
 
+export const INVALID_MERGED_INTO_INPUT = 'Invalid issue ref for merged into.';
+
 /**
  * `<mr-edit-status>`
  *
@@ -147,17 +149,20 @@ export class MrEditStatus extends LitElement {
       result['status'] = this.status;
     }
 
-    if (this.initialStatus === 'Duplicate' && !this._showMergedInto) {
-      result['mergedIntoRef'] = {};
-    } else if (this._showMergedInto) {
+    if (this._showMergedInto) {
       const newMergedInto = this.shadowRoot.querySelector(
         '#mergedIntoInput').value;
-      if (newMergedInto !== this.mergedInto) {
-        result['mergedIntoRef'] = issueStringToRef(projectName, newMergedInto);
+      const newMergedIntoRef = issueStringToRef(projectName, newMergedInto);
+      if (!newMergedIntoRef) {
+        return {result: null, error: INVALID_MERGED_INTO_INPUT};
+      } else if (newMergedInto !== this.mergedInto) {
+        result['mergedIntoRef'] = newMergedIntoRef;
       }
+    } else if (this.initialStatus === 'Duplicate') {
+      result['mergedIntoRef'] = {};
     }
 
-    return result;
+    return {result, error: null};
   }
 
   _selectChangeHandler(e) {

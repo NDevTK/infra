@@ -23,7 +23,7 @@ import * as issue from 'elements/reducers/issue.js';
 import * as project from 'elements/reducers/project.js';
 import * as ui from 'elements/reducers/ui.js';
 import '../mr-edit-field/mr-edit-field.js';
-import '../mr-edit-field/mr-edit-status.js';
+import {INVALID_MERGED_INTO_INPUT} from '../mr-edit-field/mr-edit-status.js';
 import {ISSUE_EDIT_PERMISSION, ISSUE_EDIT_SUMMARY_PERMISSION,
   ISSUE_EDIT_STATUS_PERMISSION, ISSUE_EDIT_OWNER_PERMISSION,
   ISSUE_EDIT_CC_PERMISSION,
@@ -682,18 +682,24 @@ export class MrEditMetadata extends connectStore(LitElement) {
     const result = {};
     const root = this.shadowRoot;
 
-    if (this._canEditStatus) {
-      const statusInput = root.querySelector('#statusInput');
-      if (statusInput) {
-        Object.assign(result, statusInput.getDelta(this.projectName));
+    const statusInput = root.querySelector('#statusInput');
+    if (this._canEditStatus && statusInput) {
+      const statusDelta = statusInput.getDelta(this.projectName);
+      if (statusDelta.error) {
+        this.error = statusDelta.error;
+        return {};
+      } else if (this.error === INVALID_MERGED_INTO_INPUT) {
+        this.error = null;
       }
+      Object.assign(result, statusDelta.result);
     }
 
     if (this.isApproval) {
       if (this._canEditIssue && this.hasApproverPrivileges) {
-        this._addListChangesToDelta(
-          result, 'approversInput', 'approverRefsAdd', 'approverRefsRemove',
-          displayNameToUserRef);
+        if (!this._updateDeltaWithAddedAndRemoved(
+              result, 'approvers', 'approverRefs', displayNameToUserRef)) {
+          return {};
+        }
       }
     } else {
       // TODO(zhangtiff): Consider representing baked-in fields such as owner,
@@ -720,33 +726,42 @@ export class MrEditMetadata extends connectStore(LitElement) {
       }
 
       if (this._canEditCC) {
-        this._addListChangesToDelta(result, 'ccInput',
-          'ccRefsAdd', 'ccRefsRemove', displayNameToUserRef);
+        if (!this._updateDeltaWithAddedAndRemoved(
+              result, 'cc', 'ccRefs', displayNameToUserRef)) {
+          return {};
+        }
       }
 
       if (this._canEditIssue) {
-        this._addListChangesToDelta(result, 'labelsInput',
-          'labelRefsAdd', 'labelRefsRemove', labelStringToRef);
+        if (!this._updateDeltaWithAddedAndRemoved(
+              result, 'labels', 'labelRefs', labelStringToRef)) {
+          return {};
+        }
 
-        this._addListChangesToDelta(result, 'componentsInput',
-          'compRefsAdd', 'compRefsRemove', componentStringToRef);
+        if (!this._updateDeltaWithAddedAndRemoved(
+              result, 'components', 'compRefs', componentStringToRef)) {
+          return {};
+        }
 
-        this._addListChangesToDelta(result, 'blockedOnInput',
-          'blockedOnRefsAdd', 'blockedOnRefsRemove',
-          issueStringToRef.bind(null, this.projectName));
+        if (!this._updateDeltaWithAddedAndRemoved(
+              result, 'blockedOn', 'blockedOnRefs',
+              issueStringToRef.bind(null, this.projectName))) {
+          return {};
+        }
 
-        this._addListChangesToDelta(result, 'blockingInput',
-          'blockingRefsAdd', 'blockingRefsRemove',
-          issueStringToRef.bind(null, this.projectName));
+        if (!this._updateDeltaWithAddedAndRemoved(
+              result, 'blocking', 'blockingRefs',
+              issueStringToRef.bind(null, this.projectName))) {
+          return {};
+        }
       }
     }
 
     if (this._canEditIssue) {
       const fieldDefs = this.fieldDefs || [];
-      fieldDefs.forEach(({fieldRef}) => {
-        const fieldNameInput = this._idForField(fieldRef.fieldName);
-        this._addListChangesToDelta(
-          result, fieldNameInput, 'fieldValsAdd', 'fieldValsRemove',
+      const succeeded = fieldDefs.every(({fieldRef}) => {
+        return this._updateDeltaWithAddedAndRemoved(
+          result, fieldRef.fieldName, 'fieldVals',
           (v) => {
             return {
               fieldRef: {
@@ -758,6 +773,9 @@ export class MrEditMetadata extends connectStore(LitElement) {
           }
         );
       });
+      if (!succeeded) {
+        return {};
+      }
     }
 
     return result;
@@ -783,24 +801,35 @@ export class MrEditMetadata extends connectStore(LitElement) {
     this._debouncedProcessChanges();
   }
 
-  _addListChangesToDelta(delta, inputId, addedKey, removedKey, mapFn) {
+  _updateDeltaWithAddedAndRemoved(delta, fieldName, key, mapFn) {
     const root = this.shadowRoot;
-    const input = root.querySelector(`#${inputId}`);
+    const input = root.querySelector(`#${fieldName}Input`);
     if (!input) return;
-    const valuesAdded = input.getValuesAdded();
-    const valuesRemoved = input.getValuesRemoved();
-    if (valuesAdded && valuesAdded.length) {
-      if (!delta.hasOwnProperty(addedKey)) {
-        delta[addedKey] = [];
-      }
-      delta[addedKey].push(...valuesAdded.map(mapFn));
+    const errorMsg = `Invalid input for field ${fieldName}.`;
+    if (!this._addListChangesToDelta(
+          delta, input.getValuesAdded(), key + 'Add', mapFn, errorMsg)) {
+      return false;
     }
-    if (valuesRemoved && valuesRemoved.length) {
-      if (!delta.hasOwnProperty(removedKey)) {
-        delta[removedKey] = [];
-      }
-      delta[removedKey].push(...valuesRemoved.map(mapFn));
+    if (!this._addListChangesToDelta(
+          delta, input.getValuesRemoved(), key + 'Remove', mapFn, errorMsg)) {
+      return false;
     }
+    return true;
+  }
+
+  _addListChangesToDelta(delta, values, key, mapFn, errorMsg) {
+    if (!values || !values.length) return true;
+    if (!delta.hasOwnProperty(key)) delta[key] = [];
+
+    const mappedValues = values.map(mapFn);
+    if (!mappedValues.every(Boolean)) {
+      this.error = errorMsg;
+      return false;
+    } else if (this.error === errorMsg) {
+      this.error = '';
+    }
+    delta[key].push(...mappedValues);
+    return true;
   }
 
   // This function exists because <label for="inputId"> doesn't work for custom
