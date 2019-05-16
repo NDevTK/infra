@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e6137023_b530669e",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/metadata/mr-edit-metadata/mr-edit-issue.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-05-16T02:53:14Z",
+      "side": 1,
+      "message": "Nit: With getters, I\u0027ve typically been omitting the () since you can just do form.delta",
+      "range": {
+        "startLine": 129,
+        "startChar": 23,
+        "endLine": 129,
+        "endChar": 25
+      },
+      "revId": "91c3f43373a94e4aa6d248a4b876b73183c99703",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "af4c1190_4ac04b97",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/metadata/mr-edit-metadata/mr-edit-metadata.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 687,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-05-16T02:53:14Z",
+      "side": 1,
+      "message": "Nit: Would it make sense to use instanceof instead of name to check the error type here? That would be a little less prone to typos and might work better with IDE autocompletion/automated refactoring and the like.",
+      "range": {
+        "startLine": 687,
+        "startChar": 6,
+        "endLine": 687,
+        "endChar": 47
+      },
+      "revId": "91c3f43373a94e4aa6d248a4b876b73183c99703",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b5811189_10a0a179",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/metadata/mr-edit-metadata/mr-edit-metadata.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 809,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-05-16T02:53:14Z",
+      "side": 1,
+      "message": "UX nit: Would it be possible to make this error message more descriptive? \n\nFor example, if this error message refers to a bug, then maybe it could tell the user that the input has to be a valid bug ID (maybe listing out formats). Or if it\u0027s an email, it could tell the user that it\u0027s an email. \n\nIf that would be a lot of work to do with the way the code is set up, then a TODO is fine as well.",
+      "revId": "91c3f43373a94e4aa6d248a4b876b73183c99703",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
