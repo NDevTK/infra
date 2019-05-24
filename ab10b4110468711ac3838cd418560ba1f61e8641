@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "17f450e4_1611f84c",
+        "filename": "infra/services/swarm_docker/main_helpers.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2019-05-24T20:55:29Z",
+      "side": 1,
+      "message": "This exposes another API for the cron. Right now its execution is wholly configured via cmd line args. This would open another way of affecting that, making it even harder to reason about.\n\nEverything here should be cmd line args instead. I know how much you hate plumbing vars, so consider just filing a bug instead, and I\u0027ll get to it when I can.",
+      "revId": "ab10b4110468711ac3838cd418560ba1f61e8641",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
