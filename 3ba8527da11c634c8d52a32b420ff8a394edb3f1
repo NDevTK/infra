@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4e8bc07a_1df57e4e",
+        "filename": "appengine/findit/services/test_failure/ci_test_failure.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-05-24T18:24:20Z",
+      "side": 1,
+      "message": "Consider replacing this ternary operator with a regular if/else block so that autoformat does not break step.log_data weirdly.",
+      "revId": "3ba8527da11c634c8d52a32b420ff8a394edb3f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
