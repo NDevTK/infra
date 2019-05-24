@@ -16,6 +16,24 @@
       "revId": "ab10b4110468711ac3838cd418560ba1f61e8641",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8628457d_633ae32f",
+        "filename": "infra/services/swarm_docker/main_helpers.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2019-05-24T21:14:51Z",
+      "side": 1,
+      "message": "That makes sense... so do the opposite and pass the docker version via arg?  s/args.canary/args.docker_version/ and if docker_version \u003d\u003d \u0027latest\u0027 then install latest?",
+      "parentUuid": "17f450e4_1611f84c",
+      "revId": "ab10b4110468711ac3838cd418560ba1f61e8641",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
