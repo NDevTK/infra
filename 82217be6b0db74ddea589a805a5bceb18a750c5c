@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5da47293_c500c325",
+        "filename": "appengine/monorail/businesslogic/work_env.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 1712,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-05-28T16:09:36Z",
+      "side": 1,
+      "message": "\"Censored\" -\u003e \"Redacted\".",
+      "revId": "82217be6b0db74ddea589a805a5bceb18a750c5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "302dc1b9_1ad662d2",
+        "filename": "appengine/monorail/features/filterrules_helpers.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 772,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-05-28T16:09:36Z",
+      "side": 1,
+      "message": "You could return the set.  LookupUserEmails() can accept a set.",
+      "revId": "82217be6b0db74ddea589a805a5bceb18a750c5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "738c21b7_a12ff6c5",
+        "filename": "appengine/monorail/features/filterrules_helpers.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 776,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-05-28T16:09:36Z",
+      "side": 1,
+      "message": "You can avoid creation of temporary list objects and be more clear by writing it like:\nif rule.default_owner_id:\n  user_ids.add(rule.default_owner_id)\nuser_ids.update(rule.add_cc_ids)",
+      "revId": "82217be6b0db74ddea589a805a5bceb18a750c5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
