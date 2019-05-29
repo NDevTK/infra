@@ -1,5 +1,5 @@
 # Copyright 2016 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style
+# Use of this source code is govered by a BSD-style
 # license that can be found in the LICENSE file or at
 # https://developers.google.com/open-source/licenses/bsd
 
@@ -23,6 +23,7 @@ from features import filterrules
 from features import userhotlists
 from features import inboundemail
 from features import notify
+from features import pubsub
 from features import rerankhotlist
 from features import savedqueries
 from features import spammodel
@@ -69,18 +70,19 @@ from sitewide import userprofile
 from sitewide import usersettings
 from sitewide import userclearbouncing
 from sitewide import userupdates
+from sitewide import usercommits
 
 from tracker import componentcreate
 from tracker import componentdetail
 from tracker import fieldcreate
 from tracker import fielddetail
+from tracker import issueapproval
 from tracker import issueadmin
 from tracker import issueadvsearch
 from tracker import issueattachment
 from tracker import issueattachmenttext
 from tracker import issuebulkedit
 from tracker import issuedetail
-from tracker import issuedetailezt
 from tracker import issueentry
 from tracker import issueentryafterlogin
 from tracker import issueexport
@@ -176,11 +178,6 @@ class ServletRegistry(object):
 
   def _RegisterProjectHandlers(self):
     """Register page and form handlers that operate within a project."""
-
-    self._SetupServlets({
-        # Note: the following are at URLS that are not externally accessible.
-        urls.NOTIFY_RULES_DELETED_TASK: notify.NotifyRulesDeletedTask,
-    })
     self._SetupProjectServlets({
         urls.ADMIN_INTRO: projectsummary.ProjectSummary,
         urls.PEOPLE_LIST: peoplelist.PeopleList,
@@ -217,18 +214,21 @@ class ServletRegistry(object):
           componentexport.ComponentTrainingDataExport,
         urls.COMPONENT_DATA_EXPORT_TASK:
           componentexport.ComponentTrainingDataExportTask,
+        urls.COMMIT_DATA_CRON: usercommits.GetCommitsCron,
         urls.FLT_ISSUE_CONVERSION_TASK: fltconversion.FLTConvertTask,
+        urls.PUBLISH_PUBSUB_ISSUE_CHANGE_TASK: pubsub.PublishPubsubIssueChangeTask,
         })
 
     self._SetupProjectServlets({
-        urls.ISSUE_APPROVAL: issuedetail.IssueDetailRedirect,
+        urls.ISSUE_APPROVAL: issueapproval.IssueApproval,
         urls.ISSUE_LIST: issuelist.IssueList,
         urls.ISSUE_LIST_CSV: issuelistcsv.IssueListCsv,
         urls.ISSUE_REINDEX: issuereindex.IssueReindex,
-        urls.ISSUE_DETAIL_FLIPPER_NEXT: issuedetailezt.FlipperNext,
-        urls.ISSUE_DETAIL_FLIPPER_PREV: issuedetailezt.FlipperPrev,
-        urls.ISSUE_DETAIL_FLIPPER_LIST: issuedetailezt.FlipperList,
-        urls.ISSUE_DETAIL_FLIPPER_INDEX: issuedetailezt.FlipperIndex,
+        urls.ISSUE_DETAIL: issuedetail.IssueDetail,
+        urls.ISSUE_DETAIL_FLIPPER_NEXT: issuedetail.FlipperNext,
+        urls.ISSUE_DETAIL_FLIPPER_PREV: issuedetail.FlipperPrev,
+        urls.ISSUE_DETAIL_FLIPPER_LIST: issuedetail.FlipperList,
+        urls.ISSUE_DETAIL_FLIPPER_INDEX: issuedetail.FlipperIndex,
         urls.ISSUE_ENTRY: issueentry.IssueEntry,
         urls.ISSUE_ENTRY_AFTER_LOGIN: issueentryafterlogin.IssueEntryAfterLogin,
         urls.ISSUE_TIPS: issuetips.IssueSearchTips,
@@ -256,19 +256,6 @@ class ServletRegistry(object):
         urls.ISSUE_IMPORT: issueimport.IssueImport,
         urls.SPAM_MODERATION_QUEUE: spam.ModerationQueue,
         })
-
-    # GETs for /issues/detail are now handled by the polymer page.
-    # Whereas GETs and POSTs to /issues/detail.do and /issues/detail_ezt.*
-    # are handled by the EZT servlet.
-    base = '/p/<project_name:%s>' % self._PROJECT_NAME_REGEX
-    self._AddRoute(base + urls.ISSUE_DETAIL,
-                   issuedetail.IssueDetail, 'GET')
-    self._AddRoute(base + urls.ISSUE_DETAIL + '.do',
-                   issuedetailezt.IssueDetailEzt, 'POST')
-    self._AddRoute(base + urls.ISSUE_DETAIL_LEGACY,
-                   issuedetailezt.IssueDetailEzt, 'GET')
-    self._AddRoute(base + urls.ISSUE_DETAIL_LEGACY + '.do',
-                   issuedetailezt.IssueDetailEzt, 'POST')
 
     self._SetupUserServlets({
         urls.SAVED_QUERIES: savedqueries.SavedQueries,

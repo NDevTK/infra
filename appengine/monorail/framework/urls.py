@@ -1,5 +1,5 @@
 # Copyright 2016 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style
+# Use of this source code is govered by a BSD-style
 # license that can be found in the LICENSE file or at
 # https://developers.google.com/open-source/licenses/bsd
 
@@ -49,7 +49,6 @@ NOTIFY_ISSUE_CHANGE_TASK = '/_task/notifyIssueChange'
 NOTIFY_BLOCKING_CHANGE_TASK = '/_task/notifyBlockingChange'
 NOTIFY_BULK_CHANGE_TASK = '/_task/notifyBulkEdit'
 NOTIFY_APPROVAL_CHANGE_TASK = '/_task/notifyApprovalChange'
-NOTIFY_RULES_DELETED_TASK = '/_task/notifyRulesDeleted'
 OUTBOUND_EMAIL_TASK = '/_task/outboundEmail'
 SPAM_DATA_EXPORT_TASK = '/_task/spamDataExport'
 BAN_SPAMMER_TASK = '/_task/banSpammer'
@@ -58,6 +57,9 @@ COMPONENT_DATA_EXPORT_TASK = '/_task/componentDataExportTask'
 
 # URL for manually triggered FLT launch issue conversion job.
 FLT_ISSUE_CONVERSION_TASK = '/_task/fltConversionTask'
+
+# URL for pubsub publishing of issue changes.
+PUBLISH_PUBSUB_ISSUE_CHANGE_TASK = '/_task/publishPubsubIssueChange'
 
 # URLs of cron job request handlers.  Called from GAE via cron.yaml.
 REINDEX_QUEUE_CRON = '/_cron/reindexQueue'
@@ -69,6 +71,7 @@ TRIM_VISITED_PAGES_CRON = '/_cron/trimVisitedPages'
 DATE_ACTION_CRON = '/_cron/dateAction'
 SPAM_TRAINING_CRON = '/_cron/spamTraining'
 COMPONENT_DATA_EXPORT_CRON = '/_cron/componentDataExport'
+COMMIT_DATA_CRON = '/_cron/getCommitsCron'
 
 # URLs of handlers needed for GAE instance management.
 WARMUP = '/_ah/warmup'
@@ -91,7 +94,6 @@ HOTLIST_RERANK_JSON = '/rerank'
 ISSUE_APPROVAL = '/issues/approval'
 ISSUE_LIST = '/issues/list'
 ISSUE_DETAIL = '/issues/detail'
-ISSUE_DETAIL_LEGACY = '/issues/detail_ezt'
 ISSUE_DETAIL_FLIPPER_NEXT = '/issues/detail/next'
 ISSUE_DETAIL_FLIPPER_PREV = '/issues/detail/previous'
 ISSUE_DETAIL_FLIPPER_LIST = '/issues/detail/list'

@@ -1,5 +1,5 @@
 # Copyright 2018 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style
+# Use of this source code is govered by a BSD-style
 # license that can be found in the LICENSE file or at
 # https://developers.google.com/open-source/licenses/bsd
 
@@ -39,6 +39,10 @@ def PrepareAndSendIssueChangeNotification(
   taskqueue.add(
       url=urls.NOTIFY_ISSUE_CHANGE_TASK + '.do', params=params,
       queue_name=features_constants.QUEUE_NOTIFICATIONS)
+
+taskqueue.add(
+      url=urls.PUBLISH_PUBSUB_ISSUE_CHANGE_TASK + '.do', params=params,
+      queue_name=features_constants.QUEUE_PUBSUB)
 
 
 def PrepareAndSendIssueBlockingNotification(
@@ -93,18 +97,4 @@ def SendIssueBulkChangeNotification(
   logging.info('adding bulk task with params %r', params)
   taskqueue.add(
       url=urls.NOTIFY_BULK_CHANGE_TASK + '.do', params=params,
-      queue_name=features_constants.QUEUE_NOTIFICATIONS)
-
-
-def PrepareAndSendDeletedFilterRulesNotification(
-    project_id, hostport, filter_rule_strs):
-  """Create a task to notify project owners of deleted filter rules."""
-
-  params = dict(
-      project_id=project_id, filter_rules=','.join(filter_rule_strs),
-      hostport=hostport)
-
-  logging.info('adding task with params %r', params)
-  taskqueue.add(
-      url=urls.NOTIFY_RULES_DELETED_TASK + '.do', params=params,
       queue_name=features_constants.QUEUE_NOTIFICATIONS)
