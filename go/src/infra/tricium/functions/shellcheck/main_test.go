@@ -33,8 +33,8 @@ func TestRun(t *testing.T) {
 	if err != nil {
 		t.Skip("no valid shellcheck bin found; skipping test")
 	}
-	if !strings.HasPrefix(version, "0.4.") {
-		t.Skipf("got shellcheck version %q want 0.4.x; skipping test", version)
+	if !strings.HasPrefix(version, "0.6.") {
+		t.Skipf("got shellcheck version %q want 0.6.x; skipping test", version)
 	}
 
 	outputDir, err := ioutil.TempDir("", "tricium-shellcheck-test")
@@ -61,19 +61,33 @@ func TestRun(t *testing.T) {
 		t.Fatalf("results have no comments key")
 	}
 
-	if len(comments) != 1 {
-		t.Fatalf("got %d comments want 1", len(comments))
+	if len(comments) != 2 {
+		t.Fatalf("got %d comments want 2", len(comments))
 	}
 
 	comment := comments[0]
 	assertMapKeyEqual(t, comment, "category", "ShellCheck/SC2034")
 	assertMapKeyEqual(t, comment, "message",
-		"warning: unused appears unused. Verify it or export it.")
+		"warning: unused appears unused. Verify use (or export if used externally).")
 	assertMapKeyEqual(t, comment, "url",
 		"https://github.com/koalaman/shellcheck/wiki/SC2034")
 	assertMapKeyEqual(t, comment, "path", "bad.sh")
 	assertMapKeyEqual(t, comment, "startLine", float64(3))
 	assertMapKeyEqual(t, comment, "endLine", float64(3))
+	assertMapKeyEqual(t, comment, "startChar", float64(1))
+	assertMapKeyEqual(t, comment, "endChar", float64(7))
+
+	comment = comments[1]
+	assertMapKeyEqual(t, comment, "category", "ShellCheck/SC1037")
+	assertMapKeyEqual(t, comment, "message",
+		"error: Braces are required for positionals over 9, e.g. ${10}.")
+	assertMapKeyEqual(t, comment, "url",
+		"https://github.com/koalaman/shellcheck/wiki/SC1037")
+	assertMapKeyEqual(t, comment, "path", "bad.sh")
+	assertMapKeyEqual(t, comment, "startLine", float64(4))
+	assertMapKeyEqual(t, comment, "endLine", float64(4))
+	assertMapKeyEqual(t, comment, "startChar", float64(6))
+	assertMapKeyEqual(t, comment, "endChar", float64(6))
 }
 
 func assertMapKeyEqual(t *testing.T, m map[string]interface{}, k string, want interface{}) {
