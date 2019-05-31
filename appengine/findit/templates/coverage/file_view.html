@@ -118,6 +118,17 @@
 <body>
   <cats-app id="app" components="Tools>CodeCoverage" page-header="Code Coverage: line-by-line coverage (Chrome Browser for {{platform_ui_name}})">
     <div style="font-size:18px">
+    Platform:
+    <form id="platform_select_form" method="get">
+      <select id="platform_select" name="platform" onchange="this.form.submit()">
+      {% for option in platform_select.options %}
+        <option value="{{option.value}}" {% if option.selected %}selected="selected" {% endif %}>{{option.label}}</option>
+      {% endfor %}
+      </select>
+      {% for param in platform_select.params %}
+        <input type="hidden" name="{{param.name}}" value="{{param.value}}"/>
+      {% endfor %}
+    </form>
     Switch to <a href="/p/chromium/coverage/component?host={{host}}&project={{project}}&ref={{ref}}&revision={{revision}}&path=>>&platform={{platform}}">Component View</a>
     <br>
     <br>

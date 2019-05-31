@@ -89,6 +89,46 @@ _POSTSUBMIT_PLATFORM_INFO_MAP = {
 }
 
 
+def _GetMostRecentReportForEachPlatform(host, project):
+  result = {}
+  platforms = _POSTSUBMIT_PLATFORM_INFO_MAP.keys()
+  for platform in platforms:
+    bucket = _POSTSUBMIT_PLATFORM_INFO_MAP[platform]['bucket']
+    builder = _POSTSUBMIT_PLATFORM_INFO_MAP[platform]['builder']
+    query = PostsubmitReport.query(
+        PostsubmitReport.gitiles_commit.server_host == host,
+        PostsubmitReport.gitiles_commit.project == project,
+        PostsubmitReport.bucket == bucket, PostsubmitReport.builder ==
+        builder).order(-PostsubmitReport.commit_position).order(
+            -PostsubmitReport.commit_timestamp)
+    entities = query.fetch(limit=1)
+    if entities:
+      result[platform] = entities[0]
+  return result
+
+
+def _MakePlatformSelect(host, project, ref, _revision, path, current_platform):
+  result = {}
+  result['params'] = [
+      {'name': 'host', 'value': host},
+      {'name': 'project', 'value': project},
+      {'name': 'ref', 'value': ref},
+      {'name': 'path', 'value': path},
+  ]
+  result['options'] = []
+  for platform, _report in _GetMostRecentReportForEachPlatform(
+      host, project).iteritems():
+    result['options'].append({
+        'value':
+            platform,
+        'label':
+            #label,
+            _POSTSUBMIT_PLATFORM_INFO_MAP[platform]['ui_name'],
+        'selected': platform == current_platform,
+    })
+  return result
+
+
 def _GetValidatedData(gs_url):  # pragma: no cover.
   """Returns the json data from the given GS url after validation.
 
@@ -857,6 +897,9 @@ class ServeCodeCoverageData(BaseHandler):
     path = self.request.get('path')
     data_type = self.request.get('data_type')
     platform = self.request.get('platform', 'linux')
+    list_reports = self.request.get('list_reports', False)
+
+    warning = None
 
     if not data_type and path:
       if path.endswith('/'):
@@ -932,7 +975,7 @@ class ServeCodeCoverageData(BaseHandler):
       bucket = _POSTSUBMIT_PLATFORM_INFO_MAP[platform]['bucket']
       builder = _POSTSUBMIT_PLATFORM_INFO_MAP[platform]['builder']
 
-      if not revision:
+      if list_reports:
         query = PostsubmitReport.query(
             PostsubmitReport.gitiles_commit.server_host == host,
             PostsubmitReport.gitiles_commit.project == project,
@@ -958,22 +1001,37 @@ class ServeCodeCoverageData(BaseHandler):
 
         template = 'coverage/project_view.html'
         data_type = 'project'
+
       else:
-        report = PostsubmitReport.Get(
-            server_host=host,
-            project=project,
-            ref=ref,
-            revision=revision,
-            bucket=bucket,
-            builder=builder)
-        if not report:
-          return BaseHandler.CreateError('Report record not found', 404)
+        if not data_type:
+          data_type = 'dirs'
+        if not revision:
+          query = PostsubmitReport.query(
+              PostsubmitReport.gitiles_commit.server_host == host,
+              PostsubmitReport.gitiles_commit.project == project,
+              PostsubmitReport.bucket == bucket, PostsubmitReport.builder ==
+              builder).order(-PostsubmitReport.commit_position).order(
+                  -PostsubmitReport.commit_timestamp)
+          entities = query.fetch(limit=1)
+          report = entities[0]
+          revision = report.gitiles_commit.revision
+
+        else:
+          report = PostsubmitReport.Get(
+              server_host=host,
+              project=project,
+              ref=ref,
+              revision=revision,
+              bucket=bucket,
+              builder=builder)
+          if not report:
+            return BaseHandler.CreateError('Report record not found', 404)
 
         template = 'coverage/summary_view.html'
         if data_type == 'dirs':
-          path = path or '//'
+          default_path = '//'
         elif data_type == 'components':
-          path = path or '>>'
+          default_path = '>>'
         else:
           if data_type != 'files':
             return BaseHandler.CreateError(
@@ -981,6 +1039,8 @@ class ServeCodeCoverageData(BaseHandler):
                 400)
 
           template = 'coverage/file_view.html'
+
+        path = path or default_path
 
         if data_type == 'files':
           entity = FileCoverageData.Get(
@@ -991,7 +1051,12 @@ class ServeCodeCoverageData(BaseHandler):
               path=path,
               bucket=bucket,
               builder=builder)
-        else:
+          if not entity:
+            warning = ('File "%s" does exist in this report, defaulting to root'
+                       % path)
+            path = '//'
+            data_type = 'dirs'
+        if data_type != 'files':
           entity = SummaryCoverageData.Get(
               server_host=host,
               project=project,
@@ -1001,9 +1066,19 @@ class ServeCodeCoverageData(BaseHandler):
               path=path,
               bucket=bucket,
               builder=builder)
-
-        if not entity:
-          return BaseHandler.CreateError('Requested path does not exist', 404)
+          if not entity:
+            warning = ('Path "%s" does exist in this report, defaulting to root'
+                       % path)
+            path = default_path
+            entity = SummaryCoverageData.Get(
+                server_host=host,
+                project=project,
+                ref=ref,
+                revision=revision,
+                data_type=data_type,
+                path=default_path,
+                bucket=bucket,
+                builder=builder)
 
         metadata = entity.data
         data = {
@@ -1089,8 +1164,13 @@ class ServeCodeCoverageData(BaseHandler):
                   data_type,
               'path_parts':
                   path_parts,
+              'platform_select':
+                  _MakePlatformSelect(host, project, ref, revision, path,
+                                      platform),
               'banner':
                   _GetBanner(project),
+              'warning':
+                  warning,
           },
           'template': template,
       }
