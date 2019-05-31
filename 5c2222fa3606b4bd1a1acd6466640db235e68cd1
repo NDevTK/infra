@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "e33c90e2_f6ae1b5c",
+        "filename": "go/src/infra/tricium/functions/shellcheck/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1192536
+      },
+      "writtenOn": "2019-05-31T19:43:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d668173c_c6bb2d05",
+      "range": {
+        "startLine": 107,
+        "startChar": 43,
+        "endLine": 107,
+        "endChar": 44
+      },
+      "revId": "5c2222fa3606b4bd1a1acd6466640db235e68cd1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1b55d49a_94b57b8e",
         "filename": "go/src/infra/tricium/functions/shellcheck/main_test.go",
         "patchSetId": 1
@@ -39,6 +63,24 @@
       "revId": "5c2222fa3606b4bd1a1acd6466640db235e68cd1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a00f63e2_83e06a2e",
+        "filename": "go/src/infra/tricium/functions/shellcheck/main_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1192536
+      },
+      "writtenOn": "2019-05-31T19:43:13Z",
+      "side": 1,
+      "message": "Changed.  It does seem a little less boilerplate, thanks.",
+      "parentUuid": "1b55d49a_94b57b8e",
+      "revId": "5c2222fa3606b4bd1a1acd6466640db235e68cd1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
