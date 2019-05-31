@@ -1,0 +1,291 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b13727b9_af6f8252",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-05-31T22:47:43Z",
+      "side": 1,
+      "message": "How about project view?",
+      "range": {
+        "startLine": 9,
+        "startChar": 37,
+        "endLine": 9,
+        "endChar": 68
+      },
+      "revId": "12b504478eb046dfe8f93f0c8481ae9a16ef3e88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fee76250_c75e6353",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-05-31T22:47:43Z",
+      "side": 1,
+      "message": "I think we should remove \u0027Code Mauve\u0027 as they are internal code names.",
+      "range": {
+        "startLine": 87,
+        "startChar": 48,
+        "endLine": 87,
+        "endChar": 69
+      },
+      "revId": "12b504478eb046dfe8f93f0c8481ae9a16ef3e88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1d3b1d31_dc2722c6",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-05-31T22:47:43Z",
+      "side": 1,
+      "message": "Comments please.",
+      "range": {
+        "startLine": 92,
+        "startChar": 4,
+        "endLine": 92,
+        "endChar": 39
+      },
+      "revId": "12b504478eb046dfe8f93f0c8481ae9a16ef3e88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0f8906ca_cb053bcd",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-05-31T22:47:43Z",
+      "side": 1,
+      "message": "I\u0027m also a little bit confused about the design, shouldn\u0027t we try to look for the same revision first? Assuming our future plan is to sync all the builds.\n\nThis is how I imagine the logic should look like:\n1. Look for the same revision first, if not exists, default to the latest revision.\n2. Then, Look for the same path first, if not exists, default to the root.",
+      "revId": "12b504478eb046dfe8f93f0c8481ae9a16ef3e88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5bd715b4_29307d7f",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-05-31T22:47:43Z",
+      "side": 1,
+      "message": "Comments please",
+      "range": {
+        "startLine": 110,
+        "startChar": 4,
+        "endLine": 110,
+        "endChar": 23
+      },
+      "revId": "12b504478eb046dfe8f93f0c8481ae9a16ef3e88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5ae26774_d20a45f1",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-05-31T22:47:43Z",
+      "side": 1,
+      "message": "Would it be simpler to do the following?\n\nresult[\u0027params\u0027] \u003d {\n  \u0027host\u0027: host,\n  \u0027project\u0027: project,\n  \u0027ref\u0027: ref,\n  \u0027path\u0027: path,\n}",
+      "range": {
+        "startLine": 112,
+        "startChar": 0,
+        "endLine": 117,
+        "endChar": 3
+      },
+      "revId": "12b504478eb046dfe8f93f0c8481ae9a16ef3e88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2367248c_49acf96b",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-05-31T22:47:43Z",
+      "side": 1,
+      "message": "Maybe ui_name so that the naming can be consistent everywhere?",
+      "range": {
+        "startLine": 124,
+        "startChar": 9,
+        "endLine": 124,
+        "endChar": 14
+      },
+      "revId": "12b504478eb046dfe8f93f0c8481ae9a16ef3e88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0f182778_714113c9",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-05-31T22:47:43Z",
+      "side": 1,
+      "message": "Remove?",
+      "range": {
+        "startLine": 125,
+        "startChar": 12,
+        "endLine": 125,
+        "endChar": 19
+      },
+      "revId": "12b504478eb046dfe8f93f0c8481ae9a16ef3e88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dc5045cc_50cdd879",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 900,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-05-31T22:47:43Z",
+      "side": 1,
+      "message": "What\u0027s the intention of |list_reports|? Is it equivalent to \u0027not revision\u0027?",
+      "range": {
+        "startLine": 900,
+        "startChar": 0,
+        "endLine": 900,
+        "endChar": 58
+      },
+      "revId": "12b504478eb046dfe8f93f0c8481ae9a16ef3e88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "44c3f137_0f30b22b",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 902,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-05-31T22:47:43Z",
+      "side": 1,
+      "message": "This is NOT used until line number 1055, let\u0027s move it closer to where it is actually used.",
+      "revId": "12b504478eb046dfe8f93f0c8481ae9a16ef3e88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4256b76f_43ee84f2",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1008,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-05-31T22:47:43Z",
+      "side": 1,
+      "message": "Why could revision be None? Are we throwing away the revision if user switches platform?",
+      "range": {
+        "startLine": 1008,
+        "startChar": 0,
+        "endLine": 1008,
+        "endChar": 24
+      },
+      "revId": "12b504478eb046dfe8f93f0c8481ae9a16ef3e88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "25481e10_13d34889",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1055,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-05-31T22:47:43Z",
+      "side": 1,
+      "message": "Does not exist?",
+      "range": {
+        "startLine": 1055,
+        "startChar": 34,
+        "endLine": 1055,
+        "endChar": 44
+      },
+      "revId": "12b504478eb046dfe8f93f0c8481ae9a16ef3e88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "36e1d8ba_f1ea7c91",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1070,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-05-31T22:47:43Z",
+      "side": 1,
+      "message": "Does not exist?",
+      "range": {
+        "startLine": 1070,
+        "startChar": 34,
+        "endLine": 1070,
+        "endChar": 44
+      },
+      "revId": "12b504478eb046dfe8f93f0c8481ae9a16ef3e88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
