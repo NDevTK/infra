@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a30f5383_24326a3a",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-chip-input/chops-chip-input.test.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 278,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-01T00:28:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "544de830_1b9cc7b8",
+      "range": {
+        "startLine": 278,
+        "startChar": 44,
+        "endLine": 278,
+        "endChar": 52
+      },
+      "revId": "2b992a61ed03c2533f651f9fcd9ecfe3f4affe15",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
