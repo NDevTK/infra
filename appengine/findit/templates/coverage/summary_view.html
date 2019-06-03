@@ -47,6 +47,14 @@
     tfoot tr {
       font-size: 16px;
     }
+    .warning {
+      background-color: #FFD0D0;
+      padding: 10px;
+      margin: 10px;
+      border-radius: 5px;
+      font-family: sans-serif;
+      font-style: italic;
+    }
   </style>
   <script src="/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <link rel="import" href="/ui/elements/cats-app.html">
@@ -82,6 +90,22 @@
         }
       });
     }
+    function SwitchPlatform() {
+      let form = document.getElementById('report_select_form');
+      let select = document.getElementById('platform_select');
+      let option = select.options[select.selectedIndex];
+      if (option.value.indexOf('#') > -1){
+        let platform = option.value.split('#')[0];
+        let revision = option.value.split('#')[1];
+        option.value = platform;
+        let revision_field = document.createElement('input');
+        revision_field.setAttribute('type', 'hidden');
+        revision_field.setAttribute('name', 'revision');
+        revision_field.setAttribute('value', revision);
+        form.appendChild(revision_field);
+      }
+      form.submit();
+    }
     $(function() {
       document.getElementById('app').userInfo = {{ (user_info or {}) | tojson | safe }};
       $('#filter').on('keyup', FilterComponents);
@@ -94,13 +118,32 @@
   <cats-app id="app" components="Tools>CodeCoverage" page-header="Code Coverage: summary by {{data_type}} (Chrome Browser for {{platform_ui_name}})">
     <div>
       <div style="font-size:18px">
-        {% if data_type == 'components' %}
-        Switch to <a href="/p/chromium/coverage/dir?host={{host}}&project={{project}}&ref={{ref}}&revision={{revision}}&path=//&platform={{platform}}">Directory View</a>.
-        {% else %}
-        Switch to <a href="/p/chromium/coverage/component?host={{host}}&project={{project}}&ref={{ref}}&revision={{revision}}&path=>>&platform={{platform}}">Component View</a>.
+        <form id="report_select_form" method="get">
+          Platform:
+          <select id="platform_select" name="platform" onchange="SwitchPlatform()">
+          {% for option in platform_select.options %}
+            <option value="{{option.value}}" {% if option.selected %}selected="selected" {% endif %}>{{option.ui_name}}</option>
+          {% endfor %}
+          </select>
+          View:
+          <select id="view_select" name="path" onchange="SwitchPlatform()">
+          {% if data_type == 'components' %}
+            <option value="{{path}}" selected="selected">By Component</option>
+            <option value="//">By Directory</option>
+          {% else %}
+            <option value="{{path}}" selected="selected">By Directory</option>
+            <option value=">>">By Component</option>
+          {% endif %}
+          {% for name, value in platform_select.params.iteritems() %}
+            <input type="hidden" name="{{name}}" value="{{value}}"/>
+          {% endfor %}
+          See <a href="/p/chromium/coverage/dir?host={{host}}&project={{project}}&ref={{ref}}&platform={{platform}}&list_reports=true">Previous Reports</a>
+        </form>
+        <br>
+        <br>
+        {% if warning %}
+        <div class="warning">{{warning}}</div>
         {% endif %}
-        <br>
-        <br>
       </div>
       <div class="legend">
         Legend:

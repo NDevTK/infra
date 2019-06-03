@@ -98,6 +98,22 @@
         placeholder.appendChild(link);
       }
     });
+    function SwitchPlatform() {
+      let form = document.getElementById('platform_select_form');
+      let select = document.getElementById('platform_select');
+      let option = select.options[select.selectedIndex];
+      if (option.value.indexOf('#') > -1){
+        let platform = option.value.split('#')[0];
+        let revision = option.value.split('#')[1];
+        option.value = platform;
+        let revision_field = document.createElement('input');
+        revision_field.setAttribute('type', 'hidden');
+        revision_field.setAttribute('name', 'revision');
+        revision_field.setAttribute('value', revision);
+        form.appendChild(revision_field);
+      }
+      form.submit();
+    }
   </script>
 </head>
 
@@ -117,8 +133,21 @@
 
 <body>
   <cats-app id="app" components="Tools>CodeCoverage" page-header="Code Coverage: line-by-line coverage (Chrome Browser for {{platform_ui_name}})">
+<div>
     <div style="font-size:18px">
-    Switch to <a href="/p/chromium/coverage/component?host={{host}}&project={{project}}&ref={{ref}}&revision={{revision}}&path=>>&platform={{platform}}">Component View</a>
+    <form id="platform_select_form" method="get">
+      Platform:
+      <select id="platform_select" name="platform" onchange="SwitchPlatform()">
+      {% for option in platform_select.options %}
+        <option value="{{option.value}}" {% if option.selected %}selected="selected" {% endif %}>{{option.ui_name}}</option>
+      {% endfor %}
+      </select>
+      {% for name, value in platform_select.params.iteritems() %}
+        <input type="hidden" name="{{name}}" value="{{value}}"/>
+      {% endfor %}
+      Switch to <a href="/p/chromium/coverage/component?host={{host}}&project={{project}}&ref={{ref}}&revision={{revision}}&path=>>&platform={{platform}}">Component View</a>.
+      See <a href="/p/chromium/coverage/dir?host={{host}}&project={{project}}&ref={{ref}}&platform={{platform}}&list_reports=true">Previous Reports</a>.
+    </form>
     <br>
     <br>
     </div>
@@ -182,5 +211,6 @@
       {% endfor %}
       </tbody>
     </table>
+    </div>
   </cats-app>
 </body>
