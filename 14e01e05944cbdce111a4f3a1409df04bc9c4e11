@@ -1,0 +1,88 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "49c2dd82_1392be5d",
+        "filename": "go/src/infra/appengine/dashboard/frontend/elements/chops-announcements.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2019-06-03T23:25:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4793c51c_55dc8caa",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 68,
+        "endChar": 1
+      },
+      "revId": "14e01e05944cbdce111a4f3a1409df04bc9c4e11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bbb99af8_fef3a664",
+        "filename": "go/src/infra/appengine/dashboard/frontend/elements/chops-announcements.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2019-06-03T23:25:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1b2aef9e_507a44fa",
+      "revId": "14e01e05944cbdce111a4f3a1409df04bc9c4e11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "167bb100_b287df63",
+        "filename": "go/src/infra/appengine/dashboard/frontend/elements/chops-announcements.test.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2019-06-03T23:25:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fb6152dc_3d6715fe",
+      "revId": "14e01e05944cbdce111a4f3a1409df04bc9c4e11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f0ba195e_f4d3e5ce",
+        "filename": "go/src/infra/appengine/dashboard/frontend/elements/chops-announcements.test.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2019-06-03T23:25:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c5e9b668_a116d224",
+      "range": {
+        "startLine": 91,
+        "startChar": 0,
+        "endLine": 91,
+        "endChar": 1
+      },
+      "revId": "14e01e05944cbdce111a4f3a1409df04bc9c4e11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
