@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f4d535d5_e5335bf9",
+        "filename": "go/src/infra/appengine/dashboard/frontend/elements/announcement-input.js",
+        "patchSetId": 7
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-03T23:35:53Z",
+      "side": 1,
+      "message": "Nit: Consider renaming this function this._disabledUpdateButton or something similar. _updateButtonDisabled makes it sound like it\u0027s used to compute a variable when it\u0027s actually making changes to the state, which feels a bit confusing.",
+      "range": {
+        "startLine": 52,
+        "startChar": 23,
+        "endLine": 52,
+        "endChar": 44
+      },
+      "revId": "8e492e220b4d5bb2bb1a62202265a0b8c6a59546",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c5b423c0_f63ff9ed",
+        "filename": "go/src/infra/appengine/dashboard/frontend/elements/announcement-input.js",
+        "patchSetId": 7
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-03T23:35:53Z",
+      "side": 1,
+      "message": "Instead of doing dom manipulation here, you could create a \"disabled\" property that\u0027s mapped to the button\u0027s disabled attribute. Then, you can directly set the property instead of having to find the createButton element. \n\nIf you can, it\u0027s usually better to avoid to avoid direct DOM manipulation with lit-element.",
+      "range": {
+        "startLine": 73,
+        "startChar": 6,
+        "endLine": 73,
+        "endChar": 29
+      },
+      "revId": "8e492e220b4d5bb2bb1a62202265a0b8c6a59546",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
