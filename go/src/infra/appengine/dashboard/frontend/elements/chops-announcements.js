@@ -6,6 +6,7 @@ import {LitElement, html, css} from 'lit-element';
 import {prpcClient} from 'prpc.js';
 
 import 'announcements-table.js';
+import 'announcement-input.js';
 
 import {SHARED_STYLES} from 'shared-styles.js';
 
@@ -51,6 +52,11 @@ export class ChopsAnnouncements extends LitElement {
         .announcements="${this.liveAnnouncements}"
         @announcements-changed=${this._fetchLiveAnnouncements}
       ></announcements-table>
+      ${this.isTrooper ? html `
+        <announcement-input
+          @announcement-created=${this._fetchLiveAnnouncements}
+        ></announcement-input>
+      ` : ''}
     `;
   }
 
@@ -59,7 +65,7 @@ export class ChopsAnnouncements extends LitElement {
       retired: false,
     };
     const resp = await prpcClient.call(
-      'dashboard.ChopsAnnouncements', 'SearchAnnouncements', fetchLiveMessage);
+	'dashboard.ChopsAnnouncements', 'SearchAnnouncements', fetchLiveMessage);
     this.liveAnnouncements = resp.announcements;
   }
 }
