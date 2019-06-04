@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "290905ce_7606e5b4",
+        "filename": "go/src/infra/appengine/dashboard/frontend/elements/announcement-input.js",
+        "patchSetId": 7
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2019-06-04T00:04:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f4d535d5_e5335bf9",
+      "range": {
+        "startLine": 52,
+        "startChar": 23,
+        "endLine": 52,
+        "endChar": 44
+      },
+      "revId": "8e492e220b4d5bb2bb1a62202265a0b8c6a59546",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c5b423c0_f63ff9ed",
         "filename": "go/src/infra/appengine/dashboard/frontend/elements/announcement-input.js",
         "patchSetId": 7
@@ -45,6 +69,30 @@
       "revId": "8e492e220b4d5bb2bb1a62202265a0b8c6a59546",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "83c6607c_0c20a3ea",
+        "filename": "go/src/infra/appengine/dashboard/frontend/elements/announcement-input.js",
+        "patchSetId": 7
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2019-06-04T00:04:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c5b423c0_f63ff9ed",
+      "range": {
+        "startLine": 73,
+        "startChar": 6,
+        "endLine": 73,
+        "endChar": 29
+      },
+      "revId": "8e492e220b4d5bb2bb1a62202265a0b8c6a59546",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
