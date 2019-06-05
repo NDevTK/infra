@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "6d292173_048213da",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-06-05T23:50:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7aeafe95_32537bee",
+      "range": {
+        "startLine": 9,
+        "startChar": 46,
+        "endLine": 9,
+        "endChar": 68
+      },
+      "revId": "ffa4888bbeaf1df2be723345a95dbdba665b9e6c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2144447e_e1822e4e",
         "filename": "appengine/findit/handlers/code_coverage.py",
         "patchSetId": 2
@@ -45,6 +69,30 @@
       "revId": "ffa4888bbeaf1df2be723345a95dbdba665b9e6c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8e6aad79_93e7e4e6",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1065,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-06-05T23:50:47Z",
+      "side": 1,
+      "message": "crbug.com/971437",
+      "parentUuid": "2144447e_e1822e4e",
+      "range": {
+        "startLine": 1065,
+        "startChar": 0,
+        "endLine": 1065,
+        "endChar": 11
+      },
+      "revId": "ffa4888bbeaf1df2be723345a95dbdba665b9e6c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "897838b1_be0aad93",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1067,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-06-05T23:50:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "35f8d6f2_b43364c8",
+      "range": {
+        "startLine": 1066,
+        "startChar": 0,
+        "endLine": 1067,
+        "endChar": 25
+      },
+      "revId": "ffa4888bbeaf1df2be723345a95dbdba665b9e6c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f0742bf3_3f362464",
         "filename": "appengine/findit/templates/coverage/summary_view.html",
         "patchSetId": 2
@@ -91,6 +163,30 @@
       "revId": "ffa4888bbeaf1df2be723345a95dbdba665b9e6c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c72955a4_e4107f43",
+        "filename": "appengine/findit/templates/coverage/summary_view.html",
+        "patchSetId": 2
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-06-05T23:50:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f0742bf3_3f362464",
+      "range": {
+        "startLine": 93,
+        "startChar": 0,
+        "endLine": 108,
+        "endChar": 5
+      },
+      "revId": "ffa4888bbeaf1df2be723345a95dbdba665b9e6c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
