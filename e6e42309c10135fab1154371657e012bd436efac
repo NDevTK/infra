@@ -45,6 +45,30 @@
       "revId": "e6e42309c10135fab1154371657e012bd436efac",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "10c5bb04_d9fd31af",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-chip-input/chops-chip-input.js",
+        "patchSetId": 6
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-05T19:01:41Z",
+      "side": 1,
+      "message": "Uncommented. Was left over from debugging.",
+      "parentUuid": "e99c8d07_4a683282",
+      "range": {
+        "startLine": 135,
+        "startChar": 0,
+        "endLine": 135,
+        "endChar": 55
+      },
+      "revId": "e6e42309c10135fab1154371657e012bd436efac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
