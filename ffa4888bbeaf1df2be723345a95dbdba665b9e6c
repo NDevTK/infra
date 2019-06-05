@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7aeafe95_32537bee",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-06-05T18:58:17Z",
+      "side": 1,
+      "message": "Should we allow switching platforms in project view?",
+      "range": {
+        "startLine": 9,
+        "startChar": 46,
+        "endLine": 9,
+        "endChar": 68
+      },
+      "revId": "ffa4888bbeaf1df2be723345a95dbdba665b9e6c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2144447e_e1822e4e",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1065,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-06-05T18:58:17Z",
+      "side": 1,
+      "message": "Do you mind filing a bug to refactor this code, I think it\u0027s getting pretty unmanageable (not the fault of this CL) due to too many levels of nesting, feel free to assign the bug to me.",
+      "range": {
+        "startLine": 1065,
+        "startChar": 0,
+        "endLine": 1065,
+        "endChar": 11
+      },
+      "revId": "ffa4888bbeaf1df2be723345a95dbdba665b9e6c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "35f8d6f2_b43364c8",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1067,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-06-05T18:58:17Z",
+      "side": 1,
+      "message": "You may double-check, but per line #954 - #960, the data_type should always be set, so I don\u0027t think this is needed.",
+      "range": {
+        "startLine": 1066,
+        "startChar": 0,
+        "endLine": 1067,
+        "endChar": 25
+      },
+      "revId": "ffa4888bbeaf1df2be723345a95dbdba665b9e6c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f0742bf3_3f362464",
+        "filename": "appengine/findit/templates/coverage/summary_view.html",
+        "patchSetId": 2
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-06-05T18:58:17Z",
+      "side": 1,
+      "message": "Can we put this into a separate js file? Since it\u0027s duplicated in both file and summary view.",
+      "range": {
+        "startLine": 93,
+        "startChar": 0,
+        "endLine": 108,
+        "endChar": 5
+      },
+      "revId": "ffa4888bbeaf1df2be723345a95dbdba665b9e6c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
