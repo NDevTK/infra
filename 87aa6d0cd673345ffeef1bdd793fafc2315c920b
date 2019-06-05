@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9523b536_16b95e49",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-chip-input/chops-chip-input.js",
+        "patchSetId": 7
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-06-05T20:33:20Z",
+      "side": 1,
+      "message": "How does this not perform an undo on the add-value input field at the same time?  I don\u0027t see any preventDefault().\n\nFor a follow-up CL, I think the key to making undo work fully would be to have each item on the undoStack be an object with {values, addValueStr, selection}.",
+      "revId": "87aa6d0cd673345ffeef1bdd793fafc2315c920b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df455347_4d7dd6b4",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-chip-input/chops-chip-input.js",
+        "patchSetId": 7
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-06-05T20:33:20Z",
+      "side": 1,
+      "message": "This doesn\u0027t work on my mac because I would normally use command rather than control.  I think you need to check e.metaKey.  I can test it for you if you update the demo.  As it stands, command-Z does a regular undo on the add-value input only.",
+      "revId": "87aa6d0cd673345ffeef1bdd793fafc2315c920b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "764bfc45_1c15ecf8",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-chip-input/chops-chip-input.js",
+        "patchSetId": 7
+      },
+      "lineNbr": 318,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-06-05T20:33:20Z",
+      "side": 1,
+      "message": "It would be good to also handle Enter or DownArrow here to start editing the selected chip.",
+      "revId": "87aa6d0cd673345ffeef1bdd793fafc2315c920b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
