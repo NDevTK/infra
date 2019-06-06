@@ -143,6 +143,30 @@
     },
     {
       "key": {
+        "uuid": "59b993fa_82bdeff4",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1067,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-06-06T03:13:18Z",
+      "side": 1,
+      "message": "Actually, this is needed because the logic you mentioned only works when the path is given. If no path is given, we should default to the summary view for the root of the repo.",
+      "parentUuid": "897838b1_be0aad93",
+      "range": {
+        "startLine": 1066,
+        "startChar": 0,
+        "endLine": 1067,
+        "endChar": 25
+      },
+      "revId": "ffa4888bbeaf1df2be723345a95dbdba665b9e6c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f0742bf3_3f362464",
         "filename": "appengine/findit/templates/coverage/summary_view.html",
         "patchSetId": 2
