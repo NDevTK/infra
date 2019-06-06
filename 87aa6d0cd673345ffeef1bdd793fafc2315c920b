@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "767476ad_830e0d55",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-chip-input/chops-chip-input.js",
+        "patchSetId": 7
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-06T17:11:16Z",
+      "side": 1,
+      "message": "I added a preventDefault() - needed to change the eventListener to a global one instead of component-scoped one to make this work since Ctrl+Z is a page-wide action, I think. Yup, that structure for undo SGTM.",
+      "parentUuid": "9523b536_16b95e49",
+      "revId": "87aa6d0cd673345ffeef1bdd793fafc2315c920b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "df455347_4d7dd6b4",
         "filename": "appengine/monorail/static_src/elements/chops/chops-chip-input/chops-chip-input.js",
         "patchSetId": 7
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "17d07b3b_8bbbb6ad",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-chip-input/chops-chip-input.js",
+        "patchSetId": 7
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-06T17:11:16Z",
+      "side": 1,
+      "message": "Added a check for e.metaKey",
+      "parentUuid": "df455347_4d7dd6b4",
+      "revId": "87aa6d0cd673345ffeef1bdd793fafc2315c920b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "764bfc45_1c15ecf8",
         "filename": "appengine/monorail/static_src/elements/chops/chops-chip-input/chops-chip-input.js",
         "patchSetId": 7
@@ -50,6 +86,24 @@
       "revId": "87aa6d0cd673345ffeef1bdd793fafc2315c920b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ef924871_cb6f9141",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-chip-input/chops-chip-input.js",
+        "patchSetId": 7
+      },
+      "lineNbr": 318,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-06T17:11:16Z",
+      "side": 1,
+      "message": "Done, added Enter to edit.",
+      "parentUuid": "764bfc45_1c15ecf8",
+      "revId": "87aa6d0cd673345ffeef1bdd793fafc2315c920b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
