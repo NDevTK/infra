@@ -41,9 +41,11 @@ class SomRevRange extends Polymer.Element {
     if (this.range && this.range.positions) {
       this.range.positions.sort();
     }
-    let start = this._regressionStart(this.range);
-    let end = this._regressionEnd(this.range);
-    let url = `/api/v1/revrange/${start}/${end}`;
+    const start = this._regressionRefStart(this.range);
+    const end = this._regressionRefEnd(this.range);
+    const host = 'chrome-internal'; // this.range.host;
+    const project = this.range.project.replace('/', '^');
+    const url = `/api/v1/revrange/${start}/${end}/${host}/${project}`;
     this.$.loadingMessage.hidden = false;
     fetch(url).then(
         (resp) => {
@@ -83,6 +85,20 @@ class SomRevRange extends Polymer.Element {
 
   _firstLine(message) {
     return message.split('\n')[0];
+  }
+
+  _regressionRefStart(range) {
+    if (!range || (!range.revisions || range.revisions.length == 0)) {
+      return '';
+    }
+    return range.revisions[0];
+  }
+
+  _regressionRefEnd(range) {
+    if (!range || (!range.revisions || range.revisions.length == 0)) {
+      return '';
+    }
+    return range.revisions[range.revisions.length - 1];
   }
 
   _regressionStart(range) {

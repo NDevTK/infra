@@ -196,15 +196,23 @@ func (a *Analyzer) BuildBucketAlerts(ctx context.Context, builderIDs []*bbpb.Bui
 					alertedBuilder.LatestPassing = int64(lastPassing.Number)
 					firstFailingRev, err := commitRevFromOutputProperties(firstFailure)
 					if err != nil {
-						logging.Errorf(ctx, "getting commit rev: %v %#v", err, firstFailure)
-					} else {
+						firstFailingRev, err = commitRevFromInput(firstFailure)
+						if err != nil {
+							logging.Errorf(ctx, "getting commit rev: %v %#v", err, firstFailure)
+						}
+					}
+					if err == nil {
 						alertedBuilder.FirstFailingRev = firstFailingRev
 					}
 
 					lastPassingRev, err := commitRevFromOutputProperties(lastPassing)
 					if err != nil {
-						logging.Errorf(ctx, "getting commit rev: %v %#v", err, lastPassing)
-					} else {
+						lastPassingRev, err = commitRevFromInput(lastPassing)
+						if err != nil {
+							logging.Errorf(ctx, "getting commit rev: %v %#v", err, lastPassing)
+						}
+					}
+					if err == nil {
 						alertedBuilder.LatestPassingRev = lastPassingRev
 					}
 				} else {
@@ -249,7 +257,9 @@ func (a *Analyzer) BuildBucketAlerts(ctx context.Context, builderIDs []*bbpb.Bui
 					fmt.Sprintf("%s@{#%d}", earliestRev.Branch, earliestRev.Position),
 					fmt.Sprintf("%s@{#%d}", latestRev.Branch, latestRev.Position),
 				},
-				Revisions: []string{earliestRev.GitHash},
+				Revisions: []string{earliestRev.GitHash, latestRev.GitHash},
+				Host:      earliestRev.Host,
+				Project:   earliestRev.Project,
 			})
 		}
 
@@ -375,11 +385,12 @@ func commitRevFromOutputProperties(build *bbpb.Build) (*messages.RevisionSummary
 
 	revField, ok := build.Output.Properties.Fields["got_revision"]
 	if !ok {
-		return nil, fmt.Errorf("couldn't find revision in build output properties")
+		return nil, fmt.Errorf("couldn't find revision in output got_revision, trying input")
 	}
 
 	ret := &messages.RevisionSummary{
 		GitHash: revField.GetStringValue(),
+		Host:    "chromium",
 	}
 
 	cpField, ok := build.Output.Properties.Fields["got_revision_cp"]
@@ -392,6 +403,20 @@ func commitRevFromOutputProperties(build *bbpb.Build) (*messages.RevisionSummary
 		ret.Position = pos
 	}
 
+	return ret, nil
+}
+
+func commitRevFromInput(build *bbpb.Build) (*messages.RevisionSummary, error) {
+	if build.Input == nil || build.Input.GitilesCommit == nil {
+		return nil, fmt.Errorf("build input and/or gitilescommit not set")
+	}
+
+	ret := &messages.RevisionSummary{
+		GitHash: build.Input.GitilesCommit.Id,
+		Project: build.Input.GitilesCommit.Project,
+		Host:    build.Input.GitilesCommit.Host,
+		Branch:  build.Input.GitilesCommit.Ref,
+	}
 	return ret, nil
 }
 

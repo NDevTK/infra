@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"infra/appengine/sheriff-o-matic/som/client"
 
@@ -26,8 +27,8 @@ var getOAuthClient = func(c context.Context) (*http.Client, error) {
 	return &http.Client{Transport: t}, nil
 }
 
-// GetRevRangeHandler returns a revision range queury for gitiles, given one or
-// two commit positions.
+// GetRevRangeHandler returns a revision range queury for gitiles, given two
+// git hashes.
 func GetRevRangeHandler(ctx *router.Context) {
 	crRev := client.NewCrRev("https://cr-rev.appspot.com")
 	getRevRangeHandler(ctx, crRev)
@@ -38,6 +39,8 @@ func getRevRangeHandler(ctx *router.Context, crRev client.CrRev) {
 
 	start := p.ByName("start")
 	end := p.ByName("end")
+	host := p.ByName("host")
+	project := p.ByName("project")
 	if start == "" || end == "" {
 		errStatus(c, w, http.StatusBadRequest, "Start and end parameters must be set.")
 		return
@@ -46,24 +49,21 @@ func getRevRangeHandler(ctx *router.Context, crRev client.CrRev) {
 	itm := memcache.NewItem(c, fmt.Sprintf("revrange:%s..%s", start, end))
 	err := memcache.Get(c, itm)
 
-	// TODO: nix this double layer of caching.
+	// TODO: nix this double layer of caching..
 	if err == memcache.ErrCacheMiss {
-		startRev, err := crRev.GetRedirect(c, start)
-		if err != nil {
-			errStatus(c, w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		endRev, err := crRev.GetRedirect(c, end)
-		if err != nil {
-			errStatus(c, w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
 		// TODO(seanmccullough): some sanity checking of the rev json (same repo etc)
 
-		gitilesURL := fmt.Sprintf("https://chromium.googlesource.com/chromium/src/+log/%s^..%s?format=JSON",
-			startRev["git_sha"], endRev["git_sha"])
+		if host == "" {
+			host = "chromium"
+		}
+		if project == "" {
+			project = "chromium/src"
+		} else {
+			project = strings.Replace(project, "^", "/", -1)
+		}
+
+		gitilesURL := fmt.Sprintf("https://%s.googlesource.com/%s/+log/%s^..%s?format=JSON",
+			host, project, start, end)
 
 		itm.SetValue([]byte(gitilesURL))
 		if err = memcache.Set(c, itm); err != nil {

@@ -233,6 +233,8 @@ type RegressionRange struct {
 	Revisions            []string                   `json:"revisions"`
 	Positions            []string                   `json:"positions"`
 	RevisionsWithResults []RevisionWithFinditResult `json:"revisions_with_results"`
+	Host                 string                     `json:"host"`
+	Project              string                     `json:"project"`
 }
 
 // RevisionWithFinditResult saves information from Findit about a specific revision.
@@ -260,4 +262,6 @@ type RevisionSummary struct {
 	Description string    `json:"description"`
 	Author      string    `json:"author"`
 	When        EpochTime `json:"when"`
+	Host        string    `json:"host"`
+	Project     string    `json:"project"`
 }
