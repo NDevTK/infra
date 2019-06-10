@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "71d4da55_acf136f8",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/testspec/autotest/metadata.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-06-10T20:15:44Z",
+      "side": 1,
+      "message": "nit: consider renaming to testControlParser and suiteControlParser",
+      "revId": "4941a40ca815612d98e870fa0403ee5988eb1301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8547eeb7_71eae023",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/testspec/autotest/metadata.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-06-10T20:15:44Z",
+      "side": 1,
+      "message": "parse suites",
+      "revId": "4941a40ca815612d98e870fa0403ee5988eb1301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7d07a366_0cc5119b",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/testspec/autotest/metadata_integration_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-06-10T20:15:44Z",
+      "side": 1,
+      "message": "can this be autotest_test? looks like it only touches exported API",
+      "revId": "4941a40ca815612d98e870fa0403ee5988eb1301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "785b8729_1520c7fc",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/testspec/autotest/parser_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-06-10T20:15:44Z",
+      "side": 1,
+      "message": "drop",
+      "revId": "4941a40ca815612d98e870fa0403ee5988eb1301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
