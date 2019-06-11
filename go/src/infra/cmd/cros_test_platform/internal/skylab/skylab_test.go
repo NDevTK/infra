@@ -63,8 +63,9 @@ func TestLaunchAndWaitSingleTest(t *testing.T) {
 		Convey("when running a skylab execution", func() {
 			run := skylab.NewRun(tests)
 
-			resp, err := run.LaunchAndWait(ctx, swarming)
+			err := run.LaunchAndWait(ctx, swarming)
 			So(err, ShouldBeNil)
+			resp := run.Response("")
 			So(resp, ShouldNotBeNil)
 
 			Convey("then results for all tests are reflected.", func() {
@@ -75,5 +76,23 @@ func TestLaunchAndWaitSingleTest(t *testing.T) {
 				So(swarming.createCalls, ShouldEqual, 2)
 			})
 		})
+	})
+}
+
+func TestTaskURL(t *testing.T) {
+	Convey("Given a single enumerated test running to completion, its task URL is well formed.", t, func() {
+		ctx := context.Background()
+		swarming := newFakeSwarming()
+		tests := []*steps.EnumerationResponse_Test{{}}
+		run := skylab.NewRun(tests)
+		run.LaunchAndWait(ctx, swarming)
+
+		swarming_service := "https://foo.bar.com/"
+		resp := run.Response(swarming_service)
+		So(resp.TaskResults, ShouldHaveLength, 1)
+		taskURL := resp.TaskResults[0].TaskUrl
+		taskID := resp.TaskResults[0].TaskId
+		So(taskURL, ShouldStartWith, swarming_service)
+		So(taskURL, ShouldEndWith, taskID)
 	})
 }
