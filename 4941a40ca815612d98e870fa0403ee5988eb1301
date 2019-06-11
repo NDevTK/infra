@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "dc75004d_dc4230f1",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/testspec/autotest/metadata.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-06-11T15:17:02Z",
+      "side": 1,
+      "message": "Nack. The golang stdlib convention is to use -er for interfaces (Reader, Writer...) and use -Fn for function types (e.g. filepath.WalkFn)",
+      "parentUuid": "71d4da55_acf136f8",
+      "revId": "4941a40ca815612d98e870fa0403ee5988eb1301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8547eeb7_71eae023",
         "filename": "go/src/infra/cmd/cros_test_platform/internal/testspec/autotest/metadata.go",
         "patchSetId": 10
@@ -33,6 +51,24 @@
       "revId": "4941a40ca815612d98e870fa0403ee5988eb1301",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8b4789d0_b69c01f8",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/testspec/autotest/metadata.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-06-11T15:17:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8547eeb7_71eae023",
+      "revId": "4941a40ca815612d98e870fa0403ee5988eb1301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "7510efd7_b0e4d3b1",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/testspec/autotest/metadata_integration_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-06-11T15:17:02Z",
+      "side": 1,
+      "message": "Very good idea, but hard to do currently because I\u0027m using helpers createTempDirOrDie() and friends which are defined in other _test.go files in this package. Those tests are not blackbox tests so need to be in `autotest` package.\n\nThis tells me that I need to extract these helper functions to a testing package, something I was going to do anyway to share with later CLs.\nSo, will come back and rename this then.",
+      "parentUuid": "7d07a366_0cc5119b",
+      "revId": "4941a40ca815612d98e870fa0403ee5988eb1301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "785b8729_1520c7fc",
         "filename": "go/src/infra/cmd/cros_test_platform/internal/testspec/autotest/parser_test.go",
         "patchSetId": 10
@@ -67,6 +121,24 @@
       "revId": "4941a40ca815612d98e870fa0403ee5988eb1301",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "732155b2_6ff10756",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/testspec/autotest/parser_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-06-11T15:17:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "785b8729_1520c7fc",
+      "revId": "4941a40ca815612d98e870fa0403ee5988eb1301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
