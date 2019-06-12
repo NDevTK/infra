@@ -14,8 +14,8 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	swarming_api "go.chromium.org/luci/common/api/swarming/swarming/v1"
-	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/clock"
+	"go.chromium.org/luci/common/errors"
 
 	"infra/libs/skylab/request"
 	"infra/libs/skylab/swarming"
@@ -100,12 +100,12 @@ func (r *Run) wait(ctx context.Context, swarming Swarming) error {
 
 			results, err := swarming.GetResults(ctx, []string{attempt.taskID})
 			if err != nil {
-				errors.Annotate(err, "wait for tests").Err()
+				return errors.Annotate(err, "wait for tests").Err()
 			}
 
 			result, err := unpackResultForAttempt(results, attempt)
 			if err != nil {
-				errors.Annotate(err, "wait for tests").Err()
+				return errors.Annotate(err, "wait for tests").Err()
 			}
 
 			// TODO(akeshet): Respect actual completed statuses.
