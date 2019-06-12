@@ -22,20 +22,30 @@ import (
 type fakeSwarming struct {
 	nextID      int
 	nextState   string
+	nextError   error
+	callback    func()
 	createCalls int
 	getCalls    int
 	server      string
 }
 
 func (f *fakeSwarming) CreateTask(ctx context.Context, req *swarming_api.SwarmingRpcsNewTaskRequest) (*swarming_api.SwarmingRpcsTaskRequestMetadata, error) {
+	defer f.callback()
 	f.nextID++
 	f.createCalls++
+	if f.nextError != nil {
+		return nil, f.nextError
+	}
 	resp := &swarming_api.SwarmingRpcsTaskRequestMetadata{TaskId: fmt.Sprintf("task%d", f.nextID)}
 	return resp, nil
 }
 
 func (f *fakeSwarming) GetResults(ctx context.Context, IDs []string) ([]*swarming_api.SwarmingRpcsTaskResult, error) {
+	defer f.callback()
 	f.getCalls++
+	if f.nextError != nil {
+		return nil, f.nextError
+	}
 	results := make([]*swarming_api.SwarmingRpcsTaskResult, len(IDs))
 	for i, taskID := range IDs {
 		results[i] = &swarming_api.SwarmingRpcsTaskResult{TaskId: taskID, State: f.nextState}
@@ -54,8 +64,24 @@ func (f *fakeSwarming) setNextState(state string) {
 	f.nextState = state
 }
 
+// setNextError causes this fake to start returning the given error on all
+// future API calls.
+func (f *fakeSwarming) setNextError(err error) {
+	f.nextError = err
+}
+
+// setCallback causes this fake to call the given callback function, immediately
+// prior to the return of every future API call.
+func (f *fakeSwarming) setCallback(fn func()) {
+	f.callback = fn
+}
+
 func newFakeSwarming(server string) *fakeSwarming {
-	return &fakeSwarming{nextState: "COMPLETED", server: server}
+	return &fakeSwarming{
+		nextState: "COMPLETED",
+		callback:  func() {},
+		server:    server,
+	}
 }
 
 func TestLaunchAndWaitTest(t *testing.T) {
@@ -113,6 +139,33 @@ func TestIncompleteWait(t *testing.T) {
 
 		resp := run.Response(swarming)
 		So(resp.Complete, ShouldBeFalse)
+	})
+}
+
+func TestServiceError(t *testing.T) {
+	Convey("Given a single enumerated test", t, func() {
+		ctx := context.Background()
+		swarming := newFakeSwarming("")
+
+		tests := []*chromite.AutotestTest{{}}
+		run := skylab.NewRun(tests)
+
+		Convey("when the swarming service immediately returns errors, that error is surfaced as a launch error.", func() {
+			swarming.setNextError(fmt.Errorf("foo error"))
+			err := run.LaunchAndWait(ctx, swarming)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "launch test")
+			So(err.Error(), ShouldContainSubstring, "foo error")
+		})
+
+		Convey("when the swarming service starts returning errors after the initial launch calls, that errors is surfaced as a wait error.", func() {
+			swarming.setCallback(func() {
+				swarming.setNextError(fmt.Errorf("foo error"))
+			})
+			err := run.LaunchAndWait(ctx, swarming)
+			So(err.Error(), ShouldContainSubstring, "wait for tests")
+			So(err.Error(), ShouldContainSubstring, "foo error")
+		})
 	})
 }
 
