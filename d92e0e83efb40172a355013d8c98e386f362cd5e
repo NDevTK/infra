@@ -22,6 +22,30 @@
       "revId": "d92e0e83efb40172a355013d8c98e386f362cd5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5ad7d40f_3d9ace5d",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/cmd/skylab-execute.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-06-12T19:01:36Z",
+      "side": 1,
+      "message": "Done.\n\nThough on the other hand this is expanding the interface surface of Swarming beyond most barebones needs.",
+      "parentUuid": "a1c1b312_6551d3da",
+      "range": {
+        "startLine": 179,
+        "startChar": 21,
+        "endLine": 179,
+        "endChar": 53
+      },
+      "revId": "d92e0e83efb40172a355013d8c98e386f362cd5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
