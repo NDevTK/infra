@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	swarming_api "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/clock"
 
 	"infra/libs/skylab/request"
 	"infra/libs/skylab/swarming"
@@ -99,9 +100,7 @@ func (r *Run) wait(ctx context.Context, swarming Swarming) error {
 		select {
 		case <-ctx.Done():
 			return errors.Annotate(ctx.Err(), "wait for tests").Err()
-		// TODO(akeshet): Use a mockable clock provider instead of system clock,
-		// to improve performance of unit tests.
-		case <-time.After(15 * time.Second):
+		case <-clock.After(ctx, 15*time.Second):
 		}
 	}
 }
