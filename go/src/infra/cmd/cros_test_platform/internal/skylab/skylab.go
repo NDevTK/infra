@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	swarming_api "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/clock"
 
 	"infra/libs/skylab/request"
 )
@@ -93,7 +94,7 @@ func (r *Run) wait(ctx context.Context, swarming Swarming) (*steps.ExecuteRespon
 		select {
 		case <-ctx.Done():
 			return r.response(), errors.Annotate(ctx.Err(), "wait for tests").Err()
-		case <-time.After(15 * time.Second):
+		case <-clock.After(ctx, 15*time.Second):
 		}
 	}
 }
