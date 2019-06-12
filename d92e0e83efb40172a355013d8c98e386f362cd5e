@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a1c1b312_6551d3da",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/cmd/skylab-execute.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-06-12T18:14:47Z",
+      "side": 1,
+      "message": "skylab.Run uses skylab.Swarming as the interface to create and wait for tasks. This interface should remain the single way for skylab.Run to inteact with Swarming (or get swarming info).\n\nPerhapps add a method skylab.Swarming.GetTaskURL(taskID string)",
+      "range": {
+        "startLine": 179,
+        "startChar": 21,
+        "endLine": 179,
+        "endChar": 53
+      },
+      "revId": "d92e0e83efb40172a355013d8c98e386f362cd5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
