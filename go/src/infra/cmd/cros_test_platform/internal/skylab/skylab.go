@@ -100,12 +100,12 @@ func (r *Run) wait(ctx context.Context, swarming Swarming) error {
 
 			results, err := swarming.GetResults(ctx, []string{attempt.taskID})
 			if err != nil {
-				errors.Annotate(err, "wait for tests").Err()
+				return errors.Annotate(err, "wait for tests").Err()
 			}
 
 			result, err := unpackResultForAttempt(results, attempt)
 			if err != nil {
-				errors.Annotate(err, "wait for tests").Err()
+				return errors.Annotate(err, "wait for tests").Err()
 			}
 
 			// TODO(akeshet): Respect actual completed statuses.
