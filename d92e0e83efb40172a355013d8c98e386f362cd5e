@@ -46,6 +46,30 @@
       "revId": "d92e0e83efb40172a355013d8c98e386f362cd5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bdfcf7c9_edefc6ef",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/cmd/skylab-execute.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-06-12T20:23:45Z",
+      "side": 1,
+      "message": "The skylab.Swarming interface is defined by the skylab package to encapsulate what it needs from Swarming. It should contain what skylab needs, and nothing more.\n\nYou may decide at some point that you want multiple smaller interfaces, if this one seems to be glosing cohesion.",
+      "parentUuid": "5ad7d40f_3d9ace5d",
+      "range": {
+        "startLine": 179,
+        "startChar": 21,
+        "endLine": 179,
+        "endChar": 53
+      },
+      "revId": "d92e0e83efb40172a355013d8c98e386f362cd5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
