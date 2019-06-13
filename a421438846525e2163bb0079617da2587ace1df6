@@ -16,6 +16,24 @@
       "revId": "a421438846525e2163bb0079617da2587ace1df6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a5c48a18_55ce7d43",
+        "filename": "infra/tools/bbroll/__main__.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 373,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2019-06-13T21:42:40Z",
+      "side": 1,
+      "message": "All except Linux are red right now while ours are green, I\u0027ll keep it like this for the time being.",
+      "parentUuid": "0d3564c1_bc3c15c9",
+      "revId": "a421438846525e2163bb0079617da2587ace1df6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
