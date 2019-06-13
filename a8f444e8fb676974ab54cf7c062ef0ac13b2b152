@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "4e9ed93f_53f2d891",
+        "filename": "appengine/monorail/static_src/elements/framework/cron.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2019-06-13T01:53:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7c67460a_4c0b4f4d",
+      "revId": "a8f444e8fb676974ab54cf7c062ef0ac13b2b152",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "af8b2dcd_ab8952d1",
         "filename": "appengine/monorail/static_src/elements/framework/cron.js",
         "patchSetId": 3
@@ -30,6 +48,24 @@
       "writtenOn": "2019-06-13T00:53:47Z",
       "side": 1,
       "message": "A question for context: Out of curiosity, are there plans to grow this file or re-use crons in multiple places?",
+      "revId": "a8f444e8fb676974ab54cf7c062ef0ac13b2b152",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "765d8cdc_139530ba",
+        "filename": "appengine/monorail/static_src/elements/framework/cron.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2019-06-13T01:53:43Z",
+      "side": 1,
+      "message": "Maybe.\nNo concrete plan AFAIK, but we could use cron to ask the server if there is a newer version of the page, notify the users when their token is about to expire, check if the issue we\u0027re displaying has any updates...",
+      "parentUuid": "af8b2dcd_ab8952d1",
       "revId": "a8f444e8fb676974ab54cf7c062ef0ac13b2b152",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -56,6 +92,30 @@
       "revId": "a8f444e8fb676974ab54cf7c062ef0ac13b2b152",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "249ba995_2f5df6bb",
+        "filename": "appengine/monorail/static_src/elements/framework/cron.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2019-06-13T01:53:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ff018bdc_100ef320",
+      "range": {
+        "startLine": 13,
+        "startChar": 2,
+        "endLine": 13,
+        "endChar": 69
+      },
+      "revId": "a8f444e8fb676974ab54cf7c062ef0ac13b2b152",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
