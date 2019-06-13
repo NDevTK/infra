@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "eee38115_34ca3c7e",
+        "filename": "go/src/infra/monitoring/sysmon/cros/cros.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2019-06-13T18:36:37Z",
+      "side": 1,
+      "message": "let\u0027s instead go with a single metric for this initial cl\n\nmake it a string val for dut status, that\u0027s either online/available or the offline/unreachable status otherwise\n\nthis will prove the most valuable of them all, and will hopefully make this cl much lighter",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 1
+      },
+      "revId": "fc972a492ecda6a5ab659a5b41db04095a5d5a74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
