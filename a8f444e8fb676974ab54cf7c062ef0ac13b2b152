@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7c67460a_4c0b4f4d",
+        "filename": "appengine/monorail/static_src/elements/framework/cron.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-13T00:53:47Z",
+      "side": 1,
+      "message": "Optional nit: Would it make sense to put this file in \"shared\" instead? Framework sort of makes sense as a location but it feels far away from where our other non-element code lives.",
+      "revId": "a8f444e8fb676974ab54cf7c062ef0ac13b2b152",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "af8b2dcd_ab8952d1",
+        "filename": "appengine/monorail/static_src/elements/framework/cron.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-13T00:53:47Z",
+      "side": 1,
+      "message": "A question for context: Out of curiosity, are there plans to grow this file or re-use crons in multiple places?",
+      "revId": "a8f444e8fb676974ab54cf7c062ef0ac13b2b152",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ff018bdc_100ef320",
+        "filename": "appengine/monorail/static_src/elements/framework/cron.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-13T00:53:47Z",
+      "side": 1,
+      "message": "Optional nit: Would it make sense to try to design this so that there can only be one timeout set at a time even if this function is called multiple times?",
+      "range": {
+        "startLine": 13,
+        "startChar": 2,
+        "endLine": 13,
+        "endChar": 69
+      },
+      "revId": "a8f444e8fb676974ab54cf7c062ef0ac13b2b152",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3fc94e93_41a054a0",
+        "filename": "appengine/monorail/static_src/elements/framework/mr-site-banner/mr-site-banner.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-13T00:53:47Z",
+      "side": 1,
+      "message": "Nit: Could this div be remove and the styles applied directly to :host?",
+      "range": {
+        "startLine": 17,
+        "startChar": 6,
+        "endLine": 23,
+        "endChar": 7
+      },
+      "revId": "a8f444e8fb676974ab54cf7c062ef0ac13b2b152",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
