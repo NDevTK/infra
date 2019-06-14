@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "7189a07c_3d7fe915",
+        "filename": "appengine/monorail/static_src/elements/framework/mr-site-banner/mr-site-banner.test.js",
+        "patchSetId": 9
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2019-06-14T18:56:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3922c518_d486239c",
+      "revId": "02caa7c81f57a7d9dd6730be779f9fe20e524315",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1425044d_f15a345e",
         "filename": "appengine/monorail/static_src/elements/reducers/sitewide.js",
         "patchSetId": 9
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "993d3fcc_6e46fc78",
+        "filename": "appengine/monorail/static_src/elements/reducers/sitewide.js",
+        "patchSetId": 9
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2019-06-14T18:56:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1425044d_f15a345e",
+      "revId": "02caa7c81f57a7d9dd6730be779f9fe20e524315",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8256ae7a_b06649d0",
         "filename": "appengine/monorail/static_src/elements/reducers/sitewide.test.js",
         "patchSetId": 9
@@ -47,6 +83,30 @@
       "writtenOn": "2019-06-14T17:19:12Z",
       "side": 1,
       "message": "Isn\u0027t this testing the selectors not the reducers?\n\nThough it would be good to test the reducers and action creators as well.",
+      "range": {
+        "startLine": 13,
+        "startChar": 6,
+        "endLine": 13,
+        "endChar": 14
+      },
+      "revId": "02caa7c81f57a7d9dd6730be779f9fe20e524315",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dde80b22_bcdd00fa",
+        "filename": "appengine/monorail/static_src/elements/reducers/sitewide.test.js",
+        "patchSetId": 9
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2019-06-14T18:56:18Z",
+      "side": 1,
+      "message": "\u003e Isn\u0027t this testing the selectors not the reducers?\n\nDone.\n\n\u003e Though it would be good to test the reducers and action creators as well.\n\nYeah, I\u0027ll give it a try.",
+      "parentUuid": "8256ae7a_b06649d0",
       "range": {
         "startLine": 13,
         "startChar": 6,
@@ -76,6 +136,24 @@
     },
     {
       "key": {
+        "uuid": "c7beb0af_8017a86b",
+        "filename": "appengine/monorail/static_src/elements/shared/cron.test.js",
+        "patchSetId": 9
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2019-06-14T18:56:18Z",
+      "side": 1,
+      "message": "I don\u0027t know, it\u0027d only check that we called cronTask with the right arguments.",
+      "parentUuid": "0c028d77_f3964274",
+      "revId": "02caa7c81f57a7d9dd6730be779f9fe20e524315",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f203b779_84518399",
         "filename": "appengine/monorail/static_src/elements/shared/cron.test.js",
         "patchSetId": 9
@@ -87,6 +165,30 @@
       "writtenOn": "2019-06-14T17:19:12Z",
       "side": 1,
       "message": "sinon actually has it\u0027s own utilities to specifically help with testing time that might be better to use: https://sinonjs.org/releases/v1.17.6/fake-timers/",
+      "range": {
+        "startLine": 8,
+        "startChar": 10,
+        "endLine": 8,
+        "endChar": 14
+      },
+      "revId": "02caa7c81f57a7d9dd6730be779f9fe20e524315",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4e60ab8d_0c89d12b",
+        "filename": "appengine/monorail/static_src/elements/shared/cron.test.js",
+        "patchSetId": 9
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2019-06-14T18:56:18Z",
+      "side": 1,
+      "message": "Done, thanks!",
+      "parentUuid": "f203b779_84518399",
       "range": {
         "startLine": 8,
         "startChar": 10,
