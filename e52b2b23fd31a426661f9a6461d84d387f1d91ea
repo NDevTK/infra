@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0de209bd_58997807",
+        "filename": "appengine/monorail/static_src/elements/framework/mr-site-banner/mr-site-banner.test.js",
+        "patchSetId": 13
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1303432
+      },
+      "writtenOn": "2019-06-14T21:15:19Z",
+      "side": 1,
+      "message": "Awesome that you made a test time zone robust... I\u0027ve seen that break things many times and it\u0027s always so frustraiting!",
+      "revId": "e52b2b23fd31a426661f9a6461d84d387f1d91ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

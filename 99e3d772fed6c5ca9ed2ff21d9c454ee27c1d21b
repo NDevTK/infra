@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5b3f3cb6_a0a7764c",
+        "filename": "appengine/monorail/static_src/elements/reducers/sitewide.test.js",
+        "patchSetId": 16
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1303432
+      },
+      "writtenOn": "2019-06-14T21:15:19Z",
+      "side": 1,
+      "message": "Seems like your selector tests got lost while adding these?",
+      "revId": "99e3d772fed6c5ca9ed2ff21d9c454ee27c1d21b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
