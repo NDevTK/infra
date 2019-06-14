@@ -1,0 +1,73 @@
+// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package cros
+
+import (
+	"os/user"
+	"path/filepath"
+
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/tsmon"
+	"go.chromium.org/luci/common/tsmon/field"
+	"go.chromium.org/luci/common/tsmon/metric"
+	"go.chromium.org/luci/common/tsmon/types"
+	"golang.org/x/net/context"
+)
+
+var (
+	dutStatus = metric.NewString("dev/cros/dut/status",
+		"DUT status (Online|Offline).",
+		nil,
+		field.String("device_id"))
+
+	allMetrics = []types.Metric{
+		dutStatus,
+	}
+)
+
+// Register adds tsmon callbacks to set metrics
+func Register() {
+	tsmon.RegisterGlobalCallback(func(c context.Context) {
+		usr, err := user.Current()
+		if err != nil {
+			logging.Errorf(c, "Failed to get current user: %s",
+				err)
+		} else if err = update(c, usr.HomeDir); err != nil {
+			logging.Errorf(c, "Error updating DUT metrics: %s",
+				err)
+		}
+	}, allMetrics...)
+}
+
+func update(c context.Context, usrHome string) (err error) {
+	allFiles, err := filepath.Glob(
+		filepath.Join(usrHome, fileGlob))
+	if err != nil {
+		return
+	}
+	if len(allFiles) == 0 {
+		// This is usual case in most machines. So don't log an error
+		// message.
+		return
+	}
+	var lastErr error
+	for _, filePath := range allFiles {
+		statusFile, err := loadfile(c, filePath)
+		if err != nil {
+			logging.Errorf(c, "Failed to load file %s. %s",
+				filePath, err)
+			for device := range statusFile.Devices {
+				dutStatus.Set(c, "Offline", device)
+			}
+			lastErr = err
+		} else {
+			for device := range statusFile.Devices {
+				dutStatus.Set(c, "Online", device)
+			}
+		}
+	}
+	err = lastErr
+	return
+}
