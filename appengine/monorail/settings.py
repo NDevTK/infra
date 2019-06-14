@@ -129,7 +129,7 @@ read_only = False
 # described in the banner message takes effect.  It is
 # expressed as a tuple of ints: (year, month, day[, hour[, minute[, second]]])
 # e.g. (2009, 3, 20, 21, 45) represents March 20 2009 9:45PM UTC.
-banner_time = None
+banner_time = (2019, 6, 13, 18, 30)
 
 # Display a site maintenance banner on every monorail page.
 banner_message = ''
