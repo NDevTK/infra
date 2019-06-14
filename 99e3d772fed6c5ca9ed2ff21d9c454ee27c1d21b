@@ -34,6 +34,24 @@
       "revId": "99e3d772fed6c5ca9ed2ff21d9c454ee27c1d21b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "21795002_33d57493",
+        "filename": "appengine/monorail/static_src/elements/reducers/sitewide.test.js",
+        "patchSetId": 16
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1303432
+      },
+      "writtenOn": "2019-06-14T21:28:01Z",
+      "side": 1,
+      "message": "You\u0027re totally right. Sorry... the readability and conventions of these \"ducks\" in \"reducer\" files is still getting to me. Comments for another day.",
+      "parentUuid": "24d01339_1da50cfe",
+      "revId": "99e3d772fed6c5ca9ed2ff21d9c454ee27c1d21b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
