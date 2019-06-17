@@ -18,7 +18,6 @@ export class AnnouncementsTable extends LitElement {
     return {
       isTrooper: {type: Boolean},
       announcements: {type: Array},
-      retired: {type: Boolean},
     };
   }
 
@@ -74,7 +73,7 @@ export class AnnouncementsTable extends LitElement {
       <table cellspacing="0" cellpadding="0">
         <tbody>
           <tr class="header-row">
-            ${this.isTrooper && !this.retired ? html`<th></th>` : ''}
+            ${this.isTrooper ? html`<th></th>` : ''}
             <th>Platforms</th>
             <th>Announcement</th>
             <th>Timestamp</th>
@@ -83,7 +82,7 @@ export class AnnouncementsTable extends LitElement {
           ${(this.announcements && this.announcements.length
   ) ? this.announcements.map((ann) => html`
             <tr>
-              ${this.isTrooper && !this.retired ? html`
+              ${this.isTrooper && !ann.retired ? html`
                 <td>
                   <button
                     data-annId="${ann.id}" @click=${this.retireAnnouncement}
@@ -133,6 +132,7 @@ export class AnnouncementsTable extends LitElement {
     const respPromise = prpcClient.call(
       'dashboard.ChopsAnnouncements', 'RetireAnnouncement', retireMessage);
     respPromise.then((resp) => {
+      console.log('retireAnnonucement called');
       this.dispatchEvent(new CustomEvent('announcements-changed'));
     });
   }

@@ -15,11 +15,21 @@ export class ChopsAnnouncements extends LitElement {
     return {
       isTrooper: {type: Boolean},
       liveAnnouncements: {type: Array},
+      retiredAnnouncements: {type: Array},
+      liveErrorMessage: {type: String},
+      retiredErrorMessage: {type: String},
     };
   }
 
+  constructor() {
+    super();
+    this.liveAnnouncements = [];
+    this.retiredAnnouncement = [];
+  }
+
   firstUpdated() {
-    this._fetchLiveAnnouncements();
+    console.log('firstUpdated');
+    this._fetchAnnouncements(0);
   }
 
   static get styles() {
@@ -47,26 +57,61 @@ export class ChopsAnnouncements extends LitElement {
     return html`
       <div class="round-icon live small"><p>LIVE</p></div>
       <announcements-table
-        id="live-announcements-table"
         .isTrooper="${this.isTrooper}"
         .announcements="${this.liveAnnouncements}"
-        @announcements-changed=${this._fetchLiveAnnouncements}
+        @announcements-changed=${this._fetchAnnouncements(0)}
       ></announcements-table>
+      ${this.liveErrorMessage ? html`
+          <span class=error>${this.liveErrorMessage}</span>
+        ` : ''}
+      ${this.retiredErrorMessage ? html`
+          <span class=error>${this.retiredErrorMessage}</span>
+        ` : ''}
       ${this.isTrooper ? html `
         <announcement-input
-          @announcement-created=${this._fetchLiveAnnouncements}
+          @announcement-created=${this._fetchAnnouncements(0)}
         ></announcement-input>
       ` : ''}
     `;
   }
 
-  async _fetchLiveAnnouncements() {
+  _fetchAnnouncements(retiredOffset) {
+    console.log('this is being called');
+    console.log(this.retiredAnnouncements);
+    console.log(this.liveAnnouncements);
+    this._fetchLiveAnnouncements();
+    this._fetchRetiredAnnouncements(retiredOffset);
+  }
+
+  _fetchLiveAnnouncements() {
     const fetchLiveMessage = {
       retired: false,
     };
-    const resp = await prpcClient.call(
-      'dashboard.ChopsAnnouncements', 'SearchAnnouncements', fetchLiveMessage);
-    this.liveAnnouncements = resp.announcements;
+    const promise = this._searchAnnouncements(fetchLiveMessage);
+    promise.then((resp) => {
+      this.liveAnnouncements = resp.announcements;
+    }).catch((reason) => {
+      this.liveErrorMessage = `Failed to fetch live announcements: ${reason}`;
+    });
+
+  }
+  _fetchRetiredAnnouncements(offset) {
+    const fetchRetiredMessage = {
+      retired: true,
+      offset: offset,
+      limit: 5,
+    };
+    const promise = this._searchAnnouncements(fetchRetiredMessage);
+    promise.then((resp) => {
+      this.retiredAnnouncements = resp.announcements;
+    }).catch((reason) => {
+      this.retiredErrorMessage = `Failed to fetch retired announcements: ${reason}`;
+    });
+  }
+
+  async _searchAnnouncements(message) {
+    return prpcClient.call(
+	'dashboard.ChopsAnnouncements', 'SearchAnnouncements', message);
   }
 }
 
