@@ -22,6 +22,30 @@
       "revId": "586e748be168cdf3fc92045009380a5c9a665f07",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4a7d0ac2_d42531e4",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-06-18T21:13:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "427c33a5_30544dba",
+      "range": {
+        "startLine": 183,
+        "startChar": 0,
+        "endLine": 189,
+        "endChar": 8
+      },
+      "revId": "586e748be168cdf3fc92045009380a5c9a665f07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
