@@ -180,6 +180,12 @@ func (b *BatchRunner) collectForBatch(ctx context.Context, nb *batch) {
 				// Requests channel is closed, stop collecting.
 				return
 			}
+			select {
+			case <-r.ctx.Done():
+				logging.Debugf(r.ctx, "request already cancelled, ignored for batch")
+				continue
+			default:
+			}
 			logging.Debugf(r.ctx, "request picked up as batch slave, will eventually execute")
 			nb.append(r)
 			<-b.tBatchWait
