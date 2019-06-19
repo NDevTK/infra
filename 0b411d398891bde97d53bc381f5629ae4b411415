@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8531bd76_92a8bd96",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/metadata/mr-edit-metadata/mr-edit-metadata.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 604,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-19T22:07:55Z",
+      "side": 1,
+      "message": "Nit: Use update() rather than updated() for this. updated() runs after the render happens whereas update() runs before. \n\nIn this case, using updated() causes update() to run again because the disabled change triggers another render cycle. Using update() prevents this. \n\nNote: When using update(), you have to make a call to super.update() with changedProperties",
+      "revId": "0b411d398891bde97d53bc381f5629ae4b411415",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
