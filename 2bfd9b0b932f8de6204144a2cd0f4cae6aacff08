@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "21fef000_47a79967",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/metadata/mr-edit-metadata/mr-edit-issue.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2019-06-19T20:08:49Z",
+      "side": 1,
+      "message": "- When the user clicks save\n- Because binding form.disabled to request state enables it after the request succeeds, and then it gets disabled shortly after since there is no delta and it shouldn\u0027t be enabled. You can see this on the live version when updating an approval.\n\nI\u0027ll look into binding this to the request using an extra attribute (e.g. updating) and disabling the form when updating is true or delta is empty.",
+      "parentUuid": "e5c31902_4c636948",
+      "revId": "2bfd9b0b932f8de6204144a2cd0f4cae6aacff08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4a77fbeb_3a142b73",
         "filename": "appengine/monorail/static_src/elements/issue-detail/mr-approval-card/mr-approval-card.js",
         "patchSetId": 1
