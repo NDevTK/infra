@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "13a4d9fb_e13a8db5",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/metadata/mr-edit-metadata/mr-edit-issue.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-19T19:48:50Z",
+      "side": 1,
+      "message": "Two questions for understanding:\n\n- When is this set to false? \n- Why was this approach chosen over binding the form attribute to the Redux request state? (or using local component data binding)",
+      "revId": "2bfd9b0b932f8de6204144a2cd0f4cae6aacff08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4a77fbeb_3a142b73",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/mr-approval-card/mr-approval-card.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 300,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-19T19:48:50Z",
+      "side": 1,
+      "message": ":)",
+      "revId": "2bfd9b0b932f8de6204144a2cd0f4cae6aacff08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
