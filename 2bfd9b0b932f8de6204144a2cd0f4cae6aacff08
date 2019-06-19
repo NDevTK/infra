@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "e5c31902_4c636948",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/metadata/mr-edit-metadata/mr-edit-issue.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2019-06-19T19:56:24Z",
+      "side": 1,
+      "message": "driveby: would really prefer this be bound to redux state. Suppose something happens during store.dispatch() that prevents the request from actually going through (service worker/caching etc). Or some other action dispatches a request that should disable this control while it\u0027s in flight?",
+      "parentUuid": "13a4d9fb_e13a8db5",
+      "revId": "2bfd9b0b932f8de6204144a2cd0f4cae6aacff08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4a77fbeb_3a142b73",
         "filename": "appengine/monorail/static_src/elements/issue-detail/mr-approval-card/mr-approval-card.js",
         "patchSetId": 1
