@@ -133,6 +133,8 @@ export class MrEditIssue extends connectStore(LitElement) {
 
     this._issueUpdated = false;
     this._resetOnChange = true;
+    form.disabled = true;
+
     const message = {
       issueRef: this.issueRef,
       delta: delta,
