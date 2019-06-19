@@ -585,6 +585,7 @@ export class MrEditMetadata extends connectStore(LitElement) {
       issueType: {type: String},
       optionsPerEnumField: {type: String},
       fieldGroups: {type: Object},
+      saving: {type: Boolean},
       _debouncedProcessChanges: {type: Object},
     };
   }
@@ -598,6 +599,15 @@ export class MrEditMetadata extends connectStore(LitElement) {
     this.issueRef = {};
     this.disabled = true;
     this.fieldGroups = HARDCODED_FIELD_GROUPS;
+  }
+
+  updated(changedProperties) {
+    if (changedProperties.has('saving') && this.saving) {
+      this.disabled = true;
+    }
+    if (changedProperties.has('error') && this.error) {
+      this.disabled = false;
+    }
   }
 
   get _nicheFieldCount() {
@@ -773,7 +783,6 @@ export class MrEditMetadata extends connectStore(LitElement) {
     } catch (e) {
       if (!(e instanceof UserInputError)) throw e;
       this.error = e.message;
-      this.disabled = true;
       return {};
     }
   }
