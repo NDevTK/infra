@@ -1,0 +1,95 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8a082c21_7a1c43ce",
+        "filename": "go/src/infra/monitoring/sysmon/cros/cros.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2019-06-19T22:26:01Z",
+      "side": 1,
+      "message": "\"dut\" is prob redundant (\"dev/cros\" clearly indicates a chromeos device). I\u0027d nix it",
+      "range": {
+        "startLine": 20,
+        "startChar": 40,
+        "endLine": 20,
+        "endChar": 43
+      },
+      "revId": "0e6cb9dda2a7a14b8fe2cdc6e80ac6385520e5db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "babf5235_f7e811c5",
+        "filename": "go/src/infra/monitoring/sysmon/cros/cros.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2019-06-19T22:26:01Z",
+      "side": 1,
+      "message": "What will be populated in this field? ie: what is a DUT\u0027s device_id?",
+      "revId": "0e6cb9dda2a7a14b8fe2cdc6e80ac6385520e5db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dc0d6f37_93ea702e",
+        "filename": "go/src/infra/monitoring/sysmon/cros/cros.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2019-06-19T22:26:01Z",
+      "side": 1,
+      "message": "Does this work? There\u0027s a chance that sysmon runs as root, in which case the homedir would be root\u0027s home instead of chreom-bot\u0027s",
+      "revId": "0e6cb9dda2a7a14b8fe2cdc6e80ac6385520e5db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1174fc7e_d8262a92",
+        "filename": "go/src/infra/monitoring/sysmon/cros/devicefile.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2019-06-19T22:26:01Z",
+      "side": 1,
+      "message": "Do we expect more than one device to ever appear in a single file? If not, then let\u0027s redo the format to only support one. That\u0027ll make the parsing code simpler.",
+      "revId": "0e6cb9dda2a7a14b8fe2cdc6e80ac6385520e5db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "19cf280a_c467f87e",
+        "filename": "go/src/infra/monitoring/sysmon/cros/devicefile.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2019-06-19T22:26:01Z",
+      "side": 1,
+      "message": "This creates a dependency on the format of the lsb-release file on the dut. I\u0027d rather all those dependencies be located in the code that actually talks to the device (ie: cros_ssh.py). Let\u0027s just add a board field in the json that cros_ssh.py will take care of populating with the right stuff.",
+      "revId": "0e6cb9dda2a7a14b8fe2cdc6e80ac6385520e5db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
