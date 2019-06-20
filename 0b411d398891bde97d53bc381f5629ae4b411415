@@ -16,6 +16,24 @@
       "revId": "0b411d398891bde97d53bc381f5629ae4b411415",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "18a055f8_406a4e7c",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/metadata/mr-edit-metadata/mr-edit-metadata.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 604,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2019-06-20T00:21:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8531bd76_92a8bd96",
+      "revId": "0b411d398891bde97d53bc381f5629ae4b411415",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
