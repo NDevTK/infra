@@ -42,6 +42,24 @@
     },
     {
       "key": {
+        "uuid": "451b53b1_342098dc",
+        "filename": "go/src/infra/monitoring/sysmon/cros/cros.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2019-06-20T21:05:43Z",
+      "side": 1,
+      "message": "Using the bot name ie buildx-xx__buildxx-xx",
+      "parentUuid": "babf5235_f7e811c5",
+      "revId": "0e6cb9dda2a7a14b8fe2cdc6e80ac6385520e5db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "dc0d6f37_93ea702e",
         "filename": "go/src/infra/monitoring/sysmon/cros/cros.go",
         "patchSetId": 5
@@ -59,6 +77,24 @@
     },
     {
       "key": {
+        "uuid": "2f6686d6_5e4628c3",
+        "filename": "go/src/infra/monitoring/sysmon/cros/cros.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2019-06-20T21:05:43Z",
+      "side": 1,
+      "message": "I hope it does, because I copied it from android.go",
+      "parentUuid": "dc0d6f37_93ea702e",
+      "revId": "0e6cb9dda2a7a14b8fe2cdc6e80ac6385520e5db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1174fc7e_d8262a92",
         "filename": "go/src/infra/monitoring/sysmon/cros/devicefile.go",
         "patchSetId": 5
@@ -70,6 +106,24 @@
       "writtenOn": "2019-06-19T22:26:01Z",
       "side": 1,
       "message": "Do we expect more than one device to ever appear in a single file? If not, then let\u0027s redo the format to only support one. That\u0027ll make the parsing code simpler.",
+      "revId": "0e6cb9dda2a7a14b8fe2cdc6e80ac6385520e5db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "894b7d27_74cc059f",
+        "filename": "go/src/infra/monitoring/sysmon/cros/devicefile.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2019-06-20T21:05:43Z",
+      "side": 1,
+      "message": "Will need to change cros_ssh.py for this. I\u0027ll update once that change is in",
+      "parentUuid": "1174fc7e_d8262a92",
       "revId": "0e6cb9dda2a7a14b8fe2cdc6e80ac6385520e5db",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
