@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "d2b273f9_d7369978",
+        "filename": "go/src/infra/monitoring/sysmon/cros/cros.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2019-06-24T23:19:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8a082c21_7a1c43ce",
+      "range": {
+        "startLine": 20,
+        "startChar": 40,
+        "endLine": 20,
+        "endChar": 43
+      },
+      "revId": "0e6cb9dda2a7a14b8fe2cdc6e80ac6385520e5db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "babf5235_f7e811c5",
         "filename": "go/src/infra/monitoring/sysmon/cros/cros.go",
         "patchSetId": 5
@@ -57,6 +81,24 @@
       "revId": "0e6cb9dda2a7a14b8fe2cdc6e80ac6385520e5db",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d7ea6f84_b690fbc3",
+        "filename": "go/src/infra/monitoring/sysmon/cros/cros.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2019-06-24T23:19:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "451b53b1_342098dc",
+      "revId": "0e6cb9dda2a7a14b8fe2cdc6e80ac6385520e5db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -95,6 +137,24 @@
     },
     {
       "key": {
+        "uuid": "2f42d2cc_c739ce74",
+        "filename": "go/src/infra/monitoring/sysmon/cros/cros.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2019-06-24T23:19:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2f6686d6_5e4628c3",
+      "revId": "0e6cb9dda2a7a14b8fe2cdc6e80ac6385520e5db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1174fc7e_d8262a92",
         "filename": "go/src/infra/monitoring/sysmon/cros/devicefile.go",
         "patchSetId": 5
@@ -130,6 +190,24 @@
     },
     {
       "key": {
+        "uuid": "b19ffdb4_4cc424f5",
+        "filename": "go/src/infra/monitoring/sysmon/cros/devicefile.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2019-06-24T23:19:19Z",
+      "side": 1,
+      "message": "Changed to new json format in Patchset 7",
+      "parentUuid": "894b7d27_74cc059f",
+      "revId": "0e6cb9dda2a7a14b8fe2cdc6e80ac6385520e5db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "19cf280a_c467f87e",
         "filename": "go/src/infra/monitoring/sysmon/cros/devicefile.go",
         "patchSetId": 5
@@ -144,6 +222,24 @@
       "revId": "0e6cb9dda2a7a14b8fe2cdc6e80ac6385520e5db",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "64ddbb5f_9789602f",
+        "filename": "go/src/infra/monitoring/sysmon/cros/devicefile.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2019-06-24T23:19:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "19cf280a_c467f87e",
+      "revId": "0e6cb9dda2a7a14b8fe2cdc6e80ac6385520e5db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
