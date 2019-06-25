@@ -46,6 +46,30 @@
       "revId": "247fed3aa8475b1143bdc340c214746a75d43f67",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c436b1b3_d0129168",
+        "filename": "go/src/infra/tools/kitchen/cook.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-06-25T23:15:17Z",
+      "side": 1,
+      "message": "I was meaning \u0027g\u0027 for \u0027Google\u0027. In case we add emulation for non-google cloud auth schemes at some point.\n\nI think either 1 or 2 is best; currently the metadata server only exists on GCE right? So maybe #1?",
+      "parentUuid": "64dbef27_7d013671",
+      "range": {
+        "startLine": 104,
+        "startChar": 8,
+        "endLine": 104,
+        "endChar": 13
+      },
+      "revId": "247fed3aa8475b1143bdc340c214746a75d43f67",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
