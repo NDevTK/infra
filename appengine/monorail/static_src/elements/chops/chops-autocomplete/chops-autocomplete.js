@@ -56,10 +56,17 @@ export class ChopsAutocomplete extends LitElement {
 
   render() {
     const completions = this.completions;
+    const currentValue = this._prefix.trim().toLowerCase();
     return html`
       <slot @slotchange=${this._registerInputElement}></slot>
+      <span id="instructions" hidden>
+        Use up and down arrows to highlight autocomplete results and
+        enter to select.
+      </span>
       <table
         ?hidden=${!completions.length}
+        id="results"
+        role="listbox"
       >
         <tbody>
           ${completions.map((completion, i) => html`
@@ -69,6 +76,9 @@ export class ChopsAutocomplete extends LitElement {
               data-value=${completion}
               @mouseover=${this._hoverCompletion}
               @mousedown=${this._clickCompletion}
+              role="option"
+              aria-selected=${completion.toLowerCase()
+                === currentValue ? 'true' : 'false'}
             >
               <td class="completion">
                 ${this._renderCompletion(completion)}
@@ -358,6 +368,17 @@ export class ChopsAutocomplete extends LitElement {
     node.addEventListener('keydown', this._boundNavigateCompletions);
     node.addEventListener('focus', this._boundFocusHandler);
     node.addEventListener('blur', this._boundFocusHandler);
+
+    this._oldAttributes = {
+      'aria-describedby': node.getAttribute('aria-describedby'),
+      'aria-owns': node.getAttribute('aria-owns'),
+      'aria-autocomplete': node.getAttribute('aria-autocomplete'),
+      'aria-activedescendant': node.getAttribute('aria-activedescendant'),
+    };
+    node.setAttribute('aria-describedby', 'instructions');
+    node.setAttribute('aria-owns', 'results');
+    node.setAttribute('aria-autocomplete', 'both');
+    node.setAttribute('aria-activedescendant', '');
   }
 
   _disconnectAutocomplete(node) {
@@ -367,6 +388,11 @@ export class ChopsAutocomplete extends LitElement {
     node.removeEventListener('keydown', this._boundNavigateCompletions);
     node.removeEventListener('focus', this._boundFocusHandler);
     node.removeEventListener('blur', this._boundFocusHandler);
+
+    for (const key of this._oldAttributes) {
+      node.setAttribute(key, this._oldAttributes[key]);
+    }
+    this._oldAttributes = {};
   }
 }
 customElements.define('chops-autocomplete', ChopsAutocomplete);
