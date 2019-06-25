@@ -215,6 +215,19 @@ describe('chops-autocomplete', () => {
     assert.equal(input.value, 'click me!');
   });
 
+  it('aria-activedescendant set based on selected option', async () => {
+    element.completions = [
+      'i',
+      'am',
+      'an option',
+    ];
+    element._selectedIndex = 1;
+
+    await element.updateComplete;
+
+    assert.equal(input.getAttribute('aria-activedescendant'), 'option-1');
+  });
+
   it('hovering over a completion selects it', async () => {
     element.completions = [
       'hover',
