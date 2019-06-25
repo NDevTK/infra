@@ -22,6 +22,30 @@
       "revId": "247fed3aa8475b1143bdc340c214746a75d43f67",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "64dbef27_7d013671",
+        "filename": "go/src/infra/tools/kitchen/cook.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-06-25T23:08:41Z",
+      "side": 1,
+      "message": "If by \"gcloud\" you mean the CLI tool, this is not gcloud specific. \n\nIt emulates GCE Metadata server. But this exact protocol is also used by processes running on GAE v2, Cloud Functions, Cloud Run, GKE and Cloud Shell. Thus I collectively named this \"Cloud\". Should this be \n1. \"EmulateGCE\".\n2. \"EmulateGoogleCloud\".\n?",
+      "parentUuid": "8948cba0_6faa7656",
+      "range": {
+        "startLine": 104,
+        "startChar": 8,
+        "endLine": 104,
+        "endChar": 13
+      },
+      "revId": "247fed3aa8475b1143bdc340c214746a75d43f67",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
