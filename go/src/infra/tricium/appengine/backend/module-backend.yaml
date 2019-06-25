@@ -22,3 +22,6 @@ handlers:
 - url: /.*
   script: _go_app
   secure: always
+
+nobuild_files:
+ .vendor
