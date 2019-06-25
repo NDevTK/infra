@@ -2814,22 +2814,9 @@ class WorkEnvTest(unittest.TestCase):
   def testExpungeUsers(self, fake_pasdfrn):
     """Test user data correctly expunged."""
     limit = 10000
-    # Set up mocks
-    # NOTE: If these Expunge...() methods are called in places other than
-    # ExpungeUsers(), then these methods should be added to testing.fake
-    # classes. If they are only used in ExpungeUsers, then mocking is fine.
-    self.services.config = mock.Mock(spec=config_svc.ConfigService)
-    self.services.issue = mock.Mock(spec=issue_svc.IssueService)
-    self.services.user = mock.Mock(spec=user_svc.UserService)
-    self.services.project = mock.Mock(spec=project_svc.ProjectService)
-    self.services.issue_star = mock.Mock(spec=star_svc.IssueStarService)
-    self.services.project_star = mock.Mock(spec=star_svc.ProjectStarService)
-    self.services.user_star = mock.Mock(spec=star_svc.UserStarService)
-    self.services.hotlist_star = mock.Mock(spec=star_svc.HotlistStarService)
-    self.services.features = mock.Mock(spec=features_svc.FeaturesService)
-    self.services.usergroup = mock.Mock(spec=usergroup_svc.UserGroupService)
-    self.services.template = mock.Mock(spec=template_svc.TemplateService)
-    self.services.spam = mock.Mock(spec=spam_svc.SpamService)
+    # Replace template service mock with fake testing TemplateService
+    self.services.template = fake.TemplateService()
+
 
     wipeout_emails = ['cow@test.com', 'chicken@test.com', 'llama@test.com',
                       'alpaca@test.com']
