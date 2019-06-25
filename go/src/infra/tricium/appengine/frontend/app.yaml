@@ -35,3 +35,6 @@ includes:
 
 skip_files:
   - ui/node_modules/
+
+nobuild_files:
+  - .vendor
