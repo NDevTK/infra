@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a0f9d7f3_ba3267c2",
+        "filename": "go/src/infra/monitoring/sysmon/cros/cros.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2019-06-25T21:28:01Z",
+      "side": 1,
+      "message": "Why container_hostname, and not just hostname of the dut? (IMO the latter would be better for tracking purposes.)",
+      "revId": "70d05a81a88fb1d59a8ff88fdfcf0594b3411862",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e8f895a3_9989af44",
+        "filename": "go/src/infra/monitoring/sysmon/cros/devicefile.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2019-06-25T21:28:01Z",
+      "side": 1,
+      "message": "So just because the file hasn\u0027t been updated in N seconds doesn\u0027t mean the DUT is offline. (For instance, the swarming bot doesn\u0027t run any hooks like get_state or get_dimensions during tasks.)\n\nInstead, this status should be reported by the swarming bot (since that\u0027s where the source of all this state info is coming from) and plumbed through here.\n\nAnd if the file is too stale, just don\u0027t report anything.",
+      "revId": "70d05a81a88fb1d59a8ff88fdfcf0594b3411862",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
