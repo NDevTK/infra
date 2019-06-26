@@ -2813,68 +2813,29 @@ class WorkEnvTest(unittest.TestCase):
       'PrepareAndSendDeletedFilterRulesNotification')
   def testExpungeUsers(self, fake_pasdfrn):
     """Test user data correctly expunged."""
-    limit = 10000
-    # Set up mocks
-    # NOTE: If these Expunge...() methods are called in places other than
-    # ExpungeUsers(), then these methods should be added to testing.fake
-    # classes. If they are only used in ExpungeUsers, then mocking is fine.
-    self.services.config = mock.Mock(spec=config_svc.ConfigService)
-    self.services.issue = mock.Mock(spec=issue_svc.IssueService)
-    self.services.user = mock.Mock(spec=user_svc.UserService)
-    self.services.project = mock.Mock(spec=project_svc.ProjectService)
-    self.services.issue_star = mock.Mock(spec=star_svc.IssueStarService)
-    self.services.project_star = mock.Mock(spec=star_svc.ProjectStarService)
-    self.services.user_star = mock.Mock(spec=star_svc.UserStarService)
-    self.services.hotlist_star = mock.Mock(spec=star_svc.HotlistStarService)
-    self.services.features = mock.Mock(spec=features_svc.FeaturesService)
-    self.services.usergroup = mock.Mock(spec=usergroup_svc.UserGroupService)
-    self.services.template = mock.Mock(spec=template_svc.TemplateService)
-    self.services.spam = mock.Mock(spec=spam_svc.SpamService)
+    #limit = 10000
+    # Replace template service mock with fake testing TemplateService
+    self.services.template = fake.TemplateService()
+
 
     wipeout_emails = ['cow@test.com', 'chicken@test.com', 'llama@test.com',
                       'alpaca@test.com']
-    existing_emails = ['cow@test.com', 'chicken@test.com', 'llama@test.com']
-    ids_by_email = {existing_emails[0]: 111, existing_emails[1]: 222,
-                    existing_emails[2]: 333}
-    user_ids = ids_by_email.values()
-    self.services.user.LookupExistingUserIDs = mock.Mock(
-        return_value=ids_by_email)
+    _user_1 = self.services.user.TestAddUser('cow@test.com', 111)
+    _user_2 = self.services.user.TestAddUser('chicken@test.com', 222)
+    _user_3 = self.services.user.TestAddUser('llama@test.com', 333)
+    _user_4 = self.services.user.TestAddUser('random@test.com', 888)
+    _ids_by_email = {user_1.email: user_1.user_id, user_2.email: user_2.user_id,
+                    user_3.email: user_3.user_id}
+    #user_ids = ids_by_email.values()
 
-    self.services.spam.ExpungeUsersInSpam = mock.Mock()
-
-    self.services.spam.ExpungeUsersInIssues = mock.Mock()
-
-    self.services.issue_star.ExpungeUsersInStars = mock.Mock()
-    self.services.project_star.ExpungeUsersInStars = mock.Mock()
-    self.services.hotlist_star.ExpungeUsersInStars = mock.Mock()
-    self.services.user_star.ExpungeUsersInStars = mock.Mock()
-    self.services.user_star.ExpungeStars = mock.Mock()
-
-    self.services.features.ExpungeUsersInQuickEdits = mock.Mock()
-    self.services.features.ExpungeUsersInSavedQueries = mock.Mock()
-
-    self.services.features.ExpungeUsersInHotlists = mock.Mock()
-
-    self.services.features.ExpungeUsersInHotlists = mock.Mock()
-
-    self.services.template.ExpungeUsersInTemplates = mock.Mock()
-    self.services.config.ExpungeUsersInConfigs = mock.Mock()
-
-    self.services.usergroup.ExpungeUsersInGroups = mock.Mock()
-
-    rule1 = filterrules_helpers.MakeRule('owner:cow@test.com', add_cc_ids=[888])
-    rule2 = filterrules_helpers.MakeRule(
-        'owner:random@test.com', add_cc_ids=[222, 333])
-    rule3 = filterrules_helpers.MakeRule(
-        'label:random-label', add_notify=['llama@test.com'])
-    deleted_rules_dict = {16: [rule1, rule2], 17: [rule3]}
-    self.services.user.LookupUserEmails = mock.Mock(
-        return_value={111: existing_emails[0], 222: existing_emails[1],
-                      333: existing_emails[2], 888: 'random@test.com'})
-    self.services.features.ExpungeFilterRulesByUser = mock.Mock(
-        return_value=deleted_rules_dict)
-
-    self.services.user.ExpungeUsers = mock.Mock()
+    rule1 = self.services.features.TestAddFilterRule(
+        16, 'owner:cow@test.com', add_cc_ids=[888])
+    rule2 = self.services.features.TestAddFilterRule(
+        16, 'owner:random@test.com', add_cc_ids=[222, 333])
+    rule3 = self.services.features.TestAddFilterRule(
+        17, 'label:random-label', add_notify=['llama@test.com'])
+    self.services.features.deleted_rules_by_project = {
+        16: [rule1, rule2], 17: [rule3]}
 
     self.mr.cnxn = mock.Mock()
     self.services.usergroup.group_dag = mock.Mock()
@@ -2884,49 +2845,6 @@ class WorkEnvTest(unittest.TestCase):
       we.ExpungeUsers(wipeout_emails)
 
     # test correct calls made
-    self.services.spam.ExpungeUsersInSpam.assert_called_once_with(
-        self.mr.cnxn, user_ids)
-
-    self.services.issue.ExpungeUsersInIssues.assert_called_once_with(
-        self.mr.cnxn, user_ids, limit=limit)
-
-    self.services.issue_star.ExpungeUsersInStars.assert_called_once_with(
-        self.mr.cnxn, user_ids, limit=limit)
-    self.services.project_star.ExpungeUsersInStars.assert_called_once_with(
-        self.mr.cnxn, user_ids, limit=limit)
-    self.services.hotlist_star.ExpungeUsersInStars.assert_called_once_with(
-        self.mr.cnxn, user_ids, limit=limit)
-    self.services.user_star.ExpungeUsersInStars.assert_called_once_with(
-        self.mr.cnxn, user_ids, limit=limit)
-    self.assertItemsEqual(
-        self.services.user_star.ExpungeStars.call_args_list,
-        [
-            mock.call(self.mr.cnxn, user_ids[0], commit=False, limit=limit),
-            mock.call(self.mr.cnxn, user_ids[1], commit=False, limit=limit),
-            mock.call(self.mr.cnxn, user_ids[2], commit=False, limit=limit)])
-
-    self.services.features.ExpungeUsersInQuickEdits.assert_called_once_with(
-        self.mr.cnxn, user_ids, limit=limit)
-    self.services.features.ExpungeUsersInSavedQueries.assert_called_once_with(
-        self.mr.cnxn, user_ids, limit=limit)
-
-    self.services.features.ExpungeUsersInHotlists.assert_called_once_with(
-        self.mr.cnxn, user_ids, self.services.hotlist_star, self.services.user)
-
-    self.services.template.ExpungeUsersInTemplates.assert_called_once_with(
-        self.mr.cnxn, user_ids, limit=limit)
-    self.services.config.ExpungeUsersInConfigs.assert_called_once_with(
-        self.mr.cnxn, user_ids, limit=limit)
-
-    self.services.usergroup.ExpungeUsersInGroups.assert_called_once_with(
-        self.mr.cnxn, user_ids, limit=limit)
-
-    self.services.features.ExpungeFilterRulesByUser.assert_called_once_with(
-        self.mr.cnxn, ids_by_email)
-
-    self.services.user.ExpungeUsers.assert_called_once_with(
-        self.mr.cnxn, user_ids)
-
     self.assertEqual(7, len(self.mr.cnxn.Commit.call_args_list))
     self.services.usergroup.group_dag.MarkObsolete.assert_called_once()
 
