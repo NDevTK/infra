@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2d8f5ccd_565352c3",
+        "filename": "go/src/infra/tricium/appengine/backend/module-backend.yaml",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2019-06-26T00:59:16Z",
+      "side": 1,
+      "message": "This uses a different format or you forgot \"-\" ?",
+      "revId": "8e6ce9744c1e5547d45664045a21ef5af2624f7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b43d00a7_f2a32002",
+        "filename": "go/src/infra/tricium/appengine/frontend/app.yaml",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2019-06-26T00:59:16Z",
+      "side": 1,
+      "message": "I\u0027d vote to indent it for clarity.",
+      "revId": "8e6ce9744c1e5547d45664045a21ef5af2624f7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
