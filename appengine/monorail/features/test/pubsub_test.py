@@ -1,11 +1,12 @@
 # Copyright 2019 The Chromium Authors. All rights reserved.
-# Use of this source code is govered by a BSD-style
+# Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
 
 """Tests for pubsub.py."""
 
 import unittest
+import os
 
 from google.appengine.api import taskqueue
 from google.appengine.ext import testbed
@@ -84,4 +85,3 @@ class PublishPubsubIssueChangeTaskTest(unittest.TestCase):
         services=self.services)
     result = task.HandleRequest(mr)
     self.VerifyParams(result, params)
-

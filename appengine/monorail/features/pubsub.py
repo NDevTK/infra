@@ -9,6 +9,7 @@ another issue changes, or a bulk edit is done.
 The topic is projects/monorail/issue-changes"""
 
 
+import settings
 from tracker import tracker_views
 
 from googleapiclient.discovery import build
@@ -97,4 +98,3 @@ class PublishPubsubIssueChangeTask(notify_helpers.NotifyTaskBase):
           #TODO: Add timestamp variable of when issue was updated.
           #"timestamp": publishTime}]
         }).execute()
-
