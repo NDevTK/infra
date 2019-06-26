@@ -1,7 +1,7 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style
-# license that can be found in the LICENSE file or at
-# https://developers.google.com/open-source/licenses/bsd
+# license that can be found in the LICENSE file.
+
 
 """Task handlers for publishing pubsub notifications of issue changes.
 Pubsub event notifications are sent when an issue changes, an issue that is blocking
@@ -9,41 +9,11 @@ another issue changes, or a bulk edit is done.
 The topic is projects/monorail/issue-changes"""
 
 
-import collections
-import json
-import logging
-import os
-
-from third_party import ezt
-
-from google.appengine.api import taskqueue
-from google.appengine.api import urlfetch
-from google.appengine.runtime import apiproxy_errors
-
-import settings
-from features import autolink
-from features import notify_helpers
-from features import notify_reasons
-from framework import authdata
-from framework import emailfmt
-from framework import exceptions
-from framework import framework_bizobj
-from framework import framework_helpers
-from framework import framework_views
-from framework import jsonfeed
-from framework import monorailrequest
-from framework import permissions
-from framework import template_helpers
-from framework import urls
-from tracker import tracker_bizobj
-from tracker import tracker_helpers
 from tracker import tracker_views
-from proto import tracker_pb2
 
 from googleapiclient.discovery import build
 
 class PublishPubsubIssueChangeTask(notify_helpers.NotifyTaskBase):
-  """JSON servlet that notifies appropriate users after an issue change."""
 
   def HandleRequest(self, mr):
     """Process the task to notify users after an issue change.
@@ -52,8 +22,7 @@ class PublishPubsubIssueChangeTask(notify_helpers.NotifyTaskBase):
       mr: common information parsed from the HTTP request.
 
     Returns:
-      Results dictionary in JSON format which is useful just for debugging.
-      The main goal is the side-effect of sending emails.
+      Nothing.
     """
     issue_id = mr.GetPositiveIntParam('issue_id')
     if not issue_id:
@@ -86,7 +55,6 @@ class PublishPubsubIssueChangeTask(notify_helpers.NotifyTaskBase):
       logging.info('Looking up comment by comment_id')
       for c in all_comments:
         if c.id == comment_id:
-          comment = c
           logging.info('Comment was found by comment_id')
           break
       else:
@@ -98,14 +66,14 @@ class PublishPubsubIssueChangeTask(notify_helpers.NotifyTaskBase):
     # Make followup tasks to send pubsub notification
     tasks = []
     tasks = self._PublishPubsub(
-        mr.cnxn, project, issue, config, ps_topic, ps_project, mr.perms)
+        mr.cnxn, project, issue, ps_topic, ps_project, config, mr.perms)
 
     return {
         'params': params,
         }
 
   def _PublishPubsub(
-      self, cnxn, project, issue, ps_topic, ps_project, config):
+      self, cnxn, project, issue, ps_topic, ps_project, config, perms):
 
     pubsub_data = {
         # Pass open_related and closed_related into this method and to
@@ -129,3 +97,4 @@ class PublishPubsubIssueChangeTask(notify_helpers.NotifyTaskBase):
           #TODO: Add timestamp variable of when issue was updated.
           #"timestamp": publishTime}]
         }).execute()
+

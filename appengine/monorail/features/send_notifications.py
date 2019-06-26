@@ -40,7 +40,7 @@ def PrepareAndSendIssueChangeNotification(
       url=urls.NOTIFY_ISSUE_CHANGE_TASK + '.do', params=params,
       queue_name=features_constants.QUEUE_NOTIFICATIONS)
 
-taskqueue.add(
+  taskqueue.add(
       url=urls.PUBLISH_PUBSUB_ISSUE_CHANGE_TASK + '.do', params=params,
       queue_name=features_constants.QUEUE_PUBSUB)
 

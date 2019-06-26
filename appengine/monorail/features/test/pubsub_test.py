@@ -1,31 +1,23 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is govered by a BSD-style
-# license that can be found in the LICENSE file or at
-# https://developers.google.com/open-source/licenses/bsd
+# license that can be found in the LICENSE file.
+
 
 """Tests for pubsub.py."""
 
-import json
-import logging
-import os
 import unittest
-import webapp2
-import webtest
 
 from google.appengine.api import taskqueue
 from google.appengine.ext import testbed
 
 from features import notify
-from framework import urls
 from proto import tracker_pb2
 from services import service_manager
 from testing import fake
 from testing import testing_helpers
 from tracker import attachment_helpers
-from tracker import tracker_bizobj
 
 from third_party import cloudstorage
-from googleapiclient.discovery import build
 
 
 def MakeTestIssue(project_id, local_id, owner_id, reporter_id):
@@ -46,7 +38,7 @@ class PublishPubsubIssueChangeTaskTest(unittest.TestCase):
     self.testbed.init_taskqueue_stub()
     self.taskqueue_stub = self.testbed.get_stub(testbed.TASKQUEUE_SERVICE_NAME)
     self.taskqueue_stub._root_path = os.path.dirname(
-        os.path.dirname(os.path.dirname( __file__ )))
+        os.path.dirname(os.path.dirname(__file__)))
     self.services = service_manager.Services(
         user=fake.UserService(),
         project=fake.ProjectService(),
@@ -92,3 +84,4 @@ class PublishPubsubIssueChangeTaskTest(unittest.TestCase):
         services=self.services)
     result = task.HandleRequest(mr)
     self.VerifyParams(result, params)
+
