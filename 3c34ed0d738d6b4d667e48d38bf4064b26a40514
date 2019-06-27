@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "bc38cadb_6e8dc5a1",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-autocomplete/chops-autocomplete.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-27T01:09:33Z",
+      "side": 1,
+      "message": "It can be on the \u003ctable\u003e instead. Originally, I did it this way because I tried to find a way to make aria attributes work across shadow DOM. ie: I tested having the input reference the id of a shadowRoot which would then references its children elements. That approach didn\u0027t end up working at all, but I ended up keeping the aria attributes on the main element since it works either way.",
+      "parentUuid": "07e395db_022e36a1",
+      "revId": "3c34ed0d738d6b4d667e48d38bf4064b26a40514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "7c2603ff_01f2fc2d",
         "filename": "appengine/monorail/static_src/elements/chops/chops-autocomplete/chops-autocomplete.js",
         "patchSetId": 5
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "aaa4f3bb_4b96a24c",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-autocomplete/chops-autocomplete.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-27T01:09:33Z",
+      "side": 1,
+      "message": "Yup, they work within a shadow root but not across shadow roots.",
+      "parentUuid": "7c2603ff_01f2fc2d",
+      "revId": "3c34ed0d738d6b4d667e48d38bf4064b26a40514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c8b095da_75057ade",
         "filename": "appengine/monorail/static_src/elements/chops/chops-autocomplete/chops-autocomplete.js",
         "patchSetId": 5
@@ -47,6 +83,24 @@
       "writtenOn": "2019-06-27T00:59:38Z",
       "side": 1,
       "message": "Just curious: How does this.getRootNode() find the \u003cinput\u003e?  I thought that getRootNode would return the shadowDOM for the current element.",
+      "revId": "3c34ed0d738d6b4d667e48d38bf4064b26a40514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e0b71687_22f76ec3",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-autocomplete/chops-autocomplete.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-27T01:09:33Z",
+      "side": 1,
+      "message": "getRootNode() gets the parent shadowDOM that the element lives within. When called on this, it would find the parent shadowRoot because the element itself is not within its own shadowRoot. \n\nThis approach assumes that the input is in the same shadow root as the autocomplete element. I figured that was a fine restriction since that\u0027s how for\u003d\"\" on labels and the like work as well.",
+      "parentUuid": "c8b095da_75057ade",
       "revId": "3c34ed0d738d6b4d667e48d38bf4064b26a40514",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
