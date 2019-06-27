@@ -104,6 +104,40 @@
       "revId": "3c34ed0d738d6b4d667e48d38bf4064b26a40514",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b5f4e050_6be14411",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-autocomplete/chops-autocomplete.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2019-06-27T01:13:29Z",
+      "side": 1,
+      "message": "Both this code and the connect/disconnect code below seem like they would be simpler and more component-ey if we had a wrapper component to glue the \u003cinput\u003e and \u003cchops-autocomplete\u003e together. Then these attributes would be on the child element in rather than the host, so we could just declaratively set them in render(). Is the reason we don\u0027t do that for performance?",
+      "revId": "3c34ed0d738d6b4d667e48d38bf4064b26a40514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1098b2b1_4e0d0837",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-autocomplete/chops-autocomplete.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 434,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2019-06-27T01:13:29Z",
+      "side": 1,
+      "message": "Is aria-controls the attribute that requires removal of the Shadow DOM?\nThis article says that it\u0027s not widely supported, so maybe we don\u0027t need it if it simplifies the code:\nhttps://www.heydonworks.com/article/aria-controls-is-poop",
+      "revId": "3c34ed0d738d6b4d667e48d38bf4064b26a40514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
