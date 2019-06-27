@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "07e395db_022e36a1",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-autocomplete/chops-autocomplete.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-06-27T00:59:38Z",
+      "side": 1,
+      "message": "Just curious: this needs to be on the host element? It can\u0027t be on the \u003ctable\u003e or \u003ctbody\u003e?",
+      "revId": "3c34ed0d738d6b4d667e48d38bf4064b26a40514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7c2603ff_01f2fc2d",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-autocomplete/chops-autocomplete.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-06-27T00:59:38Z",
+      "side": 1,
+      "message": "Interesting, I did not know that you could do that.  So, the arai-controls attribute works so long as the \u003cinput\u003e and the controlling element are in the same scope?",
+      "revId": "3c34ed0d738d6b4d667e48d38bf4064b26a40514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c8b095da_75057ade",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-autocomplete/chops-autocomplete.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-06-27T00:59:38Z",
+      "side": 1,
+      "message": "Just curious: How does this.getRootNode() find the \u003cinput\u003e?  I thought that getRootNode would return the shadowDOM for the current element.",
+      "revId": "3c34ed0d738d6b4d667e48d38bf4064b26a40514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
