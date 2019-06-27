@@ -142,6 +142,24 @@
     },
     {
       "key": {
+        "uuid": "3a507c6d_00683d4a",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-autocomplete/chops-autocomplete.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-27T01:28:17Z",
+      "side": 1,
+      "message": "Wait I think I misunderstood your suggestion here. \n\nI think a wrapper component is not a bad idea. I considered that but wanted to avoid having extra components. I was also a bit weary about making chops-autocomplete not able to work without a wrapper component, because chops-autocomplete does also need to bind to an input in order to display at all. \n\nAnother approach I considered was using inheritance and \"fake slots\" through overriding methods for chops-autocomplete. ie: have a function that renders an input element with the proper attributes and have subclasses override that to add different input elements. This would allow customization of the input but it requires anyone subclassing chops-autocomplete to always make sure the input has the right attributes bound when overriding the method, which seems unstable.",
+      "parentUuid": "7a69e11c_f0e80e66",
+      "revId": "3c34ed0d738d6b4d667e48d38bf4064b26a40514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1098b2b1_4e0d0837",
         "filename": "appengine/monorail/static_src/elements/chops/chops-autocomplete/chops-autocomplete.js",
         "patchSetId": 5
