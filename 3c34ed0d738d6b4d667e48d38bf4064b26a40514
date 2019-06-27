@@ -124,6 +124,24 @@
     },
     {
       "key": {
+        "uuid": "7a69e11c_f0e80e66",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-autocomplete/chops-autocomplete.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-27T01:23:13Z",
+      "side": 1,
+      "message": "Do you mean including the \u003cinput\u003e within the component rather than outside? That was initially done in the original autocomplete to allow customization. Now that there\u0027s no shadowDOM, of course, styling is no longer a concern, but there are still two major concerns I have: \n\n- Inputs will often need to have custom attributes and custom handlers set on them by the code using those inputs. If we encapsulate the input in the autocomplete component, we have to expose an API to customize the behavior of the input. It\u0027s possible to do for sure, but my thinking is that I would rather have this complexity represented in the autocomplete component code rather than taken on by all components using the input element. \n- I want to eventually make this autocomplete able to work with either a native input element or a future chops-input element. This design was made to allow flexibility in component choice.",
+      "parentUuid": "b5f4e050_6be14411",
+      "revId": "3c34ed0d738d6b4d667e48d38bf4064b26a40514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1098b2b1_4e0d0837",
         "filename": "appengine/monorail/static_src/elements/chops/chops-autocomplete/chops-autocomplete.js",
         "patchSetId": 5
@@ -135,6 +153,24 @@
       "writtenOn": "2019-06-27T01:13:29Z",
       "side": 1,
       "message": "Is aria-controls the attribute that requires removal of the Shadow DOM?\nThis article says that it\u0027s not widely supported, so maybe we don\u0027t need it if it simplifies the code:\nhttps://www.heydonworks.com/article/aria-controls-is-poop",
+      "revId": "3c34ed0d738d6b4d667e48d38bf4064b26a40514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d77d8734_50a5ff53",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-autocomplete/chops-autocomplete.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 434,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-27T01:23:13Z",
+      "side": 1,
+      "message": "It\u0027s not just aria-controls. aria-activedescendant also references IDs. I did try an approach as well where aria-controls was set to chops-autocomplete\u0027s host element\u0027s id, and chops-autocomplete would then try to reference its own children. The issue with that approach is that the host element of chops-autocomplete itself is not in the same shadowRoot as its children. \n\nAnother approach I considered was using aria-live to try to recreate browser screenreader features using JavaScript, but I avoided this because it seemed to go against the standard solutions to help with accessibility.",
+      "parentUuid": "1098b2b1_4e0d0837",
       "revId": "3c34ed0d738d6b4d667e48d38bf4064b26a40514",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
