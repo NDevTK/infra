@@ -36,8 +36,8 @@ func getApplication() *cli.Application {
 			authcli.SubcommandInfo(site.DefaultAuthOptions, "whoami", false),
 
 			subcommands.Section("Steps"),
-			cmd.Enumerate,
 			cmd.AutotestExecute,
+			cmd.Enumerate,
 			cmd.SchedulerTrafficSplit,
 			cmd.SkylabExecute,
 		},
