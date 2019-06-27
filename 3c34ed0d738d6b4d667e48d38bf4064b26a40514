@@ -160,6 +160,42 @@
     },
     {
       "key": {
+        "uuid": "3461d2af_a2962968",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-autocomplete/chops-autocomplete.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-27T17:44:53Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "e0b71687_22f76ec3",
+      "revId": "3c34ed0d738d6b4d667e48d38bf4064b26a40514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ab05fb8d_234ac5c6",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-autocomplete/chops-autocomplete.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-27T17:44:53Z",
+      "side": 1,
+      "message": "Just in case it\u0027s helpful for context, this design does take some inspiration from the source code for paper-tooltip: https://github.com/PolymerElements/paper-tooltip/blob/master/paper-tooltip.js#L494 \n\nWhere they use dom functions to find a \"for\" element for the tooltip then manipulate event handlers on that element. They don\u0027t add attributes, but I think the principle is similar. \n\nUnfortunately I can\u0027t think of a better way to handle this sort of relationship as long we want to have autocomplete able to inter-op with input elements that the autocomplete user controls, but I\u0027m open to suggestions!",
+      "parentUuid": "3a507c6d_00683d4a",
+      "revId": "3c34ed0d738d6b4d667e48d38bf4064b26a40514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1098b2b1_4e0d0837",
         "filename": "appengine/monorail/static_src/elements/chops/chops-autocomplete/chops-autocomplete.js",
         "patchSetId": 5
@@ -192,6 +228,24 @@
       "revId": "3c34ed0d738d6b4d667e48d38bf4064b26a40514",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d4de0cac_2bb9cedd",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-autocomplete/chops-autocomplete.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 434,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-06-27T17:44:53Z",
+      "side": 1,
+      "message": "I ended up changing aria-controls to aria-owns. I think right now, aria-activedescendant is causing the screenreader integration, but the guides I read suggested that aria-owns or aria-controls were still a good idea.",
+      "parentUuid": "d77d8734_50a5ff53",
+      "revId": "3c34ed0d738d6b4d667e48d38bf4064b26a40514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
