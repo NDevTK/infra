@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3b335d3c_0390918f",
+        "filename": "go/src/infra/monitoring/sysmon/cros/cros_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2019-06-28T23:31:22Z",
+      "side": 1,
+      "message": "you shouldn\u0027t have tests in cros_test mux about with the json contents\n\nrather, they should simply create deviceStatusFile structs directly and assert behavior based on their contents\n\nlet devicefile_test worry about the json format",
+      "range": {
+        "startLine": 46,
+        "startChar": 6,
+        "endLine": 50,
+        "endChar": 7
+      },
+      "revId": "d7636d7cb1180ddfb61b60d10a816e381fc09248",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
