@@ -7,8 +7,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"regexp"
+	"strconv"
 	"sync"
 	"time"
+
+	structpb "github.com/golang/protobuf/ptypes/struct"
 
 	"github.com/golang/protobuf/proto"
 	"google.golang.org/genproto/protobuf/field_mask"
@@ -19,6 +23,7 @@ import (
 	"go.chromium.org/luci/buildbucket"
 	"go.chromium.org/luci/buildbucket/deprecated"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -208,6 +213,13 @@ func (b *buildUpdater) ParseAnnotations(ctx context.Context, ann *milo.Step) (*b
 		delete(props.Fields, outputCommitProp)
 	}
 
+	if outputCommit == nil {
+		outputCommit, err = outputCommitFromLegacyProperties(props)
+		if err != nil {
+			logging.Errorf(ctx, "failed to parse output commit from legacy properties: %s", err)
+		}
+	}
+
 	return &buildbucketpb.UpdateBuildRequest{
 		Build: &buildbucketpb.Build{
 			Id:    b.buildID,
@@ -219,6 +231,63 @@ func (b *buildUpdater) ParseAnnotations(ctx context.Context, ann *milo.Step) (*b
 		},
 		UpdateMask: &field_mask.FieldMask{Paths: updatePaths},
 	}, nil
+}
+
+var commitPositionRe = regexp.MustCompile(`^([^@]+)@{#(\d+)}$`)
+var sha1HexRe = regexp.MustCompile(`^[0-9a-f]{40}$`)
+var refRe = regexp.MustCompile(`^refs/`)
+
+// outputCommitFromLegacyProperties synthesizes an output commit from
+// legacy got_revision and got_revision_cp properties
+// Uses "repository" property as a repo.
+// May return a commit without a ref.
+func outputCommitFromLegacyProperties(props *structpb.Struct) (*buildbucketpb.GitilesCommit, error) {
+	repo := props.Fields["repository"].GetStringValue()
+	gotRevision := props.Fields["got_revision"].GetStringValue()
+	cp := props.Fields["got_revision_cp"].GetStringValue()
+
+	if gotRevision == "" || repo == "" {
+		return nil, nil
+	}
+
+	// Parse repository.
+	host, project, err := gitiles.ParseRepoURL(repo)
+	if err != nil {
+		return nil, err
+	}
+	ret := &buildbucketpb.GitilesCommit{
+		Host:    host,
+		Project: project,
+	}
+
+	// Parse got_revision.
+	switch {
+	case sha1HexRe.MatchString(gotRevision):
+		ret.Id = gotRevision
+	case refRe.MatchString(gotRevision):
+		if cp != "" {
+			return nil, errors.Reason("got_revision is a ref and got_revision_cp is provided; this is unexpected").Err()
+		}
+		ret.Ref = gotRevision
+	default:
+		return nil, errors.Reason("unrecognized got_revision format: %q", gotRevision).Err()
+	}
+
+	// Parse commit position.
+	if cp != "" {
+		m := commitPositionRe.FindStringSubmatch(cp)
+		if m == nil {
+			return nil, errors.Reason("unexpected got_revision_cp format: %q", cp).Err()
+		}
+		ret.Ref = m[1]
+		pos, err := strconv.ParseUint(m[2], 10, 32)
+		if err != nil {
+			return nil, errors.Annotate(err, "malformed number in got_revision_cp").Err()
+		}
+		ret.Position = uint32(pos)
+	}
+
+	return ret, nil
 }
 
 // AnnotationUpdated is an annotee.Options.AnnotationUpdated callback
