@@ -182,9 +182,6 @@ func finalizeInstall(ctx context.Context, xcodeAppPath, xcodeVersion, packageIns
 	if isXcode8(xcodeVersion) {
 		return nil
 	}
-	if err := RunWithXcode(ctx, xcodeAppPath, "/usr/bin/xcodebuild", "-checkFirstLaunchStatus"); err == nil {
-		return nil
-	}
 	return RunWithXcodeSelect(ctx, xcodeAppPath, func() error {
 		err := RunCommand(ctx, "sudo", "/usr/bin/xcodebuild", "-runFirstLaunch")
 		if err != nil {
