@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "46c7993f_e2a9e51a",
+        "filename": "appengine/monorail/services/issue_svc.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 3116,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-07-02T17:57:36Z",
+      "side": 1,
+      "message": "This would delete all field values on an issue that mentions a deleted user in one field value.  E.g., it would lose integer fields.  I think you need the user_id\u003duser_id condition here.",
+      "revId": "09d04fed00f4ae9f9294ceb9bd47b5dbca4e3822",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4f1dcea6_07b20a06",
+        "filename": "appengine/monorail/services/issue_svc.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 3132,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-07-02T17:57:36Z",
+      "side": 1,
+      "message": "Same. This would make an affected issue lose all CCs.",
+      "revId": "09d04fed00f4ae9f9294ceb9bd47b5dbca4e3822",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
