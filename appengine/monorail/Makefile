@@ -67,7 +67,7 @@ test_coverage:
 # Commands for running locally using dev_appserver.
 serve: config_local
 	@echo "---[Starting SDK AppEngine Server]---"
-	$(GAE_PY) devserver -- $(DEV_APPSERVER_FLAGS)& $(WEBPACK_PATH) --watch
+	$(GAE_PY) devserver -- --port=8000 --admin_port=9000 $(DEV_APPSERVER_FLAGS)& $(WEBPACK_PATH) --watch
 
 serve_email: config_local
 	@echo "---[Starting SDK AppEngine Server]---"

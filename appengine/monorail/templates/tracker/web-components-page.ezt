@@ -41,3 +41,59 @@
     }
   });
 </script>
+
+<script type="text/javascript" nonce="[nonce]">
+// TODO(CL): Load in a more proper way.
+
+function handleGapiLoad() {
+  console.log('gapi loaded')
+
+  // TODO(CL): Get our own client ID.
+  const CLIENT_ID =
+    '2574281217-akkmpkflfs419iob0elj17su7dp3c673.apps.googleusercontent.com';
+  const SCOPES = 'https://www.googleapis.com/auth/buganizer';
+
+  const authOptions = {client_id: CLIENT_ID, scope: SCOPES, immediate: true};
+  gapi.auth.authorize(authOptions, (authResult) => {
+    console.log('authResult', authResult)
+    if (authResult && !authResult.error) {
+      // We good.
+      // TODO(CL): Get real bug IDs...
+      const bugID = 68881797;
+      loadGoogleIssueTrackerIssue(bugID)
+    } else {
+     // TODO(CL): Figure out failure case.
+    }
+  });
+}
+
+var ISSUE_TRACKER_QA_API_ROOT = 'https://test-issuetracker.corp.googleapis.com';
+var DISCOVERY_PATH = '/$discovery/rest';
+var ISSUE_TRACKER_API_VERSION = 'v1';
+
+function loadGoogleIssueTrackerIssue(bugID) {
+  return new Promise(function(resolve, reject) {
+    console.log('attempting to load issue...', bugID)
+
+    const url = ISSUE_TRACKER_QA_API_ROOT + DISCOVERY_PATH;
+    const version = ISSUE_TRACKER_API_VERSION;
+
+    gapi.client.load(url, version, () => {
+      const request = gapi.client.corp_issuetracker.issues.get({
+        'issueId': bugID,
+      });
+      request.execute((response) => {
+        console.log('got response:', response)
+
+        resolve(response);
+      });
+    });
+  });
+}
+</script>
+
+<script
+  src="https://apis.google.com/js/client.js?onload=handleGapiLoad"
+  type="text/javascript"
+  nonce="[nonce]">
+</script>

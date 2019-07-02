@@ -22,6 +22,30 @@ export class MrIssueLink extends LitElement {
     `;
   }
 
+  // TODO(CL): Move to a more appropriate place.
+  async connectedCallback() {
+    super.connectedCallback();
+
+    if (this.issue && this.issue.extIdentifier) {
+      // TODO(CL): If it's a Buganizer issue...
+      // Or make the Buganizer class make the call.. actually that's nicer
+      const bugID = this.issue.extIdentifier.substr(2);
+      console.log('WILL LOAD', bugID)
+      const response = await loadGoogleIssueTrackerIssue(bugID);
+      console.log('GOT', response)
+
+      const issueStatus = response && response.issueState && response.issueState.status;
+      const googIssueTrackerClosedStatuses = new Set(['FIXED']);
+
+      if (googIssueTrackerClosedStatuses.has(issueStatus)) {
+        console.log('setting to false')
+        // TODO(CL): Probably not the way to do this.
+        this.issue.statusRef = {meansOpen: false};
+        this.requestUpdate();
+      }
+    }
+  }
+
   render() {
     return html`
       <a

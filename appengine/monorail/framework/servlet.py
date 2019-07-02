@@ -314,8 +314,8 @@ class Servlet(webapp2.RequestHandler):
             " 'strict-dynamic'"  # Allows <script nonce> to load more.
             " %(version_base)s/static/dist/"
             " 'self' 'nonce-%(nonce)s'; "
-            "child-src 'none'; "
-            "frame-src 'none'; "
+            # "child-src 'none'; " # TODO figure this out...
+            # "frame-src 'accounts.google.com'; " # TODO figure this out...
             "img-src %(scheme)s data: blob: ; "
             "style-src %(scheme)s 'unsafe-inline'; "
             "object-src 'none'; "
