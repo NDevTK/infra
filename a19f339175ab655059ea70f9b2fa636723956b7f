@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7153c60d_98185c6b",
+        "filename": "go/src/infra/monitoring/sysmon/cros/cros.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2019-07-02T23:27:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ff14779e_4c77d6fe",
+      "range": {
+        "startLine": 71,
+        "startChar": 4,
+        "endLine": 71,
+        "endChar": 21
+      },
+      "revId": "a19f339175ab655059ea70f9b2fa636723956b7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f99055f3_ec3f1ae6",
         "filename": "go/src/infra/monitoring/sysmon/cros/devicefile.go",
         "patchSetId": 9
@@ -45,6 +69,30 @@
       "revId": "a19f339175ab655059ea70f9b2fa636723956b7f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "352667d3_4167584a",
+        "filename": "go/src/infra/monitoring/sysmon/cros/devicefile.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2019-07-02T23:27:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f99055f3_ec3f1ae6",
+      "range": {
+        "startLine": 21,
+        "startChar": 1,
+        "endLine": 21,
+        "endChar": 10
+      },
+      "revId": "a19f339175ab655059ea70f9b2fa636723956b7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
