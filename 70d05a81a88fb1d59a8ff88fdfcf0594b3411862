@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "01d05db2_c5dfdf18",
+        "filename": "go/src/infra/monitoring/sysmon/cros/cros.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2019-07-02T22:44:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5b560b1c_a7c37912",
+      "revId": "70d05a81a88fb1d59a8ff88fdfcf0594b3411862",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e8f895a3_9989af44",
         "filename": "go/src/infra/monitoring/sysmon/cros/devicefile.go",
         "patchSetId": 7

@@ -22,6 +22,30 @@
       "revId": "d7636d7cb1180ddfb61b60d10a816e381fc09248",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d32579dc_cd5320e2",
+        "filename": "go/src/infra/monitoring/sysmon/cros/cros_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2019-07-02T22:44:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3b335d3c_0390918f",
+      "range": {
+        "startLine": 46,
+        "startChar": 6,
+        "endLine": 50,
+        "endChar": 7
+      },
+      "revId": "d7636d7cb1180ddfb61b60d10a816e381fc09248",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
