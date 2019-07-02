@@ -1299,7 +1299,7 @@ class IssueService(object):
 
     # Test-only sequence of updated and enqueued.
     self.updated_issues = []
-    self.enqueued_issues = []
+    self.enqueued_issues = []  # issue_ids
 
     # Test-only sequence of expunged issues and projects.
     self.expunged_issues = []
@@ -1342,9 +1342,9 @@ class IssueService(object):
         comments.append(value)
     return comments
 
-  def EnqueueIssuesForIndexing(self, _cnxn, issues):
+  def EnqueueIssuesForIndexing(self, _cnxn, issue_ids):
     self.enqueue_issues_called = True
-    for i in issues:
+    for i in issue_ids:
       if i not in self.enqueued_issues:
         self.enqueued_issues.extend(issues)
 
@@ -2010,6 +2010,7 @@ class IssueService(object):
   def ExpungeUsersInIssues(self, cnxn, user_ids_by_email, limit=None):
     user_ids = list(user_ids_by_email.values())
     self.expunged_users_in_issues.extend(user_ids)
+    return []
 
 
 class TemplateService(object):
