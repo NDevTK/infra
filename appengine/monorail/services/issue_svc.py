@@ -3072,10 +3072,16 @@ class IssueService(object):
       user_ids_by_email: dict of {email: user_id} of all users we want
         to expunge.
       limit: Optional, the limit for each operation.
+
+    Returns:
+      A list of issue_ids that need to be reindexed.
     """
     commit = False
     user_ids = list(user_ids_by_email.values())
     user_emails = list(user_ids_by_email.keys())
+    # Track issue_ids for issues that will have different search documents
+    # as a result of removing users.
+    affected_issue_ids = []
 
     # Reassign commenter_id and delete inbound_messages.
     shard_id = sql.RandomShardID()
@@ -3094,6 +3100,9 @@ class IssueService(object):
         {'commenter_id': framework_constants.DELETED_USER_ID},
         id=comment_ids,
         commit=commit)
+    comment_issue_id_rows = self.comment_tbl.Select(
+        cnxn, cols=['issue_id'], id=comment_ids)
+    affected_issue_ids.extend([row[0] for row in comment_issue_id_rows])
 
     # Reassign deleted_by comments deleted_by.
     self.comment_tbl.Update(
@@ -3103,8 +3112,13 @@ class IssueService(object):
         commit=commit, limit=limit)
 
     # Remove users in field values.
-    self.issue2fieldvalue_tbl.Delete(
-        cnxn, user_id=user_ids, commit=commit, limit=limit)
+    fv_issue_id_rows = self.issue2fieldvalue_tbl.Select(
+        cnxn, cols=['issue_id'], user_id=user_ids, limit=limit)
+    fv_issue_ids = [row[0] for row in fv_issue_id_rows]
+    self.issue2fieldvalue_tbl.Delete(cnxn, issue_id=fv_issue_ids, commit=commit)
+    affected_issue_ids.extend(fv_issue_ids)
+
+    # Remove users in approval values.
     self.issueapproval2approver_tbl.Delete(
         cnxn, approver_id=user_ids, commit=commit, limit=limit)
     self.issue2approvalvalue_tbl.Update(
@@ -3113,23 +3127,44 @@ class IssueService(object):
         setter_id=user_ids,
         commit=commit, limit=limit)
 
-    # Remove users in issue.
-    self.issue2cc_tbl.Delete(cnxn, cc_id=user_ids, commit=commit, limit=limit)
+    # Remove users in issue Ccs.
+    cc_issue_id_rows = self.issue2cc_tbl.Select(
+        cnxn, cols=['issue_id'], cc_id=user_ids, limit=limit)
+    cc_issue_ids = [row[0] for row in cc_issue_id_rows]
+    self.issue2cc_tbl.Delete(
+        cnxn, issue_id=cc_issue_ids, commit=commit, limit=limit)
+    affected_issue_ids.extend(cc_issue_ids)
+
+    # Remove users in issue owners.
+    owner_issue_id_rows = self.issue_tbl.Select(
+        cnxn, cols=['id'], owner_id=user_ids, limit=limit)
+    owner_issue_ids = [row[0] for row in owner_issue_id_rows]
     self.issue_tbl.Update(
         cnxn,
         {'owner_id': None},
-        owner_id=user_ids,
-        commit=commit, limit=limit)
+        id=owner_issue_ids,
+        commit=commit)
+    affected_issue_ids.extend(owner_issue_ids)
+    derived_owner_issue_id_rows = self.issue_tbl.Select(
+        cnxn, cols=['id'], owner_id=user_ids, limit=limit)
+    derived_owner_issue_ids = [row[0] for row in derived_owner_issue_id_rows]
     self.issue_tbl.Update(
         cnxn,
         {'derived_owner_id': None},
-        derived_owner_id=user_ids,
-        commit=commit, limit=limit)
+        id=derived_owner_issue_ids,
+        commit=commit)
+    affected_issue_ids.extend(derived_owner_issue_ids)
+
+    # Remove users in issue reporters.
+    reporter_issue_id_rows = self.issue.Select(
+        cnxn, cols=['id'], reporter_id=user_ids, limit=limit)
+    reporter_issue_ids = [row[0] for row in reporter_issue_id_rows]
     self.issue_tbl.Update(
         cnxn,
         {'reporter_id': framework_constants.DELETED_USER_ID},
-        reporter_id=user_ids,
-        commit=commit, limit=limit)
+        id=reporter_issue_ids,
+        commit=commit)
+    affected_issue_ids.extend(reporter_issue_ids)
 
     # Note: issueupdate_tbl's and issue2notify's user_id columns do not
     # reference the User table. So all values need to updated here before
@@ -3167,6 +3202,8 @@ class IssueService(object):
         {'cc_id': framework_constants.DELETED_USER_ID},
         cc_id=user_ids,
         commit=commit, limit=limit)
+
+    return affected_issue_ids
 
 
 def _UpdateClosedTimestamp(config, issue, old_effective_status):
