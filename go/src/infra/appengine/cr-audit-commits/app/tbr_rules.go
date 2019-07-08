@@ -58,6 +58,19 @@ func (rule ChangeReviewed) GetName() string {
 	return "ChangeReviewed"
 }
 
+// shouldSkip decides if a given commit shouldn't be audited with this rule.
+//
+// E.g. if it's authored by an authorized automated account.
+func (rule ChangeReviewed) shouldSkip(rc *RelevantCommit) bool {
+	whitelist := []string{"recipe-mega-autoroller@chops-service-accounts.iam.gserviceaccount.com"}
+	for _, account := range whitelist {
+		if rc.AuthorAccount == account {
+			return true
+		}
+	}
+	return false
+}
+
 // Run executes the rule.
 func (rule ChangeReviewed) Run(ctx context.Context, ap *AuditParams, rc *RelevantCommit, cs *Clients) *RuleResult {
 	result := &RuleResult{}
@@ -70,6 +83,10 @@ func (rule ChangeReviewed) Run(ctx context.Context, ap *AuditParams, rc *Relevan
 	} else if prevResult != nil {
 		// Preserve any metadata from the previous execution of the rule.
 		result.MetaData = prevResult.MetaData
+	}
+	if rule.shouldSkip(rc) {
+		result.RuleResultStatus = ruleSkipped
+		return result
 	}
 	rc.LastExternalPoll = time.Now()
 	change := getChangeWithLabelDetails(ctx, ap, rc, cs)
