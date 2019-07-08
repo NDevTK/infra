@@ -13,6 +13,7 @@ import (
 	"golang.org/x/net/context"
 
 	"go.chromium.org/luci/common/api/gerrit"
+	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/logging"
 )
 
@@ -24,6 +25,11 @@ const (
 	// Post the reminder about the TBR deadline only after 1 day.
 	reminderDelay = time.Hour * 24
 )
+
+// TBRWhiteList is the list of accounts that can create TBR commits that do not need
+// to be audited.
+var TBRWhiteList = stringset.NewFromSlice(
+	"recipe-mega-autoroller@chops-service-accounts.iam.gserviceaccount.com")
 
 // getMaxLabelValue determines the highest possible value of a vote for a given
 // label. Gerrit represents the values as "-2", "-1", " 0", "+1", "+2" in the
@@ -58,6 +64,13 @@ func (rule ChangeReviewed) GetName() string {
 	return "ChangeReviewed"
 }
 
+// shouldSkip decides if a given commit shouldn't be audited with this rule.
+//
+// E.g. if it's authored by an authorized automated account.
+func (rule ChangeReviewed) shouldSkip(rc *RelevantCommit) bool {
+	return TBRWhiteList.Has(rc.AuthorAccount)
+}
+
 // Run executes the rule.
 func (rule ChangeReviewed) Run(ctx context.Context, ap *AuditParams, rc *RelevantCommit, cs *Clients) *RuleResult {
 	result := &RuleResult{}
@@ -70,6 +83,10 @@ func (rule ChangeReviewed) Run(ctx context.Context, ap *AuditParams, rc *Relevan
 	} else if prevResult != nil {
 		// Preserve any metadata from the previous execution of the rule.
 		result.MetaData = prevResult.MetaData
+	}
+	if rule.shouldSkip(rc) {
+		result.RuleResultStatus = ruleSkipped
+		return result
 	}
 	rc.LastExternalPoll = time.Now()
 	change := getChangeWithLabelDetails(ctx, ap, rc, cs)
