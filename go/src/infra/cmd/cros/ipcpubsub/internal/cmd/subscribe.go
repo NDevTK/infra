@@ -7,6 +7,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"infra/cmd/cros/ipcpubsub/pubsublib"
 
 	"go.chromium.org/luci/common/flag"
 
@@ -66,4 +67,61 @@ func (c *subscribeRun) Run(a subcommands.Application, args []string, env subcomm
 		return 1
 	}
 	return 0
+}
+
+func (c *subscribeRun) setUpSubscription(ctx context.Context, cli pubsublib.Client, t pubsublib.Topic, id string, f pubsublib.Filter) (pubsublib.Subscription, error) {
+	s, err := cli.CreateSubscription(ctx, t, id)
+	if err != nil {
+		return nil, err
+	}
+	if f != nil {
+		err = s.SetFilter(ctx, f)
+	}
+	if err != nil {
+		return nil, err
+	}
+	return s, nil
+}
+
+// Subscribe pulls messageCount messages from the subscription sub, respecting any filtering sub has.
+//   It returns each message as a string of plain bytes.
+func Subscribe(ctx context.Context, sub pubsublib.Subscription, messageCount int) ([][]byte, error) {
+	cctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	storedMessages := map[string]pubsublib.Message{}
+	msgChannel := make(chan pubsublib.Message)
+
+	errs := make(chan error, 1)
+	handleMessage := func(ctx context.Context, msg pubsublib.Message) {
+		select {
+		case <-ctx.Done():
+			//cancelled, noop
+		case msgChannel <- msg:
+			//export message to channel and then noop
+		}
+	}
+	go func() {
+		errs <- sub.Receive(cctx, handleMessage)
+	}()
+	for {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case err := <-errs:
+			return nil, err
+		case m := <-msgChannel:
+			storedMessages[m.ID()] = m
+			if len(storedMessages) >= messageCount {
+				return extractBodiesFromMessageMap(storedMessages), nil
+			}
+		}
+	}
+}
+
+func extractBodiesFromMessageMap(m map[string]pubsublib.Message) [][]byte {
+	l := make([][]byte, 0, len(m))
+	for _, v := range m {
+		l = append(l, v.Body())
+	}
+	return l
 }
