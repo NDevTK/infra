@@ -23,8 +23,11 @@ type Client struct {
 }
 
 // New returns a Client interface for downloading files from isolate.
-func New(c *isolatedclient.Client) *Client {
-	return &Client{c}
+func New(c *isolatedclient.Client) (*Client, error) {
+	if c == nil {
+		return nil, errors.Reason("nil isolate client").Err()
+	}
+	return &Client{c}, nil
 }
 
 // GetFile returns the contents of the named file from the given isolate.

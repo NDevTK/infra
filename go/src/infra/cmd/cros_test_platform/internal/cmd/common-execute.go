@@ -66,8 +66,11 @@ func (c *commonExecuteRun) validateRequestCommon(request *steps.ExecuteRequest) 
 
 func (c *commonExecuteRun) handleRequest(ctx context.Context, runner execution.Runner, t *swarming.Client) (*steps.ExecuteResponse, error) {
 	// TODO(akeshet): Use correct isolate client.
-	g := getter.New(nil)
-	err := runner.LaunchAndWait(ctx, t, g)
+	g, err := getter.New(nil)
+	if err != nil {
+		return nil, err
+	}
+	err = runner.LaunchAndWait(ctx, t, g)
 	return runner.Response(t), err
 }
 
