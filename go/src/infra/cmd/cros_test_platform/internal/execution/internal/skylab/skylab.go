@@ -119,6 +119,14 @@ func NewTaskSet(tests []*build_api.AutotestTest, params *test_platform.Request_P
 // is encountered, this method returns whatever partial execution response
 // was visible to it prior to that error.
 func (r *TaskSet) LaunchAndWait(ctx context.Context, swarming swarming.Client, getter isolate.Getter) error {
+	if swarming == nil {
+		return errors.Reason("nil swarming client").Err()
+	}
+
+	if getter == nil {
+		return errors.Reason("nil isolate getter").Err()
+	}
+
 	if err := r.launch(ctx, swarming); err != nil {
 		return err
 	}
