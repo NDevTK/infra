@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3ac589fa_4b9d23ae",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2019-07-08T20:32:32Z",
+      "side": 1,
+      "message": "please also whitelist chromium autoroller like here https://chromium.googlesource.com/infra/infra.git/+/d3e9034d4927e4edc4bdb2a055b5bfb01810bae3",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 41
+      },
+      "revId": "ea15a2c1ddd5b1ecc0b329fe7e6c992c18ef6682",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b5f08c80_383ee3ba",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/tbr_rules.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2019-07-08T20:32:32Z",
+      "side": 1,
+      "message": "this should be a const or a var outside this func. Also, stringset.Set is best for this (see https://godoc.org/go.chromium.org/luci/common/data/stringset#NewFromSlice)",
+      "range": {
+        "startLine": 65,
+        "startChar": 1,
+        "endLine": 65,
+        "endChar": 95
+      },
+      "revId": "ea15a2c1ddd5b1ecc0b329fe7e6c992c18ef6682",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
