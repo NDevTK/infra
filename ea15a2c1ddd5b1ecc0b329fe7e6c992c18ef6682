@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "cee02ba7_8d072a23",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-07-08T21:14:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3ac589fa_4b9d23ae",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 41
+      },
+      "revId": "ea15a2c1ddd5b1ecc0b329fe7e6c992c18ef6682",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b5f08c80_383ee3ba",
         "filename": "go/src/infra/appengine/cr-audit-commits/app/tbr_rules.go",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "ea15a2c1ddd5b1ecc0b329fe7e6c992c18ef6682",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "23556ab3_369ebf4d",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/tbr_rules.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-07-08T21:14:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b5f08c80_383ee3ba",
+      "range": {
+        "startLine": 65,
+        "startChar": 1,
+        "endLine": 65,
+        "endChar": 95
+      },
+      "revId": "ea15a2c1ddd5b1ecc0b329fe7e6c992c18ef6682",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
