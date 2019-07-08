@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "49146b23_f45bcad9",
+        "filename": "go/src/infra/appengine/rotang/pkg/calendar/calendar.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1284623
+      },
+      "writtenOn": "2019-07-08T01:47:53Z",
+      "side": 1,
+      "message": "Perhaps leave a comment here explaining why searching 2 full days is necessary.  Is it a workaround for a quirk of the Google Calendar API?",
+      "range": {
+        "startLine": 75,
+        "startChar": 0,
+        "endLine": 75,
+        "endChar": 31
+      },
+      "revId": "de014829a4c7e5e4b4f8d2775997358eebc32251",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
