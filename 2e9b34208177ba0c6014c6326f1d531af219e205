@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1eb6fa3d_f692fff9",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-07-08T22:34:20Z",
+      "side": 1,
+      "message": "naming nit: newSubscription(...)",
+      "revId": "2e9b34208177ba0c6014c6326f1d531af219e205",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "45ba0c1a_57dc2a1f",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-07-08T22:34:20Z",
+      "side": 1,
+      "message": "move within the previous if block;\n\nalso, you can inline it with the SetFilter in this case, e.g.\n\nif err \u003d s.SetFilter(ctx, f); err !\u003d nil {\n  return nil, err\n}",
+      "revId": "2e9b34208177ba0c6014c6326f1d531af219e205",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8f137b0d_89dca285",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-07-08T22:34:20Z",
+      "side": 1,
+      "message": "drop extra spaces",
+      "revId": "2e9b34208177ba0c6014c6326f1d531af219e205",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1b5b459a_a2163ad3",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-07-08T22:34:20Z",
+      "side": 1,
+      "message": "casual reader may be confused here, because it\u0027s not obvious that err !\u003d nil. The reason is that Receive never returns without an error. Add a comment here.",
+      "revId": "2e9b34208177ba0c6014c6326f1d531af219e205",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f93fd496_f2cf06a4",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-07-08T22:34:20Z",
+      "side": 1,
+      "message": "naming nit: extractBodies. The rest is evident from the input and output types.",
+      "revId": "2e9b34208177ba0c6014c6326f1d531af219e205",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6ce3e716_17c65550",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-07-08T22:34:20Z",
+      "side": 1,
+      "message": "nit: \"l\" is a variable name to avoid, since it looks a lot like 1 in many typefaces.",
+      "revId": "2e9b34208177ba0c6014c6326f1d531af219e205",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
