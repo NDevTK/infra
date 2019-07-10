@@ -16,6 +16,24 @@
       "revId": "861c5debd03c6b34ab0bd61107f449579feb1674",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "17b6afe9_7245f0dd",
+        "filename": "appengine/monorail/services/user_svc.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 712,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2019-07-10T18:03:54Z",
+      "side": 1,
+      "message": "Done.\nAdded not with \"framework_constants.DELETED_USER_ID\" so this method shows up when it\u0027s searched.\nNot changing testing/fake.py methods.",
+      "parentUuid": "574ce1f8_96cae6b5",
+      "revId": "861c5debd03c6b34ab0bd61107f449579feb1674",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
