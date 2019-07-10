@@ -59,10 +59,15 @@ func newStateFromProto(sp *protos.SchedulerState) *state {
 	s.lastUpdateTime = tutils.Timestamp(sp.LastUpdateTime)
 	s.queuedRequests = make(map[RequestID]*TaskRequest, len(sp.QueuedRequests))
 	for rid, req := range sp.QueuedRequests {
+		examinedTime := time.Unix(0, 0)
+		if req.ExaminedTime != nil {
+			examinedTime = tutils.Timestamp(req.ExaminedTime)
+		}
 		s.queuedRequests[RequestID(rid)] = &TaskRequest{
 			ID:                  RequestID(rid),
 			AccountID:           AccountID(req.AccountId),
 			confirmedTime:       tutils.Timestamp(req.ConfirmedTime),
+			examinedTime:        examinedTime,
 			EnqueueTime:         tutils.Timestamp(req.EnqueueTime),
 			ProvisionableLabels: toLabels(req.ProvisionableLabelIds, sp.LabelMap),
 			BaseLabels:          toLabels(req.BaseLabelIds, sp.LabelMap),
@@ -90,9 +95,14 @@ func newStateFromProto(sp *protos.SchedulerState) *state {
 			}
 			s.runningRequestsCache[RequestID(w.RunningTask.RequestId)] = WorkerID(wid)
 		}
+		modifiedTime := s.lastUpdateTime
+		if w.ModifiedTime != nil {
+			modifiedTime = tutils.Timestamp(w.ModifiedTime)
+		}
 		s.workers[WorkerID(wid)] = &Worker{
 			ID:            WorkerID(wid),
 			confirmedTime: tutils.Timestamp(w.ConfirmedTime),
+			modifiedTime:  modifiedTime,
 			Labels:        toLabels(w.LabelIds, sp.LabelMap),
 			runningTask:   tr,
 		}
@@ -186,6 +196,7 @@ func (s *state) toProto() *protos.SchedulerState {
 		}
 		workers[string(wid)] = &protos.Worker{
 			ConfirmedTime: tutils.TimestampProto(w.confirmedTime),
+			ModifiedTime:  tutils.TimestampProto(w.modifiedTime),
 			RunningTask:   rt,
 			LabelIds:      mb.ForSet(w.Labels),
 		}
