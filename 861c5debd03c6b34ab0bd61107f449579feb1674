@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "574ce1f8_96cae6b5",
+        "filename": "appengine/monorail/services/user_svc.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 712,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-07-10T16:40:19Z",
+      "side": 1,
+      "message": "It might be better to just subtract 1 in python from a simpler query for COUNT(*) with no WHERE.  I imagine that mysql optimizes for just returning the total number of rows in a table.",
+      "revId": "861c5debd03c6b34ab0bd61107f449579feb1674",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
