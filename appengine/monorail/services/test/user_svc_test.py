@@ -17,6 +17,7 @@ import time
 from google.appengine.ext import testbed
 
 from framework import exceptions
+from framework import framework_constants
 from framework import sql
 from proto import user_pb2
 from services import user_svc
@@ -537,7 +538,8 @@ class UserServiceTest(unittest.TestCase):
     self.user_service.user_tbl.SelectValue = mock.Mock()
     self.user_service.TotalUsersCount(self.cnxn)
     self.user_service.user_tbl.SelectValue.assert_called_once_with(
-        self.cnxn, col='COUNT(*)')
+        self.cnxn, col='COUNT(*)',
+        where=[('user_id != %s', [framework_constants.DELETED_USER_ID])])
 
   def testGetAllUserEmailsBatch(self):
     rows = [('cow@test.com',), ('pig@test.com',), ('fox@test.com',)]
@@ -545,6 +547,7 @@ class UserServiceTest(unittest.TestCase):
     emails = self.user_service.GetAllUserEmailsBatch(self.cnxn)
     self.user_service.user_tbl.Select.assert_called_once_with(
         self.cnxn, cols=['email'], limit=1000, offset=0,
+        where=[('user_id != %s', [framework_constants.DELETED_USER_ID])],
         order_by=[('user_id ASC'), []])
     self.assertItemsEqual(
         emails, ['cow@test.com', 'pig@test.com', 'fox@test.com'])
@@ -556,6 +559,7 @@ class UserServiceTest(unittest.TestCase):
         self.cnxn, limit=30, offset=60)
     self.user_service.user_tbl.Select.assert_called_once_with(
         self.cnxn, cols=['email'], limit=30, offset=60,
+        where=[('user_id != %s', [framework_constants.DELETED_USER_ID])],
         order_by=[('user_id ASC'), []])
     self.assertItemsEqual(
         emails, ['cow@test.com', 'pig@test.com', 'fox@test.com'])
