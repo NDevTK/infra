@@ -53,6 +53,24 @@
     },
     {
       "key": {
+        "uuid": "ae161cda_50b7e405",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2019-07-10T18:58:56Z",
+      "side": 1,
+      "message": "The leading ones? Why?",
+      "parentUuid": "8f137b0d_89dca285",
+      "revId": "2e9b34208177ba0c6014c6326f1d531af219e205",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1b5b459a_a2163ad3",
         "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
         "patchSetId": 1
@@ -87,6 +105,24 @@
     },
     {
       "key": {
+        "uuid": "83f2f65c_629b91fc",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2019-07-10T18:58:56Z",
+      "side": 1,
+      "message": "True, but I\u0027d rather leave it as-is. Skimming the code and seeing extractBodies, I\u0027d expect the input to be a slice of messages rather than a map. \"extractBodiesFromMap\" is better, though.",
+      "parentUuid": "f93fd496_f2cf06a4",
+      "revId": "2e9b34208177ba0c6014c6326f1d531af219e205",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6ce3e716_17c65550",
         "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
         "patchSetId": 1
@@ -101,6 +137,24 @@
       "revId": "2e9b34208177ba0c6014c6326f1d531af219e205",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "efc9a85f_96c01fe5",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2019-07-10T18:58:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6ce3e716_17c65550",
+      "revId": "2e9b34208177ba0c6014c6326f1d531af219e205",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
