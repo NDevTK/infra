@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "c7c2268c_c3d2fef0",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2019-07-11T21:09:20Z",
+      "side": 1,
+      "message": "Each Receive call receives only one message; this lets it receive multiple messages.",
+      "parentUuid": "5c1662a9_38200ac5",
+      "revId": "2ffd0c6a272ef0e8b3293ce0efc8f7f103eba159",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6fc5e22d_31648301",
         "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
         "patchSetId": 6
@@ -53,6 +71,24 @@
     },
     {
       "key": {
+        "uuid": "cb027a8f_912d5d79",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe_long_running_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2019-07-11T21:09:20Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "b4c794f1_023ffb94",
+      "revId": "2ffd0c6a272ef0e8b3293ce0efc8f7f103eba159",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fc4c3406_4c34049b",
         "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe_test.go",
         "patchSetId": 6
@@ -67,6 +103,24 @@
       "revId": "2ffd0c6a272ef0e8b3293ce0efc8f7f103eba159",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8ab0cc09_b84ab20f",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2019-07-11T21:09:20Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "fc4c3406_4c34049b",
+      "revId": "2ffd0c6a272ef0e8b3293ce0efc8f7f103eba159",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -16,6 +16,24 @@
       "revId": "a1ffeb2df6980b7d38134f4a377b4b9233078399",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d95db076_129db443",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2019-07-11T21:09:20Z",
+      "side": 1,
+      "message": "It implements Subscription, as you can tell from the name. Why add a docstring to repeat that?",
+      "parentUuid": "11a31b4f_08cb9ee9",
+      "revId": "a1ffeb2df6980b7d38134f4a377b4b9233078399",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
