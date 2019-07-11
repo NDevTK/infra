@@ -143,6 +143,24 @@
     },
     {
       "key": {
+        "uuid": "56d05e66_1805dd29",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-07-11T21:27:39Z",
+      "side": 1,
+      "message": "I don\u0027t follow.\n\nDocstring style is highly consistent within chops codebase. See for instance randomly selected specimen: https://cs.chromium.org/chromium/infra/go/src/go.chromium.org/luci/lucicfg/output.go?sq\u003dpackage:chromium\u0026g\u003d0",
+      "parentUuid": "2c472b96_6af4ca84",
+      "revId": "2e9b34208177ba0c6014c6326f1d531af219e205",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1b5b459a_a2163ad3",
         "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
         "patchSetId": 1
@@ -226,6 +244,24 @@
       "side": 1,
       "message": "I tried that, but got a compile-time error if I tried to omit the return statements from the mock implementation. Therefore I reluctantly decided that since the reference implementation didn\u0027t explicitly guarantee it would never return a nil value, I should have the mock return a nil value.",
       "parentUuid": "5f6aea0c_0af1b13e",
+      "revId": "2e9b34208177ba0c6014c6326f1d531af219e205",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9ebe453f_f04d0bf9",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-07-11T21:27:39Z",
+      "side": 1,
+      "message": "The reference implementation of Receive never returns until its context is cancelled. Your testing implementation should do the same, e.g. end with:\n\n\u003c- ctx.Done()\nreturn ctx.Err()",
+      "parentUuid": "867018a2_7deccbbb",
       "revId": "2e9b34208177ba0c6014c6326f1d531af219e205",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
