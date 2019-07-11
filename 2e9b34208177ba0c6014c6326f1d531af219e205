@@ -142,6 +142,24 @@
     },
     {
       "key": {
+        "uuid": "ee93720c_548ac3c0",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2019-07-11T19:08:37Z",
+      "side": 1,
+      "message": "My mock interface returns nil sometimes, so added the if err !\u003d nil block.",
+      "parentUuid": "9ac1d001_a900e870",
+      "revId": "2e9b34208177ba0c6014c6326f1d531af219e205",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f93fd496_f2cf06a4",
         "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
         "patchSetId": 1
