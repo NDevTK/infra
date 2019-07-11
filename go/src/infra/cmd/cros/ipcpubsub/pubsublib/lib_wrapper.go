@@ -141,11 +141,11 @@ type RealSubscription struct {
 // Receive handles a single incoming message and surfaces any errors from the message-handling process
 func (s *RealSubscription) Receive(ctx context.Context, handler func(context.Context, Message)) error {
 	wrappedHandler := func(ctx context.Context, m *pubsub.Message) {
-		if !s.matchesFilter(m) {
+		message := NewMessage(m.Data, m.Attributes)
+		if !s.matchesFilter(message) {
 			m.Ack()
 			return
 		}
-		message := NewMessage(m.Data, m.Attributes)
 		handler(ctx, message)
 		m.Ack()
 	}
@@ -158,19 +158,28 @@ func (s *RealSubscription) SetFilter(ctx context.Context, f Filter) error {
 	return nil
 }
 
-func (s *RealSubscription) matchesFilter(m *pubsub.Message) bool {
-	if len(s.filter) == 0 {
+// MatchesFilter takes an arbitrary pubsublib.Filter and pubsublib.Message and
+//  checks if the message satisfies the filter.
+func MatchesFilter(f Filter, m Message) bool {
+	mAttrs := m.Attributes()
+	fAttrs := f.FilterAttributes()
+	if len(fAttrs) == 0 {
 		return true
 	}
-	if len(m.Attributes) == 0 {
+	if len(mAttrs) == 0 {
 		return false
 	}
-	for k, v := range s.filter {
-		if m.Attributes[k] != v {
+	for k, v := range fAttrs {
+		if mAttrs[k] != v {
 			return false
 		}
 	}
 	return true
+}
+
+func (s *RealSubscription) matchesFilter(m *RealMessage) bool {
+	f := RealFilter(s.filter)
+	return MatchesFilter(&f, m)
 }
 
 var _ Subscription = &RealSubscription{}
