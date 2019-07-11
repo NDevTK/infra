@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4e7c2eda_596867cf",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2019-07-11T19:52:24Z",
+      "side": 1,
+      "message": "either i need 2 more cups of coffee or this is really hard to comprehend or both :)\nmind rephrasing?\n\nhas ignored an update (confirmed time is before previous update)",
+      "range": {
+        "startLine": 282,
+        "startChar": 25,
+        "endLine": 282,
+        "endChar": 78
+      },
+      "revId": "da7d067871cf7719cd6331e0693816ec06c918cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
