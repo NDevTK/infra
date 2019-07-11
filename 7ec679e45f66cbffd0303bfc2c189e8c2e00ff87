@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7d362e99_443680e6",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/scheduler_run.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1141499
+      },
+      "writtenOn": "2019-07-11T20:47:15Z",
+      "side": 1,
+      "message": "nit: did you mean to add another bullet point to the list?",
+      "range": {
+        "startLine": 90,
+        "startChar": 4,
+        "endLine": 90,
+        "endChar": 8
+      },
+      "revId": "7ec679e45f66cbffd0303bfc2c189e8c2e00ff87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
