@@ -290,6 +290,10 @@ func (s *Scheduler) GetBalances() map[AccountID]Balance {
 	return s.state.balances
 }
 
+func (s *Scheduler) RunningRequests() int {
+	return len(s.state.runningRequestsCache)
+}
+
 // DeleteAccount deletes the given account.
 func (s *Scheduler) DeleteAccount(aid AccountID) {
 	delete(s.config.AccountConfigs, string(aid))
