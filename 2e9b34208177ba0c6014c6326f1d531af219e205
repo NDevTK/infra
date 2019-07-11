@@ -107,6 +107,24 @@
     },
     {
       "key": {
+        "uuid": "22c1be75_25919350",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-07-11T20:58:02Z",
+      "side": 1,
+      "message": "Because this docstring should read like a normal paragraph. What is the purpose of the spaces?",
+      "parentUuid": "ae161cda_50b7e405",
+      "revId": "2e9b34208177ba0c6014c6326f1d531af219e205",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1b5b459a_a2163ad3",
         "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
         "patchSetId": 1
@@ -160,6 +178,24 @@
     },
     {
       "key": {
+        "uuid": "5f6aea0c_0af1b13e",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-07-11T20:58:02Z",
+      "side": 1,
+      "message": "You mock interface should behave as close as possible to reference implementation. You shouldn\u0027t return nil from it. The modification here is also problematic, see comment on later patchset.",
+      "parentUuid": "ee93720c_548ac3c0",
+      "revId": "2e9b34208177ba0c6014c6326f1d531af219e205",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f93fd496_f2cf06a4",
         "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
         "patchSetId": 1
@@ -195,6 +231,24 @@
     },
     {
       "key": {
+        "uuid": "761b59b2_a4e1b88f",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-07-11T20:58:02Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "83f2f65c_629b91fc",
+      "revId": "2e9b34208177ba0c6014c6326f1d531af219e205",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6ce3e716_17c65550",
         "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
         "patchSetId": 1
@@ -227,6 +281,24 @@
       "revId": "2e9b34208177ba0c6014c6326f1d531af219e205",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f97db06f_4d5f980f",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-07-11T20:58:02Z",
+      "side": 1,
+      "message": "not done",
+      "parentUuid": "efc9a85f_96c01fe5",
+      "revId": "2e9b34208177ba0c6014c6326f1d531af219e205",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

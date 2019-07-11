@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "11a31b4f_08cb9ee9",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-07-11T20:58:02Z",
+      "side": 1,
+      "message": "simpler name: fakeSubscription\n\nI believe this struct is designed to implement one of the interfaces you\u0027ve defined in pubsublib, but unclear which one. Is that the case? Please add a docstring if so.",
+      "revId": "a1ffeb2df6980b7d38134f4a377b4b9233078399",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
