@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "01071284_1f4486d6",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-07-11T21:24:20Z",
+      "side": 1,
+      "message": "that isn\u0027t true of the original Receive method from the pubsub library. Discussing this in prior CL.",
+      "parentUuid": "c7c2268c_c3d2fef0",
+      "revId": "2ffd0c6a272ef0e8b3293ce0efc8f7f103eba159",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6fc5e22d_31648301",
         "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/subscribe.go",
         "patchSetId": 6
