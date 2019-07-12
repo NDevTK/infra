@@ -43,7 +43,8 @@ type StateParams struct {
 	LabelsPerTask   int
 	LabelsPerWorker int
 	Workers         int
-	Tasks           int
+	TasksSpecs      int
+	TasksPerSpec    int
 
 	Accounts         int
 	ChargeRateMax    float32
@@ -106,21 +107,23 @@ func addWorkers(ctx context.Context, t time.Time, params StateParams, corpus []s
 }
 
 func addTasks(ctx context.Context, t time.Time, params StateParams, corpus []string, s *scheduler.Scheduler) {
-	for i := 0; i < params.Tasks; i++ {
+	for i := 0; i < params.TasksSpecs; i++ {
 		labels := stringset.New(params.LabelsPerTask)
 		for j := 0; j < params.LabelsPerTask; j++ {
 			labels.Add(corpus[rand.Intn(len(corpus))])
 		}
 		provisionableLabel := corpus[rand.Intn(params.ProvisionableLabels)]
 		account := accountName(rand.Intn(params.Accounts))
-		request := scheduler.NewTaskRequest(
-			scheduler.RequestID(randomString()),
-			account,
-			stringset.NewFromSlice(provisionableLabel),
-			labels,
-			t,
-		)
-		s.AddRequest(ctx, request, t, nil, scheduler.NullEventSink)
+		for j := 0; j < params.TasksPerSpec; j++ {
+			request := scheduler.NewTaskRequest(
+				scheduler.RequestID(randomString()),
+				account,
+				stringset.NewFromSlice(provisionableLabel),
+				labels,
+				t,
+			)
+			s.AddRequest(ctx, request, t, nil, scheduler.NullEventSink)
+		}
 	}
 }
 

@@ -31,7 +31,8 @@ var params = StateParams{
 	Workers:         5000,
 
 	LabelsPerTask: 5,
-	Tasks:         100000,
+	TasksSpecs:    100000,
+	TasksPerSpec:  1,
 }
 
 // BenchmarkEntitySize prints the typical proto-serialized size
@@ -75,9 +76,9 @@ func BenchmarkSchedulerSimulation(b *testing.B) {
 	// By the end of this simulation:
 	// - There are 5k workers.
 	// - There are 100k tasks.
-	// - If DisableFreeTasks were false, about 2.2k of the workers would be
+	// - If DisableFreeTasks were false, about 4k of the workers would be
 	//   running, and the others are idle.
-	// - With DisableFreeTasks set to true, only about 1.5k are running. This
+	// - With DisableFreeTasks set to true, only about 3.3k are running. This
 	// - is due to a combination of the limited maximum charge rate and the
 	//   fanout limit.
 	params := SimulationParams{
@@ -86,17 +87,18 @@ func BenchmarkSchedulerSimulation(b *testing.B) {
 			LabelCorpusSize:     1000,
 			ProvisionableLabels: 50,
 
-			LabelsPerWorker: 50,
-			LabelsPerTask:   4,
+			LabelsPerWorker: 70,
+			LabelsPerTask:   3,
 
-			Tasks:   1000,
-			Workers: 50,
+			TasksSpecs:   50,
+			TasksPerSpec: 20,
+			Workers:      50,
 
 			Accounts:         20,
 			ChargeRateMax:    10,
 			ChargeTime:       10,
 			DisableFreeTasks: true,
-			Fanout:           2,
+			Fanout:           5,
 		},
 	}
 	for i := 0; i < b.N; i++ {
