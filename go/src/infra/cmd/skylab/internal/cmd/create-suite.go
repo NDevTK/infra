@@ -18,6 +18,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/flag"
 
+	"infra/cmd/skylab/internal/cmd/recipe"
 	"infra/cmd/skylab/internal/site"
 	"infra/libs/skylab/swarming"
 )
@@ -53,6 +54,7 @@ specified multiple times.`)
 		c.Flags.BoolVar(&c.orphan, "orphan", false, "Create a suite that doesn't wait for its child tests to finish. Internal or expert use ONLY!")
 		c.Flags.BoolVar(&c.json, "json", false, "Format output as JSON")
 		c.Flags.StringVar(&c.taskName, "task-name", "", "Optional name to be used for the Swarming task.")
+		c.Flags.BoolVar(&c.buildBucket, "bb", false, "(Expert use only, not a stable API) use buildbucket recipe backend.")
 		return c
 	},
 }
@@ -74,6 +76,7 @@ type createSuiteRun struct {
 	orphan      bool
 	json        bool
 	taskName    string
+	buildBucket bool
 }
 
 func (c *createSuiteRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -92,6 +95,20 @@ func (c *createSuiteRun) innerRun(a subcommands.Application, args []string, env 
 	ctx := cli.GetContext(a, c, env)
 	e := c.envFlags.Env()
 	suiteName := c.Flags.Arg(0)
+
+	if c.buildBucket {
+		args := recipe.Args{
+			Board:        c.board,
+			Image:        c.image,
+			Model:        c.model,
+			Pool:         c.pool,
+			QuotaAccount: c.qsAccount,
+			SuiteNames:   []string{suiteName},
+			Timeout:      time.Duration(c.timeoutMins) * time.Minute,
+		}
+
+		return buildbucketRun(ctx, args, e, c.authFlags)
+	}
 
 	dimensions := []string{"pool:ChromeOSSkylab-suite"}
 	keyvals, err := toKeyvalMap(c.keyvals)
