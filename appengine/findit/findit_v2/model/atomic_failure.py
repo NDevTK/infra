@@ -62,6 +62,9 @@ class AtomicFailure(ndb.Model):
   # Mentioned files in failure log for the failure.
   files = ndb.LocalStructuredProperty(FileInFailureLog, repeated=True)
 
+  # Arbitrary properties of the failure.
+  properties = ndb.JsonProperty(indexed=False, compressed=True)
+
   @property
   def build_id(self):
     """Gets the id of the build that this failure belongs to."""
@@ -74,7 +77,8 @@ class AtomicFailure(ndb.Model):
              first_failed_build_id=None,
              last_passed_build_id=None,
              failure_group_build_id=None,
-             files=None):  # pragma: no cover
+             files=None,
+             properties=None):  # pragma: no cover
     instance = cls(step_ui_name=step_ui_name, parent=failed_build_key)
 
     files_objs = []
@@ -87,6 +91,7 @@ class AtomicFailure(ndb.Model):
     instance.first_failed_build_id = first_failed_build_id
     instance.last_passed_build_id = last_passed_build_id
     instance.failure_group_build_id = failure_group_build_id
+    instance.properties = properties
     return instance
 
   @classmethod
