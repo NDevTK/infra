@@ -57,7 +57,7 @@ class CompileFailureTest(wf_testcase.WaterfallTestCase):
     build_key = ndb.Key('LuciFailedBuild', self.build_id)
     failures_in_build = CompileFailure.query(ancestor=build_key).fetch()
     self.assertEqual(2, len(failures_in_build))
-    self.assertItemsEqual([['target1.o'], ['target2.o']],
+    self.assertItemsEqual([{'target1.o'}, {'target2.o'}],
                           [f.GetFailureIdentifier() for f in failures_in_build])
     self.assertEqual(self.build_id, failures_in_build[0].build_id)
 
@@ -164,7 +164,9 @@ class CompileFailureTest(wf_testcase.WaterfallTestCase):
         'compile': {
             'failures': {
                 frozenset(['target1.o', 'target2.o']): {
-                    'rule': 'CXX',
+                    'properties': {
+                        'rule': 'CXX'
+                    },
                     'first_failed_build': {
                         'id': 8000000000121,
                         'number': 121,
@@ -228,14 +230,15 @@ class CompileFailureTest(wf_testcase.WaterfallTestCase):
     self.assertEqual(build_id, rerun_builds[0].build_id)
 
   def testGetMergedFailureKeyNoBuildId(self):
-    self.assertIsNone(compile_failure.GetMergedFailureKey({}, None, 's', None))
+    self.assertIsNone(
+        CompileFailure.GetMergedFailureKey({}, None, 's', frozenset([])))
 
   def testGetMergedFailureKey(self):
     self.assertEqual(
         self.target_entities[0].key,
-        compile_failure.GetMergedFailureKey(
+        CompileFailure.GetMergedFailureKey(
             {}, self.build_id, 'compile',
-            self.target_entities[0].output_targets))
+            self.target_entities[0].GetFailureIdentifier()))
 
   def testGetMergedFailure(self):
     failure = CompileFailure.Create(

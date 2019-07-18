@@ -5,6 +5,7 @@
 from google.appengine.ext import ndb
 
 from findit_v2.model.gitiles_commit import Culprit
+from findit_v2.model.luci_build import LuciFailedBuild
 
 
 class FileInFailureLog(ndb.Model):
@@ -88,6 +89,31 @@ class AtomicFailure(ndb.Model):
     instance.failure_group_build_id = failure_group_build_id
     return instance
 
+  @classmethod
+  def GetMergedFailureKey(cls, failure_entities, referred_build_id,
+                          step_ui_name, atomic_failures):
+
+    def get_failures_by_build_id(build_id):
+      """Gets failure entities by build id."""
+      build_key = ndb.Key(LuciFailedBuild, build_id)
+      return cls.query(ancestor=build_key).fetch()
+
+    if not referred_build_id:
+      return None
+
+    if not failure_entities.get(referred_build_id):
+      failure_entities[referred_build_id] = (
+          get_failures_by_build_id(referred_build_id))
+
+    for failure in failure_entities[referred_build_id]:
+      if (failure.step_ui_name == step_ui_name and
+          failure.GetFailureIdentifier() == atomic_failures):
+        # Found the same failure in the first failed build. Uses that
+        # failure's merged_failure_key or key to be the current failure's
+        # merged_failure_key.
+        return failure.merged_failure_key or failure.key
+    return None
+
   def GetFailureIdentifier(self):
     """Returns the identifier for the failure within its step.
 
@@ -97,8 +123,4 @@ class AtomicFailure(ndb.Model):
       - For test failures, it'll be the [test_name].
 
     """
-    raise NotImplementedError
-
-  def GetMergedFailure(self):
-    """Gets the most up-to-date merged_failure for the current failure."""
     raise NotImplementedError
