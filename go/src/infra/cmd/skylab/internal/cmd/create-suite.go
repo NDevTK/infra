@@ -11,13 +11,18 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/golang/protobuf/jsonpb"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
+	buildbucket_pb "go.chromium.org/luci/buildbucket/proto"
 	swarming_api "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/flag"
+	"go.chromium.org/luci/grpc/prpc"
 
+	"infra/cmd/skylab/internal/cmd/recipe"
 	"infra/cmd/skylab/internal/site"
 	"infra/libs/skylab/swarming"
 )
@@ -53,6 +58,7 @@ specified multiple times.`)
 		c.Flags.BoolVar(&c.orphan, "orphan", false, "Create a suite that doesn't wait for its child tests to finish. Internal or expert use ONLY!")
 		c.Flags.BoolVar(&c.json, "json", false, "Format output as JSON")
 		c.Flags.StringVar(&c.taskName, "task-name", "", "Optional name to be used for the Swarming task.")
+		c.Flags.BoolVar(&c.buildBucket, "bb", false, "(Expert use only, not a stable API) use buildbucket recipe backend.")
 		return c
 	},
 }
@@ -74,6 +80,7 @@ type createSuiteRun struct {
 	orphan      bool
 	json        bool
 	taskName    string
+	buildBucket bool
 }
 
 func (c *createSuiteRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -92,6 +99,10 @@ func (c *createSuiteRun) innerRun(a subcommands.Application, args []string, env 
 	ctx := cli.GetContext(a, c, env)
 	e := c.envFlags.Env()
 	suiteName := c.Flags.Arg(0)
+
+	if c.buildBucket {
+		return c.buildbucketRun(ctx, suiteName, e)
+	}
 
 	dimensions := []string{"pool:ChromeOSSkylab-suite"}
 	keyvals, err := toKeyvalMap(c.keyvals)
@@ -141,6 +152,67 @@ func (c *createSuiteRun) innerRun(a subcommands.Application, args []string, env 
 
 	fmt.Fprintf(a.GetOut(), "Created Swarming Suite task %s\n", task.URL)
 	return nil
+}
+
+func (c *createSuiteRun) buildbucketRun(ctx context.Context, suiteName string, env site.Environment) error {
+	args := recipe.Args{
+		Board:        c.board,
+		Image:        c.image,
+		Model:        c.model,
+		Pool:         c.pool,
+		QuotaAccount: c.qsAccount,
+		SuiteNames:   []string{suiteName},
+	}
+
+	req := recipe.Request(args)
+
+	// Do a JSON roundtrip to turn req (a proto) into a structpb.
+	m := jsonpb.Marshaler{}
+	json, err := m.MarshalToString(req)
+	if err != nil {
+		return err
+	}
+	reqStruct := &structpb.Struct{}
+	jsonpb.UnmarshalString(json, reqStruct)
+
+	recipeStruct := &structpb.Struct{}
+	recipeStruct.Fields = map[string]*structpb.Value{
+		"request": {Kind: &structpb.Value_StructValue{StructValue: reqStruct}},
+	}
+
+	bbReq := &buildbucket_pb.ScheduleBuildRequest{
+		Builder: &buildbucket_pb.BuilderID{
+			Project: env.BuildbucketProject,
+			Bucket:  env.BuildbucketBucket,
+			Builder: env.BuildbucketBuilder,
+		},
+		Properties: recipeStruct,
+	}
+
+	hClient, err := httpClient(ctx, &c.authFlags)
+	if err != nil {
+		return err
+	}
+
+	pClient := &prpc.Client{
+		C:    hClient,
+		Host: env.BuildbucketHost,
+	}
+
+	bClient := buildbucket_pb.NewBuildsPRPCClient(pClient)
+	build, err := bClient.ScheduleBuild(ctx, bbReq)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Created request at %s\n", bbURL(env, build.Id))
+
+	return nil
+}
+
+func bbURL(e site.Environment, buildID int64) string {
+	return fmt.Sprintf("https://luci-milo.appspot.com/p/%s/builders/%s/%s/b%d",
+		e.BuildbucketProject, e.BuildbucketBucket, e.BuildbucketBuilder, buildID)
 }
 
 func (c *createSuiteRun) validateArgs() error {

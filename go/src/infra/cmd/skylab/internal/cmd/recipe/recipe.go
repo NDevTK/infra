@@ -7,8 +7,8 @@
 package recipe
 
 import (
-	"strings"
 	"net/url"
+	"strings"
 
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
@@ -69,8 +69,8 @@ func Request(a Args) *test_platform.Request {
 
 	u := &url.URL{
 		Scheme: "gs",
-		Host: "chromeos-image-archive",
-		Path: a.Image,
+		Host:   "chromeos-image-archive",
+		Path:   a.Image,
 	}
 	params.Metadata = &test_platform.Request_Params_Metadata{
 		TestMetadataUrl: u.String(),
