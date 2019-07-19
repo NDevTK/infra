@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "493672ce_e33299fe",
+        "filename": "go/src/infra/cmd/cloudbuildhelper/README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-07-19T23:12:34Z",
+      "side": 1,
+      "message": "imo it\u0027s going to be required to develop this thing and containers locally indefinitely. As such, I think it should be tested in CI.\n\nEven if the builder purged the entire docker cache on every build it would still be worth it to keep it tested.\n\nI don\u0027t think local root is a big deal at all, as long as it\u0027s a regularly recycled VM (which would also solve the \"how do we keep the docker cache clean\" problem... just let it grow and nuke the machine every 24 hours).",
+      "parentUuid": "dacbb7b9_aeb15310",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 16
+      },
+      "revId": "1fd1d929f32456d0bea6b292fc50b4661720a0fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7c0c35f3_7bd95009",
         "filename": "go/src/infra/cmd/cloudbuildhelper/README.md",
         "patchSetId": 5
