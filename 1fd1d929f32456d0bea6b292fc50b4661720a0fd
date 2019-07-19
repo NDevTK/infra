@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b062e3bc_633cfef9",
+        "filename": "go/src/infra/cmd/cloudbuildhelper/README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-07-19T20:10:07Z",
+      "side": 1,
+      "message": "imo it should always use both to verify:\n\n  * local \u0027emergency\u0027 mode is actually working and didn\u0027t rot\n  * local mode produces the same outputs as Cloud Build (determinism, correctness, trustworthiness, etc.)",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 16
+      },
+      "revId": "1fd1d929f32456d0bea6b292fc50b4661720a0fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7c0c35f3_7bd95009",
+        "filename": "go/src/infra/cmd/cloudbuildhelper/README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-07-19T20:10:07Z",
+      "side": 1,
+      "message": "missed a word",
+      "range": {
+        "startLine": 35,
+        "startChar": 35,
+        "endLine": 35,
+        "endChar": 38
+      },
+      "revId": "1fd1d929f32456d0bea6b292fc50b4661720a0fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "47b4044a_3976a975",
+        "filename": "go/src/infra/cmd/cloudbuildhelper/README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-07-19T20:10:07Z",
+      "side": 1,
+      "message": "imo (if we decide this should be runnable on windows at all), it should print a big fat warning that +x/+w bits (and the windows \u0027secret\u0027 bits like \u0027system\u0027, \u0027readonly\u0027 and \u0027hidden\u0027) will be lost when running in local directory mode. It can probably still produce reasonable output in tarball mode though (though filemode detection on inputs will be wonky too).\n\nLet\u0027s just make it exit 1 on windows with a \"pls run on *nix, thx\" message",
+      "range": {
+        "startLine": 76,
+        "startChar": 52,
+        "endLine": 77,
+        "endChar": 20
+      },
+      "revId": "1fd1d929f32456d0bea6b292fc50b4661720a0fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5aab3dc6_f0c2423e",
+        "filename": "go/src/infra/cmd/cloudbuildhelper/README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-07-19T20:10:07Z",
+      "side": 1,
+      "message": "nit: are",
+      "range": {
+        "startLine": 78,
+        "startChar": 9,
+        "endLine": 78,
+        "endChar": 11
+      },
+      "revId": "1fd1d929f32456d0bea6b292fc50b4661720a0fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
