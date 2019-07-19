@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "442e1c7f_80410df2",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/create-suite.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2019-07-19T22:05:24Z",
+      "side": 1,
+      "message": "Add the -json flag.",
+      "range": {
+        "startLine": 195,
+        "startChar": 0,
+        "endLine": 195,
+        "endChar": 73
+      },
+      "revId": "c93fa37acc3bc33c9d9a3835681feed8a2852ab1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
