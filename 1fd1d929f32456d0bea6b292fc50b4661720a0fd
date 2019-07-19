@@ -145,6 +145,30 @@
     },
     {
       "key": {
+        "uuid": "7e8a4015_2bd6e403",
+        "filename": "go/src/infra/cmd/cloudbuildhelper/README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-07-19T23:37:00Z",
+      "side": 1,
+      "message": "\u003e I don\u0027t even care about upload, I really just care about push_button -\u003e get container hash and that the hash matches what we\u0027re deploying.\n\nThis may be brittle, since I believe Docker doesn\u0027t guarantee byte-to-byte reproducibility of builds, certainly not if using different docker versions (we can\u0027t guarantee that Cloud Build and our \"local\" builds are using same docker).\n\nAlso some images are not reproducible in principle (e.g. ones using \"apt-get\"). We do have such images already (swarming docker stuff).\n\nThus I target \"builds using local docker mode are succeeding\" as a good-enough signal that local mode works.",
+      "parentUuid": "69af93d8_f571667a",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 16
+      },
+      "revId": "1fd1d929f32456d0bea6b292fc50b4661720a0fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7c0c35f3_7bd95009",
         "filename": "go/src/infra/cmd/cloudbuildhelper/README.md",
         "patchSetId": 5
