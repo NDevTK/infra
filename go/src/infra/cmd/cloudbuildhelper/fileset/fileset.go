@@ -46,6 +46,18 @@ func (f *File) normalize() error {
 	return nil
 }
 
+// filePerm returns FileMode with file permissions.
+func (f *File) filePerm() os.FileMode {
+	var mode os.FileMode = 0400
+	if f.Writable {
+		mode |= 0200
+	}
+	if f.Executable {
+		mode |= 0100
+	}
+	return mode
+}
+
 // Set represents a set of regular files and directories (no symlinks).
 //
 // Such set can be constructed from existing files on disk (perhaps scattered
@@ -131,8 +143,37 @@ func (s *Set) Files() []File {
 }
 
 // Materialize dumps all files in this set into the given directory.
+//
+// The directory should already exist. Doesn't cleanup on errors.
 func (s *Set) Materialize(root string) error {
-	panic("not implemented")
+	buf := make([]byte, 64*1024)
+	return s.Enumerate(func(f File) error {
+		p := filepath.Join(root, filepath.FromSlash(f.Path))
+		if f.Directory {
+			return os.Mkdir(p, 0700)
+		}
+
+		r, err := f.Body()
+		if err != nil {
+			return err
+		}
+		defer r.Close()
+
+		w, err := os.OpenFile(p, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, f.filePerm())
+		if err != nil {
+			return err
+		}
+		defer w.Close() // this is for early exits, we'll also explicitly close later
+
+		copied, err := io.CopyBuffer(w, r, buf)
+		if err != nil {
+			return err
+		}
+		if copied != f.Size {
+			return errors.Reason("file %q has unexpected size (expecting %d, got %d)", f.Path, f.Size, copied).Err()
+		}
+		return w.Close()
+	})
 }
 
 // Tarball dumps all files in this set into the tarball.
