@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "dacbb7b9_aeb15310",
+        "filename": "go/src/infra/cmd/cloudbuildhelper/README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-07-19T22:16:35Z",
+      "side": 1,
+      "message": "The entire point of using Cloud Build is to avoid maintaining docker daemon on builders. It is PITA. Not only installing and updating it (and giving builder account root on the machine), but also garbage collecting images and containers. If anything, I\u0027d rather delete local docker mode. But I\u0027d like to keep it for now, since this is how I going to test earlier versions of this tool, before it learns to upload to Cloud Build.",
+      "parentUuid": "b062e3bc_633cfef9",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 16
+      },
+      "revId": "1fd1d929f32456d0bea6b292fc50b4661720a0fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7c0c35f3_7bd95009",
         "filename": "go/src/infra/cmd/cloudbuildhelper/README.md",
         "patchSetId": 5
@@ -36,6 +60,30 @@
       "writtenOn": "2019-07-19T20:10:07Z",
       "side": 1,
       "message": "missed a word",
+      "range": {
+        "startLine": 35,
+        "startChar": 35,
+        "endLine": 35,
+        "endChar": 38
+      },
+      "revId": "1fd1d929f32456d0bea6b292fc50b4661720a0fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cb10c538_eb4042b9",
+        "filename": "go/src/infra/cmd/cloudbuildhelper/README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-07-19T22:16:35Z",
+      "side": 1,
+      "message": "🤬",
+      "parentUuid": "7c0c35f3_7bd95009",
       "range": {
         "startLine": 35,
         "startChar": 35,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "00140ff2_21e29ee3",
+        "filename": "go/src/infra/cmd/cloudbuildhelper/README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-07-19T22:16:35Z",
+      "side": 1,
+      "message": "This is not about Windows, this is about making final *.tar.gz \"content addressed\". \"content\" is thus defined as file bodies + their +w and +x bits, and *nothing else*. Tar supports a lot of additional metadata, we purposefully ignore it.",
+      "parentUuid": "47b4044a_3976a975",
+      "range": {
+        "startLine": 76,
+        "startChar": 52,
+        "endLine": 77,
+        "endChar": 20
+      },
+      "revId": "1fd1d929f32456d0bea6b292fc50b4661720a0fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5aab3dc6_f0c2423e",
         "filename": "go/src/infra/cmd/cloudbuildhelper/README.md",
         "patchSetId": 5
@@ -91,6 +163,30 @@
       "revId": "1fd1d929f32456d0bea6b292fc50b4661720a0fd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3195a90a_677da36a",
+        "filename": "go/src/infra/cmd/cloudbuildhelper/README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-07-19T22:16:35Z",
+      "side": 1,
+      "message": "is (are?) metadata plural or singular 🤔?",
+      "parentUuid": "5aab3dc6_f0c2423e",
+      "range": {
+        "startLine": 78,
+        "startChar": 9,
+        "endLine": 78,
+        "endChar": 11
+      },
+      "revId": "1fd1d929f32456d0bea6b292fc50b4661720a0fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
