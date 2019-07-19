@@ -116,6 +116,30 @@
       "revId": "f52461150a31e2cf1dedb415978351b848f7b2fa",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "768b62ee_1d9741c4",
+        "filename": "go/src/infra/cmd/skylab/internal/site/site.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-07-19T23:07:07Z",
+      "side": 1,
+      "message": "will consider this separately. The whole -dev story is still baking.",
+      "parentUuid": "31bf9016_446e51c4",
+      "range": {
+        "startLine": 82,
+        "startChar": 22,
+        "endLine": 82,
+        "endChar": 48
+      },
+      "revId": "f52461150a31e2cf1dedb415978351b848f7b2fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
