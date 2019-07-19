@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "15b1adf9_c8be7e5b",
+        "filename": "go/src/infra/cmd/cloudbuildhelper/README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-07-19T23:07:39Z",
+      "side": 1,
+      "message": "Oh, also there are two kinds of emergencies:\n\n1. LUCI is down and we need to build a new image. Then Cloud Build workflow can be kickstarted locally.\n2. Cloud Build is down and we need to build a new image.\n\nI think (1) is much more likely (LUCI is less stable than Cloud Build, and there\u0027s a much higher chance we *need* to build something to fix LUCI). (2) is very unlikely (Cloud Build is more stable, and even if it is down, we can probably live without new images until it is up).\n\nWhen dealing with emergency (1), local workflow will exercise all same code paths as used on CI, so it should not rot too much.\n\n(2) may rot. But considering it is rare, we may either get rid of it or maybe setup some kind of Dirt exercises (i.e. once a quoter deploy stuff from totally local state).",
+      "parentUuid": "dacbb7b9_aeb15310",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 16
+      },
+      "revId": "1fd1d929f32456d0bea6b292fc50b4661720a0fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7c0c35f3_7bd95009",
         "filename": "go/src/infra/cmd/cloudbuildhelper/README.md",
         "patchSetId": 5
