@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f1462002_8fb7370e",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/buildbucket.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-07-19T22:42:14Z",
+      "side": 1,
+      "message": "nit: check error",
+      "range": {
+        "startLine": 32,
+        "startChar": 1,
+        "endLine": 32,
+        "endChar": 23
+      },
+      "revId": "f52461150a31e2cf1dedb415978351b848f7b2fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "65a70158_052f4b79",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/buildbucket.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-07-19T22:42:14Z",
+      "side": 1,
+      "message": "This needs to be part of Environment too, -dev universe uses luci-milo-dev.appspot.com\n\nAlso for prod prefer ci.chromium.org",
+      "range": {
+        "startLine": 70,
+        "startChar": 29,
+        "endLine": 70,
+        "endChar": 50
+      },
+      "revId": "f52461150a31e2cf1dedb415978351b848f7b2fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "31bf9016_446e51c4",
+        "filename": "go/src/infra/cmd/skylab/internal/site/site.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-07-19T22:42:14Z",
+      "side": 1,
+      "message": "have you considered using cr-buildbucket-dev.appspot.com instead? Using just a different builder for Dev is not a very solid separation between prod and dev.",
+      "range": {
+        "startLine": 82,
+        "startChar": 22,
+        "endLine": 82,
+        "endChar": 48
+      },
+      "revId": "f52461150a31e2cf1dedb415978351b848f7b2fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
