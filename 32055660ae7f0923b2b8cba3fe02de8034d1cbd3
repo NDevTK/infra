@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "77a9b597_dc7d5966",
+        "filename": "appengine/findit/services/disabled_tests/disabled_tests.sql",
+        "patchSetId": 3
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-07-19T23:29:41Z",
+      "side": 1,
+      "message": "Not this CL, but do we care about the frequency of a test run?\n\nScenario 1: test1 is disabled, and runs 10 times a day.\nScenario 2: test2 is disabled, and runs 100 times a day.\n\nDo we consider the re-enabling of test2 is more important than test1? If we do, we may want to track the total #runs.",
+      "range": {
+        "startLine": 6,
+        "startChar": 2,
+        "endLine": 6,
+        "endChar": 29
+      },
+      "revId": "32055660ae7f0923b2b8cba3fe02de8034d1cbd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "611c5d03_654585e4",
+        "filename": "appengine/findit/services/disabled_tests/disabled_tests.sql",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-07-19T23:29:41Z",
+      "side": 1,
+      "message": "Could one test have multiple bugs?",
+      "range": {
+        "startLine": 13,
+        "startChar": 11,
+        "endLine": 13,
+        "endChar": 19
+      },
+      "revId": "32055660ae7f0923b2b8cba3fe02de8034d1cbd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
