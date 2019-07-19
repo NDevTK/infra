@@ -97,6 +97,30 @@
     },
     {
       "key": {
+        "uuid": "f4e58a7c_b75c617d",
+        "filename": "go/src/infra/cmd/cloudbuildhelper/README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-07-19T23:15:58Z",
+      "side": 1,
+      "message": "Per our existing policies all stuff that can transitively touch official should be built in official VLAN. We don\u0027t not recycle VMs there.\n\nWe can setup a custom GCE-P based CI builder with docker in luci.infra.ci and make it upload to chops-nonprod-images registry. Would it be good enough?",
+      "parentUuid": "493672ce_e33299fe",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 16
+      },
+      "revId": "1fd1d929f32456d0bea6b292fc50b4661720a0fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7c0c35f3_7bd95009",
         "filename": "go/src/infra/cmd/cloudbuildhelper/README.md",
         "patchSetId": 5
