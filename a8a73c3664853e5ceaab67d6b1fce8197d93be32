@@ -1,0 +1,301 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c5c53ea6_0e967118",
+        "filename": "appengine/findit/findit_v2/model/atomic_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-19T18:49:04Z",
+      "side": 1,
+      "message": "unnecessary. JSON properties are not indexable",
+      "range": {
+        "startLine": 66,
+        "startChar": 32,
+        "endLine": 66,
+        "endChar": 47
+      },
+      "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fcec182c_aa00008d",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-19T18:49:04Z",
+      "side": 1,
+      "message": "collections.defaultdict(lambda: {\u0027tests\u0027: []})\n\nthen L21-24 are not needed",
+      "range": {
+        "startLine": 19,
+        "startChar": 18,
+        "endLine": 19,
+        "endChar": 20
+      },
+      "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1f2c6572_e8d12cac",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-19T18:49:04Z",
+      "side": 1,
+      "message": "trailing comma",
+      "range": {
+        "startLine": 30,
+        "startChar": 53,
+        "endLine": 30,
+        "endChar": 54
+      },
+      "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8c6b9a0_1b1b1b11",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-19T18:49:04Z",
+      "side": 1,
+      "message": "do we have a guarantee that there will be at most one test failure entity without \"test\" for a given step?\n\nlet\u0027s at least\n\n  assert \u0027properties\u0027 not in step_failures\n\nbefore this",
+      "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "58817705_3b1a5a22",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-19T18:49:04Z",
+      "side": 1,
+      "message": "intentional?",
+      "range": {
+        "startLine": 39,
+        "startChar": 5,
+        "endLine": 39,
+        "endChar": 6
+      },
+      "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5a6c59dc_688bc3ae",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-19T18:49:04Z",
+      "side": 1,
+      "message": "this doc should explain entity key",
+      "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d05e7b4e_de1d0574",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-19T18:49:04Z",
+      "side": 1,
+      "message": "shouldn\u0027t this be a part of the key?\n\nwhat is the key?",
+      "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4b9455d1_20a45c60",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-19T18:49:04Z",
+      "side": 1,
+      "message": "nit: there will be less indentation if this condition is reversed",
+      "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "75d961bc_feff050b",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-19T18:49:04Z",
+      "side": 1,
+      "message": "nit: immutable",
+      "range": {
+        "startLine": 103,
+        "startChar": 58,
+        "endLine": 104,
+        "endChar": 13
+      },
+      "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f7b39fa6_ae700201",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-19T18:49:04Z",
+      "side": 1,
+      "message": "not for this CL: this means we store project 3 times and bucket 2 times unnecessarily. It is sufficient to store only builder_id, and then\n\n  @property\n  def luci_project(self):\n    return ... use self.builder_id ...\n\n  @property\n  def bucket_id(self):\n    return ... use self.builder_id ...",
+      "range": {
+        "startLine": 171,
+        "startChar": 3,
+        "endLine": 173,
+        "endChar": 57
+      },
+      "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "df089c1b_d5acd17b",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-19T18:49:04Z",
+      "side": 1,
+      "message": "i know i said this before, and I am not asking for action now, but this is another example of not-very-valuable piece of code that took some of our engineering time (30 LOC here, test code, time to review this code * number of reviewers), but same can be achieved in a cheaper way: instead of calling TestFailureAnalysis.Create(.....) call.\n\nOne of the problems Create() solves is not having to construct bucket_id and builder_id properties yourself, but i think the fact we have to construct them is the problem in the first place, see my comment above",
+      "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c09b0cf3_58224854",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-19T18:49:04Z",
+      "side": 1,
+      "message": "does this really belong here, or in the callsite?\n\nembedding RPCs deep inside the code (like here in the model) makes it hard to reason about RPCs that a particular handles/task/cronjob is making.",
+      "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "93b82f18_151c9a5f",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-19T18:49:04Z",
+      "side": 1,
+      "message": "one thing I\u0027ve noticed is that FindIt has significantly more entity kinds than in any other project I\u0027ve seen. It is possible that findit abuses datastore for things that are normally solved in a different way. I also suspect that this might be the reason why CATs generally do not talk about models in design docs, because there is so many of them; but the problem might be that it is too many of them",
+      "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9599c9cc_faded591",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-19T18:49:04Z",
+      "side": 1,
+      "message": "i think it would be less code if we put\n\n  if failure.test is not None:\n\nbefore L214. Then we don\u0027t need these 4 LOC",
+      "range": {
+        "startLine": 216,
+        "startChar": 3,
+        "endLine": 220,
+        "endChar": 0
+      },
+      "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "283b7309_08247ec7",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 261,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-19T18:49:04Z",
+      "side": 1,
+      "message": "same here",
+      "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
