@@ -178,7 +178,35 @@ func (s *Set) Materialize(root string) error {
 
 // Tarball dumps all files in this set into the tarball.
 func (s *Set) Tarball(w *tar.Writer) error {
-	panic("not implemented")
+	buf := make([]byte, 64*1024)
+	return s.Enumerate(func(f File) error {
+		if f.Directory {
+			return w.WriteHeader(&tar.Header{
+				Typeflag: tar.TypeDir,
+				Name:     f.Path + "/",
+				Mode:     0700,
+			})
+		}
+
+		err := w.WriteHeader(&tar.Header{
+			Typeflag: tar.TypeReg,
+			Name:     f.Path,
+			Size:     f.Size,
+			Mode:     int64(f.filePerm()),
+		})
+		if err != nil {
+			return err
+		}
+
+		r, err := f.Body()
+		if err != nil {
+			return err
+		}
+		defer r.Close()
+
+		_, err = io.CopyBuffer(w, r, buf)
+		return err
+	})
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -5,6 +5,8 @@
 package fileset
 
 import (
+	"archive/tar"
+	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -132,6 +134,46 @@ func TestSet(t *testing.T) {
 
 		scan := &Set{}
 		So(scan.AddFromDisk(d.join(""), ""), ShouldBeNil)
+		assertEqualSets(s, scan)
+	})
+
+	Convey("Tarball works", t, func(c C) {
+		s := prepSet()
+
+		buf := bytes.Buffer{}
+		tb := tar.NewWriter(&buf)
+		So(s.Tarball(tb), ShouldBeNil)
+		So(tb.Close(), ShouldBeNil)
+
+		scan := &Set{}
+		tr := tar.NewReader(&buf)
+		for {
+			hdr, err := tr.Next()
+			if err == io.EOF {
+				break
+			}
+			So(err, ShouldBeNil)
+
+			if hdr.Typeflag == tar.TypeDir {
+				scan.Add(File{
+					Path:      hdr.Name,
+					Directory: true,
+				})
+				continue
+			}
+
+			body := bytes.Buffer{}
+			_, err = io.Copy(&body, tr)
+			So(err, ShouldBeNil)
+
+			f := memFile(hdr.Name, string(body.Bytes()))
+			if runtime.GOOS != "windows" {
+				f.Writable = (hdr.Mode & 0222) != 0
+				f.Executable = (hdr.Mode & 0111) != 0
+			}
+			scan.Add(f)
+		}
+
 		assertEqualSets(s, scan)
 	})
 }
