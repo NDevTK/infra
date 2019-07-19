@@ -121,6 +121,30 @@
     },
     {
       "key": {
+        "uuid": "69af93d8_f571667a",
+        "filename": "go/src/infra/cmd/cloudbuildhelper/README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-07-19T23:22:06Z",
+      "side": 1,
+      "message": "\u003e Per our existing policies all stuff that can transitively touch official should be built in official VLAN. We don\u0027t not recycle VMs there.\n\u003e \n\ndon\u0027t not -\u003e don\u0027t? I just want to have the local mode:\n  * run in CI at some point\n  * check to see if the hash matches what cloud build pooped out\n\nThere\u0027s no \u0027touching\u0027 of anything, official or otherwise?\n\n\u003e We can setup a custom GCE-P based CI builder with docker in luci.infra.ci and make it upload to chops-nonprod-images registry. Would it be good enough?\n\nI don\u0027t even care about upload, I really just care about push_button -\u003e get container hash and that the hash matches what we\u0027re deploying.\n\nPresumably if we can generate the container, and it\u0027s the same container as what we deploy, we can find some way to upload the container in an emergency. I do assume that one of the myriad docker upload tools will continue to work in the apocalypse, but I\u0027m OK with that :p.",
+      "parentUuid": "f4e58a7c_b75c617d",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 16
+      },
+      "revId": "1fd1d929f32456d0bea6b292fc50b4661720a0fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7c0c35f3_7bd95009",
         "filename": "go/src/infra/cmd/cloudbuildhelper/README.md",
         "patchSetId": 5
