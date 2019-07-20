@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "c9a1f530_ca541cea",
+        "filename": "appengine/findit/services/disabled_tests/disabled_tests.sql",
+        "patchSetId": 3
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-07-20T00:00:32Z",
+      "side": 1,
+      "message": "That is an interesting idea. Though we need to put more thoughts on it: 1. since we only query disabled runs, will tests that are disabled all platforms got biased over tests that are only disabled on one platform? Or we should track runs per platform? 2. can we track it in a different way? For example, if tests in one suite will have the same frequency, can we track test suites instead?\n\nWe may need to talk with EngProd team to get their inputs as well.",
+      "parentUuid": "77a9b597_dc7d5966",
+      "range": {
+        "startLine": 6,
+        "startChar": 2,
+        "endLine": 6,
+        "endChar": 29
+      },
+      "revId": "32055660ae7f0923b2b8cba3fe02de8034d1cbd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "611c5d03_654585e4",
         "filename": "appengine/findit/services/disabled_tests/disabled_tests.sql",
         "patchSetId": 3
@@ -36,6 +60,30 @@
       "writtenOn": "2019-07-19T23:29:41Z",
       "side": 1,
       "message": "Could one test have multiple bugs?",
+      "range": {
+        "startLine": 13,
+        "startChar": 11,
+        "endLine": 13,
+        "endChar": 19
+      },
+      "revId": "32055660ae7f0923b2b8cba3fe02de8034d1cbd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5c6b95e3_04027830",
+        "filename": "appengine/findit/services/disabled_tests/disabled_tests.sql",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-07-20T00:00:32Z",
+      "side": 1,
+      "message": "It\u0027s possible: for example a test was disabled on one platform because of a bug, and then got disabled on another platform because of another bug.",
+      "parentUuid": "611c5d03_654585e4",
       "range": {
         "startLine": 13,
         "startChar": 11,
