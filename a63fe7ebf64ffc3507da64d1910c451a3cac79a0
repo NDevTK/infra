@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9757e5cd_ea1dd30c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-07-20T00:40:08Z",
+      "side": 1,
+      "message": "I think it should be 1691070.",
+      "revId": "a63fe7ebf64ffc3507da64d1910c451a3cac79a0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
