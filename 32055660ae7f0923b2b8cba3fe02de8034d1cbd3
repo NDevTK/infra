@@ -49,6 +49,29 @@
     },
     {
       "key": {
+        "uuid": "bda03a7c_bb6013b4",
+        "filename": "appengine/findit/services/disabled_tests/disabled_tests.sql",
+        "patchSetId": 3
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-20T05:04:00Z",
+      "side": 1,
+      "message": "thinking about DISTINCT a bit more, with such usage, if a test was re-enabled, then this query will still return it for 2 days, because the query will see old records with \"SKIP\" in run.expected\n\nconsider\n1) GROUP BY step_name, test_name\n2) ARRAY_AGG(run ORDER BY start_time DESC LIMIT 1)[OFFSET(0)] latest_run,\n   to get the latest run\n3) HAVING \u0027SKIP\u0027 in UNNEST(latest_run.expected)\n\nsuch query will see that a test was re-enabled pretty much immediately",
+      "range": {
+        "startLine": 6,
+        "startChar": 2,
+        "endLine": 6,
+        "endChar": 10
+      },
+      "revId": "32055660ae7f0923b2b8cba3fe02de8034d1cbd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "611c5d03_654585e4",
         "filename": "appengine/findit/services/disabled_tests/disabled_tests.sql",
         "patchSetId": 3
@@ -89,6 +112,29 @@
         "startChar": 11,
         "endLine": 13,
         "endChar": 19
+      },
+      "revId": "32055660ae7f0923b2b8cba3fe02de8034d1cbd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "58ee6c69_842408bd",
+        "filename": "appengine/findit/services/disabled_tests/disabled_tests.sql",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-20T05:04:00Z",
+      "side": 1,
+      "message": "nit: very unusual to see LEFT JOIN without a condition. Consider:\n\n FROM `test-results-hrd.events.test_results` AS tr, tr.bugs AS bug",
+      "range": {
+        "startLine": 11,
+        "startChar": 40,
+        "endLine": 13,
+        "endChar": 27
       },
       "revId": "32055660ae7f0923b2b8cba3fe02de8034d1cbd3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
