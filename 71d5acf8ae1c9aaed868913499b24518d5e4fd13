@@ -1,0 +1,176 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5c83ddfd_4d9a9665",
+        "filename": "appengine/findit/findit_v2/model/atomic_failure.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-24T20:17:08Z",
+      "side": 1,
+      "message": "what if someone calls this function with a list of tuple, or non-frozen set? I don\u0027t think we can ignore that\n\nwhat is the intention of this condition? if it is to ensure that it must be a frozen, then it should be \n\n  assert isisnstance(atomic_failures, frozenset)\n\nif it can be none today, then \n\n  assert isisnstance(atomic_failures, (type(None), frozenset))",
+      "range": {
+        "startLine": 106,
+        "startChar": 36,
+        "endLine": 106,
+        "endChar": 74
+      },
+      "revId": "71d5acf8ae1c9aaed868913499b24518d5e4fd13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f019162a_9449b7f8",
+        "filename": "appengine/findit/findit_v2/model/base_failure_analysis.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-24T20:17:08Z",
+      "side": 1,
+      "message": "do we do searches by this property? if not, then then do we store this?\n\nsame below",
+      "range": {
+        "startLine": 45,
+        "startChar": 7,
+        "endLine": 45,
+        "endChar": 23
+      },
+      "revId": "71d5acf8ae1c9aaed868913499b24518d5e4fd13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7b77a6e0_b4987d5f",
+        "filename": "appengine/findit/findit_v2/model/base_failure_analysis.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-24T20:17:08Z",
+      "side": 1,
+      "message": "that\u0027s the same sentence as above?",
+      "range": {
+        "startLine": 48,
+        "startChar": 4,
+        "endLine": 48,
+        "endChar": 55
+      },
+      "revId": "71d5acf8ae1c9aaed868913499b24518d5e4fd13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "09ecc3b0_0614e146",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-24T20:17:08Z",
+      "side": 1,
+      "message": "remove",
+      "revId": "71d5acf8ae1c9aaed868913499b24518d5e4fd13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eef4800e_4270bd7f",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-24T20:17:08Z",
+      "side": 1,
+      "message": "it took me sometime to understand the intention of this code. It looked like a noop for first 3min. Consider adding  comment and changing the line \n\n  _ \u003d test_failures[failure.step_ui_name]",
+      "range": {
+        "startLine": 208,
+        "startChar": 46,
+        "endLine": 209,
+        "endChar": 74
+      },
+      "revId": "71d5acf8ae1c9aaed868913499b24518d5e4fd13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "328a895e_c2e1a6cf",
+        "filename": "appengine/findit/findit_v2/services/analysis/compile_failure/pre_compile_analysis.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-24T20:17:08Z",
+      "side": 1,
+      "message": "i think I\u0027ve said this before. This looks like a copy-paste from below. Can we reduce duplication?",
+      "range": {
+        "startLine": 73,
+        "startChar": 6,
+        "endLine": 87,
+        "endChar": 49
+      },
+      "revId": "71d5acf8ae1c9aaed868913499b24518d5e4fd13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0ad55037_660000b2",
+        "filename": "appengine/findit/findit_v2/services/analysis/compile_failure/pre_compile_analysis.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-24T20:17:08Z",
+      "side": 1,
+      "message": "same comment as in https://chromium-review.googlesource.com/c/infra/infra/+/1707988/5/appengine/findit/findit_v2/services/analysis/analysis_api.py#198\n\nplease see my other comments in that CL and apply them here if they are relevant to this CL",
+      "revId": "71d5acf8ae1c9aaed868913499b24518d5e4fd13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "60deca0f_4173748d",
+        "filename": "appengine/findit/findit_v2/services/analysis/compile_failure/pre_compile_analysis.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-24T20:17:08Z",
+      "side": 1,
+      "message": "unused",
+      "range": {
+        "startLine": 154,
+        "startChar": 6,
+        "endLine": 154,
+        "endChar": 15
+      },
+      "revId": "71d5acf8ae1c9aaed868913499b24518d5e4fd13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

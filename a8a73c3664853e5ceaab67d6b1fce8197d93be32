@@ -260,6 +260,24 @@
     },
     {
       "key": {
+        "uuid": "a4f48fbe_ad7c4316",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-24T20:17:08Z",
+      "side": 1,
+      "message": "this comment does not seem to answer my request? anyway, we already have another comment thread about this. Let\u0027s resolve this one.",
+      "parentUuid": "4a229b18_e1af4214",
+      "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d05e7b4e_de1d0574",
         "filename": "appengine/findit/findit_v2/model/test_failure.py",
         "patchSetId": 2
@@ -289,6 +307,24 @@
       "side": 1,
       "message": "The is is actually Key(LuciFailedBuild, \u003cbuild_id\u003e, CompileFailure, \u003cnumeric_id\u003e(no meaning)).\n\nPlease also see my comment above.",
       "parentUuid": "d05e7b4e_de1d0574",
+      "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a825f9c0_9c122012",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-24T20:17:08Z",
+      "side": 1,
+      "message": "the answer to the question need to be in code, so that a future reader does not ask the question again. Also I realized that it should be in AtomicFailure, not TestFailure",
+      "parentUuid": "9a031471_9c025c09",
       "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -441,6 +477,24 @@
     },
     {
       "key": {
+        "uuid": "60c90773_408bfb74",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-24T20:17:08Z",
+      "side": 1,
+      "message": "marking resolved",
+      "parentUuid": "df089c1b_d5acd17b",
+      "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c09b0cf3_58224854",
         "filename": "appengine/findit/findit_v2/model/test_failure.py",
         "patchSetId": 2
@@ -473,6 +527,24 @@
       "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c6fe1914_61a56b85",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-24T20:17:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e08ad5ae_25706329",
+      "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -528,6 +600,30 @@
       "side": 1,
       "message": "Done.\n\nWanted to make sure if all failures here don\u0027t have test level info, we can still have a failure dict like:\n{\n  \u0027step1\u0027: [],\n  \u0027step2\u0027: [],\n  ...\n}",
       "parentUuid": "9599c9cc_faded591",
+      "range": {
+        "startLine": 216,
+        "startChar": 3,
+        "endLine": 220,
+        "endChar": 0
+      },
+      "revId": "a8a73c3664853e5ceaab67d6b1fce8197d93be32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "25859063_777d64cb",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-24T20:17:08Z",
+      "side": 1,
+      "message": "i see",
+      "parentUuid": "f0b2246c_309e0e8a",
       "range": {
         "startLine": 216,
         "startChar": 3,
