@@ -9,6 +9,11 @@
 #   name: "infra/python/wheels/yapf-py2_py3"
 #   version: "version:0.27.0"
 # >
+# wheel: <
+#   # Required for parallelism in python 2.
+#   name: "infra/python/wheels/futures-py2_py3"
+#   version: "version:3.1.1"
+# >
 # [VPYTHON:END]
 
 # -*- coding: utf-8 -*-
