@@ -11,3 +11,5 @@ gae.py devserver -A chopsdash
 
 To run tests:
 go test
+
+test
