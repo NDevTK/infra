@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "bed04db3_aa8912a5",
+        "filename": "appengine/findit/findit_v2/model/atomic_failure.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-07-24T21:35:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5c83ddfd_4d9a9665",
+      "range": {
+        "startLine": 106,
+        "startChar": 36,
+        "endLine": 106,
+        "endChar": 74
+      },
+      "revId": "71d5acf8ae1c9aaed868913499b24518d5e4fd13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f019162a_9449b7f8",
         "filename": "appengine/findit/findit_v2/model/base_failure_analysis.py",
         "patchSetId": 5
@@ -36,6 +60,30 @@
       "writtenOn": "2019-07-24T20:17:08Z",
       "side": 1,
       "message": "do we do searches by this property? if not, then then do we store this?\n\nsame below",
+      "range": {
+        "startLine": 45,
+        "startChar": 7,
+        "endLine": 45,
+        "endChar": 23
+      },
+      "revId": "71d5acf8ae1c9aaed868913499b24518d5e4fd13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3fe0319f_ea4c9e98",
+        "filename": "appengine/findit/findit_v2/model/base_failure_analysis.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-07-24T21:35:17Z",
+      "side": 1,
+      "message": "Not right now, but I do think it\u0027s possible that one day we want to gather some project based metrics. On that note, I\u0027ll not save bucket_id.",
+      "parentUuid": "f019162a_9449b7f8",
       "range": {
         "startLine": 45,
         "startChar": 7,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "aa2c8b93_57f74e3e",
+        "filename": "appengine/findit/findit_v2/model/base_failure_analysis.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-07-24T21:35:17Z",
+      "side": 1,
+      "message": "Copy/paste error. removed.",
+      "parentUuid": "7b77a6e0_b4987d5f",
+      "range": {
+        "startLine": 48,
+        "startChar": 4,
+        "endLine": 48,
+        "endChar": 55
+      },
+      "revId": "71d5acf8ae1c9aaed868913499b24518d5e4fd13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "09ecc3b0_0614e146",
         "filename": "appengine/findit/findit_v2/model/test_failure.py",
         "patchSetId": 5
@@ -85,6 +157,24 @@
       "revId": "71d5acf8ae1c9aaed868913499b24518d5e4fd13",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4b4a39d6_d8d44c18",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-07-24T21:35:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "09ecc3b0_0614e146",
+      "revId": "71d5acf8ae1c9aaed868913499b24518d5e4fd13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -111,6 +201,30 @@
     },
     {
       "key": {
+        "uuid": "7e4c8ba6_aa8a3c8d",
+        "filename": "appengine/findit/findit_v2/model/test_failure.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-07-24T21:35:17Z",
+      "side": 1,
+      "message": "Thanks for the suggestion, I agree it\u0027s very confusing before.\n\nDone.",
+      "parentUuid": "eef4800e_4270bd7f",
+      "range": {
+        "startLine": 208,
+        "startChar": 46,
+        "endLine": 209,
+        "endChar": 74
+      },
+      "revId": "71d5acf8ae1c9aaed868913499b24518d5e4fd13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "328a895e_c2e1a6cf",
         "filename": "appengine/findit/findit_v2/services/analysis/compile_failure/pre_compile_analysis.py",
         "patchSetId": 5
@@ -122,6 +236,30 @@
       "writtenOn": "2019-07-24T20:17:08Z",
       "side": 1,
       "message": "i think I\u0027ve said this before. This looks like a copy-paste from below. Can we reduce duplication?",
+      "range": {
+        "startLine": 73,
+        "startChar": 6,
+        "endLine": 87,
+        "endChar": 49
+      },
+      "revId": "71d5acf8ae1c9aaed868913499b24518d5e4fd13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4971ce75_b3f7a563",
+        "filename": "appengine/findit/findit_v2/services/analysis/compile_failure/pre_compile_analysis.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-07-24T21:35:17Z",
+      "side": 1,
+      "message": "Yes, the change has been made at https://chromium-review.googlesource.com/c/infra/infra/+/1707988.",
+      "parentUuid": "328a895e_c2e1a6cf",
       "range": {
         "startLine": 73,
         "startChar": 6,
@@ -151,6 +289,24 @@
     },
     {
       "key": {
+        "uuid": "0a5e1a46_33d77211",
+        "filename": "appengine/findit/findit_v2/services/analysis/compile_failure/pre_compile_analysis.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-07-24T21:35:17Z",
+      "side": 1,
+      "message": "This file will be refactored in https://chromium-review.googlesource.com/c/infra/infra/+/1707988. So I just made minimal changes on it.",
+      "parentUuid": "0ad55037_660000b2",
+      "revId": "71d5acf8ae1c9aaed868913499b24518d5e4fd13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "60deca0f_4173748d",
         "filename": "appengine/findit/findit_v2/services/analysis/compile_failure/pre_compile_analysis.py",
         "patchSetId": 5
@@ -171,6 +327,30 @@
       "revId": "71d5acf8ae1c9aaed868913499b24518d5e4fd13",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "875153b3_92d1f64f",
+        "filename": "appengine/findit/findit_v2/services/analysis/compile_failure/pre_compile_analysis.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-07-24T21:35:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "60deca0f_4173748d",
+      "range": {
+        "startLine": 154,
+        "startChar": 6,
+        "endLine": 154,
+        "endChar": 15
+      },
+      "revId": "71d5acf8ae1c9aaed868913499b24518d5e4fd13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
