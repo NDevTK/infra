@@ -1,0 +1,164 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c88fd9a1_c2960ad5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-07-25T22:54:15Z",
+      "side": 1,
+      "message": "Nit: \"Add stars to new grid view\" or similar?",
+      "revId": "2ae6aad851393b8a3c4504fffd7c5fb143e887bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6b4af74c_9a7328c9",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid-tile.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-07-25T22:54:15Z",
+      "side": 1,
+      "message": "Nit: In this case, it\u0027s better to use update() instead of updated(). They have very similar naming, which is confusing, but update() runs before render() whereas updated() runs after render(). \n\nWhen using updated, this means that you have to wait an extra render() cycle for this.issueRef to be computed, which can cause subtle bugs.",
+      "range": {
+        "startLine": 55,
+        "startChar": 2,
+        "endLine": 55,
+        "endChar": 9
+      },
+      "revId": "2ae6aad851393b8a3c4504fffd7c5fb143e887bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e407c465_af6c9116",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-07-25T22:54:15Z",
+      "side": 1,
+      "message": "FYI, to simplify this you could do: \n\nconst issueRefs \u003d this.issues.map((issue) \u003d\u003e {issueRef: issueToIssueRef(issue)});",
+      "range": {
+        "startLine": 167,
+        "startChar": 6,
+        "endLine": 170,
+        "endChar": 7
+      },
+      "revId": "2ae6aad851393b8a3c4504fffd7c5fb143e887bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "949f9235_7a730c47",
+        "filename": "appengine/monorail/static_src/elements/mr-app/mr-app.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-07-25T22:54:15Z",
+      "side": 1,
+      "message": "With this change, I think we should delete this code from mr-issue-page: \n\nhttps://cs.chromium.org/chromium/infra/appengine/monorail/static_src/elements/issue-detail/mr-issue-page/mr-issue-page.js?q\u003duser.fetch+file:%5Einfra/appengine/monorail/+package:%5Echromium$\u0026dr\u003dC\u0026l\u003d329 \n\nSince mr-app also loads mr-issue-page, the user\u0027s datawould be fetched twice otherwise. \n\nAlso, it might make sense to move this fetch under updated() like in the code linked above. The advantage of this approach is that if the user\u0027s display name changes, the lit-element will automatically refetch the user\u0027s data based on the display name change.",
+      "revId": "2ae6aad851393b8a3c4504fffd7c5fb143e887bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4d780d4e_442c5e3c",
+        "filename": "appengine/monorail/static_src/elements/reducers/issue.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 762,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-07-25T22:54:15Z",
+      "side": 1,
+      "message": "If there are 6,000 issues loaded, this approach would hit the server 6,000 times to get whether each issue is starred. With HTTP2, it is true that the overhead of each request is less than it used to be in the past, at least for clients and servers that support this. But I\u0027m worried this would: A) be really slow for the user and B) be expensive for the server to compute.  \n\nHave we tested how this approach ends up working with a large number of issues?",
+      "range": {
+        "startLine": 762,
+        "startChar": 2,
+        "endLine": 762,
+        "endChar": 35
+      },
+      "revId": "2ae6aad851393b8a3c4504fffd7c5fb143e887bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "325c5ecb_7bc364ba",
+        "filename": "appengine/monorail/static_src/elements/reducers/issue.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 766,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-07-25T22:54:15Z",
+      "side": 1,
+      "message": "FYI, since this approach waits for one request to end before firing the next, the user will have to wait for each of those 6,000 requests to individually finish one after another. With asynchronous code, it\u0027s not necessary to wait for one request to finish before firing the next one: we can do multiple pieces of work at once.",
+      "range": {
+        "startLine": 764,
+        "startChar": 6,
+        "endLine": 766,
+        "endChar": 8
+      },
+      "revId": "2ae6aad851393b8a3c4504fffd7c5fb143e887bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9b8037ca_03cbce69",
+        "filename": "appengine/monorail/static_src/elements/reducers/issue.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 783,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-07-25T22:54:15Z",
+      "side": 1,
+      "message": "It would be better not to pass an isStarred map into this function and instead have the STAR_SUCCESS action handle changing the star state for an issue based on the issueRef passed in. \n\nA relevant general software engineering principle is the Law of Demeter ( https://en.wikipedia.org/wiki/Law_of_Demeter ). Basically, if you can, try to give functions the minimal amount of information needed to do their job.",
+      "revId": "2ae6aad851393b8a3c4504fffd7c5fb143e887bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4d224726_236c89fb",
+        "filename": "appengine/monorail/static_src/elements/shared/converters.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-07-25T22:54:15Z",
+      "side": 1,
+      "message": "Thanks for creating this helper!",
+      "revId": "2ae6aad851393b8a3c4504fffd7c5fb143e887bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
