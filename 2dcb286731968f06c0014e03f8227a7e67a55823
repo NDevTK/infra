@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "717e681a_e551fb3f",
+        "filename": "go/src/infra/appengine/rotang/pkg/algo/fair.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2019-07-25T23:41:22Z",
+      "side": 1,
+      "message": "Use https://golang.org/pkg/time/#Time.Add with a negative time.Duration (aliased int64) value?",
+      "range": {
+        "startLine": 96,
+        "startChar": 20,
+        "endLine": 96,
+        "endChar": 76
+      },
+      "revId": "2dcb286731968f06c0014e03f8227a7e67a55823",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
