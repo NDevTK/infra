@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "aef5b589_47642d24",
+        "filename": "appengine/findit/findit_v2/model/atomic_failure.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-25T01:38:40Z",
+      "side": 1,
+      "message": "nit: this error message does not really add value because assertion exception contains the stack trace which already contains the snippet of code with the condition, or at least line number, so you can tell which assertion failed. What you cannot tell from the assertion message is the values of expressions (in this case, type(atomic_failures)). That is what\u0027s valuable to include in the assertion message.\n\nthis is primarily for future. I have noticed that this is the code style that we were following in FindIt. I\u0027ve suggested same to Yuke earlier in the month",
+      "revId": "e51b3e9fcc4462b8597ce8e8c15bfa39bf3e40b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
