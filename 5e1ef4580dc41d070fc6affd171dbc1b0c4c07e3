@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "851fa21a_20738950",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/internal/skylab/skylab.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2019-07-25T21:06:28Z",
+      "side": 1,
+      "message": "\u003e \"tht\" is a possible misspelling of \"the\" or \"that\".\n\nPlease Fix",
+      "parentUuid": "4e9f12d4_6bb3d788",
+      "range": {
+        "startLine": 44,
+        "startChar": 22,
+        "endLine": 44,
+        "endChar": 25
+      },
+      "revId": "5e1ef4580dc41d070fc6affd171dbc1b0c4c07e3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
