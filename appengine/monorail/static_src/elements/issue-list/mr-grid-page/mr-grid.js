@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 import {LitElement, html, css} from 'lit-element';
-import {extractGridData, EMPTY_HEADER_VALUE} from './extract-grid-data.js';
-import {issueRefToUrl} from '../../shared/converters.js';
+import {connectStore, store} from 'elements/reducers/base.js';
+import * as issue from 'elements/reducers/issue.js';
+import {issueRefToUrl, issueToIssueRef} from '../../shared/converters.js';
 import './mr-grid-tile.js';
+import {extractGridData, EMPTY_HEADER_VALUE} from './extract-grid-data.js';
 import qs from 'qs';
 
-export class MrGrid extends LitElement {
+export class MrGrid extends connectStore(LitElement) {
   render() {
     return html`
       <table>
@@ -65,14 +67,16 @@ export class MrGrid extends LitElement {
           </a>
         `;
       }
-    } else if (cellMode == 'tiles') {
+    } else if (cellMode === 'tiles') {
       return html`
-        ${this.groupedIssues.get(cellHeading).map((issue) => html`
-          <mr-grid-tile
-            .issue=${issue}
-            .queryParams=${this.queryParams}
-          ></mr-grid-tile>
-        `)}
+        ${this.groupedIssues.get(cellHeading).map((issue) =>
+          html`
+            <mr-grid-tile
+              .issue=${issue}
+              .queryParams=${this.queryParams}
+            ></mr-grid-tile>
+          `)
+        }
       `;
     }
   }
@@ -158,6 +162,16 @@ export class MrGrid extends LitElement {
       this.xHeadings = gridData.xHeadings;
       this.yHeadings = gridData.yHeadings;
       this.groupedIssues = gridData.sortedIssues;
+    }
+    if (changedProperties.has('issues')) {
+      const issueRefs = [];
+      // Here, i is used instead of 'issue' to avoid
+      // conflicts with importing * as issue
+      for (const i of this.issues) {
+        issueRefs.push({issueRef: issueToIssueRef(i)});
+      }
+
+      store.dispatch(issue.fetchIsStarred(issueRefs));
     }
   }
 };
