@@ -11,6 +11,7 @@ import 'elements/framework/mr-site-banner/mr-site-banner.js';
 import {store, connectStore} from 'elements/reducers/base.js';
 import * as issue from 'elements/reducers/issue.js';
 import * as ui from 'elements/reducers/ui.js';
+import * as user from 'elements/reducers/user.js';
 import {arrayToEnglish} from 'elements/shared/helpers.js';
 import 'elements/framework/mr-header/mr-header.js';
 import 'elements/framework/mr-keystrokes/mr-keystrokes.js';
@@ -89,6 +90,9 @@ export class MrApp extends connectStore(LitElement) {
 
     // TODO(zhangtiff): Figure out some way to save Redux state between
     //   page loads.
+
+    // Store current user in store for other components to user
+    store.dispatch(user.fetch(this.userDisplayName));
 
     // page doesn't handle users reloading the page or closing a tab.
     window.onbeforeunload = this._confirmDiscardMessage.bind(this);
