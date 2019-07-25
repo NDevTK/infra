@@ -637,6 +637,7 @@ def _add_configured_cache(build_proto, configured_cache):
       wait_for_warm_cache=dict(
           seconds=configured_cache.wait_for_warm_cache_secs
       ),
+      env_var=configured_cache.env_var,
   )
 
 
