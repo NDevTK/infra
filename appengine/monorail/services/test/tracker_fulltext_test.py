@@ -160,7 +160,8 @@ class TrackerFulltextTest(unittest.TestCase):
         'test@example.com comment content hello.c hello.h',
         extracted_text)
 
-  def testIndexableComments_Length(self):
+  def testIndexableComments_NumberOfComments(self):
+    """We consider at most 100 initial comments and 500 most recent comments."""
     comments = [self.comment]
     indexable = tracker_fulltext._IndexableComments(comments, self.users_by_id)
     self.assertEquals(1, len(indexable))
@@ -181,6 +182,26 @@ class TrackerFulltextTest(unittest.TestCase):
     indexable = tracker_fulltext._IndexableComments(comments, self.users_by_id)
     self.assertEquals(600, len(indexable))
     self.assertNotIn(100, indexable)
+
+  def testIndexableComments_NumberOfChars(self):
+    """We consider comments that can fit into the search index document."""
+    self.comment.content = 'x' * 1000
+    comments = [self.comment] * 100
+
+    indexable = tracker_fulltext._IndexableComments(
+        comments, self.users_by_id, remaining_chars=100000)
+    self.assertEquals(100, len(indexable))
+
+    indexable = tracker_fulltext._IndexableComments(
+        comments, self.users_by_id, remaining_chars=50000)
+    self.assertEquals(50, len(indexable))
+    indexable = tracker_fulltext._IndexableComments(
+        comments, self.users_by_id, remaining_chars=50999)
+    self.assertEquals(50, len(indexable))
+
+    indexable = tracker_fulltext._IndexableComments(
+        comments, self.users_by_id, remaining_chars=999)
+    self.assertEquals(0, len(indexable))
 
   def SetUpUnindexIssues(self):
     search.Index(name=settings.search_index_name_format % 1).AndReturn(
