@@ -16,6 +16,24 @@
       "revId": "e51b3e9fcc4462b8597ce8e8c15bfa39bf3e40b2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cdac9f38_4cd14463",
+        "filename": "appengine/findit/findit_v2/model/atomic_failure.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-07-25T01:59:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aef5b589_47642d24",
+      "revId": "e51b3e9fcc4462b8597ce8e8c15bfa39bf3e40b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
