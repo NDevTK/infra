@@ -23,6 +23,30 @@
       "revId": "5e1ef4580dc41d070fc6affd171dbc1b0c4c07e3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c538c42a_f2049b9e",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/internal/skylab/skylab.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-07-25T21:27:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "851fa21a_20738950",
+      "range": {
+        "startLine": 44,
+        "startChar": 22,
+        "endLine": 44,
+        "endChar": 25
+      },
+      "revId": "5e1ef4580dc41d070fc6affd171dbc1b0c4c07e3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
