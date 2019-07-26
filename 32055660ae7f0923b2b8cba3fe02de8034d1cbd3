@@ -72,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "f042191f_21278f3b",
+        "filename": "appengine/findit/services/disabled_tests/disabled_tests.sql",
+        "patchSetId": 3
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1345347
+      },
+      "writtenOn": "2019-07-26T02:19:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bda03a7c_bb6013b4",
+      "range": {
+        "startLine": 6,
+        "startChar": 2,
+        "endLine": 6,
+        "endChar": 10
+      },
+      "revId": "32055660ae7f0923b2b8cba3fe02de8034d1cbd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "611c5d03_654585e4",
         "filename": "appengine/findit/services/disabled_tests/disabled_tests.sql",
         "patchSetId": 3
@@ -139,6 +163,30 @@
       "revId": "32055660ae7f0923b2b8cba3fe02de8034d1cbd3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "acab07ee_0e9f85d0",
+        "filename": "appengine/findit/services/disabled_tests/disabled_tests.sql",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1345347
+      },
+      "writtenOn": "2019-07-26T02:19:46Z",
+      "side": 1,
+      "message": "Removed LEFT JOIN",
+      "parentUuid": "58ee6c69_842408bd",
+      "range": {
+        "startLine": 11,
+        "startChar": 40,
+        "endLine": 13,
+        "endChar": 27
+      },
+      "revId": "32055660ae7f0923b2b8cba3fe02de8034d1cbd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
