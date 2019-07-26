@@ -22,6 +22,30 @@
       "revId": "976da666d34459edb39eec30be9daf959f084e64",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "833d85d2_2eb50465",
+        "filename": "go/src/infra/appengine/rotang/pkg/algo/fair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1115874
+      },
+      "writtenOn": "2019-07-26T18:20:36Z",
+      "side": 1,
+      "message": "len() returns int:\n invalid operation: -24 * time.Hour * 2 * len(members) (mismatched types time.Duration and int)",
+      "parentUuid": "15cb6a8b_c30d9b2f",
+      "range": {
+        "startLine": 97,
+        "startChar": 50,
+        "endLine": 97,
+        "endChar": 61
+      },
+      "revId": "976da666d34459edb39eec30be9daf959f084e64",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
