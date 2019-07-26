@@ -46,6 +46,30 @@
       "revId": "976da666d34459edb39eec30be9daf959f084e64",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "821c1bb2_6ebc8744",
+        "filename": "go/src/infra/appengine/rotang/pkg/algo/fair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2019-07-26T18:49:51Z",
+      "side": 1,
+      "message": "oh, the len() tripped up the inference. Guess it needs a cast after all :/\nRegardless, using time.Hour instead of nanosPerDay is less code and might be more readable:\n\nhistoryStart :\u003d time.Now().Add(-24*time.Hour * 2 * time.Duration(len(members)) * 10 / 14)\n\nBTW in Go code reviews, we sometimes link to isolated, runnable examples to help figure things out. In this case e.g. https://play.golang.org/p/wYpbqsQcUGh",
+      "parentUuid": "833d85d2_2eb50465",
+      "range": {
+        "startLine": 97,
+        "startChar": 50,
+        "endLine": 97,
+        "endChar": 61
+      },
+      "revId": "976da666d34459edb39eec30be9daf959f084e64",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
