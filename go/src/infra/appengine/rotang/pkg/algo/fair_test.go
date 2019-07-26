@@ -14,7 +14,8 @@ import (
 	"github.com/kylelemons/godebug/pretty"
 )
 
-var midnight = time.Date(2006, 8, 2, 0, 0, 0, 0, time.UTC)
+var now = time.Now()
+var midnight = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
 
 func stringToShifts(in, shiftName string) []rotang.ShiftEntry {
 	var res []rotang.ShiftEntry
@@ -286,5 +287,21 @@ func TestGenerateFair(t *testing.T) {
 		if diff := pretty.Compare(tst.want, shifts); diff != "" {
 			t.Errorf("%s: Generate(_) differs -want +got: %s", tst.name, diff)
 		}
+	}
+}
+
+func TestIgnoreOldShifts(t *testing.T) {
+	// Should give the same pseudo random sequence every time.
+	rand.Seed(7357)
+
+	// The shift used to be just A and B, so they've done lots of shifts.
+	// E is new.
+	// Don't over-schedule E or under-schedule A and B.
+	var members = stringToMembers("ABCDE", mtvTime)
+	const previous = "ABABABABABCDABCDABCD"
+	const want = "EABCD"
+	res := makeFair(members, stringToShifts(previous, "MTV all day"))
+	if got, want := membersToString(res), want; got != want {
+		t.Errorf("TestIgnoreOldShifts: makeFair(_, _ ) = %q want: %q", got, want)
 	}
 }
