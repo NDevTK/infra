@@ -89,7 +89,17 @@ func makeFair(members []rotang.Member, previous []rotang.ShiftEntry) []rotang.Me
 			member: m,
 		}
 	}
+
+	// Ignore old shifts.
+	// Remember two full rounds of members.
+	// There are 10 shifts per 14 days.
+	var historyStart = time.Now().Add(-24 * time.Hour * 2 * time.Duration(len(members)) * 10 / 14)
+
 	for weight, e := range previous {
+		if e.EndTime.Before(historyStart) {
+			continue
+		}
+
 		for _, o := range e.OnCall {
 			// If someone in a previous shift is not a member anymore.
 			if _, ok := oncalls[o.Email]; !ok {
