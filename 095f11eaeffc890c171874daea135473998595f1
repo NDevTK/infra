@@ -16,6 +16,24 @@
       "revId": "095f11eaeffc890c171874daea135473998595f1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b50a1b01_8df24162",
+        "filename": "go/src/infra/cmd/mac_toolchain/install.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1165055
+      },
+      "writtenOn": "2019-07-27T01:28:54Z",
+      "side": 1,
+      "message": "If version is 10.2, 10.2.1 or 10.3 skip checking \"if this is the first run.\" so additional tools can be accepted.",
+      "parentUuid": "8c083b24_115a7a17",
+      "revId": "095f11eaeffc890c171874daea135473998595f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
