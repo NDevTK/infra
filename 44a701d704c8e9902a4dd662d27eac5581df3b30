@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "aaf2888f_471faae1",
+        "filename": "appengine/findit/services/disabled_tests/disabled_tests.sql",
+        "patchSetId": 5
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1345347
+      },
+      "writtenOn": "2019-07-27T00:59:43Z",
+      "side": 1,
+      "message": "I was using the BigQuery \"format\" function, but I just discovered the GoogleSQL formatter. Looks much better now.",
+      "parentUuid": "88da8d9f_eecd0657",
+      "range": {
+        "startLine": 11,
+        "startChar": 4,
+        "endLine": 18,
+        "endChar": 19
+      },
+      "revId": "44a701d704c8e9902a4dd662d27eac5581df3b30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0d08e801_25a0e40a",
         "filename": "appengine/findit/services/disabled_tests/disabled_tests.sql",
         "patchSetId": 5
@@ -57,6 +81,24 @@
       "revId": "44a701d704c8e9902a4dd662d27eac5581df3b30",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "003729ab_cf7d09cc",
+        "filename": "appengine/findit/services/disabled_tests/disabled_tests.sql",
+        "patchSetId": 5
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1345347
+      },
+      "writtenOn": "2019-07-27T00:59:43Z",
+      "side": 1,
+      "message": "We definitely can. Thanks for the suggestion.",
+      "parentUuid": "2be9afee_ac592437",
+      "revId": "44a701d704c8e9902a4dd662d27eac5581df3b30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
