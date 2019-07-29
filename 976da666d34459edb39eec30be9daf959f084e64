@@ -70,6 +70,30 @@
       "revId": "976da666d34459edb39eec30be9daf959f084e64",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6f987398_169af0b5",
+        "filename": "go/src/infra/appengine/rotang/pkg/algo/fair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1115874
+      },
+      "writtenOn": "2019-07-29T19:19:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "821c1bb2_6ebc8744",
+      "range": {
+        "startLine": 97,
+        "startChar": 50,
+        "endLine": 97,
+        "endChar": 61
+      },
+      "revId": "976da666d34459edb39eec30be9daf959f084e64",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
