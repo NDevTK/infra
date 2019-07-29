@@ -52,6 +52,24 @@
       "revId": "095f11eaeffc890c171874daea135473998595f1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ca225710_a14d149f",
+        "filename": "go/src/infra/cmd/mac_toolchain/install.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1165055
+      },
+      "writtenOn": "2019-07-29T15:11:11Z",
+      "side": 1,
+      "message": "xcode11 doesn\u0027t so far appear to have the same behavior as 10.2 and 10.3, so this leaves xcode 9, xcode10 and xcode10.1, and xcode11 and beyond using checkfistlaunchstatus. \n\nIf xcode releases another version of 10.3 that needs to still install additional tools after the first run, then yes we would have to add that, but we won\u0027t know until they release it. It also wouldn\u0027t be deployed or used in our waterfall without first canarying it on our fyi bot, so we would catch it. This is the most specific way to target the offending versions of xcode10.2 and 13.3 that I know of. Is there a different way we should go about still installing additional tools after first run for these specific xcode versions?",
+      "parentUuid": "3b9c0cf7_a8d76041",
+      "revId": "095f11eaeffc890c171874daea135473998595f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
