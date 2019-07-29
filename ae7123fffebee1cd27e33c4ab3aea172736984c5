@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "94039a21_dc92b0e9",
+        "filename": "appengine/findit/services/disabled_tests/disabled_tests.sql",
+        "patchSetId": 6
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-07-29T22:06:32Z",
+      "side": 1,
+      "message": "It seems that tr is not used.",
+      "range": {
+        "startLine": 12,
+        "startChar": 43,
+        "endLine": 12,
+        "endChar": 49
+      },
+      "revId": "ae7123fffebee1cd27e33c4ab3aea172736984c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
