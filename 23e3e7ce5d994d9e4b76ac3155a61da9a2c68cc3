@@ -20,6 +20,24 @@
     },
     {
       "key": {
+        "uuid": "c2f4ab09_abe03918",
+        "filename": "appengine/monorail/services/test/tracker_fulltext_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-07-29T19:36:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2fb3bae6_8b542d9a",
+      "revId": "23e3e7ce5d994d9e4b76ac3155a61da9a2c68cc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dc31530f_e1dc1a88",
         "filename": "appengine/monorail/services/test/tracker_fulltext_test.py",
         "patchSetId": 1
@@ -38,6 +56,24 @@
     },
     {
       "key": {
+        "uuid": "ad946501_dc927745",
+        "filename": "appengine/monorail/services/test/tracker_fulltext_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-07-29T19:36:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dc31530f_e1dc1a88",
+      "revId": "23e3e7ce5d994d9e4b76ac3155a61da9a2c68cc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8584d8ec_ca1ac532",
         "filename": "appengine/monorail/services/test/tracker_fulltext_test.py",
         "patchSetId": 1
@@ -53,6 +89,24 @@
       "revId": "23e3e7ce5d994d9e4b76ac3155a61da9a2c68cc3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5aa2dbcf_1d02480a",
+        "filename": "appengine/monorail/services/test/tracker_fulltext_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-07-29T19:36:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8584d8ec_ca1ac532",
+      "revId": "23e3e7ce5d994d9e4b76ac3155a61da9a2c68cc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -79,6 +133,30 @@
     },
     {
       "key": {
+        "uuid": "bafdbae0_4656e195",
+        "filename": "appengine/monorail/services/test/tracker_fulltext_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-07-29T19:36:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "344fbbc0_497fd084",
+      "range": {
+        "startLine": 203,
+        "startChar": 36,
+        "endLine": 203,
+        "endChar": 55
+      },
+      "revId": "23e3e7ce5d994d9e4b76ac3155a61da9a2c68cc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6d2485e8_d0d915bc",
         "filename": "appengine/monorail/services/test/tracker_fulltext_test.py",
         "patchSetId": 1
@@ -97,6 +175,24 @@
     },
     {
       "key": {
+        "uuid": "01c315f6_dbb3f7fa",
+        "filename": "appengine/monorail/services/test/tracker_fulltext_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-07-29T19:36:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6d2485e8_d0d915bc",
+      "revId": "23e3e7ce5d994d9e4b76ac3155a61da9a2c68cc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "893d9ba2_691afc76",
         "filename": "appengine/monorail/services/tracker_fulltext.py",
         "patchSetId": 1
@@ -108,6 +204,30 @@
       "writtenOn": "2019-07-25T22:59:42Z",
       "side": 1,
       "message": "Are we missing summary here?",
+      "range": {
+        "startLine": 129,
+        "startChar": 4,
+        "endLine": 129,
+        "endChar": 21
+      },
+      "revId": "23e3e7ce5d994d9e4b76ac3155a61da9a2c68cc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d75ac959_2938cf84",
+        "filename": "appengine/monorail/services/tracker_fulltext.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-07-29T19:36:10Z",
+      "side": 1,
+      "message": "Added.",
+      "parentUuid": "893d9ba2_691afc76",
       "range": {
         "startLine": 129,
         "startChar": 4,
@@ -143,6 +263,30 @@
     },
     {
       "key": {
+        "uuid": "3f3a4bd2_5dc77c93",
+        "filename": "appengine/monorail/services/tracker_fulltext.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-07-29T19:36:10Z",
+      "side": 1,
+      "message": "Good catch.  I had it working differently in an earlier version and this was missed when I changed things around.",
+      "parentUuid": "408fa8db_764c98f3",
+      "range": {
+        "startLine": 133,
+        "startChar": 27,
+        "endLine": 133,
+        "endChar": 51
+      },
+      "revId": "23e3e7ce5d994d9e4b76ac3155a61da9a2c68cc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3619f4da_745eab18",
         "filename": "appengine/monorail/services/tracker_fulltext.py",
         "patchSetId": 1
@@ -154,6 +298,30 @@
       "writtenOn": "2019-07-25T22:59:42Z",
       "side": 1,
       "message": "Maybe\n\n  if total_length \u003e remaining_chars:\n    break\n  result.append(comment)",
+      "range": {
+        "startLine": 227,
+        "startChar": 4,
+        "endLine": 227,
+        "endChar": 6
+      },
+      "revId": "23e3e7ce5d994d9e4b76ac3155a61da9a2c68cc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "678d1aa1_16ab9cd0",
+        "filename": "appengine/monorail/services/tracker_fulltext.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-07-29T19:36:10Z",
+      "side": 1,
+      "message": "Done.  Good suggestion.",
+      "parentUuid": "3619f4da_745eab18",
       "range": {
         "startLine": 227,
         "startChar": 4,
