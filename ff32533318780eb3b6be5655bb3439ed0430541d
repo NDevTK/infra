@@ -34,6 +34,24 @@
       "revId": "ff32533318780eb3b6be5655bb3439ed0430541d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "09e874e0_f6831f35",
+        "filename": "go/src/infra/appengine/rotang/pkg/algo/fair_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2019-07-29T22:04:07Z",
+      "side": 1,
+      "message": "How about this instead? Modify makeFair to take a \"now time.Time\" value for time instead of relying on time.Now() in its implementation.  Have this test go back to using the original value for midnight. Then, in the non-test call site, pass in time.Now() for now.",
+      "parentUuid": "810f9f04_6771b594",
+      "revId": "ff32533318780eb3b6be5655bb3439ed0430541d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
