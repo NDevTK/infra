@@ -16,6 +16,24 @@
       "revId": "ff32533318780eb3b6be5655bb3439ed0430541d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "810f9f04_6771b594",
+        "filename": "go/src/infra/appengine/rotang/pkg/algo/fair_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1115874
+      },
+      "writtenOn": "2019-07-29T20:31:41Z",
+      "side": 1,
+      "message": "Without these changes, makeFair ignores all previous shifts because it thinks they are too old.",
+      "parentUuid": "4992b0a9_b5fc51d8",
+      "revId": "ff32533318780eb3b6be5655bb3439ed0430541d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
