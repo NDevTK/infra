@@ -34,6 +34,24 @@
       "revId": "095f11eaeffc890c171874daea135473998595f1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3b9c0cf7_a8d76041",
+        "filename": "go/src/infra/cmd/mac_toolchain/install.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1181690
+      },
+      "writtenOn": "2019-07-29T14:59:30Z",
+      "side": 1,
+      "message": "In that case, I guess I\u0027m primarily concerned that it looks like this will stop working beyond 10.3 w/o further code changes.",
+      "parentUuid": "b50a1b01_8df24162",
+      "revId": "095f11eaeffc890c171874daea135473998595f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
