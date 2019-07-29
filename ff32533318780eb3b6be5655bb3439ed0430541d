@@ -52,6 +52,24 @@
       "revId": "ff32533318780eb3b6be5655bb3439ed0430541d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "421e3c6a_76bb15bf",
+        "filename": "go/src/infra/appengine/rotang/pkg/algo/fair_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1115874
+      },
+      "writtenOn": "2019-07-29T22:32:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "09e874e0_f6831f35",
+      "revId": "ff32533318780eb3b6be5655bb3439ed0430541d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
