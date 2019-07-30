@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4f362f97_8f4ad9a0",
+        "filename": "go/src/infra/cmd/mac_toolchain/install.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-07-30T22:49:13Z",
+      "side": 1,
+      "message": "nit: outer (...) are unnecessary, please remove them",
+      "range": {
+        "startLine": 200,
+        "startChar": 5,
+        "endLine": 200,
+        "endChar": 6
+      },
+      "revId": "01d8c64456c31968bf21696c71947edb54cae7f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
