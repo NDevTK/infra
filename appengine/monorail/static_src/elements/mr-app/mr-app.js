@@ -86,6 +86,13 @@ export class MrApp extends connectStore(LitElement) {
     this.dirtyForms = ui.dirtyForms(state);
   }
 
+  update(changedProperties) {
+    if (changedProperties.has('userDisplayName')) {
+      store.dispatch(issue.fetchIssuesStarred());
+    }
+    super.update(changedProperties);
+  }
+
   updated(changedProperties) {
     if (changedProperties.has('userDisplayName')) {
       store.dispatch(user.fetch(this.userDisplayName));
