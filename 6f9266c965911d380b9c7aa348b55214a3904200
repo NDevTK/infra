@@ -449,6 +449,30 @@
     },
     {
       "key": {
+        "uuid": "204f5b16_51a9ea91",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-30T22:53:12Z",
+      "side": 1,
+      "message": "https://chromium-review.googlesource.com/c/infra/infra/+/1725002/4/appengine/findit/services/code_coverage.py#109 is what I meant. thank you",
+      "parentUuid": "7d80397d_20a6d07d",
+      "range": {
+        "startLine": 110,
+        "startChar": 4,
+        "endLine": 110,
+        "endChar": 20
+      },
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0f8387f0_75443601",
         "filename": "appengine/findit/services/code_coverage.py",
         "patchSetId": 2
