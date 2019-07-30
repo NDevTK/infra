@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "310554f7_6a87c9b7",
+        "filename": "appengine/cr-buildbucket/swarming.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 415,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-30T02:40:15Z",
+      "side": 1,
+      "message": "using posixpath.join would be more consistent with this file. posixpath is already imported",
+      "range": {
+        "startLine": 415,
+        "startChar": 22,
+        "endLine": 415,
+        "endChar": 31
+      },
+      "revId": "60d18d70c3c32fc53640c0ced9f67f36b458e71b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6b27e0bb_bc1dfb24",
+        "filename": "appengine/cr-buildbucket/swarming.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 419,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-30T02:40:15Z",
+      "side": 1,
+      "message": "build.proto",
+      "range": {
+        "startLine": 419,
+        "startChar": 12,
+        "endLine": 419,
+        "endChar": 17
+      },
+      "revId": "60d18d70c3c32fc53640c0ced9f67f36b458e71b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c2df954c_e01a1c14",
+        "filename": "appengine/cr-buildbucket/swarming.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 424,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-30T02:40:15Z",
+      "side": 1,
+      "message": "cool didn\u0027t know about this",
+      "range": {
+        "startLine": 424,
+        "startChar": 31,
+        "endLine": 424,
+        "endChar": 46
+      },
+      "revId": "60d18d70c3c32fc53640c0ced9f67f36b458e71b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7786e3ee_91d4c407",
+        "filename": "appengine/cr-buildbucket/swarming.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 424,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-30T02:40:15Z",
+      "side": 1,
+      "message": "this is 2 * O(size of the args). Is that a lot? consider changing luci_runner to accept padded b64",
+      "range": {
+        "startLine": 424,
+        "startChar": 62,
+        "endLine": 424,
+        "endChar": 81
+      },
+      "revId": "60d18d70c3c32fc53640c0ced9f67f36b458e71b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
