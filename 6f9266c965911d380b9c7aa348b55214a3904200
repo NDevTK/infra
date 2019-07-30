@@ -401,6 +401,30 @@
     },
     {
       "key": {
+        "uuid": "820e22e9_1eb111c6",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-30T19:49:48Z",
+      "side": 1,
+      "message": "if we expect gerrit to be broken int this case, so it does not matter match, I\u0027d still prefer to err on correctness. Can we honestly raise an exception, rather than lying that [] is the correct response?",
+      "parentUuid": "32321c4a_58505ac8",
+      "range": {
+        "startLine": 110,
+        "startChar": 4,
+        "endLine": 110,
+        "endChar": 20
+      },
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0f8387f0_75443601",
         "filename": "appengine/findit/services/code_coverage.py",
         "patchSetId": 2
@@ -448,6 +472,30 @@
     },
     {
       "key": {
+        "uuid": "13b044b3_58b1de08",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-30T19:49:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "b9e90ea0_59dc00ae",
+      "range": {
+        "startLine": 117,
+        "startChar": 26,
+        "endLine": 117,
+        "endChar": 31
+      },
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a42f5e74_3d7d667d",
         "filename": "appengine/findit/services/code_coverage.py",
         "patchSetId": 2
@@ -483,6 +531,24 @@
     },
     {
       "key": {
+        "uuid": "2b22c175_16954d8a",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-30T19:49:48Z",
+      "side": 1,
+      "message": "i think monitoring should notice this.\n\ni am glad we monitoring outbound requests",
+      "parentUuid": "ef17466a_69227786",
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "17a5be16_a72a83d9",
         "filename": "appengine/findit/services/code_coverage.py",
         "patchSetId": 2
@@ -515,6 +581,24 @@
       "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d5525732_28926697",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-30T19:49:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "fcd8ef0b_9c8ba0d1",
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
