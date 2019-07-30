@@ -22,6 +22,30 @@
       "revId": "ae7123fffebee1cd27e33c4ab3aea172736984c5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e7b29045_1a8265fc",
+        "filename": "appengine/findit/services/disabled_tests/disabled_tests.sql",
+        "patchSetId": 6
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1345347
+      },
+      "writtenOn": "2019-07-30T16:09:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "94039a21_dc92b0e9",
+      "range": {
+        "startLine": 12,
+        "startChar": 43,
+        "endLine": 12,
+        "endChar": 49
+      },
+      "revId": "ae7123fffebee1cd27e33c4ab3aea172736984c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
