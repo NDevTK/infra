@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "62c5520c_ae64a994",
+        "filename": "go/src/infra/cmd/cloudbuildhelper/cmdbuild.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-07-30T01:38:29Z",
+      "side": 1,
+      "message": "I assume the upload namespace would already sufficiently disambiguate different cr-buildbucket deployments? e.g. if we uploaded an image from dev, it would be going to a different registry?",
+      "range": {
+        "startLine": 92,
+        "startChar": 48,
+        "endLine": 92,
+        "endChar": 68
+      },
+      "revId": "0e6fd0c0befa4c74b43f476bc11c56ef379bf679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
