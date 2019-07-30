@@ -124,6 +124,24 @@
       "revId": "095f11eaeffc890c171874daea135473998595f1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2788ef6f_736a61e5",
+        "filename": "go/src/infra/cmd/mac_toolchain/install.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1165055
+      },
+      "writtenOn": "2019-07-30T22:24:29Z",
+      "side": 1,
+      "message": "@monufriienko - Ok, I\u0027m adding xc11b5 version to the list.\n\n@jbudorick - Yes, I think we should wait and see, as we are still in betas for xcode11.",
+      "parentUuid": "9affcc69_1908c2f5",
+      "revId": "095f11eaeffc890c171874daea135473998595f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
