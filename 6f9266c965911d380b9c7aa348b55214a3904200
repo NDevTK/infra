@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "da88010b_bb630757",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-07-30T19:01:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fc1d02bf_5739559d",
+      "range": {
+        "startLine": 14,
+        "startChar": 15,
+        "endLine": 14,
+        "endChar": 28
+      },
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "79a95d3b_dab17d80",
         "filename": "appengine/findit/services/code_coverage.py",
         "patchSetId": 2
@@ -45,6 +69,30 @@
       "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c57870c8_4a718d50",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-07-30T19:01:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "79a95d3b_dab17d80",
+      "range": {
+        "startLine": 39,
+        "startChar": 19,
+        "endLine": 39,
+        "endChar": 23
+      },
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "518e7ee6_696973d3",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-07-30T19:01:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "93938938_afdd05b4",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 66
+      },
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b55307d0_f69d43d9",
         "filename": "appengine/findit/services/code_coverage.py",
         "patchSetId": 2
@@ -85,6 +157,24 @@
       "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "74256b77_70af338e",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-07-30T19:01:23Z",
+      "side": 1,
+      "message": "It\u0027s 1 week. I didn\u0027t realize memcache will evict cache on its own, then let\u0027s remove this for simplicity.",
+      "parentUuid": "b55307d0_f69d43d9",
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -111,6 +201,30 @@
     },
     {
       "key": {
+        "uuid": "bfcbb4e9_acd4e0da",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-07-30T19:01:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c2f387e6_8537aa8c",
+      "range": {
+        "startLine": 96,
+        "startChar": 63,
+        "endLine": 96,
+        "endChar": 70
+      },
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "67d3d955_1c4cc9c1",
         "filename": "appengine/findit/services/code_coverage.py",
         "patchSetId": 2
@@ -125,6 +239,24 @@
       "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "89cd3c6c_83ab257e",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-07-30T19:01:23Z",
+      "side": 1,
+      "message": "Please see the other comment.",
+      "parentUuid": "67d3d955_1c4cc9c1",
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -151,6 +283,30 @@
     },
     {
       "key": {
+        "uuid": "50128d92_025f5ccc",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-07-30T19:01:23Z",
+      "side": 1,
+      "message": "Indeed! Nice catch! If patchset is a string, \u0027    if current_patchset \u003e patchset\u0027 will always be evaluated to False. I\u0027ve updated the test case to cover this scenario.",
+      "parentUuid": "653b2981_f1a78bff",
+      "range": {
+        "startLine": 104,
+        "startChar": 12,
+        "endLine": 104,
+        "endChar": 15
+      },
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "df2b879a_be1628ae",
         "filename": "appengine/findit/services/code_coverage.py",
         "patchSetId": 2
@@ -171,6 +327,30 @@
       "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8862b46d_907e5c44",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-07-30T19:01:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "df2b879a_be1628ae",
+      "range": {
+        "startLine": 109,
+        "startChar": 71,
+        "endLine": 109,
+        "endChar": 76
+      },
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -197,6 +377,30 @@
     },
     {
       "key": {
+        "uuid": "32321c4a_58505ac8",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-07-30T19:01:23Z",
+      "side": 1,
+      "message": "Possibly, however, if this endpoint is broken, I suspect that PolyGerrit will even stop working, so I don\u0027t think coverage behavior is really a concern in that situation.",
+      "parentUuid": "882b3d35_911511c6",
+      "range": {
+        "startLine": 110,
+        "startChar": 4,
+        "endLine": 110,
+        "endChar": 20
+      },
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0f8387f0_75443601",
         "filename": "appengine/findit/services/code_coverage.py",
         "patchSetId": 2
@@ -208,6 +412,30 @@
       "writtenOn": "2019-07-30T01:24:08Z",
       "side": 1,
       "message": "this can be the change number\nhttps://chromium-review.googlesource.com/changes/1725002?o\u003dALL_REVISIONS\u0026o\u003dSKIP_MERGEABLE",
+      "range": {
+        "startLine": 117,
+        "startChar": 26,
+        "endLine": 117,
+        "endChar": 31
+      },
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b9e90ea0_59dc00ae",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-07-30T19:01:23Z",
+      "side": 1,
+      "message": "I made the change in the latest patchset of the other CL to refactor gerrit and diff util, however, after reading more about documentation, it seems that using a numeric change ID as change identifier is deprecated and will be removed in future releases, so it seems that it\u0027s still better to use \"\u0027\u003cproject\u003e~\u003cnumericId\u003e\u0027\".\n\nFollowing is the official documentation.\n-------------------------------------------------------------------------------------------\nIdentifier that uniquely identifies one change. It contains the URL-encoded project name as well as the change number: \"\u0027\u003cproject\u003e~\u003cnumericId\u003e\u0027\"\n\nDepending on the server’s configuration, Gerrit can still support the following deprecated identifiers. These will be removed in a future release:\n\nan ID of the change in the format \"\u0027\u003cproject\u003e~\u003cbranch\u003e~\u003cChange-Id\u003e\u0027\", where for the branch the refs/heads/ prefix can be omitted (\"myProject~master~I8473b95934b5732ac55d26311a706c9c2bde9940\")\n\na Change-Id if it uniquely identifies one change (\"I8473b95934b5732ac55d26311a706c9c2bde9940\")\n\na numeric change ID (\"4247\")",
+      "parentUuid": "0f8387f0_75443601",
       "range": {
         "startLine": 117,
         "startChar": 26,
@@ -237,6 +465,24 @@
     },
     {
       "key": {
+        "uuid": "ef17466a_69227786",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-07-30T19:01:23Z",
+      "side": 1,
+      "message": "I\u0027m confused about the question, do you expect our monitoring to or NOT to notice this?\n\nAnyway, our monitoring will notice this because the return code of all requests made by FinditHttpClient is monitored.",
+      "parentUuid": "a42f5e74_3d7d667d",
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "17a5be16_a72a83d9",
         "filename": "appengine/findit/services/code_coverage.py",
         "patchSetId": 2
@@ -248,6 +494,24 @@
       "writtenOn": "2019-07-30T01:24:08Z",
       "side": 1,
       "message": "also note that the original code that you copied has this bug: crbug.com/809182\ni never had time to fix it, but maybe you can find a solution here since you are at it",
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fcd8ef0b_9c8ba0d1",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-07-30T19:01:23Z",
+      "side": 1,
+      "message": "Will address this in a separate patchset.",
+      "parentUuid": "17a5be16_a72a83d9",
       "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
