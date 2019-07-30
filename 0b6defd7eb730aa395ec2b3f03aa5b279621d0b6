@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "9f90eab7_4747e30c",
+        "filename": "go/src/infra/cmd/cloudbuildhelper/cmdbuild.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-07-30T02:39:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bb7e0a07_e583bfe8",
+      "range": {
+        "startLine": 256,
+        "startChar": 4,
+        "endLine": 256,
+        "endChar": 7
+      },
+      "revId": "0b6defd7eb730aa395ec2b3f03aa5b279621d0b6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f66dfbcf_a133403e",
         "filename": "go/src/infra/cmd/cloudbuildhelper/cmdbuild.go",
         "patchSetId": 2
@@ -45,6 +69,30 @@
       "revId": "0b6defd7eb730aa395ec2b3f03aa5b279621d0b6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a11d4e63_f63fea83",
+        "filename": "go/src/infra/cmd/cloudbuildhelper/cmdbuild.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 427,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-07-30T02:39:13Z",
+      "side": 1,
+      "message": "Eh, not really worth it. It will be harder to discover structs they refer to.",
+      "parentUuid": "f66dfbcf_a133403e",
+      "range": {
+        "startLine": 427,
+        "startChar": 0,
+        "endLine": 427,
+        "endChar": 23
+      },
+      "revId": "0b6defd7eb730aa395ec2b3f03aa5b279621d0b6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
