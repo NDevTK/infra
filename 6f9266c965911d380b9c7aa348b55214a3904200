@@ -425,6 +425,30 @@
     },
     {
       "key": {
+        "uuid": "7d80397d_20a6d07d",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-07-30T22:50:11Z",
+      "side": 1,
+      "message": "That\u0027s a good point! However, it seems that FindItHttpClient has a limitation that it swallows the exception, so we cannot raise the exact exception here.",
+      "parentUuid": "820e22e9_1eb111c6",
+      "range": {
+        "startLine": 110,
+        "startChar": 4,
+        "endLine": 110,
+        "endChar": 20
+      },
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0f8387f0_75443601",
         "filename": "appengine/findit/services/code_coverage.py",
         "patchSetId": 2
@@ -596,6 +620,24 @@
       "side": 1,
       "message": "Ack",
       "parentUuid": "fcd8ef0b_9c8ba0d1",
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fb80136f_b953f938",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-07-30T22:50:11Z",
+      "side": 1,
+      "message": "The latest patchset addresses this comment and a test is added to verify the behavior.",
+      "parentUuid": "d5525732_28926697",
       "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
