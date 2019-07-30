@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "c4cfa2d6_4a7748ab",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1349501
+      },
+      "writtenOn": "2019-07-30T23:33:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c88fd9a1_c2960ad5",
+      "revId": "2ae6aad851393b8a3c4504fffd7c5fb143e887bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6b4af74c_9a7328c9",
         "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid-tile.js",
         "patchSetId": 2
@@ -39,6 +57,30 @@
       "revId": "2ae6aad851393b8a3c4504fffd7c5fb143e887bc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b8355264_9fbc1eba",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid-tile.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1349501
+      },
+      "writtenOn": "2019-07-30T23:33:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6b4af74c_9a7328c9",
+      "range": {
+        "startLine": 55,
+        "startChar": 2,
+        "endLine": 55,
+        "endChar": 9
+      },
+      "revId": "2ae6aad851393b8a3c4504fffd7c5fb143e887bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -65,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "dca037dd_c8482b65",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1349501
+      },
+      "writtenOn": "2019-07-30T23:33:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e407c465_af6c9116",
+      "range": {
+        "startLine": 167,
+        "startChar": 6,
+        "endLine": 170,
+        "endChar": 7
+      },
+      "revId": "2ae6aad851393b8a3c4504fffd7c5fb143e887bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "949f9235_7a730c47",
         "filename": "appengine/monorail/static_src/elements/mr-app/mr-app.js",
         "patchSetId": 2
@@ -82,6 +148,24 @@
     },
     {
       "key": {
+        "uuid": "75b9036c_8800cc3b",
+        "filename": "appengine/monorail/static_src/elements/mr-app/mr-app.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1349501
+      },
+      "writtenOn": "2019-07-30T23:33:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "949f9235_7a730c47",
+      "revId": "2ae6aad851393b8a3c4504fffd7c5fb143e887bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4d780d4e_442c5e3c",
         "filename": "appengine/monorail/static_src/elements/reducers/issue.js",
         "patchSetId": 2
@@ -93,6 +177,30 @@
       "writtenOn": "2019-07-25T22:54:15Z",
       "side": 1,
       "message": "If there are 6,000 issues loaded, this approach would hit the server 6,000 times to get whether each issue is starred. With HTTP2, it is true that the overhead of each request is less than it used to be in the past, at least for clients and servers that support this. But I\u0027m worried this would: A) be really slow for the user and B) be expensive for the server to compute.  \n\nHave we tested how this approach ends up working with a large number of issues?",
+      "range": {
+        "startLine": 762,
+        "startChar": 2,
+        "endLine": 762,
+        "endChar": 35
+      },
+      "revId": "2ae6aad851393b8a3c4504fffd7c5fb143e887bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0bf1076b_2d7899d5",
+        "filename": "appengine/monorail/static_src/elements/reducers/issue.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 762,
+      "author": {
+        "id": 1349501
+      },
+      "writtenOn": "2019-07-30T23:33:24Z",
+      "side": 1,
+      "message": "I just tested it more thoroughly and it is, as you said, very very slow for the user. You mentioned changing IsIssueStarred to AreIssuesStarred (to get many issues\u0027 stars instead of just one at a time) as a way to speed this up - are you suggesting I change the structure of the API itself to request multiple issue stars, or that I change the way I request IsIssueStarred inside fetchIsStarred? Just wanted to clarify!",
+      "parentUuid": "4d780d4e_442c5e3c",
       "range": {
         "startLine": 762,
         "startChar": 2,
@@ -128,6 +236,30 @@
     },
     {
       "key": {
+        "uuid": "710d639b_0beb08fa",
+        "filename": "appengine/monorail/static_src/elements/reducers/issue.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 766,
+      "author": {
+        "id": 1349501
+      },
+      "writtenOn": "2019-07-30T23:33:24Z",
+      "side": 1,
+      "message": "Do you have any suggestions for a better approach? One of my first idea is to wrap this call in its own async/await, but I\u0027m not sure. How might I get it do multiple pieces of work at once?",
+      "parentUuid": "325c5ecb_7bc364ba",
+      "range": {
+        "startLine": 764,
+        "startChar": 6,
+        "endLine": 766,
+        "endChar": 8
+      },
+      "revId": "2ae6aad851393b8a3c4504fffd7c5fb143e887bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "9b8037ca_03cbce69",
         "filename": "appengine/monorail/static_src/elements/reducers/issue.js",
         "patchSetId": 2
@@ -145,6 +277,24 @@
     },
     {
       "key": {
+        "uuid": "d6740d1a_b6235bbe",
+        "filename": "appengine/monorail/static_src/elements/reducers/issue.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 783,
+      "author": {
+        "id": 1349501
+      },
+      "writtenOn": "2019-07-30T23:33:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9b8037ca_03cbce69",
+      "revId": "2ae6aad851393b8a3c4504fffd7c5fb143e887bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4d224726_236c89fb",
         "filename": "appengine/monorail/static_src/elements/shared/converters.js",
         "patchSetId": 2
@@ -156,6 +306,24 @@
       "writtenOn": "2019-07-25T22:54:15Z",
       "side": 1,
       "message": "Thanks for creating this helper!",
+      "revId": "2ae6aad851393b8a3c4504fffd7c5fb143e887bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1308f4d8_36cd5ff3",
+        "filename": "appengine/monorail/static_src/elements/shared/converters.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1349501
+      },
+      "writtenOn": "2019-07-30T23:33:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4d224726_236c89fb",
       "revId": "2ae6aad851393b8a3c4504fffd7c5fb143e887bc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
