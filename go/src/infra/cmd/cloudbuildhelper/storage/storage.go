@@ -198,7 +198,7 @@ func (s *Storage) UpdateMetadata(ctx context.Context, obj *Object, cb func(m *Me
 			meta = obj.Metadata
 			metaGen = obj.Metageneration
 		} else {
-			logging.Infof(ctx, "Fetching metadata of %s...", obj)
+			logging.Debugf(ctx, "Fetching metadata of %s...", obj)
 			attrs, err := handle.Attrs(ctx)
 			if err != nil {
 				return err
@@ -214,7 +214,7 @@ func (s *Storage) UpdateMetadata(ctx context.Context, obj *Object, cb func(m *Me
 		}
 
 		// Do compare-and-swap of the metadata.
-		logging.Infof(ctx, "Updating metadata of %s...", obj)
+		logging.Debugf(ctx, "Updating metadata of %s...", obj)
 		_, err := handle.If(storage.Conditions{MetagenerationMatch: metaGen}).Update(ctx, storage.ObjectAttrsToUpdate{
 			Metadata: updated.Assemble(),
 		})
