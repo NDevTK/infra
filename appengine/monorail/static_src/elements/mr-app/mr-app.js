@@ -85,6 +85,13 @@ export class MrApp extends connectStore(LitElement) {
     this.dirtyForms = ui.dirtyForms(state);
   }
 
+  update(changedProperties) {
+    if (changedProperties.has('userDisplayName')) {
+      store.dispatch(issue.fetchIssuesStarred());
+    }
+    super.update(changedProperties);
+  }
+
   updated(changedProperties) {
     if (changedProperties.has('userDisplayName')) {
       store.dispatch(user.fetch(this.userDisplayName));
@@ -148,6 +155,13 @@ export class MrApp extends connectStore(LitElement) {
     page('/p/:project/issues/list_new', this._loadListPage.bind(this));
     page('/p/:project/issues/detail', this._loadIssuePage.bind(this));
     page();
+  }
+
+  updated(changedProperties) {
+    // Store current user in store for other components to use
+    if (changedProperties.has('userDisplayName')) {
+      store.dispatch(user.fetch(this.userDisplayName));
+    }
   }
 
   loadWebComponent(name, props) {
