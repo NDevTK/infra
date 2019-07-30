@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {LitElement, html, css} from 'lit-element';
+import {LitElement, html, css, property, customElement} from 'lit-element';
 
+@customElement('chops-header')
 export class ChopsHeader extends LitElement {
   constructor() {
     super();
@@ -11,33 +12,26 @@ export class ChopsHeader extends LitElement {
     this.homeUrl = '/';
   }
 
-  static get properties() {
-    return {
-      /* String for the title of the application. */
-      appTitle: {
-        type: String,
-      },
-      /* The home URL for the application. Defaults to '/'. */
-      homeUrl: {
-        type: String,
-      },
-      /* URL for the image location of the application's logo. No logo is
-       * shown if this is not specified. */
-      logoSrc: {
-        type: String,
-      },
-      // TODO(zhangtiff): Also make the :host element extend the "header"
-      // tag once browsers implement extending native elements with web
-      // components.
-      role: {
-        type: String,
-        reflect: true,
-      },
-    };
-  }
+  /* String for the title of the application. */
+  @property({type: String})
+  appTitle = '';
 
-  static get styles() {
-    return css`
+  /* The home URL for the application. Defaults to '/'. */
+  @property({type: String})
+  homeUrl = '';
+
+  /* URL for the image location of the application's logo. No logo is
+   * shown if this is not specified. */
+  @property({type: String})
+  logoSrc = '';
+
+  // TODO(zhangtiff): Also make the :host element extend the "header"
+  // tag once browsers implement extending native elements with web
+  // components.
+  @property({type: String, reflect: true})
+  role = '';
+
+  static styles = css`
       :host {
         color: var(--chops-header-text-color);
         box-sizing: border-box;
@@ -93,7 +87,6 @@ export class ChopsHeader extends LitElement {
         }
       }
     `;
-  }
 
   render() {
     return html`
@@ -121,5 +114,3 @@ export class ChopsHeader extends LitElement {
     `;
   }
 }
-
-customElements.define('chops-header', ChopsHeader);

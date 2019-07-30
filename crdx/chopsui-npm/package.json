@@ -11,7 +11,8 @@
   "scripts": {
     "bootstrap": "npm install && lerna bootstrap --hoist",
     "start": "webpack-dev-server --progress --hot",
-    "test": "karma start --coverage --no-color"
+    "test": "karma start --coverage --no-color",
+    "build:typescript": "tsc --build elements/**/tsconfig.json"
   },
   "version": "",
   "author": "The Chromium Authors",
@@ -33,6 +34,7 @@
     "lerna": "^3.15.0",
     "mocha": "^5.2.0",
     "puppeteer": "^1.15.0",
+    "typescript": "^3.5.2",
     "sinon": "^7.3.2",
     "webpack": "^4.0.0",
     "webpack-cli": "^3.0.0",
