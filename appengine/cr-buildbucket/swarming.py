@@ -24,40 +24,32 @@ import base64
 import collections
 import copy
 import datetime
-import hashlib
 import json
 import logging
 import posixpath
-import random
 import re
-import string
 import uuid
 
-from components import config as component_config
-from components import decorators
-from components import net
-from components import utils
-from components.config import validation
 from google.appengine.api import app_identity
 from google.appengine.api import memcache
 from google.appengine.api import taskqueue
 from google.appengine.ext import ndb
 from google.protobuf import json_format
+
 import webapp2
+
+from components import decorators
+from components import net
+from components import utils
 
 from legacy import api_common
 from proto import common_pb2
 from proto import launcher_pb2
-from proto import project_config_pb2
 from proto import service_config_pb2
-import bbutil
-import buildtags
 import config
 import errors
 import events
-import flatten_swarmingcfg
 import model
-import swarmingcfg as swarmingcfg_module
 import tokens
 import tq
 import user
@@ -235,7 +227,7 @@ def _compute_task_slices(build, settings):
               'value': str(build.experimental).upper(),
           }],
           'command':
-              _kitchen_command(build, settings),
+              _compute_command(build, settings),
       },
   }
 
@@ -331,7 +323,11 @@ def _compute_cipd_input(build, settings):
   }
 
 
-def _kitchen_command(build, settings):
+def _compute_command(build, settings):
+  if _builder_matches(
+      build.proto.builder, settings.swarming.luci_runner_package.builders):
+    return _compute_luci_runner(build, settings)
+
   logdog = build.proto.infra.logdog
   annotation_url = (
       'logdog://%s/%s/%s/+/annotations' %
@@ -409,6 +405,24 @@ def _compute_properties(build):
       )
 
   return ret
+
+
+def _compute_luci_runner(build, settings):
+  """Returns the command for luci_runner."""
+  args = launcher_pb2.RunnerArgs(
+      buildbucket_host=app_identity.get_default_version_hostname(),
+      logdog_host=build.proto.infra.logdog.hostname,
+      executable_path='/'.join([_KITCHEN_CHECKOUT, 'run_build']),
+      cache_dir=_CACHE_DIR,
+      known_public_gerrit_hosts=settings.known_public_gerrit_hosts,
+      luci_system_account='system',
+      build=build,
+  )
+  # luciexe/runner expects zlib-compressed, unpadded base64
+  return [
+      'luci_runner${EXECUTABLE_SUFFIX}',
+      args.SerializeToString().encode('zlib').encode('base64').strip().strip('='),
+  ]
 
 
 def validate_build(build):
