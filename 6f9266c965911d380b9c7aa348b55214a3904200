@@ -1,0 +1,256 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fc1d02bf_5739559d",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-30T01:24:08Z",
+      "side": 1,
+      "message": "metric names",
+      "range": {
+        "startLine": 14,
+        "startChar": 15,
+        "endLine": 14,
+        "endChar": 28
+      },
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "79a95d3b_dab17d80",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-30T01:24:08Z",
+      "side": 1,
+      "message": "kinds",
+      "range": {
+        "startLine": 39,
+        "startChar": 19,
+        "endLine": 39,
+        "endChar": 23
+      },
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "93938938_afdd05b4",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-30T01:24:08Z",
+      "side": 1,
+      "message": "please put these comments alongside with strings below:\n\n_NON_CONFLICT_CHANGE_KIND \u003d [\n    # explanation goes here\n    \u0027TRIVIAL_REBASE\u0027, \n    # explanation goes here\n    \u0027MERGE_FIRST_PARENT_UPDATE\u0027, \n     ....\n]",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 66
+      },
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b55307d0_f69d43d9",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-30T01:24:08Z",
+      "side": 1,
+      "message": "not sure what\u0027s the value of this.\n\nthe equivalent patchsets are deterministic. If there is no enough memcache capacity, memcache will evict the cache on its own. 7w is so large that it will either not have any effect on perf, or would be already evicted",
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c2f387e6_8537aa8c",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-30T01:24:08Z",
+      "side": 1,
+      "message": "typo",
+      "range": {
+        "startLine": 96,
+        "startChar": 63,
+        "endLine": 96,
+        "endChar": 70
+      },
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "67d3d955_1c4cc9c1",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-30T01:24:08Z",
+      "side": 1,
+      "message": "do we really need this? change number is unique across host",
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "653b2981_f1a78bff",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-30T01:24:08Z",
+      "side": 1,
+      "message": "why this isn\u0027t a number? looks like an invitation for a mistake. same for patchset\n\nnote that return value is integers, so it is at least inconsistent",
+      "range": {
+        "startLine": 104,
+        "startChar": 12,
+        "endLine": 104,
+        "endChar": 15
+      },
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df2b879a_be1628ae",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-30T01:24:08Z",
+      "side": 1,
+      "message": "typo",
+      "range": {
+        "startLine": 109,
+        "startChar": 71,
+        "endLine": 109,
+        "endChar": 76
+      },
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "882b3d35_911511c6",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-30T01:24:08Z",
+      "side": 1,
+      "message": "will this cause flaky behavior and confusion among users?",
+      "range": {
+        "startLine": 110,
+        "startChar": 4,
+        "endLine": 110,
+        "endChar": 20
+      },
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0f8387f0_75443601",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-30T01:24:08Z",
+      "side": 1,
+      "message": "this can be the change number\nhttps://chromium-review.googlesource.com/changes/1725002?o\u003dALL_REVISIONS\u0026o\u003dSKIP_MERGEABLE",
+      "range": {
+        "startLine": 117,
+        "startChar": 26,
+        "endLine": 117,
+        "endChar": 31
+      },
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a42f5e74_3d7d667d",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-30T01:24:08Z",
+      "side": 1,
+      "message": "our monitoring won\u0027t notice this, wouldn\u0027t it?\n\nif this faithfully return HTTP 500, then it would be caught by our monitoring, and the client (plugin) would retry and hopefully see the full list next time.",
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "17a5be16_a72a83d9",
+        "filename": "appengine/findit/services/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-30T01:24:08Z",
+      "side": 1,
+      "message": "also note that the original code that you copied has this bug: crbug.com/809182\ni never had time to fix it, but maybe you can find a solution here since you are at it",
+      "revId": "6f9266c965911d380b9c7aa348b55214a3904200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
