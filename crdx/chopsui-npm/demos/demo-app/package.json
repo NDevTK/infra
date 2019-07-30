@@ -1,0 +1,32 @@
+{
+  "name": "chops-header-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:proto": "mkdir -p ./generated & protoc --js_out='import_style=commonjs:./generated/' --grpc-web_out='import_style=commonjs+dts,mode=grpcwebtext:./generated/' -I ../../../../appengine/monorail/ -I . ../../../../appengine/monorail/api/api_proto/*.proto",
+    "build:dist": "webpack",
+    "lint": "tslint --project ./",
+    "start:dev": "webpack-dev-server --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@chopsui/chops-header": "file:../../elements/chops-header",
+    "@chopsui/prpc-client": "^1.0.0",
+    "@improbable-eng/grpc-web": "^0.9.6",
+    "grpc-web": "^1.0.5",
+    "pwa-helpers": "^0.9.1",
+    "redux": "^4.0.4"
+  },
+  "devDependencies": {
+    "@webpack-cli/serve": "^0.1.8",
+    "ts-loader": "^6.0.4",
+    "ts-protoc-gen": "^0.10.0",
+    "tslint": "^5.18.0",
+    "webpack": "^4.35.2",
+    "webpack-cli": "^3.3.5",
+    "webpack-dev-server": "^3.7.2"
+  }
+}

@@ -1,0 +1,14 @@
+node_modules
+dist
+
+# protoc output
+generated
+
+# TS compiler output
+**/*.d.ts
+**/*.d.ts.map
+**/*.js
+**/*.js.map
+.tsbuildinfo
+
+

@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "experimentalDecorators": true,
+    "inlineSources": true,
+    "lib": ["es2017", "dom", "dom.iterable"],
+    "module": "es2015",
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": false,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "outDir": "./",
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "target": "es2017",
+    "tsBuildInfoFile": ".tsbuildinfo",
+    "types": ["chai", "mocha"],
+  },
+  "exclude": [],
+  "include": [
+    "**/*.ts"
+  ]
+}
