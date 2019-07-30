@@ -70,6 +70,24 @@
       "revId": "095f11eaeffc890c171874daea135473998595f1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0c1ac40e_e9e38710",
+        "filename": "go/src/infra/cmd/mac_toolchain/install.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1307243
+      },
+      "writtenOn": "2019-07-30T01:34:33Z",
+      "side": 1,
+      "message": "the issue is reproducing on recent ios13-sdk and beta builds (builds timed-out and tests did not start)\nhttps://ci.chromium.org/p/chromium/builders/ci/ios13-sdk-simulator\nhttps://ci.chromium.org/p/chromium/builders/ci/ios13-beta-simulator",
+      "parentUuid": "ca225710_a14d149f",
+      "revId": "095f11eaeffc890c171874daea135473998595f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
