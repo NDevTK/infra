@@ -73,6 +73,9 @@ class BaseTest(testing.AppengineTestCase):
                 package_name='infra/tools/luci_runner',
                 version='luci-runner-version',
                 version_canary='luci-runner-version-canary',
+                builders=service_config_pb2.BuilderPredicate(
+                    regex=["chromium/try/linux"],
+                ),
             ),
             kitchen_package=dict(
                 package_name='infra/tools/kitchen',
@@ -461,12 +464,6 @@ class TaskDefTest(BaseTest):
 
     actual = self.compute_task_def(build)
 
-    # Properties are tested by test_properties() above.
-    expected_input_properties = test_util.ununicode(
-        api_common.properties_to_json(
-            swarming._compute_legacy_properties(build),
-        )
-    )
     expected_swarming_props_def = {
         'env': [{
             'key': 'BUILDBUCKET_EXPERIMENTAL',
@@ -485,31 +482,20 @@ class TaskDefTest(BaseTest):
         'execution_timeout_secs':
             '3600',
         'command': [
-            'kitchen${EXECUTABLE_SUFFIX}',
-            'cook',
-            '-buildbucket-hostname',
-            'cr-buildbucket.appspot.com',
-            '-buildbucket-build-id',
-            '1',
-            '-call-update-build',
-            '-build-url',
-            'https://milo.example.com/b/1',
-            '-luci-system-account',
-            'system',
-            '-recipe',
-            'recipe',
-            '-cache-dir',
-            'cache',
-            '-checkout-dir',
-            'kitchen-checkout',
-            '-temp-dir',
-            'tmp',
-            '-properties',
-            expected_input_properties,
-            '-logdog-annotation-url',
-            'logdog://logs.example.com/chromium/bb/+/annotations',
-            '-known-gerrit-host',
-            'chromium-review.googlesource.com',
+            'luci_runner${EXECUTABLE_SUFFIX}',
+            swarming._cli_encode_proto(
+                launcher_pb2.RunnerArgs(
+                    buildbucket_host='cr-buildbucket.appspot.com',
+                    logdog_host='logs.example.com',
+                    executable_path='%s/run_build' % swarming._KITCHEN_CHECKOUT,
+                    cache_dir=swarming._CACHE_DIR,
+                    known_public_gerrit_hosts=[
+                        'chromium-review.googlesource.com'
+                    ],
+                    luci_system_account='system',
+                    build=build.proto,
+                )
+            ),
         ],
         'dimensions': [
             {'key': 'cores', 'value': '8'},
@@ -591,6 +577,30 @@ class TaskDefTest(BaseTest):
 
     self.assertNotIn('buildbucket', build.proto.input.properties)
     self.assertNotIn('$recipe_engine/buildbucket', build.proto.input.properties)
+
+  def test_legacy_kitchen(self):
+    build = self._test_build(
+        builder=build_pb2.BuilderID(
+            project='chromium', bucket='try', builder='linux_kitchen'
+        ),
+    )
+    actual = self.compute_task_def(build)
+
+    self.assertEqual([
+        "kitchen${EXECUTABLE_SUFFIX}", 'cook', '-buildbucket-hostname',
+        'cr-buildbucket.appspot.com', '-buildbucket-build-id',
+        '9027773186396127232', '-call-update-build', '-build-url',
+        'https://milo.example.com/b/9027773186396127232',
+        '-luci-system-account', 'system', '-recipe', 'presubmit', '-cache-dir',
+        'cache', '-checkout-dir', 'kitchen-checkout', '-temp-dir', 'tmp',
+        '-properties',
+        api_common.properties_to_json(
+            swarming._compute_legacy_properties(build)
+        ), '-logdog-annotation-url',
+        'logdog://logdog.example.com/chromium/bb/+/annotations',
+        '-known-gerrit-host', 'chromium-review.googlesource.com'
+    ], test_util.ununicode(actual['task_slices'][0]['properties']['command']))
+
 
   def test_experimental(self):
     build = self._test_build(input=dict(experimental=True))
