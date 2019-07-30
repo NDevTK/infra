@@ -22,6 +22,30 @@
       "revId": "0e6fd0c0befa4c74b43f476bc11c56ef379bf679",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c832941b_a36bfdae",
+        "filename": "go/src/infra/cmd/cloudbuildhelper/cmdbuild.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-07-30T02:39:27Z",
+      "side": 1,
+      "message": "Yes, but at this layer we don\u0027t really impose any requirements on build-id. It can includ buildbucket server URL if it really wants to. What exactly goes here will be decided by the recipe.",
+      "parentUuid": "62c5520c_ae64a994",
+      "range": {
+        "startLine": 92,
+        "startChar": 48,
+        "endLine": 92,
+        "endChar": 68
+      },
+      "revId": "0e6fd0c0befa4c74b43f476bc11c56ef379bf679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
