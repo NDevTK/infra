@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bb7e0a07_e583bfe8",
+        "filename": "go/src/infra/cmd/cloudbuildhelper/cmdbuild.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-07-30T01:35:50Z",
+      "side": 1,
+      "message": "maybe img.Log(ctx)?",
+      "range": {
+        "startLine": 256,
+        "startChar": 4,
+        "endLine": 256,
+        "endChar": 7
+      },
+      "revId": "0b6defd7eb730aa395ec2b3f03aa5b279621d0b6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f66dfbcf_a133403e",
+        "filename": "go/src/infra/cmd/cloudbuildhelper/cmdbuild.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 427,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-07-30T01:35:50Z",
+      "side": 1,
+      "message": "consider separate files for these, e.g. cmdbuild_cloud.go",
+      "range": {
+        "startLine": 427,
+        "startChar": 0,
+        "endLine": 427,
+        "endChar": 23
+      },
+      "revId": "0b6defd7eb730aa395ec2b3f03aa5b279621d0b6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
