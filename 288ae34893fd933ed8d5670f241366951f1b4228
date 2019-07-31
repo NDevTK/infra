@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "908c8a15_40c5d48d",
+        "filename": "appengine/monorail/api/api_proto/issues.proto",
+        "patchSetId": 8
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1349501
+      },
+      "writtenOn": "2019-07-31T21:50:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c840faeb_6dafe218",
+      "range": {
+        "startLine": 25,
+        "startChar": 6,
+        "endLine": 25,
+        "endChar": 22
+      },
+      "revId": "288ae34893fd933ed8d5670f241366951f1b4228",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d29b6267_2125dbe2",
         "filename": "appengine/monorail/api/api_proto/issues.proto",
         "patchSetId": 8
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "fddbcda3_7caf6b93",
+        "filename": "appengine/monorail/api/api_proto/issues.proto",
+        "patchSetId": 8
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1349501
+      },
+      "writtenOn": "2019-07-31T21:50:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d29b6267_2125dbe2",
+      "range": {
+        "startLine": 158,
+        "startChar": 20,
+        "endLine": 158,
+        "endChar": 34
+      },
+      "revId": "288ae34893fd933ed8d5670f241366951f1b4228",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6644fc32_25cb0c27",
         "filename": "appengine/monorail/static_src/elements/mr-app/mr-app.js",
         "patchSetId": 8
@@ -68,6 +116,30 @@
       "revId": "288ae34893fd933ed8d5670f241366951f1b4228",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3a3d2f73_c2c4b485",
+        "filename": "appengine/monorail/static_src/elements/mr-app/mr-app.js",
+        "patchSetId": 8
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1349501
+      },
+      "writtenOn": "2019-07-31T21:50:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6644fc32_25cb0c27",
+      "range": {
+        "startLine": 89,
+        "startChar": 2,
+        "endLine": 89,
+        "endChar": 8
+      },
+      "revId": "288ae34893fd933ed8d5670f241366951f1b4228",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
