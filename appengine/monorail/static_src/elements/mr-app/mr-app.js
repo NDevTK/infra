@@ -89,6 +89,7 @@ export class MrApp extends connectStore(LitElement) {
   updated(changedProperties) {
     if (changedProperties.has('userDisplayName')) {
       store.dispatch(user.fetch(this.userDisplayName));
+      store.dispatch(issue.fetchIssuesStarred());
     }
   }
 

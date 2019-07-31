@@ -51,6 +51,10 @@ const FETCH_IS_STARRED_START = 'FETCH_IS_STARRED_START';
 const FETCH_IS_STARRED_SUCCESS = 'FETCH_IS_STARRED_SUCCESS';
 const FETCH_IS_STARRED_FAILURE = 'FETCH_IS_STARRED_FAILURE';
 
+const FETCH_ISSUES_STARRED_START = 'FETCH_ISSUES_STARRED_START';
+const FETCH_ISSUES_STARRED_SUCCESS = 'FETCH_ISSUES_STARRED_SUCCESS';
+const FETCH_ISSUES_STARRED_FAILURE = 'FETCH_ISSUES_STARRED_FAILURE';
+
 const FETCH_COMMENTS_START = 'FETCH_COMMENTS_START';
 export const FETCH_COMMENTS_SUCCESS = 'FETCH_COMMENTS_SUCCESS';
 const FETCH_COMMENTS_FAILURE = 'FETCH_COMMENTS_FAILURE';
@@ -103,7 +107,8 @@ const UPDATE_APPROVAL_FAILURE = 'UPDATE_APPROVAL_FAILURE';
   relatedIssues: Map,
   referencedUsers: Array,
   usersProjects: Map,
-  isStarred: Boolean,
+  starredIssues: Array,
+  issuesStarred: Object,
   permissions: Array,
   presubmitResponse: Object,
   predictedComponent: String,
@@ -119,7 +124,8 @@ const UPDATE_APPROVAL_FAILURE = 'UPDATE_APPROVAL_FAILURE';
     fetchComments: Object,
     fetchCommentReferences: Object,
     fetchRelatedIssues: Object,
-    fetchIsStarred: Object,
+    fetchStarredIssues: Object,
+    fetchIssuesStarred: Object,
     convert: Object,
     update: Object,
     updateApproval: Object,
@@ -206,9 +212,20 @@ const usersProjectsReducer = createReducer(new Map(), {
   },
 });
 
-const isStarredReducer = createReducer(false, {
-  [STAR_SUCCESS]: (state, _action) => !state,
-  [FETCH_IS_STARRED_SUCCESS]: (_state, action) => !!action.isStarred,
+const starredIssuesReducer = createReducer([], {
+  [STAR_SUCCESS]: (state, action) => {
+    const newState = state.slice();
+    const ref = action.ref;
+    if (action.starred) {
+      // Insert ref into the array of starred issues
+      newState.splice(0, 0, ref);
+    } else {
+      // Remove ref from array of starred issues
+      newState.splice(newState.indexOf(ref), 1);
+    }
+    return newState;
+  },
+  [FETCH_ISSUES_STARRED_SUCCESS]: (_state, action) => action.starredIssues,
 });
 
 const presubmitResponseReducer = createReducer({}, {
@@ -264,6 +281,10 @@ const requestsReducer = combineReducers({
     FETCH_USERS_PROJECTS_FAILURE),
   fetchIsStarred: createRequestReducer(
     FETCH_IS_STARRED_START, FETCH_IS_STARRED_SUCCESS, FETCH_IS_STARRED_FAILURE),
+  fetchIssuesStarred: createRequestReducer(
+    FETCH_ISSUES_STARRED_START, FETCH_ISSUES_STARRED_SUCCESS,
+    FETCH_ISSUES_STARRED_FAILURE
+  ),
   convert: createRequestReducer(
     CONVERT_START, CONVERT_SUCCESS, CONVERT_FAILURE),
   update: createRequestReducer(
@@ -289,7 +310,7 @@ export const reducer = combineReducers({
   relatedIssues: relatedIssuesReducer,
   referencedUsers: referencedUsersReducer,
   usersProjects: usersProjectsReducer,
-  isStarred: isStarredReducer,
+  starredIssues: starredIssuesReducer,
   permissions: permissionsReducer,
   presubmitResponse: presubmitResponseReducer,
   predictedComponent: predictedComponentReducer,
@@ -323,9 +344,20 @@ export const predictedComponent = (state) => state.issue.predictedComponent;
 export const relatedIssues = (state) => state.issue.relatedIssues;
 export const referencedUsers = (state) => state.issue.referencedUsers;
 export const usersProjects = (state) => state.issue.usersProjects;
-export const isStarred = (state) => state.issue.isStarred;
+export const starredIssues = (state) => state.issue.starredIssues;
 
 export const requests = (state) => state.issue.requests;
+
+export const isIssueStarred = createSelector(
+  starredIssues,
+  (starredIssues) => {
+    const stars = new Set();
+    for (const ref of starredIssues) {
+      stars.add(ref);
+    }
+    return stars;
+  }
+);
 
 // TODO(zhangtiff): Split up either comments or approvals into their own "duck".
 export const commentsByApprovalName = createSelector(
@@ -806,8 +838,6 @@ export const fetchComments = (message) => async (dispatch) => {
 };
 
 export const fetchIsStarred = (message) => async (dispatch) => {
-  dispatch({type: FETCH_IS_STARRED_START});
-
   try {
     const resp = await prpcClient.call(
       'monorail.Issues', 'IsIssueStarred', message
@@ -819,20 +849,38 @@ export const fetchIsStarred = (message) => async (dispatch) => {
   };
 };
 
+export const fetchIssuesStarred = () => async (dispatch) => {
+  dispatch({type: FETCH_ISSUES_STARRED_START});
+
+  try {
+    const resp = await prpcClient.call(
+      'monorail.Issues', 'ListStarredIssues', {}
+    );
+
+    const issueIds = (resp.starredIssueRefs || []).map(
+      (ref) => issueRefToString(ref));
+
+    dispatch({type: FETCH_ISSUES_STARRED_SUCCESS, starredIssues: issueIds});
+  } catch (error) {
+    dispatch({type: FETCH_ISSUES_STARRED_FAILURE, error});
+  };
+};
+
 export const star = (issueRef, starred) => async (dispatch) => {
   dispatch({type: STAR_START});
-
   const message = {issueRef, starred};
 
   try {
     const resp = await prpcClient.call(
       'monorail.Issues', 'StarIssue', message
     );
+    const ref = issueRefToString(issueRef);
 
     dispatch({
       type: STAR_SUCCESS,
       starCount: resp.starCount,
-      isStarred: starred,
+      ref: ref,
+      starred: starred,
     });
   } catch (error) {
     dispatch({type: STAR_FAILURE, error});
