@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1fae8ce2_a90f1c1e",
+        "filename": "appengine/cr-buildbucket/swarming.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-31T19:05:13Z",
+      "side": 1,
+      "message": "consider adding a TODO to rename the var and the value, since kitchen is going away",
+      "revId": "bd9c3f3d2f3b7dc051292ecfd07af82a649ec795",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "434221fa_c8bf57d7",
+        "filename": "appengine/cr-buildbucket/swarming.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 424,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-31T19:05:13Z",
+      "side": 1,
+      "message": "consistency: \u0027\u0027",
+      "range": {
+        "startLine": 424,
+        "startChar": 35,
+        "endLine": 424,
+        "endChar": 37
+      },
+      "revId": "bd9c3f3d2f3b7dc051292ecfd07af82a649ec795",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2d4041a7_ce890135",
+        "filename": "appengine/cr-buildbucket/test/swarming_test.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-31T19:05:13Z",
+      "side": 1,
+      "message": "\u0027",
+      "range": {
+        "startLine": 77,
+        "startChar": 27,
+        "endLine": 77,
+        "endChar": 28
+      },
+      "revId": "bd9c3f3d2f3b7dc051292ecfd07af82a649ec795",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0d832ff7_6be1de80",
+        "filename": "appengine/cr-buildbucket/test/validation_test.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 875,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-07-31T19:05:13Z",
+      "side": 1,
+      "message": "you can also use dict",
+      "range": {
+        "startLine": 875,
+        "startChar": 16,
+        "endLine": 875,
+        "endChar": 30
+      },
+      "revId": "bd9c3f3d2f3b7dc051292ecfd07af82a649ec795",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
