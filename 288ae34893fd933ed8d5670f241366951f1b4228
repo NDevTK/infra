@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c840faeb_6dafe218",
+        "filename": "appengine/monorail/api/api_proto/issues.proto",
+        "patchSetId": 8
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-07-31T00:00:40Z",
+      "side": 1,
+      "message": "Since this API endpoint has been changed a bit since our original idea for it, I think it might make sense to call it something like \"ListStarredIssues\" instead of \"AreIssuesStarred\" since it\u0027s geting all stars for a given user.",
+      "range": {
+        "startLine": 25,
+        "startChar": 6,
+        "endLine": 25,
+        "endChar": 22
+      },
+      "revId": "288ae34893fd933ed8d5670f241366951f1b4228",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d29b6267_2125dbe2",
+        "filename": "appengine/monorail/api/api_proto/issues.proto",
+        "patchSetId": 8
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-07-31T00:00:40Z",
+      "side": 1,
+      "message": "Nit: starred_issue_refs?",
+      "range": {
+        "startLine": 158,
+        "startChar": 20,
+        "endLine": 158,
+        "endChar": 34
+      },
+      "revId": "288ae34893fd933ed8d5670f241366951f1b4228",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6644fc32_25cb0c27",
+        "filename": "appengine/monorail/static_src/elements/mr-app/mr-app.js",
+        "patchSetId": 8
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-07-31T00:00:40Z",
+      "side": 1,
+      "message": "Nit: It would be better to put the fetch request in updated() rather than update() since it doesn\u0027t need to happen before the next render cycle completes.",
+      "range": {
+        "startLine": 89,
+        "startChar": 2,
+        "endLine": 89,
+        "endChar": 8
+      },
+      "revId": "288ae34893fd933ed8d5670f241366951f1b4228",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f7a895f_8f328353",
+        "filename": "appengine/monorail/static_src/elements/reducers/issue.js",
+        "patchSetId": 8
+      },
+      "lineNbr": 863,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-07-31T00:00:40Z",
+      "side": 1,
+      "message": "Nit: It\u0027d be better to rename this to starredIssueRefs or similar instead of isStarred.",
+      "range": {
+        "startLine": 863,
+        "startChar": 50,
+        "endLine": 863,
+        "endChar": 59
+      },
+      "revId": "288ae34893fd933ed8d5670f241366951f1b4228",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
