@@ -1,0 +1,182 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "782d1267_b54ebc0d",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid-tile.js",
+        "patchSetId": 10
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-01T21:20:12Z",
+      "side": 1,
+      "message": "Do fractional pixels work? 0.1px seems really small - is it possible to perceive this amount of margin?",
+      "range": {
+        "startLine": 105,
+        "startChar": 20,
+        "endLine": 105,
+        "endChar": 24
+      },
+      "revId": "cd9c9e2a6155955e1ea0463d1b6dae3ff29ccf7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3a89c4a6_13ab9f11",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid-tile.js",
+        "patchSetId": 10
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-01T21:20:12Z",
+      "side": 1,
+      "message": "Nit: I\u0027ve not seen an align CSS attribute before - if this is removed, does anything change?",
+      "range": {
+        "startLine": 106,
+        "startChar": 8,
+        "endLine": 106,
+        "endChar": 20
+      },
+      "revId": "cd9c9e2a6155955e1ea0463d1b6dae3ff29ccf7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "16a9571a_8edc2aee",
+        "filename": "appengine/monorail/static_src/elements/mr-app/mr-app.js",
+        "patchSetId": 10
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-01T21:20:12Z",
+      "side": 1,
+      "message": "Let\u0027s try calling this in mr-grid-page instead of mr-app for now. \n\nSince the issue detail page doesn\u0027t need to know all of the issues a user has starred, I think we should do this call on just the grid page for now. \n\nThe list page will also end up sharing this later as well. Once we\u0027ve launched the new grid view, we can look more closely at the performance tradeoffs of loading all starred issues on the detail page vs. loading just one. \n\nSome considerations: \n\n- loading all stars for a user should take more time, but if a user navigates between the grid view and issue detail pages, then this would save time in the long-run. \n- If a user loads only the issue detail page, though, they\u0027d get a slightly slower request that gets a lot of extra data they don\u0027t use. \n- Since right now the issue detail page is the only page in the SPA that\u0027s launched, I think we should keep IsIssueStarred around for now. \n- Long-term, I think we will still want both request types to exist - for example, we\u0027ll probably load all starred issues for a user when they\u0027re on a page that needs to check multiple starred issues, then when we load a single issue, we can use IsIssueStarred to check that the star state is still accurate (for example, a user could have starred the issue on a different computer since, so we still want to refresh the star state every now and then).",
+      "revId": "cd9c9e2a6155955e1ea0463d1b6dae3ff29ccf7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "15a681c9_6cdbc025",
+        "filename": "appengine/monorail/static_src/elements/reducers/issue.js",
+        "patchSetId": 10
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-01T21:20:12Z",
+      "side": 1,
+      "message": "Even though we can\u0027t add Set objects directly to the Redux state, we can still store stars in an Object instead of an Array in Redux. For example the shape could look like: \n\n{\n  \u0027chromium:31\u0027: true,\n  \u0027chromium:22\u0027: true,\n};\n\netc\n\nIn this model its still helpful to have the selector convert this to a Set. The Object format is nice though because it will make it easier to update the state without having to do Array splicing and the like. It\u0027s also more performant.",
+      "range": {
+        "startLine": 216,
+        "startChar": 0,
+        "endLine": 227,
+        "endChar": 4
+      },
+      "revId": "cd9c9e2a6155955e1ea0463d1b6dae3ff29ccf7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b7b11760_c2711818",
+        "filename": "appengine/monorail/static_src/elements/reducers/issue.js",
+        "patchSetId": 10
+      },
+      "lineNbr": 351,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-01T21:20:12Z",
+      "side": 1,
+      "message": "Nit: I\u0027d prefer to call this Set something like starredIssues since it\u0027s not a boolean. isThingTrue is usually a naming pattern used for booleans, so think this name owuld be confusing.\n\nIt\u0027s okay to replace the \"starredIssues\" selector with this functionality because I don\u0027t expect components will need the non-Set form of this.",
+      "range": {
+        "startLine": 351,
+        "startChar": 13,
+        "endLine": 351,
+        "endChar": 27
+      },
+      "revId": "cd9c9e2a6155955e1ea0463d1b6dae3ff29ccf7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3ff93ece_66f0d3ca",
+        "filename": "appengine/monorail/static_src/elements/reducers/issue.js",
+        "patchSetId": 10
+      },
+      "lineNbr": 852,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-01T21:20:12Z",
+      "side": 1,
+      "message": "Nit: fetchStarredIssues to match the naming convention of the API endpoint?",
+      "range": {
+        "startLine": 852,
+        "startChar": 13,
+        "endLine": 852,
+        "endChar": 31
+      },
+      "revId": "cd9c9e2a6155955e1ea0463d1b6dae3ff29ccf7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "58bd61c2_e213ad3d",
+        "filename": "appengine/monorail/static_src/elements/shared/converters.js",
+        "patchSetId": 10
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-01T21:20:12Z",
+      "side": 1,
+      "message": "Nit: Add a check for the case when issue is undefined. ie: if (!issue) return {}; or similar.",
+      "range": {
+        "startLine": 106,
+        "startChar": 0,
+        "endLine": 107,
+        "endChar": 40
+      },
+      "revId": "cd9c9e2a6155955e1ea0463d1b6dae3ff29ccf7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f6405968_173286e5",
+        "filename": "appengine/monorail/static_src/elements/shared/converters.js",
+        "patchSetId": 10
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-01T21:20:12Z",
+      "side": 1,
+      "message": "Nit: In most of the code, we usually end up omitting the single quotes around Object property names. ie: \u0027localId\u0027: issue.localId \u003d\u003e localId: issue.localId",
+      "range": {
+        "startLine": 108,
+        "startChar": 9,
+        "endLine": 109,
+        "endChar": 37
+      },
+      "revId": "cd9c9e2a6155955e1ea0463d1b6dae3ff29ccf7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

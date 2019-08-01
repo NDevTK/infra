@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a13d761c_5372a6a7",
+        "filename": "appengine/monorail/static_src/elements/reducers/issue.js",
+        "patchSetId": 10
+      },
+      "lineNbr": 808,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-01T21:20:12Z",
+      "side": 0,
+      "message": "I think we should keep IsIssueStarred around for now - the issue detail page only needs data on whether one issue is starred to display properly, so I think we should keep using IsIssueStarred on the issue detail page for now. \n\nWe can make IsIssueStarred edit starredIssues in the Redux state - so we can have these different API endpoints share the same part of the state.",
+      "range": {
+        "startLine": 808,
+        "startChar": 0,
+        "endLine": 808,
+        "endChar": 64
+      },
+      "revId": "e1bf7576511c0a31f004dfe3da564c9017688721",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
