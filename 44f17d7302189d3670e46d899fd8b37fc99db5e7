@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "10ab1de7_6304e77c",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/common.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-08-01T23:14:35Z",
+      "side": 1,
+      "message": "group stdlib imports in a separate section from non-stdlib.",
+      "revId": "44f17d7302189d3670e46d899fd8b37fc99db5e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9cadfbf9_92ca39ad",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/common.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-08-01T23:14:35Z",
+      "side": 1,
+      "message": "can this be a private method?",
+      "revId": "44f17d7302189d3670e46d899fd8b37fc99db5e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
