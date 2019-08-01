@@ -26,6 +26,7 @@ var CmdPublish = &subcommands.Command{
 		c := &publishRun{}
 		c.registerCommonFlags(&c.Flags)
 		c.Flags.StringVar(&c.messageFile, "file", "", "path to file to send as message")
+		c.Flags.StringVar(&c.messageString, "message", "", "text string to send as message")
 		c.Flags.Var(flag.JSONMap(&c.attributes), "attributes", "map of attributes to add to the message")
 		return c
 	},
