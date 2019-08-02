@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "8c169cef_0e597e51",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/common.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2019-08-02T00:01:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "10ab1de7_6304e77c",
+      "revId": "44f17d7302189d3670e46d899fd8b37fc99db5e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9cadfbf9_92ca39ad",
         "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/common.go",
         "patchSetId": 3
@@ -33,6 +51,24 @@
       "revId": "44f17d7302189d3670e46d899fd8b37fc99db5e7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f5e40548_053f8f8a",
+        "filename": "go/src/infra/cmd/cros/ipcpubsub/internal/cmd/common.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2019-08-02T00:01:45Z",
+      "side": 1,
+      "message": "Probably. Will check and then make it private if possible.",
+      "parentUuid": "9cadfbf9_92ca39ad",
+      "revId": "44f17d7302189d3670e46d899fd8b37fc99db5e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
