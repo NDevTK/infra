@@ -5,11 +5,13 @@
 import {LitElement, html, css} from 'lit-element';
 import page from 'page';
 import qs from 'qs';
+import {connectStore} from 'elements/reducers/base.js';
+import * as project from 'elements/reducers/project.js';
 import './mr-grid-dropdown';
 import './mr-choice-buttons';
 import {getAvailableGridFields} from './extract-grid-data.js';
 
-export class MrGridControls extends LitElement {
+export class MrGridControls extends connectStore(LitElement) {
   render() {
     return html`
     <div>
@@ -71,6 +73,9 @@ export class MrGridControls extends LitElement {
     ];
     this.queryParams = {y: 'None', x: 'None'};
     this.cellType = 'tiles';
+
+    this.fieldDefs = [];
+    this.labelPrefixFields = [];
   };
 
   static get properties() {
@@ -80,14 +85,22 @@ export class MrGridControls extends LitElement {
       cellType: {type: String},
       viewSelector: {type: Array},
       queryParams: {type: Object},
-      customFieldDefs: {type: Array},
+      fieldDefs: {type: Array},
+      labelPrefixFields: {type: Object},
       issueCount: {type: Number},
     };
   };
 
+  stateChanged(state) {
+    this.fieldDefs = project.fieldDefs(state) || [];
+    this.labelPrefixFields = project.labelPrefixFields(state) || [];
+  }
+
   update(changedProperties) {
-    if (changedProperties.has('customFieldDefs')) {
-      this.issueProperties = getAvailableGridFields(this.customFieldDefs);
+    if (changedProperties.has('fieldDefs')
+        || changedProperties.has('labelPrefixFields')) {
+      this.issueProperties = getAvailableGridFields(
+        this.fieldDefs, this.labelPrefixFields);
     }
     if (changedProperties.has('cells') && this.queryParams.cells) {
       this.cellType = this.queryParams.cells;
