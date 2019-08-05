@@ -19,7 +19,6 @@ export class MrGridPage extends connectStore(LitElement) {
       <div id="grid-area">
         <mr-grid-controls
           .queryParams=${this.queryParams}
-          .customFieldDefs=${this.fields}
           .issueCount=${this.issues.length}>
         </mr-grid-controls>
         <progress
@@ -56,7 +55,6 @@ export class MrGridPage extends connectStore(LitElement) {
   constructor() {
     super();
     this.issues = [];
-    this.fields = [];
     this.progress = 0;
     this.queryParams = {y: 'None', x: 'None'};
   };
@@ -65,7 +63,6 @@ export class MrGridPage extends connectStore(LitElement) {
     // TODO(zosha): Abort sets of calls to ListIssues when
     // queryParams.q is changed.
     if (changedProperties.has('projectName')) {
-      store.dispatch(project.fetchFieldsList(this.projectName));
       store.dispatch(issue.fetchIssueList(this.queryParams,
         this.projectName, {maxItems: 500}, 12));
     } else if (changedProperties.has('queryParams').q) {
@@ -80,7 +77,6 @@ export class MrGridPage extends connectStore(LitElement) {
   stateChanged(state) {
     this.issues = (issue.issueList(state) || []);
     this.progress = (issue.issueListProgress(state) || 0);
-    this.fields = (project.fieldsList(state) || []);
   }
 
   static get styles() {
