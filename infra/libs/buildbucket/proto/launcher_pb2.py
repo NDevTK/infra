@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='buildbucket.v2',
   syntax='proto3',
   serialized_options=_b('Z4go.chromium.org/luci/buildbucket/proto;buildbucketpb'),
-  serialized_pb=_b('\n\x0elauncher.proto\x12\x0e\x62uildbucket.v2\x1a\x0b\x62uild.proto\"#\n\x0c\x42uildSecrets\x12\x13\n\x0b\x62uild_token\x18\x01 \x01(\t\"\xcc\x01\n\nRunnerArgs\x12\x18\n\x10\x62uildbucket_host\x18\x01 \x01(\t\x12\x13\n\x0blogdog_host\x18\x02 \x01(\t\x12\x16\n\x0e\x65xecutable_dir\x18\x03 \x01(\t\x12\x11\n\tcache_dir\x18\x04 \x01(\t\x12!\n\x19known_public_gerrit_hosts\x18\x05 \x03(\t\x12\x1b\n\x13luci_system_account\x18\x06 \x01(\t\x12$\n\x05\x62uild\x18\x07 \x01(\x0b\x32\x15.buildbucket.v2.BuildB6Z4go.chromium.org/luci/buildbucket/proto;buildbucketpbb\x06proto3')
+  serialized_pb=_b('\n\x0elauncher.proto\x12\x0e\x62uildbucket.v2\x1a\x0b\x62uild.proto\"#\n\x0c\x42uildSecrets\x12\x13\n\x0b\x62uild_token\x18\x01 \x01(\t\"\x9d\x01\n\nRunnerArgs\x12\x16\n\x0e\x65xecutable_dir\x18\x01 \x01(\t\x12\x11\n\tcache_dir\x18\x02 \x01(\t\x12!\n\x19known_public_gerrit_hosts\x18\x03 \x03(\t\x12\x1b\n\x13luci_system_account\x18\x04 \x01(\t\x12$\n\x05\x62uild\x18\x05 \x01(\x0b\x32\x15.buildbucket.v2.BuildB6Z4go.chromium.org/luci/buildbucket/proto;buildbucketpbb\x06proto3')
   ,
   dependencies=[build__pb2.DESCRIPTOR,])
 
@@ -66,50 +66,36 @@ _RUNNERARGS = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='buildbucket_host', full_name='buildbucket.v2.RunnerArgs.buildbucket_host', index=0,
+      name='executable_dir', full_name='buildbucket.v2.RunnerArgs.executable_dir', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='logdog_host', full_name='buildbucket.v2.RunnerArgs.logdog_host', index=1,
+      name='cache_dir', full_name='buildbucket.v2.RunnerArgs.cache_dir', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='executable_dir', full_name='buildbucket.v2.RunnerArgs.executable_dir', index=2,
-      number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
+      name='known_public_gerrit_hosts', full_name='buildbucket.v2.RunnerArgs.known_public_gerrit_hosts', index=2,
+      number=3, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='cache_dir', full_name='buildbucket.v2.RunnerArgs.cache_dir', index=3,
+      name='luci_system_account', full_name='buildbucket.v2.RunnerArgs.luci_system_account', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='known_public_gerrit_hosts', full_name='buildbucket.v2.RunnerArgs.known_public_gerrit_hosts', index=4,
-      number=5, type=9, cpp_type=9, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='luci_system_account', full_name='buildbucket.v2.RunnerArgs.luci_system_account', index=5,
-      number=6, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='build', full_name='buildbucket.v2.RunnerArgs.build', index=6,
-      number=7, type=11, cpp_type=10, label=1,
+      name='build', full_name='buildbucket.v2.RunnerArgs.build', index=4,
+      number=5, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -127,7 +113,7 @@ _RUNNERARGS = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=85,
-  serialized_end=289,
+  serialized_end=242,
 )
 
 _RUNNERARGS.fields_by_name['build'].message_type = build__pb2._BUILD

@@ -173,6 +173,7 @@ class BuildRequest(_BuildRequestBase):
     bp.input.gerrit_changes.extend(sbr.gerrit_changes)
 
     # Populate infra fields.
+    bp.infra.buildbucket.hostname = app_identity.get_default_version_hostname()
     bp.infra.buildbucket.requested_properties.CopyFrom(sbr.properties)
     bp.infra.buildbucket.requested_dimensions.extend(sbr.dimensions)
     if sbr.experimental != common_pb2.UNSET:

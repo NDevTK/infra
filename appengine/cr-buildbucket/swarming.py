@@ -434,8 +434,6 @@ def _cli_encode_proto(message):
 def _compute_luci_runner(build, settings):
   """Returns the command for luci_runner."""
   args = launcher_pb2.RunnerArgs(
-      buildbucket_host=app_identity.get_default_version_hostname(),
-      logdog_host=build.proto.infra.logdog.hostname,
       executable_dir=_KITCHEN_CHECKOUT,
       cache_dir=_CACHE_DIR,
       known_public_gerrit_hosts=settings.known_public_gerrit_hosts,

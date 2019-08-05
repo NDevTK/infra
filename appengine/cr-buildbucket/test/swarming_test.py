@@ -465,8 +465,6 @@ class TaskDefTest(BaseTest):
     actual = self.compute_task_def(build)
 
     expected_args = launcher_pb2.RunnerArgs(
-        buildbucket_host='cr-buildbucket.appspot.com',
-        logdog_host='logs.example.com',
         executable_dir=swarming._KITCHEN_CHECKOUT,
         cache_dir=swarming._CACHE_DIR,
         known_public_gerrit_hosts=['chromium-review.googlesource.com'],
