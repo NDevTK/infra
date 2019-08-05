@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b28551ed_681a1f23",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid-controls.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-05T19:58:17Z",
+      "side": 1,
+      "message": "Nit: space between. ie: 1? \u003d\u003e 1 ?",
+      "range": {
+        "startLine": 46,
+        "startChar": 31,
+        "endLine": 46,
+        "endChar": 33
+      },
+      "revId": "d45dc01b572e54430310b8dac8da1b241c6849b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b975a450_4b3b47f9",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid-page.js",
+        "patchSetId": 5
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-05T19:58:17Z",
+      "side": 1,
+      "message": "Nit: Since mr-grid-page doesn\u0027t use totalIssues, you could directly connect this to mr-grid-controls, so you don\u0027t have to add this variable to two places.",
+      "revId": "d45dc01b572e54430310b8dac8da1b241c6849b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
