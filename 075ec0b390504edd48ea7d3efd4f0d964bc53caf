@@ -47,6 +47,30 @@
       "revId": "075ec0b390504edd48ea7d3efd4f0d964bc53caf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8a086e2e_bb268627",
+        "filename": "go/deps.lock",
+        "patchSetId": 1
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-08-05T19:03:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7306a069_764ec8cf",
+      "range": {
+        "startLine": 118,
+        "startChar": 11,
+        "endLine": 118,
+        "endChar": 51
+      },
+      "revId": "075ec0b390504edd48ea7d3efd4f0d964bc53caf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
