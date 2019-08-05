@@ -19,8 +19,9 @@ export class MrGridPage extends connectStore(LitElement) {
       <div id="grid-area">
         <mr-grid-controls
           .queryParams=${this.queryParams}
-          .customFieldDefs=${this.fields}
-          .issueCount=${this.issues.length}>
+          .customIssueProperties=${this.fields}
+          .issueCount=${this.issues.length}
+          .totalIssues=${this.totalIssues}>
         </mr-grid-controls>
         <progress
           title="${Math.round(this.progress * 100)}%"
@@ -50,6 +51,7 @@ export class MrGridPage extends connectStore(LitElement) {
       fields: {type: Array},
       fetchingIssueList: {type: Boolean},
       progress: {type: Number},
+      totalIssues: {type: Number},
     };
   };
 
@@ -59,6 +61,7 @@ export class MrGridPage extends connectStore(LitElement) {
     this.fields = [];
     this.progress = 0;
     this.queryParams = {y: 'None', x: 'None'};
+    this.totalIssues = 0;
   };
 
   updated(changedProperties) {
@@ -80,6 +83,7 @@ export class MrGridPage extends connectStore(LitElement) {
   stateChanged(state) {
     this.issues = (issue.issueList(state) || []);
     this.progress = (issue.issueListProgress(state) || 0);
+    this.totalIssues = (issue.totalIssues(state) || 0);
     this.fields = (project.fieldsList(state) || []);
   }
 
