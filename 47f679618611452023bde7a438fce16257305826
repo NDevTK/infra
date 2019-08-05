@@ -1,0 +1,137 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "43bb564f_d296ec65",
+        "filename": "appengine/monorail/static_src/elements/framework/mr-star-button/mr-star-button.js",
+        "patchSetId": 12
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-05T15:14:10Z",
+      "side": 1,
+      "message": "Nit: I think this should also be called _starredIssues here as well.",
+      "range": {
+        "startLine": 78,
+        "startChar": 6,
+        "endLine": 78,
+        "endChar": 21
+      },
+      "revId": "47f679618611452023bde7a438fce16257305826",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6e4d0db0_e84f9eae",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid-tile.js",
+        "patchSetId": 12
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-05T15:14:10Z",
+      "side": 1,
+      "message": "Nit: This could be something like ${this.issue.summary || \u0027\u0027}",
+      "range": {
+        "startLine": 32,
+        "startChar": 10,
+        "endLine": 34,
+        "endChar": 11
+      },
+      "revId": "47f679618611452023bde7a438fce16257305826",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7bd425e2_a8d22408",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid-tile.js",
+        "patchSetId": 12
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-05T15:14:10Z",
+      "side": 1,
+      "message": "Nit: This seems to be unused, so it can probably be deleted.",
+      "revId": "47f679618611452023bde7a438fce16257305826",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aaf1febd_7b9dad57",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid.js",
+        "patchSetId": 12
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-05T15:14:10Z",
+      "side": 1,
+      "message": "You can prevent these linter errors if you do something like: \n\n${this.groupedIssues.get(cellHeading).map((issue) \u003d\u003e html`\n  // HTML here\n`)}",
+      "parentUuid": "7e62a719_af39548e",
+      "range": {
+        "startLine": 72,
+        "startChar": 0,
+        "endLine": 72,
+        "endChar": 10
+      },
+      "revId": "47f679618611452023bde7a438fce16257305826",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2c4ef73c_e55fddec",
+        "filename": "appengine/monorail/static_src/elements/reducers/issue.js",
+        "patchSetId": 12
+      },
+      "lineNbr": 347,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-05T15:14:10Z",
+      "side": 1,
+      "message": "Nit: Is this comment still relevant?",
+      "range": {
+        "startLine": 347,
+        "startChar": 48,
+        "endLine": 347,
+        "endChar": 78
+      },
+      "revId": "47f679618611452023bde7a438fce16257305826",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "33975e5d_8af8ac51",
+        "filename": "appengine/monorail/static_src/elements/reducers/issue.js",
+        "patchSetId": 12
+      },
+      "lineNbr": 348,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-05T15:14:10Z",
+      "side": 1,
+      "message": "To get ride of the undefined error while renaming allStarredIssues -\u003e starredIssues, you could make this something like: \n\nconst _starredIssues \u003d (state) \u003d\u003e state.issue.starredIssues;\n\nexport const starredIssues \u003d createSelector(\n  _starredIssues,\n  (starredIssues) \u003d\u003e {\n    // Logic here.\n  }\n);",
+      "range": {
+        "startLine": 343,
+        "startChar": 0,
+        "endLine": 348,
+        "endChar": 16
+      },
+      "revId": "47f679618611452023bde7a438fce16257305826",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
