@@ -5,7 +5,11 @@
 import {assert} from 'chai';
 import sinon from 'sinon';
 import * as issue from './issue.js';
+<<<<<<< HEAD
+import {fieldTypes} from 'elements/shared/field-types.js';
+=======
 import {fieldTypes} from 'elements/shared/issue-fields.js';
+>>>>>>> 53c7268bfe4295501dd2492f8b6bf62bf7560b45
 import {prpcClient} from 'prpc-client-instance.js';
 
 let prpcCall;

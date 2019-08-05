@@ -64,7 +64,11 @@ export class MrApp extends connectStore(LitElement) {
         nondismissible
       ></mr-cue>
       <mr-cue cuePrefName="search_for_numbers" centered></mr-cue>
+<<<<<<< HEAD
+      ${this._renderPage()}
+=======
       <main>${this._renderPage()}</main>
+>>>>>>> 53c7268bfe4295501dd2492f8b6bf62bf7560b45
     `;
   }
 
@@ -144,6 +148,7 @@ export class MrApp extends connectStore(LitElement) {
        * in future navigations.
        */
       _currentContext: {type: Object},
+      page: {type: String},
     };
   }
 
@@ -182,6 +187,32 @@ export class MrApp extends connectStore(LitElement) {
     page();
   }
 
+<<<<<<< HEAD
+  _renderPage() {
+    if (this.page === 'detail') {
+      return html`
+        <mr-issue-page
+          .projectName=${this.projectName}
+          .userDisplayName=${this.userDisplayName}
+          .queryParams=${this.queryParams}
+          .loginUrl=${this.loginUrl}
+        ></mr-issue-page>
+      `;
+    } else if (this.page === 'grid') {
+      return html`
+        <mr-grid-page
+          .projectName=${this.projectName}
+          .queryParams=${this.queryParams}
+        ></mr-grid-page>
+      `;
+    } else if (this.page === 'list') {
+      return html`
+        <mr-list-page
+          .projectName=${this.projectName}
+          .queryParams=${this.queryParams}
+        ></mr-list-page>
+      `;
+=======
   // Functionality that runs on every single route change.
   _universalRouteHandler(ctx, next) {
     // Scroll to the requested element if a hash is present.
@@ -213,6 +244,7 @@ export class MrApp extends connectStore(LitElement) {
       // We don't call next to avoid loading whatever page was supposed to
       // load next.
       return;
+>>>>>>> 53c7268bfe4295501dd2492f8b6bf62bf7560b45
     }
 
     // Run query string parsing on all routes.

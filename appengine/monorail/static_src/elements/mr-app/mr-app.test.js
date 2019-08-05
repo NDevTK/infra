@@ -65,6 +65,7 @@ describe('mr-app', () => {
     const main = element.shadowRoot.querySelector('main');
     assert.equal(main.children.length, 1);
 
+    await element.updateComplete;
     const issuePage = element.shadowRoot.querySelector('mr-issue-page');
     assert.isDefined(issuePage, 'issue page is defined');
     assert.equal(issuePage.issueRef.projectName, 'chromium');
@@ -75,12 +76,17 @@ describe('mr-app', () => {
     await element._loadListPage({
       params: {project: 'chromium'},
     });
+<<<<<<< HEAD
+
+    await element.updateComplete;
+=======
     await element.updateComplete;
 
     // Check that only one page element is rendering at a time.
     const main = element.shadowRoot.querySelector('main');
     assert.equal(main.children.length, 1);
 
+>>>>>>> 53c7268bfe4295501dd2492f8b6bf62bf7560b45
     const listPage = element.shadowRoot.querySelector('mr-list-page');
     assert.isDefined(listPage, 'list page is defined');
     assert.equal(listPage.projectName, 'chromium');
@@ -91,12 +97,17 @@ describe('mr-app', () => {
     await element._loadListPage({
       params: {project: 'chromium'},
     });
+<<<<<<< HEAD
+
+    await element.updateComplete;
+=======
     await element.updateComplete;
 
     // Check that only one page element is rendering at a time.
     const main = element.shadowRoot.querySelector('main');
     assert.equal(main.children.length, 1);
 
+>>>>>>> 53c7268bfe4295501dd2492f8b6bf62bf7560b45
     const gridPage = element.shadowRoot.querySelector('mr-grid-page');
     assert.isDefined(gridPage, 'grid page is defined');
     assert.equal(gridPage.projectName, 'chromium');
