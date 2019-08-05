@@ -41,7 +41,9 @@ export class MrGridControls extends LitElement {
     <div class="right-controls">
       <div class="issue-count">
         ${this.issueCount}
-        ${this.issueCount === 1? html`
+        of
+        ${this.totalIssues}
+        ${this.totalIssues === 1? html`
           issue `: html`
           issues `} shown
       </div>
@@ -82,6 +84,7 @@ export class MrGridControls extends LitElement {
       queryParams: {type: Object},
       customFieldDefs: {type: Array},
       issueCount: {type: Number},
+      totalIssues: {type: Number},
     };
   };
 

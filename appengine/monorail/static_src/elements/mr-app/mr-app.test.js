@@ -65,6 +65,7 @@ describe('mr-app', () => {
     const main = element.shadowRoot.querySelector('main');
     assert.equal(main.children.length, 1);
 
+    await element.updateComplete;
     const issuePage = element.shadowRoot.querySelector('mr-issue-page');
     assert.isDefined(issuePage, 'issue page is defined');
     assert.equal(issuePage.issueRef.projectName, 'chromium');

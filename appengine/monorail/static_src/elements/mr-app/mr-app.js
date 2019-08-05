@@ -144,6 +144,7 @@ export class MrApp extends connectStore(LitElement) {
        * in future navigations.
        */
       _currentContext: {type: Object},
+      page: {type: String},
     };
   }
 
