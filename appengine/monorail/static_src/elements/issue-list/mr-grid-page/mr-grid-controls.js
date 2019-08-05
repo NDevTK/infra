@@ -7,6 +7,7 @@ import page from 'page';
 import qs from 'qs';
 import './mr-grid-dropdown';
 import './mr-choice-buttons';
+import * as issue from 'elements/reducers/issue.js';
 import {getAvailableGridFields} from './extract-grid-data.js';
 
 export class MrGridControls extends LitElement {
@@ -41,7 +42,9 @@ export class MrGridControls extends LitElement {
     <div class="right-controls">
       <div class="issue-count">
         ${this.issueCount}
-        ${this.issueCount === 1? html`
+        of
+        ${this.totalIssues}
+        ${this.totalIssues === 1 ? html`
           issue `: html`
           issues `} shown
       </div>
@@ -71,6 +74,7 @@ export class MrGridControls extends LitElement {
     ];
     this.queryParams = {y: 'None', x: 'None'};
     this.cellType = 'tiles';
+    this.totalIssues = 0;
   };
 
   static get properties() {
@@ -82,6 +86,7 @@ export class MrGridControls extends LitElement {
       queryParams: {type: Object},
       customFieldDefs: {type: Array},
       issueCount: {type: Number},
+      totalIssues: {type: Number},
     };
   };
 
@@ -95,6 +100,9 @@ export class MrGridControls extends LitElement {
     super.update(changedProperties);
   }
 
+  stateChanged(state) {
+    this.totalIssues = (issue.totalIssues(state) || 0);
+  }
   static get styles() {
     return css`
       :host {
