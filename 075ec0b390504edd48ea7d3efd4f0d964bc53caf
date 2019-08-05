@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "704552c2_ca7324d6",
+        "filename": "go/deps.lock",
+        "patchSetId": 1
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-08-05T18:52:07Z",
+      "side": 1,
+      "message": "this doesn\u0027t look right, it isn\u0027t https://chromium.googlesource.com/external/github.com/golang/protobuf.git/+/4c88cc3f1a34ffade77b79abc53335d1e511f25b\n\n(also +log URL in the commit message doesn\u0027t work which prompted me to check this)",
+      "range": {
+        "startLine": 118,
+        "startChar": 11,
+        "endLine": 118,
+        "endChar": 51
+      },
+      "revId": "075ec0b390504edd48ea7d3efd4f0d964bc53caf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
