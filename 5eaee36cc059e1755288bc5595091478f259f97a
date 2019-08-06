@@ -1,0 +1,76 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d8e98f91_4fa34180",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid-tile.js",
+        "patchSetId": 13
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-06T21:34:47Z",
+      "side": 1,
+      "message": "\u003e Strings must use singlequote.\n\u003e To disable, add: // eslint-disable-line quotes\n\nPlease Fix",
+      "parentUuid": "71b4f865_2bd0299c",
+      "range": {
+        "startLine": 32,
+        "startChar": 34,
+        "endLine": 32,
+        "endChar": 36
+      },
+      "revId": "5eaee36cc059e1755288bc5595091478f259f97a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3c921bd5_a43d9f60",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid.js",
+        "patchSetId": 13
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-06T21:34:47Z",
+      "side": 1,
+      "message": "Nit: This could be fixed by putting ) and } on the same line. ie: \u003e\u003c/mr-grid-tile\u003e`)}",
+      "parentUuid": "fc1d64d0_372ca480",
+      "range": {
+        "startLine": 79,
+        "startChar": 0,
+        "endLine": 79,
+        "endChar": 8
+      },
+      "revId": "5eaee36cc059e1755288bc5595091478f259f97a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1413c8db_01b26c07",
+        "filename": "appengine/monorail/static_src/elements/reducers/issue.test.js",
+        "patchSetId": 13
+      },
+      "lineNbr": 439,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-06T21:34:47Z",
+      "side": 1,
+      "message": "Nit: Please fix the lint errors in this test file before submitting.",
+      "parentUuid": "9a8889de_7d2e39c6",
+      "range": {
+        "startLine": 439,
+        "startChar": 61,
+        "endLine": 439,
+        "endChar": 62
+      },
+      "revId": "5eaee36cc059e1755288bc5595091478f259f97a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
