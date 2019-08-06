@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "99429e5f_e6940877",
+        "filename": "appengine/monorail/static_src/elements/framework/mr-star-button/mr-star-button.js",
+        "patchSetId": 12
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1349501
+      },
+      "writtenOn": "2019-08-06T20:53:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "43bb564f_d296ec65",
+      "range": {
+        "startLine": 78,
+        "startChar": 6,
+        "endLine": 78,
+        "endChar": 21
+      },
+      "revId": "47f679618611452023bde7a438fce16257305826",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6e4d0db0_e84f9eae",
         "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid-tile.js",
         "patchSetId": 12
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "9442af4f_f89fc07e",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid-tile.js",
+        "patchSetId": 12
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1349501
+      },
+      "writtenOn": "2019-08-06T20:53:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6e4d0db0_e84f9eae",
+      "range": {
+        "startLine": 32,
+        "startChar": 10,
+        "endLine": 34,
+        "endChar": 11
+      },
+      "revId": "47f679618611452023bde7a438fce16257305826",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7bd425e2_a8d22408",
         "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid-tile.js",
         "patchSetId": 12
@@ -62,6 +110,24 @@
       "revId": "47f679618611452023bde7a438fce16257305826",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3940f7b0_c50b44c7",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid-tile.js",
+        "patchSetId": 12
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1349501
+      },
+      "writtenOn": "2019-08-06T20:53:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7bd425e2_a8d22408",
+      "revId": "47f679618611452023bde7a438fce16257305826",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -89,6 +155,30 @@
     },
     {
       "key": {
+        "uuid": "9b47c15f_9b07b9cb",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid.js",
+        "patchSetId": 12
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1349501
+      },
+      "writtenOn": "2019-08-06T20:53:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aaf1febd_7b9dad57",
+      "range": {
+        "startLine": 72,
+        "startChar": 0,
+        "endLine": 72,
+        "endChar": 10
+      },
+      "revId": "47f679618611452023bde7a438fce16257305826",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2c4ef73c_e55fddec",
         "filename": "appengine/monorail/static_src/elements/reducers/issue.js",
         "patchSetId": 12
@@ -112,6 +202,30 @@
     },
     {
       "key": {
+        "uuid": "c65b221a_7897261a",
+        "filename": "appengine/monorail/static_src/elements/reducers/issue.js",
+        "patchSetId": 12
+      },
+      "lineNbr": 347,
+      "author": {
+        "id": 1349501
+      },
+      "writtenOn": "2019-08-06T20:53:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2c4ef73c_e55fddec",
+      "range": {
+        "startLine": 347,
+        "startChar": 48,
+        "endLine": 347,
+        "endChar": 78
+      },
+      "revId": "47f679618611452023bde7a438fce16257305826",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "33975e5d_8af8ac51",
         "filename": "appengine/monorail/static_src/elements/reducers/issue.js",
         "patchSetId": 12
@@ -132,6 +246,30 @@
       "revId": "47f679618611452023bde7a438fce16257305826",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ed183c3c_9f048f59",
+        "filename": "appengine/monorail/static_src/elements/reducers/issue.js",
+        "patchSetId": 12
+      },
+      "lineNbr": 348,
+      "author": {
+        "id": 1349501
+      },
+      "writtenOn": "2019-08-06T20:53:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "33975e5d_8af8ac51",
+      "range": {
+        "startLine": 343,
+        "startChar": 0,
+        "endLine": 348,
+        "endChar": 16
+      },
+      "revId": "47f679618611452023bde7a438fce16257305826",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
