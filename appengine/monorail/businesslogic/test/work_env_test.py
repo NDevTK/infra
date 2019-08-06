@@ -2917,10 +2917,10 @@ class WorkEnvTest(unittest.TestCase):
     template = self.services.template.TestAddIssueTemplateDef(
         13, 16, 'template name', owner_id=user_3.user_id)
     project1 = self.services.project.TestAddProject(
-        'project1', owner_ids=[111, 333])
+        'project1', owner_ids=[111, 333], project_id=16)
     project2 = self.services.project.TestAddProject(
         'project2',owner_ids=[888], contrib_ids=[111, 222],
-        committer_ids=[333])
+        committer_ids=[333], project_id=17)
 
     self.services.features.TestAddFilterRule(
         16, 'owner:cow@test.com', add_cc_ids=[user_4.user_id])
