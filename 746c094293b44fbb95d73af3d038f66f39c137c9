@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a095a0a_891ef35e",
+        "filename": "appengine/monorail/static_src/elements/framework/mr-issue-list/mr-issue-list.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2019-08-06T00:16:05Z",
+      "side": 1,
+      "message": "stringValuesForIssueField doesn\u0027t take these arguments. Is this intentional in anticipation for the follow-up?",
+      "revId": "746c094293b44fbb95d73af3d038f66f39c137c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
