@@ -34,6 +34,24 @@
       "revId": "7a8979ef7d39d74fe501eba09af324279b7b3067",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7a278755_3c211904",
+        "filename": "appengine/monorail/framework/framework_helpers.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 511,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2019-08-07T17:31:26Z",
+      "side": 1,
+      "message": "ah nevermind, i see the screenshot and realized i read the code wrong",
+      "parentUuid": "1ad7a24b_1e821c94",
+      "revId": "7a8979ef7d39d74fe501eba09af324279b7b3067",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
