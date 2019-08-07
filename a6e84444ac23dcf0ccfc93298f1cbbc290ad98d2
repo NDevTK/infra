@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f659f5e3_7f7eca8f",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/protos/README.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2019-08-07T07:35:42Z",
+      "side": 1,
+      "message": "vadimsh@ and yyanagisawa@,\n\nI found that the latest protoc version is 3.8.0,  but infra/bootstrap/cipd/cipd*.txt have been configured with 3.6.1.\n- https://chrome-infra-packages.appspot.com/p/infra/tools/protoc/linux-amd64/+/UN1OwZBNClXY9Zr5529vIR7jtYRWh5RZxz5vpl8DF3MC\n- https://cs.chromium.org/chromium/infra/bootstrap/cipd/cipd_linux_amd64.txt?g\u003d0\u0026l\u003d9\n\nQ. Should we update the cipd*.txt files with 3.8.0 before this CL submitted?",
+      "range": {
+        "startLine": 8,
+        "startChar": 33,
+        "endLine": 8,
+        "endChar": 38
+      },
+      "revId": "a6e84444ac23dcf0ccfc93298f1cbbc290ad98d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
