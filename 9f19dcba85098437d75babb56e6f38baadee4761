@@ -22,6 +22,30 @@
       "revId": "9f19dcba85098437d75babb56e6f38baadee4761",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fdc44249_a25cb413",
+        "filename": "appengine/findit/handlers/flake/detection/flake_detection_utils.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-08-13T16:26:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6f873aa9_29256a9e",
+      "range": {
+        "startLine": 276,
+        "startChar": 2,
+        "endLine": 279,
+        "endChar": 67
+      },
+      "revId": "9f19dcba85098437d75babb56e6f38baadee4761",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
