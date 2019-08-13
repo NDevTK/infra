@@ -16,6 +16,24 @@
       "revId": "7d99823519f504afa0a8d7e8042baebbacc58095",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "209b4a75_b588acbd",
+        "filename": "go/test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-13T22:53:10Z",
+      "side": 0,
+      "message": "Removed - this file has been appearing a lot for me lately when I rebase. I\u0027m not sure why.",
+      "parentUuid": "ad5bbfee_ddcd7be1",
+      "revId": "7d99823519f504afa0a8d7e8042baebbacc58095",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
