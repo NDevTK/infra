@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "0d2917b3_3f3ad279",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-13T21:52:58Z",
+      "side": 1,
+      "message": "Added a test for this case.",
+      "parentUuid": "86c6ab03_f914040a",
+      "range": {
+        "startLine": 74,
+        "startChar": 4,
+        "endLine": 74,
+        "endChar": 24
+      },
+      "revId": "66f1e9afd66162d76788da9c5d5b851f1561b467",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3c61e2c3_a2c96998",
         "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid.js",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "66f1e9afd66162d76788da9c5d5b851f1561b467",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ca26b38d_9ab0aabc",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-13T21:52:58Z",
+      "side": 1,
+      "message": "Lit-element doesn\u0027t have attribute converters for the Map type, so I think setting the type to \"Map\" doesn\u0027t do anything. \n\nI ended up deleting this property entirely - we don\u0027t expect this property to be set through HTML nor do we expect to be able to re-render based on it, so I think deleting the property declaration and making this into a plain JS object property is better.",
+      "parentUuid": "3c61e2c3_a2c96998",
+      "range": {
+        "startLine": 121,
+        "startChar": 28,
+        "endLine": 121,
+        "endChar": 34
+      },
+      "revId": "66f1e9afd66162d76788da9c5d5b851f1561b467",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
