@@ -370,6 +370,18 @@ wheel: <
 
 ## **astroid**
 
+### 1.4.9
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/astroid-py2_py3"
+  version: "version:1.4.9"
+>
+```
+
+
+* *universal*
+
 ### 1.6.3
 
 ```protobuf
@@ -2615,6 +2627,18 @@ wheel: <
 * *universal*
 
 ## **pylint**
+
+### 1.5.6-551505593fa0d9c5372b79c95e3dfe9a
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pylint-py2_py3"
+  version: "version:1.5.6-551505593fa0d9c5372b79c95e3dfe9a"
+>
+```
+
+
+* *universal*
 
 ### 1.8.4
 
