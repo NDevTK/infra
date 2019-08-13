@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ad5bbfee_ddcd7be1",
+        "filename": "go/test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2019-08-13T21:57:57Z",
+      "side": 0,
+      "message": "Not sure if this file got deleted via a rebase or other git shenanigans - but the change looks unrelated",
+      "revId": "7d99823519f504afa0a8d7e8042baebbacc58095",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
