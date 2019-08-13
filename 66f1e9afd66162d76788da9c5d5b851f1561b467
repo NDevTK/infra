@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "86c6ab03_f914040a",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2019-08-13T21:40:53Z",
+      "side": 1,
+      "message": "Is this change tested?",
+      "range": {
+        "startLine": 74,
+        "startChar": 4,
+        "endLine": 74,
+        "endChar": 24
+      },
+      "revId": "66f1e9afd66162d76788da9c5d5b851f1561b467",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3c61e2c3_a2c96998",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2019-08-13T21:40:53Z",
+      "side": 1,
+      "message": "If this is being set to a Map below should this still be Object?",
+      "range": {
+        "startLine": 121,
+        "startChar": 28,
+        "endLine": 121,
+        "endChar": 34
+      },
+      "revId": "66f1e9afd66162d76788da9c5d5b851f1561b467",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
