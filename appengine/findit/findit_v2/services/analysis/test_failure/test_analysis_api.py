@@ -205,3 +205,11 @@ class TestAnalysisAPI(AnalysisAPI):
             test=next(iter(test_set)) if test_set else None)
         rerun_build_entity.failures.append(failure_entity)
     rerun_build_entity.put()
+
+  def _GetFailureKeysToAnalyze(self, failure_entities, project_api):
+    """Gets failures that'll actually be analyzed in the analysis.
+
+    Placeholder for project specific logic, for example in-build failure
+    grouping for ChromeOS test failure analysis.
+    """
+    return project_api.GetFailureKeysToAnalyzeTestFailures(failure_entities)

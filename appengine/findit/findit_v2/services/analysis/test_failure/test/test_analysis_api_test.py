@@ -643,6 +643,7 @@ class TestAnalysisAPITest(wf_testcase.TestCase):
         },
         'last_passed_build': build_121_info
     }
+    print expected_res
     self.assertEqual(
         expected_res,
         self.analysis_api.GetFirstFailuresInCurrentBuild(
