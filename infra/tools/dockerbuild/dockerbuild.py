@@ -128,7 +128,7 @@ def _main_wheel_build(args, system):
 
       util.LOGGER.info('Uploading CIPD package for: %s', package)
       # But when we register it, we want to attach all tags.
-      system.cipd.register_package(pkg_path, *package.tags)
+      system.cipd.register_package(pkg_path, package.tags, dev=args.dev_server)
 
 
 def _main_wheel_dump(args, system):
@@ -248,6 +248,8 @@ def add_argparse_options(parser):
       help='Force rebuild of package even if it is already built.')
   subparser.add_argument('--upload', action='store_true',
       help='Upload any missing CIPD packages.')
+  subparser.add_argument('--dev-server', action='store_true',
+      help='Upload to the dev server instead of prod.')
   subparser.set_defaults(func=_main_wheel_build)
 
   # Subcommand: wheel-dump

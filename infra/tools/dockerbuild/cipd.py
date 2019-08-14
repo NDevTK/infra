@@ -18,6 +18,9 @@ INSTALL_SYMLINK = 'symlink'
 INSTALL_COPY = 'copy'
 
 
+DEV_SERVER = 'https://chrome-infra-packages-dev.appspot.com'
+
+
 RE_DISALLOWED_PACKAGE_CHARS = re.compile(r'^[a-zA-Z-_]')
 
 
@@ -69,11 +72,13 @@ class Cipd(object):
   def install(self, name, version, root):
     self.check_run('install', '-root', root, name, version)
 
-  def register_package(self, path, *tags):
+  def register_package(self, path, tags, dev=False):
     cmd = [
         'pkg-register',
         path,
     ]
+    if dev:
+      cmd += ['-service-url', DEV_SERVER]
     for tag in tags:
       cmd += ['-tag', tag]
     self.check_run(*cmd)
