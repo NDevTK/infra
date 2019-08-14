@@ -198,6 +198,7 @@ class TestAnalysisAPI(AnalysisAPI):
     rerun_build_entity.status = status
     rerun_build_entity.failures = []
     for step_ui_name, step_info in detailed_test_failures.iteritems():
+      step_info['failures'] = step_info['failures'] or {frozenset([]): {}}
       for test_set in step_info['failures']:
         failure_entity = TestFailureInRerunBuild(
             step_ui_name=step_ui_name,

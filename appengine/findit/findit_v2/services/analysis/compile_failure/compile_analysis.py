@@ -125,7 +125,7 @@ def _SaveRerunBuildResults(rerun_build_entity, status,
   rerun_build_entity.status = status
   rerun_build_entity.failures = []
   for step_ui_name, step_info in detailed_compile_failures.iteritems():
-    for output_targets in step_info['failures']:
+    for output_targets in step_info.get('failures') or {frozenset([]): {}}:
       failure_entity = CompileFailureInRerunBuild(
           step_ui_name=step_ui_name, output_targets=output_targets)
       rerun_build_entity.failures.append(failure_entity)
