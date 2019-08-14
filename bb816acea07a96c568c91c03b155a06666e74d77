@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f84ce8ce_dbda08c2",
+        "filename": "infra/tools/dockerbuild/cipd.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-08-14T17:30:15Z",
+      "side": 1,
+      "message": "I\u0027m not sure coupling it to the dev server makes sense; This is usually for testing new versions of cipd itself.\n\nWhat about a --test-mode flag which prepends `experimental/$USER/` to all the cipd package names?",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 10
+      },
+      "revId": "bb816acea07a96c568c91c03b155a06666e74d77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
