@@ -46,6 +46,30 @@
       "revId": "bb816acea07a96c568c91c03b155a06666e74d77",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7816a6c3_2ced1cf7",
+        "filename": "infra/tools/dockerbuild/cipd.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-08-14T18:10:23Z",
+      "side": 1,
+      "message": "It really depends on the use case; if you use experimental on the prod server, it will use all the production ACL groups on chrome-infra-auth. Presumably if you\u0027re uploading these, you also intend for something else to download them (probably vpython?) which will need to support the dev server (I\u0027m not actually sure if it does), and you\u0027ll need to adjust the dev server acls to be compatible with wherever they\u0027re downloaded.\n\nThis means that if you want to use it in e.g. a `led` task, you\u0027ll probably have to re-target it at the dev version of swarming as well, which has substantially fewer machines and is public.\n\nIf you use experimental on chrome-infra-packages you can trivially ACL other people or bots to have access to it.",
+      "parentUuid": "3dd43d6c_27aea51c",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 10
+      },
+      "revId": "bb816acea07a96c568c91c03b155a06666e74d77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
