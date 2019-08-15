@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/errors"
 )
 
@@ -102,6 +103,30 @@ func oneShotWriteFile(dataDir, fileName string, data string) error {
 	}
 	f = nil
 	return nil
+}
+
+// CompareExcludingFlakyLabels compares two SchedulableLabels
+// but ignores differences in flaky fields.
+// The flaky fields are:
+//      AudioLoopbackDongle (crbug/991285)
+func CompareExcludingFlakyLabels(left *SchedulableLabels, right *SchedulableLabels) bool {
+	var leftAudioLoopbackDongle *bool
+	var rightAudioLoopbackDongle *bool
+	var falsum bool
+	// save old values of flaky labels
+	leftAudioLoopbackDongle = left.Peripherals.AudioLoopbackDongle
+	rightAudioLoopbackDongle = right.Peripherals.AudioLoopbackDongle
+	// restore old values of flaky labels upon exit
+	defer func() {
+		left.Peripherals.AudioLoopbackDongle = leftAudioLoopbackDongle
+		right.Peripherals.AudioLoopbackDongle = rightAudioLoopbackDongle
+	}()
+	// set flaky labels to canonical value
+	left.Peripherals.AudioLoopbackDongle = &falsum
+	right.Peripherals.AudioLoopbackDongle = &falsum
+	// compare left and right with canonical values applied
+	equal := proto.Equal(left, right)
+	return equal
 }
 
 // SortLabels takes a SchedulableLabels and destructively canonicalizes it.

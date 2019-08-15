@@ -45,7 +45,7 @@ func (s *Store) Close() error {
 	if new.GetUselessSwitch() {
 		*new.UselessSwitch = false
 	}
-	if proto.Equal(new, old) {
+	if inventory.CompareExcludingFlakyLabels(new, old) {
 		log.Printf("Skipping label update since there are no changes")
 		return nil
 	}
