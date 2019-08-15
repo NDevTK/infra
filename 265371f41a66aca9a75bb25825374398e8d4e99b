@@ -119,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "68755ac2_365d5108",
+        "filename": "appengine/findit/findit_v2/services/chromeos_api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 306,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-08-15T17:46:54Z",
+      "side": 1,
+      "message": "python attribute name does not have to match datastore property name:\n\n  my_better_name \u003d ndb.KeyProperty(kind\u003d\u0027CompileFailure\u0027, name\u003d\u0027merged_failure_key\u0027)",
+      "parentUuid": "1da9c246_72c3bd98",
+      "range": {
+        "startLine": 306,
+        "startChar": 16,
+        "endLine": 306,
+        "endChar": 34
+      },
+      "revId": "265371f41a66aca9a75bb25825374398e8d4e99b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b29e27d9_9b2213d8",
         "filename": "appengine/findit/findit_v2/services/project_api.py",
         "patchSetId": 1
