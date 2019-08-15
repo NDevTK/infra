@@ -97,20 +97,27 @@ def WasCreatedByFindit(issue):
   return issue.reporter == constants.DEFAULT_SERVICE_ACCOUNT
 
 
-def GetMergedDestinationIssueForId(issue_id, monorail_project='chromium'):
+def GetMergedDestinationIssueForId(issue_id,
+                                   monorail_project='chromium',
+                                   merged_issue_only=True):
   """Given an id, traverse the merge chain to get the destination issue.
 
   Args:
     issue_id: The id to get merged destination issue for.
     monorail_project: The Monorail project the issue is on.
+    merged_issue_only: Flag indicates that only to get merged destination if
+      the requested issue is currently merged, otherwise False.
+
+  issue.merged_into is the most recent issue it was merged into, so if an
+  issue was merged then unmerged, this field will still have value.
 
   Returns:
     The destination issue if the original issue was merged, otherwise itself,
     and returns None if there is an exception while communicating with
     Monorail.
 
-    NOTE: If there is a cycle in the merge chain, the first visited issue in
-    the cycle will be returned.
+    NOTE: If there is a circle in the merge chain, the first visited issue in
+    the circle will be returned.
   """
   if issue_id is None:
     return None
@@ -119,8 +126,10 @@ def GetMergedDestinationIssueForId(issue_id, monorail_project='chromium'):
       monorail_project, use_staging=appengine_util.IsStaging())
   issue = GetMonorailIssueForIssueId(
       issue_id, issue_tracker_api=issue_tracker_api)
-  visited_issues = set()
+  if not issue or (merged_issue_only and issue.status != 'Duplicate'):
+    return issue
 
+  visited_issues = set()
   while issue and issue.merged_into:
     logging.info('Issue %s was merged into %s on project: %s.', issue.id,
                  issue.merged_into, monorail_project)
@@ -134,7 +143,7 @@ def GetMergedDestinationIssueForId(issue_id, monorail_project='chromium'):
 
     issue = merged_issue
     if issue in visited_issues:
-      # There is a cycle, bails out.
+      # There is a circle, bails out.
       break
 
   return issue
