@@ -70,6 +70,30 @@
       "revId": "bb816acea07a96c568c91c03b155a06666e74d77",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "73bf4d9a_d08294b4",
+        "filename": "infra/tools/dockerbuild/cipd.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1000768
+      },
+      "writtenOn": "2019-08-15T20:42:15Z",
+      "side": 1,
+      "message": "i don\u0027t think vpython supports pulling from a diff server.  cipd does which is largely what i\u0027ve been using.  my goal was more for immediate testing: build the wheels \u0026 upload the results \u0026 check the tags/refs/etc... via cipd or via the web interface.  running it through vpython later would be useful, but for developing the dockerbuild code, it\u0027s mostly an unnecessary layer.\n\nthat said, --test-mode and --server settings can be implemented independently.",
+      "parentUuid": "7816a6c3_2ced1cf7",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 10
+      },
+      "revId": "bb816acea07a96c568c91c03b155a06666e74d77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
