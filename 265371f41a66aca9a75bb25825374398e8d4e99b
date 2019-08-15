@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "6b6ac7da_e954a993",
+        "filename": "appengine/findit/findit_v2/services/analysis/test_failure/test/test_analysis_api_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 646,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-08-15T17:35:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "098738fb_69e519d6",
+      "revId": "265371f41a66aca9a75bb25825374398e8d4e99b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "71783a1d_be9ef276",
         "filename": "appengine/findit/findit_v2/services/chromeos_api.py",
         "patchSetId": 1
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "c408c97f_49444b68",
+        "filename": "appengine/findit/findit_v2/services/chromeos_api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-08-15T17:35:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "71783a1d_be9ef276",
+      "revId": "265371f41a66aca9a75bb25825374398e8d4e99b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8fb73171_62f6f8d8",
         "filename": "appengine/findit/findit_v2/services/chromeos_api.py",
         "patchSetId": 1
@@ -47,6 +83,30 @@
       "writtenOn": "2019-08-15T00:50:18Z",
       "side": 1,
       "message": "this property\u0027s name is a little confusing, it is the key for the failure that another failure has been merged _into_, and not the key to another failure that has been merged _into this_.\n\nCould we rename it to something like \u0027merge_parent_failure_key\u0027 or \u0027group_sample_failure_key\u0027?",
+      "range": {
+        "startLine": 306,
+        "startChar": 16,
+        "endLine": 306,
+        "endChar": 34
+      },
+      "revId": "265371f41a66aca9a75bb25825374398e8d4e99b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1da9c246_72c3bd98",
+        "filename": "appengine/findit/findit_v2/services/chromeos_api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 306,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-08-15T17:35:30Z",
+      "side": 1,
+      "message": "Because of old data in datastore, I\u0027m a little hesitate to rename this field...",
+      "parentUuid": "8fb73171_62f6f8d8",
       "range": {
         "startLine": 306,
         "startChar": 16,
