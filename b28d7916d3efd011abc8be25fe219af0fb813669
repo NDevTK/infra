@@ -1,0 +1,39 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c65114c7_343027af",
+        "filename": "appengine/findit/services/monorail_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-08-15T22:55:16Z",
+      "side": 1,
+      "message": "If set to false, traverse the merge chain regardless of issue status, if set to True, traverse the merge chain only if the original issue has been merged as duplicate?\n\nIs my understanding correct?. If so, consider clarifying the flag name/docstring.\n\nAlso, maybe consider changing this to \u0027force_follow_merge_chain\u0027 and default to False. Then the clause below could be phrased as\nif issue and (force_follow_merge_chain or issue.status \u003d\u003d \u0027Duplicate\u0027):\n  visited_issues.... # follow the merge chain (lines 132-147)\nreturn issue",
+      "revId": "b28d7916d3efd011abc8be25fe219af0fb813669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9930b58e_47816f88",
+        "filename": "appengine/findit/services/test/monorail_util_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-08-15T22:55:16Z",
+      "side": 1,
+      "message": "Please fix, otherwise one of the two tests won\u0027t run.",
+      "parentUuid": "62e28f22_535c9eb8",
+      "revId": "b28d7916d3efd011abc8be25fe219af0fb813669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
