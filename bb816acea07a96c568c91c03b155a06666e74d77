@@ -118,6 +118,30 @@
       "revId": "bb816acea07a96c568c91c03b155a06666e74d77",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6256d055_15154a01",
+        "filename": "infra/tools/dockerbuild/cipd.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1000768
+      },
+      "writtenOn": "2019-08-15T21:14:18Z",
+      "side": 1,
+      "message": "that doesn\u0027t help me when i need to verify the tags/refs with cipd :)\n\nbut maybe i can change the behavior when --upload isn\u0027t used to dump the command it would have run.  currently it just logs \"Refraining from uploading package\" and skips everything else.",
+      "parentUuid": "8c602234_d485f782",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 10
+      },
+      "revId": "bb816acea07a96c568c91c03b155a06666e74d77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
