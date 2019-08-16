@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "481c3dfd_d94f175e",
+        "filename": "infra/tools/dockerbuild/dockerbuild.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1000768
+      },
+      "writtenOn": "2019-08-16T20:38:11Z",
+      "side": 1,
+      "message": "i took the liberty of showing the dryrun cipd command even in this case.  i don\u0027t think it\u0027d be too confusing ?",
+      "revId": "5d4a8262498ed20945a3e6c6acf17c96305ccd3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
