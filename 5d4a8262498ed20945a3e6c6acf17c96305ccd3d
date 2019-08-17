@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "ac6aefac_f9bde3c9",
+        "filename": "infra/tools/dockerbuild/cipd.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1000768
+      },
+      "writtenOn": "2019-08-17T07:30:09Z",
+      "side": 1,
+      "message": "mixing *args with named keyword args is problematic.  in this case the kwargs expansion is localized -- _run_cipd doesn\u0027t accept **kwargs, it only accepts dryrun.  so run/check_run are the only APIs that deal with this.\n\ni would have used dryrun\u003d explicitly here if it weren\u0027t for the *args.\n\nputting \"dryrun\u003dFalse\" after \"*args\" is a syntax error:\n\n\u003e\u003e\u003e def foo(foo, *args, dry\u003dFalse): pass\n  File \"\u003cstdin\u003e\", line 1\n    def foo(foo, *args, dry\u003dFalse): pass\n                          ^\nSyntaxError: invalid syntax\n\nputting it before \"*args\" doesn\u0027t work as you might expect -- dryrun is always the first arg.\n\n\u003e\u003e\u003e def foo(dry\u003dFalse, *args): print(\u0027dry\u0027, dry, \u0027args\u0027, args)\n... \n\u003e\u003e\u003e foo(1,2,3,4)\ndry 1 args (2, 3, 4)\n\u003e\u003e\u003e foo(1,2,3,4, dry\u003dTrue)\nTraceback (most recent call last):\n  File \"\u003cstdin\u003e\", line 1, in \u003cmodule\u003e\nTypeError: foo() got multiple values for argument \u0027dry\u0027\n\npassing the |upload| setting to Cipd.__init__ doesn\u0027t change this -- i still need a kwarg in run/check_run while also using *args which doesn\u0027t work.",
+      "parentUuid": "f6b8e01e_846a2464",
+      "range": {
+        "startLine": 49,
+        "startChar": 25,
+        "endLine": 49,
+        "endChar": 31
+      },
+      "revId": "5d4a8262498ed20945a3e6c6acf17c96305ccd3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "481c3dfd_d94f175e",
         "filename": "infra/tools/dockerbuild/dockerbuild.py",
         "patchSetId": 3
