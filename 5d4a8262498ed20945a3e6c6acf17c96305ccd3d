@@ -2,6 +2,52 @@
   "comments": [
     {
       "key": {
+        "uuid": "b2de4110_918a12f4",
+        "filename": "infra/tools/dockerbuild/cipd.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-08-17T01:22:11Z",
+      "side": 1,
+      "message": "lol",
+      "range": {
+        "startLine": 43,
+        "startChar": 45,
+        "endLine": 43,
+        "endChar": 50
+      },
+      "revId": "5d4a8262498ed20945a3e6c6acf17c96305ccd3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f6b8e01e_846a2464",
+        "filename": "infra/tools/dockerbuild/cipd.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-08-17T01:22:11Z",
+      "side": 1,
+      "message": "not a huge fan of `**kwargs` passthrough. Can lead to spooky action at a distance. Could we instead have Cipd.__init__ take a \u0027local_only\u0027 boolean which disables all remote write operations? Then run/check_run could take a \u0027is_write\u0027 boolean. Ideally run and check_run could be made internal methods too....",
+      "range": {
+        "startLine": 49,
+        "startChar": 25,
+        "endLine": 49,
+        "endChar": 31
+      },
+      "revId": "5d4a8262498ed20945a3e6c6acf17c96305ccd3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "481c3dfd_d94f175e",
         "filename": "infra/tools/dockerbuild/dockerbuild.py",
         "patchSetId": 3
@@ -16,6 +62,24 @@
       "revId": "5d4a8262498ed20945a3e6c6acf17c96305ccd3d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2ea2eda9_eff9204b",
+        "filename": "infra/tools/dockerbuild/dockerbuild.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-08-17T01:22:11Z",
+      "side": 1,
+      "message": "I think it should be OK",
+      "parentUuid": "481c3dfd_d94f175e",
+      "revId": "5d4a8262498ed20945a3e6c6acf17c96305ccd3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
