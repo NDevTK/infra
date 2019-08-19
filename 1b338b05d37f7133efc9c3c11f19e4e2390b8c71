@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8c89e389_3110cef7",
+        "filename": "appengine/monorail/static_src/elements/framework/mr-dropdown/mr-dropdown.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-19T19:57:12Z",
+      "side": 1,
+      "message": "FYI: This was the offending - I set \"display: block;\" to allow adding margins to this icon, but that overrode the [hidden] style since this selector was more specific, so the placeholder icon slot would always show up, even when hidden.",
+      "revId": "1b338b05d37f7133efc9c3c11f19e4e2390b8c71",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
