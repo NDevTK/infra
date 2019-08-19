@@ -72,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "c9d0489a_004ec3cf",
+        "filename": "infra/tools/dockerbuild/cipd.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-08-19T18:22:23Z",
+      "side": 1,
+      "message": "ugh, you\u0027re right, I forgot this was still python2  :(",
+      "parentUuid": "ac6aefac_f9bde3c9",
+      "range": {
+        "startLine": 49,
+        "startChar": 25,
+        "endLine": 49,
+        "endChar": 31
+      },
+      "revId": "5d4a8262498ed20945a3e6c6acf17c96305ccd3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "481c3dfd_d94f175e",
         "filename": "infra/tools/dockerbuild/dockerbuild.py",
         "patchSetId": 3
