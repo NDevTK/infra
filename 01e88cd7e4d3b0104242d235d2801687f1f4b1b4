@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "c3b2588d_0933fe53",
+        "filename": "appengine/monorail/static_src/elements/issue-list/dialogs/mr-change-columns/mr-change-columns.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-20T22:46:51Z",
+      "side": 1,
+      "message": "You\u0027re right! It can be removed. :) We use similar styles in other parts of the FE code, so we can probably simplify some CSS here.",
+      "parentUuid": "833134c0_28b0c748",
+      "range": {
+        "startLine": 25,
+        "startChar": 10,
+        "endLine": 25,
+        "endChar": 22
+      },
+      "revId": "01e88cd7e4d3b0104242d235d2801687f1f4b1b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "03e042ac_46a5c0a6",
         "filename": "appengine/monorail/static_src/elements/issue-list/dialogs/mr-change-columns/mr-change-columns.js",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "98412f3b_708e2b59",
+        "filename": "appengine/monorail/static_src/elements/issue-list/dialogs/mr-change-columns/mr-change-columns.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-20T22:46:51Z",
+      "side": 1,
+      "message": "Yup - I tested this on small screen sizes when adding this rule. max-width: 100%; shrinks the width when dialog becomes smaller than 800px, so it should never be larger than the screen width.",
+      "parentUuid": "03e042ac_46a5c0a6",
+      "range": {
+        "startLine": 31,
+        "startChar": 10,
+        "endLine": 31,
+        "endChar": 23
+      },
+      "revId": "01e88cd7e4d3b0104242d235d2801687f1f4b1b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f2b74556_dde97849",
         "filename": "appengine/monorail/static_src/elements/issue-list/dialogs/mr-change-columns/mr-change-columns.js",
         "patchSetId": 1
@@ -62,6 +110,24 @@
       "revId": "01e88cd7e4d3b0104242d235d2801687f1f4b1b4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bc1398fd_14da3261",
+        "filename": "appengine/monorail/static_src/elements/issue-list/dialogs/mr-change-columns/mr-change-columns.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-08-20T22:46:51Z",
+      "side": 1,
+      "message": "Yes! Strongly agree with this suggestion - I had filed a bug for this before as well: https://crbug.com/monorail/6060 :)",
+      "parentUuid": "f2b74556_dde97849",
+      "revId": "01e88cd7e4d3b0104242d235d2801687f1f4b1b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
