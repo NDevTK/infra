@@ -2752,10 +2752,14 @@ type InventoryClient interface {
 	// Cached inventory data is used to serve read-only inventory RPCs.
 	// Cached inventory data is not used for inventory modification RPCs.
 	UpdateCachedInventory(ctx context.Context, in *UpdateCachedInventoryRequest, opts ...grpc.CallOption) (*UpdateCachedInventoryResponse, error)
-	// Update device config to inventory.
+	// Update device config to inventory and local datastore.
 	//
 	// Device config updating will be forbidden via repair jobs.
-	// Instead, this cron job will ensure device config is synced in time.
+	// Instead, this cron job will ensure device config is synced in time so that
+	// inventory file is up-to-date.
+	//
+	// It also updates device config to local datastore, which will be used in
+	// future DUT labels.
 	UpdateDeviceConfig(ctx context.Context, in *UpdateDeviceConfigRequest, opts ...grpc.CallOption) (*UpdateDeviceConfigResponse, error)
 }
 type inventoryPRPCClient struct {
@@ -3156,10 +3160,14 @@ type InventoryServer interface {
 	// Cached inventory data is used to serve read-only inventory RPCs.
 	// Cached inventory data is not used for inventory modification RPCs.
 	UpdateCachedInventory(context.Context, *UpdateCachedInventoryRequest) (*UpdateCachedInventoryResponse, error)
-	// Update device config to inventory.
+	// Update device config to inventory and local datastore.
 	//
 	// Device config updating will be forbidden via repair jobs.
-	// Instead, this cron job will ensure device config is synced in time.
+	// Instead, this cron job will ensure device config is synced in time so that
+	// inventory file is up-to-date.
+	//
+	// It also updates device config to local datastore, which will be used in
+	// future DUT labels.
 	UpdateDeviceConfig(context.Context, *UpdateDeviceConfigRequest) (*UpdateDeviceConfigResponse, error)
 }
 
