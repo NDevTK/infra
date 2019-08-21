@@ -373,16 +373,21 @@ func identifyBots(ctx context.Context, bots []*swarming.SwarmingRpcsBotInfo) (re
 	for _, b := range bots {
 		s := clients.GetStateDimension(b.Dimensions)
 		dims := swarmingDimensionsMap(b.Dimensions)
+		os, err := extractSingleValuedDimension(dims, clients.DutOSDimensionKey)
 		n, err := extractSingleValuedDimension(dims, clients.DutNameDimensionKey)
 		if err != nil {
 			logging.Warningf(ctx, "failed to obtain DUT name for bot %q", b.BotId)
 			continue
 		}
-		if s == fleet.DutState_NeedsRepair || s == fleet.DutState_RepairFailed {
+		if os == "OS_TYPE_CROS" && (s == fleet.DutState_NeedsRepair || s == fleet.DutState_RepairFailed) {
 			repairDUTs = append(repairDUTs, n)
 		}
-		if s == fleet.DutState_NeedsReset {
+		if os == "OS_TYPE_CROS" && s == fleet.DutState_NeedsReset {
 			resetDUTs = append(resetDUTs, n)
+		}
+		// Trigger repair for labstations no matter what state it is.
+		if os == "OS_TYPE_LABSTATION" {
+			repairDUTs = append(repairDUTs, n)
 		}
 	}
 	return repairDUTs, resetDUTs
