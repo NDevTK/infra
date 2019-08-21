@@ -185,8 +185,8 @@ type datastoreEntity struct {
 	// binary format.
 	ReconcilerData []byte `gae:",noindex"`
 
-	// ConfigData is the SchedulerPoolConfig object, serialized to protobuf
-	// binary format.
+	// ConfigData deprecated; field exists only for backward compatibility with
+	// previously serialized datastore entities.
 	ConfigData []byte `gae:",noindex"`
 }
 
