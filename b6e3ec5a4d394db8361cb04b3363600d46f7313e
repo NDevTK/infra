@@ -1,0 +1,40 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bdcea0b1_05dd842b",
+        "filename": "appengine/monorail/features/notify_reasons.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-08-21T17:58:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b662f4ee_23860632",
+      "revId": "b6e3ec5a4d394db8361cb04b3363600d46f7313e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2a2d181f_60669503",
+        "filename": "appengine/monorail/features/notify_reasons.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-08-21T17:58:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d3ba2f87_438beb2d",
+      "revId": "b6e3ec5a4d394db8361cb04b3363600d46f7313e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
