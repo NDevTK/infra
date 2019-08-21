@@ -94,6 +94,26 @@ func (mr *MockTrackerClientMockRecorder) PushBotsForAdminTasks(ctx, in interface
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PushBotsForAdminTasks", reflect.TypeOf((*MockTrackerClient)(nil).PushBotsForAdminTasks), varargs...)
 }
 
+// PushLabstationsForRepair mocks base method
+func (m *MockTrackerClient) PushLabstationsForRepair(ctx context.Context, in *PushLabstationsForRepairRequest, opts ...grpc.CallOption) (*PushLabstationsForRepairResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "PushLabstationsForRepair", varargs...)
+	ret0, _ := ret[0].(*PushLabstationsForRepairResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// PushLabstationsForRepair indicates an expected call of PushLabstationsForRepair
+func (mr *MockTrackerClientMockRecorder) PushLabstationsForRepair(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PushLabstationsForRepair", reflect.TypeOf((*MockTrackerClient)(nil).PushLabstationsForRepair), varargs...)
+}
+
 // ReportBots mocks base method
 func (m *MockTrackerClient) ReportBots(ctx context.Context, in *ReportBotsRequest, opts ...grpc.CallOption) (*ReportBotsResponse, error) {
 	m.ctrl.T.Helper()
@@ -180,6 +200,21 @@ func (m *MockTrackerServer) PushBotsForAdminTasks(arg0 context.Context, arg1 *Pu
 func (mr *MockTrackerServerMockRecorder) PushBotsForAdminTasks(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PushBotsForAdminTasks", reflect.TypeOf((*MockTrackerServer)(nil).PushBotsForAdminTasks), arg0, arg1)
+}
+
+// PushLabstationsForRepair mocks base method
+func (m *MockTrackerServer) PushLabstationsForRepair(arg0 context.Context, arg1 *PushLabstationsForRepairRequest) (*PushLabstationsForRepairResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "PushLabstationsForRepair", arg0, arg1)
+	ret0, _ := ret[0].(*PushLabstationsForRepairResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// PushLabstationsForRepair indicates an expected call of PushLabstationsForRepair
+func (mr *MockTrackerServerMockRecorder) PushLabstationsForRepair(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PushLabstationsForRepair", reflect.TypeOf((*MockTrackerServer)(nil).PushLabstationsForRepair), arg0, arg1)
 }
 
 // ReportBots mocks base method

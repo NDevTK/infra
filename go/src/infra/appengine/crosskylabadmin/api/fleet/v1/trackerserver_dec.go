@@ -74,6 +74,23 @@ func (s *DecoratedTracker) PushBotsForAdminTasks(c context.Context, req *PushBot
 	return
 }
 
+func (s *DecoratedTracker) PushLabstationsForRepair(c context.Context, req *PushLabstationsForRepairRequest) (rsp *PushLabstationsForRepairResponse, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(c, "PushLabstationsForRepair", req)
+		if err == nil {
+			c = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.PushLabstationsForRepair(c, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(c, "PushLabstationsForRepair", rsp, err)
+	}
+	return
+}
+
 func (s *DecoratedTracker) ReportBots(c context.Context, req *ReportBotsRequest) (rsp *ReportBotsResponse, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context
