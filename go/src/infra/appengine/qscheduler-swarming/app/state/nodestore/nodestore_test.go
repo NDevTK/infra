@@ -21,6 +21,7 @@ import (
 
 	"github.com/google/uuid"
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/gae/service/datastore"
 	"go.chromium.org/luci/appengine/gaetesting"
 
 	"infra/appengine/qscheduler-swarming/app/state/nodestore"
@@ -102,6 +103,51 @@ func TestConflictingRun(t *testing.T) {
 			s, err := storeA.Get(ctx)
 			So(err, ShouldBeNil)
 			So(len(s.Scheduler.Config().AccountConfigs), ShouldEqual, 4)
+		})
+	})
+}
+
+func TestClean(t *testing.T) {
+	Convey("Given a testing context with a created entity", t, func() {
+		ctx := gaetesting.TestingContext()
+		datastore.GetTestable(ctx).Consistent(true)
+		datastore.GetTestable(ctx).AutoIndex(true)
+
+		store := nodestore.New("foo-pool")
+		err := store.Create(ctx, time.Now())
+		So(err, ShouldBeNil)
+
+		Convey("an immediate clean should run without error.", func() {
+			count, err := store.Clean(ctx)
+			So(count, ShouldEqual, 0)
+			So(err, ShouldBeNil)
+		})
+
+		Convey("a clean after some operations runs without error, removes stale entities, and does not affect state.", func() {
+			err = store.Run(ctx, createUniqueAccount{})
+			So(err, ShouldBeNil)
+
+			err = store.Run(ctx, createUniqueAccount{})
+			So(err, ShouldBeNil)
+
+			err = store.Run(ctx, createUniqueAccount{})
+			So(err, ShouldBeNil)
+
+			beforeClean, err := store.Get(ctx)
+			So(err, ShouldBeNil)
+
+			count, err := datastore.Count(ctx, datastore.NewQuery("stateNode"))
+			So(count, ShouldEqual, 4)
+
+			delCount, err := store.Clean(ctx)
+			So(err, ShouldBeNil)
+			So(delCount, ShouldEqual, 3)
+			afterClean, err := store.Get(ctx)
+			So(err, ShouldBeNil)
+			So(afterClean, ShouldResemble, beforeClean)
+
+			count, err = datastore.Count(ctx, datastore.NewQuery("stateNode"))
+			So(count, ShouldEqual, 1)
 		})
 	})
 }
