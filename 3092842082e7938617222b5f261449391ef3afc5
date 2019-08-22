@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "51cd5aff_0f589440",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tracker.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 390,
+      "author": {
+        "id": 1206284
+      },
+      "writtenOn": "2019-08-22T21:23:33Z",
+      "side": 1,
+      "message": "i don\u0027t understand this .... we\u0027re going to schedule repairs for all lab stations every few minutes?",
+      "range": {
+        "startLine": 390,
+        "startChar": 13,
+        "endLine": 390,
+        "endChar": 14
+      },
+      "revId": "3092842082e7938617222b5f261449391ef3afc5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
