@@ -92,11 +92,10 @@ func (n *NodeStore) Create(ctx context.Context, timestamp time.Time) error {
 
 		s := scheduler.New(timestamp)
 		p := &blob.QSchedulerPoolState{Scheduler: s.ToProto()}
-		nodeIDs, err := writeNodes(ctx, p, timestamp)
+		nodeIDs, err := writeNodes(ctx, p, n.qsPoolID, 0)
 		if err != nil {
 			return err
 		}
-		record.Timestamp = timestamp.UTC()
 		record.NodeIDs = nodeIDs
 		if err := datastore.Put(ctx, record); err != nil {
 			return err
@@ -155,9 +154,31 @@ func (n *NodeStore) Get(ctx context.Context) (*types.QScheduler, error) {
 	}, nil
 }
 
+// Clean deletes stale entities. It should be called periodically by a cronjob.
+//
+// It returns the number of stale entities deleted.
+func (n *NodeStore) Clean(ctx context.Context) (int, error) {
+	sg, err := n.loadState(ctx)
+	if err != nil {
+		return 0, errors.Annotate(err, "nodestore clean").Err()
+	}
+
+	query := datastore.NewQuery("stateNode").Eq("PoolID", n.qsPoolID).Lt("Generation", sg.generation)
+
+	var keys []*datastore.Key
+	if err := datastore.GetAll(ctx, query, &keys); err != nil {
+		return 0, errors.Annotate(err, "nodestore clean").Err()
+	}
+
+	if err = datastore.Delete(ctx, keys); err != nil {
+		return 0, errors.Annotate(err, "nodestore clean").Err()
+	}
+
+	return len(keys), nil
+}
+
 // tryRun attempts to modify and commit the given state, using the given operator.
 func (n *NodeStore) tryRun(ctx context.Context, o Operator, sg *stateAndGeneration) error {
-	timestamp := time.Now()
 	q := &types.QScheduler{
 		SchedulerID: n.qsPoolID,
 		Reconciler:  reconciler.NewFromProto(sg.state.Reconciler),
@@ -170,7 +191,7 @@ func (n *NodeStore) tryRun(ctx context.Context, o Operator, sg *stateAndGenerati
 		Reconciler: q.Reconciler.ToProto(),
 		Scheduler:  q.Scheduler.ToProto(),
 	}
-	IDs, err := writeNodes(ctx, p, timestamp)
+	IDs, err := writeNodes(ctx, p, n.qsPoolID, sg.generation+1)
 	if err != nil {
 		return errors.Annotate(err, "nodestore try").Err()
 	}
@@ -190,7 +211,6 @@ func (n *NodeStore) tryRun(ctx context.Context, o Operator, sg *stateAndGenerati
 			PoolID:     n.qsPoolID,
 			NodeIDs:    IDs,
 			Generation: sg.generation + 1,
-			Timestamp:  timestamp.UTC(),
 		}
 		if err := datastore.Put(ctx, outRecord); err != nil {
 			return err
@@ -246,9 +266,6 @@ type stateRecord struct {
 	// PoolID is the qs pool ID for this record.
 	PoolID string `gae:"$id"`
 
-	// Timestamp is the time at which this entity was written.
-	Timestamp time.Time
-
 	Generation int64 `gae:",noindex"`
 
 	NodeIDs []string `gae:",noindex"`
@@ -266,9 +283,14 @@ type stateNode struct {
 	// ID is a globally unique ID for this entity. Entities are append-only.
 	ID string `gae:"$id"`
 
-	// Timestamp is the time at which this entity was written. It is an indexed
-	// field, used to enable cleanup of stale entities.
-	Timestamp time.Time
+	// PoolID is the ID of the pool that this node corresponds to. It is an
+	// indexed field, used to enable cleanup of stale entities.
+	PoolID string `gae:"PoolID"`
+
+	// Generation is the generation number of the parent state for which
+	// this entity was written. It is an indexed field, used to enable cleanup
+	// of stale entities.
+	Generation int64 `gae:"Generation"`
 
 	// QSchedulerPoolStateDataShard contains this node's shard of the proto-
 	// serialized QSchedulerPoolState.
@@ -277,7 +299,7 @@ type stateNode struct {
 
 // writeNodes writes the given state to as many nodes as necessary, and returns
 // their IDs.
-func writeNodes(ctx context.Context, state *blob.QSchedulerPoolState, timestamp time.Time) ([]string, error) {
+func writeNodes(ctx context.Context, state *blob.QSchedulerPoolState, poolID string, generation int64) ([]string, error) {
 	bytes, err := proto.Marshal(state)
 	if err != nil {
 		return nil, errors.Annotate(err, "write nodes").Err()
@@ -302,7 +324,8 @@ func writeNodes(ctx context.Context, state *blob.QSchedulerPoolState, timestamp 
 		ID := uuid.New().String()
 		node := &stateNode{
 			ID:                           ID,
-			Timestamp:                    timestamp.UTC(),
+			PoolID:                       poolID,
+			Generation:                   generation,
 			QSchedulerPoolStateDataShard: shard,
 		}
 
