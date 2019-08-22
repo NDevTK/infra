@@ -22,6 +22,30 @@
       "revId": "3092842082e7938617222b5f261449391ef3afc5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a18cceb0_c822ae90",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tracker.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 390,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2019-08-22T21:40:21Z",
+      "side": 1,
+      "message": "Yes, we want to actively schedule repair task against labstation periodically because we don\u0027t schedule test on our labstations and they\u0027re not able to go into need_repair state by themselves.",
+      "parentUuid": "51cd5aff_0f589440",
+      "range": {
+        "startLine": 390,
+        "startChar": 13,
+        "endLine": 390,
+        "endChar": 14
+      },
+      "revId": "3092842082e7938617222b5f261449391ef3afc5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
