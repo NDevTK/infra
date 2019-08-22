@@ -70,6 +70,30 @@
       "revId": "3092842082e7938617222b5f261449391ef3afc5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a3b77e36_6d359123",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tracker.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 390,
+      "author": {
+        "id": 1206284
+      },
+      "writtenOn": "2019-08-22T21:43:32Z",
+      "side": 1,
+      "message": "that is very nuanced ... updated the comments\n\nstill confused ... this is going to run all of the time (every 5 minutes IIRC) ... does repair get blocked somewhere else for labstation",
+      "parentUuid": "ef6160c3_4aaf8567",
+      "range": {
+        "startLine": 390,
+        "startChar": 13,
+        "endLine": 390,
+        "endChar": 14
+      },
+      "revId": "3092842082e7938617222b5f261449391ef3afc5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
