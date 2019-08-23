@@ -1,0 +1,22 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d3b14232_aae46582",
+        "filename": "appengine/findit/handlers/flake/detection/process_flakes.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-08-23T16:34:37Z",
+      "side": 1,
+      "message": "\u003e Unused import json.\n\u003e To disable, add: # pylint: disable\u003dunused-import\n\nPlease Fix",
+      "parentUuid": "f9921d56_37bbb1c6",
+      "revId": "f03b1ab465fef2b72a495eba819b0cc1bb3c93f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
