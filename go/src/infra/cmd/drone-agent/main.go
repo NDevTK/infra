@@ -15,19 +15,23 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"sync"
 	"time"
 
 	"go.chromium.org/luci/auth"
-	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 
 	"infra/appengine/drone-queen/api"
 	"infra/cmd/drone-agent/internal/agent"
 	"infra/cmd/drone-agent/internal/bot"
 	"infra/cmd/drone-agent/internal/draining"
+	"infra/cmd/drone-agent/internal/tokman"
 )
 
-const drainingFile = "drone-agent.drain"
+const (
+	drainingFile   = "drone-agent.drain"
+	oauthTokenPath = "/var/lib/swarming/oauth_bot_token.json"
+)
 
 var (
 	queenService = os.Getenv("DRONE_AGENT_QUEEN_SERVICE")
@@ -46,19 +50,38 @@ var (
 )
 
 func main() {
+	if err := innerMain(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func innerMain() error {
 	// TODO(ayatane): Add environment validation.
 	ctx := context.Background()
 	ctx = notifySIGTERM(ctx)
 	ctx = notifyDraining(ctx, filepath.Join(workingDirPath, drainingFile))
 
+	var wg sync.WaitGroup
+	defer wg.Wait()
+
 	authn := auth.NewAuthenticator(ctx, auth.SilentLogin, authOptions)
+
+	r, err := tokman.Make(authn, oauthTokenPath, time.Minute)
+	if err != nil {
+		return err
+	}
+	wg.Add(1)
+	go func() {
+		r.KeepNew(ctx)
+		wg.Done()
+	}()
+
 	h, err := authn.Client()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-
 	if err := os.MkdirAll(workingDirPath, 0777); err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	a := agent.Agent{
@@ -73,6 +96,7 @@ func main() {
 		StartBotFunc:      bot.NewStarter(h).Start,
 	}
 	a.Run(ctx)
+	return nil
 }
 
 const checkDrainingInterval = time.Minute
