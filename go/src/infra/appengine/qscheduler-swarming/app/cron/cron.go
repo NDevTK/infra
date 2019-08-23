@@ -70,6 +70,11 @@ func refreshSchedulers(c *router.Context) error {
 		if _, err := s.AssignTasks(ctx, req); err != nil {
 			return errors.Wrap(err, "unable to refresh scheduler via AssignTasks")
 		}
+
+		store := nodestore.New(sid)
+		if _, err := store.Clean(ctx); err != nil {
+			return err
+		}
 	}
 
 	return nil
