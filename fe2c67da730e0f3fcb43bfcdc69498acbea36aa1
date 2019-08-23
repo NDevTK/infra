@@ -46,6 +46,30 @@
       "revId": "fe2c67da730e0f3fcb43bfcdc69498acbea36aa1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6f6feb69_14ba7fb6",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/nodestore/nodestore_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-08-23T18:49:44Z",
+      "side": 1,
+      "message": "Fine, whatever. Can you at least confirm that the test covers all retry logic (the outer loop in tryRun and transaction retries)?",
+      "parentUuid": "6a6cdf91_a9530155",
+      "range": {
+        "startLine": 227,
+        "startChar": 6,
+        "endLine": 227,
+        "endChar": 17
+      },
+      "revId": "fe2c67da730e0f3fcb43bfcdc69498acbea36aa1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
