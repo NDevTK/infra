@@ -214,15 +214,19 @@ func TestCreateListDelete(t *testing.T) {
 		ctx := gaetesting.TestingContext()
 		datastore.GetTestable(ctx).Consistent(true)
 
+		IDs, err := nodestore.List(ctx)
+		So(err, ShouldBeNil)
+		So(IDs, ShouldBeEmpty)
+
 		storeA := nodestore.New("A")
-		err := storeA.Create(ctx, time.Now())
+		err = storeA.Create(ctx, time.Now())
 		So(err, ShouldBeNil)
 
 		storeB := nodestore.New("B")
 		err = storeB.Create(ctx, time.Now())
 		So(err, ShouldBeNil)
 
-		IDs, err := nodestore.List(ctx)
+		IDs, err = nodestore.List(ctx)
 		So(err, ShouldBeNil)
 		So(IDs, ShouldHaveLength, 2)
 		So(IDs, ShouldContain, "A")
