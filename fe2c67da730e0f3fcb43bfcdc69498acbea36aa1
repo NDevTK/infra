@@ -22,6 +22,30 @@
       "revId": "fe2c67da730e0f3fcb43bfcdc69498acbea36aa1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6a6cdf91_a9530155",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/nodestore/nodestore_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-08-23T18:07:12Z",
+      "side": 1,
+      "message": "I\u0027m OK either way, though I think as written we actually expose more of nodestore behaviors (e.g. concurrent use of a single store) and the higher concurrency leads to more conflicts, which is what we want in this test.",
+      "parentUuid": "ef1dd89e_5374c340",
+      "range": {
+        "startLine": 227,
+        "startChar": 6,
+        "endLine": 227,
+        "endChar": 17
+      },
+      "revId": "fe2c67da730e0f3fcb43bfcdc69498acbea36aa1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
