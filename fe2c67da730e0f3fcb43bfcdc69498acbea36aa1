@@ -94,6 +94,30 @@
       "revId": "fe2c67da730e0f3fcb43bfcdc69498acbea36aa1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fb0e7b80_b14b2527",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/nodestore/nodestore_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-08-23T19:21:08Z",
+      "side": 1,
+      "message": "ok",
+      "parentUuid": "50324ace_a9a7145e",
+      "range": {
+        "startLine": 227,
+        "startChar": 6,
+        "endLine": 227,
+        "endChar": 17
+      },
+      "revId": "fe2c67da730e0f3fcb43bfcdc69498acbea36aa1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
