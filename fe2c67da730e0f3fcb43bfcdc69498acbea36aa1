@@ -70,6 +70,30 @@
       "revId": "fe2c67da730e0f3fcb43bfcdc69498acbea36aa1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "50324ace_a9a7145e",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/nodestore/nodestore_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-08-23T19:10:33Z",
+      "side": 1,
+      "message": "Sure, I confirmed that it exercises the retry loop by seeing that the success rate of operations in this test depends sensitively on the max number of retries.\n\nI also tried a variety of attempt #s in the tryRun transaction, and they did\u0027t sensitively affect this success rate (as I would expect, because when a transaction fails on the stateRecord that means that it is likely already newer than tryRun\u0027s generation, so the entire tryRun is doomed).\n\nIs that what you\u0027re looking for?",
+      "parentUuid": "6f6feb69_14ba7fb6",
+      "range": {
+        "startLine": 227,
+        "startChar": 6,
+        "endLine": 227,
+        "endChar": 17
+      },
+      "revId": "fe2c67da730e0f3fcb43bfcdc69498acbea36aa1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
