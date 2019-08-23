@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ef1dd89e_5374c340",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/nodestore/nodestore_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-08-23T17:56:46Z",
+      "side": 1,
+      "message": "IMHO, the test will be more representative of the real world if the inner loop runs store.Run(...) sequentially, not in parallel. In real world we may have multiple qscheduler processes, which each run stuff sequentially.",
+      "range": {
+        "startLine": 227,
+        "startChar": 6,
+        "endLine": 227,
+        "endChar": 17
+      },
+      "revId": "fe2c67da730e0f3fcb43bfcdc69498acbea36aa1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
