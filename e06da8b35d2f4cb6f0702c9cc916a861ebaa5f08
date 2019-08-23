@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6999d09e_5ad819cb",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/nodestore/nodestore_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-08-23T17:52:08Z",
+      "side": 1,
+      "message": "How long does this test run? Maybe it would be better to make entity size limit mockable (e.g. represented by a global variable modified from test, except oops the test has no access to non-public globals...).",
+      "range": {
+        "startLine": 169,
+        "startChar": 5,
+        "endLine": 169,
+        "endChar": 19
+      },
+      "revId": "e06da8b35d2f4cb6f0702c9cc916a861ebaa5f08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
