@@ -22,6 +22,30 @@
       "revId": "e06da8b35d2f4cb6f0702c9cc916a861ebaa5f08",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e8c8b9cb_480d84be",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/nodestore/nodestore_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-08-23T17:55:17Z",
+      "side": 1,
+      "message": "The full set of tests in this file, including the forthcoming ones in the rest of this stack, runs in about 1.8s on my machine.",
+      "parentUuid": "6999d09e_5ad819cb",
+      "range": {
+        "startLine": 169,
+        "startChar": 5,
+        "endLine": 169,
+        "endChar": 19
+      },
+      "revId": "e06da8b35d2f4cb6f0702c9cc916a861ebaa5f08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
