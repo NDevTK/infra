@@ -47,7 +47,7 @@ func AssignTasks(r []*swarming.AssignTasksRequest) (types.Operation, []*swarming
 	temp := make([]*swarming.AssignTasksRequest, len(r))
 	copy(temp, r)
 	r = temp
-	return func(ctx context.Context, state *types.QScheduler, events scheduler.EventSink) error {
+	return func(ctx context.Context, state *types.QScheduler, events scheduler.EventSink) {
 		var idles []*reconciler.IdleWorker
 		timestamp := time.Unix(0, 0)
 		for _, req := range r {
@@ -88,8 +88,6 @@ func AssignTasks(r []*swarming.AssignTasksRequest) (types.Operation, []*swarming
 			}
 			response[i] = &swarming.AssignTasksResponse{Assignments: assignments}
 		}
-
-		return nil
 	}, response
 }
 
@@ -97,11 +95,7 @@ func AssignTasks(r []*swarming.AssignTasksRequest) (types.Operation, []*swarming
 // and result object that will get the results after the operation is run.
 func NotifyTasks(r *swarming.NotifyTasksRequest) (types.Operation, *swarming.NotifyTasksResponse) {
 	var response swarming.NotifyTasksResponse
-	return func(ctx context.Context, sp *types.QScheduler, events scheduler.EventSink) error {
-		if sp.Scheduler.Config() == nil {
-			return errors.Errorf("Scheduler with id %s has nil config.", r.SchedulerId)
-		}
-
+	return func(ctx context.Context, sp *types.QScheduler, events scheduler.EventSink) {
 		if r.IsCallback {
 			events = events.WithFields(true)
 		}
@@ -139,7 +133,6 @@ func NotifyTasks(r *swarming.NotifyTasksRequest) (types.Operation, *swarming.Not
 			}
 		}
 		response = swarming.NotifyTasksResponse{}
-		return nil
 	}, &response
 }
 
