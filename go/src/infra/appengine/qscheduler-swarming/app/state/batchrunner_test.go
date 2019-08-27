@@ -15,24 +15,23 @@
 package state_test
 
 import (
-	"context"
-	"strings"
+	"fmt"
 	"sync"
 	"testing"
 	"time"
 
-	"github.com/pkg/errors"
+	"github.com/google/uuid"
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
 
 	"infra/appengine/qscheduler-swarming/app/eventlog"
 	"infra/appengine/qscheduler-swarming/app/state"
 	"infra/appengine/qscheduler-swarming/app/state/nodestore"
-	"infra/appengine/qscheduler-swarming/app/state/types"
-	"infra/qscheduler/qslib/scheduler"
+	"infra/qscheduler/qslib/tutils"
+	swarming "infra/swarming"
 )
 
-func TestBatcherErrors(t *testing.T) {
+/*func TestBatcherErrors(t *testing.T) {
 	Convey("Given a testing context with a scheduler pool, and a batcher for that pool", t, func() {
 		ctx := gaetesting.TestingContext()
 		ctx = eventlog.Use(ctx, &eventlog.NullBQInserter{})
@@ -80,7 +79,7 @@ func TestBatcherErrors(t *testing.T) {
 			So(goodError, ShouldBeNil)
 		})
 	})
-}
+}*/
 
 func TestBatcherBehavior(t *testing.T) {
 	Convey("Given a testing context with a scheduler pool, and a batcher for that pool", t, func() {
@@ -94,39 +93,72 @@ func TestBatcherBehavior(t *testing.T) {
 		batcher.Start(store)
 		defer batcher.Close()
 
-		Convey("a batch of requests are run in priority order.", func() {
-			s := &[]string{}
-			operationA := func(_ context.Context, _ *types.QScheduler, _ scheduler.EventSink) error {
-				temp := append(*s, "A")
-				s = &temp
-				return nil
+		Convey("a batch of requests can run, with notifications coming before assignments.", func() {
+			nTasks := 10
+			labels := make([]string, nTasks)
+			for i := range labels {
+				labels[i] = uuid.New().String()
 			}
-			operationB := func(_ context.Context, _ *types.QScheduler, _ scheduler.EventSink) error {
-				temp := append(*s, "B")
-				s = &temp
-				return nil
-			}
+			assignements := make([]*swarming.AssignTasksResponse, nTasks)
+			now := tutils.TimestampProto(time.Now())
 
 			wg := sync.WaitGroup{}
-			for i := 0; i < 10; i++ {
+			for i := 0; i < nTasks; i++ {
 				wg.Add(2)
-				go func() {
-					done := batcher.EnqueueOperation(ctx, operationA, state.BatchPriorityNotify)
-					<-done
+				// Run 10 assignment requests concurrently.
+				go func(i int) {
+					req := &swarming.AssignTasksRequest{
+						IdleBots: []*swarming.IdleBot{
+							{
+								BotId:      fmt.Sprintf("%d", i),
+								Dimensions: []string{labels[i]},
+							},
+						},
+						Time: now,
+					}
+					resp, err := batcher.Assign(ctx, req)
+					if err != nil {
+						panic(err)
+					}
+					assignements[i] = resp
 					wg.Done()
-				}()
-				go func() {
-					done := batcher.EnqueueOperation(ctx, operationB, state.BatchPriorityAssign)
-					<-done
+				}(i)
+				// Also run 10 notifications concurrently.
+				go func(i int) {
+					req := &swarming.NotifyTasksRequest{
+						Notifications: []*swarming.NotifyTasksItem{
+							{
+								Task: &swarming.TaskSpec{
+									EnqueuedTime: now,
+									Id:           fmt.Sprintf("%d", i),
+									State:        swarming.TaskState_PENDING,
+									Slices: []*swarming.SliceSpec{
+										{
+											Dimensions: []string{labels[i]},
+										},
+									},
+								},
+								Time: now,
+							},
+						},
+					}
+					resp, err := batcher.Notify(ctx, req)
+					if err != nil {
+						panic(err)
+					}
+					if resp == nil {
+						panic("unexpectedly nil response")
+					}
 					wg.Done()
-				}()
+				}(i)
 			}
 			batcher.TBatchStart()
 			batcher.TBatchWait(20)
 			wg.Wait()
-
-			j := strings.Join(*s, "")
-			So(j, ShouldEqual, "AAAAAAAAAABBBBBBBBBB")
+			for _, a := range assignements {
+				So(a.Assignments, ShouldHaveLength, 1)
+				So(a.Assignments[0].BotId, ShouldEqual, a.Assignments[0].TaskId)
+			}
 		})
 	})
 }
