@@ -137,6 +137,7 @@ func (c *Client) WaitForBuild(ctx context.Context, ID int64) (*steps.ExecuteResp
 
 // Build contains selected state information from a fetched buildbucket Build.
 type Build struct {
+	ID     int64
 	Status buildbucket_pb.Status
 	// Tags strings of the form "key:value"
 	Tags []string
@@ -245,6 +246,7 @@ func splitTagPairs(tags []string) ([]*buildbucket_pb.StringPair, error) {
 
 // getBuildFields is the list of buildbucket fields that are needed.
 var getBuildFields = []string{
+	"id",
 	// Build details are parsed from the build's output properties.
 	"output.properties",
 	// Build status is used to determine whether the build is complete.
@@ -292,6 +294,7 @@ func extractBuildData(from *buildbucket_pb.Build) (*Build, error) {
 		return nil, errors.Annotate(err, "extractBuildData").Err()
 	}
 	return &Build{
+		ID:     from.Id,
 		Status: from.GetStatus(),
 		Tags:   tags,
 
