@@ -21,6 +21,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 	"go.chromium.org/luci/common/clock"
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
 	"infra/appengine/qscheduler-swarming/app/config"
@@ -28,6 +29,7 @@ import (
 	"infra/appengine/qscheduler-swarming/app/state/nodestore"
 	"infra/appengine/qscheduler-swarming/app/state/types"
 	"infra/qscheduler/qslib/scheduler"
+	swarming "infra/swarming"
 )
 
 // BatchPriority is the priority level within a batch.
@@ -115,12 +117,24 @@ func (b *BatchRunner) Start(store *nodestore.NodeStore) {
 // EnqueueOperation returns a channel that receives an error for the operation or
 // closes once the operation has completed after which it is safe to read its
 // result.
-func (b *BatchRunner) EnqueueOperation(ctx context.Context, op types.Operation, priority BatchPriority) (wait <-chan error) {
+//
+// op should be either a:
+// -- *swarming.NotifyTaskRequest
+// -- *swarming.AssignTaskRequst
+// -- implementor of types.Operation
+// Otherwise, an error is returned immedatiatly on the error channel.
+func (b *BatchRunner) EnqueueOperation(ctx context.Context, op interface{}, priority BatchPriority) (wait <-chan error) {
+	if !isValidOp(op) {
+		dc := make(chan error, 1)
+		dc <- errors.New("invalid operation type")
+		close(dc)
+		return dc
+	}
+
 	// Use a buffered channel, so that writing back to this channel doesn't block.
 	dc := make(chan error, b.doneChannelSize)
 	bo := &batchedOp{
 		ctx:       ctx,
-		priority:  priority,
 		operation: op,
 		done:      dc,
 	}
@@ -136,7 +150,19 @@ func (b *BatchRunner) EnqueueOperation(ctx context.Context, op types.Operation, 
 	}()
 
 	return dc
+}
 
+func isValidOp(op interface{}) bool {
+	switch op.(type) {
+	case *swarming.AssignTasksRequest:
+		return true
+	case *swarming.NotifyTasksRequest:
+		return true
+	case types.Operation:
+		return true
+	default:
+		return false
+	}
 }
 
 // Close closes a batcher, and waits for it to finish closing.
@@ -240,11 +266,12 @@ type batchedOp struct {
 	ctx context.Context
 
 	// operation is the Operation to be run.
-	operation types.Operation
-
-	// priority is the priority within the batch to run the operation.
-	// Operations will be run within in the batch in ascending priority order.
-	priority BatchPriority
+	//
+	// This is one of:
+	// -- *swarming.NotifyTaskRequest
+	// -- *swarming.AssignTaskRequst
+	// -- implementor of types.Operation
+	operation interface{}
 
 	// err is the error that was encountered on the batch (so far) for this
 	// operation.
@@ -268,21 +295,37 @@ func (b *batchedOp) isActive() bool {
 
 // batch encapsulates a batch of operations.
 type batch struct {
-	// operations is (per-priority) collection of operations included in the batch.
-	operations [nBatchPriorities][]*batchedOp
+	// notifyRequests is the set of NotifyRequest operations included in this
+	// batch. All items in this list have an operation of type *swarming.NotifyTaskRequest
+	notifyRequests []*batchedOp
+	// notifyRequests is the set of AssignRequest operations included in this
+	// batch. All items in this list have an operation of type *swarming.AssignTasksRequest
+	assignRequests []*batchedOp
+	// operations is the set of types.Operation operations included in this batch.
+	// All items in this list have an operation of type types.Operation
+	freeformOperations []*batchedOp
+
+	count int
 }
 
 // append appends an operation to the batch.
 func (b *batch) append(bo *batchedOp) {
-	b.operations[bo.priority] = append(b.operations[bo.priority], bo)
+	switch o := bo.operation.(type) {
+	case *swarming.NotifyTasksRequest:
+		b.notifyRequests = append(b.notifyRequests, bo)
+	case *swarming.AssignTasksRequest:
+		b.assignRequests = append(b.assignRequests, bo)
+	case types.Operation:
+		b.freeformOperations = append(b.freeformOperations, bo)
+	default:
+		panic("invalid operation type appended to batch")
+	}
+
+	b.count++
 }
 
 func (b *batch) numOperations() int {
-	count := 0
-	for _, ops := range b.operations {
-		count += len(ops)
-	}
-	return count
+	return b.count
 }
 
 // executeAndClose executes and closes the given batch.
@@ -300,12 +343,18 @@ func (b *batch) executeAndClose(ctx context.Context, store *nodestore.NodeStore,
 	b.close()
 }
 
+func (b *batch) allOps() []*batchedOp {
+	all := append(b.notifyRequests, b.assignRequests...)
+	all = append(all, b.freeformOperations...)
+	return all
+}
+
 // getRunner gets a runner function to be used in a datastore transaction
 // to execute the batch.
 func (b *batch) getRunner() types.Operation {
 	return func(ctx context.Context, state *types.QScheduler, events scheduler.EventSink) error {
-		// Modify
-		for _, opSlice := range b.operations {
+		// Run all notify requests in individual operations.
+		for _, notify := range b.notifyRequests {
 			for _, op := range opSlice {
 				op.err = op.operation(ctx, state, events)
 			}
@@ -316,23 +365,21 @@ func (b *batch) getRunner() types.Operation {
 
 // allResultsError sets the given error to all operations in the batch.
 func (b *batch) allResultsError(err error) {
-	for _, opSlice := range b.operations {
-		for _, op := range opSlice {
-			op.err = err
-		}
+	all := b.allOps()
+	for _, op := range all {
+		op.err = err
 	}
 }
 
 // close closes a batch, sending out any necessary errors to operations.
 func (b *batch) close() {
-	for _, opSlice := range b.operations {
-		for _, op := range opSlice {
-			if op.err != nil {
-				op.done <- op.err
-			}
-
-			close(op.done)
+	all := b.allOps()
+	for _, op := range all {
+		if op.err != nil {
+			op.done <- op.err
 		}
+
+		close(op.done)
 	}
 }
 
