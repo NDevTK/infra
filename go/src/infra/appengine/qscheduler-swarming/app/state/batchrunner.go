@@ -26,21 +26,10 @@ import (
 	"infra/appengine/qscheduler-swarming/app/config"
 	"infra/appengine/qscheduler-swarming/app/state/metrics"
 	"infra/appengine/qscheduler-swarming/app/state/nodestore"
+	"infra/appengine/qscheduler-swarming/app/state/operations"
 	"infra/appengine/qscheduler-swarming/app/state/types"
 	"infra/qscheduler/qslib/scheduler"
-)
-
-// BatchPriority is the priority level within a batch.
-type BatchPriority int
-
-const (
-	// BatchPriorityNotify is the priority level of Notify requests.
-	BatchPriorityNotify BatchPriority = iota
-
-	// BatchPriorityAssign is the priority level of Assign requests.
-	BatchPriorityAssign
-
-	nBatchPriorities int = iota
+	"infra/swarming"
 )
 
 // BatchRunner runs operations in batches.
@@ -53,23 +42,22 @@ type BatchRunner struct {
 	// closed is closed to indicate that the Batcher has finished closing.
 	closed chan struct{}
 
-	// requests is the channel of operations to be run.
-	requests chan *batchedOp
+	// requests is the channel of requests to be run.
+	requests chan batchable
 
 	// startOnce is used to ensure that the batcher is only started once.
 	startOnce sync.Once
 
-	// Test fixtures channels. These will always be initialized, but are
-	// closed for non-test instances of Batcher, so that reads from them
+	// Test fixtures channels.
+
+	// testonlyBatchWait is read from after a request is included in a batch.
+	// This is closed in non-test instance of Batcher, so that reads always
 	// succeed immediately without blocking.
+	testonlyBatchWait chan struct{}
 
-	// tBatchWait is read from after a request is included in a batch.
-	tBatchWait chan struct{}
-
-	tWait bool
-
-	// tBatchStart is read from prior to a batch being permitted to start.
-	tBatchStart chan struct{}
+	// A write to testonlyBatchStart causes a batch to stop constructing and start
+	// executing. Only test instances of Batcher write to this.
+	testonlyBatchStart chan struct{}
 
 	// doneChannelSize is the buffer size to use for done channels.
 	//
@@ -87,19 +75,18 @@ func NewBatcher(poolID string) *BatchRunner {
 	b := &BatchRunner{
 		poolID: poolID,
 
-		requests: make(chan *batchedOp, 100),
+		requests: make(chan batchable, 100),
 		closed:   make(chan struct{}),
 
 		doneChannelSize: 1,
 
-		tBatchStart: make(chan struct{}),
-		tBatchWait:  make(chan struct{}),
+		testonlyBatchWait: make(chan struct{}),
 	}
 	b.closeFixtureChannels()
 	return b
 }
 
-// Start starts a batcher (if it hasn't been started already).
+// Start starts a BatchRunner (if it hasn't been started already).
 //
 // It returns immediately.
 func (b *BatchRunner) Start(store *nodestore.NodeStore) {
@@ -108,38 +95,67 @@ func (b *BatchRunner) Start(store *nodestore.NodeStore) {
 	})
 }
 
-// EnqueueOperation enqueues the given operation within a batch.
-//
-// Within a batch, operations are ordered by priority.
-//
-// EnqueueOperation returns a channel that receives an error for the operation or
-// closes once the operation has completed after which it is safe to read its
-// result.
-func (b *BatchRunner) EnqueueOperation(ctx context.Context, op types.Operation, priority BatchPriority) (wait <-chan error) {
-	// Use a buffered channel, so that writing back to this channel doesn't block.
-	dc := make(chan error, b.doneChannelSize)
-	bo := &batchedOp{
-		ctx:       ctx,
-		priority:  priority,
-		operation: op,
-		done:      dc,
+// Notify runs the given notify request in a batch.
+func (b *BatchRunner) Notify(ctx context.Context, req *swarming.NotifyTasksRequest) (*swarming.NotifyTasksResponse, error) {
+	bn := b.enqueueNotify(ctx, req)
+	err, ok := <-bn.Done()
+	if ok {
+		return nil, err
 	}
-
-	go func() {
-		// Attempt to join a batch, but bail out if context is cancelled.
-		select {
-		case <-ctx.Done():
-			dc <- ctx.Err()
-			close(dc)
-		case b.requests <- bo:
-		}
-	}()
-
-	return dc
-
+	return bn.resp, nil
 }
 
-// Close closes a batcher, and waits for it to finish closing.
+// Assign runs the given assign request in a batch.
+func (b *BatchRunner) Assign(ctx context.Context, req *swarming.AssignTasksRequest) (*swarming.AssignTasksResponse, error) {
+	ba := b.enqueueAssign(ctx, req)
+	err, ok := <-ba.Done()
+	if ok {
+		return nil, err
+	}
+	return ba.resp, nil
+}
+
+// enqueueNotify enqueues a notify request.
+func (b *BatchRunner) enqueueNotify(ctx context.Context, req *swarming.NotifyTasksRequest) *batchedNotify {
+	dc := make(chan error, b.doneChannelSize)
+	bo := &batchedNotify{
+		batchedRequest: batchedRequest{
+			ctx:  ctx,
+			done: dc,
+		},
+		req: req,
+	}
+
+	go b.tryJoin(ctx, bo)
+	return bo
+}
+
+// enqueueAssign enqueues an assign request.
+func (b *BatchRunner) enqueueAssign(ctx context.Context, req *swarming.AssignTasksRequest) *batchedAssign {
+	dc := make(chan error, b.doneChannelSize)
+	bo := &batchedAssign{
+		batchedRequest: batchedRequest{
+			ctx:  ctx,
+			done: dc,
+		},
+		req: req,
+	}
+
+	go b.tryJoin(ctx, bo)
+	return bo
+}
+
+// tryJoin attempts to include bo in a batch, until that succeeds or context
+// is cancelled.
+func (b *BatchRunner) tryJoin(ctx context.Context, bo batchable) {
+	select {
+	case <-ctx.Done():
+		bo.Close(ctx.Err())
+	case b.requests <- bo:
+	}
+}
+
+// Close closes a BatchRunner, and waits for it to finish closing.
 //
 // Any requests that were previously enqueued to this batcher
 // will be allowed to complete. Attempting to send any new requests
@@ -154,13 +170,11 @@ func (b *BatchRunner) Close() {
 // channel closes.
 func (b *BatchRunner) runRequestsInBatches(store *nodestore.NodeStore) {
 	for r := range b.requests {
-		<-b.tBatchStart
-
 		// Create a new batch that will run in r's context.
-		ctx := r.ctx
+		ctx := r.Ctx()
 		logging.Debugf(ctx, "request picked as batch master")
 
-		if !r.isActive() {
+		if ctx.Err() != nil {
 			// Request is already cancelled, don't use it as a master.
 			logging.Debugf(ctx, "request already cancelled, dropped as batch master")
 			continue
@@ -168,9 +182,18 @@ func (b *BatchRunner) runRequestsInBatches(store *nodestore.NodeStore) {
 
 		nb := &batch{}
 		nb.append(r)
-		<-b.tBatchWait
+		// In test fixture, wait for a signal to continue after appending
+		// an item to the batch.
+		// In production, this channel is closed so the read returns immediately.
+		<-b.testonlyBatchWait
 
-		b.collectForBatch(ctx, nb)
+		err := b.collectForBatch(ctx, nb)
+		if err != nil {
+			logging.Debugf(ctx, "batch of size %d cancelled due to error", nb.numOperations(), err)
+			nb.close(err)
+			continue
+		}
+
 		logging.Debugf(ctx, "batch of size %d collected, executing", nb.numOperations())
 		nb.executeAndClose(ctx, store, b.poolID)
 		logging.Debugf(ctx, "batch executed")
@@ -179,28 +202,31 @@ func (b *BatchRunner) runRequestsInBatches(store *nodestore.NodeStore) {
 	close(b.closed)
 }
 
-func (b *BatchRunner) collectForBatch(ctx context.Context, nb *batch) {
+func (b *BatchRunner) collectForBatch(ctx context.Context, nb *batch) error {
 	timer := clock.After(ctx, waitToCollect(ctx))
 	for {
 		select {
-		case r := <-b.requests:
-			if r == nil {
+		case r, ok := <-b.requests:
+			if !ok {
 				// Requests channel is closed, stop collecting.
-				return
+				return nil
 			}
-			if !r.isActive() {
-				logging.Debugf(r.ctx, "request already cancelled, ignored for batch")
+			if r.Ctx().Err() != nil {
+				logging.Debugf(r.Ctx(), "request already cancelled, ignored for batch")
 				continue
 			}
-			logging.Debugf(r.ctx, "request picked up as batch slave, will eventually execute")
+			logging.Debugf(r.Ctx(), "request picked up as batch slave, will eventually execute")
 			nb.append(r)
-			<-b.tBatchWait
-		case <-timer:
-			// Stop collecting, unless we are in a test test fixture and
-			// waiting for additional requests.
-			if !b.tWait {
-				return
-			}
+			// In test fixture, wait for a signal to continue after appending
+			// an item to the batch.
+			// In production, this channel is closed so the read returns immediately.
+			<-b.testonlyBatchWait
+		case tr := <-timer:
+			return tr.Err
+		case <-b.testonlyBatchStart:
+			// Stop collecting due to test fixture signal.
+			// In production, this codepath is never followed.
+			return nil
 		}
 	}
 }
@@ -223,12 +249,27 @@ func waitToCollect(ctx context.Context) time.Duration {
 // for Batcher. This causes Batcher to behave as though there were no test
 // fixture.
 func (b *BatchRunner) closeFixtureChannels() {
-	close(b.tBatchStart)
-	close(b.tBatchWait)
+	close(b.testonlyBatchWait)
 }
 
-// batchedOp encapsulates a single operation to be batched.
-type batchedOp struct {
+// batchable is the common interface implemented by all batched requests.
+type batchable interface {
+	// Close causes this batchable to close, with the given error if it is
+	// non-nil. If error is non-nil, it may block until errors are emitted.
+	Close(error)
+	// Ctx returns the context that this batchable's request came with.
+	Ctx() context.Context
+	// Done returns the channel that indicates that this batchable is finished
+	// executing, possibly with an error.
+	Done() <-chan error
+}
+
+// batchedRequest represents single request that has been batched.
+//
+// This implements batchable interface.
+//
+// batchedRequest methods and fields are not concurrency-safe.
+type batchedRequest struct {
 	// ctx is the context of the originating request for this operation.
 	//
 	// It is examined and used only for the first operation of a batch, to be
@@ -239,100 +280,126 @@ type batchedOp struct {
 	// through a channel and then be used as a parameter to batch.Build.
 	ctx context.Context
 
-	// operation is the Operation to be run.
-	operation types.Operation
-
-	// priority is the priority within the batch to run the operation.
-	// Operations will be run within in the batch in ascending priority order.
-	priority BatchPriority
-
-	// err is the error that was encountered on the batch (so far) for this
-	// operation.
-	err error
-
-	// done is a buffered channel, that should have the error for this operation written to it
-	// or be closed if the operation completed without error.
-	done chan<- error
+	// done is a buffered channel, that will have the error for this operation
+	// written to it or be closed if the operation completed without error.
+	done chan error
 }
 
-// isActive returns true if this operation is still active (its context is not
-// cancelled).
-func (b *batchedOp) isActive() bool {
-	select {
-	case <-b.ctx.Done():
-		return false
-	default:
-		return true
+func (b *batchedRequest) Close(err error) {
+	if err != nil {
+		b.done <- err
 	}
+	close(b.done)
+}
+
+func (b *batchedRequest) Ctx() context.Context {
+	return b.ctx
+}
+
+func (b *batchedRequest) Done() <-chan error {
+	return b.done
+}
+
+type batchedNotify struct {
+	batchedRequest
+
+	req  *swarming.NotifyTasksRequest
+	resp *swarming.NotifyTasksResponse
+}
+
+type batchedAssign struct {
+	batchedRequest
+
+	req  *swarming.AssignTasksRequest
+	resp *swarming.AssignTasksResponse
 }
 
 // batch encapsulates a batch of operations.
 type batch struct {
-	// operations is (per-priority) collection of operations included in the batch.
-	operations [nBatchPriorities][]*batchedOp
+	// notifyRequests is the set of NotifyRequest operations included in this
+	// batch.
+	notifyRequests []*batchedNotify
+	// assignRequests is the set of AssignRequest operations included in this
+	// batch.
+	assignRequests []*batchedAssign
+
+	count int
 }
 
 // append appends an operation to the batch.
-func (b *batch) append(bo *batchedOp) {
-	b.operations[bo.priority] = append(b.operations[bo.priority], bo)
+func (b *batch) append(bo batchable) {
+	switch o := bo.(type) {
+	case *batchedNotify:
+		b.notifyRequests = append(b.notifyRequests, o)
+	case *batchedAssign:
+		b.assignRequests = append(b.assignRequests, o)
+	default:
+		panic("invalid operation type appended to batch")
+	}
+
+	b.count++
 }
 
 func (b *batch) numOperations() int {
-	count := 0
-	for _, ops := range b.operations {
-		count += len(ops)
-	}
-	return count
+	return b.count
 }
 
 // executeAndClose executes and closes the given batch.
 func (b *batch) executeAndClose(ctx context.Context, store *nodestore.NodeStore, poolID string) {
-	success := true
 	nodeRunner := NewNodeStoreOperationRunner(b.getRunner(), poolID)
 
-	if err := store.Run(ctx, nodeRunner); err != nil {
-		// A batch-wide error occurred. Store it on all results.
-		b.allResultsError(err)
-		success = false
-	}
-	metrics.RecordBatchSize(ctx, b.numOperations(), poolID, success)
-
-	b.close()
+	err := store.Run(ctx, nodeRunner)
+	metrics.RecordBatchSize(ctx, b.numOperations(), poolID, err == nil)
+	b.close(err)
 }
 
-// getRunner gets a runner function to be used in a datastore transaction
-// to execute the batch.
+func (b *batch) allOps() []batchable {
+	all := make([]batchable, len(b.notifyRequests)+len(b.assignRequests))
+	i := 0
+	for _, n := range b.notifyRequests {
+		all[i] = n
+		i++
+	}
+	for _, a := range b.assignRequests {
+		all[i] = a
+		i++
+	}
+	return all
+}
+
+// getRunner gets a types.Operation that runs the batch.
 func (b *batch) getRunner() types.Operation {
-	return func(ctx context.Context, state *types.QScheduler, events scheduler.EventSink) error {
-		// Modify
-		for _, opSlice := range b.operations {
-			for _, op := range opSlice {
-				op.err = op.operation(ctx, state, events)
-			}
+	return func(ctx context.Context, state *types.QScheduler, events scheduler.EventSink) {
+		// Run all notify requests in individual operations; there is no
+		// overhead improving in combining them to a single operation.
+		for _, notify := range b.notifyRequests {
+			op, resp := operations.NotifyTasks(notify.req)
+			op(ctx, state, events)
+			notify.resp = resp
 		}
-		return nil
+
+		// Run all assign requests in a single operation, so that they all
+		// run in a single pass of the scheduler algorithm.
+		assignReqs := make([]*swarming.AssignTasksRequest, len(b.assignRequests))
+		for i, assign := range b.assignRequests {
+			assignReqs[i] = assign.req
+		}
+
+		op, resp := operations.AssignTasks(assignReqs)
+		op(ctx, state, events)
+
+		for i, assign := range b.assignRequests {
+			assign.resp = resp[i]
+		}
 	}
 }
 
-// allResultsError sets the given error to all operations in the batch.
-func (b *batch) allResultsError(err error) {
-	for _, opSlice := range b.operations {
-		for _, op := range opSlice {
-			op.err = err
-		}
-	}
-}
-
-// close closes a batch, sending out any necessary errors to operations.
-func (b *batch) close() {
-	for _, opSlice := range b.operations {
-		for _, op := range opSlice {
-			if op.err != nil {
-				op.done <- op.err
-			}
-
-			close(op.done)
-		}
+// close closes a batch with the given error (which may be nil to indicate
+// success).
+func (b *batch) close(err error) {
+	all := b.allOps()
+	for _, op := range all {
+		op.Close(err)
 	}
 }
 
@@ -345,13 +412,13 @@ func (b *batch) close() {
 // batches to be allowed to close.
 func NewBatchRunnerForTest() *BatchRunner {
 	return &BatchRunner{
-		requests: make(chan *batchedOp),
+		requests: make(chan batchable),
 		closed:   make(chan struct{}),
 
 		doneChannelSize: 0,
 
-		tBatchStart: make(chan struct{}),
-		tBatchWait:  make(chan struct{}),
+		testonlyBatchWait:  make(chan struct{}),
+		testonlyBatchStart: make(chan struct{}),
 	}
 }
 
@@ -359,19 +426,18 @@ func NewBatchRunnerForTest() *BatchRunner {
 // a batch.
 //
 // This is to be used only by tests, on Batcher instances created with
-// NewForTest. Otherwise, this method panics.
+// NewBatchRunnerForTest. Otherwise, this method panics.
 func (b *BatchRunner) TBatchWait(requests int) {
-	b.tWait = true
 	for i := 0; i < requests; i++ {
-		b.tBatchWait <- struct{}{}
+		b.testonlyBatchWait <- struct{}{}
 	}
-	b.tWait = false
 }
 
-// TBatchStart allows the currently building batch to stop building and start executing.
+// TBatchStart allows a new batch to start executing, and blocks until it does
+// so.
 //
 // This is to be used only by tests, on Batcher instances created with
-// NewForTest. Otherwise, this method panics.
+// NewBatchRunnerForTest.
 func (b *BatchRunner) TBatchStart() {
-	b.tBatchStart <- struct{}{}
+	b.testonlyBatchStart <- struct{}{}
 }
