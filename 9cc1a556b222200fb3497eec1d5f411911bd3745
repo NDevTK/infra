@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ee97fcea_be29c060",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-08-28T22:56:44Z",
+      "side": 1,
+      "message": "this is not necessary, it is already called \"swarming\"",
+      "range": {
+        "startLine": 32,
+        "startChar": 1,
+        "endLine": 32,
+        "endChar": 9
+      },
+      "revId": "9cc1a556b222200fb3497eec1d5f411911bd3745",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "32977ae6_e62de24e",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-08-28T22:56:44Z",
+      "side": 1,
+      "message": "why does it need to be a separate goroutine if we end up blocking on .Done() channel right away. Might just as well execute tryJoin(...) synchronously.",
+      "range": {
+        "startLine": 145,
+        "startChar": 1,
+        "endLine": 145,
+        "endChar": 22
+      },
+      "revId": "9cc1a556b222200fb3497eec1d5f411911bd3745",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fd4bb55a_a57a5a3f",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-08-28T22:56:44Z",
+      "side": 1,
+      "message": "ctx",
+      "range": {
+        "startLine": 180,
+        "startChar": 5,
+        "endLine": 180,
+        "endChar": 12
+      },
+      "revId": "9cc1a556b222200fb3497eec1d5f411911bd3745",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "847dcd5d_754a6019",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-08-28T22:56:44Z",
+      "side": 1,
+      "message": "this is already covered by \u0027case tr :\u003d \u003c-timer\u0027",
+      "range": {
+        "startLine": 228,
+        "startChar": 2,
+        "endLine": 229,
+        "endChar": 19
+      },
+      "revId": "9cc1a556b222200fb3497eec1d5f411911bd3745",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "83d41c8b_b851023e",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-08-28T22:56:44Z",
+      "side": 1,
+      "message": "It would be simpler to have Close(err error) (and batch.close(err) and get rid of allResultsError). SetError and Close are always called together.",
+      "range": {
+        "startLine": 263,
+        "startChar": 1,
+        "endLine": 266,
+        "endChar": 16
+      },
+      "revId": "9cc1a556b222200fb3497eec1d5f411911bd3745",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "05c04acb_fc20d0da",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 355,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-08-28T22:56:44Z",
+      "side": 1,
+      "message": "IMHO it would be simpler to do \n\nfunc (b *batch) append(bo batchable) {\n  b.requests \u003d append(b.requests, bo)\n}\n\nAnd move the type switch to getRunner().\n\nThen b.count and b.allOps() become unnecessary. getRunner is also where the difference between types actually matters.",
+      "range": {
+        "startLine": 346,
+        "startChar": 0,
+        "endLine": 355,
+        "endChar": 10
+      },
+      "revId": "9cc1a556b222200fb3497eec1d5f411911bd3745",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
