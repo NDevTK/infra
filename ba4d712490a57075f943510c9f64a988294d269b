@@ -22,6 +22,30 @@
       "revId": "ba4d712490a57075f943510c9f64a988294d269b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e2f42ac5_345879cf",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/queue/queue.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-08-30T17:00:01Z",
+      "side": 1,
+      "message": "I imagine that at worst we lose some repair jobs in previous endpoint (the queue is usually empty, once some repair jobs come in, they get run immediately), so just merge everything in one release.",
+      "parentUuid": "58446ea7_a6f1fb1e",
+      "range": {
+        "startLine": 35,
+        "startChar": 18,
+        "endLine": 35,
+        "endChar": 29
+      },
+      "revId": "ba4d712490a57075f943510c9f64a988294d269b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
