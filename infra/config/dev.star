@@ -89,7 +89,7 @@ def ci_builder(
   )
 
 
-ci_builder(name = 'infra-continuous-trusty-64', os = 'Ubuntu-14.04')
+ci_builder(name = 'infra-continuous-xenial-64', os = 'Ubuntu-16.04')
 ci_builder(name = 'infra-continuous-win-64', os = 'Windows-7-SP1')
 ci_builder(name = 'infra-continuous-win10-64', os = 'Windows-10')
 
@@ -181,7 +181,7 @@ luci.notifier(
     on_failure = True,
     notify_emails = ['nodir+spam@google.com'],
     template = 'test',
-    notified_by = ['infra-continuous-trusty-64']
+    notified_by = ['infra-continuous-xenial-64']
 )
 
 luci.notifier_template(
