@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "98e1fe20_ad7ba8d7",
+        "filename": "infra/config/generated/commit-queue.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-08-30T23:46:43Z",
+      "side": 1,
+      "message": "this is odd, your lucicfg version is old. (There\u0027s a check in main.star, but no check in dev.star, didn\u0027t want to duplicate it...)\n\nPlease update depot tools and regenerate.",
+      "range": {
+        "startLine": 117,
+        "startChar": 6,
+        "endLine": 118,
+        "endChar": 7
+      },
+      "revId": "3dfa5dac14b29c3154640b9e9a4aae4a03473509",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
