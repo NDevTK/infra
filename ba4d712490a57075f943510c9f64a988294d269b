@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "58446ea7_a6f1fb1e",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/queue/queue.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1206284
+      },
+      "writtenOn": "2019-08-30T13:27:32Z",
+      "side": 1,
+      "message": "not familiar enough with appengine push process, but I assume this is a push safe change?\n\nthis this is effectively pushing client/server changes at the same time that could be run across different tasks in appengine\n\nnormally for something like this ... you\u0027d push the new endpoint on one release, then the client change on the next release, then the removal of the old endpoint on the 3rd push",
+      "range": {
+        "startLine": 35,
+        "startChar": 18,
+        "endLine": 35,
+        "endChar": 29
+      },
+      "revId": "ba4d712490a57075f943510c9f64a988294d269b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
