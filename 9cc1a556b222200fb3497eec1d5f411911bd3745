@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "99a8304f_0e3112a6",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-09-04T21:29:14Z",
+      "side": 1,
+      "message": "Done here and other occurrences.",
+      "parentUuid": "ee97fcea_be29c060",
+      "range": {
+        "startLine": 32,
+        "startChar": 1,
+        "endLine": 32,
+        "endChar": 9
+      },
+      "revId": "9cc1a556b222200fb3497eec1d5f411911bd3745",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "32977ae6_e62de24e",
         "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
         "patchSetId": 8
@@ -45,6 +69,30 @@
       "revId": "9cc1a556b222200fb3497eec1d5f411911bd3745",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a28f0727_43c1d741",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-09-04T21:29:14Z",
+      "side": 1,
+      "message": "As currently implemented, this needs to be a separate goroutine, because we need the reader at e.g. line 111 or line 101 to allow the bo.Close() call to succeed (tests catch this because the Done channel is explicitly unbuffered in tests, in order to sniff out possible deadlocks like this). Added a clarifying comment to batchable interface.",
+      "parentUuid": "32977ae6_e62de24e",
+      "range": {
+        "startLine": 145,
+        "startChar": 1,
+        "endLine": 145,
+        "endChar": 22
+      },
+      "revId": "9cc1a556b222200fb3497eec1d5f411911bd3745",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "ef021d46_7725b6dc",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-09-04T21:29:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fd4bb55a_a57a5a3f",
+      "range": {
+        "startLine": 180,
+        "startChar": 5,
+        "endLine": 180,
+        "endChar": 12
+      },
+      "revId": "9cc1a556b222200fb3497eec1d5f411911bd3745",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "847dcd5d_754a6019",
         "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
         "patchSetId": 8
@@ -91,6 +163,30 @@
       "revId": "9cc1a556b222200fb3497eec1d5f411911bd3745",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b70d6faa_d597f9c5",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-09-04T21:29:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "847dcd5d_754a6019",
+      "range": {
+        "startLine": 228,
+        "startChar": 2,
+        "endLine": 229,
+        "endChar": 19
+      },
+      "revId": "9cc1a556b222200fb3497eec1d5f411911bd3745",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "930ffd41_c8b98f5a",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-09-04T21:29:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "83d41c8b_b851023e",
+      "range": {
+        "startLine": 263,
+        "startChar": 1,
+        "endLine": 266,
+        "endChar": 16
+      },
+      "revId": "9cc1a556b222200fb3497eec1d5f411911bd3745",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "05c04acb_fc20d0da",
         "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
         "patchSetId": 8
@@ -137,6 +257,30 @@
       "revId": "9cc1a556b222200fb3497eec1d5f411911bd3745",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1b578bca_cc5f9de1",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 355,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-09-04T21:29:14Z",
+      "side": 1,
+      "message": "No, because I want to collect the Notify and Assign requests separately, so I can run all the Notifys before all the Assigns.",
+      "parentUuid": "05c04acb_fc20d0da",
+      "range": {
+        "startLine": 346,
+        "startChar": 0,
+        "endLine": 355,
+        "endChar": 10
+      },
+      "revId": "9cc1a556b222200fb3497eec1d5f411911bd3745",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
