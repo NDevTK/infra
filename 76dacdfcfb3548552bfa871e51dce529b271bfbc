@@ -72,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "77071a5b_38a5da8a",
+        "filename": "go/src/infra/tools/led/cmd_launch.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-09-04T22:48:59Z",
+      "side": 1,
+      "message": "It IS actually related; it SHOULD be the same value, but currently the build.proto one is opaque to led. \n\nAs part of moving away from @@@annotation@@@ protocol, build.proto will become the native language of led, and this value will be correctly set again.",
+      "parentUuid": "1304d9c4_a111439d",
+      "range": {
+        "startLine": 158,
+        "startChar": 1,
+        "endLine": 158,
+        "endChar": 13
+      },
+      "revId": "76dacdfcfb3548552bfa871e51dce529b271bfbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a9b0d670_c6e5017f",
         "filename": "go/src/infra/tools/led/cmd_launch.go",
         "patchSetId": 3
