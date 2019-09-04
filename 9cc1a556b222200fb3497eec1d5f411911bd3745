@@ -190,6 +190,30 @@
     },
     {
       "key": {
+        "uuid": "ea04495e_f31f9832",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-09-04T22:48:07Z",
+      "side": 1,
+      "message": "Actually, had to restore this. The timer doesn\u0027t return upon context cancellation, on windows.",
+      "parentUuid": "b70d6faa_d597f9c5",
+      "range": {
+        "startLine": 228,
+        "startChar": 2,
+        "endLine": 229,
+        "endChar": 19
+      },
+      "revId": "9cc1a556b222200fb3497eec1d5f411911bd3745",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "83d41c8b_b851023e",
         "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
         "patchSetId": 8
