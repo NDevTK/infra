@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ff856ac2_fe5af36d",
+        "filename": "go/src/infra/tools/led/cmd_launch.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-09-04T21:36:04Z",
+      "side": 1,
+      "message": "generateLogdogPrefix",
+      "range": {
+        "startLine": 103,
+        "startChar": 5,
+        "endLine": 103,
+        "endChar": 25
+      },
+      "revId": "76dacdfcfb3548552bfa871e51dce529b271bfbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8976d8b6_f5a7efae",
+        "filename": "go/src/infra/tools/led/cmd_launch.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-09-04T21:36:04Z",
+      "side": 1,
+      "message": "logdogPrefix",
+      "range": {
+        "startLine": 158,
+        "startChar": 1,
+        "endLine": 158,
+        "endChar": 13
+      },
+      "revId": "76dacdfcfb3548552bfa871e51dce529b271bfbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a9b0d670_c6e5017f",
+        "filename": "go/src/infra/tools/led/cmd_launch.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-09-04T21:36:04Z",
+      "side": 1,
+      "message": "logdog_prefix, though... ick. I would make the actual property here \"led_run_id\", then remove \"launched_by_led\". If \"led_run_id\" is set, then we know we\u0027re \u0027launched_by_led\u0027 as well.\n\nThe fact that it\u0027s related to the logdog prefix should be opaque to the led module, I think.",
+      "range": {
+        "startLine": 171,
+        "startChar": 4,
+        "endLine": 171,
+        "endChar": 17
+      },
+      "revId": "76dacdfcfb3548552bfa871e51dce529b271bfbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
