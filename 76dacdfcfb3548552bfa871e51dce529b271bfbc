@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "1304d9c4_a111439d",
+        "filename": "go/src/infra/tools/led/cmd_launch.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1347995
+      },
+      "writtenOn": "2019-09-04T22:43:10Z",
+      "side": 1,
+      "message": "The terminology is a bit confusing because there\u0027s also the (seemingly unrelated) logdog.prefix section of the Build proto, which I actually thought was what you meant by \"logdog prefix\" at first: https://chromium.googlesource.com/infra/luci/luci-go/+/refs/heads/master/buildbucket/proto/build.proto#381\n\nI don\u0027t feel super strongly about the naming, just an FYI that it\u0027s an overloaded term. Could this be renamed to led_run_id or should that only be the name that gets exposed to recipes?",
+      "parentUuid": "8976d8b6_f5a7efae",
+      "range": {
+        "startLine": 158,
+        "startChar": 1,
+        "endLine": 158,
+        "endChar": 13
+      },
+      "revId": "76dacdfcfb3548552bfa871e51dce529b271bfbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a9b0d670_c6e5017f",
         "filename": "go/src/infra/tools/led/cmd_launch.go",
         "patchSetId": 3
@@ -59,6 +83,30 @@
       "writtenOn": "2019-09-04T21:36:04Z",
       "side": 1,
       "message": "logdog_prefix, though... ick. I would make the actual property here \"led_run_id\", then remove \"launched_by_led\". If \"led_run_id\" is set, then we know we\u0027re \u0027launched_by_led\u0027 as well.\n\nThe fact that it\u0027s related to the logdog prefix should be opaque to the led module, I think.",
+      "range": {
+        "startLine": 171,
+        "startChar": 4,
+        "endLine": 171,
+        "endChar": 17
+      },
+      "revId": "76dacdfcfb3548552bfa871e51dce529b271bfbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "893c1fbb_4d513527",
+        "filename": "go/src/infra/tools/led/cmd_launch.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1347995
+      },
+      "writtenOn": "2019-09-04T22:43:10Z",
+      "side": 1,
+      "message": "Cool, I did feel kinda weird about exposing this as a \"logdog stream\" when it\u0027s not actually going to be used in that context by the recipes.",
+      "parentUuid": "a9b0d670_c6e5017f",
       "range": {
         "startLine": 171,
         "startChar": 4,
