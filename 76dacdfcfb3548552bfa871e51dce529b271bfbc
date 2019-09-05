@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "32e54534_ff0eae97",
+        "filename": "go/src/infra/tools/led/cmd_launch.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1347995
+      },
+      "writtenOn": "2019-09-05T18:24:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ff856ac2_fe5af36d",
+      "range": {
+        "startLine": 103,
+        "startChar": 5,
+        "endLine": 103,
+        "endChar": 25
+      },
+      "revId": "76dacdfcfb3548552bfa871e51dce529b271bfbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8976d8b6_f5a7efae",
         "filename": "go/src/infra/tools/led/cmd_launch.go",
         "patchSetId": 3
@@ -96,6 +120,30 @@
     },
     {
       "key": {
+        "uuid": "89e1a48e_2e41f5e1",
+        "filename": "go/src/infra/tools/led/cmd_launch.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1347995
+      },
+      "writtenOn": "2019-09-05T18:24:29Z",
+      "side": 1,
+      "message": "Ah, got it. Thanks for the explanation.",
+      "parentUuid": "77071a5b_38a5da8a",
+      "range": {
+        "startLine": 158,
+        "startChar": 1,
+        "endLine": 158,
+        "endChar": 13
+      },
+      "revId": "76dacdfcfb3548552bfa871e51dce529b271bfbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a9b0d670_c6e5017f",
         "filename": "go/src/infra/tools/led/cmd_launch.go",
         "patchSetId": 3
@@ -140,6 +188,30 @@
       "revId": "76dacdfcfb3548552bfa871e51dce529b271bfbc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5ad69b86_70bf776c",
+        "filename": "go/src/infra/tools/led/cmd_launch.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1347995
+      },
+      "writtenOn": "2019-09-05T18:24:29Z",
+      "side": 1,
+      "message": "Done. I\u0027ll leave in \"launched_by_led\" for now so we can do a soft transition to led_run_id. I\u0027ll make a separate change to remove it.",
+      "parentUuid": "893c1fbb_4d513527",
+      "range": {
+        "startLine": 171,
+        "startChar": 4,
+        "endLine": 171,
+        "endChar": 17
+      },
+      "revId": "76dacdfcfb3548552bfa871e51dce529b271bfbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
