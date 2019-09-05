@@ -212,6 +212,30 @@
       "revId": "76dacdfcfb3548552bfa871e51dce529b271bfbc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "72e007d6_abbad3da",
+        "filename": "go/src/infra/tools/led/cmd_launch.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-09-05T18:51:24Z",
+      "side": 1,
+      "message": "SGTM",
+      "parentUuid": "5ad69b86_70bf776c",
+      "range": {
+        "startLine": 171,
+        "startChar": 4,
+        "endLine": 171,
+        "endChar": 17
+      },
+      "revId": "76dacdfcfb3548552bfa871e51dce529b271bfbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
