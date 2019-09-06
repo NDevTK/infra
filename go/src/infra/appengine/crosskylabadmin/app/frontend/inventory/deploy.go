@@ -237,6 +237,9 @@ func deployManyDUTs(ctx context.Context, s *gitstore.InventoryStore, sc clients.
 		failDeployStatus(ctx, ds, fmt.Sprintf("failed to add DUT(s) to fleet: %s", err))
 		return ds
 	}
+	if a.GetSkipDeployment() {
+		return ds
+	}
 	for _, nd := range nds {
 		taskID, err := scheduleDUTPreparationTask(ctx, sc, nd.GetId(), a)
 		// TODO(gregorynisbet): this only records the last task ID
