@@ -57,8 +57,8 @@ specified multiple times.`)
 }
 
 func (c *createRunCommon) ValidateArgs(fl flag.FlagSet) error {
-	if c.board == "" {
-		return NewUsageError(fl, "missing -board")
+	if c.board == "" && c.model == "" {
+		return NewUsageError(fl, "must set one of -board or -model")
 	}
 	if c.pool == "" {
 		return NewUsageError(fl, "missing -pool")

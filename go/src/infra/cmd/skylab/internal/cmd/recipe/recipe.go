@@ -79,14 +79,18 @@ func (a *Args) TestPlatformRequest() (*test_platform.Request, error) {
 	req.Params = &test_platform.Request_Params{}
 	params := req.Params
 
-	params.HardwareAttributes = &test_platform.Request_Params_HardwareAttributes{
-		Model: a.Model,
+	if a.Model != "" {
+		params.HardwareAttributes = &test_platform.Request_Params_HardwareAttributes{
+			Model: a.Model,
+		}
 	}
 
 	params.Scheduling = toScheduling(a.Pool, a.QuotaAccount, a.Priority)
 
-	params.SoftwareAttributes = &test_platform.Request_Params_SoftwareAttributes{
-		BuildTarget: &chromiumos.BuildTarget{Name: a.Board},
+	if a.Board != "" {
+		params.SoftwareAttributes = &test_platform.Request_Params_SoftwareAttributes{
+			BuildTarget: &chromiumos.BuildTarget{Name: a.Board},
+		}
 	}
 
 	var deps []*test_platform.Request_Params_SoftwareDependency

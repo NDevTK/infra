@@ -207,12 +207,13 @@ func getRunSuiteCmd(board string, model string, pool string, image string, suite
 	cmd := []string{
 		"/usr/local/autotest/bin/run_suite_skylab",
 		"--build", image,
-		"--board", board,
 		"--pool", pool,
 		"--suite_name", suiteName,
 		"--priority", strconv.Itoa(priority),
 		"--timeout_mins", strconv.Itoa(timeoutMins)}
-
+	if board != "" {
+		cmd = append(cmd, "--board", board)
+	}
 	if orphan {
 		cmd = append(cmd, "--create_and_return")
 	}
