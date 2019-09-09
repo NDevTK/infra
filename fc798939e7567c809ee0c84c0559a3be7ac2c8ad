@@ -1,0 +1,211 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f4ba58d7_d626476c",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2019-09-09T08:01:36Z",
+      "side": 1,
+      "message": "👍 smart and clear.",
+      "range": {
+        "startLine": 51,
+        "startChar": 0,
+        "endLine": 60,
+        "endChar": 33
+      },
+      "revId": "fc798939e7567c809ee0c84c0559a3be7ac2c8ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cbd6d352_2a9808db",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2019-09-09T08:01:36Z",
+      "side": 1,
+      "message": "what\u0027s the value in these 2 funcs? Also, why have tryJoin\u0027s create new goroutine?\nI think this can also be done with less boilerplate like this:\n\nNotify:\n  bo, err :\u003d b.run(ctx, \u0026batchedNotify{batchedRequest: newBatchRequest(), req: req})\n  return resp.(*swarming.NotifyTasksResponse)\nAssign:\n  bo, err :\u003d b.run(ctx, \u0026batchedAssign{batchedRequest: newBatchRequest(), req: req})\n  return resp.(*swarming.AssignTasksResponse)\n\nrun (ctx, bo):\n  // instead of go b.tryJoin(ctx, bo):\n  select {\n  case \u003c-ctx.Done():\n    // prob. not necessary any more: bo.Close(ctx.Err())\n    return nil, ctx.Err()\n  case b.requests \u003c- bo:\n  }\n  err, ok :\u003d \u003c-bo.Done()\n  if ok {return nil, err}\n  return bo.resp, nil\n\nnewBatchRequest(ctx):\n  return batchedRequest{ctx:  ctx, done: make(...)}",
+      "range": {
+        "startLine": 118,
+        "startChar": 1,
+        "endLine": 147,
+        "endChar": 0
+      },
+      "revId": "fc798939e7567c809ee0c84c0559a3be7ac2c8ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9bab3ced_8840b84c",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2019-09-09T08:01:36Z",
+      "side": 1,
+      "message": "for follow up CL: if this slice reached certain size, you should bail, too\nrelying on timer will backfire when your Go process is CPU-starved.",
+      "range": {
+        "startLine": 219,
+        "startChar": 3,
+        "endLine": 219,
+        "endChar": 15
+      },
+      "revId": "fc798939e7567c809ee0c84c0559a3be7ac2c8ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2227f2fe_40b8c6db",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2019-09-09T08:01:36Z",
+      "side": 1,
+      "message": "tbh, i didn\u0027t expect timer to \"unwind\" on ctx cancelation.",
+      "range": {
+        "startLine": 225,
+        "startChar": 2,
+        "endLine": 227,
+        "endChar": 43
+      },
+      "revId": "fc798939e7567c809ee0c84c0559a3be7ac2c8ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4165bafd_ccfaa97d",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 261,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2019-09-09T08:01:36Z",
+      "side": 1,
+      "message": "based on prior suggestion, this would benefit from Resp()\n  Resp() interface{}\n\nif adopted, you can probably change Close signature to (resp interface{}, err error)",
+      "range": {
+        "startLine": 261,
+        "startChar": 5,
+        "endLine": 261,
+        "endChar": 14
+      },
+      "revId": "fc798939e7567c809ee0c84c0559a3be7ac2c8ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "989c6e79_a1f42336",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2019-09-09T08:01:36Z",
+      "side": 1,
+      "message": "I guess you can avoid this block -- see idea below.",
+      "range": {
+        "startLine": 263,
+        "startChar": 13,
+        "endLine": 263,
+        "endChar": 72
+      },
+      "revId": "fc798939e7567c809ee0c84c0559a3be7ac2c8ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fc6a6ae0_9c928acb",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2019-09-09T08:01:36Z",
+      "side": 1,
+      "message": "I assume that you expect Close(errORnil) to be called only once.\nThen, I recommend you follow context.Context way of returning Error to the caller:\n * Done() \u003c- chan struct{} // closed on completion, hence unblocks waiters\n * Err() error // returns error if any has been set by Close(), meaningful only after Done() is closed.",
+      "range": {
+        "startLine": 267,
+        "startChar": 1,
+        "endLine": 269,
+        "endChar": 20
+      },
+      "revId": "fc798939e7567c809ee0c84c0559a3be7ac2c8ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6dbf9425_5da02960",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 379,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2019-09-09T08:01:36Z",
+      "side": 1,
+      "message": "?\nthere is no advantage in combining ... ?",
+      "range": {
+        "startLine": 378,
+        "startChar": 61,
+        "endLine": 379,
+        "endChar": 23
+      },
+      "revId": "fc798939e7567c809ee0c84c0559a3be7ac2c8ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d594814_5a92c02b",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 405,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2019-09-09T08:01:36Z",
+      "side": 1,
+      "message": "this appears to be used only here -- save on GC and LOC by iterating 2 lists here",
+      "range": {
+        "startLine": 405,
+        "startChar": 10,
+        "endLine": 405,
+        "endChar": 16
+      },
+      "revId": "fc798939e7567c809ee0c84c0559a3be7ac2c8ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
