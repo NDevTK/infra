@@ -1,0 +1,4 @@
+Scrapy
+lxml
+beautifulsoup4
+Flask
