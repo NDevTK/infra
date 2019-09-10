@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1952e845_96e94afd",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2019-09-10T00:30:42Z",
+      "side": 1,
+      "message": "again, up to you, but at this point I\u0027d just inline tryJoin (3LOC, which I didn\u0027t realize you forgot)",
+      "range": {
+        "startLine": 91,
+        "startChar": 1,
+        "endLine": 93,
+        "endChar": 2
+      },
+      "revId": "47343ce33c0f0e6c92951e54d3841bc5fc3de11b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "03bcb599_b8524e8f",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2019-09-10T00:30:42Z",
+      "side": 1,
+      "message": "This comment reads as if this issue is unique to current code.\n\nIMO, this is always the case when context may expire while async may be running. Hence, idempotency is important.",
+      "range": {
+        "startLine": 96,
+        "startChar": 2,
+        "endLine": 97,
+        "endChar": 62
+      },
+      "revId": "47343ce33c0f0e6c92951e54d3841bc5fc3de11b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
