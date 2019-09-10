@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "943855ea_14002e7b",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-09-10T00:15:08Z",
+      "side": 1,
+      "message": "Simplified in a similar way to this suggestion.",
+      "parentUuid": "cbd6d352_2a9808db",
+      "range": {
+        "startLine": 118,
+        "startChar": 1,
+        "endLine": 147,
+        "endChar": 0
+      },
+      "revId": "fc798939e7567c809ee0c84c0559a3be7ac2c8ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9bab3ced_8840b84c",
         "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
         "patchSetId": 14
@@ -117,6 +141,30 @@
     },
     {
       "key": {
+        "uuid": "0c5278e0_d8957b0d",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 261,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-09-10T00:15:08Z",
+      "side": 1,
+      "message": "I\u0027d prefer not to cast from interface{} to response types. There are only 2 supported operations, so the existing duplication of code between 2 request types isn\u0027t too bad. Let me know if you still think the same after the recent changes.",
+      "parentUuid": "4165bafd_ccfaa97d",
+      "range": {
+        "startLine": 261,
+        "startChar": 5,
+        "endLine": 261,
+        "endChar": 14
+      },
+      "revId": "fc798939e7567c809ee0c84c0559a3be7ac2c8ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "989c6e79_a1f42336",
         "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
         "patchSetId": 14
@@ -137,6 +185,30 @@
       "revId": "fc798939e7567c809ee0c84c0559a3be7ac2c8ad",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8bc21cd4_7829af12",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-09-10T00:15:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "989c6e79_a1f42336",
+      "range": {
+        "startLine": 263,
+        "startChar": 13,
+        "endLine": 263,
+        "endChar": 72
+      },
+      "revId": "fc798939e7567c809ee0c84c0559a3be7ac2c8ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -163,6 +235,30 @@
     },
     {
       "key": {
+        "uuid": "05b5cda1_deb79129",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-09-10T00:15:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fc6a6ae0_9c928acb",
+      "range": {
+        "startLine": 267,
+        "startChar": 1,
+        "endLine": 269,
+        "endChar": 20
+      },
+      "revId": "fc798939e7567c809ee0c84c0559a3be7ac2c8ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6dbf9425_5da02960",
         "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
         "patchSetId": 14
@@ -186,6 +282,30 @@
     },
     {
       "key": {
+        "uuid": "37ddcf70_3916f175",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 379,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-09-10T00:15:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6dbf9425_5da02960",
+      "range": {
+        "startLine": 378,
+        "startChar": 61,
+        "endLine": 379,
+        "endChar": 23
+      },
+      "revId": "fc798939e7567c809ee0c84c0559a3be7ac2c8ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5d594814_5a92c02b",
         "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
         "patchSetId": 14
@@ -206,6 +326,30 @@
       "revId": "fc798939e7567c809ee0c84c0559a3be7ac2c8ad",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e65f34f1_51155f75",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 405,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-09-10T00:15:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5d594814_5a92c02b",
+      "range": {
+        "startLine": 405,
+        "startChar": 10,
+        "endLine": 405,
+        "endChar": 16
+      },
+      "revId": "fc798939e7567c809ee0c84c0559a3be7ac2c8ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
