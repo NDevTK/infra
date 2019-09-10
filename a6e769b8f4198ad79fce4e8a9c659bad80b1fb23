@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2ef84383_3699d810",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2019-09-10T00:27:03Z",
+      "side": 1,
+      "message": "del.",
+      "range": {
+        "startLine": 229,
+        "startChar": 13,
+        "endLine": 229,
+        "endChar": 72
+      },
+      "revId": "a6e769b8f4198ad79fce4e8a9c659bad80b1fb23",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "85cc6837_0c2bdfac",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2019-09-10T00:27:03Z",
+      "side": 1,
+      "message": "struct{} is more canonical when no data is meant to be ever sent here.",
+      "range": {
+        "startLine": 235,
+        "startChar": 15,
+        "endLine": 235,
+        "endChar": 24
+      },
+      "revId": "a6e769b8f4198ad79fce4e8a9c659bad80b1fb23",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

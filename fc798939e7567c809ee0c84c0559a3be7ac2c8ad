@@ -95,6 +95,30 @@
     },
     {
       "key": {
+        "uuid": "b0383ca1_8fada8ef",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2019-09-10T00:27:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9bab3ced_8840b84c",
+      "range": {
+        "startLine": 219,
+        "startChar": 3,
+        "endLine": 219,
+        "endChar": 15
+      },
+      "revId": "fc798939e7567c809ee0c84c0559a3be7ac2c8ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2227f2fe_40b8c6db",
         "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
         "patchSetId": 14
@@ -162,6 +186,30 @@
       "revId": "fc798939e7567c809ee0c84c0559a3be7ac2c8ad",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cfc8f75d_12011f11",
+        "filename": "go/src/infra/appengine/qscheduler-swarming/app/state/batchrunner.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 261,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2019-09-10T00:27:03Z",
+      "side": 1,
+      "message": "casting from interface{} is how Go generics work :P\n\nI unreasonably hate non-trivial logic duplicate, so I\u0027d have done this anyhow, but it\u0027s just my preference. Your code, you decide.",
+      "parentUuid": "0c5278e0_d8957b0d",
+      "range": {
+        "startLine": 261,
+        "startChar": 5,
+        "endLine": 261,
+        "endChar": 14
+      },
+      "revId": "fc798939e7567c809ee0c84c0559a3be7ac2c8ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
