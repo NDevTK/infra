@@ -8,7 +8,6 @@ from datetime import timedelta
 import json
 import logging
 import os
-import re
 
 from google.appengine.api import memcache
 from google.appengine.api import taskqueue
@@ -232,6 +231,9 @@ def _StoreMultipleLocalEntities(local_entities):
       key_to_local_entities[key] for key in non_existent_entity_keys
   ]
   ndb.put_multi(non_existent_local_entities)
+
+  # Frees the memory used be memcache.
+  ndb.get_context().clear_cache()
   return non_existent_local_entities
 
 
@@ -372,12 +374,8 @@ def _GetCQHiddenFlakeQueryStartTime():
     (str): String representation of a datetime in the format
       %Y-%m-%d %H:%M:%S UTC.
   """
-  last_query_time_right_bourndary = time_util.GetUTCNow() - timedelta(
+  last_query_time_right_boundary = time_util.GetUTCNow() - timedelta(
       hours=_CQ_HIDDEN_FLAKE_QUERY_HOUR_INTERVAL)
-  hidden_flake_query_start_time = time_util.FormatDatetime(time_util.GetUTCNow(
-  ) - timedelta(
-      hours=_CQ_HIDDEN_FLAKE_QUERY_HOUR_INTERVAL + _ROUGH_MAX_BUILD_CYCLE_HOURS,
-      minutes=_CQ_HIDDEN_FLAKE_QUERY_OVERLAP_MINUTES))
   hidden_flake_query_end_time = time_util.FormatDatetime(
       time_util.GetUTCNow() -
       timedelta(hours=_CQ_HIDDEN_FLAKE_QUERY_HOUR_INTERVAL))
@@ -386,9 +384,20 @@ def _GetCQHiddenFlakeQueryStartTime():
 
   if not last_query_time:
     # Only before the first time of running the query.
+    hidden_flake_query_start_time = time_util.FormatDatetime(
+        time_util.GetUTCNow() - timedelta(
+            hours=_CQ_HIDDEN_FLAKE_QUERY_HOUR_INTERVAL +
+            _ROUGH_MAX_BUILD_CYCLE_HOURS,
+            minutes=_CQ_HIDDEN_FLAKE_QUERY_OVERLAP_MINUTES))
     return hidden_flake_query_start_time, hidden_flake_query_end_time
+
+  hidden_flake_query_start_time = time_util.FormatDatetime(
+      last_query_time - timedelta(
+          hours=_CQ_HIDDEN_FLAKE_QUERY_HOUR_INTERVAL +
+          _ROUGH_MAX_BUILD_CYCLE_HOURS,
+          minutes=_CQ_HIDDEN_FLAKE_QUERY_OVERLAP_MINUTES))
   return ((hidden_flake_query_start_time, hidden_flake_query_end_time) if
-          last_query_time <= last_query_time_right_bourndary else (None, None))
+          last_query_time <= last_query_time_right_boundary else (None, None))
 
 
 def _GetQuery(flake_type_enum):
@@ -424,7 +433,10 @@ def _ExecuteQueryPaging(flake_type_enum,
   else:
     query = _GetQuery(flake_type_enum)
     success, rows, job_id, page_token = bigquery_helper.ExecuteQueryPaging(
-        appengine_util.GetApplicationId(), query=query, parameters=parameters)
+        appengine_util.GetApplicationId(),
+        query=query,
+        parameters=parameters,
+        max_results=10000)
 
   flake_type_desc = FLAKE_TYPE_DESCRIPTIONS.get(flake_type_enum, 'N/A')
   if not success:
@@ -492,6 +504,26 @@ def QueryAndStoreNonHiddenFlakes(flake_type_enum):
     _EnqueueDetectFlakeByBuildTasks(row['build_id'], flake_type_desc)
 
 
+def _UpdateMetadataForFlakesWithHiddenOccurrences(flake_type,
+                                                  detection_start_time):
+  """
+
+  Args:
+    flake_type (FlakeType): Type of the flake occurrences.
+    detection_start_time (datetime): datetime the detection of hidden flakes
+       starts.
+  """
+  query = FlakeOccurrence.query(
+      ndb.AND(FlakeOccurrence.time_detected > detection_start_time,
+              FlakeOccurrence.flake_type == flake_type))
+  more = True
+  cursor = None
+
+  while more:
+    occurrences, cursor, more = query.fetch_page(1000, start_cursor=cursor)
+    _UpdateFlakeMetadata(occurrences)
+
+
 def QueryAndStoreHiddenFlakes(flake_type_enum=FlakeType.CQ_HIDDEN_FLAKE):
   """Runs the query to fetch hidden flake occurrences and store them.
 
@@ -502,6 +534,7 @@ def QueryAndStoreHiddenFlakes(flake_type_enum=FlakeType.CQ_HIDDEN_FLAKE):
   there should be many of them in many builds.
   Use a query to directly query hidden flakes from bigquery.
   """
+  detection_start_time = time_util.GetUTCNow()
   start_time_string, end_time_string = _GetCQHiddenFlakeQueryStartTime()
   if not start_time_string:
     # Only runs this query every 2 hours.
@@ -517,7 +550,7 @@ def QueryAndStoreHiddenFlakes(flake_type_enum=FlakeType.CQ_HIDDEN_FLAKE):
   if rows is None:
     return
 
-  new_occurrences = []
+  new_occurrence_count = 0
   while True:
     # Makes local_flakes a generator to reduce memory usage.
     local_flakes = (_CreateFlakeFromRow(row) for row in rows)
@@ -526,14 +559,17 @@ def QueryAndStoreHiddenFlakes(flake_type_enum=FlakeType.CQ_HIDDEN_FLAKE):
     # local_flake_occurrences is another generator.
     local_flake_occurrences = (
         _CreateFlakeOccurrenceFromRow(row, flake_type_enum) for row in rows)
-    new_occurrences.extend(_StoreMultipleLocalEntities(local_flake_occurrences))
+    new_occurrence_count += len(
+        _StoreMultipleLocalEntities(local_flake_occurrences))
 
     if not page_token:
       break
 
     rows, job_id, page_token = _ExecuteQueryPaging(
         flake_type_enum, job_id=job_id, page_token=page_token)
-  _UpdateFlakeMetadata(new_occurrences)
+
+  _UpdateMetadataForFlakesWithHiddenOccurrences(flake_type_enum,
+                                                detection_start_time)
 
   if flake_type_enum == FlakeType.CQ_HIDDEN_FLAKE:
     # Updates memecache for the new last_cq_hidden_flake_query_time.
@@ -541,7 +577,7 @@ def QueryAndStoreHiddenFlakes(flake_type_enum=FlakeType.CQ_HIDDEN_FLAKE):
 
   flake_type_desc = FLAKE_TYPE_DESCRIPTIONS.get(flake_type_enum, 'N/A')
   monitoring.OnFlakeDetectionDetectNewOccurrences(
-      flake_type=flake_type_desc, num_occurrences=len(new_occurrences))
+      flake_type=flake_type_desc, num_occurrences=new_occurrence_count)
 
 
 def StoreDetectedCIFlakes(master_name, builder_name, build_number, flaky_tests):
