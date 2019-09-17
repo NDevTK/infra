@@ -1,0 +1,199 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f862e39b_c55260d7",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-17T01:48:12Z",
+      "side": 1,
+      "message": "Let\u0027s add an additional paragraph (or perhaps a bulleted list) clarifying what it means to be \"correctly formatted\"",
+      "revId": "fa833e004bbb5188be8f26e791499673b90c5f70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5174b163_dfa4be4a",
+        "filename": "go/src/infra/tricium/functions/histograms-check/.gitignore",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-17T01:48:12Z",
+      "side": 1,
+      "message": "nit: Let\u0027s alphabetize",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 2,
+        "endChar": 17
+      },
+      "revId": "fa833e004bbb5188be8f26e791499673b90c5f70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f08d7311_53899ad7",
+        "filename": "go/src/infra/tricium/functions/histograms-check/Makefile",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-17T01:48:12Z",
+      "side": 1,
+      "message": "nit: Omit this trailing whitespace",
+      "range": {
+        "startLine": 13,
+        "startChar": 10,
+        "endLine": 13,
+        "endChar": 11
+      },
+      "revId": "fa833e004bbb5188be8f26e791499673b90c5f70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "52fa92c0_aea6112d",
+        "filename": "go/src/infra/tricium/functions/histograms-check/cipd.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-17T01:48:12Z",
+      "side": 1,
+      "message": "IMO, let\u0027s name the analyzer something a bit broader like \"metrics\" or \"metrics-reviews\". But, Quinten might have a stronger preference, based on best practices for analyzer names.",
+      "range": {
+        "startLine": 1,
+        "startChar": 32,
+        "endLine": 1,
+        "endChar": 48
+      },
+      "revId": "fa833e004bbb5188be8f26e791499673b90c5f70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3dca0897_2b2081dd",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-17T01:48:12Z",
+      "side": 1,
+      "message": "nit: I\u0027d suggest something like \"Metrics\"; though again, I\u0027m happy to defer to Quinten\u0027s preference if he has one.",
+      "range": {
+        "startLine": 19,
+        "startChar": 20,
+        "endLine": 19,
+        "endChar": 38
+      },
+      "revId": "fa833e004bbb5188be8f26e791499673b90c5f70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "22eead99_70ee6d9d",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-17T01:48:12Z",
+      "side": 1,
+      "message": "Do we want to write this as a defer statement immediately after opening the file?",
+      "revId": "fa833e004bbb5188be8f26e791499673b90c5f70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4957944_4bff1283",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-17T01:48:12Z",
+      "side": 1,
+      "message": "nit: Perhaps name this \"comment\"? (go style does tend to prefer really short variable names, so \"c\" might also be ok if it would make the line too long)",
+      "range": {
+        "startLine": 84,
+        "startChar": 6,
+        "endLine": 84,
+        "endChar": 7
+      },
+      "revId": "fa833e004bbb5188be8f26e791499673b90c5f70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f77ab00a_a71d398d",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-17T01:48:12Z",
+      "side": 1,
+      "message": "nit: Could we make this an `else if`?",
+      "range": {
+        "startLine": 89,
+        "startChar": 2,
+        "endLine": 89,
+        "endChar": 4
+      },
+      "revId": "fa833e004bbb5188be8f26e791499673b90c5f70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "619f6957_170651d4",
+        "filename": "go/src/infra/tricium/functions/histograms-check/test/src/good.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-17T01:48:12Z",
+      "side": 1,
+      "message": "Let\u0027s include a second histogram where both of the listed owners are individuals rather than teams.",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 20
+      },
+      "revId": "fa833e004bbb5188be8f26e791499673b90c5f70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
