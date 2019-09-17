@@ -88,6 +88,30 @@
     },
     {
       "key": {
+        "uuid": "19fca84c_6fc23991",
+        "filename": "go/src/infra/tricium/functions/histograms-check/cipd.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T18:20:16Z",
+      "side": 1,
+      "message": "metrics or metrics-reviews both sound OK to me.\n\nHmm... It might be a bit redundant to include \"-reviews\", since all the analyzers create comment for code review. But then again, many analyzers contain \"lint\" or \"check\".\n\nAnyway, I think any of these names are OK, and a broader name would be better if it will be expanded to check other metrics-related files.",
+      "parentUuid": "52fa92c0_aea6112d",
+      "range": {
+        "startLine": 1,
+        "startChar": 32,
+        "endLine": 1,
+        "endChar": 48
+      },
+      "revId": "fa833e004bbb5188be8f26e791499673b90c5f70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3dca0897_2b2081dd",
         "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
         "patchSetId": 1
@@ -99,6 +123,30 @@
       "writtenOn": "2019-09-17T01:48:12Z",
       "side": 1,
       "message": "nit: I\u0027d suggest something like \"Metrics\"; though again, I\u0027m happy to defer to Quinten\u0027s preference if he has one.",
+      "range": {
+        "startLine": 19,
+        "startChar": 20,
+        "endLine": 19,
+        "endChar": 38
+      },
+      "revId": "fa833e004bbb5188be8f26e791499673b90c5f70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2114c0e4_8673e347",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T18:20:16Z",
+      "side": 1,
+      "message": "No particular preference, although there is a convention that the category name here matches the name in the analyzer definition in the configs later (and also the directory name here).",
+      "parentUuid": "3dca0897_2b2081dd",
       "range": {
         "startLine": 19,
         "startChar": 20,
@@ -128,6 +176,24 @@
     },
     {
       "key": {
+        "uuid": "a9e664a4_bf50a7d2",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T18:20:16Z",
+      "side": 1,
+      "message": "Yep, although it doesn\u0027t make much difference here, it\u0027s idiomatic Go to put closing operations immediately after opening operations with defer.",
+      "parentUuid": "22eead99_70ee6d9d",
+      "revId": "fa833e004bbb5188be8f26e791499673b90c5f70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1765ebe4_1a347e2e",
         "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
         "patchSetId": 1
@@ -139,6 +205,24 @@
       "writtenOn": "2019-09-17T01:52:39Z",
       "side": 1,
       "message": "I think this means we\u0027ll read the entire histograms.xml file, line by line, right? Does the Tricium API support reading just the changed lines in a file in some convenient way? Given the size of the histograms.xml file, it might be a significant performance boost if we can skip over unchanged lines.",
+      "revId": "fa833e004bbb5188be8f26e791499673b90c5f70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8b9b121_ec3e653c",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T18:20:16Z",
+      "side": 1,
+      "message": "This is a great point ... but unfortunately there\u0027s no very easy way for the analyzers to get the changed lines :-( I guess let\u0027s see how the performance is in practice first?",
+      "parentUuid": "1765ebe4_1a347e2e",
       "revId": "fa833e004bbb5188be8f26e791499673b90c5f70",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

@@ -1,0 +1,271 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b613a82b_18581062",
+        "filename": "go/src/infra/tricium/functions/histograms-check/Makefile",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T18:20:16Z",
+      "side": 1,
+      "message": "Extra blank line (I think)",
+      "revId": "98a279c9d3b3c07d9989cddd84924a9ae8eb1cb1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "556211e8_83a0c5e5",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T18:20:16Z",
+      "side": 1,
+      "message": "By convention, .go filenames have underscores rather than dashes, so histograms_check.go and histograms_check_test.go.",
+      "revId": "98a279c9d3b3c07d9989cddd84924a9ae8eb1cb1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "15b21f5b_431bd101",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T18:20:16Z",
+      "side": 1,
+      "message": "Usually different types of imports (standard library, external library, or local) are grouped visually, so this line would go at the bottom with a blank line between strings and this line.",
+      "revId": "98a279c9d3b3c07d9989cddd84924a9ae8eb1cb1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3eb4744f_8d08019c",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T18:20:16Z",
+      "side": 1,
+      "message": "nit: this could be changed to \"an individual\"",
+      "range": {
+        "startLine": 24,
+        "startChar": 44,
+        "endLine": 24,
+        "endChar": 54
+      },
+      "revId": "98a279c9d3b3c07d9989cddd84924a9ae8eb1cb1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0348d79b_d7862fab",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T18:20:16Z",
+      "side": 1,
+      "message": "Somewhere here, either at the top of the file, or in a separate README, or here, you could make it clear that we\u0027re talking about UMA histograms, as described in https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md.\n\nI\u0027d say maybe a short description of the analyzer and its purpose could be added at the top of this file or a separate README file. Then this comment could potentially be removed.",
+      "revId": "98a279c9d3b3c07d9989cddd84924a9ae8eb1cb1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9616fd21_09d051e1",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T18:20:16Z",
+      "side": 1,
+      "message": "Optionally, you could omit the items that are not used yet.",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 21
+      },
+      "revId": "98a279c9d3b3c07d9989cddd84924a9ae8eb1cb1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "151232d8_ffabde20",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T18:20:16Z",
+      "side": 1,
+      "message": "Also, if you only want to look at one or a few particular files (e.g. \"histograms.xml\") you may want to match those names explicitly, so that you don\u0027t look at random other XML files in the source tree, e.g. foo_preferences.xml\".\n\nOne possible way to do that would be something like:\n\n\tif base :\u003d filepath.Base(file.Path); base \u003d\u003d \"histograms.xml\" {\n\nAlso: it doesn\u0027t really save any lines here, but it\u0027s worth noting there\u0027s a helper function  defined in https://cs.chromium.org/chromium/infra/go/src/infra/tricium/api/v1/data_helpers.go?l\u003d97 to filter by extension, e.g.:\n\n\tfiles, err :\u003d tricium.FilterFiles(input.Files, \"*.xml\")\n\tif err !\u003d nil {\n\t\tlog.Fatalf(\"Failed to filter files: %v\", err)\n\t}",
+      "revId": "98a279c9d3b3c07d9989cddd84924a9ae8eb1cb1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "53ef0111_6bc6efb8",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T18:20:16Z",
+      "side": 1,
+      "message": "Very idiomatic Go variable names :-)\n\n[Aside: I had a hard time getting to used to some Go code where very short variable names are used, as one-letter names are sometimes less clear. But in this case, it\u0027s clear enough that p means path and f means file.]",
+      "revId": "98a279c9d3b3c07d9989cddd84924a9ae8eb1cb1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8223044f_81f29b52",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T18:20:16Z",
+      "side": 1,
+      "message": "We\u0027re assuming that histograms.xml is always nicely formatted. I guess it\u0027s autoformatted? I think it\u0027s worth explicitly stating this assumption, since this would break if it\u0027s not, e.g. if \"\u003c/summary\u003e\u003c/histogram\u003e\" were on the same line.\n\nAs this analyzer is expanded to check more things, it might end up being simpler to use a library for parsing XML, e.g. https://golang.org/pkg/encoding/xml/.",
+      "revId": "98a279c9d3b3c07d9989cddd84924a9ae8eb1cb1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "adfc073b_5383e3b7",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T18:20:16Z",
+      "side": 1,
+      "message": "Note, a capital letter in a function name in Go means that it\u0027s public rather than private. So if this function is meant to be private like the other functions here (no reason why it shouldn\u0027t be), then this function could be called xmlTagVal.",
+      "revId": "98a279c9d3b3c07d9989cddd84924a9ae8eb1cb1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1680647c_50e61f36",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T18:20:16Z",
+      "side": 1,
+      "message": "This will be incorrect if there are ever sets of tags on one line, e.g. for\n\n    \u003cone\u003e1\u003c/one\u003e\u003ctwo\u003e2\u003c/two\u003e\n\nThis will return \"1\u003c/one\u003e\u003ctwo\u003e2\"",
+      "revId": "98a279c9d3b3c07d9989cddd84924a9ae8eb1cb1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b4a25602_d618c2ee",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T18:20:16Z",
+      "side": 1,
+      "message": "I like that the code is organized into small, simple functions.",
+      "revId": "98a279c9d3b3c07d9989cddd84924a9ae8eb1cb1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2a0756c5_beb8524f",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T18:20:16Z",
+      "side": 1,
+      "message": "EndLine can be omitted if it\u0027s always the same as StartLine.",
+      "revId": "98a279c9d3b3c07d9989cddd84924a9ae8eb1cb1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e11e6300_7f9ae533",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T18:20:16Z",
+      "side": 1,
+      "message": "This test looks good to me -- it\u0027s split into small tests that are pretty easy to understand one by one.\n\nNote that this test only tests `analyzeFile` and it relies on test data that\u0027s not in the test itself, but I think that\u0027s appropriate in this case.",
+      "revId": "98a279c9d3b3c07d9989cddd84924a9ae8eb1cb1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9612ebb4_840d38a2",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T18:20:16Z",
+      "side": 1,
+      "message": "Nit: This import can go in a separate line, with a blank line between the convey import and this.",
+      "revId": "98a279c9d3b3c07d9989cddd84924a9ae8eb1cb1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
