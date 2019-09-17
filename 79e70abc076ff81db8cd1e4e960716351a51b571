@@ -1,0 +1,118 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e9e85a3f_6c32e429",
+        "filename": "go/src/infra/tricium/functions/metrics/README.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T23:26:07Z",
+      "side": 1,
+      "message": "Thanks, I think this is helpful.",
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "85b8650c_d486653e",
+        "filename": "go/src/infra/tricium/functions/metrics/README.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T23:26:07Z",
+      "side": 1,
+      "message": "Nit, period at end of sentence",
+      "range": {
+        "startLine": 11,
+        "startChar": 128,
+        "endLine": 11,
+        "endChar": 129
+      },
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "13571da8_1364ce4a",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T23:26:07Z",
+      "side": 1,
+      "message": "Note: I usually end all full-sentence comments with a period, and optionally you could do this too. I see currently you\u0027re consistently not using periods, so keeping it consistent is what\u0027s important.",
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "996756c6_173f81d0",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T23:26:07Z",
+      "side": 1,
+      "message": "Optional: I think it\u0027s simpler and a little more idiomatic to just use a literal struct\n\n    \u0026LineNum{OwnerLineNum: ...}\n\ninline in the code below -- even later on, when there are more members in this struct.\n\nIn any case, if you did want to keep this function, then, since it\u0027s a helper function, I\u0027d make it private (lower-case) and move it down in the file below where it\u0027s used.",
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "29561def_a392817e",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T23:26:07Z",
+      "side": 1,
+      "message": "Yep, I think using the xml package to unmarshal will make this simpler later on when looking at more fields.\n\nNote, xml.Unmarshal returns an error in the case of error, you may want to print a warning and return nil in this case.",
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "72fd5a44_d4f6fe97",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-17T23:26:07Z",
+      "side": 1,
+      "message": "Nit/optional, usually the \"same project\" imports go after the \"external library\" exports, so convey/tricium would swap positions.",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 45
+      },
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
