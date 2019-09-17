@@ -128,6 +128,23 @@
     },
     {
       "key": {
+        "uuid": "1765ebe4_1a347e2e",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-17T01:52:39Z",
+      "side": 1,
+      "message": "I think this means we\u0027ll read the entire histograms.xml file, line by line, right? Does the Tricium API support reading just the changed lines in a file in some convenient way? Given the size of the histograms.xml file, it might be a significant performance boost if we can skip over unchanged lines.",
+      "revId": "fa833e004bbb5188be8f26e791499673b90c5f70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a4957944_4bff1283",
         "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
         "patchSetId": 1
