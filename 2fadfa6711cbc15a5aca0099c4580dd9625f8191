@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e941e1a1_5a9c88b8",
+        "filename": "appengine/findit/services/flake_detection/detect_flake_occurrences.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-09-17T19:17:23Z",
+      "side": 1,
+      "message": "by",
+      "range": {
+        "startLine": 235,
+        "startChar": 26,
+        "endLine": 235,
+        "endChar": 28
+      },
+      "revId": "2fadfa6711cbc15a5aca0099c4580dd9625f8191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8e27d8f6_4e7ed990",
+        "filename": "appengine/findit/services/flake_detection/detect_flake_occurrences.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 391,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-09-17T19:17:23Z",
+      "side": 1,
+      "message": "This time delta seems identical to the one below, is it worth computing only once?",
+      "range": {
+        "startLine": 388,
+        "startChar": 32,
+        "endLine": 391,
+        "endChar": 60
+      },
+      "revId": "2fadfa6711cbc15a5aca0099c4580dd9625f8191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ac37ba0b_e6dce04c",
+        "filename": "appengine/findit/services/flake_detection/detect_flake_occurrences.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 400,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-09-17T19:17:23Z",
+      "side": 1,
+      "message": "It might be easier to read if this check happens earlier. (By line 383 both last_query_time and the right boundary are already defined)",
+      "revId": "2fadfa6711cbc15a5aca0099c4580dd9625f8191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1defaae8_251c3d51",
+        "filename": "appengine/findit/services/flake_detection/detect_flake_occurrences.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 516,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-09-17T19:17:23Z",
+      "side": 1,
+      "message": "is this correct? it seems detection_start_time is set to GetUTCNow() in line 536",
+      "range": {
+        "startLine": 516,
+        "startChar": 46,
+        "endLine": 516,
+        "endChar": 66
+      },
+      "revId": "2fadfa6711cbc15a5aca0099c4580dd9625f8191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
