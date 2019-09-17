@@ -1,0 +1,4 @@
+package: infra/tricium/function/histograms-check
+install_mode: symlink
+data:
+  - file: histograms-check
