@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "65a23779_7fb6234c",
+        "filename": "appengine/findit/services/flake_detection/detect_flake_occurrences.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-09-17T20:26:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e941e1a1_5a9c88b8",
+      "range": {
+        "startLine": 235,
+        "startChar": 26,
+        "endLine": 235,
+        "endChar": 28
+      },
+      "revId": "2fadfa6711cbc15a5aca0099c4580dd9625f8191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8e27d8f6_4e7ed990",
         "filename": "appengine/findit/services/flake_detection/detect_flake_occurrences.py",
         "patchSetId": 3
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "f9e72ba3_02a5806e",
+        "filename": "appengine/findit/services/flake_detection/detect_flake_occurrences.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 391,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-09-17T20:26:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8e27d8f6_4e7ed990",
+      "range": {
+        "startLine": 388,
+        "startChar": 32,
+        "endLine": 391,
+        "endChar": 60
+      },
+      "revId": "2fadfa6711cbc15a5aca0099c4580dd9625f8191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ac37ba0b_e6dce04c",
         "filename": "appengine/findit/services/flake_detection/detect_flake_occurrences.py",
         "patchSetId": 3
@@ -65,6 +113,24 @@
     },
     {
       "key": {
+        "uuid": "bec255f7_ac3df262",
+        "filename": "appengine/findit/services/flake_detection/detect_flake_occurrences.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 400,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-09-17T20:26:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ac37ba0b_e6dce04c",
+      "revId": "2fadfa6711cbc15a5aca0099c4580dd9625f8191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1defaae8_251c3d51",
         "filename": "appengine/findit/services/flake_detection/detect_flake_occurrences.py",
         "patchSetId": 3
@@ -76,6 +142,30 @@
       "writtenOn": "2019-09-17T19:17:23Z",
       "side": 1,
       "message": "is this correct? it seems detection_start_time is set to GetUTCNow() in line 536",
+      "range": {
+        "startLine": 516,
+        "startChar": 46,
+        "endLine": 516,
+        "endChar": 66
+      },
+      "revId": "2fadfa6711cbc15a5aca0099c4580dd9625f8191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ac762e83_ca923df2",
+        "filename": "appengine/findit/services/flake_detection/detect_flake_occurrences.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 516,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-09-17T20:26:48Z",
+      "side": 1,
+      "message": "Yes, detection_start_time is set to the time when query starts, so all occurrences stored after it should be the occurrences that are detected in this task.",
+      "parentUuid": "1defaae8_251c3d51",
       "range": {
         "startLine": 516,
         "startChar": 46,
