@@ -361,6 +361,24 @@
     },
     {
       "key": {
+        "uuid": "28f45d0d_80fb59eb",
+        "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-18T20:38:51Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "a8b9b121_ec3e653c",
+      "revId": "fa833e004bbb5188be8f26e791499673b90c5f70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a4957944_4bff1283",
         "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
         "patchSetId": 1

@@ -739,6 +739,30 @@
       "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0202270a_51916f6c",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-18T20:38:51Z",
+      "side": 1,
+      "message": "Ack. Thanks for teaching me about Go paradigms \u003d)",
+      "parentUuid": "3fa53569_e3d6e985",
+      "range": {
+        "startLine": 38,
+        "startChar": 35,
+        "endLine": 38,
+        "endChar": 43
+      },
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
