@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "680be275_c0567054",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-18T17:31:07Z",
+      "side": 1,
+      "message": "The tab would be included in the string here; to avoid including a tab, you have a couple choices:\n\n\toneOwnerError \u003d (\"It\u0027s a best practice to list multiple owners, \\n\" +\n\t\"so that there\u0027s no single point of failure for communication:\")\n\nOr maybe (not sure if gofmt will mess this up):\n\n\toneOwnerError \u003d `It\u0027s a best practice to list multiple owners,\nso that there\u0027s no single point of failure for communication:`",
+      "range": {
+        "startLine": 29,
+        "startChar": 63,
+        "endLine": 30,
+        "endChar": 1
+      },
+      "revId": "7b5d9bf0952fb1e842fe6ed6440694219e3f6128",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

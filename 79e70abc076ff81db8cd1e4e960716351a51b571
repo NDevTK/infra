@@ -553,6 +553,24 @@
     },
     {
       "key": {
+        "uuid": "92340391_7cc00fec",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-18T17:31:07Z",
+      "side": 1,
+      "message": "Nope, the Tricium comments that are posted to Gerrit will only be for changed lines.\n\nBackground:\nSince it\u0027s important that Tricium comments generally useful and actionable, we almost always only care about issues within the changed/added lines, so we want to only post comments in those lines. BUT:\n\n1. Many linter tools only support checking the whole file; it\u0027s often easier for analyzers to check the whole file and not be responsible for filtering based on changed lines.\n2. In the Gerrit API, in order to get information about which lines changed, it\u0027s necessary to request the diff, for one change at a time. So to avoid many unnecessary requests, we wait until there are actually comments generated before requesting the diff and filtering the comments.",
+      "parentUuid": "d1f13f00_64777e16",
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ae5a3fe4_4e60cc56",
         "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
         "patchSetId": 4
