@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "dbd36ea4_55863f8c",
+        "filename": "go/src/infra/tricium/functions/histograms-check/Makefile",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-18T17:08:07Z",
+      "side": 1,
+      "message": "I meant at the end of the file, it looks like there might be two newline characters when only one would do - but this doesn\u0027t actually matter, since it doesn\u0027t affect behavior or readability or anything (so feel free to just mark this as resolved).",
+      "parentUuid": "9a04bd00_f5f19eba",
+      "revId": "98a279c9d3b3c07d9989cddd84924a9ae8eb1cb1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "556211e8_83a0c5e5",
         "filename": "go/src/infra/tricium/functions/histograms-check/histograms-check.go",
         "patchSetId": 2
