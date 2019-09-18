@@ -535,6 +535,24 @@
     },
     {
       "key": {
+        "uuid": "d1f13f00_64777e16",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1369574
+      },
+      "writtenOn": "2019-09-18T17:12:38Z",
+      "side": 1,
+      "message": "Will the Tricium comments that show up in the Gerrit UI also be for the entire histograms.xml file, and not just the changes?",
+      "parentUuid": "5b464589_5db6c90c",
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ae5a3fe4_4e60cc56",
         "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
         "patchSetId": 4
