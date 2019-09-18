@@ -70,6 +70,30 @@
       "revId": "7b5d9bf0952fb1e842fe6ed6440694219e3f6128",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7bcace3d_cbf72e22",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-18T21:36:04Z",
+      "side": 1,
+      "message": "Sounds good! Let\u0027s actually split off a small follow-up CL for just this fix, to keep individual CLs more focused. Thanks \u003d)",
+      "parentUuid": "d11e3cb0_33b36af6",
+      "range": {
+        "startLine": 29,
+        "startChar": 63,
+        "endLine": 30,
+        "endChar": 1
+      },
+      "revId": "7b5d9bf0952fb1e842fe6ed6440694219e3f6128",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
