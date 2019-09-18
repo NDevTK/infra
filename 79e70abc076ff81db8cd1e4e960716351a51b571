@@ -19,6 +19,63 @@
     },
     {
       "key": {
+        "uuid": "28381968_d3663546",
+        "filename": "go/src/infra/tricium/functions/metrics/README.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-18T02:35:21Z",
+      "side": 1,
+      "message": "nit: Instead of \"requests\", let\u0027s write \"metadata\" or \"XML files\". We can update this if we also add checking for metrics call sites.",
+      "range": {
+        "startLine": 3,
+        "startChar": 39,
+        "endLine": 3,
+        "endChar": 47
+      },
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3dcbafbe_e2156dd5",
+        "filename": "go/src/infra/tricium/functions/metrics/README.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-18T02:35:21Z",
+      "side": 1,
+      "message": "nit: I\u0027d phrase this as something like \"There are multiple owners, to avoid a single point of failure.\"",
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bcd3482b_60977bb8",
+        "filename": "go/src/infra/tricium/functions/metrics/README.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-18T02:35:21Z",
+      "side": 1,
+      "message": "nit: I\u0027d add here: \"so that there\u0027s a clear primary point of contact\".",
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "85b8650c_d486653e",
         "filename": "go/src/infra/tricium/functions/metrics/README.md",
         "patchSetId": 4
@@ -36,6 +93,86 @@
         "endLine": 11,
         "endChar": 129
       },
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "72b27abb_a4d6338a",
+        "filename": "go/src/infra/tricium/functions/metrics/README.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-18T02:35:21Z",
+      "side": 1,
+      "message": "Let\u0027s also document that this pretty printing is enforced by the presubmit tooling.",
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0433c46f_2dd95d05",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-18T02:35:21Z",
+      "side": 1,
+      "message": "nit: Somewhere, it would be helpful to document why we want both of these. (Presumably, because there are other tags that share the \"histogram\" prefix, such as \"histogram-suffixes\", right?)",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 37
+      },
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "270ffa4a_617ca6eb",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-18T02:35:21Z",
+      "side": 1,
+      "message": "Sorry, I forgot to comment on the actual messages last time! I meant to come back to them and forgot to.\n\nFor this one, let\u0027s phrase it as \"It\u0027s a best practice to list multiple owners, so that there\u0027s no single point of failure for communication: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Owners\". (And, let\u0027s include that link in the message, so that there\u0027s an obvious place to look for more information if someone is curious.)",
+      "range": {
+        "startLine": 27,
+        "startChar": 24,
+        "endLine": 27,
+        "endChar": 63
+      },
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fea5ab2c_21d64e34",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-18T02:35:21Z",
+      "side": 1,
+      "message": "Let\u0027s phrase this as: \"Please list an individual as the primary owner for this metric: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Owners\"",
       "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -93,6 +230,40 @@
     },
     {
       "key": {
+        "uuid": "550514c3_b1078ecc",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-18T02:35:21Z",
+      "side": 1,
+      "message": "Quinten, is there any best practice for what sorts of log statements to include?\n\nI wonder if it would be more helpful to log the entire Data_Comment, so that the log includes all of the context we\u0027d want to see if debugging. Currently, it\u0027s not clear from the log, which histogram this corresponds to.",
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ae5a3fe4_4e60cc56",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-18T02:35:21Z",
+      "side": 1,
+      "message": "I think I forgot to come back to this check in my previous review pass as well. Let\u0027s also look for the strings \"-dev\" and \"-core\" in the first owner\u0027s name – names like \"extensions-dev\" and \"extensions-core\" are often team names. Actually, it might be fine to just look for a hyphen in the username, as I don\u0027t think individual usernames (\"ldaps\") are allowed to have hyphens; whereas group list names almost universally include a hyphen.",
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "72fd5a44_d4f6fe97",
         "filename": "go/src/infra/tricium/functions/metrics/histograms_check_test.go",
         "patchSetId": 4
@@ -109,6 +280,29 @@
         "startChar": 0,
         "endLine": 11,
         "endChar": 45
+      },
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7400c345_28f81ec2",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-18T02:35:21Z",
+      "side": 1,
+      "message": "Hmm, it took me a while to realize that I should look in a different file to find the definition for this variable. I\u0027m actually not super familiar with Go – is this typical Go style?",
+      "range": {
+        "startLine": 38,
+        "startChar": 35,
+        "endLine": 38,
+        "endChar": 43
       },
       "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
