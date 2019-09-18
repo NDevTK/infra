@@ -22,6 +22,30 @@
       "revId": "7b5d9bf0952fb1e842fe6ed6440694219e3f6128",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "be701598_4bbcfd5b",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-09-18T21:15:28Z",
+      "side": 1,
+      "message": "Did this comment end up being addressed? If not, that\u0027s ok, but let\u0027s make sure to address it in a follow-up CL. Thanks!",
+      "parentUuid": "680be275_c0567054",
+      "range": {
+        "startLine": 29,
+        "startChar": 63,
+        "endLine": 30,
+        "endChar": 1
+      },
+      "revId": "7b5d9bf0952fb1e842fe6ed6440694219e3f6128",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
