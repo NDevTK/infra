@@ -162,6 +162,30 @@
     },
     {
       "key": {
+        "uuid": "3dcc91f3_6b3a76f9",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-18T16:51:08Z",
+      "side": 1,
+      "message": "Agreed, this is a good idea. Even more so than with human reviews, robot comments should be clear and provide context, because you can\u0027t ask \"What?\" back to the robot :-P",
+      "parentUuid": "270ffa4a_617ca6eb",
+      "range": {
+        "startLine": 27,
+        "startChar": 24,
+        "endLine": 27,
+        "endChar": 63
+      },
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "fea5ab2c_21d64e34",
         "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
         "patchSetId": 4
@@ -247,6 +271,24 @@
     },
     {
       "key": {
+        "uuid": "626d0426_a504a90c",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-18T16:51:08Z",
+      "side": 1,
+      "message": "As elsewhere, the general best practice is to log enough (for debugging) but not any more :-)\n\nThe Comments produced will all be written into results.json, so for debugging purposes, comments output will always be available - and also in the past I found that logging the entire Comment can be really verbose.\n\nFor histograms.xml, it\u0027s worth noting that given that the entire file will be scanned each time, comments will be generated for any existing issues in the file. So depending on the state of hte file now, there might be hundreds of lines logged here.\n\nI imagine that \"Adding comment: Number of owners must be greater than 1\" might not help debugging in some cases; it may be more helpful to log something more like \"Adding comment for line N; one owner\". (You\u0027re already logging starting a file on line 75, so we\u0027ll know which file).",
+      "parentUuid": "550514c3_b1078ecc",
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ae5a3fe4_4e60cc56",
         "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
         "patchSetId": 4
@@ -307,6 +349,30 @@
       "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a42d2f34_5cbae2b8",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-09-18T16:51:08Z",
+      "side": 1,
+      "message": "Yep, all symbols defined in global scope are available throughout the whole package, including any package-private functions and structs; this is pretty typical.\n\nIn some cases this makes it easier to refactor to split up files within a package... but the cost is that you may have to look outside the current file to find where a variable was defined :-/ As a side note, this also means that it\u0027s important to keep Go packages small.",
+      "parentUuid": "7400c345_28f81ec2",
+      "range": {
+        "startLine": 38,
+        "startChar": 35,
+        "endLine": 38,
+        "endChar": 43
+      },
+      "revId": "79e70abc076ff81db8cd1e4e960716351a51b571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
