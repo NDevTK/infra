@@ -46,6 +46,30 @@
       "revId": "7b5d9bf0952fb1e842fe6ed6440694219e3f6128",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d11e3cb0_33b36af6",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1369574
+      },
+      "writtenOn": "2019-09-18T21:21:06Z",
+      "side": 1,
+      "message": "Sorry, missed this. Will fix in latest CL!",
+      "parentUuid": "be701598_4bbcfd5b",
+      "range": {
+        "startLine": 29,
+        "startChar": 63,
+        "endLine": 30,
+        "endChar": 1
+      },
+      "revId": "7b5d9bf0952fb1e842fe6ed6440694219e3f6128",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
