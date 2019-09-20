@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2689f483_e41dc89f",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/internal/skylab/skylab.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 308,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-09-20T23:52:08Z",
+      "side": 1,
+      "message": "A bit weirdly, this means FAILED gets promoted to NO_VERDICT if subsequent attempt was NO_VERDICT, which is a bit different from its behavior if test passed on retry.",
+      "revId": "ed20a0b3b3e6e8943175b7af2cf398a9b7780508",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fa7677eb_8949c0b1",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/internal/skylab/skylab.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 763,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-09-20T23:52:08Z",
+      "side": 1,
+      "message": "Followup to comment on test. I think this case should be folded into the above case. An individual task being PASSED_ON_RETRY doesn\u0027t mean the build as a whole is PASSED_ON_RETRY, it\u0027s simply PASSED.\n\nClients that care to surface PASSED_ON_RETRY tasks differently can findthem in the the response proto anyway.",
+      "revId": "ed20a0b3b3e6e8943175b7af2cf398a9b7780508",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a1302016_27c7b8c1",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/internal/skylab/skylab_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 861,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-09-20T23:52:08Z",
+      "side": 1,
+      "message": "I expect VERDICT_PASSED_ON_RETRY for the individual test, but on line 910 you also seem to be asserting that we get VERDICT_PASSED_ON_RETRY for the cros_test_platform build. Shouldn\u0027t that just be PASSED?",
+      "revId": "ed20a0b3b3e6e8943175b7af2cf398a9b7780508",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
