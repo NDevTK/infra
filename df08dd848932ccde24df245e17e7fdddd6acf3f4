@@ -22,6 +22,30 @@
       "revId": "df08dd848932ccde24df245e17e7fdddd6acf3f4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "af191b2c_47693c3f",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/internal/skylab/skylab.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 300,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-09-20T22:09:10Z",
+      "side": 1,
+      "message": "We\u0027re abusing unspecified imho. In protobuf world, the convention is that an enum is unspecified *only* if something so bad happened that you didn\u0027t even get to set a more meaningful response.",
+      "parentUuid": "f59500de_15599675",
+      "range": {
+        "startLine": 300,
+        "startChar": 18,
+        "endLine": 300,
+        "endChar": 25
+      },
+      "revId": "df08dd848932ccde24df245e17e7fdddd6acf3f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
