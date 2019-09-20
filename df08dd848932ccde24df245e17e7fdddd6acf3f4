@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f59500de_15599675",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/internal/skylab/skylab.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 300,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-09-20T22:07:02Z",
+      "side": 1,
+      "message": "We now have three distinct levels of Verdict() decisions - attempt, test-run and task-set.\n\nFunnily (or not so funnily), each level elevates unspecified verdicts to failed, while adding its own unspecified for a different reason.\n\nattempt: attempt didn\u0027t start / timed out \u003d\u003e unspecified\ntest run: attempt#unspecified \u003d\u003e failed; rejected due to dimensions \u003d\u003e unspecified\ntask set: test run#unspecified \u003d\u003e failed: still running \u003d\u003e unspecified (actually, the lifecycle and verdict in the response of a running task set is not very robust, and imo wrong. But I don\u0027t care. I don\u0027t think any of this code is written safely w.r.t. Response() getting called after Launch() is called but before Wait() returns)",
+      "range": {
+        "startLine": 300,
+        "startChar": 18,
+        "endLine": 300,
+        "endChar": 25
+      },
+      "revId": "df08dd848932ccde24df245e17e7fdddd6acf3f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
