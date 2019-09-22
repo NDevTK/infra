@@ -246,6 +246,52 @@ func (c *Client) BotExists(ctx context.Context, dims []*swarming_api.SwarmingRpc
 	return len(resp.Items) > 0, nil
 }
 
+// GetBotHostnames accepts a list of dimensions in the format key:value and returns
+// a list of hostnames or possibly some kind of failure
+func (c *Client) GetBotHostnames(ctx context.Context, dims []*swarming_api.SwarmingRpcsStringPair) ([]string, error) {
+	var out []string
+
+	call := c.SwarmingService.Bots.List().Dimensions(flattenStringPairs(dims)...)
+	for {
+		var shouldExit bool
+		tl, err := call.Context(ctx).Do()
+		if err != nil {
+			return nil, err
+		}
+		if tl.Cursor == "" {
+			shouldExit = true
+		} else {
+			call = call.Cursor(tl.Cursor)
+		}
+		for _, item := range tl.Items {
+			var hostname string
+			for _, pair := range item.Dimensions {
+				if pair.Key == "dut_name" {
+					var value []string
+					value = pair.Value
+					if len(value) == 0 {
+						continue
+					}
+					if len(value) > 1 {
+						continue
+					}
+					hostname = value[0]
+				}
+			}
+			// TODO(gregorynisbet): do we want to log a warning if
+			// there is no hostname associated with one of the DUTs?
+			if hostname != "" {
+				out = append(out, hostname)
+			}
+		}
+		if shouldExit {
+			return out, nil
+		}
+	}
+
+	return out, nil
+}
+
 func flattenStringPairs(pairs []*swarming_api.SwarmingRpcsStringPair) []string {
 	ss := make([]string, len(pairs))
 	for i, p := range pairs {
