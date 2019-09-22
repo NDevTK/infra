@@ -1,0 +1,228 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "22808513_f4349b07",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-09-22T06:19:24Z",
+      "side": 1,
+      "message": "Add test section.\n\ne.g. TEST\u003d./skylab dut-list ***",
+      "revId": "b7d6b95649547f733d4b436a58fcd5b5f336a786",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "63480f00_305ba982",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/dut-list.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-09-22T06:19:24Z",
+      "side": 1,
+      "message": "Get DUT information",
+      "range": {
+        "startLine": 22,
+        "startChar": 23,
+        "endLine": 22,
+        "endChar": 52
+      },
+      "revId": "b7d6b95649547f733d4b436a58fcd5b5f336a786",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dfc06872_3506629a",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/dut-list.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-09-22T06:19:24Z",
+      "side": 1,
+      "message": "use-inventory (I like the idea that it\u0027s an option!)",
+      "range": {
+        "startLine": 38,
+        "startChar": 34,
+        "endLine": 38,
+        "endChar": 45
+      },
+      "revId": "b7d6b95649547f733d4b436a58fcd5b5f336a786",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "872bdc6c_6ce76270",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/dut-list.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-09-22T06:19:24Z",
+      "side": 1,
+      "message": "it\u0027s too vague. Probably sth like \"indicating ... if yes, use... if not, ...\"",
+      "range": {
+        "startLine": 38,
+        "startChar": 56,
+        "endLine": 38,
+        "endChar": 75
+      },
+      "revId": "b7d6b95649547f733d4b436a58fcd5b5f336a786",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cea9ac8a_8e43e5d6",
+        "filename": "go/src/infra/libs/skylab/swarming/swarming.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-09-22T06:19:24Z",
+      "side": 1,
+      "message": "the name is too specific. User probably want to list its dut_state later. So it\u0027s better to have a GetBots() first, then parseBots() to parse the bots\u0027 info based on users\u0027 requirements, e.g. hostname for now.",
+      "range": {
+        "startLine": 251,
+        "startChar": 17,
+        "endLine": 251,
+        "endChar": 32
+      },
+      "revId": "b7d6b95649547f733d4b436a58fcd5b5f336a786",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b46b1369_219f92cf",
+        "filename": "go/src/infra/libs/skylab/swarming/swarming.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-09-22T06:19:24Z",
+      "side": 1,
+      "message": "It needs to be called with callWithRetries() to avoid flakiness.",
+      "range": {
+        "startLine": 251,
+        "startChar": 0,
+        "endLine": 251,
+        "endChar": 118
+      },
+      "revId": "b7d6b95649547f733d4b436a58fcd5b5f336a786",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "234f70f7_b3741cd2",
+        "filename": "go/src/infra/libs/skylab/swarming/swarming.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 265,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-09-22T06:19:24Z",
+      "side": 1,
+      "message": "shouldExit is redundant. This can be moved to the end of this for loop, if tl.Cursor \u003d\u003d \"\", just return.",
+      "range": {
+        "startLine": 261,
+        "startChar": 2,
+        "endLine": 265,
+        "endChar": 3
+      },
+      "revId": "b7d6b95649547f733d4b436a58fcd5b5f336a786",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "47b4061b_22797a84",
+        "filename": "go/src/infra/libs/skylab/swarming/swarming.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-09-22T06:19:24Z",
+      "side": 1,
+      "message": "this should be extracted to a single func e.g. \u0027extractSingleValuedDimension\u0027 in case dut-list want to list not only \"dut_name\".",
+      "range": {
+        "startLine": 266,
+        "startChar": 2,
+        "endLine": 269,
+        "endChar": 31
+      },
+      "revId": "b7d6b95649547f733d4b436a58fcd5b5f336a786",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5aedfe83_82cadaf0",
+        "filename": "go/src/infra/libs/skylab/swarming/swarming.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-09-22T06:19:24Z",
+      "side": 1,
+      "message": "This is not needed as the dut_name cannot be duplicated.",
+      "range": {
+        "startLine": 269,
+        "startChar": 4,
+        "endLine": 279,
+        "endChar": 5
+      },
+      "revId": "b7d6b95649547f733d4b436a58fcd5b5f336a786",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c6737806_ebf9dfa4",
+        "filename": "go/src/infra/libs/skylab/swarming/swarming.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-09-22T06:19:24Z",
+      "side": 1,
+      "message": "can we log the host which misses dut_name? I don\u0027t feel it could happen actually...",
+      "range": {
+        "startLine": 281,
+        "startChar": 3,
+        "endLine": 282,
+        "endChar": 59
+      },
+      "revId": "b7d6b95649547f733d4b436a58fcd5b5f336a786",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
