@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "845e4c25_a187b668",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/internal/skylab/skylab.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 308,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-09-23T17:00:57Z",
+      "side": 1,
+      "message": "VERDICT_NO_VERDICT means *only* that the requested test was not applicable for the targeted DUT, so the task did nothing. Thus, the only way a test\u0027s attempts can go from FAILED -\u003e VERDICT_NO_VERDICT is that there was an infra failure in the first attempt (the test could not reasonably fail on the first attempt, then declare N/A on the next attempt).\n\nThus, it is OK to bubble up VERDICT_NO_VERDICT here (rather than adding another VERDICT_NO_VERDICT_ON_RETRY). Promoting it to PASSED_ON_RETRY would be simply wrong.",
+      "parentUuid": "2689f483_e41dc89f",
+      "revId": "ed20a0b3b3e6e8943175b7af2cf398a9b7780508",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa7677eb_8949c0b1",
         "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/internal/skylab/skylab.go",
         "patchSetId": 6
@@ -30,6 +48,24 @@
       "writtenOn": "2019-09-20T23:52:08Z",
       "side": 1,
       "message": "Followup to comment on test. I think this case should be folded into the above case. An individual task being PASSED_ON_RETRY doesn\u0027t mean the build as a whole is PASSED_ON_RETRY, it\u0027s simply PASSED.\n\nClients that care to surface PASSED_ON_RETRY tasks differently can findthem in the the response proto anyway.",
+      "revId": "ed20a0b3b3e6e8943175b7af2cf398a9b7780508",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b816741f_3554c3ec",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/internal/skylab/skylab.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 763,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-09-23T17:00:57Z",
+      "side": 1,
+      "message": "There is, at the moment, no concept of a TaskState per test in the execution response: https://chromium.googlesource.com/chromiumos/infra/proto/+/master/src/test_platform/steps/execution.proto\n\nThere are individual tasks, which is a flattened list of all attempts and the overall build taskstate.\nSo, I must summarize to overall build\u0027s taskstate.verdict being PASSED_ON_RETRY.\n\nThe other option is to just promote the passed attempt\u0027s taskstate to be PASSED_ON_RETRY, but that is misleading - my assumption on seeing an attempt with PASSED_ON_RETRY is that there was internal retry in the attempt.",
+      "parentUuid": "fa7677eb_8949c0b1",
       "revId": "ed20a0b3b3e6e8943175b7af2cf398a9b7780508",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -50,6 +86,24 @@
       "revId": "ed20a0b3b3e6e8943175b7af2cf398a9b7780508",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "876f6a44_2cc46e2d",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/internal/skylab/skylab_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 861,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-09-23T17:00:57Z",
+      "side": 1,
+      "message": "Let\u0027s discuss this in your comment in skylab.go.\n\ntl;dr - there is no way to tag a test as PASSED_ON_RETRY in the execution response, so we must tag the overall build instead.",
+      "parentUuid": "a1302016_27c7b8c1",
+      "revId": "ed20a0b3b3e6e8943175b7af2cf398a9b7780508",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
