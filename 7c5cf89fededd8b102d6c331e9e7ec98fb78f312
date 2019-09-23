@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c44679d5_726e30f1",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-09-23T20:46:07Z",
+      "side": 1,
+      "message": "is it still tested as the modifications of this CL?",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 72
+      },
+      "revId": "7c5cf89fededd8b102d6c331e9e7ec98fb78f312",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cef59966_ad127bc4",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/dut-list.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-09-23T20:46:07Z",
+      "side": 1,
+      "message": "this should be outside of if-else as for inventory source printing is also the same",
+      "range": {
+        "startLine": 99,
+        "startChar": 2,
+        "endLine": 101,
+        "endChar": 3
+      },
+      "revId": "7c5cf89fededd8b102d6c331e9e7ec98fb78f312",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
