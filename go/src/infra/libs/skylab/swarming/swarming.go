@@ -18,6 +18,7 @@ import (
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/common/retry/transient"
 	"google.golang.org/api/googleapi"
+	// iSwarming "infra/libs/skylab/inventory/swarming"
 )
 
 // Client is a swarming client for creating tasks and waiting for their results.
@@ -244,6 +245,100 @@ func (c *Client) BotExists(ctx context.Context, dims []*swarming_api.SwarmingRpc
 		return false, err
 	}
 	return len(resp.Items) > 0, nil
+}
+
+// getSwarmingRpcsBotList -- get a SwarmingRpcsBotList, retrying as appropriate for swarming
+func getSwarmingRpcsBotList(ctx context.Context, c *Client, call *swarming_api.BotsListCall, cursor string) (*swarming_api.SwarmingRpcsBotList, string, error) {
+	var err error
+	var tl *swarming_api.SwarmingRpcsBotList
+	call = call.Cursor(cursor)
+	f := func() error {
+		var err error
+		tl, err = call.Context(ctx).Do()
+		return err
+	}
+	err = callWithRetries(ctx, f)
+	if err != nil {
+		return nil, "", err
+	}
+	return tl, tl.Cursor, nil
+}
+
+// GetBots returns a slice of bots
+func (c *Client) GetBots(ctx context.Context, dims []*swarming_api.SwarmingRpcsStringPair) ([]*swarming_api.SwarmingRpcsBotInfo, error) {
+	var out []*swarming_api.SwarmingRpcsBotInfo
+	var call *swarming_api.BotsListCall
+	var cursor string
+
+	call = c.SwarmingService.Bots.List().Dimensions(flattenStringPairs(dims)...)
+	for {
+		var tl *swarming_api.SwarmingRpcsBotList
+		var err error
+		var newCursor string
+		tl, newCursor, err = getSwarmingRpcsBotList(ctx, c, call, cursor)
+		if err != nil {
+			return nil, err
+		}
+		cursor = newCursor
+		{
+			for _, item := range tl.Items {
+				out = append(out, item)
+			}
+		}
+		if tl.Cursor == "" {
+			return out, nil
+		}
+	}
+}
+
+// GetBotsLookupDimension returns a slice of a single dimension extracted from bots
+func (c *Client) GetBotsLookupDimension(ctx context.Context, dims []*swarming_api.SwarmingRpcsStringPair, key string) ([]string, error) {
+	var out []string
+	var call *swarming_api.BotsListCall
+	var cursor string
+
+	call = c.SwarmingService.Bots.List().Dimensions(flattenStringPairs(dims)...)
+	for {
+		var tl *swarming_api.SwarmingRpcsBotList
+		var err error
+		var newCursor string
+		tl, newCursor, err = getSwarmingRpcsBotList(ctx, c, call, cursor)
+		if err != nil {
+			return nil, err
+		}
+		cursor = newCursor
+		{
+			for _, item := range tl.Items {
+				contribution, err := LookupDimension(item, key)
+				// if we don't have exactly one value associated with this key,
+				// skip it
+				if err != nil {
+					continue
+				}
+				out = append(out, contribution)
+			}
+		}
+		if tl.Cursor == "" {
+			return out, nil
+		}
+	}
+}
+
+// LookupDimension gets a single string value associated with a dimension
+func LookupDimension(info *swarming_api.SwarmingRpcsBotInfo, key string) (string, error) {
+	for _, pair := range info.Dimensions {
+		if pair.Key == key {
+			if len(pair.Value) == 0 {
+				return "", fmt.Errorf("found key, 0 values")
+			}
+			if len(pair.Value) > 1 {
+				return "", fmt.Errorf("found key, (%d) values", len(pair.Value))
+			}
+			return pair.Value[0], nil
+		}
+	}
+	// TODO(gregorynisbet): truncate key if it's too long
+	return "", fmt.Errorf("no corresponding value for key (%s)", key)
 }
 
 func flattenStringPairs(pairs []*swarming_api.SwarmingRpcsStringPair) []string {
