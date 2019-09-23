@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d9f92e51_5d41fb2a",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/dut-list.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-09-23T19:37:50Z",
+      "side": 1,
+      "message": "just return ListedHost, then add a function like:\nfunc (*ListedHost) string() {\n}\n\nThen for here:\nfor _, lh :\u003d range listedHosts {\n    fmt.Printf(\"%s\\n\", lh.string())\n}\n\nIt\u0027s easy to extend if we add more to ListedHost.",
+      "range": {
+        "startLine": 102,
+        "startChar": 1,
+        "endLine": 105,
+        "endChar": 0
+      },
+      "revId": "49e83f1674ba9ba172d9db89a79b504075254fdb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b6f776bb_8c11a3a7",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/dut-list.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-09-23T19:37:50Z",
+      "side": 1,
+      "message": "it should be before the above for-loop.",
+      "range": {
+        "startLine": 144,
+        "startChar": 1,
+        "endLine": 146,
+        "endChar": 2
+      },
+      "revId": "49e83f1674ba9ba172d9db89a79b504075254fdb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c75f580a_224e6ab7",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/dut-list.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-09-23T19:37:50Z",
+      "side": 1,
+      "message": "just return []*ListedHost",
+      "range": {
+        "startLine": 147,
+        "startChar": 1,
+        "endLine": 147,
+        "endChar": 16
+      },
+      "revId": "49e83f1674ba9ba172d9db89a79b504075254fdb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ddaf2078_605c6afd",
+        "filename": "go/src/infra/libs/skylab/swarming/swarming.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-09-23T19:37:50Z",
+      "side": 1,
+      "message": "redundant",
+      "range": {
+        "startLine": 256,
+        "startChar": 1,
+        "endLine": 256,
+        "endChar": 14
+      },
+      "revId": "49e83f1674ba9ba172d9db89a79b504075254fdb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b397b2e7_1230e692",
+        "filename": "go/src/infra/libs/skylab/swarming/swarming.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-09-23T19:37:50Z",
+      "side": 1,
+      "message": "err :\u003d callWithRetries(ctx, f)",
+      "range": {
+        "startLine": 263,
+        "startChar": 1,
+        "endLine": 263,
+        "endChar": 30
+      },
+      "revId": "49e83f1674ba9ba172d9db89a79b504075254fdb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
