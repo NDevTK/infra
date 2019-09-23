@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "56c0549b_77c8338d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2019-09-23T20:52:00Z",
+      "side": 1,
+      "message": "$ ./main dut-list -board nami | tail\nchromeos6-row9-rack9-host1\nchromeos6-row9-rack9-host11\nchromeos6-row9-rack9-host13\nchromeos6-row9-rack9-host15\nchromeos6-row9-rack9-host17\nchromeos6-row9-rack9-host21\nchromeos6-row9-rack9-host3\nchromeos6-row9-rack9-host5\nchromeos6-row9-rack9-host7\nchromeos6-row9-rack9-host9",
+      "parentUuid": "c44679d5_726e30f1",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 72
+      },
+      "revId": "7c5cf89fededd8b102d6c331e9e7ec98fb78f312",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cef59966_ad127bc4",
         "filename": "go/src/infra/cmd/skylab/internal/cmd/dut-list.go",
         "patchSetId": 5
@@ -45,6 +69,30 @@
       "revId": "7c5cf89fededd8b102d6c331e9e7ec98fb78f312",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9b87dc70_7f41de0f",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/dut-list.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2019-09-23T20:52:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cef59966_ad127bc4",
+      "range": {
+        "startLine": 99,
+        "startChar": 2,
+        "endLine": 101,
+        "endChar": 3
+      },
+      "revId": "7c5cf89fededd8b102d6c331e9e7ec98fb78f312",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
