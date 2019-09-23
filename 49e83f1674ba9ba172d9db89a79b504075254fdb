@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "55bc4696_a18b5d86",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/dut-list.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2019-09-23T20:41:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d9f92e51_5d41fb2a",
+      "range": {
+        "startLine": 102,
+        "startChar": 1,
+        "endLine": 105,
+        "endChar": 0
+      },
+      "revId": "49e83f1674ba9ba172d9db89a79b504075254fdb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b6f776bb_8c11a3a7",
         "filename": "go/src/infra/cmd/skylab/internal/cmd/dut-list.go",
         "patchSetId": 4
@@ -45,6 +69,30 @@
       "revId": "49e83f1674ba9ba172d9db89a79b504075254fdb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "220fbdea_abfbe909",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/dut-list.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2019-09-23T20:41:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b6f776bb_8c11a3a7",
+      "range": {
+        "startLine": 144,
+        "startChar": 1,
+        "endLine": 146,
+        "endChar": 2
+      },
+      "revId": "49e83f1674ba9ba172d9db89a79b504075254fdb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "4b324a15_b343e691",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/dut-list.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2019-09-23T20:41:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c75f580a_224e6ab7",
+      "range": {
+        "startLine": 147,
+        "startChar": 1,
+        "endLine": 147,
+        "endChar": 16
+      },
+      "revId": "49e83f1674ba9ba172d9db89a79b504075254fdb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ddaf2078_605c6afd",
         "filename": "go/src/infra/libs/skylab/swarming/swarming.go",
         "patchSetId": 4
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "7c7ab2cf_ad822a7f",
+        "filename": "go/src/infra/libs/skylab/swarming/swarming.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2019-09-23T20:41:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ddaf2078_605c6afd",
+      "range": {
+        "startLine": 256,
+        "startChar": 1,
+        "endLine": 256,
+        "endChar": 14
+      },
+      "revId": "49e83f1674ba9ba172d9db89a79b504075254fdb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b397b2e7_1230e692",
         "filename": "go/src/infra/libs/skylab/swarming/swarming.go",
         "patchSetId": 4
@@ -114,6 +210,30 @@
       "revId": "49e83f1674ba9ba172d9db89a79b504075254fdb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f09a6e0c_e66303fc",
+        "filename": "go/src/infra/libs/skylab/swarming/swarming.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2019-09-23T20:41:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b397b2e7_1230e692",
+      "range": {
+        "startLine": 263,
+        "startChar": 1,
+        "endLine": 263,
+        "endChar": 30
+      },
+      "revId": "49e83f1674ba9ba172d9db89a79b504075254fdb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
