@@ -72,6 +72,24 @@
     },
     {
       "key": {
+        "uuid": "99c44f54_f9278795",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/internal/skylab/skylab.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 763,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-09-24T02:09:32Z",
+      "side": 1,
+      "message": "The individual values in task_results in Execute response are not a flattened list of all attempts of a test, they are the individual attempts (as far as I remember). The failed task attempt should be promoted to PASSED_ON_RETRY if it passed on retry. The passed task should remain as PASS. The existence of a PASSED_ON_RETRY task within the execution should not affect the overall execution response verdict, which should simply be Passed.",
+      "parentUuid": "b816741f_3554c3ec",
+      "revId": "ed20a0b3b3e6e8943175b7af2cf398a9b7780508",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a1302016_27c7b8c1",
         "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/internal/skylab/skylab_test.go",
         "patchSetId": 6
