@@ -90,6 +90,24 @@
     },
     {
       "key": {
+        "uuid": "11c49547_a2291c31",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/internal/skylab/skylab.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 763,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2019-09-24T16:48:02Z",
+      "side": 1,
+      "message": "Let\u0027s agree to disagree for now.\n\nAn attempt\u0027s verdict should never be changed because of another attempt\u0027s verdict.\nWhat I wanted was a testRun-level verdict which is promoted to PASSED_ON_RETRY (while the request verdict stays PASSED)\nBut the execute response doesn\u0027t group attempts by testRun\u0027s at all. This is unfortunate. Clients might want to show only the latest / passing attempt or show all the attempts for a testRun together.\n\nFor now, I\u0027m just promoting the request verdict to PASSED. Let\u0027s circle back on PASSED_ON_RETRY in a bit (let TODO)",
+      "parentUuid": "99c44f54_f9278795",
+      "revId": "ed20a0b3b3e6e8943175b7af2cf398a9b7780508",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a1302016_27c7b8c1",
         "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/internal/skylab/skylab_test.go",
         "patchSetId": 6
