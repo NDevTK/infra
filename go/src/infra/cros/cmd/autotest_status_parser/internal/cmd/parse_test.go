@@ -352,3 +352,27 @@ func testCase(name string, passed bool, summary string) *skylab_test_runner.Resu
 	}
 	return &output
 }
+
+func TestGetPerfResultTestName(t *testing.T) {
+	Convey("Parse test name from tast result file path",
+		t, func() {
+			input := "/tmp/autotest_tast/autoserv_test/tast/" +
+				"results/tests/graphics." +
+				"WebRTCVideoPlaybackDelay/results-chart.json"
+
+			testName, err := getPerfResultTestName(input)
+
+			So(testName, ShouldResemble, "graphics.WebRTCVideoPlaybackDelay")
+			So(err, ShouldResemble, nil)
+		})
+	Convey("Parse test name from non-test result file path",
+		t, func() {
+			input := "/tmp/autoserv_test/platform_BootPerfServer/" +
+				"results/results-chart.json"
+
+			testName, err := getPerfResultTestName(input)
+
+			So(testName, ShouldResemble, "platform_BootPerfServer")
+			So(err, ShouldResemble, nil)
+		})
+}

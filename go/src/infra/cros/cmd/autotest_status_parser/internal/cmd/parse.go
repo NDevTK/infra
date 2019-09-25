@@ -5,15 +5,16 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/maruel/subcommands"
+	"github.com/pkg/errors"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 )
@@ -70,11 +71,17 @@ func (c *parseRun) innerRun(a subcommands.Application, args []string, env subcom
 
 	prejobResult := getPrejobResults(dir)
 
+	perfResult, err := getPerfResults(testDir)
+	if err != nil {
+		return err
+	}
+
 	result := skylab_test_runner.Result{
 		Harness: &skylab_test_runner.Result_AutotestResult{
-			AutotestResult: &autotestResult,
+			AutotestResult: autotestResult,
 		},
-		Prejob: &prejobResult,
+		Prejob:     prejobResult,
+		Perfresult: perfResult,
 	}
 
 	return printProtoJSON(a.GetOut(), &result)
@@ -89,14 +96,14 @@ func (c *parseRun) validateArgs() error {
 
 // getTestResults extracts all test case results from the status.log file
 // inside the given results directory.
-func getTestResults(dir string) skylab_test_runner.Result_Autotest {
+func getTestResults(dir string) *skylab_test_runner.Result_Autotest {
 	resultsSummaryPath := filepath.Join(dir, resultsSummaryFile)
 	resultsSummaryContent, err := ioutil.ReadFile(resultsSummaryPath)
 
 	if err != nil {
 		// Errors in reading status.log are expected when the server
 		// job is aborted.
-		return skylab_test_runner.Result_Autotest{
+		return &skylab_test_runner.Result_Autotest{
 			Incomplete: true,
 		}
 	}
@@ -107,7 +114,7 @@ func getTestResults(dir string) skylab_test_runner.Result_Autotest {
 	exitStatusContent, err := ioutil.ReadFile(exitStatusFilePath)
 
 	if err != nil {
-		return skylab_test_runner.Result_Autotest{
+		return &skylab_test_runner.Result_Autotest{
 			TestCases:  testCases,
 			Incomplete: true,
 		}
@@ -115,7 +122,7 @@ func getTestResults(dir string) skylab_test_runner.Result_Autotest {
 
 	incomplete := exitedWithErrors(string(exitStatusContent))
 
-	return skylab_test_runner.Result_Autotest{
+	return &skylab_test_runner.Result_Autotest{
 		TestCases:  testCases,
 		Incomplete: incomplete,
 	}
@@ -126,14 +133,14 @@ type prejobInfo struct {
 	Dir  string
 }
 
-func getPrejobResults(dir string) skylab_test_runner.Result_Prejob {
+func getPrejobResults(dir string) *skylab_test_runner.Result_Prejob {
 	var steps []*skylab_test_runner.Result_Prejob_Step
 
 	prejobs, err := getPrejobs(dir)
 
 	if err != nil {
 		// TODO(zamorzaev): find a better way to surface this error.
-		return skylab_test_runner.Result_Prejob{
+		return &skylab_test_runner.Result_Prejob{
 			Step: []*skylab_test_runner.Result_Prejob_Step{
 				{
 					Name:    "unknown",
@@ -149,7 +156,7 @@ func getPrejobResults(dir string) skylab_test_runner.Result_Prejob {
 			Verdict: getPrejobVerdict(prejob.Dir),
 		})
 	}
-	return skylab_test_runner.Result_Prejob{
+	return &skylab_test_runner.Result_Prejob{
 		Step: steps,
 	}
 }
@@ -362,6 +369,73 @@ func parseVerdict(verdict string) skylab_test_runner.Result_Autotest_TestCase_Ve
 	}
 	// TODO(crbug.com/846770): deal with TEST_NA separately.
 	return skylab_test_runner.Result_Autotest_TestCase_VERDICT_FAIL
+}
+
+// Parse test name out of the result file path.
+// For non-tast tests, it would be in the form
+//   <root_test_dir>/autoserv_test/<test_name>/results/results-chart.json
+// For tast tests, it would be in the form
+//   <root_test_dir>/autoserv_test/tast/results/tests/<test_name>/results-chart.json
+func getPerfResultTestName(filePath string) (string, error) {
+	parts := strings.Split(filePath, "/")
+	length := len(parts)
+
+	isTast := false
+	for _, p := range parts {
+		if p == "tast" {
+			isTast = true
+			break
+		}
+	}
+	if isTast {
+		if length >= 2 {
+			return parts[length-2], nil
+		}
+	} else {
+		if length >= 3 && parts[length-2] == "results" {
+			return parts[length-3], nil
+		}
+	}
+	return "", errors.New("unrecognizable file path")
+}
+
+// Traverse the output directory to find all results-chart.json, and returns the
+// content of all files found.
+func getPerfResults(dir string) (*skylab_test_runner.Result_PerfResult, error) {
+	const resultChartJSONFileName = "results-chart.json"
+
+	metrics := []*skylab_test_runner.Result_PerfResult_Metric{}
+
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if filepath.Base(path) == resultChartJSONFileName {
+			content, err := ioutil.ReadFile(path)
+			if err != nil {
+				return errors.Wrapf(err,
+					"failed to read file %s", path)
+			}
+			testName, err := getPerfResultTestName(path)
+			if err != nil {
+				return errors.Wrapf(err,
+					"failed to get test name from %s", path)
+			}
+			metrics = append(metrics,
+				&skylab_test_runner.Result_PerfResult_Metric{
+					Name:    testName,
+					Content: string(content),
+				})
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &skylab_test_runner.Result_PerfResult{
+		Metrics: metrics,
+	}, nil
 }
 
 // printProtoJSON prints the parsed test cases as a JSON-pb to stdout.
