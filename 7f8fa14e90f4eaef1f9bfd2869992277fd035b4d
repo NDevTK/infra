@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5edb9d44_e3f5dd14",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/create-common.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2019-09-26T19:01:31Z",
+      "side": 1,
+      "message": "Mention that values outside of this range are \"truncated\" into it.",
+      "range": {
+        "startLine": 49,
+        "startChar": 37,
+        "endLine": 49,
+        "endChar": 43
+      },
+      "revId": "7f8fa14e90f4eaef1f9bfd2869992277fd035b4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
