@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "380a319f_f276987c",
+        "filename": "DEPS",
+        "patchSetId": 2
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2019-10-01T13:40:04Z",
+      "side": 1,
+      "message": "I guess we should eventually migrate to native gclient CIPD support eventually?",
+      "revId": "5d52fa564e8789ed7f1f1f94ac58c826dba36bc2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

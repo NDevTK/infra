@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7b52a545_7c029363",
+        "filename": "test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2019-10-01T13:40:04Z",
+      "side": 0,
+      "message": "Can you note this in the CL description since it\u0027s fairly unrelated.",
+      "revId": "3ed23c9b4dae6e6aa3d197cea55fec31dfc419f9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
