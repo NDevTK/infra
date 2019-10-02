@@ -27,9 +27,29 @@ the builders and other infra devs have installed). *Then* make sure you've
 run
 
 ```sh
-eval `../../../../env.py`
+sheriff-o-matic$ eval `../../../../env.py`
 ```
 in that shell window.
+
+## Setting up credentials for local development and testing
+
+You will need access to either staging or prod
+sheriff-o-matic before you can do this, so contact cit-sheriffing@google.com
+to request access ("Please add me to the relevant AMI roles...") if you don't already have it.
+
+```
+# in case you already have this pointed at a jwt file downloaded from gcp console:
+unset GOOGLE_APPLICATION_CREDENTIALS
+
+# Use your user identity instead of a service account, will require web flow auth:
+gcloud auth application-default login
+```
+
+Note that some services (notably, Monorail) will not honor your credentials when
+authenticated this way. You'll see `401 Unauthorized` responses in the console logs.
+For these, you may need to get service account credentials.
+We no longer recommend developers download service account credentials to their machines
+because they are more sensitive (and GCP limits how many we can have out in the wild).
 
 ## Getting up and running locally
 
@@ -37,18 +57,17 @@ After initial checkout, make sure you have all of the bower dependencies
 installed. Also run this whenever bower.json is updated:
 
 ```sh
-cd frontend
-make deps
+sheriff-o-matic$ make build
 ```
 
-(Note that you should always be able to `rm -rf fronted/bower_components`
+(Note that you should always be able to `rm -rf frontend/bower_components`
 and re-run `bower install` at any time. Occasionally there are changes that,
 when applied over an existing `frontend/bower_components`, will b0rk your
 checkout.)
 
 To run locally from an infra.git checkout:
 ```sh
-make devserver
+sheriff-o-matic$ make devserver
 ```
 
 To run tests:
@@ -73,7 +92,7 @@ make wct_debug
 
 To view test coverage report after running tests:
 ```sh
-google-chrome ./coverage/lcov-report/index.html
+sheriff-o-matic$ google-chrome ./coverage/lcov-report/index.html
 ```
 ## Access to AppEngine instances
 
@@ -87,7 +106,7 @@ grant staging access to contributors!
 
 First create a new CL for the RELNOTES.md update. Then run:
 ```sh
-make relnotes
+sheriff-o-matic$ make relnotes
 ```
 
 Note that you may need to authenticate for deployment as
@@ -154,26 +173,6 @@ wish to analyze. Note that the cron analyzers run on a different port than the
 UI (8081 vs 8080). This is because the cron tasks run in a separate GAE service
 (aka "module" in some docs). These requests may also take quite a while to
 complete, depending on the current state of your builders.
-
-## Setting up credentials for local development and testing
-
-You will need access to either staging or prod
-sheriff-o-matic before you can do this, so contact cit-sheriffing@google.com
-to request access ("Please add me to the relevant AMI roles...") if you don't already have it.
-
-```
-# in case you already have this pointed at a jwt file downloaded from gcp console:
-unset GOOGLE_APPLICATION_CREDENTIALS
-
-# Use your user identity instead of a service account, will require web flow auth:
-gcloud auth application-default login
-```
-
-Note that some services (notably, Monorail) will not honor your credentials when
-authenticated this way. You'll see `401 Unauthorized` responses in the console logs.
-For these, you may need to get service account credentials.
-We no longer recommend developers download service account credentials to their machines
-because they are more sensitive (and GCP limits how many we can have out in the wild).
 
 ## Contributors
 
