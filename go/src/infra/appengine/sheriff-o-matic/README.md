@@ -27,7 +27,7 @@ the builders and other infra devs have installed). *Then* make sure you've
 run
 
 ```sh
-eval `../../../../env.py`
+sheriff-o-matic$ eval `../../../../env.py`
 ```
 in that shell window.
 
@@ -37,18 +37,17 @@ After initial checkout, make sure you have all of the bower dependencies
 installed. Also run this whenever bower.json is updated:
 
 ```sh
-cd frontend
-make deps
+sheriff-o-matic$ make build
 ```
 
-(Note that you should always be able to `rm -rf fronted/bower_components`
+(Note that you should always be able to `rm -rf frontend/bower_components`
 and re-run `bower install` at any time. Occasionally there are changes that,
 when applied over an existing `frontend/bower_components`, will b0rk your
 checkout.)
 
 To run locally from an infra.git checkout:
 ```sh
-make devserver
+sheriff-o-matic$ make devserver
 ```
 
 To run tests:
@@ -73,7 +72,7 @@ make wct_debug
 
 To view test coverage report after running tests:
 ```sh
-google-chrome ./coverage/lcov-report/index.html
+sheriff-o-matic$ google-chrome ./coverage/lcov-report/index.html
 ```
 ## Access to AppEngine instances
 
@@ -87,7 +86,7 @@ grant staging access to contributors!
 
 First create a new CL for the RELNOTES.md update. Then run:
 ```sh
-make relnotes
+sheriff-o-matic$ make relnotes
 ```
 
 Note that you may need to authenticate for deployment as
