@@ -150,6 +150,7 @@ func printAccountTables(w io.Writer, report *qscheduler.InspectPoolResponse) {
 	printAccountBalancesTable(tw, report)
 	printAccountRatesTable(tw, report)
 	printAccountPoliciesTable(tw, report)
+	printAccountDescriptionTable(tw, report)
 	tw.Flush()
 }
 
@@ -203,6 +204,24 @@ func printAccountPoliciesTable(tw *tabwriter.Writer, report *qscheduler.InspectP
 			fmt.Sprintf("%.1f", config.GetMaxChargeSeconds()),
 			fmt.Sprintf("%d", config.GetMaxFanout()),
 			fmt.Sprintf("%t", config.GetDisableFreeTasks()),
+		}...)
+		t = append(t, r)
+	}
+	t.sort()
+	t.print(tw)
+	fmt.Fprintln(tw)
+	return
+}
+
+func printAccountDescriptionTable(tw *tabwriter.Writer, report *qscheduler.InspectPoolResponse) {
+	fmt.Fprintln(tw, "Account Description")
+	fmt.Fprintln(tw, "================================================================")
+	t := make(table, 0, len(report.GetAccountConfigs()))
+	for account, config := range report.GetAccountConfigs() {
+		r := make(row, 0, 2)
+		r = append(r, []string{
+			account,
+			fmt.Sprintf("%s", config.GetDescription()),
 		}...)
 		t = append(t, r)
 	}
