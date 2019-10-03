@@ -98,3 +98,28 @@ func (f nullableBool) String() string {
 	}
 	return strconv.FormatBool(**f.val)
 }
+
+type nullableString struct {
+	val **string
+}
+
+// nullableStringValue returns a flags.Value implementation that allows
+// setting a (nullable) string.
+func nullableStringValue(dest **string) nullableString {
+	return nullableString{dest}
+}
+
+func (f nullableString) Set(val string) error {
+	if *f.val != nil {
+		return errors.New("value already set")
+	}
+	*f.val = &val
+	return nil
+}
+
+func (f nullableString) String() string {
+	if f.val == nil || *f.val == nil {
+		return "unset"
+	}
+	return **f.val
+}

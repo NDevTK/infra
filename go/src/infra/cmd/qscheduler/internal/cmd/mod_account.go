@@ -59,7 +59,7 @@ func (c *modAccountRun) validate(args []string) error {
 		return errors.New("not enough arguments")
 	}
 
-	if len(args) > 2 {
+	if len(args) > 3 {
 		return errors.New("too many arguments")
 	}
 
