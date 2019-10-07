@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6ba3a6ca_8c75c8c5",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 982,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-10-07T23:03:55Z",
+      "side": 0,
+      "message": "why was this removed?",
+      "range": {
+        "startLine": 980,
+        "startChar": 3,
+        "endLine": 982,
+        "endChar": 63
+      },
+      "revId": "04f2b317a0cc9ef40eaecdea7d2263f43b540b65",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
