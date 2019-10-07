@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "562f09cc_08569842",
+        "filename": "go/src/infra/cros/cmd/autotest_status_parser/internal/cmd/parse.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2019-10-07T23:21:18Z",
+      "side": 1,
+      "message": "Is there a way of telling that a given test has no perf results other than \"there\u0027s no results-chart.json anywhere in the results tree\"? \n\nSince tests that have perf files constitute a small fraction of all tests, I would rather run as little perf-specific logic on non-perf tests as possible. E.g. if a non-perf test has some weirdness in its results tree, this function could potentially choke and timeout the whole run even though it had no chance of producing results to start with.",
+      "range": {
+        "startLine": 74,
+        "startChar": 20,
+        "endLine": 74,
+        "endChar": 34
+      },
+      "revId": "8bdbb766f6cba1fb78db5e74df42f107e8cee563",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0d866800_2d7df82f",
+        "filename": "go/src/infra/cros/cmd/autotest_status_parser/internal/cmd/parse.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2019-10-07T23:21:18Z",
+      "side": 1,
+      "message": "The fact that we failed to get perf results shouldn\u0027t prevent us from surfacing any results whatsoever. E.g. if a perf results JSON file is malformed due to the test crashing while writing it, it should be surfaced as a test failure (via an appropriate field in the JSON), not an autotest_status_parser error. Also, autotest_status_parser is used by *all* HW tests, so any bugs in getPerfResults would blow up all of CQ, release builders etc.\n\nI suggest to either\n- add an error field into the PerfResult proto and populate that in case of error (preferred) or\n- log the error (simpler)\n\nand to continue with writing skylab_test_runner.Result to stdout. Both getTestResults and getPrejobResults are doing the first option.",
+      "range": {
+        "startLine": 75,
+        "startChar": 0,
+        "endLine": 77,
+        "endChar": 2
+      },
+      "revId": "8bdbb766f6cba1fb78db5e74df42f107e8cee563",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "43212b8f_007cef2b",
+        "filename": "go/src/infra/cros/cmd/autotest_status_parser/internal/cmd/parse.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 399,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2019-10-07T23:21:18Z",
+      "side": 1,
+      "message": "Include the file path into the error.",
+      "range": {
+        "startLine": 399,
+        "startChar": 0,
+        "endLine": 399,
+        "endChar": 50
+      },
+      "revId": "8bdbb766f6cba1fb78db5e74df42f107e8cee563",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c9020211_f017efd0",
+        "filename": "go/src/infra/cros/cmd/autotest_status_parser/internal/cmd/parse.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 409,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2019-10-07T23:21:18Z",
+      "side": 1,
+      "message": "I would rather not walk the entire results dir tree, since it might have very large parts which are totally irrelevant for perf results.\n\nInstead, you can call filepath.Glob on \u003cdir\u003e/*/results/results-chart.json and \u003cdir\u003e/tast/results/tests/*/results-chart.json.",
+      "range": {
+        "startLine": 409,
+        "startChar": 8,
+        "endLine": 409,
+        "endChar": 21
+      },
+      "revId": "8bdbb766f6cba1fb78db5e74df42f107e8cee563",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
