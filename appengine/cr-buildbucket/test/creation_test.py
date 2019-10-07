@@ -411,6 +411,11 @@ class CreationTest(testing.AppengineTestCase):
     infra = model.BuildInfra.key_for(build.key).get().parse()
     self.assertEqual(infra.swarming.priority, 42)
 
+  def test_parent_task_id(self):
+    build = self.add(dict(swarming={'parent_run_id': 'deadbeef'}))
+    infra = model.BuildInfra.key_for(build.key).get().parse()
+    self.assertEqual(infra.swarming.parent_run_id, 'deadbeef')
+
   def test_update_builders(self):
     recently = self.now - datetime.timedelta(minutes=1)
     while_ago = self.now - datetime.timedelta(minutes=61)
