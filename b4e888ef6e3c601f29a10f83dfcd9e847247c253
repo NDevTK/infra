@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6e8698aa_7f7658b1",
+        "filename": "appengine/cr-buildbucket/swarming.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-10-08T17:01:12Z",
+      "side": 1,
+      "message": "sw",
+      "range": {
+        "startLine": 167,
+        "startChar": 5,
+        "endLine": 167,
+        "endChar": 31
+      },
+      "revId": "b4e888ef6e3c601f29a10f83dfcd9e847247c253",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
