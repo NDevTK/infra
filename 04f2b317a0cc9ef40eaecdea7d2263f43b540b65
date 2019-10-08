@@ -22,6 +22,30 @@
       "revId": "04f2b317a0cc9ef40eaecdea7d2263f43b540b65",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2f84ac3a_e616fc85",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 982,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-10-08T16:44:20Z",
+      "side": 0,
+      "message": "That messed up during rebase, I noticed and fixed it, but it seems that I forgot to upload my latest patch.",
+      "parentUuid": "6ba3a6ca_8c75c8c5",
+      "range": {
+        "startLine": 980,
+        "startChar": 3,
+        "endLine": 982,
+        "endChar": 63
+      },
+      "revId": "04f2b317a0cc9ef40eaecdea7d2263f43b540b65",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
