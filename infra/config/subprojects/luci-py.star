@@ -32,7 +32,6 @@ def try_builder(
       builder = name,
       cq_group = cq_group,
       experiment_percentage = experiment_percentage,
-      disable_reuse = (properties or {}).get('presubmit'),
   )
 
 
@@ -50,5 +49,16 @@ build.presubmit(
 try_builder(
     name = 'luci-py-try-xenial-64',
     os = 'Ubuntu-16.04',
-    properties = {'presubmit': True},
+)
+
+try_builder(
+    name = 'luci-py-try-mac',
+    os = 'Mac-10.13',
+    experiment_percentage=100,
+)
+
+try_builder(
+    name = 'luci-py-try-win',
+    os = 'Windows',
+    experiment_percentage=100,
 )
