@@ -22,6 +22,30 @@
       "revId": "ee030046f6eabec118c0775c0635b7f4712e88e5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b8139f3c_dc3abbaa",
+        "filename": "infra/config/subprojects/luci-py.star",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2019-10-10T06:14:47Z",
+      "side": 1,
+      "message": "\u003e Windows-10\n\nI just followed the infra tryjobs.\nhttps://cs.chromium.org/chromium/infra/infra/config/subprojects/infra.star?q\u003dinfra.star\u0026sq\u003dpackage:chromium\u0026g\u003d0\u0026l\u003d94\n\nDoes \"os \u003d \u0027Windows\u0027\" mean any windows bot regardless version?\n\n\u003e Also this won\u0027t success because we don\u0027t have node cipd package for windows?\n\nnode testing runs on linux only\nhttps://cs.chromium.org/chromium/infra/recipes/recipes/luci_py.py?q\u003dluci_py\u0026sq\u003dpackage:chromium\u0026g\u003d0\u0026l\u003d35",
+      "parentUuid": "c2eca16c_f1d2760d",
+      "range": {
+        "startLine": 62,
+        "startChar": 10,
+        "endLine": 62,
+        "endChar": 17
+      },
+      "revId": "ee030046f6eabec118c0775c0635b7f4712e88e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
