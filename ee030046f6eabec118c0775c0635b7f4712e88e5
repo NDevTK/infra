@@ -142,6 +142,30 @@
       "revId": "ee030046f6eabec118c0775c0635b7f4712e88e5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a7ebd7b7_a0d362ae",
+        "filename": "infra/config/subprojects/luci-py.star",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2019-10-10T07:54:00Z",
+      "side": 1,
+      "message": "Yeah, it is wrong.",
+      "parentUuid": "be3df54e_b65cd273",
+      "range": {
+        "startLine": 62,
+        "startChar": 10,
+        "endLine": 62,
+        "endChar": 17
+      },
+      "revId": "ee030046f6eabec118c0775c0635b7f4712e88e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
