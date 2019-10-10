@@ -94,6 +94,30 @@
       "revId": "ee030046f6eabec118c0775c0635b7f4712e88e5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "72ed527c_97c2ebae",
+        "filename": "infra/config/subprojects/luci-py.star",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2019-10-10T06:55:41Z",
+      "side": 1,
+      "message": "We need to use Windows-7 for win7.\n\nBoth win7 and win10 bot have Windows dimension.\nhttps://chromium-swarm.appspot.com/bot?id\u003dvm304-m4\nhttps://chromium-swarm.appspot.com/bot?id\u003dluci-flex-try-win10-19-dviv",
+      "parentUuid": "210b4b20_0152464f",
+      "range": {
+        "startLine": 62,
+        "startChar": 10,
+        "endLine": 62,
+        "endChar": 17
+      },
+      "revId": "ee030046f6eabec118c0775c0635b7f4712e88e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
