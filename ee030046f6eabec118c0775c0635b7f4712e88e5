@@ -118,6 +118,30 @@
       "revId": "ee030046f6eabec118c0775c0635b7f4712e88e5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "be3df54e_b65cd273",
+        "filename": "infra/config/subprojects/luci-py.star",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2019-10-10T07:09:19Z",
+      "side": 1,
+      "message": "So is this builder name wrong?\nhttps://cs.chromium.org/chromium/infra/infra/config/subprojects/infra.star?q\u003dinfra.star\u0026sq\u003dpackage:chromium\u0026dr\u003dC\u0026l\u003d73",
+      "parentUuid": "72ed527c_97c2ebae",
+      "range": {
+        "startLine": 62,
+        "startChar": 10,
+        "endLine": 62,
+        "endChar": 17
+      },
+      "revId": "ee030046f6eabec118c0775c0635b7f4712e88e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
