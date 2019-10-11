@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "6c02c054_7134690d",
+        "filename": "appengine/findit/findit_v2/services/chromium_api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 360,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-10-11T23:42:10Z",
+      "side": 1,
+      "message": "Great point!. I didn\u0027t realize how generic this was until after it was written. I have moved out all of this to the parent class. PTAL",
+      "parentUuid": "6b100161_b6de8f10",
+      "range": {
+        "startLine": 333,
+        "startChar": 0,
+        "endLine": 360,
+        "endChar": 45
+      },
+      "revId": "32bdf9a599292458d606262c63d41ada40524b34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4da83232_4580e119",
         "filename": "appengine/findit/findit_v2/services/project_api.py",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "e5915865_7cce50e8",
+        "filename": "appengine/findit/findit_v2/services/project_api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 308,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-10-11T23:42:10Z",
+      "side": 1,
+      "message": "I have added details in the implementation.",
+      "parentUuid": "4da83232_4580e119",
+      "range": {
+        "startLine": 308,
+        "startChar": 21,
+        "endLine": 308,
+        "endChar": 31
+      },
+      "revId": "32bdf9a599292458d606262c63d41ada40524b34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7e85bcf5_5daae573",
         "filename": "appengine/findit/findit_v2/services/project_api.py",
         "patchSetId": 1
@@ -68,6 +116,30 @@
       "revId": "32bdf9a599292458d606262c63d41ada40524b34",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e88ebf62_f9d747a3",
+        "filename": "appengine/findit/findit_v2/services/project_api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 326,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-10-11T23:42:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7e85bcf5_5daae573",
+      "range": {
+        "startLine": 324,
+        "startChar": 26,
+        "endLine": 326,
+        "endChar": 24
+      },
+      "revId": "32bdf9a599292458d606262c63d41ada40524b34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -118,6 +190,30 @@
     },
     {
       "key": {
+        "uuid": "8a5e0968_085168c7",
+        "filename": "appengine/findit/findit_v2/services/project_api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 346,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-10-11T23:42:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6324483a_94f926ad",
+      "range": {
+        "startLine": 344,
+        "startChar": 26,
+        "endLine": 346,
+        "endChar": 24
+      },
+      "revId": "32bdf9a599292458d606262c63d41ada40524b34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "09a30a2c_b9b8b8c1",
         "filename": "appengine/findit/findit_v2/services/project_api.py",
         "patchSetId": 1
@@ -159,6 +255,24 @@
     },
     {
       "key": {
+        "uuid": "3373015e_7dad6291",
+        "filename": "appengine/findit/findit_v2/services/project_api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 353,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-10-11T23:42:10Z",
+      "side": 1,
+      "message": "Having this separation allows for a more graceful failure mode:\nIf landing a revert fails after successfully creating it, we can try to request a review without creating a new revert.",
+      "parentUuid": "b6957e0f_9ea43b2f",
+      "revId": "32bdf9a599292458d606262c63d41ada40524b34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0578ef9b_2e459e0b",
         "filename": "appengine/findit/infra_api_clients/codereview/gerrit.py",
         "patchSetId": 1
@@ -173,6 +287,24 @@
       "revId": "32bdf9a599292458d606262c63d41ada40524b34",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1539bbaf_435b6685",
+        "filename": "appengine/findit/infra_api_clients/codereview/gerrit.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-10-11T23:42:10Z",
+      "side": 1,
+      "message": "Done. I tried to minimize the changes to v1, but I hadn\u0027t realized how small this change would be.",
+      "parentUuid": "0578ef9b_2e459e0b",
+      "revId": "32bdf9a599292458d606262c63d41ada40524b34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -196,6 +328,30 @@
       "revId": "32bdf9a599292458d606262c63d41ada40524b34",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fc36be0a_33387749",
+        "filename": "appengine/findit/services/git.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-10-11T23:42:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2df73e9d_84e000c9",
+      "range": {
+        "startLine": 298,
+        "startChar": 45,
+        "endLine": 298,
+        "endChar": 46
+      },
+      "revId": "32bdf9a599292458d606262c63d41ada40524b34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
