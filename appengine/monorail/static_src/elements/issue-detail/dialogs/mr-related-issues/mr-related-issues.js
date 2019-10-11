@@ -182,7 +182,7 @@ export class MrRelatedIssues extends connectStore(LitElement) {
     return blockedOn.map((issue) => {
       const isClosed = issue.statusRef ? !issue.statusRef.meansOpen : false;
       let summary = issue.summary;
-      if (issue.extIdentifier) {
+      if (issue.extIdentifier && !issue.summary) {
         summary = '(not available)';
       }
       const row = {
