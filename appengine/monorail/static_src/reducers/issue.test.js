@@ -15,6 +15,71 @@ let prpcCall;
 let dispatch;
 
 describe('issue', () => {
+  describe('reducers', () => {
+    describe('relatedIssuesReducer', () => {
+      it('handles FETCH_RELATED_ISSUES_SUCCESS', () => {
+        const newState = issue.relatedIssuesReducer({}, {
+          type: 'FETCH_RELATED_ISSUES_SUCCESS',
+          relatedIssues: {'rutabaga:1234': {}},
+        });
+        assert.deepEqual(newState, {'rutabaga:1234': {}});
+      });
+
+      describe('FETCH_FEDERATED_REFERENCES_SUCCESS', () => {
+        it('returns early if data is missing', () => {
+          const newState = issue.relatedIssuesReducer({'b/123': {}}, {
+            type: 'FETCH_FEDERATED_REFERENCES_SUCCESS',
+          });
+          assert.deepEqual(newState, {'b/123': {}});
+        });
+
+        it('returns early if data is empty', () => {
+          const newState = issue.relatedIssuesReducer({'b/123': {}}, {
+            type: 'FETCH_FEDERATED_REFERENCES_SUCCESS',
+            fedRefIssueRefs: [],
+          });
+          assert.deepEqual(newState, {'b/123': {}});
+        });
+
+        it('assigns each FedRef to the state', () => {
+          const state = {
+            'rutabaga:123': {},
+            'rutabaga:345': {},
+          };
+          const newState = issue.relatedIssuesReducer(state, {
+            type: 'FETCH_FEDERATED_REFERENCES_SUCCESS',
+            fedRefIssueRefs: [
+              {
+                extIdentifier: 'b/987',
+                summary: 'What is up',
+                statusRef: {meansOpen: true},
+              },
+              {
+                extIdentifier: 'b/765',
+                summary: 'Rutabaga',
+                statusRef: {meansOpen: false},
+              },
+            ],
+          });
+          assert.deepEqual(newState, {
+            'rutabaga:123': {},
+            'rutabaga:345': {},
+            'b/987': {
+              extIdentifier: 'b/987',
+              summary: 'What is up',
+              statusRef: {meansOpen: true},
+            },
+            'b/765': {
+              extIdentifier: 'b/765',
+              summary: 'Rutabaga',
+              statusRef: {meansOpen: false},
+            },
+          });
+        });
+      });
+    });
+  });
+
   it('issue', () => {
     assert.deepEqual(issue.issue(wrapIssue()), {});
     assert.deepEqual(issue.issue(wrapIssue({localId: 100})), {localId: 100});
@@ -603,6 +668,9 @@ describe('issue', () => {
         const response = {
           result: {
             resolvedTime: 12345,
+            issueState: {
+              title: 'Rutabaga title',
+            },
           },
         };
         window.gapi = {
@@ -618,16 +686,18 @@ describe('issue', () => {
         delete window.gapi;
       });
 
-      describe('fetchFederatedReferenceStatuses', () => {
+      describe('fetchFederatedReferences', () => {
         it('returns an empty map if no fedrefs found', async () => {
           const dispatch = sinon.stub();
           const testIssue = {};
-          const action = issue.fetchFederatedReferenceStatuses(testIssue);
+          const action = issue.fetchFederatedReferences(testIssue);
           const result = await action(dispatch);
 
-          assert.equal(dispatch.getCalls().length, 0);
-          assert.instanceOf(result, Map);
-          assert.deepEqual(Array.from(result), []);
+          assert.equal(dispatch.getCalls().length, 1);
+          sinon.assert.calledWith(dispatch, {
+            type: 'FETCH_FEDERATED_REFERENCES_START',
+          });
+          assert.isUndefined(result);
         });
 
         it('fetches from Buganizer API', async () => {
@@ -643,26 +713,42 @@ describe('issue', () => {
               extIdentifier: 'b/987654',
             },
           };
-          const action = issue.fetchFederatedReferenceStatuses(testIssue);
-          const result = await action(dispatch);
+          const action = issue.fetchFederatedReferences(testIssue);
+          await action(dispatch);
 
+          sinon.assert.calledWith(dispatch, {
+            type: 'FETCH_FEDERATED_REFERENCES_START',
+          });
           sinon.assert.calledWith(dispatch, {
             type: 'GAPI_LOGIN_SUCCESS',
             email: 'rutabaga@google.com',
           });
-          assert.deepEqual(Array.from(result.entries()), [
-            ['b/123456', false],
-            ['b/654321', false],
-            ['b/987654', false],
-          ]);
+          sinon.assert.calledWith(dispatch, {
+            type: 'FETCH_FEDERATED_REFERENCES_SUCCESS',
+            fedRefIssueRefs: [
+              {
+                extIdentifier: 'b/123456',
+                statusRef: {meansOpen: false},
+                summary: 'Rutabaga title',
+              },
+              {
+                extIdentifier: 'b/654321',
+                statusRef: {meansOpen: false},
+                summary: 'Rutabaga title',
+              },
+              {
+                extIdentifier: 'b/987654',
+                statusRef: {meansOpen: false},
+                summary: 'Rutabaga title',
+              },
+            ],
+          });
         });
       });
 
       describe('fetchRelatedIssues', () => {
-        it('calls fetchFederatedReferenceStatuses for mergedinto', async () => {
-          const dispatch = sinon.stub().returns(new Map([
-            ['b/987654', false],
-          ]));
+        it('calls fetchFederatedReferences for mergedinto', async () => {
+          const dispatch = sinon.stub();
           prpcCall.returns(Promise.resolve({openRefs: [], closedRefs: []}));
           const testIssue = {
             mergedIntoIssueRef: {
@@ -676,16 +762,15 @@ describe('issue', () => {
           const expectedMessage = {issueRefs: []};
           sinon.assert.calledWith(prpcClient.call, 'monorail.Issues',
               'ListReferencedIssues', expectedMessage);
+
+          sinon.assert.calledWith(dispatch, {
+            type: 'FETCH_RELATED_ISSUES_START',
+          });
+          // No mergedInto refs returned, they're handled by
+          // fetchFederatedReferences.
           sinon.assert.calledWith(dispatch, {
             type: 'FETCH_RELATED_ISSUES_SUCCESS',
-            relatedIssues: {
-              'b/987654': {
-                extIdentifier: 'b/987654',
-                statusRef: {
-                  meansOpen: false,
-                },
-              },
-            },
+            relatedIssues: {},
           });
         });
       });
