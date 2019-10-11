@@ -2,6 +2,75 @@
   "comments": [
     {
       "key": {
+        "uuid": "6b100161_b6de8f10",
+        "filename": "appengine/findit/findit_v2/services/chromium_api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 360,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-10-11T22:26:48Z",
+      "side": 1,
+      "message": "i don\u0027t see anything chromium-specific here. why is it in the project API?",
+      "range": {
+        "startLine": 333,
+        "startChar": 0,
+        "endLine": 360,
+        "endChar": 45
+      },
+      "revId": "32bdf9a599292458d606262c63d41ada40524b34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4da83232_4580e119",
+        "filename": "appengine/findit/findit_v2/services/project_api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 308,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-10-11T22:26:48Z",
+      "side": 1,
+      "message": "shouldn\u0027t dict keys and value schema be documented here?",
+      "range": {
+        "startLine": 308,
+        "startChar": 21,
+        "endLine": 308,
+        "endChar": 31
+      },
+      "revId": "32bdf9a599292458d606262c63d41ada40524b34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7e85bcf5_5daae573",
+        "filename": "appengine/findit/findit_v2/services/project_api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 326,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-10-11T22:26:48Z",
+      "side": 1,
+      "message": "this does not explain much. what are the keys, values? \n\nperhaps this doc can just say that this must be a dict returned by CreateRevert. Then we essentially refer to the doc of that func",
+      "range": {
+        "startLine": 324,
+        "startChar": 26,
+        "endLine": 326,
+        "endChar": 24
+      },
+      "revId": "32bdf9a599292458d606262c63d41ada40524b34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f3404436_c5d2518e",
         "filename": "appengine/findit/findit_v2/services/project_api.py",
         "patchSetId": 1
@@ -26,6 +95,29 @@
     },
     {
       "key": {
+        "uuid": "6324483a_94f926ad",
+        "filename": "appengine/findit/findit_v2/services/project_api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 346,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-10-11T22:26:48Z",
+      "side": 1,
+      "message": "same here",
+      "range": {
+        "startLine": 344,
+        "startChar": 26,
+        "endLine": 346,
+        "endChar": 24
+      },
+      "revId": "32bdf9a599292458d606262c63d41ada40524b34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "09a30a2c_b9b8b8c1",
         "filename": "appengine/findit/findit_v2/services/project_api.py",
         "patchSetId": 1
@@ -47,6 +139,63 @@
       "revId": "32bdf9a599292458d606262c63d41ada40524b34",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b6957e0f_9ea43b2f",
+        "filename": "appengine/findit/findit_v2/services/project_api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 353,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-10-11T22:26:48Z",
+      "side": 1,
+      "message": "do we really need 3 methods for revert? why not one function CreateRevert with modes \"land\" and \"request review\"?",
+      "revId": "32bdf9a599292458d606262c63d41ada40524b34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0578ef9b_2e459e0b",
+        "filename": "appengine/findit/infra_api_clients/codereview/gerrit.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-10-11T22:26:48Z",
+      "side": 1,
+      "message": "i find this function signature somewhat weird because it has a dynamic return type unnecessarily.\nI see only one non-test usage of CreateRevert\nhttps://osscs.corp.google.com/search?q\u003d%5CbCreateRevert%5C(%20f:findit\u0026ss\u003dchromium\n\ncan we instead update that one usage to do CreateRevert(...)[\u0027change_id\u0027]\n\n?",
+      "revId": "32bdf9a599292458d606262c63d41ada40524b34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2df73e9d_84e000c9",
+        "filename": "appengine/findit/services/git.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-10-11T22:26:48Z",
+      "side": 1,
+      "message": "nit: period",
+      "range": {
+        "startLine": 298,
+        "startChar": 45,
+        "endLine": 298,
+        "endChar": 46
+      },
+      "revId": "32bdf9a599292458d606262c63d41ada40524b34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
