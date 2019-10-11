@@ -13,8 +13,10 @@ from findit_v2.services.failure_type import StepTypeEnum
 from findit_v2.services.project_api import ProjectAPI
 
 from common.findit_http_client import FinditHttpClient
+from common.rotations import current_sheriffs
 from common.waterfall import buildbucket_client
 from infra_api_clients import logdog_util
+from infra_api_clients.codereview import gerrit
 from services import git
 from services.compile_failure import extract_compile_signal
 from services.compile_failure import compile_failure_analysis
@@ -321,3 +323,64 @@ class ChromiumProjectAPI(ProjectAPI):
         failure_key = (failure['step_name'], frozenset(tests))
         result[failure_key].append(suspects_by_cp[cp])
     return result
+
+  def _ChangeInfoAndClientFromCommit(self, commit):
+    repo_url = git.GetRepoUrlFromCommit(commit)
+    change_info = git.GetCodeReviewInfoForACommit(commit.gitiles_id, repo_url,
+                                                  commit.gitiles_ref)
+    assert change_info, 'Missing CL info for %s' % commit.key.id()
+    return change_info, gerrit.Gerrit(change_info['review_server_host'])
+
+  def CreateRevert(self, culprit, reason):
+    """Create a revert on Gerrit.
+
+    Args:
+      culprit(Culprit): The commit that needs to be reverted.
+      reason (str): Explanation to be included in the reverting CL description.
+
+    Returns:
+      A dictionary as returned by Gerrit. E.g.:
+      {
+        "id": "myProject~master~I8473b95934b5732ac55d26311a706c9c2bde9940",
+        "project": "myProject",
+        "branch": "master",
+        "change_id": "I8473b95934b5732ac55d26311a706c9c2bde9940",
+        "subject": "Revert \"Implementing Feature X\"",
+        "status": "NEW",
+        "created": "2013-02-01 09:59:32.126000000",
+        "updated": "2013-02-21 11:16:36.775000000",
+        "mergeable": true,
+        "insertions": 6,
+        "deletions": 4,
+        "_number": 3965,
+        "owner": {
+          "name": "John Doe"
+        }
+      }
+    """
+    change_info, gerrit_client = self._ChangeInfoAndClientFromCommit(culprit)
+    revert_info = gerrit_client.CreateRevert(
+        reason, change_info['review_change_id'], full_change_info=True)
+    revert_info['client'] = gerrit_client
+    return revert_info
+
+  def CommitRevert(self, revert_info, message):
+    client = revert_info['client']
+    submitted = client.SubmitRevert(revert_info['review_change_id'])
+    if submitted:
+      self.RequestReview(revert_info, message)
+    return submitted
+
+  def RequestReview(self, revert_info, message):
+    client = revert_info['client']
+    assert client.AddReviewers(
+        revert_info['review_change_id'],
+        current_sheriffs('chrome'),
+        message=message)
+
+  def NotifyCulprit(self, culprit, message, silent_notification=False):
+    change_info, gerrit_client = self._ChangeInfoAndClientFromCommit(culprit)
+    return gerrit_client.PostMessage(
+        change_info['review_change_id'],
+        message,
+        should_email=not silent_notification)
