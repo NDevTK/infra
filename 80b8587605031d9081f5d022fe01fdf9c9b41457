@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bed64bb1_973ec57f",
+        "filename": "appengine/monorail/static_src/shared/federated.js",
+        "patchSetId": 4
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-10-11T22:21:39Z",
+      "side": 1,
+      "message": "Unrelated to this change, but I realized this was something I might have not thought about in old code reviews. If Objects with these classes happen to be stored in the Redux store for Monorail, we\u0027ll want to make sure they are serializeable to JSON (with enough information to be added back into the Redux state and re-create the user\u0027s session) for a few reasons: \n\n- We\u0027ll eventually add more complex frontend caching to Monorail where serializing will likely be important. \n- Non-serializable stuff in Redux doesn\u0027t show up in Redux DevTools which can make debugging harder. \n- (Less important than the above): We used to have this sort of pie in the sky idea in frontend land that using Redux we could take a snapshot of the app\u0027s Redux state whenever a user would file a bug and that a developer would use this state snapshot to recreate exactly what the user was experiencing.",
+      "range": {
+        "startLine": 53,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 22
+      },
+      "revId": "80b8587605031d9081f5d022fe01fdf9c9b41457",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
