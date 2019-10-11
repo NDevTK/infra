@@ -69,7 +69,8 @@ class CodeReview(object):  # pragma: no cover.
                    change_id,
                    patchset_id=None,
                    footer=None,
-                   bug_id=None):
+                   bug_id=None,
+                   full_change_info=False):
     """Creates a revert CL for the given issue and patchset.
 
     Args:
@@ -78,6 +79,9 @@ class CodeReview(object):  # pragma: no cover.
           Rietveld to create the revert for.
       patchset_id (int): The patchset id on Rietveld to create the revert for.
           Optional for Gerrit.
+      full_change_info (bool): If True, rather than return just the change id
+          for the created revert, return the whole response dict as returned by
+          gerrit.
 
     Returns:
       The change id (or issue id) of the revert CL, or None upon failures.
