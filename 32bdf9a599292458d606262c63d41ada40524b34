@@ -1,0 +1,52 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f3404436_c5d2518e",
+        "filename": "appengine/findit/findit_v2/services/project_api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-10-11T21:44:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0f21365d_78b47d36",
+      "range": {
+        "startLine": 328,
+        "startChar": 52,
+        "endLine": 328,
+        "endChar": 59
+      },
+      "revId": "32bdf9a599292458d606262c63d41ada40524b34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "09a30a2c_b9b8b8c1",
+        "filename": "appengine/findit/findit_v2/services/project_api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 349,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-10-11T21:44:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c8bdaba9_2c0659c2",
+      "range": {
+        "startLine": 349,
+        "startChar": 16,
+        "endLine": 349,
+        "endChar": 23
+      },
+      "revId": "32bdf9a599292458d606262c63d41ada40524b34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
