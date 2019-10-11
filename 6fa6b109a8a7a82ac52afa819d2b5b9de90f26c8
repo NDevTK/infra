@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2d97bec4_2fbc11fe",
+        "filename": "appengine/findit/infra_api_clients/codereview/gerrit.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-10-11T23:49:11Z",
+      "side": 1,
+      "message": "how is this supposed to be handled? this looks like an invalid gerrit response is silently ignored by our system\n\nmarking resolved because it is not for this CL. there seems to be a problem in this code base does error handling",
+      "revId": "6fa6b109a8a7a82ac52afa819d2b5b9de90f26c8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
