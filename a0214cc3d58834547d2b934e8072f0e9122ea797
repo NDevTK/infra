@@ -16,6 +16,24 @@
       "revId": "a0214cc3d58834547d2b934e8072f0e9122ea797",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8cf84fe8_96e36612",
+        "filename": "go/src/infra/cmd/qscheduler/internal/cmd/inspect.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1336288
+      },
+      "writtenOn": "2019-10-11T21:10:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "61765351_0d21c193",
+      "revId": "a0214cc3d58834547d2b934e8072f0e9122ea797",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
