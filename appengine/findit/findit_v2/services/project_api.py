@@ -290,3 +290,82 @@ class ProjectAPI(object):  # pragma: no cover.
     """Creates input object required by heuristic analysis for test."""
     # pylint: disable=unused-argument
     return {}
+
+  def CreateRevert(self, culprit, reason):
+    """Create a revert of a culprit.
+
+    If a commit is identified as the root cause of a CI failure, Findit may
+    choose to create a revert if the project is so configured. This revert may
+    then be landed automatically by Findit or manually by Sheriffs or other
+    group in charge of the CI waterfall, again depending on how the project is
+    configured.
+
+    Args:
+      culrpit(findit_v2.model.gitiles_commit.Culprit): The culprit to revert.
+      reason(str): A message explaining the reason for the revert, this will
+          be included in the commit description of the revert.
+    Returns:
+      revert_info: A dictionary containing information about the revert CL
+      created along with a reusable code review client (e.g. Gerrit).
+    """
+    # pylint: disable=unused-argument
+    raise NotImplementedError
+
+  def CommitRevert(self, revert_info, message):
+    """Attempt to submit a revert created by Findit.
+
+    Once a revert has been created, Findit may land it if the project is
+    configured to allow it. It will also add the Sheriffs on rotation as
+    reviewers of the revert and post a message with the justification for
+    landing the revert, as well as informing the reviewers on how to report a
+    false positive.
+
+    Args:
+      revert_info (dict): A dictionary containing information about the revert
+          CL to be submitted created along with a reusable code review client
+          (e.g. Gerrit).
+      message(str): A message explaining that Findit committed the change
+          automatically and where to report a false postive. This will be
+          added to the CL as a comment.
+    Returns:
+      A boolean indicating whether the revert was landed successfully.
+    """
+    # pylint: disable=unused-argument
+    raise NotImplementedError
+
+  def RequestReview(self, revert_info, message):
+    """Add appropriate reviewers to revert for manual submission.
+
+    In case the project is not configured to automatically land reverts, or the
+    configured limit of auto-submitted reverts has been reached, this method may
+    be called to add the appropriate reviewers and post a message requesting
+    that they manually land the revert if they agree with Findit's findings.
+    Args:
+      revert_info (dict): A dictionary containing information about the revert
+          CL to be reviewed created along with a reusable code review client
+          (e.g. Gerrit).
+      message(str): A message explaining that Findit will not commit the revert
+          automatically, instructions about how to land it and where to report a
+          false postive. This will be added to the CL as a comment.
+    """
+    # pylint: disable=unused-argument
+    raise NotImplementedError
+
+  def NotifyCulprit(self, culprit, message, silent_notification=True):
+    """Post comment on culprit's CL about Findit's findings.
+
+    This is intended for Findit to notify the culprit's author/reviewers that
+    change was identified by Findit as causing certain CI failures.
+    Args:
+      culrpit(findit_v2.model.gitiles_commit.Culprit): The CL to comment on.
+      message(str): A message explaining the findings, and providing an example
+          of a failed build caused by the change. This will be posted in the CL
+          as a comment.
+      silent_notification(bool): If true, make the comment posting not send
+          email to the reviewers. For example, when the culprit is already being
+          reverted by a human, such as the sheriff or the author.
+    Returns:
+      sent: A boolean indicating whether the notification was sent successfully.
+    """
+    # pylint: disable=unused-argument
+    raise NotImplementedError

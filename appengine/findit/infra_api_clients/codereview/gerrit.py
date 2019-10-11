@@ -156,14 +156,19 @@ class Gerrit(codereview.CodeReview):
                    change_id,
                    patchset_id=None,
                    footer=None,
-                   bug_id=None):
+                   bug_id=None,
+                   full_change_info=False):
     parts = ['changes', change_id, 'revert']
     revert_cl_description = self._GenerateRevertCLDescription(
         change_id, reason, bug_id=bug_id)
     body = {'message': revert_cl_description}
     reverting_change = self._Post(parts, body=body)
     try:
-      return reverting_change['change_id']
+      # Retrieve key to trigger except clause if necessary.
+      change_id = reverting_change['change_id']
+      if full_change_info:
+        return reverting_change
+      return change_id
     except (TypeError, KeyError):
       return None
 
