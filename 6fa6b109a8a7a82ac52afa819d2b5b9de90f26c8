@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "bbae4147_b8acae33",
+        "filename": "appengine/findit/findit_v2/services/project_api.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 411,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-10-12T00:18:17Z",
+      "side": 1,
+      "message": "I\u0027m wondering should this method be named as \u0027GetAutoRevertReviewers\u0027.\n\nThough it could be also helpful if we add them to a culprit Findit finds but cannot revert.",
+      "range": {
+        "startLine": 411,
+        "startChar": 6,
+        "endLine": 411,
+        "endChar": 28
+      },
+      "revId": "6fa6b109a8a7a82ac52afa819d2b5b9de90f26c8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2d97bec4_2fbc11fe",
         "filename": "appengine/findit/infra_api_clients/codereview/gerrit.py",
         "patchSetId": 4
@@ -16,6 +39,29 @@
       "revId": "6fa6b109a8a7a82ac52afa819d2b5b9de90f26c8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fd2b3c46_b6c7ae94",
+        "filename": "appengine/findit/infra_api_clients/codereview/gerrit.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-10-12T00:18:17Z",
+      "side": 1,
+      "message": "Do you mean\n\nif not reverting_change or \u0027change_id\u0027 not in reverting_change:\n  return None",
+      "range": {
+        "startLine": 171,
+        "startChar": 0,
+        "endLine": 172,
+        "endChar": 17
+      },
+      "revId": "6fa6b109a8a7a82ac52afa819d2b5b9de90f26c8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
