@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "c28d4dd7_dc629705",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/dialogs/mr-related-issues/mr-related-issues.js",
+        "patchSetId": 4
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2019-10-14T19:39:50Z",
+      "side": 1,
+      "message": "I added a comment to explain this and also added a test because I realized it wasn\u0027t tested 😬",
+      "range": {
+        "startLine": 185,
+        "startChar": 34,
+        "endLine": 185,
+        "endChar": 47
+      },
+      "revId": "80b8587605031d9081f5d022fe01fdf9c9b41457",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bed64bb1_973ec57f",
         "filename": "appengine/monorail/static_src/shared/federated.js",
         "patchSetId": 4
@@ -18,6 +41,53 @@
         "startChar": 0,
         "endLine": 53,
         "endChar": 22
+      },
+      "revId": "80b8587605031d9081f5d022fe01fdf9c9b41457",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "43093fab_3da85f85",
+        "filename": "appengine/monorail/static_src/shared/federated.js",
+        "patchSetId": 4
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2019-10-14T19:39:50Z",
+      "side": 1,
+      "message": "Got it. This CL avoids that by converting the FederatedIssue classes to IssueRef objects in the action dispatcher. I don\u0027t think any other code I\u0027ve worked on stores non-serializable objects in the Redux store but I\u0027ll go back and check. And I\u0027ll keep that in mind for future CLs.",
+      "parentUuid": "bed64bb1_973ec57f",
+      "range": {
+        "startLine": 53,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 22
+      },
+      "revId": "80b8587605031d9081f5d022fe01fdf9c9b41457",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fc75687d_efd9aee0",
+        "filename": "appengine/monorail/static_src/shared/federated.js",
+        "patchSetId": 4
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2019-10-14T19:39:50Z",
+      "side": 1,
+      "message": "Added a test for this",
+      "range": {
+        "startLine": 162,
+        "startChar": 2,
+        "endLine": 162,
+        "endChar": 12
       },
       "revId": "80b8587605031d9081f5d022fe01fdf9c9b41457",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
