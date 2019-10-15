@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0d7fa601_08a44875",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-10-15T22:59:41Z",
+      "side": 1,
+      "message": "nit: Looks like we should update this comment as well",
+      "revId": "8c6e451b5493de05d0073b9fa2a6ce8e1298bda8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
