@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -14,11 +15,12 @@ import (
 )
 
 const (
-	emptyPatch = "testdata/empty_diff.patch"
+	emptyPatch = "empty_diff.patch"
+	inputPath  = "testdata"
 )
 
 func analyzeTestFile(t *testing.T, name string, patch string, tempDir string) []*tricium.Data_Comment {
-	filePath := "testdata/src/" + name
+	filePath := "src/" + name
 	// now mocks the current time for testing.
 	now = func() time.Time { return time.Date(2019, time.September, 18, 0, 0, 0, 0, time.UTC) }
 	// getMilestoneDate is a function that mocks getting the milestone date from server.
@@ -42,19 +44,19 @@ func analyzeTestFile(t *testing.T, name string, patch string, tempDir string) []
 		}
 		return date, err
 	}
-	filesChanged, err := getDiffsPerFile(patch)
+	filesChanged, err := getDiffsPerFile(filepath.Join(inputPath, patch))
 	if err != nil {
 		t.Fatalf("Failed to get diffs per file for %s: %v", name, err)
 	}
 	// Original files will be put into tempDir.
-	getOriginalFiles([]string{filePath}, tempDir, patch)
+	getOriginalFiles([]string{filePath}, inputPath, tempDir, patch)
 	if patch == emptyPatch {
 		// Assumes all test files are less than 100 lines in length
 		// Necessary to ensure all lines in the test file are analyzed
 		filesChanged.addedLines[filePath] = makeRange(1, 100)
 		filesChanged.removedLines[filePath] = makeRange(1, 100)
 	}
-	return analyzeFile(filePath, tempDir, filesChanged)
+	return analyzeFile(filePath, inputPath, tempDir, filesChanged)
 }
 
 func TestHistogramsCheck(t *testing.T) {
@@ -69,12 +71,13 @@ func TestHistogramsCheck(t *testing.T) {
 			t.Fatalf("Failed to clean up temporary directory %q: %v", tempDir, err)
 		}
 	}()
-	patchFile, err := os.Create(emptyPatch)
+	patchPath := filepath.Join(inputPath, emptyPatch)
+	patchFile, err := os.Create(patchPath)
 	if err != nil {
-		t.Fatalf("Failed to create empty patch file %s: %v", emptyPatch, err)
+		t.Fatalf("Failed to create empty patch file %s: %v", patchPath, err)
 	}
 	patchFile.Close()
-	defer os.Remove(emptyPatch)
+	defer os.Remove(patchPath)
 
 	// EXPIRY tests
 	Convey("Analyze XML file with no errors: good expiry date", t, func() {
@@ -396,7 +399,7 @@ func TestHistogramsCheck(t *testing.T) {
 
 	// REMOVED HISTOGRAM tests
 	Convey("Analyze XML file with error: histogram deleted", t, func() {
-		results := analyzeTestFile(t, "rm/remove_histogram.xml", "testdata/tricium_generated_diff.patch", tempDir)
+		results := analyzeTestFile(t, "rm/remove_histogram.xml", "tricium_generated_diff.patch", tempDir)
 		So(results, ShouldResemble, []*tricium.Data_Comment{
 			{
 				Category: fmt.Sprintf("%s/%s", category, "Removed"),
@@ -408,14 +411,14 @@ func TestHistogramsCheck(t *testing.T) {
 
 	// ADDED NAMESPACE tests
 	Convey("Analyze XML file with no error: added histogram with same namespace", t, func() {
-		results := analyzeTestFile(t, "namespace/same_namespace.xml", "testdata/tricium_same_namespace.patch", tempDir)
+		results := analyzeTestFile(t, "namespace/same_namespace.xml", "tricium_same_namespace.patch", tempDir)
 		So(results, ShouldResemble, []*tricium.Data_Comment{
 			defaultExpiryInfoLine("testdata/src/namespace/same_namespace.xml", 8),
 		})
 	})
 
 	Convey("Analyze XML file with warning: added namespace", t, func() {
-		results := analyzeTestFile(t, "namespace/add_namespace.xml", "testdata/tricium_namespace_diff.patch", tempDir)
+		results := analyzeTestFile(t, "namespace/add_namespace.xml", "tricium_namespace_diff.patch", tempDir)
 		So(results, ShouldResemble, []*tricium.Data_Comment{
 			defaultExpiryInfoLine("testdata/src/namespace/add_namespace.xml", 8),
 			{
