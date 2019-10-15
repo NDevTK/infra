@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "38284b74_193b3909",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2019-10-15T14:16:25Z",
+      "side": 1,
+      "message": "I think the analyzer should still write the (empty) output file for consistency, otherwise Tricium doesn\u0027t know if the analyzer somehow misbehaved.\n\nThe easiest way to do it is to declare results right before the condition, then put the actual work inside the condition. Something like:\n\n  results :\u003d \u0026tricium.Data_Results{}\n  if len(filePaths) !\u003d 0 {\n    \u003clines 170-190\u003e\n    \u003clines 193-195\u003e\n  }\n  \u003ccontinue with line 197\u003e",
+      "revId": "7c1f870de6c3999f86bc43c2ec8cf431e29a51f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
