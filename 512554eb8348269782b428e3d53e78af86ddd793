@@ -22,6 +22,30 @@
       "revId": "512554eb8348269782b428e3d53e78af86ddd793",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "58c451ce_17dd0841",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid-controls.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-10-16T18:41:20Z",
+      "side": 1,
+      "message": "Great catch! Much better. :)",
+      "parentUuid": "94b5f0aa_940bada3",
+      "range": {
+        "startLine": 132,
+        "startChar": 4,
+        "endLine": 132,
+        "endChar": 35
+      },
+      "revId": "512554eb8348269782b428e3d53e78af86ddd793",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
