@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e75b4a11_5e41a28b",
+        "filename": "appengine/findit/findit_v2/services/build_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-10-16T01:24:47Z",
+      "side": 1,
+      "message": "How will we use this?\n\nI assume this is to decide if Findit should take auto action? If so probably we should specifically look for the failures that the culprit caused?",
+      "revId": "3bebf12862f790831b9bc73e902adaefb515b6e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "576dfcc5_d9c5158d",
+        "filename": "appengine/findit/findit_v2/services/build_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-10-16T01:24:47Z",
+      "side": 1,
+      "message": "also include build\u0027s info in this logging?",
+      "range": {
+        "startLine": 147,
+        "startChar": 20,
+        "endLine": 147,
+        "endChar": 52
+      },
+      "revId": "3bebf12862f790831b9bc73e902adaefb515b6e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "41ddb637_4f39a3bb",
+        "filename": "appengine/findit/findit_v2/services/build_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-10-16T01:24:47Z",
+      "side": 1,
+      "message": "I believe a safer solution is to compare by build id.\n\nNoted: the later the build, the smaller the build_id.",
+      "range": {
+        "startLine": 165,
+        "startChar": 35,
+        "endLine": 165,
+        "endChar": 47
+      },
+      "revId": "3bebf12862f790831b9bc73e902adaefb515b6e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
