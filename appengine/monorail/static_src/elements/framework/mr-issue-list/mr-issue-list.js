@@ -32,6 +32,7 @@ const COLUMN_DISPLAY_NAMES = {
 const UNGROUPABLE_COLUMNS = new Set(['id', 'summary']);
 
 export class MrIssueList extends connectStore(LitElement) {
+  /** @override */
   static get styles() {
     return css`
       :host {
@@ -158,6 +159,7 @@ export class MrIssueList extends connectStore(LitElement) {
     `;
   }
 
+  /** @override */
   render() {
     const selectAllChecked = this._selectedIssues.size > 0;
 
@@ -405,6 +407,7 @@ export class MrIssueList extends connectStore(LitElement) {
     return values.join(', ');
   }
 
+  /** @override */
   static get properties() {
     return {
       /**
@@ -474,6 +477,7 @@ export class MrIssueList extends connectStore(LitElement) {
     };
   };
 
+  /** @override */
   constructor() {
     super();
     this.issues = [];
@@ -508,6 +512,7 @@ export class MrIssueList extends connectStore(LitElement) {
     this._page = page;
   };
 
+  /** @override */
   stateChanged(state) {
     this._fieldDefMap = project.fieldDefMap(state);
     this._labelPrefixSet = project.labelPrefixSet(state);
@@ -525,12 +530,14 @@ export class MrIssueList extends connectStore(LitElement) {
     window.addEventListener('keydown', this._boundRunNavigationHotKeys);
   }
 
+  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
 
     window.removeEventListener('keydown', this._boundRunNavigationHotKeys);
   }
 
+  /** @override */
   update(changedProperties) {
     if (changedProperties.has('issues')) {
       // Clear selected issues to avoid an ever-growing Set size. In the future,

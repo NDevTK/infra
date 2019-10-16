@@ -27,6 +27,7 @@ import {SHARED_STYLES} from 'shared/shared-styles.js';
  *
  */
 export class MrApp extends connectStore(LitElement) {
+  /** @override */
   static get styles() {
     return [
       SHARED_STYLES,
@@ -43,6 +44,7 @@ export class MrApp extends connectStore(LitElement) {
     ];
   }
 
+  /** @override */
   render() {
     return html`
       <mr-keystrokes
@@ -99,6 +101,7 @@ export class MrApp extends connectStore(LitElement) {
     }
   }
 
+  /** @override */
   static get properties() {
     return {
       /**
@@ -151,6 +154,7 @@ export class MrApp extends connectStore(LitElement) {
     };
   }
 
+  /** @override */
   constructor() {
     super();
     this.queryParams = {};
@@ -158,11 +162,13 @@ export class MrApp extends connectStore(LitElement) {
     this._currentContext = {};
   }
 
+  /** @override */
   stateChanged(state) {
     this.dirtyForms = ui.dirtyForms(state);
     this.queryParams = sitewide.queryParams(state);
   }
 
+  /** @override */
   updated(changedProperties) {
     if (changedProperties.has('userDisplayName')) {
       store.dispatch(user.fetch(this.userDisplayName));
@@ -173,6 +179,7 @@ export class MrApp extends connectStore(LitElement) {
     }
   }
 
+  /** @override */
   connectedCallback() {
     super.connectedCallback();
 

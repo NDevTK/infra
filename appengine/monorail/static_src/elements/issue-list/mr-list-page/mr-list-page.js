@@ -25,6 +25,7 @@ const PARAMS_THAT_TRIGGER_REFRESH = ['sort', 'groupby', 'num',
   'start'];
 
 export class MrListPage extends connectStore(LitElement) {
+  /** @override */
   static get styles() {
     return css`
       :host {
@@ -118,6 +119,7 @@ export class MrListPage extends connectStore(LitElement) {
     `;
   }
 
+  /** @override */
   render() {
     const selectedRefs = this.selectedIssues.map(
         ({localId, projectName}) => ({localId, projectName}));
@@ -272,6 +274,7 @@ export class MrListPage extends connectStore(LitElement) {
     `;
   }
 
+  /** @override */
   static get properties() {
     return {
       issues: {type: Array},
@@ -296,6 +299,7 @@ export class MrListPage extends connectStore(LitElement) {
     };
   };
 
+  /** @override */
   constructor() {
     super();
     this.issues = [];
@@ -322,18 +326,21 @@ export class MrListPage extends connectStore(LitElement) {
     this.page = page;
   };
 
+  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
     window.addEventListener('refreshList', this._boundRefresh);
   }
 
+  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
 
     window.removeEventListener('refreshList', this._boundRefresh);
   }
 
+  /** @override */
   updated(changedProperties) {
     if (changedProperties.has('projectName') ||
         changedProperties.has('currentQuery') ||
@@ -364,6 +371,7 @@ export class MrListPage extends connectStore(LitElement) {
         {maxItems: this.maxItems, start: this.startIndex}));
   }
 
+  /** @override */
   stateChanged(state) {
     this._isLoggedIn = user.isLoggedIn(state);
     this._currentUser = user.user(state);

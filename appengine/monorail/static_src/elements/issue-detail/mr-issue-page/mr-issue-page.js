@@ -36,6 +36,7 @@ const DETAIL_COMMENT_COUNT = 100;
  *
  */
 export class MrIssuePage extends connectStore(LitElement) {
+  /** @override */
   static get styles() {
     return [
       SHARED_STYLES,
@@ -166,6 +167,7 @@ export class MrIssuePage extends connectStore(LitElement) {
     ];
   }
 
+  /** @override */
   render() {
     const issueIsEmpty = !this.issue || !this.issue.localId;
     const movedToRef = this.issue.movedToRef;
@@ -252,6 +254,7 @@ export class MrIssuePage extends connectStore(LitElement) {
     `;
   }
 
+  /** @override */
   static get properties() {
     return {
       queryParams: {type: Object},
@@ -277,6 +280,7 @@ export class MrIssuePage extends connectStore(LitElement) {
     };
   }
 
+  /** @override */
   constructor() {
     super();
     this.issue = {};
@@ -286,6 +290,7 @@ export class MrIssuePage extends connectStore(LitElement) {
     this.codeFont = false;
   }
 
+  /** @override */
   stateChanged(state) {
     this.issue = issue.issue(state);
     this.issueHotlists = issue.hotlists(state);
@@ -298,6 +303,7 @@ export class MrIssuePage extends connectStore(LitElement) {
     this.prefs = user.prefs(state);
   }
 
+  /** @override */
   update(changedProperties) {
     if (changedProperties.has('prefs')) {
       this.codeFont = this.prefs.get('code_font') === 'true';
@@ -310,6 +316,7 @@ export class MrIssuePage extends connectStore(LitElement) {
     super.update(changedProperties);
   }
 
+  /** @override */
   updated(changedProperties) {
     if (changedProperties.has('issueRef')) {
       if (this.issueRef.localId && this.issueRef.projectName
