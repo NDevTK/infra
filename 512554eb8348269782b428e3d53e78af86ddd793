@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "94b5f0aa_940bada3",
+        "filename": "appengine/monorail/static_src/elements/issue-list/mr-grid-page/mr-grid-controls.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2019-10-16T03:20:56Z",
+      "side": 1,
+      "message": "This can be `return cells || \u0027titles\u0027;`",
+      "range": {
+        "startLine": 132,
+        "startChar": 4,
+        "endLine": 132,
+        "endChar": 35
+      },
+      "revId": "512554eb8348269782b428e3d53e78af86ddd793",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
