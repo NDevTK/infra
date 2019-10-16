@@ -1,0 +1,129 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4cf36cec_0b38748f",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2019-10-16T23:38:46Z",
+      "side": 1,
+      "message": "You should fail when -input is not provided with a clear message, like\n\n  \"Please specify -previous (and other required flags) when running this analyzer directly\"",
+      "revId": "b6ca3d4246b2c5db3325e29ccbe0772d6e494299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c3c1a02a_b33bc020",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2019-10-16T23:38:46Z",
+      "side": 1,
+      "message": "I\u0027m confused though, if there\u0027s any other XML file modified in the repository, this will trigger, right? Are you sure this won\u0027t create a ton of noise? The filtering can be done at the analyzer configuration level but I think (?) it\u0027d be good to check again here to be safe.",
+      "range": {
+        "startLine": 184,
+        "startChar": 11,
+        "endLine": 184,
+        "endChar": 14
+      },
+      "revId": "b6ca3d4246b2c5db3325e29ccbe0772d6e494299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5a46ccba_ffc950a1",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2019-10-16T23:38:46Z",
+      "side": 1,
+      "message": "// Set up the temporary directory where we\u0027ll put original files and apply the patch on them.",
+      "revId": "b6ca3d4246b2c5db3325e29ccbe0772d6e494299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "36281060_dc9d3dde",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2019-10-16T23:38:46Z",
+      "side": 1,
+      "message": "There\u0027s a problem with the use of log.Fatal() in this file; log.Fatal() / Fatalf() calls os.Exit(1), which does *not* call deferred function. This means all the cleanup functions will not be called. See https://golang.org/pkg/log/#Fatal.",
+      "revId": "b6ca3d4246b2c5db3325e29ccbe0772d6e494299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a73fa0c2_3b30b58e",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 261,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2019-10-16T23:38:46Z",
+      "side": 1,
+      "message": "\"parent commit\" is not exactly right. I think it\u0027d be clearer with:\n\n  // getOriginalFiles unapplies a patch in copied files.\n  //\n  // It copies filePaths files from inputDir into prevDir, then applies the patch file at patchPath reversed on the copied files.\n  //\n  // patchPath must be relative to inputDir.",
+      "revId": "b6ca3d4246b2c5db3325e29ccbe0772d6e494299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "791ff4ef_dd58f948",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2019-10-16T23:38:46Z",
+      "side": 1,
+      "message": "In Go you can skip the type of repeated arguments, so you can write:\n\n  func getOriginalFiles(filePaths []string, inputDir, prevDir, patchPath string) {",
+      "revId": "b6ca3d4246b2c5db3325e29ccbe0772d6e494299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce59c559_120a3604",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2019-10-16T23:38:46Z",
+      "side": 1,
+      "message": "Please add the copyright here.",
+      "revId": "b6ca3d4246b2c5db3325e29ccbe0772d6e494299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
