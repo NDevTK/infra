@@ -16,6 +16,24 @@
       "revId": "19702059baaa9a59170118954ab40db54e5541cb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d2e81ae2_0f5d6c42",
+        "filename": "go/src/infra/libs/skylab/inventory/device.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 333,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2019-10-16T19:31:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d5fe685a_5ef81b76",
+      "revId": "19702059baaa9a59170118954ab40db54e5541cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
