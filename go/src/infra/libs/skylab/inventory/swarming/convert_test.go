@@ -39,6 +39,7 @@ peripherals: {
   huddly: true
   conductive: true
   chameleon_type: 3
+  chameleon_type: 5
   chameleon: true
   audio_loopback_dongle: true
   audio_box: true
@@ -91,7 +92,10 @@ var fullDimensions = Dimensions{
 	"label-board":                 {"boardval"},
 	"label-carrier":               {"CARRIER_TMOBILE"},
 	"label-chameleon":             {"True"},
-	"label-chameleon_type":        {"CHAMELEON_TYPE_DP_HDMI"},
+	"label-chameleon_type":        {
+		"CHAMELEON_TYPE_DP_HDMI",
+		"CHAMELEON_TYPE_HDMI",
+	},
 	"label-chaos_dut":             {"True"},
 	"label-chromesign":            {"True"},
 	"label-conductive":            {"True"},
