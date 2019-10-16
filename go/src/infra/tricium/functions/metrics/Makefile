@@ -10,6 +10,9 @@ histograms-check:
 test: histograms-check
 	./histograms_check -input=testdata -output=out
 
+test-arg: histograms-check
+	./histograms_check -input=testdata -output=out -previous=prevdata -patch=tricium_generated_diff.patch -- src/rm/remove_histogram.xml
+
 unit-test:
 	go test histograms_check_test.go histograms_check.go
 
