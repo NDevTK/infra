@@ -72,6 +72,11 @@ https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/R
 For most new histograms, it's appropriate to re-use one of the existing 
 top-level histogram namespaces. For histogram names, the namespace 
 is defined as everything preceding the first dot '.' in the name.`
+	singleElementEnumWarning = `[WARNING]: It looks like this is an enumerated histogram that contains only a single bucket. 
+UMA metrics are difficult to interpret in isolation, so please either 
+add one or more additional buckets that can serve as a baseline for comparison, 
+or document what other metric should be used as a baseline during analysis. 
+https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#enum-histograms.`
 )
 
 var (
@@ -115,6 +120,22 @@ type Metadata struct {
 	HistogramBytes        []byte
 }
 
+// enum contains all the data about a particular enum.
+type enum struct {
+	Name     string `xml:"name,attr"`
+	Elements []struct {
+		Value string `xml:"value,attr"`
+		Label string `xml:"label,attr"`
+	} `xml:"int"`
+}
+
+// enumFile contains all the data in an enums file.
+type enumFile struct {
+	Enums struct {
+		EnumList []enum `xml:"enum"`
+	} `xml:"enums"`
+}
+
 // Milestone contains the date of a particular milestone
 type Milestone struct {
 	Milestone int    `json:"mstone"`
@@ -143,55 +164,59 @@ const (
 func main() {
 	inputDir := flag.String("input", "", "Path to root of Tricium input")
 	outputDir := flag.String("output", "", "Path to root of Tricium output")
+	prevDir := flag.String("previous", "", "Path to directory with previous versions of changed files")
+	patchPath := flag.String("patch", "", "Path to patch of changed files")
+	enumsPath := flag.String("enums", "", "Path to enums file")
 	flag.Parse()
-	if flag.NArg() != 0 {
-		log.Fatalf("Unexpected argument.")
-	}
-	// Read Tricium input FILES data.
-	input := &tricium.Data_Files{}
-	if err := tricium.ReadDataType(*inputDir, input); err != nil {
-		log.Fatalf("Failed to read FILES data: %v", err)
-	}
-	log.Printf("Read FILES data.")
-
-	results := &tricium.Data_Results{}
-
-	// Only add .xml files to filePaths.
+	// This is a temporary way for us to get recipes to work without breaking the current analyzer.
 	var filePaths []string
-	for _, file := range input.Files {
-		if !file.IsBinary && filepath.Ext(file.Path) == ".xml" {
-			filePaths = append(filePaths, filepath.Join(*inputDir, file.Path))
+	if *prevDir != "" {
+		filePaths = flag.Args()
+	} else {
+		// Read Tricium input FILES data.
+		input := &tricium.Data_Files{}
+		if err := tricium.ReadDataType(*inputDir, input); err != nil {
+			log.Fatalf("Failed to read FILES data: %v", err)
+		}
+		log.Printf("Read FILES data.")
+		// Only add .xml files to filePaths.
+		// Eventually, we want to change this to only analyze "histograms.xml".
+		// Right now, it's kept more general for testing purposes.
+		for _, file := range input.Files {
+			if !file.IsBinary && filepath.Ext(file.Path) == ".xml" && filepath.Base(file.Path) != "enums.xml" {
+				filePaths = append(filePaths, file.Path)
+			}
+		}
+		// Only get original files if .xml files were modified.
+		if len(filePaths) != 0 {
+			// Set up the temporary directory where we'll put original files.
+			// The temporary directory should be cleaned up before exiting.
+			tempDir, err := ioutil.TempDir(*inputDir, "get-original-file")
+			if err != nil {
+				log.Fatalf("Failed to setup temporary directory: %v", err)
+			}
+			defer func() {
+				if err = os.RemoveAll(tempDir); err != nil {
+					log.Fatalf("Failed to clean up temporary directory %q: %v", tempDir, err)
+				}
+			}()
+			log.Printf("Created temporary directory %q.", tempDir)
+			*patchPath = input.Patch
+			*prevDir = filepath.Join(tempDir, *inputDir)
+			// Original files will be put into prevDir.
+			getOriginalFiles(filePaths, *inputDir, *prevDir, *patchPath)
 		}
 	}
+	singletonEnums := getSingleElementEnums(filepath.Join(*inputDir, *enumsPath))
 
-	// Return early if no .xml files were modified.
-	if len(filePaths) == 0 {
-		return
-	}
-
-	filesChanged, err := getDiffsPerFile(filepath.Join(*inputDir, input.Patch))
+	filesChanged, err := getDiffsPerFile(filepath.Join(*inputDir, *patchPath))
 	if err != nil {
 		log.Fatalf("Failed to get diffs per file: %v", err)
 	}
 
-	// Set up the temporary directory where we'll put original files.
-	// The temporary directory should be cleaned up before exiting.
-	tempDir, err := ioutil.TempDir(*inputDir, "get-original-file")
-	if err != nil {
-		log.Fatalf("Failed to setup temporary directory: %v", err)
-	}
-	defer func() {
-		if err = os.RemoveAll(tempDir); err != nil {
-			log.Fatalf("Failed to clean up temporary directory %q: %v", tempDir, err)
-		}
-	}()
-	log.Printf("Created temporary directory %q.", tempDir)
-
-	// Original files will be put into tempDir.
-	getOriginalFiles(filePaths, tempDir, filepath.Join(*inputDir, input.Patch))
-
+	results := &tricium.Data_Results{}
 	for _, filePath := range filePaths {
-		results.Comments = append(results.Comments, analyzeFile(filePath, tempDir, filesChanged)...)
+		results.Comments = append(results.Comments, analyzeFile(filePath, *inputDir, *prevDir, filesChanged, singletonEnums)...)
 	}
 
 	// Write Tricium RESULTS data.
@@ -234,18 +259,18 @@ func getDiffsPerFile(patchPath string) (*diffsPerFile, error) {
 }
 
 // getOriginalFiles gets files in parent commit, before the patch, and puts them in tempDir.
-func getOriginalFiles(filePaths []string, tempDir string, patchPath string) {
+func getOriginalFiles(filePaths []string, inputDir string, prevDir string, patchPath string) {
 	filesToCopy := append(filePaths, patchPath)
 	for _, filePath := range filesToCopy {
-		tempPath := filepath.Join(tempDir, filePath)
+		tempPath := filepath.Join(prevDir, filePath)
 		// Note: Must use filepath.Dir rather than path.Dir to be compatible with Windows.
 		if err := os.MkdirAll(filepath.Dir(tempPath), os.ModePerm); err != nil {
 			log.Fatalf("Failed to create dirs for file: %v", err)
 		}
-		copyFile(filePath, tempPath)
+		copyFile(filepath.Join(inputDir, filePath), tempPath)
 	}
 	// Only apply patch if patch is not empty.
-	fi, err := os.Stat(patchPath)
+	fi, err := os.Stat(filepath.Join(inputDir, patchPath))
 	if err != nil {
 		log.Fatalf("Failed to get file info for patch %s: %v", patchPath, err)
 	}
@@ -254,7 +279,7 @@ func getOriginalFiles(filePaths []string, tempDir string, patchPath string) {
 		cmds = append(cmds, exec.Command("git", "apply", "-p1", "--reverse", patchPath))
 		for _, c := range cmds {
 			var stderr bytes.Buffer
-			c.Dir = tempDir
+			c.Dir = prevDir
 			c.Stderr = &stderr
 			log.Printf("Running cmd: %s", c.Args)
 			if err := c.Run(); err != nil {
@@ -274,26 +299,48 @@ func copyFile(sourceFile string, destFile string) {
 	}
 }
 
-func analyzeFile(inputPath string, tempDir string, filesChanged *diffsPerFile) []*tricium.Data_Comment {
-	log.Printf("ANALYZING File: %s", inputPath)
+func getSingleElementEnums(inputPath string) stringset.Set {
+	singletonEnums := make(stringset.Set)
+	f := openFileOrDie(inputPath)
+	defer closeFileOrDie(f)
+	enumBytes, err := ioutil.ReadAll(f)
+	if err != nil {
+		log.Fatalf("Failed to read enums into buffer")
+	}
+	var enumFile enumFile
+	if err := xml.Unmarshal(enumBytes, &enumFile); err != nil {
+		log.Fatalf("Failed to unmarshal enums")
+	}
+	for _, enum := range enumFile.Enums.EnumList {
+		if len(enum.Elements) == 1 {
+			singletonEnums.Add(enum.Name)
+		}
+	}
+	return singletonEnums
+}
+
+func analyzeFile(filePath string, inputDir string, prevDir string, filesChanged *diffsPerFile, singletonEnums stringset.Set) []*tricium.Data_Comment {
+	log.Printf("ANALYZING File: %s", filePath)
 	var allComments []*tricium.Data_Comment
+	inputPath := filepath.Join(inputDir, filePath)
 	f := openFileOrDie(inputPath)
 	defer closeFileOrDie(f)
 	// Analyze added lines in file (if any)
-	comments, addedHistograms, newNamespaces, namespaceLineNums := analyzeChangedLines(bufio.NewScanner(f), inputPath, filesChanged.addedLines[inputPath], ADDED)
+	comments, addedHistograms, newNamespaces, namespaceLineNums := analyzeChangedLines(bufio.NewScanner(f), inputPath, filesChanged.addedLines[filePath], singletonEnums, ADDED)
 	allComments = append(allComments, comments...)
 	// Analyze removed lines in file (if any)
-	tempPath := filepath.Join(tempDir, inputPath)
+	tempPath := filepath.Join(prevDir, filePath)
 	oldFile := openFileOrDie(tempPath)
 	defer closeFileOrDie(oldFile)
-	_, removedHistograms, oldNamespaces, _ := analyzeChangedLines(bufio.NewScanner(oldFile), tempPath, filesChanged.removedLines[inputPath], REMOVED)
+	var emptySet stringset.Set
+	_, removedHistograms, oldNamespaces, _ := analyzeChangedLines(bufio.NewScanner(oldFile), tempPath, filesChanged.removedLines[filePath], emptySet, REMOVED)
 	// Identify any removed histograms
 	allComments = append(allComments, findRemovedHistograms(inputPath, addedHistograms, removedHistograms)...)
 	allComments = append(allComments, findAddedNamespaces(inputPath, newNamespaces, oldNamespaces, namespaceLineNums)...)
 	return allComments
 }
 
-func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int, mode changeMode) ([]*tricium.Data_Comment, stringset.Set, stringset.Set, map[string]int) {
+func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int, singletonEnums stringset.Set, mode changeMode) ([]*tricium.Data_Comment, stringset.Set, stringset.Set, map[string]int) {
 	var comments []*tricium.Data_Comment
 	// metadata is a struct that holds line numbers of different tags in histogram.
 	var metadata *Metadata
@@ -333,7 +380,7 @@ func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int
 				changedHistograms.Add(histogram.Name)
 				// Only check new (added) histograms are correct
 				if mode == ADDED {
-					comments = append(comments, checkHistogram(path, currHistogram, metadata)...)
+					comments = append(comments, checkHistogram(path, currHistogram, metadata, singletonEnums)...)
 				}
 			}
 			currHistogram = nil
@@ -352,7 +399,7 @@ func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int
 	return comments, changedHistograms, namespaces, namespaceLineNums
 }
 
-func checkHistogram(path string, histBytes []byte, metadata *Metadata) []*tricium.Data_Comment {
+func checkHistogram(path string, histBytes []byte, metadata *Metadata, singletonEnums stringset.Set) []*tricium.Data_Comment {
 	var comments []*tricium.Data_Comment
 	histogram := bytesToHistogram(histBytes, metadata)
 	if comment := checkNumOwners(path, histogram, metadata); comment != nil {
@@ -365,6 +412,9 @@ func checkHistogram(path string, histBytes []byte, metadata *Metadata) []*triciu
 		comments = append(comments, comment)
 	}
 	if comment := checkObsolete(path, histogram, metadata); comment != nil {
+		comments = append(comments, comment)
+	}
+	if comment := checkEnums(path, histogram, metadata, singletonEnums); comment != nil {
 		comments = append(comments, comment)
 	}
 	comments = append(comments, checkExpiry(path, histogram, metadata)...)
@@ -542,6 +592,19 @@ func createExpiryComment(message string, path string, metadata *Metadata) *trici
 		Path:      path,
 		StartLine: int32(metadata.HistogramLineNum),
 	}
+}
+
+func checkEnums(path string, histogram Histogram, metadata *Metadata, singletonEnums stringset.Set) *tricium.Data_Comment {
+	if singletonEnums.Has(histogram.Enum) && !strings.Contains(histogram.Summary, "baseline") {
+		log.Printf("ADDING Comment for %s at line %d: %s", histogram.Name, metadata.HistogramLineNum, "Single Element Enum No Baseline")
+		return &tricium.Data_Comment{
+			Category:  category + "/Enums",
+			Message:   singleElementEnumWarning,
+			Path:      path,
+			StartLine: int32(metadata.HistogramLineNum),
+		}
+	}
+	return nil
 }
 
 func findRemovedHistograms(path string, addedHistograms stringset.Set, removedHistograms stringset.Set) []*tricium.Data_Comment {
