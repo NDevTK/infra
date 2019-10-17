@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "949ffa35_1f499e29",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1369574
+      },
+      "writtenOn": "2019-10-17T00:09:18Z",
+      "side": 1,
+      "message": "Only -input, -output, and -enums are required flags.",
+      "parentUuid": "4cf36cec_0b38748f",
+      "revId": "b6ca3d4246b2c5db3325e29ccbe0772d6e494299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c3c1a02a_b33bc020",
         "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
         "patchSetId": 8
@@ -42,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "d7f37e6c_df462e23",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1369574
+      },
+      "writtenOn": "2019-10-17T00:09:18Z",
+      "side": 1,
+      "message": "Okay, I will only check histograms.xml right now, and I\u0027ll change it on my local file when I need it for local testing. The unit tests are still fine since they don\u0027t use this code path.",
+      "parentUuid": "c3c1a02a_b33bc020",
+      "range": {
+        "startLine": 184,
+        "startChar": 11,
+        "endLine": 184,
+        "endChar": 14
+      },
+      "revId": "b6ca3d4246b2c5db3325e29ccbe0772d6e494299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a46ccba_ffc950a1",
         "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
         "patchSetId": 8
@@ -59,6 +101,24 @@
     },
     {
       "key": {
+        "uuid": "972f9f9b_962e7312",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1369574
+      },
+      "writtenOn": "2019-10-17T00:09:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5a46ccba_ffc950a1",
+      "revId": "b6ca3d4246b2c5db3325e29ccbe0772d6e494299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "36281060_dc9d3dde",
         "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
         "patchSetId": 8
@@ -70,6 +130,24 @@
       "writtenOn": "2019-10-16T23:38:46Z",
       "side": 1,
       "message": "There\u0027s a problem with the use of log.Fatal() in this file; log.Fatal() / Fatalf() calls os.Exit(1), which does *not* call deferred function. This means all the cleanup functions will not be called. See https://golang.org/pkg/log/#Fatal.",
+      "revId": "b6ca3d4246b2c5db3325e29ccbe0772d6e494299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "98f7c38d_60b9aaa3",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1369574
+      },
+      "writtenOn": "2019-10-17T00:09:18Z",
+      "side": 1,
+      "message": "What should I use instead of log.Fatal()?",
+      "parentUuid": "36281060_dc9d3dde",
       "revId": "b6ca3d4246b2c5db3325e29ccbe0772d6e494299",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -93,6 +171,24 @@
     },
     {
       "key": {
+        "uuid": "6eabed97_57881f82",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 261,
+      "author": {
+        "id": 1369574
+      },
+      "writtenOn": "2019-10-17T00:09:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a73fa0c2_3b30b58e",
+      "revId": "b6ca3d4246b2c5db3325e29ccbe0772d6e494299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "791ff4ef_dd58f948",
         "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
         "patchSetId": 8
@@ -107,6 +203,24 @@
       "revId": "b6ca3d4246b2c5db3325e29ccbe0772d6e494299",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6f79eba0_b8250bb0",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1369574
+      },
+      "writtenOn": "2019-10-17T00:09:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "791ff4ef_dd58f948",
+      "revId": "b6ca3d4246b2c5db3325e29ccbe0772d6e494299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
