@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -164,69 +164,64 @@ const (
 func main() {
 	inputDir := flag.String("input", "", "Path to root of Tricium input")
 	outputDir := flag.String("output", "", "Path to root of Tricium output")
+	prevDir := flag.String("previous", "", "Path to directory with previous versions of changed files")
+	patchPath := flag.String("patch", "", "Path to patch of changed files")
+	enumsPath := flag.String("enums", "", "Path to enums file")
 	flag.Parse()
-	if flag.NArg() != 0 {
-		log.Fatalf("Unexpected argument.")
-	}
-	// Read Tricium input FILES data.
-	input := &tricium.Data_Files{}
-	if err := tricium.ReadDataType(*inputDir, input); err != nil {
-		log.Fatalf("Failed to read FILES data: %v", err)
-	}
-	log.Printf("Read FILES data.")
-
-	results := &tricium.Data_Results{}
-
-	// Only add .xml files to filePaths
+	// This is a temporary way for us to get recipes to work without breaking the current analyzer.
 	var filePaths []string
-	var singletonEnums stringset.Set
-	for _, file := range input.Files {
-		if !file.IsBinary {
-			fullPath := filepath.Join(*inputDir, file.Path)
-			if filepath.Base(file.Path) == "enums.xml" {
-				singletonEnums = getSingleElementEnums(fullPath)
-			} else if filepath.Ext(file.Path) == ".xml" {
-				// Eventually, we want to change this to only analyze "histograms.xml".
-				// Right now, it's kept more general for testing purposes.
-				filePaths = append(filePaths, fullPath)
+	if *prevDir != "" {
+		filePaths = flag.Args()
+	} else {
+		// Read Tricium input FILES data.
+		input := &tricium.Data_Files{}
+		if err := tricium.ReadDataType(*inputDir, input); err != nil {
+			log.Fatalf("Failed to read FILES data: %v. Did you specify a Tricium-compatible input directory with -input?", err)
+		}
+		log.Printf("Read FILES data.")
+		// Only add .xml files to filePaths.
+		for _, file := range input.Files {
+			if !file.IsBinary && filepath.Base(file.Path) == "histograms.xml" {
+				filePaths = append(filePaths, file.Path)
 			}
 		}
+		// We need this outside the if statement since it will be used in getDiffsPerFile later.
+		*patchPath = input.Patch
+		// Only get original files if .xml files were modified.
+		if len(filePaths) != 0 {
+			// Set up the temporary directory where we'll put original files and apply the patch on them.
+			// The temporary directory should be cleaned up before exiting.
+			tempDir, err := ioutil.TempDir(*inputDir, "get-original-file")
+			if err != nil {
+				log.Fatalf("Failed to setup temporary directory: %v", err)
+			}
+			defer func() {
+				if err = os.RemoveAll(tempDir); err != nil {
+					log.Fatalf("Failed to clean up temporary directory %q: %v", tempDir, err)
+				}
+			}()
+			log.Printf("Created temporary directory %q.", tempDir)
+			*prevDir = filepath.Join(tempDir, *inputDir)
+			// Original files will be put into prevDir.
+			getOriginalFiles(filePaths, *inputDir, *prevDir, *patchPath)
+		}
 	}
+	singletonEnums := getSingleElementEnums(filepath.Join(*inputDir, *enumsPath))
 
-	// Return early if no .xml files were modified.
-	if len(filePaths) == 0 {
-		return
-	}
-
-	filesChanged, err := getDiffsPerFile(filepath.Join(*inputDir, input.Patch))
+	filesChanged, err := getDiffsPerFile(filepath.Join(*inputDir, *patchPath))
 	if err != nil {
 		log.Fatalf("Failed to get diffs per file: %v", err)
 	}
 
-	// Set up the temporary directory where we'll put original files.
-	// The temporary directory should be cleaned up before exiting.
-	tempDir, err := ioutil.TempDir(*inputDir, "get-original-file")
-	if err != nil {
-		log.Fatalf("Failed to setup temporary directory: %v", err)
-	}
-	defer func() {
-		if err = os.RemoveAll(tempDir); err != nil {
-			log.Fatalf("Failed to clean up temporary directory %q: %v", tempDir, err)
-		}
-	}()
-	log.Printf("Created temporary directory %q.", tempDir)
-
-	// Original files will be put into tempDir.
-	getOriginalFiles(filePaths, tempDir, filepath.Join(*inputDir, input.Patch))
-
+	results := &tricium.Data_Results{}
 	for _, filePath := range filePaths {
-		results.Comments = append(results.Comments, analyzeFile(filePath, tempDir, filesChanged, singletonEnums)...)
+		results.Comments = append(results.Comments, analyzeFile(filePath, *inputDir, *prevDir, filesChanged, singletonEnums)...)
 	}
 
 	// Write Tricium RESULTS data.
 	path, err := tricium.WriteDataType(*outputDir, results)
 	if err != nil {
-		log.Fatalf("Failed to write RESULTS data: %v", err)
+		log.Fatalf("Failed to write RESULTS data: %v. Did you specify an output directory with -output?", err)
 	}
 	log.Printf("Wrote RESULTS data to path %q.", path)
 }
@@ -262,19 +257,21 @@ func getDiffsPerFile(patchPath string) (*diffsPerFile, error) {
 	return diffInfo, nil
 }
 
-// getOriginalFiles gets files in parent commit, before the patch, and puts them in tempDir.
-func getOriginalFiles(filePaths []string, tempDir string, patchPath string) {
+// getOriginalFiles unapplies a patch in copied files.
+// It copies filePaths files from inputDir into prevDir, then applies the patch file at patchPath reversed on the copied files.
+// patchPath must be relative to inputDir.
+func getOriginalFiles(filePaths []string, inputDir, prevDir, patchPath string) {
 	filesToCopy := append(filePaths, patchPath)
 	for _, filePath := range filesToCopy {
-		tempPath := filepath.Join(tempDir, filePath)
+		tempPath := filepath.Join(prevDir, filePath)
 		// Note: Must use filepath.Dir rather than path.Dir to be compatible with Windows.
 		if err := os.MkdirAll(filepath.Dir(tempPath), os.ModePerm); err != nil {
 			log.Fatalf("Failed to create dirs for file: %v", err)
 		}
-		copyFile(filePath, tempPath)
+		copyFile(filepath.Join(inputDir, filePath), tempPath)
 	}
 	// Only apply patch if patch is not empty.
-	fi, err := os.Stat(patchPath)
+	fi, err := os.Stat(filepath.Join(inputDir, patchPath))
 	if err != nil {
 		log.Fatalf("Failed to get file info for patch %s: %v", patchPath, err)
 	}
@@ -283,7 +280,7 @@ func getOriginalFiles(filePaths []string, tempDir string, patchPath string) {
 		cmds = append(cmds, exec.Command("git", "apply", "-p1", "--reverse", patchPath))
 		for _, c := range cmds {
 			var stderr bytes.Buffer
-			c.Dir = tempDir
+			c.Dir = prevDir
 			c.Stderr = &stderr
 			log.Printf("Running cmd: %s", c.Args)
 			if err := c.Run(); err != nil {
@@ -293,7 +290,7 @@ func getOriginalFiles(filePaths []string, tempDir string, patchPath string) {
 	}
 }
 
-func copyFile(sourceFile string, destFile string) {
+func copyFile(sourceFile, destFile string) {
 	input, err := ioutil.ReadFile(sourceFile)
 	if err != nil {
 		log.Fatalf("Failed to read file %s while copying file %s to %s: %v", sourceFile, sourceFile, destFile, err)
@@ -309,11 +306,11 @@ func getSingleElementEnums(inputPath string) stringset.Set {
 	defer closeFileOrDie(f)
 	enumBytes, err := ioutil.ReadAll(f)
 	if err != nil {
-		log.Fatalf("Failed to read enums into buffer")
+		log.Fatalf("Failed to read enums into buffer: %v. Did you specify the enums file correctly with -enums?", err)
 	}
 	var enumFile enumFile
 	if err := xml.Unmarshal(enumBytes, &enumFile); err != nil {
-		log.Fatalf("Failed to unmarshal enums")
+		log.Fatalf("Failed to unmarshal enums: %v", err)
 	}
 	for _, enum := range enumFile.Enums.EnumList {
 		if len(enum.Elements) == 1 {
@@ -323,20 +320,21 @@ func getSingleElementEnums(inputPath string) stringset.Set {
 	return singletonEnums
 }
 
-func analyzeFile(inputPath string, tempDir string, filesChanged *diffsPerFile, singletonEnums stringset.Set) []*tricium.Data_Comment {
-	log.Printf("ANALYZING File: %s", inputPath)
+func analyzeFile(filePath, inputDir, prevDir string, filesChanged *diffsPerFile, singletonEnums stringset.Set) []*tricium.Data_Comment {
+	log.Printf("ANALYZING File: %s", filePath)
 	var allComments []*tricium.Data_Comment
+	inputPath := filepath.Join(inputDir, filePath)
 	f := openFileOrDie(inputPath)
 	defer closeFileOrDie(f)
 	// Analyze added lines in file (if any)
-	comments, addedHistograms, newNamespaces, namespaceLineNums := analyzeChangedLines(bufio.NewScanner(f), inputPath, filesChanged.addedLines[inputPath], singletonEnums, ADDED)
+	comments, addedHistograms, newNamespaces, namespaceLineNums := analyzeChangedLines(bufio.NewScanner(f), inputPath, filesChanged.addedLines[filePath], singletonEnums, ADDED)
 	allComments = append(allComments, comments...)
 	// Analyze removed lines in file (if any)
-	tempPath := filepath.Join(tempDir, inputPath)
+	tempPath := filepath.Join(prevDir, filePath)
 	oldFile := openFileOrDie(tempPath)
 	defer closeFileOrDie(oldFile)
 	var emptySet stringset.Set
-	_, removedHistograms, oldNamespaces, _ := analyzeChangedLines(bufio.NewScanner(oldFile), tempPath, filesChanged.removedLines[inputPath], emptySet, REMOVED)
+	_, removedHistograms, oldNamespaces, _ := analyzeChangedLines(bufio.NewScanner(oldFile), tempPath, filesChanged.removedLines[filePath], emptySet, REMOVED)
 	// Identify any removed histograms
 	allComments = append(allComments, findRemovedHistograms(inputPath, addedHistograms, removedHistograms)...)
 	allComments = append(allComments, findAddedNamespaces(inputPath, newNamespaces, oldNamespaces, namespaceLineNums)...)
@@ -450,7 +448,7 @@ func checkNonTeamOwner(path string, histogram Histogram, metadata *Metadata) *tr
 	return nil
 }
 
-func createOwnerComment(message string, path string, metadata *Metadata) *tricium.Data_Comment {
+func createOwnerComment(message, path string, metadata *Metadata) *tricium.Data_Comment {
 	return &tricium.Data_Comment{
 		Category:  fmt.Sprintf("%s/%s", category, "Owners"),
 		Message:   message,
@@ -542,7 +540,7 @@ func checkExpiry(path string, histogram Histogram, metadata *Metadata) []*triciu
 	return expiryComments
 }
 
-func processExpiryDateDiff(inputDate time.Time, commentMessage *string, logMessage *string) {
+func processExpiryDateDiff(inputDate time.Time, commentMessage, logMessage *string) {
 	dateDiff := int(inputDate.Sub(now()).Hours()/24) + 1
 	if dateDiff <= 0 {
 		*commentMessage = pastExpiryWarning
@@ -588,7 +586,7 @@ func getMilestoneDateImpl(milestone int) (time.Time, error) {
 	return milestoneDate, nil
 }
 
-func createExpiryComment(message string, path string, metadata *Metadata) *tricium.Data_Comment {
+func createExpiryComment(message, path string, metadata *Metadata) *tricium.Data_Comment {
 	return &tricium.Data_Comment{
 		Category:  fmt.Sprintf("%s/%s", category, "Expiry"),
 		Message:   message,
