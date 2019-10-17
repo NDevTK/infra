@@ -19,6 +19,48 @@
     },
     {
       "key": {
+        "uuid": "c746ca66_37f17194",
+        "filename": "appengine/findit/findit_v2/services/build_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-10-17T21:05:08Z",
+      "side": 1,
+      "message": "Correct. I have fixed it to use only the culprit\u0027s failures.",
+      "parentUuid": "e75b4a11_5e41a28b",
+      "revId": "3bebf12862f790831b9bc73e902adaefb515b6e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "509ba844_c6f4ed64",
+        "filename": "appengine/findit/findit_v2/services/build_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-10-17T21:05:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "915bfc58_1de7e3a0",
+      "range": {
+        "startLine": 130,
+        "startChar": 58,
+        "endLine": 130,
+        "endChar": 65
+      },
+      "revId": "3bebf12862f790831b9bc73e902adaefb515b6e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "576dfcc5_d9c5158d",
         "filename": "appengine/findit/findit_v2/services/build_util.py",
         "patchSetId": 1
@@ -30,6 +72,30 @@
       "writtenOn": "2019-10-16T01:24:47Z",
       "side": 1,
       "message": "also include build\u0027s info in this logging?",
+      "range": {
+        "startLine": 147,
+        "startChar": 20,
+        "endLine": 147,
+        "endChar": 52
+      },
+      "revId": "3bebf12862f790831b9bc73e902adaefb515b6e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "29014df2_4d0063a8",
+        "filename": "appengine/findit/findit_v2/services/build_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-10-17T21:05:08Z",
+      "side": 1,
+      "message": "How about including the build id?",
+      "parentUuid": "576dfcc5_d9c5158d",
       "range": {
         "startLine": 147,
         "startChar": 20,
@@ -62,6 +128,30 @@
       "revId": "3bebf12862f790831b9bc73e902adaefb515b6e7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6d6296f7_b79749a7",
+        "filename": "appengine/findit/findit_v2/services/build_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-10-17T21:05:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "41ddb637_4f39a3bb",
+      "range": {
+        "startLine": 165,
+        "startChar": 35,
+        "endLine": 165,
+        "endChar": 47
+      },
+      "revId": "3bebf12862f790831b9bc73e902adaefb515b6e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
