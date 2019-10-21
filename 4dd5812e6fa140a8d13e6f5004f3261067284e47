@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6dc806c0_102a92b1",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 761,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-10-21T22:54:20Z",
+      "side": 1,
+      "message": "our server should not fail based on invalid user data. Logging an error/warning and exiting would be better, see L754",
+      "range": {
+        "startLine": 761,
+        "startChar": 4,
+        "endLine": 761,
+        "endChar": 10
+      },
+      "revId": "4dd5812e6fa140a8d13e6f5004f3261067284e47",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b35d548d_3143d70c",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 763,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-10-21T22:54:20Z",
+      "side": 1,
+      "message": "why not modify _IsPresubmitBuild itself?",
+      "revId": "4dd5812e6fa140a8d13e6f5004f3261067284e47",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
