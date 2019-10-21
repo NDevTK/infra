@@ -758,8 +758,10 @@ class ProcessCodeCoverageData(BaseHandler):
     all_json_gs_path = '%s/all.json.gz' % full_gs_metadata_dir
     data = _GetValidatedData(all_json_gs_path)
 
-    # For presubmit coverage, save the whole data in json.
-    if _IsPresubmitBuild(build):
+    assert 'coverage_is_presubmit' in properties, (
+        'Expecting "coverage_is_presubmit" in output properties')
+    if properties['coverage_is_presubmit']:
+      # For presubmit coverage, save the whole data in json.
       # Assume there is only 1 patch which is true in CQ.
       assert len(build.input.gerrit_changes) == 1, 'Expect only one patchset'
       patch = build.input.gerrit_changes[0]
