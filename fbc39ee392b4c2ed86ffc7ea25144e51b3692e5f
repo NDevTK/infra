@@ -119,6 +119,24 @@
       "revId": "fbc39ee392b4c2ed86ffc7ea25144e51b3692e5f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "631a8290_42a8e72f",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 364,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-10-22T21:06:21Z",
+      "side": 1,
+      "message": "The copy is necessary so that the scanner doesn\u0027t overwrite memory out from under us – it\u0027s not safe to try to share this slice. Tina, let\u0027s definitely add a comment to explain this, as it\u0027s quite subtle.",
+      "parentUuid": "cbb8ee2d_ea804bbf",
+      "revId": "fbc39ee392b4c2ed86ffc7ea25144e51b3692e5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
