@@ -154,6 +154,24 @@
     },
     {
       "key": {
+        "uuid": "92aee30f_dd41fd5c",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1369574
+      },
+      "writtenOn": "2019-10-22T17:14:48Z",
+      "side": 1,
+      "message": "Addressed in https://chromium-review.googlesource.com/c/infra/infra/+/1873600",
+      "parentUuid": "98f7c38d_60b9aaa3",
+      "revId": "b6ca3d4246b2c5db3325e29ccbe0772d6e494299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a73fa0c2_3b30b58e",
         "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
         "patchSetId": 8
