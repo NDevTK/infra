@@ -1,0 +1,124 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9450c16b_4224488c",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-10-22T18:12:38Z",
+      "side": 1,
+      "message": "With the question mark, would that make this also match \u0027\u003chistogram-\u0027, as in \u003chistogram-suffixes\u003e ?",
+      "range": {
+        "startLine": 85,
+        "startChar": 66,
+        "endLine": 85,
+        "endChar": 67
+      },
+      "revId": "fbc39ee392b4c2ed86ffc7ea25144e51b3692e5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7da65b98_63b9e114",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-10-22T18:12:38Z",
+      "side": 1,
+      "message": "Note: The word \"original\" is used in other places, rather than \"previous\", you could use the same word here.",
+      "range": {
+        "startLine": 167,
+        "startChar": 64,
+        "endLine": 167,
+        "endChar": 81
+      },
+      "revId": "fbc39ee392b4c2ed86ffc7ea25144e51b3692e5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "271c565f_8c51e01f",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-10-22T18:12:38Z",
+      "side": 1,
+      "message": "I may have missed this before. Is enums.xml is a special file in metrics which should read by this analyzer even if enums.xml is itself not changed?",
+      "revId": "fbc39ee392b4c2ed86ffc7ea25144e51b3692e5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b84bf51c_46823bb0",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-10-22T18:12:38Z",
+      "side": 1,
+      "message": "What is the temporary way to get recipes to work?",
+      "revId": "fbc39ee392b4c2ed86ffc7ea25144e51b3692e5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5e0d7e88_a4c3b502",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-10-22T18:12:38Z",
+      "side": 1,
+      "message": "Nit: even though there\u0027s no line length limit in Go, you could still wrap all comments to 80 columns.",
+      "range": {
+        "startLine": 262,
+        "startChar": 0,
+        "endLine": 263,
+        "endChar": 42
+      },
+      "revId": "fbc39ee392b4c2ed86ffc7ea25144e51b3692e5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cbb8ee2d_ea804bbf",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 364,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-10-22T18:12:38Z",
+      "side": 1,
+      "message": "Why do we make a copy?",
+      "revId": "fbc39ee392b4c2ed86ffc7ea25144e51b3692e5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
