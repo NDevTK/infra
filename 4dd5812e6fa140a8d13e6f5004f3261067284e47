@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "f473ad96_1eaf6853",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 761,
+      "author": {
+        "id": 1287069
+      },
+      "writtenOn": "2019-10-22T00:13:11Z",
+      "side": 1,
+      "message": "agree, just log an error and exit this coverage build process.",
+      "parentUuid": "6dc806c0_102a92b1",
+      "range": {
+        "startLine": 761,
+        "startChar": 4,
+        "endLine": 761,
+        "endChar": 10
+      },
+      "revId": "4dd5812e6fa140a8d13e6f5004f3261067284e47",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b35d548d_3143d70c",
         "filename": "appengine/findit/handlers/code_coverage.py",
         "patchSetId": 1
@@ -36,6 +60,24 @@
       "writtenOn": "2019-10-21T22:54:20Z",
       "side": 1,
       "message": "why not modify _IsPresubmitBuild itself?",
+      "revId": "4dd5812e6fa140a8d13e6f5004f3261067284e47",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "37bbe611_936eb165",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 763,
+      "author": {
+        "id": 1287069
+      },
+      "writtenOn": "2019-10-22T00:13:11Z",
+      "side": 1,
+      "message": "since libassistant builder does not provide this property yet, can you handle both cases for now? Or our testing server would fail I deploy your latest change.",
+      "parentUuid": "b35d548d_3143d70c",
       "revId": "4dd5812e6fa140a8d13e6f5004f3261067284e47",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
