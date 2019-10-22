@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "64e26f87_31a0cdc2",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1195,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-10-22T02:50:01Z",
+      "side": 1,
+      "message": "by default, the returned default_config is an empty dict, so this will cause an exception. Should we check that that is falsy? should change the default to None?",
+      "range": {
+        "startLine": 1195,
+        "startChar": 36,
+        "endLine": 1195,
+        "endChar": 50
+      },
+      "revId": "7c7213f538bdaf7e1b75fa787969e388a5d19c84",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
