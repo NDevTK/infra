@@ -123,6 +123,24 @@
       "revId": "4dd5812e6fa140a8d13e6f5004f3261067284e47",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3ce5855e_24547d50",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 763,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-10-22T19:42:28Z",
+      "side": 1,
+      "message": "Meng: friendly ping:)\n\nI can hold on landing this CL until you made the change at the builder side, but if there is a reason you can\u0027t change it, I\u0027m happy to temporarily keep both behaviors, please let me know.",
+      "parentUuid": "26514846_269c23b4",
+      "revId": "4dd5812e6fa140a8d13e6f5004f3261067284e47",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
