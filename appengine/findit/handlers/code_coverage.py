@@ -234,7 +234,7 @@ def _MakePlatformSelect(luci_project, host, project, ref, revision, path,
   return result
 
 
-def _GetValidatedData(gs_path):  # pragma: no cover.
+def _GetValidatedData(gs_url):  # pragma: no cover.
   """Returns the json data from the given GS path after validation.
 
   Args:
@@ -244,9 +244,9 @@ def _GetValidatedData(gs_path):  # pragma: no cover.
     json_data (dict): the json data of the file pointed by the given GS url, or
         None if the data can't be retrieved.
   """
-  logging.info('Fetching data from %s', gs_path)
-  content = _GetFileContentFromGs(gs_path)
-  assert content, 'Failed to fetch coverage json data from %s' % gs_path
+  logging.info('Fetching %s', gs_url)
+  status, content, _ = FinditHttpClient().Get(gs_url)
+  assert status == 200, 'Can not retrieve the data: %s' % gs_url
 
   logging.info('Decompressing and loading coverage data...')
   decompressed_data = zlib.decompress(content)
@@ -738,12 +738,19 @@ class ProcessCodeCoverageData(BaseHandler):
       coverage_data (list): A list of File in coverage proto.
       build_id (int): Id of the build to process coverage data for.
     """
-    entity = PresubmitCoverageData.Create(
-        server_host=patch.host,
-        change=patch.change,
-        patchset=patch.patchset,
-        build_id=build_id,
-        data=coverage_data)
+    entity = PresubmitCoverageData.Get(
+        server_host=patch.host, change=patch.change, patchset=patch.patchset)
+    if entity:
+      merged_data = code_coverage_util.MergeLinesCoverageData(
+          entity.data, coverage_data)
+      entity.data = merged_data
+    else:
+      entity = PresubmitCoverageData.Create(
+          server_host=patch.host,
+          change=patch.change,
+          patchset=patch.patchset,
+          data=coverage_data)
+    entity.build_ids.append(build_id)
     entity.absolute_percentages = (
         code_coverage_util.CalculateAbsolutePercentages(coverage_data))
     entity.incremental_percentages = (
@@ -762,16 +769,10 @@ class ProcessCodeCoverageData(BaseHandler):
           'Could not retrieve build #%d from buildbucket, retry' % build_id,
           404)
 
-    builder_id = '%s/%s/%s' % (build.builder.project, build.builder.bucket,
-                               build.builder.builder)
-    if builder_id not in _GetWhitelistedBuilders():
-      logging.info('%s is not whitelisted', builder_id)
-      return
-
     # Convert the Struct to standard dict, to use .get, .iteritems etc.
     properties = dict(build.output.properties.items())
     gs_bucket = properties.get('coverage_gs_bucket')
-    gs_metadata_dir = properties.get('coverage_metadata_gs_path')
+    gs_path = properties.get('coverage_metadata_gs_path')
     if properties.get('process_coverage_data_failure'):
       monitoring.code_coverage_cq_errors.increment({
           'project': build.builder.project,
@@ -779,14 +780,10 @@ class ProcessCodeCoverageData(BaseHandler):
           'builder': build.builder.builder,
       })
 
-    # Ensure that the coverage data is ready.
-    if not gs_bucket or not gs_metadata_dir:
-      logging.warn('coverage GS bucket info not available in %r', build.id)
-      return
+    full_gs_dir = 'https://storage.googleapis.com/%s/%s' % (gs_bucket, gs_path)
+    gs_url = '%s/all.json.gz' % full_gs_dir
 
-    full_gs_metadata_dir = '/%s/%s' % (gs_bucket, gs_metadata_dir)
-    all_json_gs_path = '%s/all.json.gz' % full_gs_metadata_dir
-    data = _GetValidatedData(all_json_gs_path)
+    data = _GetValidatedData(gs_url)
 
     # For presubmit coverage, save the whole data in json.
     if _IsPresubmitBuild(build):

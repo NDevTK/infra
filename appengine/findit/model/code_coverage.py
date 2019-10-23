@@ -178,8 +178,8 @@ class PresubmitCoverageData(ndb.Model):
   # The CL patchset.
   cl_patchset = ndb.StructuredProperty(CLPatchset, indexed=True, required=True)
 
-  # The build id that uniquely identifies the build.
-  build_id = ndb.IntegerProperty(indexed=False, required=True)
+  # List of build ids that contributed to this coverage data.
+  build_ids = ndb.IntegerProperty(indexed=False, repeated=True)
 
   # A list of file level coverage data for all the source files modified by the
   # this CL.
@@ -198,14 +198,14 @@ class PresubmitCoverageData(ndb.Model):
     return ndb.Key(cls, '%s$%s$%s' % (server_host, change, patchset))
 
   @classmethod
-  def Create(cls, server_host, change, patchset, build_id, data, project=None):
+  def Create(cls, server_host, change, patchset, data, project=None):
     key = cls._CreateKey(server_host, change, patchset)
     cl_patchset = CLPatchset(
         server_host=server_host,
         project=project,
         change=change,
         patchset=patchset)
-    return cls(key=key, cl_patchset=cl_patchset, build_id=build_id, data=data)
+    return cls(key=key, cl_patchset=cl_patchset, data=data)
 
   @classmethod
   def Get(cls, server_host, change, patchset):
