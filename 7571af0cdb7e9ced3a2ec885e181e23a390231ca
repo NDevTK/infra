@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8ba56cfc_c32a3e45",
+        "filename": "appengine/findit/services/code_coverage/code_coverage_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 507,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-10-23T21:47:24Z",
+      "side": 1,
+      "message": "I wonder how much more efficient this is compared to expanding each file to a dict like a \u003d {0:10, 10:5, 11:5, 12:5} + b \u003d {0:5, 13:5} would produce c \u003d {0:15, 10:5, 11:5, 12:5, 13:5}\n\nWith something like\n`\n  for k in set(a.keys() + b.keys()):\n    c[k] \u003d a.get(k, 0) + b.get(k, 0)\n`\n\nWhich I think would be easier to maintain.",
+      "revId": "7571af0cdb7e9ced3a2ec885e181e23a390231ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
