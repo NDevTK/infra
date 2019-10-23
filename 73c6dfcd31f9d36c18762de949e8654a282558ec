@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "4cf9e2c9_9f3df4b4",
+        "filename": "appengine/monorail/services/chart_svc.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 352,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-10-23T19:05:44Z",
+      "side": 1,
+      "message": "Yeah, we should double check.  I have been under the assumption that mysqldb sets autocomplete to false for each DB connection that it creates.   If I check this running locally by adding a line to _ExecuteWithSQLConnection() like \n logging.info(\u0027autocommit is %r\u0027, sql_cnxn.get_autocommit())\nit says False.  However, maybe that is just a python variable and it is not actually communicated to the MySQL server.  To be 100% sure we could run an experiment where one servlet does a DB read os some int column, adds 1 to it, writes it with commit\u003dfalse and then does sleep(30), and finally commits, meanwhile other requests in parallel are doing the same thing.  One of them should succeed and the others should rollback.   If autocommit was true, then the int value would be incremented several times.",
+      "parentUuid": "8f4ac32b_6a40c6ca",
+      "range": {
+        "startLine": 352,
+        "startChar": 8,
+        "endLine": 352,
+        "endChar": 21
+      },
+      "revId": "73c6dfcd31f9d36c18762de949e8654a282558ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "408bad59_27e05b06",
         "filename": "appengine/monorail/services/features_svc.py",
         "patchSetId": 1
