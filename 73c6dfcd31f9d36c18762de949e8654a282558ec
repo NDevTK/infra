@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8f4ac32b_6a40c6ca",
+        "filename": "appengine/monorail/services/chart_svc.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 352,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2019-10-23T04:39:18Z",
+      "side": 1,
+      "message": "Last time I was dealing with commits I discovered that the production SQL databases have autocommit[1] turned on, which I think entailed that regardless of whether commit\u003dFalse or commit\u003dTrue, the statement always committed the transaction when it was run. Might be worth double checking at some point that this code doesn\u0027t commit the transaction when commit\u003dFalse.\n\n[1] https://dev.mysql.com/doc/refman/5.6/en/innodb-autocommit-commit-rollback.html",
+      "range": {
+        "startLine": 352,
+        "startChar": 8,
+        "endLine": 352,
+        "endChar": 21
+      },
+      "revId": "73c6dfcd31f9d36c18762de949e8654a282558ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "408bad59_27e05b06",
+        "filename": "appengine/monorail/services/features_svc.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1065,
+      "author": {
+        "id": 1168241
+      },
+      "writtenOn": "2019-10-23T04:39:18Z",
+      "side": 1,
+      "message": "How will the cache get invalidated if commit\u003dFalse?",
+      "revId": "73c6dfcd31f9d36c18762de949e8654a282558ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
