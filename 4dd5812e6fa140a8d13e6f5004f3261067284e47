@@ -177,6 +177,24 @@
       "revId": "4dd5812e6fa140a8d13e6f5004f3261067284e47",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1fd0307d_3c5e9284",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 763,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-10-23T18:59:51Z",
+      "side": 1,
+      "message": "Thanks for the quick follow up Meng!",
+      "parentUuid": "e484b537_20f98666",
+      "revId": "4dd5812e6fa140a8d13e6f5004f3261067284e47",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
