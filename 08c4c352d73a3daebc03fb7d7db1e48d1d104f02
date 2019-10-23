@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "ba818d8c_6371744c",
+        "filename": "appengine/findit/services/code_coverage/code_coverage_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 548,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-10-23T23:19:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3bd42734_263d6d64",
+      "range": {
+        "startLine": 548,
+        "startChar": 17,
+        "endLine": 548,
+        "endChar": 18
+      },
+      "revId": "08c4c352d73a3daebc03fb7d7db1e48d1d104f02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9ddc22e4_5a78c9a8",
         "filename": "appengine/findit/services/code_coverage/code_coverage_util.py",
         "patchSetId": 4
@@ -45,6 +69,30 @@
       "revId": "08c4c352d73a3daebc03fb7d7db1e48d1d104f02",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "31532306_52c1b4ee",
+        "filename": "appengine/findit/services/code_coverage/code_coverage_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 549,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-10-23T23:19:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9ddc22e4_5a78c9a8",
+      "range": {
+        "startLine": 549,
+        "startChar": 18,
+        "endLine": 549,
+        "endChar": 47
+      },
+      "revId": "08c4c352d73a3daebc03fb7d7db1e48d1d104f02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
