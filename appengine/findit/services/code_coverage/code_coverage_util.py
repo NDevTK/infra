@@ -502,3 +502,70 @@ def _GetPatchsetRevision(patchset, change_details):
   raise RuntimeError(
       'Patchset %d is not found in the returned change details: %s' %
       (patchset, json.dumps(change_details)))
+
+
+def MergeFilesCoverageDataForPerCL(a, b):
+  """Merges files coverage data for per-cl coverage data.
+
+  The original data includes 'uncovered blocks', but this merge function drops
+  it because it's non-trivial to merge them, and it won't be useful at all
+  unless Gerrit decides to support displaying them, and it's still unclear
+  whether it will happen or not.
+
+  Args:
+    a (list): A list of File in coverage proto.
+    b (list): A list of File in coverage proto.
+
+  Returns:
+    A list of File in coverage proto.
+  """
+  merged = []
+  a_dict = {i['path']: i for i in a}
+  b_dict = {i['path']: i for i in b}
+  for path in set(a_dict.keys() + b_dict.keys()):
+    if path not in a_dict:
+      merged.append(b_dict[path])
+      continue
+
+    if path not in b_dict:
+      merged.append(a_dict[path])
+      continue
+
+    a_lines = DecompressLineRanges(a_dict[path]['lines'])
+    b_lines = DecompressLineRanges(b_dict[path]['lines'])
+    a_index = 0
+    b_index = 0
+    merged_lines = []
+    while a_index < len(a_lines) or b_index < len(b_lines):
+      if a_index >= len(a_lines):
+        merged_lines.append(b_lines[b_index])
+        b_index += 1
+        continue
+
+      if b_index >= len(b_lines):
+        merged_lines.append(a_lines[a_index])
+        a_index += 1
+        continue
+
+      a_line_num = a_lines[a_index]['line']
+      b_line_num = b_lines[b_index]['line']
+      if a_line_num < b_line_num:
+        merged_lines.append(a_lines[a_index])
+        a_index += 1
+      elif a_line_num > b_line_num:
+        merged_lines.append(b_lines[b_index])
+        b_index += 1
+      else:
+        merged_lines.append({
+            'line': a_line_num,
+            'count': a_lines[a_index]['count'] + b_lines[b_index]['count'],
+        })
+        a_index += 1
+        b_index += 1
+
+    merged.append({
+        'path': file,
+        'lines': CompressLines(merged_lines),
+    })
+
+  return sorted(merged, key=lambda x: x['path'])
