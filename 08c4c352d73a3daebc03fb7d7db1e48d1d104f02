@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3bd42734_263d6d64",
+        "filename": "appengine/findit/services/code_coverage/code_coverage_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 548,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-10-23T23:06:01Z",
+      "side": 1,
+      "message": "nit: c,",
+      "range": {
+        "startLine": 548,
+        "startChar": 17,
+        "endLine": 548,
+        "endChar": 18
+      },
+      "revId": "08c4c352d73a3daebc03fb7d7db1e48d1d104f02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9ddc22e4_5a78c9a8",
+        "filename": "appengine/findit/services/code_coverage/code_coverage_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 549,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-10-23T23:06:01Z",
+      "side": 1,
+      "message": "CompressLines assumes that merged_lines are ordered, but this code does not guarantee that. We should do sorted(merged_lines_dict.iteritems()) here",
+      "range": {
+        "startLine": 549,
+        "startChar": 18,
+        "endLine": 549,
+        "endChar": 47
+      },
+      "revId": "08c4c352d73a3daebc03fb7d7db1e48d1d104f02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
