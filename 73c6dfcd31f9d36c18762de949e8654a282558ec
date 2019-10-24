@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "d11735fd_3021e1b8",
+        "filename": "appengine/monorail/services/chart_svc.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 352,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2019-10-24T00:54:46Z",
+      "side": 1,
+      "message": "big revelation. big.\nIf true, I\u0027m surprised this would not have caused other issues\n\nIs there a bug for this? If not I\u0027ll file one. \nIn what context was this previously discovered?\n\nI think I would still be OK with committing this, since all previous calls of this method are with commit\u003dFalse and this CL doesn\u0027t really change anything about that.",
+      "parentUuid": "4cf9e2c9_9f3df4b4",
+      "range": {
+        "startLine": 352,
+        "startChar": 8,
+        "endLine": 352,
+        "endChar": 21
+      },
+      "revId": "73c6dfcd31f9d36c18762de949e8654a282558ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "408bad59_27e05b06",
         "filename": "appengine/monorail/services/features_svc.py",
         "patchSetId": 1
@@ -60,6 +84,24 @@
       "writtenOn": "2019-10-23T04:39:18Z",
       "side": 1,
       "message": "How will the cache get invalidated if commit\u003dFalse?",
+      "revId": "73c6dfcd31f9d36c18762de949e8654a282558ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d8936a33_a1d96b04",
+        "filename": "appengine/monorail/services/features_svc.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1065,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2019-10-24T00:54:46Z",
+      "side": 1,
+      "message": "Originally I thought the cache invalidation should be called by the caller or the caller\u0027s caller. Eg. in the whole ExpungeUsers pipeline, it should make all the DB executions first and then invalidate the cache for everything at the end if the DB executions were successful.\nBut I\u0027ve changed my mind on this and think it\u0027s simpler to have this invalidate cache regardless of commit. We can always add an invalidate BOOL later on like we do with \u0027commit\u0027.",
+      "parentUuid": "408bad59_27e05b06",
       "revId": "73c6dfcd31f9d36c18762de949e8654a282558ec",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
