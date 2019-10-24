@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a8996ef_048b8de3",
+        "filename": "recipes/recipes/luci_py.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2019-10-24T09:16:59Z",
+      "side": 1,
+      "message": "maybe we don\u0027t need to run this in non-Linux",
+      "revId": "a6656465221545b47479fd89162724f88b72c7d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
