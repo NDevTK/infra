@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c6c96fe4_75b36baf",
+        "filename": "recipes/recipes/luci_py.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2019-10-24T12:22:13Z",
+      "side": 1,
+      "message": "I\u0027d recommend filing a bug and adding a TODO(crbug/123) here, otherwise we\u0027ll forget.",
+      "revId": "d94981611321fc69d6bfe0ca101a23df654aa9ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
