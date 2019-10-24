@@ -178,8 +178,8 @@ class PresubmitCoverageData(ndb.Model):
   # The CL patchset.
   cl_patchset = ndb.StructuredProperty(CLPatchset, indexed=True, required=True)
 
-  # The build id that uniquely identifies the build.
-  build_id = ndb.IntegerProperty(indexed=False, required=True)
+  # List of build ids that contributed to this coverage data.
+  build_ids = ndb.IntegerProperty(indexed=False, repeated=True)
 
   # A list of file level coverage data for all the source files modified by the
   # this CL.
@@ -193,23 +193,29 @@ class PresubmitCoverageData(ndb.Model):
   incremental_percentages = ndb.LocalStructuredProperty(
       CoveragePercentage, indexed=False, repeated=True)
 
+  # List of later patchsets that reuse coverage data from this patchset, and the
+  # reason of tracking them is to invalidate their coverage data once this
+  # patchset's coverage data is updated due to, for example, the coverage data
+  # of a new builder is merged into this patchset.
+  dependent_patchsets = ndb.IntegerProperty(indexed=False, repeated=True)
+
   @classmethod
-  def _CreateKey(cls, server_host, change, patchset):
+  def CreateKey(cls, server_host, change, patchset):
     return ndb.Key(cls, '%s$%s$%s' % (server_host, change, patchset))
 
   @classmethod
-  def Create(cls, server_host, change, patchset, build_id, data, project=None):
-    key = cls._CreateKey(server_host, change, patchset)
+  def Create(cls, server_host, change, patchset, data, project=None):
+    key = cls.CreateKey(server_host, change, patchset)
     cl_patchset = CLPatchset(
         server_host=server_host,
         project=project,
         change=change,
         patchset=patchset)
-    return cls(key=key, cl_patchset=cl_patchset, build_id=build_id, data=data)
+    return cls(key=key, cl_patchset=cl_patchset, data=data)
 
   @classmethod
   def Get(cls, server_host, change, patchset):
-    return cls._CreateKey(server_host, change, patchset).get()
+    return cls.CreateKey(server_host, change, patchset).get()
 
 
 class FileCoverageData(ndb.Model):

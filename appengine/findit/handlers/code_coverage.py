@@ -730,18 +730,48 @@ class ProcessCodeCoverageData(BaseHandler):
       coverage_data (list): A list of File in coverage proto.
       build_id (int): Id of the build to process coverage data for.
     """
-    entity = PresubmitCoverageData.Create(
-        server_host=patch.host,
-        change=patch.change,
-        patchset=patch.patchset,
-        build_id=build_id,
-        data=coverage_data)
+    entity = PresubmitCoverageData.Get(
+        server_host=patch.host, change=patch.change, patchset=patch.patchset)
+    if entity:
+      merged_data = code_coverage_util.MergeFilesCoverageDataForPerCL(
+          entity.data, coverage_data)
+      entity.data = merged_data
+    else:
+      entity = PresubmitCoverageData.Create(
+          server_host=patch.host,
+          change=patch.change,
+          patchset=patch.patchset,
+          data=coverage_data)
+    entity.build_ids.append(build_id)
     entity.absolute_percentages = (
         code_coverage_util.CalculateAbsolutePercentages(coverage_data))
     entity.incremental_percentages = (
         code_coverage_util.CalculateIncrementalPercentages(
             patch.host, patch.project, patch.change, patch.patchset,
             coverage_data))
+
+    # There is one scenario when this could cause trouble:
+    # 1. User triggers builder1 on ps1, so ps1 has builder1's coverage data.
+    # 2. Ps2 is a trivial-rebase of ps1, and once its coverage data is
+    #    requested, it reuses ps1's, which is to say that ps2 now has builder1's
+    #    coverage data.
+    # 3. User triggers builder2 on ps2, so ps2 contains coverage data from both
+    #    builder1 and builder2.
+    # 4. User triggers builder3 on ps1, so now ps1 has builder1 and builder3's
+    #    coverage data, and it also invalidates ps2, but it's NOT entirely
+    #    correct because ps2 has something (builder2) that ps1 doesn't have.
+    #
+    # In practice, the described scenario is rather extreme corner case because:
+    # 1. Most users triggers cq dry run instead of specific builders.
+    # 2. When users upload a new trivial-rebase patchset, most likely they'll
+    #    never go back to previous patchset to trigger builds.
+    #
+    # Therefore, it makes sense to do nothing about it for now.
+    ndb.delete_multi([
+        PresubmitCoverageData.CreateKey(patch.host, patch.change, dependent_ps)
+        for dependent_ps in entity.dependent_patchsets
+    ])
+    entity.dependent_patchsets = []
     entity.put()
 
   def _processCodeCoverageData(self, build_id):
@@ -1120,11 +1150,12 @@ class ServeCodeCoverageData(BaseHandler):
         server_host=host,
         change=change,
         patchset=patchset,
-        build_id=latest_entity.build_id,
         data=rebased_coverage_data)
+    entity.build_ids = latest_entity.build_ids
     entity.absolute_percentages = latest_entity.absolute_percentages
     entity.incremental_percentages = latest_entity.incremental_percentages
-    entity.put()
+    latest_entity.dependent_patchsets.append(entity.cl_patchset.patchset)
+    ndb.put_multi([entity, latest_entity])
     return _ServeLines(entity.data)
 
   def _ServeProjectViewCoverageData(self, luci_project, host, project, ref,
