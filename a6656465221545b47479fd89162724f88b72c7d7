@@ -16,6 +16,24 @@
       "revId": "a6656465221545b47479fd89162724f88b72c7d7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "555d3d71_6f376f47",
+        "filename": "recipes/recipes/luci_py.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2019-10-24T09:31:30Z",
+      "side": 1,
+      "message": "OK, will run it only on linux.",
+      "parentUuid": "1a8996ef_048b8de3",
+      "revId": "a6656465221545b47479fd89162724f88b72c7d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
