@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "74d58723_ff8886fa",
+        "filename": "go/src/infra/tools/bugtemplate/.gitignore",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2019-10-24T22:17:52Z",
+      "side": 1,
+      "message": "if you run `go build` here to actually test the template, you end up with binary which I prefer to not upload to Gerrit.",
+      "parentUuid": "fe07b63e_4467b560",
+      "revId": "f79a3f6573be5667553ba26d29cab5d1c1847af4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e3de06e0_b3d6ce32",
         "filename": "go/src/infra/tools/bugtemplate/templates/luci-trooper-bug.txt",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "f79a3f6573be5667553ba26d29cab5d1c1847af4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "830dff78_2eb0962b",
+        "filename": "go/src/infra/tools/bugtemplate/templates/luci-trooper-bug.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2019-10-24T22:17:52Z",
+      "side": 1,
+      "message": "good catch! done.",
+      "parentUuid": "e3de06e0_b3d6ce32",
+      "revId": "f79a3f6573be5667553ba26d29cab5d1c1847af4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
