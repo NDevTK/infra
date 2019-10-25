@@ -223,6 +223,24 @@ func TestMcsvFieldsNoDuplicates(t *testing.T) {
 	}
 }
 
+func TestDeviceUnderTestOfMcsvRecordEmptyServoSerial(t *testing.T) {
+	input := &mcsvRecord{}
+	input.servoSerial = ""
+	input.servoHost = "4"
+	dut := deviceUnderTestOfMcsvRecord(input)
+	attrs := dut.Common.Attributes
+	foundAttrs := make(map[string]string)
+	for _, attr := range attrs {
+		foundAttrs[*attr.Key] = *attr.Value
+	}
+	if len(foundAttrs) != 1 {
+		t.Errorf("expected singleton map, got %v", foundAttrs)
+	}
+	if _, ok := foundAttrs["servo_host"]; !ok {
+		t.Errorf("single key must be servo_host")
+	}
+}
+
 // promptHandler responds to user prompts using a canned response.
 type promptHandler struct {
 	// Canned response for prompts.
