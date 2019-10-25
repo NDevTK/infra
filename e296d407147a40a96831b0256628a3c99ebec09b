@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "05384b72_b1fe0595",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2019-10-25T01:15:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3278e634_183538e9",
+      "range": {
+        "startLine": 9,
+        "startChar": 4,
+        "endLine": 9,
+        "endChar": 8
+      },
+      "revId": "e296d407147a40a96831b0256628a3c99ebec09b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b7d16ba2_a92cf5e7",
         "filename": "/COMMIT_MSG",
         "patchSetId": 1
@@ -72,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "d6fdee6a_5117bafc",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2019-10-25T01:15:39Z",
+      "side": 1,
+      "message": "Do you want me to re-deploy an existing dut?",
+      "parentUuid": "f86f5dae_2a8712bf",
+      "range": {
+        "startLine": 10,
+        "startChar": 5,
+        "endLine": 10,
+        "endChar": 89
+      },
+      "revId": "e296d407147a40a96831b0256628a3c99ebec09b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c47186c1_2ef533c1",
         "filename": "go/src/infra/cmd/skylab/internal/userinput/device_specs.go",
         "patchSetId": 1
@@ -106,6 +154,24 @@
     },
     {
       "key": {
+        "uuid": "3aac7708_46ed7751",
+        "filename": "go/src/infra/cmd/skylab/internal/userinput/device_specs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 272,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2019-10-25T01:15:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aa4f4c31_018d12c9",
+      "revId": "e296d407147a40a96831b0256628a3c99ebec09b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "71a05658_ebf30b42",
         "filename": "go/src/infra/cmd/skylab/internal/userinput/device_specs.go",
         "patchSetId": 1
@@ -129,6 +195,30 @@
     },
     {
       "key": {
+        "uuid": "68e844e2_e4f69987",
+        "filename": "go/src/infra/cmd/skylab/internal/userinput/device_specs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 277,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2019-10-25T01:15:39Z",
+      "side": 1,
+      "message": "I don\u0027t think any attributes can legitimately be present, but with an empty string value.\n\nDone",
+      "parentUuid": "71a05658_ebf30b42",
+      "range": {
+        "startLine": 272,
+        "startChar": 0,
+        "endLine": 277,
+        "endChar": 2
+      },
+      "revId": "e296d407147a40a96831b0256628a3c99ebec09b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "53bfd7a7_ddae28cc",
         "filename": "go/src/infra/cmd/skylab/internal/userinput/device_specs_test.go",
         "patchSetId": 1
@@ -143,6 +233,24 @@
       "revId": "e296d407147a40a96831b0256628a3c99ebec09b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d4215a05_41d802f8",
+        "filename": "go/src/infra/cmd/skylab/internal/userinput/device_specs_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2019-10-25T01:15:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "53bfd7a7_ddae28cc",
+      "revId": "e296d407147a40a96831b0256628a3c99ebec09b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -163,6 +271,24 @@
     },
     {
       "key": {
+        "uuid": "6f0669d9_46dadc19",
+        "filename": "go/src/infra/cmd/skylab/internal/userinput/device_specs_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2019-10-25T01:15:39Z",
+      "side": 1,
+      "message": "done",
+      "parentUuid": "49cde7f5_907b544f",
+      "revId": "e296d407147a40a96831b0256628a3c99ebec09b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0d4683f4_15956e25",
         "filename": "go/src/infra/cmd/skylab/internal/userinput/device_specs_test.go",
         "patchSetId": 1
@@ -177,6 +303,24 @@
       "revId": "e296d407147a40a96831b0256628a3c99ebec09b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2fd22f49_8cdc7a55",
+        "filename": "go/src/infra/cmd/skylab/internal/userinput/device_specs_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2019-10-25T01:15:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0d4683f4_15956e25",
+      "revId": "e296d407147a40a96831b0256628a3c99ebec09b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
