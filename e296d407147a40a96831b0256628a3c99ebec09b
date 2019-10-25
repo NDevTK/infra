@@ -137,6 +137,24 @@
     },
     {
       "key": {
+        "uuid": "cb191011_f1f9b195",
+        "filename": "go/src/infra/cmd/skylab/internal/userinput/device_specs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2019-10-25T01:21:17Z",
+      "side": 1,
+      "message": "it\u0027s not an exported function. its only mission in life is to convert between different formats.\n\nI think XOfY is a reasonable convention for a function that just converts between types in a somewhat semantics-preserving way.",
+      "parentUuid": "c47186c1_2ef533c1",
+      "revId": "e296d407147a40a96831b0256628a3c99ebec09b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aa4f4c31_018d12c9",
         "filename": "go/src/infra/cmd/skylab/internal/userinput/device_specs.go",
         "patchSetId": 1
