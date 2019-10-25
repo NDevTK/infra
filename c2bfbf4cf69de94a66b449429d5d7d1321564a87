@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "094ff73e_ed6d0a99",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 736,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-10-25T16:51:09Z",
+      "side": 1,
+      "message": "nit: inline?",
+      "range": {
+        "startLine": 736,
+        "startChar": 6,
+        "endLine": 736,
+        "endChar": 17
+      },
+      "revId": "c2bfbf4cf69de94a66b449429d5d7d1321564a87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "823dd813_5fc5ccfd",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 747,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-10-25T16:51:09Z",
+      "side": 1,
+      "message": "i think this must be entity.data, otherwise this ignores previous data. same in L751",
+      "range": {
+        "startLine": 747,
+        "startChar": 56,
+        "endLine": 747,
+        "endChar": 69
+      },
+      "revId": "c2bfbf4cf69de94a66b449429d5d7d1321564a87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e6b44acc_c5968f69",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 780,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-10-25T16:51:09Z",
+      "side": 1,
+      "message": "the get and put of this entity must be a transaction, otherwise it is a race\nhttps://cloud.google.com/appengine/docs/standard/python/ndb/transactions",
+      "revId": "c2bfbf4cf69de94a66b449429d5d7d1321564a87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "81f005a3_da0fa09f",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1163,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-10-25T16:51:09Z",
+      "side": 1,
+      "message": "this is a race too, because we read get and put of the latest_entity aren\u0027t transactional. This put overwrites anything that another concurrent put did between get in L1132 and here\n\nbut see my another comment in Model how to avoid this",
+      "range": {
+        "startLine": 1163,
+        "startChar": 27,
+        "endLine": 1163,
+        "endChar": 40
+      },
+      "revId": "c2bfbf4cf69de94a66b449429d5d7d1321564a87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3080dafc_14ea283d",
+        "filename": "appengine/findit/model/code_coverage.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-10-25T16:51:09Z",
+      "side": 1,
+      "message": "i think this essentially implements a custom reverse index, and it currently requires doing puts in two separate entity groups. Did you consider \n\n  based_on \u003d ndb.IntegerProperty()\n\nand then, when you want to invalidate cache, do a NDB query based on this property?",
+      "range": {
+        "startLine": 200,
+        "startChar": 2,
+        "endLine": 200,
+        "endChar": 21
+      },
+      "revId": "c2bfbf4cf69de94a66b449429d5d7d1321564a87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
