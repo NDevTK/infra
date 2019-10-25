@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "12b2336f_e041e4eb",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 770,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-10-25T16:32:26Z",
+      "side": 1,
+      "message": "Done. Clarified, please let me know if it makes sense now.",
+      "parentUuid": "4037ddc4_820ec06d",
+      "revId": "84e33e323ea84c3b59fb0febd96c526a6223f815",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "956c0446_78140713",
         "filename": "appengine/findit/model/code_coverage.py",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "84e33e323ea84c3b59fb0febd96c526a6223f815",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "736a2f35_0d144d2f",
+        "filename": "appengine/findit/model/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-10-25T16:32:26Z",
+      "side": 1,
+      "message": "It won\u0027t, the build id was not used anywhere, and I think it was only used for debugging purpose, same with the build ids, they won\u0027t be used, but we need to a way to track a list of builds that contributed to this coverage data for ease of debugging.",
+      "parentUuid": "956c0446_78140713",
+      "revId": "84e33e323ea84c3b59fb0febd96c526a6223f815",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
