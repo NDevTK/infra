@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "f86f5dae_2a8712bf",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-10-25T00:37:26Z",
+      "side": 1,
+      "message": "by work, I mean the deploy task works with empty serial number input.",
+      "parentUuid": "b7d16ba2_a92cf5e7",
+      "range": {
+        "startLine": 10,
+        "startChar": 5,
+        "endLine": 10,
+        "endChar": 89
+      },
+      "revId": "e296d407147a40a96831b0256628a3c99ebec09b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "71a05658_ebf30b42",
         "filename": "go/src/infra/cmd/skylab/internal/userinput/device_specs.go",
         "patchSetId": 1
