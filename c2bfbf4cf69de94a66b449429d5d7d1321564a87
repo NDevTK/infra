@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "b42190bd_a9c9bcb9",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 736,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-10-25T19:01:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "094ff73e_ed6d0a99",
+      "range": {
+        "startLine": 736,
+        "startChar": 6,
+        "endLine": 736,
+        "endChar": 17
+      },
+      "revId": "c2bfbf4cf69de94a66b449429d5d7d1321564a87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "823dd813_5fc5ccfd",
         "filename": "appengine/findit/handlers/code_coverage.py",
         "patchSetId": 3
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "ac61691b_0c369fef",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 747,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-10-25T19:01:03Z",
+      "side": 1,
+      "message": "Good catch!",
+      "parentUuid": "823dd813_5fc5ccfd",
+      "range": {
+        "startLine": 747,
+        "startChar": 56,
+        "endLine": 747,
+        "endChar": 69
+      },
+      "revId": "c2bfbf4cf69de94a66b449429d5d7d1321564a87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e6b44acc_c5968f69",
         "filename": "appengine/findit/handlers/code_coverage.py",
         "patchSetId": 3
@@ -62,6 +110,24 @@
       "revId": "c2bfbf4cf69de94a66b449429d5d7d1321564a87",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7a223f88_b6de6fa1",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 780,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-10-25T19:01:03Z",
+      "side": 1,
+      "message": "Good point! Done.",
+      "parentUuid": "e6b44acc_c5968f69",
+      "revId": "c2bfbf4cf69de94a66b449429d5d7d1321564a87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -88,6 +154,30 @@
     },
     {
       "key": {
+        "uuid": "78cfc10c_02639ce7",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1163,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-10-25T19:01:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "81f005a3_da0fa09f",
+      "range": {
+        "startLine": 1163,
+        "startChar": 27,
+        "endLine": 1163,
+        "endChar": 40
+      },
+      "revId": "c2bfbf4cf69de94a66b449429d5d7d1321564a87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3080dafc_14ea283d",
         "filename": "appengine/findit/model/code_coverage.py",
         "patchSetId": 3
@@ -108,6 +198,30 @@
       "revId": "c2bfbf4cf69de94a66b449429d5d7d1321564a87",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d9ca197c_278f9007",
+        "filename": "appengine/findit/model/code_coverage.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-10-25T19:01:03Z",
+      "side": 1,
+      "message": "Agree it\u0027s a much cleaner design, thanks, done!",
+      "parentUuid": "3080dafc_14ea283d",
+      "range": {
+        "startLine": 200,
+        "startChar": 2,
+        "endLine": 200,
+        "endChar": 21
+      },
+      "revId": "c2bfbf4cf69de94a66b449429d5d7d1321564a87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
