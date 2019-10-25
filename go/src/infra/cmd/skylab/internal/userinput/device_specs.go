@@ -269,11 +269,22 @@ func deviceUnderTestOfMcsvRecord(rec *mcsvRecord) *inventory.DeviceUnderTest {
 	out.Common.Hostname = &rec.host
 	out.Common.Labels.Board = &rec.board
 	out.Common.Labels.Model = &rec.model
-	dutAddAttribute(out, `servo_host`, rec.servoHost)
-	dutAddAttribute(out, `servo_port`, rec.servoPort)
-	dutAddAttribute(out, `servo_serial`, rec.servoSerial)
-	dutAddAttribute(out, `powerunit_hostname`, rec.powerunitHostname)
-	dutAddAttribute(out, `powerunit_outlet`, rec.powerunitOutlet)
+	if rec.servoHost != "" {
+		dutAddAttribute(out, `servo_host`, rec.servoHost)
+	}
+	if rec.servoPort != "" {
+		dutAddAttribute(out, `servo_port`, rec.servoPort)
+	}
+	// servo v3's don't have servo_serial attributes.
+	if rec.servoSerial != "" {
+		dutAddAttribute(out, `servo_serial`, rec.servoSerial)
+	}
+	if rec.powerunitHostname != "" {
+		dutAddAttribute(out, `powerunit_hostname`, rec.powerunitHostname)
+	}
+	if rec.powerunitOutlet != "" {
+		dutAddAttribute(out, `powerunit_outlet`, rec.powerunitOutlet)
+	}
 	return out
 }
 
