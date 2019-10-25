@@ -72,6 +72,40 @@
     },
     {
       "key": {
+        "uuid": "c47186c1_2ef533c1",
+        "filename": "go/src/infra/cmd/skylab/internal/userinput/device_specs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-10-25T00:38:43Z",
+      "side": 1,
+      "message": "comment: these names aren\u0027t very good, and they really need doc comments.",
+      "revId": "e296d407147a40a96831b0256628a3c99ebec09b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "aa4f4c31_018d12c9",
+        "filename": "go/src/infra/cmd/skylab/internal/userinput/device_specs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 272,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-10-25T00:38:43Z",
+      "side": 1,
+      "message": "Add a helper function?  e.g. dutMaybeAddAttribute",
+      "revId": "e296d407147a40a96831b0256628a3c99ebec09b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "71a05658_ebf30b42",
         "filename": "go/src/infra/cmd/skylab/internal/userinput/device_specs.go",
         "patchSetId": 1
@@ -89,6 +123,57 @@
         "endLine": 277,
         "endChar": 2
       },
+      "revId": "e296d407147a40a96831b0256628a3c99ebec09b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "53bfd7a7_ddae28cc",
+        "filename": "go/src/infra/cmd/skylab/internal/userinput/device_specs_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-10-25T00:38:43Z",
+      "side": 1,
+      "message": "This can just be a literal inline.",
+      "revId": "e296d407147a40a96831b0256628a3c99ebec09b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "49cde7f5_907b544f",
+        "filename": "go/src/infra/cmd/skylab/internal/userinput/device_specs_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-10-25T00:38:43Z",
+      "side": 1,
+      "message": "This should be a helper, e.g. getAttrMap(dut)",
+      "revId": "e296d407147a40a96831b0256628a3c99ebec09b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0d4683f4_15956e25",
+        "filename": "go/src/infra/cmd/skylab/internal/userinput/device_specs_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-10-25T00:38:43Z",
+      "side": 1,
+      "message": "Probably better to do a single check against an expected value.  grep cmp.Diff",
       "revId": "e296d407147a40a96831b0256628a3c99ebec09b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
