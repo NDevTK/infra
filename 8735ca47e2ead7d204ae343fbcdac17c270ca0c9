@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "31880f80_878e71ea",
+        "filename": "go/src/infra/cmd/skylab/internal/userinput/device_specs_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2019-10-25T01:35:09Z",
+      "side": 1,
+      "message": "forgot to delete?",
+      "revId": "8735ca47e2ead7d204ae343fbcdac17c270ca0c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
