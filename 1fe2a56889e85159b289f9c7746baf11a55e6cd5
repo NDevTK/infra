@@ -16,6 +16,24 @@
       "revId": "1fe2a56889e85159b289f9c7746baf11a55e6cd5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d8bfa5f7_584bcf08",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 736,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-10-28T19:56:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bc0e5ee4_0577147a",
+      "revId": "1fe2a56889e85159b289f9c7746baf11a55e6cd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

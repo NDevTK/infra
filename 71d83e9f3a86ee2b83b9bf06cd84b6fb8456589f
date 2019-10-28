@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "410a4eb0_4d9716c1",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 784,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-10-28T19:56:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ac6bd14c_149759e7",
+      "range": {
+        "startLine": 784,
+        "startChar": 62,
+        "endLine": 784,
+        "endChar": 67
+      },
+      "revId": "71d83e9f3a86ee2b83b9bf06cd84b6fb8456589f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fe5b3f5b_a40d2433",
         "filename": "appengine/findit/handlers/code_coverage.py",
         "patchSetId": 6
