@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "315adf6a_6120ceae",
+        "filename": "appengine/monorail/api/test/converters_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 521,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2019-10-30T19:28:36Z",
+      "side": 1,
+      "message": "Thanks for adding the test! \nSorry, I originally meant just add a few lines here to test the attachment_count in line 572. But what you have is better.\n\nSorry I was not clear.",
+      "revId": "c1c61293c483de3da89dcb6c7c7df20bba431205",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
