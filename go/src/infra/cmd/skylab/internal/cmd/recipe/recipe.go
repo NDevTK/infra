@@ -18,6 +18,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 )
 
+// Pubsub Topic to use for Status updates
+const PubsubStatusTopic = "projects/chromeos-swarming/topics/task-status-updates"
+
 // NewTestPlanForSuites returns a test plan consisting of the given named suites.
 func NewTestPlanForSuites(suiteNames ...string) *test_platform.Request_TestPlan {
 	p := test_platform.Request_TestPlan{}
@@ -68,7 +71,7 @@ type Args struct {
 	Tags                       []string
 	ProvisionLabels            []string
 	LegacySuite                string
-	PubsubTopic                string
+	PubsubIdentifier           string
 }
 
 // TestPlatformRequest constructs a cros_test_platform.Request from Args.
@@ -139,9 +142,10 @@ func (a *Args) TestPlatformRequest() (*test_platform.Request, error) {
 		}
 	}
 
-	if a.PubsubTopic != "" {
+	if a.PubsubIdentifier != "" {
 		params.Notification = &test_platform.Request_Params_Notification{
-			PubsubTopic: a.PubsubTopic,
+			PubsubTopic:      PubsubStatusTopic,
+			PubsubIdentifier: a.PubsubIdentifier,
 		}
 	}
 
