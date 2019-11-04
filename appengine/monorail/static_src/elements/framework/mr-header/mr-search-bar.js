@@ -9,7 +9,11 @@ import qs from 'qs';
 import '../mr-dropdown/mr-dropdown.js';
 import {prpcClient} from 'prpc-client-instance.js';
 import ClientLogger from 'monitoring/client-logger';
+import * as sitewide from 'reducers/sitewide.js';
+import {issueRefToUrl} from 'shared/converters.js';
 
+// Assuming digits as query, for attempting jump-to-issue
+const JUMP_RE = /^\d+$/;
 
 /**
  * `<mr-search-bar>`
@@ -343,7 +347,26 @@ export class MrSearchBar extends LitElement {
     params.q = form.q.value.trim();
     params.can = form.can.value;
 
-    this._navigateToList(params, newTab);
+    if (JUMP_RE.test(params.q)) {
+      const message = {
+	issueRef: {
+	  projectName: this.projectName,
+	  localId: params.q,
+	},
+      };
+
+      const getIssuePromise = prpcClient.call(
+	  'monorail.Issues', 'GetIssue', message
+      );
+      getIssuePromise.then((resp) => {
+	const link = issueRefToUrl(resp.issue, params);
+	this._page(link);
+      }, (error) => {
+	this._navigateToList(params, newTab);
+      });
+    } else {
+      this._navigateToList(params, newTab);
+    }
   }
 
   _navigateToList(params, newTab = false) {

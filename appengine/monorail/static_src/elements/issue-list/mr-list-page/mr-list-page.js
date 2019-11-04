@@ -347,11 +347,15 @@ export class MrListPage extends connectStore(LitElement) {
 
   /** @override */
   updated(changedProperties) {
+    console.log(changedProperties);
+    console.log('cowcow')
     if (changedProperties.has('projectName') ||
         changedProperties.has('currentQuery') ||
         changedProperties.has('currentCan')) {
       this.refresh();
     } else if (changedProperties.has('queryParams')) {
+      console.log('chickenchicken');
+      console.log(changedProperties.get('queryParams'));
       const oldParams = changedProperties.get('queryParams') || {};
 
       const shouldRefresh = PARAMS_THAT_TRIGGER_REFRESH.some((param) => {
