@@ -34,6 +34,24 @@
       "revId": "a9a95ed840ca006ef6114d23a112089c66997d8d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5df1bb75_696778b9",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/recipe/recipe.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-11-05T22:34:38Z",
+      "side": 1,
+      "message": "Having PubsubIdentifier be turned into a tag is a redundant way of specifying tags, from the perspective of this library.",
+      "parentUuid": "6c97d716_0ff219a1",
+      "revId": "a9a95ed840ca006ef6114d23a112089c66997d8d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
