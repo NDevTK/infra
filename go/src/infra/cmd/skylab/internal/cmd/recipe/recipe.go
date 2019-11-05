@@ -7,6 +7,7 @@
 package recipe
 
 import (
+	"fmt"
 	"net/url"
 	"strings"
 	"time"
@@ -107,6 +108,10 @@ func (a *Args) TestPlatformRequest() (*test_platform.Request, error) {
 		deps = append(deps, dep)
 	}
 	params.SoftwareDependencies = deps
+
+	if a.PubsubIdentifier != "" {
+		a.Tags = append(a.Tags, fmt.Sprintf("identifier:%s", a.PubsubIdentifier))
+	}
 
 	params.Decorations = &test_platform.Request_Params_Decorations{
 		AutotestKeyvals: a.Keyvals,
