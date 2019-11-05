@@ -13,6 +13,7 @@ import (
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
+	"go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/flag"
 
@@ -78,22 +79,27 @@ func (c *trackTasksRun) innerRun(a subcommands.Application, args []string, env s
 	// printed, so we instead handle cancellation gracefully
 	cancelWhenSIGINT(can)
 	ch := pubsublib.ReceiveToChannel(ctx, sub)
+	go c.fetchCompleteTasks(ctx)
 	go c.receiveMessages(ctx, ch)
 
 	c.printOutput(ctx)
 	return nil
 }
 
-func (c *trackTasksRun) fetchCompleteTasks(ctx context.Context) {
-	taskIds := c.queryCompleteTasks()
+func (c *trackTasksRun) fetchCompleteTasks(ctx context.Context) error {
+	taskIds, err := c.queryCompleteTasks(ctx)
+	if err != nil {
+		return err
+	}
 	for n := range taskIds {
 		select {
 		case <-ctx.Done():
-			return
+			return nil
 		default:
 			c.idChannel <- taskIds[n]
 		}
 	}
+	return nil
 }
 
 // Checks whether a message (JSON object) has one of the flags we're expecting
@@ -124,6 +130,10 @@ func (c *trackTasksRun) receiveMessages(ctx context.Context, ch <-chan pubsublib
 				continue
 			}
 			id := m["task_id"]
+			if len(id) == 0 {
+				moe.Message.Ack()
+				continue
+			}
 			if c.includeInterim || c.isTaskComplete(ctx, id) {
 				c.idChannel <- id
 				moe.Message.Ack()
@@ -153,13 +163,46 @@ func (c *trackTasksRun) printOutput(ctx context.Context) {
 }
 
 func (c *trackTasksRun) isTaskComplete(ctx context.Context, id string) bool {
-	// TODO: implement checking task status
-	return true
+	ser, err := swarming.NewService(ctx)
+	if err != nil {
+		return false
+	}
+	ts := swarming.NewTaskService(ser)
+	res, err := ts.Result(id).Do()
+	if err != nil {
+		return false
+	}
+	state := res.State
+	switch state {
+	case "CANCELED", "COMPLETED", "KILLED", "TIMED_OUT":
+		return true
+	default:
+		return false
+	}
 }
 
-func (c *trackTasksRun) queryCompleteTasks() []string {
-	// TODO: implement lookup for complete tasks
-	return []string{}
+func (c *trackTasksRun) queryCompleteTasks(ctx context.Context) ([]string, error) {
+	var completeIDs []string
+	ser, err := swarming.NewService(ctx)
+	if err != nil {
+		return nil, err
+	}
+	ts := swarming.NewTasksService(ser)
+	for _, state := range [...]string{"CANCELED", "COMPLETED", "KILLED", "TIMED_OUT"} {
+		for _, id := range c.statusIds {
+			list := ts.List()
+			list.Tags(fmt.Sprintf("identifier:%s", id))
+			list.State(state)
+			res, err := list.Do()
+			if err != nil {
+				return nil, err
+			}
+			for _, r := range res.Items {
+				completeIDs = append(completeIDs, r.TaskId)
+			}
+		}
+	}
+	return completeIDs, nil
 }
 
 func cancelWhenSIGINT(can context.CancelFunc) {
