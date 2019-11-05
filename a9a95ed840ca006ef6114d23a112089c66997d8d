@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d2c44920_76c61599",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/recipe/recipe.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2019-11-05T20:47:12Z",
+      "side": 1,
+      "message": "This tag name is too generic and broad.\n\nWe also shouldn\u0027t be adding tags ad hoc like this within the request formulation. If the caller of this library wants a particular tag, they should include it in the Tags field they provide. Don\u0027t give the client redundant ways of specifying the same thing.",
+      "revId": "a9a95ed840ca006ef6114d23a112089c66997d8d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
