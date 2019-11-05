@@ -7,6 +7,7 @@
 package recipe
 
 import (
+	"fmt"
 	"net/url"
 	"strings"
 	"time"
@@ -147,6 +148,8 @@ func (a *Args) TestPlatformRequest() (*test_platform.Request, error) {
 			PubsubTopic:      PubsubStatusTopic,
 			PubsubIdentifier: a.PubsubIdentifier,
 		}
+		// Add a tag to the task for finding already-complete jobs
+		params.Decorations.Tags = append(params.Decorations.Tags, fmt.Sprintf("results-label:%s", a.PubsubIdentifier))
 	}
 
 	return req, nil
