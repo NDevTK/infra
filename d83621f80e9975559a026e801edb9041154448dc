@@ -16,6 +16,24 @@
       "revId": "d83621f80e9975559a026e801edb9041154448dc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7244fc9f_bd7eacd5",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/recipe/recipe.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2019-11-06T01:02:20Z",
+      "side": 1,
+      "message": "Do you have an alternate suggestion? I picked it as a description of what it does; it\u0027s a searchable label for results. I clearly don\u0027t share your intuitions about naming choices for this, so I expect anything else I suggest you\u0027ll object to as well.\n\nWhether this library already has munging is relevant, but I think it\u0027s much less important than clarity. Splitting the logic across two (or more) places - the create subtasks and this recipe - makes it harder to follow, because it becomes less clear whether these fields always go together. Putting the logic here makes it clear that this tag shows up always and only when the PubsubIdentifier (or whatever that\u0027s renamed to) is set.",
+      "parentUuid": "6859aaac_4ecf9621",
+      "revId": "d83621f80e9975559a026e801edb9041154448dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
