@@ -61,6 +61,10 @@ _NON_CONFLICT_CHANGE_KIND = [
 ]
 
 
+class MissingChangeDataException(Exception):
+  pass
+
+
 def GetMetricsBasedOnCoverageTool(coverage_tool):
   """Gets a list of metrics for the given coverage tool.
 
@@ -157,8 +161,10 @@ def _FetchChangeDetails(host, project, change):
   url = template_to_get_change % (host, _GetChangeId(project, change))
   status_code, response, _ = FinditHttpClient().Get(url)
   if status_code != 200:
-    raise RuntimeError(
-        'Failed to get change details with status code: %d' % status_code)
+    e = RuntimeError
+    if status_code == 404:
+      e = MissingChangeDataException
+    raise e('Failed to get change details with status code: %d' % status_code)
 
   # Remove XSSI magic prefix
   if response.startswith(')]}\''):
@@ -367,7 +373,10 @@ def _FetchPatchsetFiles(host, project, change, patchset_revision):
                                   patchset_revision)
   status_code, response, _ = FinditHttpClient().Get(url)
   if status_code != 200:
-    raise RuntimeError(
+    e = RuntimeError
+    if status_code == 404:
+      e = MissingChangeDataException
+    raise e(
         'Failed to get change details with status code: %d, response: %s' %
         status_code, response)
 
@@ -477,8 +486,10 @@ def _FetchDiffForPatchset(host, project, change, patchset_revision):
   url = url_template % (host, _GetChangeId(project, change), patchset_revision)
   status_code, response, _ = FinditHttpClient().Get(url)
   if status_code != 200:
-    raise RuntimeError(
-        'Failed to get change details with status code: %d' % status_code)
+    e = RuntimeError
+    if status_code == 404:
+      e = MissingChangeDataException
+    raise e('Failed to get change details with status code: %d' % status_code)
 
   return base64.b64decode(response)
 
@@ -499,7 +510,7 @@ def _GetPatchsetRevision(patchset, change_details):
     if patchset == value['_number']:
       return revision
 
-  raise RuntimeError(
+  raise MissingChangeDataException(
       'Patchset %d is not found in the returned change details: %s' %
       (patchset, json.dumps(change_details)))
 
