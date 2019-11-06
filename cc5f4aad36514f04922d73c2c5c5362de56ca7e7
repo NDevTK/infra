@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "16b631db_8cbe2554",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1181,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-11-06T16:04:57Z",
+      "side": 1,
+      "message": "what value does this block of code add? without it, it is still HTTP 500 and it is clear that we had an unexpected error, and that this is about coverage because the whole endpoint is about coverage",
+      "range": {
+        "startLine": 1177,
+        "startChar": 4,
+        "endLine": 1181,
+        "endChar": 29
+      },
+      "revId": "cc5f4aad36514f04922d73c2c5c5362de56ca7e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c1e4dee3_5168f5f0",
+        "filename": "appengine/findit/services/code_coverage/code_coverage_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 491,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-11-06T16:04:57Z",
+      "side": 1,
+      "message": "this code is duplicated 3 times in the same file. Could you extract the common parts to a reusable function?",
+      "revId": "cc5f4aad36514f04922d73c2c5c5362de56ca7e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
