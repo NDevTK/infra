@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "502645bb_7c87bafa",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1172,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-11-06T07:38:32Z",
+      "side": 1,
+      "message": "they are equivalent, but you are right. using \u0027as\u0027 is the newer, recommended approach. done.",
+      "parentUuid": "f6f6577c_2cae9a00",
+      "range": {
+        "startLine": 1172,
+        "startChar": 56,
+        "endLine": 1172,
+        "endChar": 62
+      },
+      "revId": "e4fe0193a5f019c0035ffab8fbbf188ddc92c129",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2b53982f_cd7522a2",
         "filename": "appengine/findit/services/code_coverage/code_coverage_util.py",
         "patchSetId": 1
@@ -39,6 +63,24 @@
       "revId": "e4fe0193a5f019c0035ffab8fbbf188ddc92c129",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a420d214_30668a63",
+        "filename": "appengine/findit/services/code_coverage/code_coverage_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-11-06T07:38:32Z",
+      "side": 1,
+      "message": "Agreed. PTAL at the new approach.",
+      "parentUuid": "2b53982f_cd7522a2",
+      "revId": "e4fe0193a5f019c0035ffab8fbbf188ddc92c129",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
