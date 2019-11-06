@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f6f6577c_2cae9a00",
+        "filename": "appengine/findit/handlers/code_coverage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1172,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-11-06T05:10:42Z",
+      "side": 1,
+      "message": "was this tested?\n\ndid you mean\n\n  except code_coverage_util.MissingChangeDataException as mcde:\n\n?",
+      "range": {
+        "startLine": 1172,
+        "startChar": 56,
+        "endLine": 1172,
+        "endChar": 62
+      },
+      "revId": "e4fe0193a5f019c0035ffab8fbbf188ddc92c129",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2b53982f_cd7522a2",
+        "filename": "appengine/findit/services/code_coverage/code_coverage_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-11-06T05:10:42Z",
+      "side": 1,
+      "message": "!\u003d200 doesn\u0027t mean missing.\n404 means missing\n\nsame below",
+      "revId": "e4fe0193a5f019c0035ffab8fbbf188ddc92c129",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
