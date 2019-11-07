@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b3780ff8_263246bb",
+        "filename": "appengine/findit/services/code_coverage/code_coverage_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2019-11-07T21:02:27Z",
+      "side": 1,
+      "message": "abstraction levels here and in the function name are inconsistent: the function name is generic, but the error message is specific to fetching change details. Please either make the function name specific (CheckChangeDetailsResponseCode) or make the error message generic (do not mention change details)",
+      "range": {
+        "startLine": 176,
+        "startChar": 21,
+        "endLine": 176,
+        "endChar": 36
+      },
+      "revId": "96fb658e491e75149210a7ec0e8edd3b31c14e7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
