@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "967e44d8_62fcece7",
+        "filename": "go/src/infra/appengine/arquebus/app/config/config_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1354087
+      },
+      "writtenOn": "2019-11-08T01:30:40Z",
+      "side": 1,
+      "message": "nit: without assignees*",
+      "revId": "3cedef08209f3a96612af1585a1a094781b6cb13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
