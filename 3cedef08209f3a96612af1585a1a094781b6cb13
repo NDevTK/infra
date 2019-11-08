@@ -16,6 +16,24 @@
       "revId": "3cedef08209f3a96612af1585a1a094781b6cb13",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "faaf4fff_501d21bd",
+        "filename": "go/src/infra/appengine/arquebus/app/config/config_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2019-11-08T05:43:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "967e44d8_62fcece7",
+      "revId": "3cedef08209f3a96612af1585a1a094781b6cb13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
