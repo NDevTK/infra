@@ -22,6 +22,30 @@
       "revId": "96fb658e491e75149210a7ec0e8edd3b31c14e7e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ab735390_64c11959",
+        "filename": "appengine/findit/services/code_coverage/code_coverage_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2019-11-08T01:14:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b3780ff8_263246bb",
+      "range": {
+        "startLine": 176,
+        "startChar": 21,
+        "endLine": 176,
+        "endChar": 36
+      },
+      "revId": "96fb658e491e75149210a7ec0e8edd3b31c14e7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
