@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "de396de3_57119d4f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2019-11-11T23:56:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fa5c40c1_c47c70c3",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 4
+      },
+      "revId": "04c852cff075a02d0e806099b8dcc891a796ef08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4d96597a_60e520eb",
         "filename": "appengine/monorail/doc/triage.md",
         "patchSetId": 1
@@ -71,6 +95,30 @@
     },
     {
       "key": {
+        "uuid": "40b51763_36530415",
+        "filename": "appengine/monorail/doc/triage.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2019-11-11T23:56:24Z",
+      "side": 1,
+      "message": "Fair enough. Should we then also remove the link from https://cs.corp.google.com/search/?q\u003dAAAACV9ZZ8k",
+      "parentUuid": "e2c7aac3_ecec0ed9",
+      "range": {
+        "startLine": 33,
+        "startChar": 43,
+        "endLine": 33,
+        "endChar": 83
+      },
+      "revId": "04c852cff075a02d0e806099b8dcc891a796ef08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0f46a445_c66b0eef",
         "filename": "appengine/monorail/doc/triage.md",
         "patchSetId": 1
@@ -82,6 +130,30 @@
       "writtenOn": "2019-11-11T23:16:34Z",
       "side": 1,
       "message": "If the issue filed makes no sense and is not a valid issue.",
+      "range": {
+        "startLine": 85,
+        "startChar": 2,
+        "endLine": 85,
+        "endChar": 48
+      },
+      "revId": "04c852cff075a02d0e806099b8dcc891a796ef08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c7ca7b0b_5497a932",
+        "filename": "appengine/monorail/doc/triage.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2019-11-11T23:56:24Z",
+      "side": 1,
+      "message": "So if it\u0027s an empty issue, first time reporter, we would also report the reporter as a spammer? Shouldn\u0027t we just close the issue as invalid?",
+      "parentUuid": "0f46a445_c66b0eef",
       "range": {
         "startLine": 85,
         "startChar": 2,
@@ -140,6 +212,54 @@
     },
     {
       "key": {
+        "uuid": "f74f6687_bea79f9d",
+        "filename": "appengine/monorail/doc/triage.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2019-11-11T23:56:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "78182104_6614a747",
+      "range": {
+        "startLine": 87,
+        "startChar": 129,
+        "endLine": 87,
+        "endChar": 130
+      },
+      "revId": "04c852cff075a02d0e806099b8dcc891a796ef08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b4e672d2_fd7d4fb6",
+        "filename": "appengine/monorail/doc/triage.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2019-11-11T23:56:24Z",
+      "side": 1,
+      "message": "So you would recommend that osantiagofarias@gmail.com as a spammer?",
+      "parentUuid": "af8312e1_f0be4eb5",
+      "range": {
+        "startLine": 87,
+        "startChar": 69,
+        "endLine": 87,
+        "endChar": 128
+      },
+      "revId": "04c852cff075a02d0e806099b8dcc891a796ef08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "7f1f11b7_35db749e",
         "filename": "appengine/monorail/doc/triage.md",
         "patchSetId": 1
@@ -160,6 +280,30 @@
       "revId": "04c852cff075a02d0e806099b8dcc891a796ef08",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f57310d3_79cf501a",
+        "filename": "appengine/monorail/doc/triage.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2019-11-11T23:56:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7f1f11b7_35db749e",
+      "range": {
+        "startLine": 88,
+        "startChar": 4,
+        "endLine": 88,
+        "endChar": 21
+      },
+      "revId": "04c852cff075a02d0e806099b8dcc891a796ef08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
