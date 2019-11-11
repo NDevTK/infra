@@ -10,11 +10,13 @@ When you have a monorail triage shift, look at each issue in the
 [untriaged queue](https://bugs.chromium.org/p/monorail/issues/list?can=2&q=-has%3Aqueue+-has%3Aowner)
 and do the following:
 
-* If it is an urgent issue that affects operation of the site, chat with jrobbins or
+* If it is an urgent issue that affects operation of the site, notify the monorail chat or
   escalate to the Chrome Operations team as a whole.
 * If the issue is spam or off-topic, ban the user or set the issue state to Invalid.
   To ban: click the user's email address and press "Ban as spammer."
 * If the issue clearly belongs in /p/chromium, move it there and then set status, pri, and type.
+* If the ask is a small task or a quick bug, assign the owner to yourself, set status to Accepted, and fix and or implement
+  the necessary changes.
 * If the issue is valid and requires action, set status to Accepted and the Queue to one described below.
 * It if is not clear that this request should be acted on, leave the status as New and use Queue-Later.
   We will look at it again if multiple users star the issue.
@@ -28,7 +30,7 @@ And, take a look at any recent threads on
 questions there or if there are any current b/ issues that are sending
 notifications there.
 
-If you have questions, feel free to chat with jrobbins or other members of the monorail team.
+If you have questions, feel free to [chat](https://chat.google.com/room/AAAACV9ZZ8k) with members of the monorail team.
 
 
 ## Triage SLA
@@ -77,3 +79,10 @@ If you have questions, feel free to chat with jrobbins or other members of the m
 Milestones are date-based goals for resolving issues that are based on our team's quarterly
 OKRs.  Team members should set Milestone-* labels on issues that relate to current OKRs.
 Other issues will not have a milestone.
+
+## Open Questions
+
+* How do we assess that a reporter is a spammer?
+  * Frequency of reporting?
+* What to do about clearly mistaken / empty bugs, ie [monorail:6717](https://bugs.chromium.org/p/monorail/issues/detail?id=6717)? 
+  * Mark "Won't Fix"?
