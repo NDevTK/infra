@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa5c40c1_c47c70c3",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2019-11-11T23:16:34Z",
+      "side": 1,
+      "message": "[Monorail] Add...",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 4
+      },
+      "revId": "04c852cff075a02d0e806099b8dcc891a796ef08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4d96597a_60e520eb",
+        "filename": "appengine/monorail/doc/triage.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2019-11-11T23:16:34Z",
+      "side": 1,
+      "message": "Please add that if the bug is caused by someone else\u0027s changes\nor if the bug is part of a feature clearly owned by one person, then it should be assigned to them.",
+      "range": {
+        "startLine": 18,
+        "startChar": 2,
+        "endLine": 18,
+        "endChar": 23
+      },
+      "revId": "04c852cff075a02d0e806099b8dcc891a796ef08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e2c7aac3_ecec0ed9",
+        "filename": "appengine/monorail/doc/triage.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2019-11-11T23:16:34Z",
+      "side": 1,
+      "message": "Can we take this link out and just say \"monorail chat\"?\n\nI don\u0027t want random people finding this and joining the chat just to ask questions that they should be asking on g/monorail-eng\n\nIt can be disrupting for the team, if we don\u0027t want to immediately answer someone\u0027s question but want to talk to teammates.",
+      "range": {
+        "startLine": 33,
+        "startChar": 43,
+        "endLine": 33,
+        "endChar": 83
+      },
+      "revId": "04c852cff075a02d0e806099b8dcc891a796ef08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0f46a445_c66b0eef",
+        "filename": "appengine/monorail/doc/triage.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2019-11-11T23:16:34Z",
+      "side": 1,
+      "message": "If the issue filed makes no sense and is not a valid issue.",
+      "range": {
+        "startLine": 85,
+        "startChar": 2,
+        "endLine": 85,
+        "endChar": 48
+      },
+      "revId": "04c852cff075a02d0e806099b8dcc891a796ef08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "78182104_6614a747",
+        "filename": "appengine/monorail/doc/triage.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2019-11-11T23:16:34Z",
+      "side": 1,
+      "message": "Please fix.",
+      "range": {
+        "startLine": 87,
+        "startChar": 129,
+        "endLine": 87,
+        "endChar": 130
+      },
+      "revId": "04c852cff075a02d0e806099b8dcc891a796ef08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "af8312e1_f0be4eb5",
+        "filename": "appengine/monorail/doc/triage.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2019-11-11T23:16:34Z",
+      "side": 1,
+      "message": "This would be categorized as spam.\nIf you\u0027re ever unsure, you can check out the user\u0027s updates page:\nhttps://bugs.chromium.org/u/osantiagofarias@gmail.com/updates\n\nif none of their other activities on the site are serious or valid, then the person is an obvious spammer.",
+      "range": {
+        "startLine": 87,
+        "startChar": 69,
+        "endLine": 87,
+        "endChar": 128
+      },
+      "revId": "04c852cff075a02d0e806099b8dcc891a796ef08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f1f11b7_35db749e",
+        "filename": "appengine/monorail/doc/triage.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2019-11-11T23:16:34Z",
+      "side": 1,
+      "message": "No.\nMark it as spam. https://screenshot.googleplex.com/sata9U4NvOO\nIf this option does not show up for you LMK.",
+      "range": {
+        "startLine": 88,
+        "startChar": 4,
+        "endLine": 88,
+        "endChar": 21
+      },
+      "revId": "04c852cff075a02d0e806099b8dcc891a796ef08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
