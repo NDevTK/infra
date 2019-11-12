@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ed0f2a54_fcf00684",
+        "filename": "go/src/infra/cmd/cloudbuildhelper/cmdbuild.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2019-11-12T22:00:11Z",
+      "side": 1,
+      "message": "grammar question: what is the correct article here:\na) \u0027a\u0027\nb) \u0027the\u0027\nc) \u0027\u0027\nd) \u0027thy\u0027\n\n?",
+      "range": {
+        "startLine": 68,
+        "startChar": 68,
+        "endLine": 68,
+        "endChar": 69
+      },
+      "revId": "b3141a0ae84264c78b5791ee936c41022d2bafc2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
