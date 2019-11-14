@@ -177,7 +177,9 @@ Component view shows
 
 ## Contacts
 ### Reporting problems
-For any breakage report and feature requests, please [file a bug].
+For any breakage report and feature requests, please
+ * [file a bug for Flake Analyzer].
+ * [file a bug for other Flakiness Tooling].
 ### Mailing list
 For questions and general discussions, please use [findit group].
 ## FAQ
@@ -204,7 +206,8 @@ For questions and general discussions, please use [findit group].
 [Example of gtests with different parameters]: images/gtests_with_different_parameters.png
 [Example of webkit layout tests with different queries]: images/webkit_layout_tests_with_different_queries.png
 [external/wpt/IndexedDB/interleaved-cursors-large.html]: https://analysis.chromium.org/p/chromium/flake-portal/flakes?flake_filter=test::external/wpt/IndexedDB/interleaved-cursors-large.html
-[file a bug]: https://bugs.chromium.org/p/chromium/issues/entry?components=Infra%3ETest%3EFlakiness
+[file a bug for Flake Analyzer]: https://bugs.chromium.org/p/chromium/issues/entry?components=Tools%3ETest%3EFindIt%3EFlakiness
+[file a bug for other Flakiness Tooling]: https://bugs.chromium.org/p/chromium/issues/entry?components=Infra%3ETest%3EFlakiness
 [Filter Flakes Example]: images/filter_flakes.png
 [Findit]: https://analysis.chromium.org
 [findit group]: https://groups.google.com/a/chromium.org/forum/?pli=1#!forum/findit
@@ -217,7 +220,7 @@ For questions and general discussions, please use [findit group].
 [OWNERS]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/accessibility/OWNERS?q=COMPONENT
 [parent_component==Blink>Accessibility]: https://analysis.chromium.org/p/chromium/flake-portal/flakes?flake_filter=parent_component::Blink>Accessibility
 [post-analysis bug]: https://bugs.chromium.org/p/chromium/issues/list?can=2&q=test-findit-analyzed&colspec=ID+Pri+M+Stars+ReleaseBlock+Component+Status+Owner+Summary+OS+Modified&x=m&y=releaseblock&cells=ids
-[pre-analysis bugs]: https://bugs.chromium.org/p/chromium/issues/list?can=2&q=test-findit-detected&colspec=ID+Pri+M+Stars+ReleaseBlock+Component+Status+Owner+Summary+OS+Modified&x=m&y=releaseblock&cells=ids
+[pre-analysis bugs]: https://bugs.chromium.org/p/chromium/issues/list?can=2&q=test-flake-detected&colspec=ID+Pri+M+Stars+ReleaseBlock+Component+Status+Owner+Summary+OS+Modified&x=m&y=releaseblock&cells=ids
 [Project Report]: images/project_report.png
 [Report]: https://findit-for-me.appspot.com/p/chromium/flake-portal/report
 [Search Flake Example]: images/search_flake.png

@@ -346,8 +346,9 @@ class FlakeReportUtilTest(WaterfallTestCase):
 
     expected_wrong_result_link = (
         'https://bugs.chromium.org/p/chromium/issues/entry?status=Unconfirmed&'
-        'labels=Pri-1,Test-Findit-Wrong&components=Infra%3ETest%3EFlakiness&'
-        'summary=%5BFindit%5D%20Flake%20Detection%20-%20Wrong%20'
+        'labels=Pri-1,Test-Flake-Detection-Wrong&'
+        'components=Infra%3ETest%3EFlakiness&'
+        'summary=Flake%20Detection%20-%20Wrong%20'
         'result%3A%20test&comment=Link%20to%20flake%20details%3A%20'
         'https://analysis.chromium.org'
         '/p/chromium/flake-portal/flakes/occurrences?key={}').format(
@@ -356,7 +357,7 @@ class FlakeReportUtilTest(WaterfallTestCase):
     expected_description = textwrap.dedent("""
 test_label is flaky.
 
-Findit has detected 3 flake occurrences of this test within the
+3 flake occurrences of this test have been detected within the
 past 24 hours. List of all flake occurrences can be found at:
 https://analysis.chromium.org/p/chromium/flake-portal/flakes/occurrences?key={}.
 
@@ -371,7 +372,7 @@ Automatically posted by the findit-for-me app (https://goo.gl/Ne6KtC)."""
                                                    expected_wrong_result_link)
 
     expected_labels = [
-        'Type-Bug', 'Test-Flaky', 'Test-Findit-Detected', 'Pri-1',
+        'Type-Bug', 'Test-Flaky', 'Test-Flake-Detected', 'Pri-1',
         'Sheriff-Chromium'
     ]
 
@@ -485,8 +486,9 @@ Automatically posted by the findit-for-me app (https://goo.gl/Ne6KtC)."""
 
     expected_wrong_result_link = (
         'https://bugs.chromium.org/p/chromium/issues/entry?status=Unconfirmed&'
-        'labels=Pri-1,Test-Findit-Wrong&components=Infra%3ETest%3EFlakiness'
-        '&summary=%5BFindit%5D%20Flake%20Detection%20-%20Wrong%20'
+        'labels=Pri-1,Test-Flake-Detection-Wrong'
+        '&components=Infra%3ETest%3EFlakiness'
+        '&summary=Flake%20Detection%20-%20Wrong%20'
         'result%3A%20test&comment=Link%20to%20flake%20details%3A%20'
         'https://analysis.chromium.org'
         '/p/chromium/flake-portal/flakes/occurrences?key={}').format(
@@ -499,7 +501,7 @@ Automatically posted by the findit-for-me app (https://goo.gl/Ne6KtC)."""
     expected_comment = textwrap.dedent("""
 test_label is flaky.
 
-Findit has detected 3 new flake occurrences of this test. List
+3 new flake occurrences of this test have been detected. List
 of all flake occurrences can be found at:
 https://analysis.chromium.org/p/chromium/flake-portal/flakes/occurrences?key={}.
 
@@ -1167,7 +1169,7 @@ Automatically posted by the findit-for-me app (https://goo.gl/Ne6KtC)."""
     self.assertTrue(mock_first_comment.called)
 
     expected_labels = [
-        'Type-Bug', 'Test-Flaky', 'Test-Findit-Detected', 'Pri-1',
+        'Type-Bug', 'Test-Flaky', 'Test-Flake-Detected', 'Pri-1',
         'Sheriff-Chromium'
     ]
     issue = mock_create_bug.call_args_list[0][0][0]
