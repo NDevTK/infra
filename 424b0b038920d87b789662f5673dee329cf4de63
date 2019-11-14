@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "69d6cf59_484a3e5b",
+        "filename": "appengine/findit/services/issue_constants.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-11-14T23:03:26Z",
+      "side": 1,
+      "message": "I\u0027ll have to bulk edit all existing flake bugs filed by FP to include them in the query of FP filed flake bugs. But I think this change is necessary for a clean separation.",
+      "revId": "424b0b038920d87b789662f5673dee329cf4de63",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
