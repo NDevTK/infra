@@ -50,7 +50,7 @@ _WRONG_CULPRIT_LINK_TEMPLATE = (
     'https://bugs.chromium.org/p/chromium/issues/entry?'
     'status=Unconfirmed&'
     'labels=Pri-1,Test-Findit-Wrong&'
-    'components=Infra%3ETest%3EFlakiness&'
+    'components=Tools%3ETest%3EFindIt%3EFlakiness&'
     'summary=%5BFindit%5D%20Flake%20Analyzer%20-%20Wrong%20culprit%20'
     'r{commit_position}&comment=Link%20to%20Culprit%3A%20{culprit_link}')
 
