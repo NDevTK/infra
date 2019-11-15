@@ -2,6 +2,52 @@
   "comments": [
     {
       "key": {
+        "uuid": "b230f51e_e1215a31",
+        "filename": "appengine/findit/docs/flake_portal.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-11-15T01:33:02Z",
+      "side": 1,
+      "message": "I think this should be updated for the purpose of separation, and so is the UI template file.",
+      "range": {
+        "startLine": 86,
+        "startChar": 13,
+        "endLine": 86,
+        "endChar": 19
+      },
+      "revId": "424b0b038920d87b789662f5673dee329cf4de63",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a019b57b_c4e879ec",
+        "filename": "appengine/findit/docs/flake_portal.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-11-15T01:33:02Z",
+      "side": 1,
+      "message": "Should this be chops-cti now?",
+      "range": {
+        "startLine": 184,
+        "startChar": 51,
+        "endLine": 184,
+        "endChar": 62
+      },
+      "revId": "424b0b038920d87b789662f5673dee329cf4de63",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "69d6cf59_484a3e5b",
         "filename": "appengine/findit/services/issue_constants.py",
         "patchSetId": 3
@@ -13,6 +59,47 @@
       "writtenOn": "2019-11-14T23:03:26Z",
       "side": 1,
       "message": "I\u0027ll have to bulk edit all existing flake bugs filed by FP to include them in the query of FP filed flake bugs. But I think this change is necessary for a clean separation.",
+      "revId": "424b0b038920d87b789662f5673dee329cf4de63",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "574e7099_17165e4a",
+        "filename": "appengine/findit/services/issue_constants.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-11-15T01:33:02Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "69d6cf59_484a3e5b",
+      "revId": "424b0b038920d87b789662f5673dee329cf4de63",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "85793744_39ae113f",
+        "filename": "appengine/findit/services/issue_generator.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2019-11-15T01:33:02Z",
+      "side": 1,
+      "message": "Maybe remove this?",
+      "range": {
+        "startLine": 110,
+        "startChar": 0,
+        "endLine": 110,
+        "endChar": 74
+      },
       "revId": "424b0b038920d87b789662f5673dee329cf4de63",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
