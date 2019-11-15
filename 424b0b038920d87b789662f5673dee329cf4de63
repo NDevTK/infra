@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "b0c54882_48c75426",
+        "filename": "appengine/findit/docs/flake_portal.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-11-15T18:30:39Z",
+      "side": 1,
+      "message": "Done.\n\nI\u0027ll update UI template in a separate change.",
+      "parentUuid": "b230f51e_e1215a31",
+      "range": {
+        "startLine": 86,
+        "startChar": 13,
+        "endLine": 86,
+        "endChar": 19
+      },
+      "revId": "424b0b038920d87b789662f5673dee329cf4de63",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a019b57b_c4e879ec",
         "filename": "appengine/findit/docs/flake_portal.md",
         "patchSetId": 3
@@ -45,6 +69,30 @@
       "revId": "424b0b038920d87b789662f5673dee329cf4de63",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aebf8d3f_4bd7e57d",
+        "filename": "appengine/findit/docs/flake_portal.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-11-15T18:30:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a019b57b_c4e879ec",
+      "range": {
+        "startLine": 184,
+        "startChar": 51,
+        "endLine": 184,
+        "endChar": 62
+      },
+      "revId": "424b0b038920d87b789662f5673dee329cf4de63",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -103,6 +151,30 @@
       "revId": "424b0b038920d87b789662f5673dee329cf4de63",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "30a2a1cb_ddedb356",
+        "filename": "appengine/findit/services/issue_generator.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2019-11-15T18:30:39Z",
+      "side": 1,
+      "message": "Use Flake portal as well.",
+      "parentUuid": "85793744_39ae113f",
+      "range": {
+        "startLine": 110,
+        "startChar": 0,
+        "endLine": 110,
+        "endChar": 74
+      },
+      "revId": "424b0b038920d87b789662f5673dee329cf4de63",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
