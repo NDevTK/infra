@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "368a7597_98f89985",
+        "filename": "packages/infra_libs/infra_libs/ts_mon/common/pb_to_popo.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2019-11-15T18:41:25Z",
+      "side": 1,
+      "message": "i wonder wtf is this",
+      "range": {
+        "startLine": 26,
+        "startChar": 27,
+        "endLine": 26,
+        "endChar": 31
+      },
+      "revId": "9070f11300c14aeadf3935677cd8f6d964943360",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
