@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c216bef6_66c7e0f4",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-11-25T22:14:11Z",
+      "side": 1,
+      "message": "nit: This link looks duplicated?",
+      "range": {
+        "startLine": 36,
+        "startChar": 165,
+        "endLine": 36,
+        "endChar": 265
+      },
+      "revId": "deb91e2c70ed4fba35553d98d34bc87c951d4fac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4c2923d5_0e5bff45",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-11-25T22:14:11Z",
+      "side": 1,
+      "message": "Let\u0027s keep the phrasing a bit more consistent between these two comments. I\u0027d suggest, with some minor tweaks to Brian\u0027s phrasing:\n\n1st comment:\n\"It\u0027s preferred to list at least two owners, where the second is often a team mailing list or a src/path/to/OWNERS reference.\"\n\n2nd comment:\n\"Note that it\u0027s preferred to list at least two owners, where the second is often a team mailing list or a src/path/to/OWNERS reference.\"",
+      "range": {
+        "startLine": 38,
+        "startChar": 103,
+        "endLine": 38,
+        "endChar": 174
+      },
+      "revId": "deb91e2c70ed4fba35553d98d34bc87c951d4fac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
