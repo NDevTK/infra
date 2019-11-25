@@ -22,6 +22,30 @@
       "revId": "a77e1f4317ad7e1682b207d27c8770f9bc5513f0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3612aab3_dcdddba3",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/frontend/elements/som-annotations/som-file-bug.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2019-11-25T23:14:43Z",
+      "side": 1,
+      "message": "Actually it does not matter here, because immediately after setting the _isFilingBug \u003d false, it immediately execute \"this.showBugFiledDialog()\", which replaces the bug filing dialog with this https://screenshot.googleplex.com/6vaOFRCy9nY.\n\nSo the user has no way to click on the button the second time.",
+      "parentUuid": "adb9d2dc_0953bbb3",
+      "range": {
+        "startLine": 166,
+        "startChar": 2,
+        "endLine": 166,
+        "endChar": 27
+      },
+      "revId": "a77e1f4317ad7e1682b207d27c8770f9bc5513f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
