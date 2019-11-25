@@ -125,6 +125,15 @@
     "name": "gclient runhooks"
   },
   {
+    "cmd": [
+      "python",
+      "-u",
+      "",
+      "--version"
+    ],
+    "name": "check version"
+  },
+  {
     "cmd": [],
     "name": "auth_service"
   },
