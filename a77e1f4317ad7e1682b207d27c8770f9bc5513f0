@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "adb9d2dc_0953bbb3",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/frontend/elements/som-annotations/som-file-bug.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1275796
+      },
+      "writtenOn": "2019-11-25T23:01:38Z",
+      "side": 1,
+      "message": "If I understand this correctly, we re-enable the button after a bug has been successfully filed? Why not leave it disabled - any clicks at this point would file a duplicate bug, right?",
+      "range": {
+        "startLine": 166,
+        "startChar": 2,
+        "endLine": 166,
+        "endChar": 27
+      },
+      "revId": "a77e1f4317ad7e1682b207d27c8770f9bc5513f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
