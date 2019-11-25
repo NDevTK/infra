@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "604d0d46_419986fd",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1369574
+      },
+      "writtenOn": "2019-11-25T23:12:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c216bef6_66c7e0f4",
+      "range": {
+        "startLine": 36,
+        "startChar": 165,
+        "endLine": 36,
+        "endChar": 265
+      },
+      "revId": "deb91e2c70ed4fba35553d98d34bc87c951d4fac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4c2923d5_0e5bff45",
         "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "deb91e2c70ed4fba35553d98d34bc87c951d4fac",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f8047d6_6e9b55aa",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1369574
+      },
+      "writtenOn": "2019-11-25T23:12:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4c2923d5_0e5bff45",
+      "range": {
+        "startLine": 38,
+        "startChar": 103,
+        "endLine": 38,
+        "endChar": 174
+      },
+      "revId": "deb91e2c70ed4fba35553d98d34bc87c951d4fac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
