@@ -125,6 +125,13 @@
     "name": "gclient runhooks"
   },
   {
+    "cmd": [
+      "python",
+      "--version"
+    ],
+    "name": "check python version"
+  },
+  {
     "cmd": [],
     "name": "client"
   },

@@ -25,6 +25,8 @@ def RunSteps(api):
   api.bot_update.ensure_checkout()
   api.gclient.runhooks()
 
+  api.step('check python version', ['python', '--version'])
+
   luci_dir = api.path['checkout'].join('luci')
   with api.context(cwd=luci_dir):
     # auth server
