@@ -69,6 +69,24 @@
       "revId": "247dab6cbbddc35cc95fc3f67466978265d3d5e1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a65aced4_4029a8b7",
+        "filename": "recipes/recipes/luci_py.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2019-11-26T22:01:16Z",
+      "side": 1,
+      "message": "That allows us to confirm the test passed on the bot easily before make it mandatory.",
+      "parentUuid": "126066c4_82bc6401",
+      "revId": "247dab6cbbddc35cc95fc3f67466978265d3d5e1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
