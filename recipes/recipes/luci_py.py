@@ -51,10 +51,11 @@ def RunSteps(api):
 
     # TODO(crbug.com/1017545): enable python3 on windows and mac
     # client
-    _step_run_tests(api, 'client',
-                    luci_dir.join('client'),
-                    run_test_seq=True,
-                    run_python3=api.platform.is_linux)
+    if api.platform.is_linux:
+      _step_run_tests(api, 'client',
+                      luci_dir.join('client'),
+                      run_test_seq=True,
+                      run_python3=True)
 
     # TODO(crbug.com/1019105): remove this timeout.
     if api.platform.is_mac:
@@ -145,7 +146,7 @@ def GenTests(api):
   yield (
       api.test('try') +
       api.buildbucket.try_build(
-          'infra', 'try', 'Luci-py Presubmit',
+          'infra', 'try', 'Luci-py Linux',
           git_repo='https://chromium.googlesource.com/infra/luci/luci-py',
       )
   )
@@ -154,14 +155,23 @@ def GenTests(api):
       api.test('try-mac') +
       api.platform.name('mac') +
       api.buildbucket.try_build(
-          'infra', 'try', 'Luci-py Presubmit',
+          'infra', 'try', 'Luci-py Mac',
+          git_repo='https://chromium.googlesource.com/infra/luci/luci-py',
+      )
+  )
+
+  yield (
+      api.test('try-win') +
+      api.platform.name('win') +
+      api.buildbucket.try_build(
+          'infra', 'try', 'Luci-py Windows',
           git_repo='https://chromium.googlesource.com/infra/luci/luci-py',
       )
   )
 
   # test case for failures
   yield (
-      api.test('failure') +
+      api.test('try-failure') +
       api.buildbucket.try_build(
           'infra', 'try', 'Luci-py Presubmit',
           git_repo='https://chromium.googlesource.com/infra/luci/luci-py',
