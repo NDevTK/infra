@@ -25,6 +25,8 @@ def RunSteps(api):
   api.bot_update.ensure_checkout()
   api.gclient.runhooks()
 
+  api.step('check python version', ['python', '--version'])
+
   luci_dir = api.path['checkout'].join('luci')
   with api.context(cwd=luci_dir):
     # auth server
@@ -51,10 +53,11 @@ def RunSteps(api):
 
     # TODO(crbug.com/1017545): enable python3 on windows and mac
     # client
-    _step_run_tests(api, 'client',
-                    luci_dir.join('client'),
-                    run_test_seq=True,
-                    run_python3=api.platform.is_linux)
+    if api.platform.is_linux:
+      _step_run_tests(api, 'client',
+                      luci_dir.join('client'),
+                      run_test_seq=True,
+                      run_python3=True)
 
     # TODO(crbug.com/1019105): remove this timeout.
     if api.platform.is_mac:
@@ -145,7 +148,7 @@ def GenTests(api):
   yield (
       api.test('try') +
       api.buildbucket.try_build(
-          'infra', 'try', 'Luci-py Presubmit',
+          'infra', 'try', 'Luci-py linux',
           git_repo='https://chromium.googlesource.com/infra/luci/luci-py',
       )
   )
@@ -154,7 +157,16 @@ def GenTests(api):
       api.test('try-mac') +
       api.platform.name('mac') +
       api.buildbucket.try_build(
-          'infra', 'try', 'Luci-py Presubmit',
+          'infra', 'try', 'Luci-py mac',
+          git_repo='https://chromium.googlesource.com/infra/luci/luci-py',
+      )
+  )
+
+  yield (
+      api.test('try-win') +
+      api.platform.name('win') +
+      api.buildbucket.try_build(
+          'infra', 'try', 'Luci-py windows',
           git_repo='https://chromium.googlesource.com/infra/luci/luci-py',
       )
   )
