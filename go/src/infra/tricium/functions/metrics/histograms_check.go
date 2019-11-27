@@ -346,7 +346,7 @@ func processExpiryDateDiff(inputDate time.Time, dateType expiryDateType, comment
 	if dateDiff <= 0 {
 		*commentMessage = pastExpiryWarning
 		*logMessage = "[WARNING]: Expiry in past"
-	} else if dateDiff >= 365 {
+	} else if dateDiff >= 380 {
 		*commentMessage = farExpiryWarning
 		*logMessage = "[WARNING]: Expiry past one year"
 	}
