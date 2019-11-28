@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "95de9a04_9eccd6db",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 349,
+      "author": {
+        "id": 1002410
+      },
+      "writtenOn": "2019-11-28T02:42:25Z",
+      "side": 1,
+      "message": "Let\u0027s also add a brief comment explaining why this constant is not 365. It\u0027s clear within the context of this CL, but it won\u0027t be as clear for subsequent readers of the code, if there isn\u0027t a comment to explain.",
+      "revId": "ccc924fe845ee27a30ee85e4dcc2098d68857c4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
