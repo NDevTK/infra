@@ -5,12 +5,11 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/url"
 	"os/exec"
 	"strings"
-
-	"golang.org/x/net/context"
 
 	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/errors"

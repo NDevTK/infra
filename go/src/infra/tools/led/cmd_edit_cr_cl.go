@@ -5,12 +5,11 @@
 package main
 
 import (
-	"golang.org/x/net/context"
+	"context"
 
 	"github.com/maruel/subcommands"
 
 	"go.chromium.org/luci/auth"
-	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -46,7 +45,6 @@ first CL on the task.
 			ret.logCfg.Level = logging.Info
 
 			ret.logCfg.AddFlags(&ret.Flags)
-			ret.authFlags.Register(&ret.Flags, authOpts)
 
 			ret.Flags.IntVar(&ret.atIndex, "at-index", 0,
 				"For tasks taking multiple CLs; allows setting the CL at an index other than 0.")
@@ -59,14 +57,13 @@ first CL on the task.
 type cmdEditCl struct {
 	subcommands.CommandRunBase
 
-	logCfg    logging.Config
-	authFlags authcli.Flags
+	logCfg logging.Config
 
 	changelistURL string
 	atIndex       int
 }
 
-func (c *cmdEditCl) validateFlags(ctx context.Context, args []string) (authOpts auth.Options, err error) {
+func (c *cmdEditCl) validateFlags(ctx context.Context, args []string) (err error) {
 	if len(args) != 1 {
 		err = errors.New("expected URL_TO_CHANGELIST")
 		return
@@ -78,28 +75,22 @@ func (c *cmdEditCl) validateFlags(ctx context.Context, args []string) (authOpts 
 		return
 	}
 
-	return c.authFlags.Options()
+	return
 }
 
 func (c *cmdEditCl) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	ctx := c.logCfg.Set(cli.GetContext(a, c, env))
-	authOpts, err := c.validateFlags(ctx, args)
+	err := c.validateFlags(ctx, args)
 	if err != nil {
 		logging.Errorf(ctx, "bad arguments: %s\n\n", err)
 		c.GetFlags().Usage()
 		return 1
 	}
 
-	authClient, err := getAuthClient(ctx, authOpts)
-	if err != nil {
-		errors.Log(ctx, err)
-		return 2
-	}
-
 	err = editMode(ctx, func(jd *JobDefinition) error {
-		ejd := jd.Edit()
-		ejd.ChromiumCL(ctx, authClient, c.changelistURL, c.atIndex)
-		return ejd.Finalize()
+		return jd.EditBuildbucket(func(ejd *EditBBJobDefinition) {
+			ejd.ChromiumCL(c.changelistURL, c.atIndex)
+		})
 	})
 	if err != nil {
 		errors.Log(ctx, err)

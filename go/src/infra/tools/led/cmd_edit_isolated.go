@@ -5,14 +5,13 @@
 package main
 
 import (
+	"context"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"runtime"
 	"sync"
 	"time"
-
-	"golang.org/x/net/context"
 
 	"github.com/maruel/subcommands"
 
@@ -101,7 +100,7 @@ func (c *cmdEditIsolated) Run(a subcommands.Application, args []string, env subc
 	}()
 
 	err = editMode(ctx, func(jd *JobDefinition) error {
-		authClient, swarm, err := newSwarmClient(ctx, authOpts, jd.SwarmingHostname)
+		authClient, swarm, err := newSwarmClient(ctx, authOpts, jd.SwarmingHostname())
 		if err != nil {
 			return err
 		}
@@ -116,23 +115,16 @@ func (c *cmdEditIsolated) Run(a subcommands.Application, args []string, env subc
 			return err
 		}
 
-		ejd := jd.Edit()
-		ejd.ConsolidateIsolateSources(ctx, isoClient)
-		if err := ejd.Finalize(); err != nil {
+		if err := jd.ConsolidateIsolateSources(ctx, isoClient); err != nil {
 			return err
 		}
 
-		// At this point only one of RecipeIsolatedHash or InputsRef will be set,
-		// and any cmd/cwd in InputsRef have been extracted from the isolated. If
-		// there's some existing isolated, download it so the user can edit it.
-		var currentIsolated string
-		var storeInRecipeIsolated bool
-		if rih := jd.Slices[0].U.RecipeIsolatedHash; rih != "" {
-			currentIsolated = rih
-			storeInRecipeIsolated = true
-		} else if ir := jd.Slices[0].S.TaskSlice.Properties.InputsRef; ir != nil {
-			currentIsolated = ir.Isolated
+		currentIsolated, err := jd.GetCurrentIsolated()
+		if err != nil {
+			return err
 		}
+		jd.ClearCurrentIsolated()
+
 		if currentIsolated != "" {
 			var statMu sync.Mutex
 			var previousStats *downloader.FileStats
@@ -144,7 +136,6 @@ func (c *cmdEditIsolated) Run(a subcommands.Application, args []string, env subc
 					statMu.Unlock()
 				},
 			})
-
 			if err = dl.Wait(); err != nil {
 				return err
 			}
@@ -176,13 +167,9 @@ func (c *cmdEditIsolated) Run(a subcommands.Application, args []string, env subc
 		}
 		logging.Infof(ctx, "isolated upload: done")
 
-		ejd = jd.Edit()
-		if storeInRecipeIsolated {
+		return jd.Edit(func(ejd EditJobDefinition) {
 			ejd.RecipeSource(string(hash), "", "")
-		} else {
-			ejd.EditIsolated(string(hash))
-		}
-		return ejd.Finalize()
+		})
 	})
 	if err != nil {
 		errors.Log(ctx, err)

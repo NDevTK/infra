@@ -5,10 +5,9 @@
 package main
 
 import (
+	"context"
 	"os"
 	"os/signal"
-
-	"golang.org/x/net/context"
 
 	"github.com/maruel/subcommands"
 
@@ -114,7 +113,7 @@ The spec (as it is) for JobDefinition is at:
 
 			// commands to edit JobDescriptions.
 			editCmd(),
-			editSystemCmd(),
+			editSystemCmd(authDefaults),
 			editRecipeBundleCmd(authDefaults),
 			editCrCLCmd(authDefaults),
 

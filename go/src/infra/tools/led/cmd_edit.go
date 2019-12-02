@@ -5,13 +5,12 @@
 package main
 
 import (
-	"encoding/json"
+	"context"
 	"os"
 	"sync/atomic"
 	"time"
 
-	"golang.org/x/net/context"
-
+	"github.com/golang/protobuf/jsonpb"
 	"github.com/maruel/subcommands"
 
 	"go.chromium.org/luci/common/cli"
@@ -103,10 +102,13 @@ func decodeJobDefinition(ctx context.Context) (*JobDefinition, error) {
 		}
 	}()
 
-	jd := &JobDefinition{}
-	err := json.NewDecoder(os.Stdin).Decode(jd)
-	atomic.StoreUint32(&done, 1)
-	return jd, errors.Annotate(err, "decoding JobDefinition").Err()
+	ret := &JobDefinition{}
+	err := jsonpb.Unmarshal(os.Stdin, ret)
+	return ret, err
+}
+
+func dumpJobDefinition(jd *JobDefinition) error {
+	return (&jsonpb.Marshaler{Indent: "  ", OrigName: true}).Marshal(os.Stdout, jd)
 }
 
 func editMode(ctx context.Context, cb func(jd *JobDefinition) error) error {
@@ -119,28 +121,22 @@ func editMode(ctx context.Context, cb func(jd *JobDefinition) error) error {
 		return err
 	}
 
-	enc := json.NewEncoder(os.Stdout)
-	enc.SetIndent("", "  ")
-	if err := enc.Encode(jd); err != nil {
-		return errors.Annotate(err, "encoding JobDefinition").Err()
-	}
-
-	return nil
+	return dumpJobDefinition(jd)
 }
 
 func (c *cmdEdit) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	ctx := c.logCfg.Set(cli.GetContext(a, c, env))
 
 	err := editMode(ctx, func(jd *JobDefinition) error {
-		ejd := jd.Edit()
-		ejd.RecipeSource(c.recipeIsolate, c.recipeCIPDPkg, c.recipeCIPDVer)
-		ejd.Dimensions(c.dimensions)
-		ejd.Properties(c.properties, false)
-		ejd.Properties(c.propertiesAuto, true)
-		ejd.Recipe(c.recipeName)
-		ejd.SwarmingHostname(c.swarmingHost)
-		ejd.Experimental(c.experimental)
-		return ejd.Finalize()
+		return jd.EditBuildbucket(func(ejd *EditBBJobDefinition) {
+			ejd.RecipeSource(c.recipeIsolate, c.recipeCIPDPkg, c.recipeCIPDVer)
+			ejd.Dimensions(c.dimensions)
+			ejd.Properties(c.properties, false)
+			ejd.Properties(c.propertiesAuto, true)
+			ejd.Recipe(c.recipeName)
+			ejd.SwarmingHostname(c.swarmingHost)
+			ejd.Experimental(c.experimental)
+		})
 	})
 	if err != nil {
 		errors.Log(ctx, err)

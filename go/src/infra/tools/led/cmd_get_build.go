@@ -5,11 +5,10 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"strings"
-
-	"golang.org/x/net/context"
 
 	"github.com/maruel/subcommands"
 
@@ -129,7 +128,9 @@ func (c *cmdGetBuild) grabBuildDefinition(ctx context.Context, authOpts auth.Opt
 		return errors.New("unable to find swarming hostname on buildbucket task")
 	}
 
-	return GetFromSwarmingTask(ctx, authOpts, swarmingHostname, swarmingTaskID, c.pinMachine)
+	return GetFromSwarmingTask(
+		ctx, authOpts, fmt.Sprintf("get-build %d", c.buildID),
+		swarmingHostname, swarmingTaskID, c.pinMachine)
 }
 
 func (c *cmdGetBuild) Run(a subcommands.Application, args []string, env subcommands.Env) int {

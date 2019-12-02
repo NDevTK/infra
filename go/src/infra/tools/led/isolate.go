@@ -5,12 +5,11 @@
 package main
 
 import (
+	"context"
 	"crypto"
 	"encoding/json"
 	"net/http"
 	"os"
-
-	"golang.org/x/net/context"
 
 	"go.chromium.org/luci/client/archiver"
 	"go.chromium.org/luci/common/errors"

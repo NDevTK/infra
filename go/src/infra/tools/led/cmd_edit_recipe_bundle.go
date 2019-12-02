@@ -5,6 +5,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -12,8 +13,6 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-
-	"golang.org/x/net/context"
 
 	"github.com/maruel/subcommands"
 
@@ -222,6 +221,8 @@ func (c *cmdEditRecipeBundle) findRecipesPy(ctx context.Context) (string, error)
 		repoRoot, filepath.FromSlash(rj.RecipesPath), "recipes.py"), nil
 }
 
+const recipeCheckoutDir = "user"
+
 func (c *cmdEditRecipeBundle) bundle(ctx context.Context) (string, error) {
 	repoRecipesPy, err := c.findRecipesPy(ctx)
 	if err != nil {
@@ -250,7 +251,7 @@ func (c *cmdEditRecipeBundle) Run(a subcommands.Application, args []string, env 
 	logging.Infof(ctx, "bundling recipes: done")
 
 	err = editMode(ctx, func(jd *JobDefinition) error {
-		authClient, swarm, err := newSwarmClient(ctx, authOpts, jd.SwarmingHostname)
+		authClient, swarm, err := newSwarmClient(ctx, authOpts, jd.SwarmingHostname())
 		if err != nil {
 			return err
 		}
@@ -272,9 +273,9 @@ func (c *cmdEditRecipeBundle) Run(a subcommands.Application, args []string, env 
 		}
 		logging.Infof(ctx, "isolating recipes: done")
 
-		ejd := jd.Edit()
-		ejd.RecipeSource(string(hash), "", "")
-		return ejd.Finalize()
+		return jd.EditBuildbucket(func(ejd *EditBBJobDefinition) {
+			ejd.RecipeSource(string(hash), "", "")
+		})
 	})
 	if err != nil {
 		errors.Log(ctx, err)

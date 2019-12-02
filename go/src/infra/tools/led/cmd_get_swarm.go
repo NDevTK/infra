@@ -5,19 +5,17 @@
 package main
 
 import (
-	"encoding/json"
-	"os"
-
-	"golang.org/x/net/context"
+	"context"
+	"fmt"
 
 	"github.com/maruel/subcommands"
 
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
-	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	apipb "go.chromium.org/luci/swarming/proto/api"
 )
 
 func getSwarmCmd(authOpts auth.Options) *subcommands.Command {
@@ -72,7 +70,7 @@ func (c *cmdGetSwarm) validateFlags(ctx context.Context, args []string) (authOpt
 
 // GetFromSwarmingTask retrieves and renders a JobDefinition from the given
 // swarming task, printing it to stdout and returning an error.
-func GetFromSwarmingTask(ctx context.Context, authOpts auth.Options, host, taskID string, pinMachine bool) error {
+func GetFromSwarmingTask(ctx context.Context, authOpts auth.Options, name, host, taskID string, pinMachine bool) error {
 	logging.Infof(ctx, "getting task definition: %q", taskID)
 	_, swarm, err := newSwarmClient(ctx, authOpts, host)
 	if err != nil {
@@ -84,33 +82,11 @@ func GetFromSwarmingTask(ctx context.Context, authOpts auth.Options, host, taskI
 		return err
 	}
 
-	newTask := &swarming.SwarmingRpcsNewTaskRequest{
-		Name:           req.Name,
-		ExpirationSecs: req.ExpirationSecs,
-		Priority:       req.Priority,
-		Properties:     req.Properties,
-		TaskSlices:     req.TaskSlices,
-		// don't wan't these or some random person/service will get notified :
-		//PubsubTopic:    req.PubsubTopic,
-		//PubsubUserdata: req.PubsubUserdata,
-		Tags:           req.Tags,
-		User:           req.User,
-		ServiceAccount: req.ServiceAccount,
-	}
-
-	// Clear all secret bytes. The swarming server sends them as
-	// "<REDACTED>".encode("base64"), which is, at best, useless. However tasks
-	// that then read them usually crash.
-	newTask.Properties.SecretBytes = ""
-	for _, ts := range newTask.TaskSlices {
-		ts.Properties.SecretBytes = ""
-	}
-
-	jd, err := JobDefinitionFromNewTaskRequest(newTask)
+	jd, err := JobDefinitionFromNewTaskRequest(
+		taskRequestToNewTaskRequest(req), name, host)
 	if err != nil {
 		return err
 	}
-	jd.SwarmingHostname = host
 
 	logging.Infof(ctx, "getting task definition: done")
 
@@ -125,33 +101,43 @@ func GetFromSwarmingTask(ctx context.Context, authOpts auth.Options, host, taskI
 			return errors.Reason("could not pin bot ID, task is %q", rslt.State).Err()
 		}
 
-		didIt := false
+		id := ""
 		for _, d := range rslt.BotDimensions {
 			if d.Key == "id" {
-				for _, slice := range jd.Slices {
-					pool, hadPool := slice.U.Dimensions["pool"]
-					slice.U.Dimensions = map[string]string{"id": d.Value[0]}
-					if hadPool {
-						slice.U.Dimensions["pool"] = pool
-					}
-				}
-				logging.Infof(ctx, "pinning swarming bot: done: %q", d.Value[0])
-				didIt = true
+				id = d.Value[0]
 				break
 			}
 		}
-		if !didIt {
+
+		if id == "" {
 			return errors.New("could not pin bot ID (bot ID not found)")
 		}
+
+		jd.EditSwarming(ctx, authOpts, func(ejd *EditSWJobDefinition) {
+			ejd.tweakSlices(func(slc *apipb.TaskSlice) error {
+				if slc.Properties == nil {
+					slc.Properties = &apipb.TaskProperties{}
+				}
+
+				var poolDim *apipb.StringListPair
+				for _, dim := range slc.GetProperties().GetDimensions() {
+					if dim.Key == "pool" {
+						poolDim = dim
+						break
+					}
+				}
+				slc.Properties.Dimensions = []*apipb.StringListPair{
+					{Key: "id", Values: []string{id}},
+				}
+				if poolDim != nil {
+					slc.Properties.Dimensions = append(slc.Properties.Dimensions, poolDim)
+				}
+				return nil
+			})
+		})
 	}
 
-	enc := json.NewEncoder(os.Stdout)
-	enc.SetIndent("", "  ")
-	if err := enc.Encode(jd); err != nil {
-		return err
-	}
-
-	return nil
+	return dumpJobDefinition(jd)
 }
 
 func (c *cmdGetSwarm) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -163,7 +149,8 @@ func (c *cmdGetSwarm) Run(a subcommands.Application, args []string, env subcomma
 		return 1
 	}
 
-	if err = GetFromSwarmingTask(ctx, authOpts, c.swarmingHost, c.taskID, c.pinMachine); err != nil {
+	name := fmt.Sprintf(`get-swarm %s`, c.taskID)
+	if err = GetFromSwarmingTask(ctx, authOpts, name, c.swarmingHost, c.taskID, c.pinMachine); err != nil {
 		errors.Log(ctx, err)
 		return 1
 	}
