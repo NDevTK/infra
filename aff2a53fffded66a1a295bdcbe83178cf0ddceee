@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "b6bd0841_35302966",
+        "filename": "appengine/monorail/api/monorail_servicer.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1377977
+      },
+      "writtenOn": "2019-12-02T23:21:35Z",
+      "side": 1,
+      "message": "`# TODO(b/144508063):` is a more common idiom. Easier to search for all code affected by a particular bug, and remains accurate when bug moves to a new owner.",
+      "revId": "aff2a53fffded66a1a295bdcbe83178cf0ddceee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "bd406839_1cf6fb95",
         "filename": "appengine/monorail/api/monorail_servicer.py",
         "patchSetId": 5
@@ -13,6 +30,57 @@
       "writtenOn": "2019-12-02T23:12:56Z",
       "side": 1,
       "message": "I think of assert statements as only being used for checking conditions that are caused by program defects.  Having an except clause for AssertionError means that you could be catching failed asserts in some function that is called.  An if-statement would be a better choice here.  You could even have something like:\nif framework_constants.MONORAIL_SCOPE not in authorized_scopes:\n  raise oauth.Error(\u0027Work around for b/144508063\u0027)",
+      "revId": "aff2a53fffded66a1a295bdcbe83178cf0ddceee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1c04843d_e0318193",
+        "filename": "appengine/monorail/api/monorail_servicer.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1377977
+      },
+      "writtenOn": "2019-12-02T23:21:35Z",
+      "side": 1,
+      "message": "Much of the control flow here predates this changelist and I can see that we\u0027re seeing incremental/organic growth following the patterns that have already been laid out.\n\nThat said, to my eyes, this method is becoming a bit unwieldy. I\u0027d recommend some combination of: 1) return/raise early to avoid unnecessary nesting, 2) factor logical blocks into separate methods, and 3) rely less on exceptions for expected control flow (\"expections\").\n\nA possible direction you could go with this:\n\n```\nif definitely_not_authorized():\n  ...\n  raise permissions.PermissionException\n\nif blacklisted():\n  ...\n  raise permissions.PermissionException\n\nif api_whitelisted_mechanism_one():\n  ...\n  return auth_data\n\nif api_whitelisted_mechanism_two():\n  ...\n  return auth_data\n\n# default behavior\nreturn something_else\n```",
+      "revId": "aff2a53fffded66a1a295bdcbe83178cf0ddceee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a1078b2b_f57f6e4f",
+        "filename": "appengine/monorail/api/monorail_servicer.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1377977
+      },
+      "writtenOn": "2019-12-02T23:21:35Z",
+      "side": 1,
+      "message": "Same as above.",
+      "revId": "aff2a53fffded66a1a295bdcbe83178cf0ddceee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "269f232d_bd4784b2",
+        "filename": "appengine/monorail/api/test/monorail_servicer_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1377977
+      },
+      "writtenOn": "2019-12-02T23:21:35Z",
+      "side": 1,
+      "message": "Same as above.",
       "revId": "aff2a53fffded66a1a295bdcbe83178cf0ddceee",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
