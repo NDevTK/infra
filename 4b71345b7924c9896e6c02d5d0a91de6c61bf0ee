@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e33d121e_abcf83aa",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2019-12-02T18:44:51Z",
+      "side": 1,
+      "message": "Nit: Not sure why but Gerrit seems to not be autolinking \"monorail:6508\" to the Monorail issue in this description. Maybe it\u0027s expecting \"bug\" to be capitalized?",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 18
+      },
+      "revId": "4b71345b7924c9896e6c02d5d0a91de6c61bf0ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
