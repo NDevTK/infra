@@ -27,52 +27,47 @@ def RunSteps(api):
 
   luci_dir = api.path['checkout'].join('luci')
   with api.context(cwd=luci_dir):
+    appeng_dir = luci_dir.join('appengine')
 
     if api.platform.is_linux:
-      _step_run_tests(api, 'auth_service',
-                      luci_dir.join('appengine', 'auth_service'))
+      _step_run_tests(api, 'auth_service', appeng_dir.join('auth_service'))
 
-      _step_run_tests(api, 'config_service',
-                      luci_dir.join('appengine', 'config_service'))
+      _step_run_tests(api, 'config_service', appeng_dir.join('config_service'))
 
-      _step_run_tests(api, 'components',
-                      luci_dir.join('appengine', 'components'),
-                      run_test_seq=True,
-                      run_python3=True)
+      _step_run_tests(api, 'components', appeng_dir.join('components'))
+      _step_run_tests(api, 'components', appeng_dir.join('components'),
+                      python3=True)
 
-      _step_run_tests(api, 'isolate',
-                      luci_dir.join('appengine', 'isolate'))
+      _step_run_tests(api, 'isolate', appeng_dir.join('appengine', 'isolate'))
 
-    # TODO(crbug.com/1017545): enable python3 on windows and mac
-    # client
-    ok_ret = (0,)
-    if not api.platform.is_linux:
-      ok_ret = 'any'
-    _step_run_tests(api, 'client',
-                    luci_dir.join('client'),
-                    run_test_seq=True,
-                    run_python3=True,
-                    ok_ret=ok_ret)
+    # TODO(crbug.com/1017545): enable on Windows and Mac.
+    # clients tests run in python2/3, but it ignores failures on Windows
+    # in python2, and ignores failures on Windows and Mac in python3.
+    ok_ret = 'any' if api.platform.is_win else (0,)
+    _step_run_tests(api, 'client', luci_dir.join('client'), ok_ret=ok_ret)
+    ok_ret = 'any' if not api.platform.is_linux else (0,)
+    _step_run_tests(api, 'client', luci_dir.join('client'), ok_ret=ok_ret,
+                    python3=True)
+
+    swarming_dir = appeng_dir.join('swarming')
 
     # TODO(crbug.com/1019105): remove this timeout.
     if api.platform.is_mac:
       timeout = 120
     else:
       timeout = None
-
-    # TODO(crbug.com/1017545): enable python3 on windows and mac
-    # swarming bot
-    _step_run_tests(api, 'swarming bot',
-                    luci_dir.join('appengine', 'swarming', 'swarming_bot'),
-                    run_test_seq=True,
-                    run_python3=api.platform.is_linux,
+    _step_run_tests(api, 'swarming bot', swarming_dir.join('swarming_bot'),
                     timeout=timeout)
+    # TODO(crbug.com/1017545): enable python3 on Windows and Mac.
+    # swarming bot tests run in python3, but it ignores failures on Windows
+    # and Mac.
+    ok_ret = 'any' if not api.platform.is_linux else (0,)
+    _step_run_tests(api, 'swarming bot', swarming_dir.join('swarming_bot'),
+                    timeout=timeout, ok_ret=ok_ret, python3=True)
 
     # swarming server
     if api.platform.is_linux:
-      _step_run_tests(api, 'swarming',
-                      luci_dir.join('appengine', 'swarming'),
-                      run_test_seq=True)
+      _step_run_tests(api, 'swarming', swarming_dir)
 
     # swarming ui
     if api.platform.is_linux:
@@ -80,34 +75,23 @@ def RunSteps(api):
 
 
 def _step_run_tests(
-    api, name, cwd, run_test_seq=False, run_python3=False, timeout=None,
-    ok_ret=(0,)):
+    api, name, cwd, python3=False, timeout=None, ok_ret=(0,)):
   luci_dir = api.context.cwd
   with api.step.nest(name):
     with api.context(cwd=cwd):
       cfg = api.context.cwd.join('unittest.cfg')
-      testpy_args = ['-v', '--conf', cfg, '-A', '!no_run']
+      testpy_args = ['-v', '--conf', cfg]
 
-      if run_python3:
-        # python3
-        venv3 = luci_dir.join('.vpython3')
-        api.python('run tests python3',
-                   'test.py', args=testpy_args, venv=venv3,
-                   timeout=timeout, ok_ret=ok_ret)
-        if run_test_seq:
-          api.python('run tests seq python3',
-                     'test_seq.py', args=['-v'], venv=venv3,
-                     timeout=timeout, ok_ret=ok_ret)
+      if python3:
+        py = 'python3'
+        venv = luci_dir.join('.vpython3')
+      else:
+        py = 'python2'
+        venv = luci_dir.join('.vpython')
 
-      # python2
-      venv = luci_dir.join('.vpython')
-      api.python('run tests python2',
+      api.python('run tests %s' % py,
                  'test.py', args=testpy_args, venv=venv,
                  timeout=timeout, ok_ret=ok_ret)
-      if run_test_seq:
-        api.python('run tests seq python2',
-                   'test_seq.py', args=['-v'], venv=venv,
-                   timeout=timeout, ok_ret=ok_ret)
 
 
 def _step_swarming_ui_tests(api):
