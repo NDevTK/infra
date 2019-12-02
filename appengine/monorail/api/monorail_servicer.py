@@ -140,7 +140,8 @@ class MonorailServicer(object):
   def GetAndAssertRequesterAuth(self, cnxn, metadata, services):
     """Gets the requester identity and checks if the user has permission
        to make the request.
-       Any users successfully authenticated with oauth must be whitelisted.
+       Any users successfully authenticated with oauth must be whitelisted or
+       have accounts with the domains in api_allowed_email_domains.
        Users identified using cookie-based auth must have valid XSRF tokens.
        Test accounts ending with @example.com are only allowed in the
        local_mode.
@@ -174,7 +175,28 @@ class MonorailServicer(object):
       logging.info('Using test_account: %r' % test_account)
       requester_auth = authdata.AuthData.FromEmail(cnxn, test_account, services)
 
-    # TODO(jojwang): Oauth using Monorail's scope
+    # Oauth for users with email domains in api_allowed_email_domains.
+    if not requester_auth:
+      try:
+        # Note: get_current_user(scopes) returns the User with the User's email.
+        # So, in addition to requesting any scope listed in 'scopes', it also
+        # always requests the email scope.
+        monorail_scope_user = oauth.get_current_user(
+            framework_constants.MONORAIL_SCOPE)
+        # TODO(jojwang): workaround for b/144508063.
+        authorized_scopes = oauth.get_authorized_scopes(
+            framework_constants.MONORAIL_SCOPE)
+        logging.info(authorized_scopes)
+        logging.info('monorail scope user %r', monorail_scope_user)
+        if (monorail_scope_user and monorail_scope_user.email().endswith(
+            settings.api_allowed_email_domains)):
+          logging.info('User %r authenticated with Oauth and monorail',
+                       monorail_scope_user.email())
+          requester_auth = authdata.AuthData.FromEmail(
+              cnxn, monorail_scope_user.email(), services)
+      except oauth.Error as ex:
+        logging.info('oauth.Error for monorail scope: %s' % ex)
+
     # Oauth for whitelisted users
     if not requester_auth:
       try:
