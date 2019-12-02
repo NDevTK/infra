@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bd406839_1cf6fb95",
+        "filename": "appengine/monorail/api/monorail_servicer.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2019-12-02T23:12:56Z",
+      "side": 1,
+      "message": "I think of assert statements as only being used for checking conditions that are caused by program defects.  Having an except clause for AssertionError means that you could be catching failed asserts in some function that is called.  An if-statement would be a better choice here.  You could even have something like:\nif framework_constants.MONORAIL_SCOPE not in authorized_scopes:\n  raise oauth.Error(\u0027Work around for b/144508063\u0027)",
+      "revId": "aff2a53fffded66a1a295bdcbe83178cf0ddceee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
