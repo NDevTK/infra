@@ -16,6 +16,24 @@
       "revId": "ccc924fe845ee27a30ee85e4dcc2098d68857c4d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f8b3a28b_ab137fb5",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 349,
+      "author": {
+        "id": 1369574
+      },
+      "writtenOn": "2019-12-02T20:16:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "95de9a04_9eccd6db",
+      "revId": "ccc924fe845ee27a30ee85e4dcc2098d68857c4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
