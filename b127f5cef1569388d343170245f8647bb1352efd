@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2c59dcf7_f04af28a",
+        "filename": "recipes/recipes/luci_py.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2019-12-02T14:27:22Z",
+      "side": 1,
+      "message": "nit: I prefer\n\"(0,) if api.platform.is_linux else \u0027any\u0027\"",
+      "range": {
+        "startLine": 53,
+        "startChar": 15,
+        "endLine": 53,
+        "endChar": 59
+      },
+      "revId": "b127f5cef1569388d343170245f8647bb1352efd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2771fc9d_4858b99e",
+        "filename": "recipes/recipes/luci_py.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2019-12-02T14:27:22Z",
+      "side": 1,
+      "message": "ditto",
+      "revId": "b127f5cef1569388d343170245f8647bb1352efd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "97c74072_073aba0b",
+        "filename": "recipes/recipes/luci_py.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2019-12-02T14:27:22Z",
+      "side": 1,
+      "message": "python3?",
+      "range": {
+        "startLine": 90,
+        "startChar": 12,
+        "endLine": 90,
+        "endChar": 18
+      },
+      "revId": "b127f5cef1569388d343170245f8647bb1352efd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
