@@ -5,12 +5,13 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
 
-	"golang.org/x/net/context"
+	"google.golang.org/api/option"
 
 	"github.com/maruel/subcommands"
 
@@ -96,7 +97,7 @@ func (c *cmdGetBuilder) grabBuilderDefinition(ctx context.Context, bucket, build
 	if err != nil {
 		return nil, err
 	}
-	sbucket, err := swarmbucket.New(authClient)
+	sbucket, err := swarmbucket.NewService(ctx, option.WithHTTPClient(authClient))
 	sbucket.BasePath = fmt.Sprintf("https://%s/_ah/api/swarmbucket/v1/", c.bbHost)
 
 	type parameters struct {
@@ -133,13 +134,8 @@ func (c *cmdGetBuilder) grabBuilderDefinition(ctx context.Context, bucket, build
 		return nil, err
 	}
 
-	jd, err := JobDefinitionFromNewTaskRequest(newTask)
-	if err != nil {
-		return nil, err
-	}
-	jd.SwarmingHostname = answer.SwarmingHost
-
-	return jd, nil
+	return JobDefinitionFromNewTaskRequest(
+		newTask, fmt.Sprintf(`get-builder %s:%s`, bucket, builder), answer.SwarmingHost)
 }
 
 func (c *cmdGetBuilder) Run(a subcommands.Application, args []string, env subcommands.Env) int {

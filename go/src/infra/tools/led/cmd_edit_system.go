@@ -5,8 +5,12 @@
 package main
 
 import (
+	"context"
+
 	"github.com/maruel/subcommands"
 
+	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/flag/stringlistflag"
@@ -14,7 +18,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 )
 
-func editSystemCmd() *subcommands.Command {
+func editSystemCmd(authOpts auth.Options) *subcommands.Command {
 	return &subcommands.Command{
 		UsageLine: "edit-system [options]",
 		ShortDesc: "edits the systemland of a JobDescription",
@@ -23,6 +27,9 @@ func editSystemCmd() *subcommands.Command {
 		CommandRun: func() subcommands.CommandRun {
 			ret := &cmdEditSystem{}
 			ret.logCfg.Level = logging.Info
+
+			ret.logCfg.AddFlags(&ret.Flags)
+			ret.authFlags.Register(&ret.Flags, authOpts)
 
 			ret.Flags.Var(&ret.environment, "e",
 				"(repeatable) override an environment variable. This takes a parameter of `env_var=value`. "+
@@ -48,7 +55,8 @@ func editSystemCmd() *subcommands.Command {
 type cmdEditSystem struct {
 	subcommands.CommandRunBase
 
-	logCfg logging.Config
+	logCfg    logging.Config
+	authFlags authcli.Flags
 
 	environment   stringmapflag.Value
 	cipdPackages  stringmapflag.Value
@@ -57,17 +65,31 @@ type cmdEditSystem struct {
 	priority      int64
 }
 
+func (c *cmdEditSystem) validateFlags(ctx context.Context, args []string) (authOpts auth.Options, err error) {
+	if len(args) > 0 {
+		err = errors.Reason("unexpected positional arguments: %q", args).Err()
+		return
+	}
+	return c.authFlags.Options()
+}
+
 func (c *cmdEditSystem) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	ctx := c.logCfg.Set(cli.GetContext(a, c, env))
+	authOpts, err := c.validateFlags(ctx, args)
+	if err != nil {
+		logging.Errorf(ctx, "bad arguments: %s\n\n", err)
+		c.GetFlags().Usage()
+		return 1
+	}
 
-	err := editMode(ctx, func(jd *JobDefinition) error {
-		ejd := jd.Edit()
-		ejd.Env(c.environment)
-		ejd.CipdPkgs(c.cipdPackages)
-		ejd.PrefixPathEnv(c.prefixPathEnv)
-		ejd.Priority(c.priority)
-		ejd.Tags(c.tags)
-		return ejd.Finalize()
+	err = editMode(ctx, func(jd *JobDefinition) error {
+		return jd.EditSwarming(ctx, authOpts, func(ejd *EditSWJobDefinition) {
+			ejd.Env(c.environment)
+			ejd.CipdPkgs(c.cipdPackages)
+			ejd.PrefixPathEnv(c.prefixPathEnv)
+			ejd.Priority(int32(c.priority))
+			ejd.Tags(c.tags)
+		})
 	})
 	if err != nil {
 		errors.Log(ctx, err)

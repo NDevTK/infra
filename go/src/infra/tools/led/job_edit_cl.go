@@ -5,92 +5,13 @@
 package main
 
 import (
-	"context"
-	"fmt"
-	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 
-	gerrit "github.com/andygrunwald/go-gerrit"
-
-	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 )
-
-type gerritCL struct {
-	buildbucketpb.GerritChange
-
-	// blamelist == [blame]
-	blame string
-}
-
-func getStrMap(m map[string]interface{}, key ...string) map[string]interface{} {
-	for _, k := range key {
-		sub, _ := m[k].(map[string]interface{})
-		if sub == nil {
-			sub = map[string]interface{}{}
-			m[k] = sub
-		}
-		m = sub
-	}
-	return m
-}
-
-func getStrMapInList(m map[string]interface{}, key string, idx int) map[string]interface{} {
-	lst, _ := m[key].([]interface{})
-	if lst == nil {
-		lst = []interface{}{}
-		m[key] = lst
-	}
-	for len(lst) <= idx {
-		lst = append(lst, map[string]interface{}{})
-	}
-	m[key] = lst
-	ret, ok := lst[idx].(map[string]interface{})
-	if !ok {
-		ret = map[string]interface{}{}
-		lst[idx] = ret
-	}
-	return ret
-}
-
-func (g *gerritCL) setProperties(properties map[string]interface{}, atIndex int) {
-	properties["repository"] = fmt.Sprintf("https://%s/%s", g.Host, g.Project)
-	properties["blamelist"] = []string{g.blame}
-
-	input := getStrMap(properties, "$recipe_engine/buildbucket", "build", "input")
-	gerritChanges := getStrMapInList(input, "gerritChanges", atIndex)
-
-	gerritChanges["change"] = strconv.FormatInt(g.Change, 10)
-	gerritChanges["host"] = g.Host
-	gerritChanges["patchset"] = strconv.FormatInt(g.Patchset, 10)
-	gerritChanges["project"] = g.Project
-}
-
-func (g *gerritCL) loadRemoteData(ctx context.Context, authClient *http.Client) error {
-	gc, err := gerrit.NewClient("https://"+g.Host, authClient)
-	if err != nil {
-		return errors.Annotate(err, "creating new gerrit client").Err()
-	}
-
-	ci, _, err := gc.Changes.GetChangeDetail(strconv.FormatInt(g.Change, 10), &gerrit.ChangeOptions{
-		AdditionalFields: []string{"ALL_REVISIONS", "DOWNLOAD_COMMANDS"}})
-	if err != nil {
-		return errors.Annotate(err, "GetChangeDetail").Err()
-	}
-
-	g.Project = ci.Project
-	for commitID, rd := range ci.Revisions {
-		if int64(rd.Number) == g.Patchset || (g.Patchset == 0 && commitID == ci.CurrentRevision) {
-			g.Patchset = int64(rd.Number)
-			g.blame = rd.Uploader.Email
-			break
-		}
-	}
-
-	return nil
-}
 
 func urlTrimSplit(path string) []string {
 	ret := strings.Split(strings.Trim(path, "/"), "/")
@@ -104,8 +25,8 @@ func urlTrimSplit(path string) []string {
 // parseGerrit is a helper to parse ethier the url.Path or url.Fragment.
 //
 // toks should be [<issue>, <patchset>] or [<issue>]
-func parseGerrit(p *url.URL, toks []string) (ret *gerritCL, err error) {
-	ret = &gerritCL{}
+func parseGerrit(p *url.URL, toks []string) (ret *bbpb.GerritChange, err error) {
+	ret = &bbpb.GerritChange{}
 	ret.Host = p.Host
 	switch len(toks) {
 	case 2:
@@ -121,7 +42,7 @@ func parseGerrit(p *url.URL, toks []string) (ret *gerritCL, err error) {
 	return
 }
 
-func parseCrChangeListURL(clURL string) (*gerritCL, error) {
+func parseCrChangeListURL(clURL string) (*bbpb.GerritChange, error) {
 	p, err := url.Parse(clURL)
 	if err != nil {
 		err = errors.Annotate(err, "URL_TO_CHANGELIST is invalid").Err()
@@ -165,21 +86,16 @@ func parseCrChangeListURL(clURL string) (*gerritCL, error) {
 // ChromiumCL edits the chromium-recipe-specific properties pertaining to
 // a "tryjob" CL. These properties include things like "patch_storage", "issue",
 // etc.
-func (ejd *EditJobDefinition) ChromiumCL(ctx context.Context, authClient *http.Client, patchsetURL string, atIndex int) {
+func (ejd *EditBBJobDefinition) ChromiumCL(patchsetURL string, atIndex int) {
 	if patchsetURL == "" {
 		return
 	}
-	ejd.tweakUserland(func(u *Userland) error {
+
+	ejd.tweak(func() error {
 		// parse patchsetURL to see if we understand it
-		clImpl, err := parseCrChangeListURL(patchsetURL)
+		cl, err := parseCrChangeListURL(patchsetURL)
 		if err != nil {
 			return errors.Annotate(err, "parsing changelist URL").Err()
-		}
-
-		// make some RPCs to the underlying service to extract the rest of the
-		// properties.
-		if err := clImpl.loadRemoteData(ctx, authClient); err != nil {
-			return errors.Annotate(err, "loading remote data").Err()
 		}
 
 		// wipe out all the old properties
@@ -189,11 +105,15 @@ func (ejd *EditJobDefinition) ChromiumCL(ctx context.Context, authClient *http.C
 			"patchset", "repository", "rietveld", "buildbucket",
 		}
 		for _, key := range toDel {
-			delete(u.RecipeProperties, key)
+			delete(ejd.bb.BbagentArgs.Build.Input.Properties.Fields, key)
 		}
 
-		// set the properties.
-		clImpl.setProperties(u.RecipeProperties, atIndex)
+		gc := &ejd.bb.BbagentArgs.Build.Input.GerritChanges
+
+		for len(*gc) < atIndex+1 {
+			*gc = append(*gc, nil)
+		}
+		(*gc)[atIndex] = cl
 
 		return nil
 	})

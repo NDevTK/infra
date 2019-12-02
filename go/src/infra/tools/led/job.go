@@ -1,223 +1,203 @@
-// Copyright 2017 The LUCI Authors. All rights reserved.
+// Copyright 2019 The LUCI Authors. All rights reserved.
 // Use of this source code is governed under the Apache License, Version 2.0
 // that can be found in the LICENSE file.
 
 package main
 
 import (
-	"flag"
-	"regexp"
-	"strings"
+	"context"
+	"encoding/hex"
+	"time"
 
-	"golang.org/x/net/context"
-
+	"go.chromium.org/luci/auth"
 	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
+	"go.chromium.org/luci/common/data/rand/cryptorand"
+	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/gcloud/googleoauth"
 	logdog_types "go.chromium.org/luci/logdog/common/types"
-
-	"infra/tools/kitchen/cookflags"
 )
 
-const generateLogdogToken = "TRY_RECIPE_GENERATE_LOGDOG_TOKEN"
-const ledJobNamePrefix = "led: "
-
-// JobSliceFromTaskSlice returns a JobSlice parsed from a SwarmingRpcsTaskSlice.
-func JobSliceFromTaskSlice(ts *swarming.SwarmingRpcsTaskSlice) (*JobSlice, error) {
-	ingestMap := func(pairs *[]*swarming.SwarmingRpcsStringPair) map[string]string {
-		ret := make(map[string]string, len(*pairs))
-		for _, p := range *pairs {
-			ret[p.Key] = p.Value
-		}
-		*pairs = nil
-		return ret
+// SwarmingHostname retrieves the Swarming hostname from the JobDefinition.
+//
+// This value occurs in different places, depending on if the JobDefinition is
+// in buildbucket or swarming mode.
+func (jd *JobDefinition) SwarmingHostname() string {
+	if jd.GetBuildbucket() != nil {
+		return jd.GetBuildbucket().GetBbagentArgs().GetBuild().GetInfra().GetSwarming().GetHostname()
 	}
+	return jd.GetSwarming().GetHostname()
+}
 
-	ret := &JobSlice{}
-	ret.S.TaskSlice = ts
-	props := ts.Properties
-
-	ret.S.Env = ingestMap(&props.Env)
-	ret.S.CipdPkgs = map[string]map[string]string{}
-	if props.CipdInput != nil {
-		for _, pkg := range props.CipdInput.Packages {
-			if _, ok := ret.S.CipdPkgs[pkg.Path]; !ok {
-				ret.S.CipdPkgs[pkg.Path] = map[string]string{}
-			}
-			ret.S.CipdPkgs[pkg.Path][pkg.PackageName] = pkg.Version
-		}
-		props.CipdInput.Packages = nil
-		if props.CipdInput.Server == "" && props.CipdInput.ClientPackage == nil {
-			props.CipdInput = nil
-		}
+// TaskName retrieves the human-readable Swarming task name from the
+// JobDefinition.
+//
+// This value occurs in different places, depending on if the JobDefinition is
+// in buildbucket or swarming mode.
+func (jd *JobDefinition) TaskName() string {
+	if jd.GetBuildbucket() != nil {
+		return jd.GetBuildbucket().GetName()
 	}
+	return jd.GetSwarming().GetTask().GetName()
+}
 
-	ret.U.Dimensions = ingestMap(&props.Dimensions)
+func (jd *JobDefinition) addLedProperties(ctx context.Context, uid string) (logdogPrefix string, err error) {
+	// Set the "$recipe_engine/led" recipe properties.
+	buf := make([]byte, 32)
+	if _, err := cryptorand.Read(ctx, buf); err != nil {
+		return "", errors.Annotate(err, "generating random token").Err()
+	}
+	streamName, err := logdog_types.MakeStreamName("", "led", uid, hex.EncodeToString(buf))
+	if err != nil {
+		return "", errors.Annotate(err, "generating logdog token").Err()
+	}
+	logdogPrefix = string(streamName)
 
-	if len(props.Command) > 2 {
-		if props.Command[0] == "kitchen${EXECUTABLE_SUFFIX}" && props.Command[1] == "cook" {
-			ret.S.KitchenArgs = &cookflags.CookFlags{}
-
-			fs := flag.NewFlagSet("kitchen_cook", flag.ContinueOnError)
-			ret.S.KitchenArgs.Register(fs)
-			if err := fs.Parse(props.Command[2:]); err != nil {
-				return nil, errors.Annotate(err, "parsing kitchen cook args").Err()
+	err = jd.EditBuildbucket(func(ejd *EditBBJobDefinition) {
+		ejd.tweak(func() error {
+			// Pass the CIPD package or isolate containing the recipes code into
+			// the led recipe module. This gives the build the information it needs
+			// to launch child builds using the same version of the recipes code.
+			ledProperties := map[string]interface{}{
+				// The logdog prefix is unique to each led job, so it can be used as an
+				// ID for the job.
+				"led_run_id": string(logdogPrefix),
 			}
-			props.Command = nil
-
-			// We aren't going to be a real buildbucket job, so we won't have a way
-			// to upload build.proto's to buildbucket.
-			ret.S.KitchenArgs.CallUpdateBuild = false
-
-			if !ret.S.KitchenArgs.AnnotationURL.IsZero() {
-				// annotation urls are one-time use; if we got one as part of the new
-				// task request, the odds are that it's already been used. We do this
-				// replacement here so that when we launch the task we can generate
-				// a unique annotation url.
-				prefix, path := ret.S.KitchenArgs.AnnotationURL.Path.Split()
-				prefix = generateLogdogToken
-				ret.S.KitchenArgs.AnnotationURL.Path = prefix.AsPathPrefix(path)
-
-				if cipdRecipe, ok := ret.S.CipdPkgs[ret.S.KitchenArgs.CheckoutDir]; ok {
-					pkgname, vers := "", ""
-					for pkgname, vers = range cipdRecipe {
-						break
-					}
-					delete(ret.S.CipdPkgs[ret.S.KitchenArgs.CheckoutDir], pkgname)
-					ret.U.RecipeCIPDSource = &RecipeCIPDSource{pkgname, vers}
-				} else if iso := props.InputsRef.Isolated; iso != "" {
-					// TODO(iannucci): actually separate recipe files from the isolated
-					// instead of assuming the whole thing is recipes.
-					ret.U.RecipeIsolatedHash = iso
-					props.InputsRef.Isolated = ""
+			if dgst := jd.GetUserPayload().GetDigest(); dgst != "" {
+				ledProperties["isolated_input"] = map[string]interface{}{
+					// TODO(iannucci): Set server and namespace too.
+					"hash": dgst,
 				}
-
-				ret.U.RecipeName = ret.S.KitchenArgs.RecipeName
-				ret.S.KitchenArgs.RecipeName = ""
-
-				ret.U.RecipeProperties = ret.S.KitchenArgs.Properties
-				ret.S.KitchenArgs.Properties = nil
+			} else if pkg := ejd.bb.GetBbagentArgs().GetBuild().GetExe(); pkg != nil {
+				ledProperties["cipd_input"] = map[string]interface{}{
+					"package": pkg.GetCipdPackage(),
+					"version": pkg.GetCipdVersion(),
+				}
 			}
-		}
-	}
 
-	return ret, nil
-}
+			ejd.bb.WriteProperties(map[string]interface{}{
+				"$recipe_engine/led": ledProperties,
+			})
 
-// JobDefinitionFromNewTaskRequest generates a new JobDefinition by parsing the
-// given SwarmingRpcsNewTaskRequest. It expects that the
-// SwarmingRpcsNewTaskRequest is for a swarmbucket-originating job (or at least
-// looks like one :)).
-func JobDefinitionFromNewTaskRequest(r *swarming.SwarmingRpcsNewTaskRequest) (*JobDefinition, error) {
-	numSlices := len(r.TaskSlices)
-	if numSlices == 0 {
-		numSlices = 1
-	}
-	ret := &JobDefinition{
-		TopLevel: &ToplevelFields{
-			r.Name,
-			r.Priority,
-			r.ServiceAccount,
-			r.Tags,
-			r.User,
-		},
-		Slices: make([]*JobSlice, numSlices),
-	}
-	me := errors.NewLazyMultiError(numSlices)
-	var err error
-	if len(r.TaskSlices) > 0 {
-		for i := range ret.Slices {
-			ret.Slices[i], err = JobSliceFromTaskSlice(r.TaskSlices[i])
-			me.Assign(i, err)
-		}
-	} else {
-		ret.Slices[0], err = JobSliceFromTaskSlice(&swarming.SwarmingRpcsTaskSlice{
-			ExpirationSecs: r.ExpirationSecs,
-			Properties:     r.Properties,
+			return nil
 		})
-	}
-
-	ret.TopLevel.Tags = trimTags(ret.TopLevel.Tags, []string{
-		"luci_project:",
-		"recipe_package:", // re-added by Userland.apply
+		return
 	})
-
-	// prepend the name by default. This can be removed by manually editing the
-	// job definition before launching it.
-	if !strings.HasPrefix(ret.TopLevel.Name, ledJobNamePrefix) {
-		ret.TopLevel.Name = ledJobNamePrefix + ret.TopLevel.Name
-	}
-
-	// Default all led tasks to experimental
-	ejd := EditJobDefinition{ret, me.Get()}
-	ejd.Experimental("true")
-
-	return ret, ejd.err
-}
-
-func (tl *ToplevelFields) apply(st *swarming.SwarmingRpcsNewTaskRequest) {
-	st.Name = tl.Name
-	st.Priority = tl.Priority
-	st.ServiceAccount = tl.ServiceAccount
-	st.Tags = append([]string{}, tl.Tags...)
-	st.User = tl.User
-}
-
-func (js *JobSlice) gen(ctx context.Context, uid string, logPrefix logdog_types.StreamName) (ret *swarming.SwarmingRpcsTaskSlice, extraTags []string) {
-	ret = &(*js.S.TaskSlice)
-	args, systemTags := js.S.apply(ctx, uid, logPrefix, ret)
-	userTags := js.U.apply(ctx, args, ret)
-	if args != nil {
-		ret.Properties.Command = append([]string{"kitchen${EXECUTABLE_SUFFIX}", "cook"},
-			args.Dump()...)
-		extraTags = append(systemTags, userTags...)
-	}
 	return
 }
 
-// GetSwarmingNewTask builds a usable SwarmingRpcsNewTaskRequest from the
-// JobDefinition, incorporating all of the extra bits of the JobDefinition.
-func (jd *JobDefinition) GetSwarmingNewTask(ctx context.Context, uid string, prefix logdog_types.StreamName) (*swarming.SwarmingRpcsNewTaskRequest, error) {
-	st := &swarming.SwarmingRpcsNewTaskRequest{}
-	jd.TopLevel.apply(st)
-	for i, s := range jd.Slices {
-		s.U.RecipeProperties[""] = string(prefix)
-		slc, extraTags := s.gen(ctx, uid, prefix)
-		// HACK(iannucci): Technically the swarming task could define task slice
-		// fallbacks which had e.g. different logdog URLs or different recipe
-		// versions. In practice, with buildbucket/kitchen, we don't do this, so the
-		// `firstSliceTags` thing should be fine.
-		if i == 0 {
-			st.Tags = append(st.Tags, extraTags...)
-		}
-		st.TaskSlices = append(st.TaskSlices, slc)
+func getUIDFromAuth(ctx context.Context, authOpts auth.Options) (string, error) {
+	authenticator := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts)
+	tok, err := authenticator.GetAccessToken(time.Minute)
+	if err != nil {
+		return "", errors.Annotate(err, "making authenticator").Err()
 	}
-	return st, nil
+	info, err := googleoauth.GetTokenInfo(ctx, googleoauth.TokenInfoParams{
+		AccessToken: tok.AccessToken,
+	})
+	if err != nil {
+		return "", errors.Annotate(err, "extracting token info").Err()
+	}
+	uid := info.Email
+	if uid == "" {
+		uid = "uid:" + info.Sub
+	}
+	return uid, nil
 }
 
-// Private stuff
-
-func exfiltrateMap(m map[string]string) []*swarming.SwarmingRpcsStringPair {
-	if len(m) == 0 {
+// FlattenToSwarming modifies this JobDefinition to populate the Swarming field
+// from the Buildbucket field.
+//
+// After flattening, buildbucket-only edit functionality will no longer work.
+func (jd *JobDefinition) FlattenToSwarming(ctx context.Context, authOpts auth.Options) error {
+	if jd.GetSwarming() != nil {
 		return nil
 	}
-	ret := make([]*swarming.SwarmingRpcsStringPair, 0, len(m))
-	for k, v := range m {
-		ret = append(ret, &swarming.SwarmingRpcsStringPair{Key: k, Value: v})
+
+	// Adjust bbargs to use "$recipeCheckoutDir/luciexe" as ExecutablePath.
+
+	// TODO(iannucci): content
+	// setOutputResultPath tells the task to write its result to a JSON file in the ISOLATED_OUTDIR.
+	// This is an interface for getting structured output from a task launched by led.
+	//func setOutputResultPath(s *Systemland) error {
+	//	ka := s.KitchenArgs
+	//	if ka == nil {
+	//		// TODO(iannucci): Support LUCI runner.
+	//		// Intentionally not fatal. led supports jobs which don't use kitchen or LUCI runner,
+	//		// and we don't want to block that usage.
+	//	return nil
+	//	}
+	//	ka.OutputResultJSONPath = "${ISOLATED_OUTDIR}/build.proto.json"
+	//	return nil
+	//}
+
+	uid, err := getUIDFromAuth(ctx, authOpts)
+	if err != nil {
+		return errors.Annotate(err, "getting user ID").Err()
 	}
-	return ret
+
+	logdogPrefix, err := jd.addLedProperties(ctx, uid)
+	if err != nil {
+		return errors.Annotate(err, "adding led properties").Err()
+	}
+
+	// generate "log_location:logdog://" and "allow_milo:1" tags
+	// generate "recipe_package:" and "recipe_name:" tags
+
+	panic("implement")
 }
 
-func trimTags(tags []string, keepPrefixes []string) []string {
-	quoted := make([]string, len(keepPrefixes))
-	for i, p := range keepPrefixes {
-		quoted[i] = regexp.QuoteMeta(p)
+// ToSwarmingNewTask renders a (swarming) JobDefinition to
+// a SwarmingRpcsNewTaskRequest.
+//
+// If you call this on something other than a swarming JobDefinition, it will
+// panic.
+func (jd *JobDefinition) ToSwarmingNewTask(ctx context.Context, authOpts auth.Options) (*swarming.SwarmingRpcsNewTaskRequest, error) {
+	if err := jd.FlattenToSwarming(ctx, authOpts); err != nil {
+		return nil, errors.Annotate(err, "flattening to swarming JobDefinition").Err()
 	}
-	re := regexp.MustCompile("(" + strings.Join(quoted, ")|(") + ")")
-	newTags := make([]string, 0, len(tags))
-	for _, t := range tags {
-		if re.MatchString(t) {
-			newTags = append(newTags, t)
+
+	// TODO(iannucci): set "User" top level property to uid
+
+	panic("implement")
+}
+
+// GetCurrentIsolated returns the current isolated contents for the
+// JobDefinition.
+//
+// Supports:
+//   Buildbucket JobDefinitions with UserPayload set.
+//   Swarming JobDefinitions with UserPayload set.
+//   Swarming JobDefinitions where all the slices have the same CasInput.
+//
+// Returns error for unuspported JobDefinition.
+func (jd *JobDefinition) GetCurrentIsolated() (string, error) {
+	isolatedOptions := stringset.New(1)
+	isolatedOptions.Add(jd.GetUserPayload().GetDigest())
+
+	if sw := jd.GetSwarming(); sw != nil {
+		for _, slc := range sw.GetTask().GetTaskSlices() {
+			input := slc.GetProperties().GetCasInputs()
+			if input != nil {
+				isolatedOptions.Add(input.Digest)
+			}
 		}
 	}
-	return newTags
+	isolatedOptions.Del("") // don't care about empty string
+	if isolatedOptions.Len() > 1 {
+		return "", errors.Reason(
+			"JobDefinition contains multiple isolateds: %v", isolatedOptions.ToSlice()).Err()
+	}
+	ret, _ := isolatedOptions.Pop()
+	return ret, nil
+}
+
+// ClearCurrentIsolated removes all isolateds from this JobDefinition.
+func (jd *JobDefinition) ClearCurrentIsolated() {
+	jd.UserPayload = nil
+	for _, slc := range jd.GetSwarming().GetTask().GetTaskSlices() {
+		if input := slc.GetProperties().GetCasInputs(); input != nil {
+			input.Digest = ""
+		}
+	}
 }
