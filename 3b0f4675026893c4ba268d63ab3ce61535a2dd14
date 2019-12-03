@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f7802656_00521df2",
+        "filename": "go/src/infra/appengine/cros/lab_inventory/api/bigquery/lab.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2019-12-03T19:23:55Z",
+      "side": 1,
+      "message": "no labstation?",
+      "revId": "3b0f4675026893c4ba268d63ab3ce61535a2dd14",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
