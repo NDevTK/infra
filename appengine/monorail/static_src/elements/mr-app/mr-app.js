@@ -222,12 +222,6 @@ export class MrApp extends connectStore(LitElement) {
 
     // Start a cron task to periodically request the status from the server.
     getServerStatusCron.start();
-
-    page('*', this._universalRouteHandler.bind(this));
-    page('/p/:project/issues/list_new', this._loadListPage.bind(this));
-    page('/p/:project/issues/detail', this._loadIssuePage.bind(this));
-    page('/u/:user/*', this._setContext);
-    page('/u/:user/hotlists/:hotlist/*', this._setContext);
     page('/u/:user/hotlists/:hotlist/details_new', this._loadHotlistDetailsPage.bind(this));
     page('/u/:user/hotlists/:hotlist/issues_new', this._loadHotlistIssuesPage.bind(this));
     page('/u/:user/hotlists/:hotlist/people_new', this._loadHotlistPeoplePage.bind(this));
@@ -319,11 +313,6 @@ export class MrApp extends connectStore(LitElement) {
         this.page = 'list';
         break;
     }
-  }
-
-  async _setContext(ctx, next) {
-    store.dispatch(ui.setContext(ctx.params));
-    next();
   }
 
   async _loadHotlistDetailsPage(ctx, next) {
