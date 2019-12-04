@@ -50,9 +50,7 @@
       "-tag",
       "version:2.1.2.chromium14",
       "-json-output",
-      "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json"
+      "/path/to/tmp/json"
     ],
     "name": "python.cipd search infra/python/cpython/linux-amd64 version:2.1.2.chromium14",
     "~followup_annotations": [
@@ -184,9 +182,7 @@
       "-ensure-file",
       "infra/third_party/pip-packages version:9.0.1\ninfra/third_party/source/autoconf version:2.69\ninfra/third_party/source/automake version:1.15\ninfra/third_party/source/bzip2 version:1.0.6\ninfra/third_party/source/curl version:7.59.0\ninfra/third_party/source/gnu_sed version:4.2.2\ninfra/third_party/source/libidn2 version:2.0.4\ninfra/third_party/source/mac_openssl_headers version:0.9.8zh\ninfra/third_party/source/ncurses version:6.0\ninfra/third_party/source/nsl version:1.0.4\ninfra/third_party/source/openssl version:1.1.0f\ninfra/third_party/source/pcre version:8.41\ninfra/third_party/source/pcre2 version:10.23\ninfra/third_party/source/readline version:7.0\ninfra/third_party/source/sqlite-autoconf version:3.19.3\ninfra/third_party/source/zlib version:1.2.11",
       "-json-output",
-      "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json"
+      "/path/to/tmp/json"
     ],
     "cwd": "[START_DIR]/python/checkout",
     "name": "python.ensure_installed",
@@ -1371,8 +1367,6 @@
       "[START_DIR]/python/package.cipd",
       "-json-output",
       "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json",
       "-ref",
       "latest",
       "-tag",
@@ -1441,9 +1435,7 @@
       "-tag",
       "version:2.12.2.2.chromium16",
       "-json-output",
-      "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json"
+      "/path/to/tmp/json"
     ],
     "name": "git.cipd search infra/git/linux-amd64 version:2.12.2.2.chromium16",
     "~followup_annotations": [
@@ -1557,9 +1549,7 @@
       "-ensure-file",
       "infra/third_party/pip-packages version:9.0.1\ninfra/third_party/source/autoconf version:2.69\ninfra/third_party/source/automake version:1.15\ninfra/third_party/source/bzip2 version:1.0.6\ninfra/third_party/source/curl version:7.59.0\ninfra/third_party/source/gnu_sed version:4.2.2\ninfra/third_party/source/libidn2 version:2.0.4\ninfra/third_party/source/mac_openssl_headers version:0.9.8zh\ninfra/third_party/source/ncurses version:6.0\ninfra/third_party/source/nsl version:1.0.4\ninfra/third_party/source/openssl version:1.1.0f\ninfra/third_party/source/pcre version:8.41\ninfra/third_party/source/pcre2 version:10.23\ninfra/third_party/source/readline version:7.0\ninfra/third_party/source/sqlite-autoconf version:3.19.3\ninfra/third_party/source/zlib version:1.2.11",
       "-json-output",
-      "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json"
+      "/path/to/tmp/json"
     ],
     "cwd": "[START_DIR]/git/checkout",
     "name": "git.ensure_installed",
@@ -2226,8 +2216,6 @@
       "[START_DIR]/git/package.cipd",
       "-json-output",
       "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json",
       "-ref",
       "latest",
       "-tag",
@@ -2293,9 +2281,7 @@
       "-tag",
       "version:1.2.3.chromium0",
       "-json-output",
-      "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json"
+      "/path/to/tmp/json"
     ],
     "name": "gcloud.cipd search infra/gcloud/linux-amd64 version:1.2.3.chromium0",
     "~followup_annotations": [
@@ -2413,8 +2399,6 @@
       "[START_DIR]/gcloud_linux_64/package.cipd",
       "-json-output",
       "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json",
       "-ref",
       "latest",
       "-tag",
@@ -2480,9 +2464,7 @@
       "-tag",
       "version:4.21",
       "-json-output",
-      "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json"
+      "/path/to/tmp/json"
     ],
     "name": "gsutil.cipd search infra/gsutil version:4.21",
     "~followup_annotations": [
@@ -2557,8 +2539,6 @@
       "[START_DIR]/gsutil/package.cipd",
       "-json-output",
       "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json",
       "-ref",
       "latest",
       "-tag",
@@ -2627,9 +2607,7 @@
       "-tag",
       "version:1.7.2",
       "-json-output",
-      "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json"
+      "/path/to/tmp/json"
     ],
     "name": "ninja.cipd search infra/ninja/linux-amd64 version:1.7.2",
     "~followup_annotations": [
@@ -2799,8 +2777,6 @@
       "[START_DIR]/ninja/package.cipd",
       "-json-output",
       "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json",
       "-ref",
       "latest",
       "-tag",
@@ -2847,9 +2823,7 @@
       "-ensure-file",
       "infra/cmake/${platform} version:3.11.4\ninfra/ninja/${platform} version:1.8.2",
       "-json-output",
-      "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json"
+      "/path/to/tmp/json"
     ],
     "name": "cmake.ensure_installed",
     "~followup_annotations": [
@@ -2900,9 +2874,7 @@
       "-tag",
       "version:3.9.1",
       "-json-output",
-      "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json"
+      "/path/to/tmp/json"
     ],
     "name": "cmake.cipd search infra/cmake/linux-amd64 version:3.9.1",
     "~followup_annotations": [
@@ -3100,8 +3072,6 @@
       "[START_DIR]/cmake/package.cipd",
       "-json-output",
       "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json",
       "-ref",
       "latest",
       "-tag",
@@ -3170,9 +3140,7 @@
       "-tag",
       "version:3.0.12",
       "-json-output",
-      "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json"
+      "/path/to/tmp/json"
     ],
     "name": "swig.cipd search infra/swig/linux-amd64 version:3.0.12",
     "~followup_annotations": [
@@ -3303,9 +3271,7 @@
       "-ensure-file",
       "infra/third_party/pip-packages version:9.0.1\ninfra/third_party/source/autoconf version:2.69\ninfra/third_party/source/automake version:1.15\ninfra/third_party/source/bzip2 version:1.0.6\ninfra/third_party/source/curl version:7.59.0\ninfra/third_party/source/gnu_sed version:4.2.2\ninfra/third_party/source/libidn2 version:2.0.4\ninfra/third_party/source/mac_openssl_headers version:0.9.8zh\ninfra/third_party/source/ncurses version:6.0\ninfra/third_party/source/nsl version:1.0.4\ninfra/third_party/source/openssl version:1.1.0f\ninfra/third_party/source/pcre version:8.41\ninfra/third_party/source/pcre2 version:10.23\ninfra/third_party/source/readline version:7.0\ninfra/third_party/source/sqlite-autoconf version:3.19.3\ninfra/third_party/source/zlib version:1.2.11",
       "-json-output",
-      "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json"
+      "/path/to/tmp/json"
     ],
     "cwd": "[START_DIR]/swig/checkout",
     "name": "swig.ensure_installed",
@@ -3700,8 +3666,6 @@
       "[START_DIR]/swig/package.cipd",
       "-json-output",
       "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json",
       "-ref",
       "latest",
       "-tag",
@@ -3767,9 +3731,7 @@
       "-tag",
       "version:1.2.3",
       "-json-output",
-      "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json"
+      "/path/to/tmp/json"
     ],
     "name": "go.cipd search infra/go/linux-amd64 version:1.2.3",
     "~followup_annotations": [
@@ -3844,8 +3806,6 @@
       "[START_DIR]/go_linux_64/package.cipd",
       "-json-output",
       "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json",
       "-ref",
       "latest",
       "-tag",
@@ -3876,9 +3836,7 @@
       "-ensure-file",
       "infra/nodejs/nodejs/${platform} latest",
       "-json-output",
-      "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json"
+      "/path/to/tmp/json"
     ],
     "name": "firebase.ensure_installed",
     "~followup_annotations": [
@@ -3918,9 +3876,7 @@
       "-tag",
       "version:3.19.3",
       "-json-output",
-      "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json"
+      "/path/to/tmp/json"
     ],
     "name": "firebase.cipd search infra/npm/firebase-tools version:3.19.3",
     "~followup_annotations": [
@@ -3980,8 +3936,6 @@
       "[START_DIR]/nodejs/node_modules/package.cipd",
       "-json-output",
       "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json",
       "-ref",
       "latest",
       "-tag",
@@ -4034,9 +3988,7 @@
       "-tag",
       "version:0.3.1",
       "-json-output",
-      "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json"
+      "/path/to/tmp/json"
     ],
     "name": "dep.cipd search go/cmd/github.com/golang/dep/linux-amd64 version:0.3.1",
     "~followup_annotations": [
@@ -4148,9 +4100,7 @@
       "-ensure-file",
       "infra/go/${platform} version:1.9.4",
       "-json-output",
-      "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json"
+      "/path/to/tmp/json"
     ],
     "name": "dep.ensure_installed",
     "~followup_annotations": [
@@ -4216,8 +4166,6 @@
       "[START_DIR]/dep/package.cipd",
       "-json-output",
       "/path/to/tmp/json",
-      "-service-account-json",
-      "/creds/service_accounts/service-account-cipd-builder.json",
       "-ref",
       "latest",
       "-tag",
