@@ -16,6 +16,24 @@
       "revId": "3b0f4675026893c4ba268d63ab3ce61535a2dd14",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4ff0ddcf_f97420d6",
+        "filename": "go/src/infra/appengine/cros/lab_inventory/api/bigquery/lab.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-12-06T06:10:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f7802656_00521df2",
+      "revId": "3b0f4675026893c4ba268d63ab3ce61535a2dd14",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
