@@ -97,6 +97,30 @@
     },
     {
       "key": {
+        "uuid": "d6126a93_6bbd0469",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1178490
+      },
+      "writtenOn": "2019-12-06T13:20:21Z",
+      "side": 1,
+      "message": "Ok, sounds good to me. Is there any reason why we don\u0027t turn on the middleware (at first sight it looks useful). Edit: I saw the next comment. Ok not adding it.",
+      "parentUuid": "e0a887f0_760790e9",
+      "range": {
+        "startLine": 21,
+        "startChar": 4,
+        "endLine": 21,
+        "endChar": 35
+      },
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "792f162e_85d4dd4d",
         "filename": "appengine/rietveld_crawler/crawler.py",
         "patchSetId": 1
@@ -127,6 +151,24 @@
       "side": 1,
       "message": "Aw but that\u0027s no fun!\nIt just complains about Python 3 syntax in general 😞\nI.e. if I were to pass the initial syntax error, then maybe it\u0027d start complaining about other Python3-specific stuff that\u0027s not on syntax level. So is it worth fighting?",
       "parentUuid": "792f162e_85d4dd4d",
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9543a821_e1fc2589",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1178490
+      },
+      "writtenOn": "2019-12-06T13:20:21Z",
+      "side": 1,
+      "message": "I am fine actually. Not sure what owners will have to say but I am ok keeping this on Python 3 syntax.",
+      "parentUuid": "3a80df6b_05f0a741",
       "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -168,6 +210,30 @@
       "side": 1,
       "message": "Don\u0027t remember exactly, but I think there\u0027s some other rule that eliminates that entire block. Have you tried running this?",
       "parentUuid": "e474ef9d_fc6c3786",
+      "range": {
+        "startLine": 35,
+        "startChar": 8,
+        "endLine": 35,
+        "endChar": 74
+      },
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a1b00cc9_312a9d17",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1178490
+      },
+      "writtenOn": "2019-12-06T13:20:21Z",
+      "side": 1,
+      "message": "Nope. 😉\n\nI will give it a run on Monday and see how it goes.",
+      "parentUuid": "98cecccb_fa62e9d2",
       "range": {
         "startLine": 35,
         "startChar": 8,
