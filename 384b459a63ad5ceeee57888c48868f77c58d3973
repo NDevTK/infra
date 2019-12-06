@@ -1,0 +1,185 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "53ad7498_d426c586",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1178490
+      },
+      "writtenOn": "2019-12-06T12:55:52Z",
+      "side": 1,
+      "message": "\u003e Missing copyright statement.\n\u003e Use the following for BSD:\n\u003e Copyright \u003cyear\u003e The \u003cgroup\u003e Authors. All rights reserved.\n\u003e Use of this source code is governed by a BSD-style license that can be\n\u003e found in the LICENSE file.\n\u003e \n\u003e See: https://chromium.googlesource.com/chromium/src/+/master/styleguide/c++/c++.md#file-headers\n\u003e \n\u003e Or the following for MIT: Copyright \u003cyear\u003e The \u003cgroup\u003e Authors\n\u003e \n\u003e Use of this source code is governed by a MIT-style\n\u003e license that can be found in the LICENSE file or at\n\u003e https://opensource.org/licenses/MIT.\n\nPlease Fix",
+      "parentUuid": "f07e2fe2_c0c804b1",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 1
+      },
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a7f321c4_3404571d",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1178490
+      },
+      "writtenOn": "2019-12-06T12:55:52Z",
+      "side": 1,
+      "message": "In order to use this, shouldn\u0027t you add a spider middleware (scrapy.spidermiddlewares.offsite.OffsiteMiddleware) to the scrapy.crawler.CrawlerProcess settings (see https://docs.scrapy.org/en/latest/topics/spider-middleware.html and https://docs.scrapy.org/en/latest/topics/spiders.html#scrapy.spiders.Spider.allowed_domains).",
+      "range": {
+        "startLine": 21,
+        "startChar": 4,
+        "endLine": 21,
+        "endChar": 35
+      },
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "792f162e_85d4dd4d",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1178490
+      },
+      "writtenOn": "2019-12-06T12:55:52Z",
+      "side": 1,
+      "message": "\u003e invalid syntax (\u003cstring\u003e, line 22).\n\u003e To disable, add: # pylint: disable\u003dsyntax-error\n\nPlease Fix, I guess we should not use f-strings here.",
+      "parentUuid": "146bf5de_b9550fe0",
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e474ef9d_fc6c3786",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1178490
+      },
+      "writtenOn": "2019-12-06T12:55:52Z",
+      "side": 1,
+      "message": "I see also \"Sign in with your Google Account to create issues and add comments\" on the top, is that fine?",
+      "range": {
+        "startLine": 35,
+        "startChar": 8,
+        "endLine": 35,
+        "endChar": 74
+      },
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eacb9c0a_c418ea56",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1178490
+      },
+      "writtenOn": "2019-12-06T12:55:52Z",
+      "side": 1,
+      "message": "I see it is used here (see previous comment). Is this effective without scrapy.spidermiddlewares.offsite.OffsiteMiddleware?",
+      "range": {
+        "startLine": 82,
+        "startChar": 14,
+        "endLine": 82,
+        "endChar": 48
+      },
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "62229ba3_be99de7b",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1178490
+      },
+      "writtenOn": "2019-12-06T12:55:52Z",
+      "side": 1,
+      "message": "Is it intended the override of \"path\" defined at 27? I think using another variable name would be nice (maybe file_path).",
+      "range": {
+        "startLine": 94,
+        "startChar": 4,
+        "endLine": 94,
+        "endChar": 8
+      },
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f2351e7f_694b4e5b",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1178490
+      },
+      "writtenOn": "2019-12-06T12:55:52Z",
+      "side": 1,
+      "message": "Should this be True? We set some AUTOTHROTTLE configs but it is disabled.",
+      "range": {
+        "startLine": 160,
+        "startChar": 27,
+        "endLine": 160,
+        "endChar": 32
+      },
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e370153a_d5798011",
+        "filename": "appengine/rietveld_crawler/server.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1178490
+      },
+      "writtenOn": "2019-12-06T12:55:52Z",
+      "side": 1,
+      "message": "\u003e Missing copyright statement.\n\u003e Use the following for BSD:\n\u003e Copyright \u003cyear\u003e The \u003cgroup\u003e Authors. All rights reserved.\n\u003e Use of this source code is governed by a BSD-style license that can be\n\u003e found in the LICENSE file.\n\u003e \n\u003e See: https://chromium.googlesource.com/chromium/src/+/master/styleguide/c++/c++.md#file-headers\n\u003e \n\u003e Or the following for MIT: Copyright \u003cyear\u003e The \u003cgroup\u003e Authors\n\u003e \n\u003e Use of this source code is governed by a MIT-style\n\u003e license that can be found in the LICENSE file or at\n\u003e https://opensource.org/licenses/MIT.\n\nPlease Fix",
+      "parentUuid": "54585e88_e125ae49",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 1
+      },
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
