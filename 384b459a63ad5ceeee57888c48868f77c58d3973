@@ -26,6 +26,30 @@
     },
     {
       "key": {
+        "uuid": "d1c3f49a_0a312ef1",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1179484
+      },
+      "writtenOn": "2019-12-06T13:06:02Z",
+      "side": 1,
+      "message": "😬",
+      "parentUuid": "53ad7498_d426c586",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 1
+      },
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a7f321c4_3404571d",
         "filename": "appengine/rietveld_crawler/crawler.py",
         "patchSetId": 1
@@ -37,6 +61,30 @@
       "writtenOn": "2019-12-06T12:55:52Z",
       "side": 1,
       "message": "In order to use this, shouldn\u0027t you add a spider middleware (scrapy.spidermiddlewares.offsite.OffsiteMiddleware) to the scrapy.crawler.CrawlerProcess settings (see https://docs.scrapy.org/en/latest/topics/spider-middleware.html and https://docs.scrapy.org/en/latest/topics/spiders.html#scrapy.spiders.Spider.allowed_domains).",
+      "range": {
+        "startLine": 21,
+        "startChar": 4,
+        "endLine": 21,
+        "endChar": 35
+      },
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e0a887f0_760790e9",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1179484
+      },
+      "writtenOn": "2019-12-06T13:06:02Z",
+      "side": 1,
+      "message": "If I don\u0027t enable this middleware, nothing looks at the variable, but I look at it myself later on.\nIt\u0027s a bit weird, but the thinking is, if someone *were* to enable OffsiteMiddleware, this would already be a useful setting towards it.",
+      "parentUuid": "a7f321c4_3404571d",
       "range": {
         "startLine": 21,
         "startChar": 4,
@@ -67,6 +115,24 @@
     },
     {
       "key": {
+        "uuid": "3a80df6b_05f0a741",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1179484
+      },
+      "writtenOn": "2019-12-06T13:06:02Z",
+      "side": 1,
+      "message": "Aw but that\u0027s no fun!\nIt just complains about Python 3 syntax in general 😞\nI.e. if I were to pass the initial syntax error, then maybe it\u0027d start complaining about other Python3-specific stuff that\u0027s not on syntax level. So is it worth fighting?",
+      "parentUuid": "792f162e_85d4dd4d",
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e474ef9d_fc6c3786",
         "filename": "appengine/rietveld_crawler/crawler.py",
         "patchSetId": 1
@@ -78,6 +144,30 @@
       "writtenOn": "2019-12-06T12:55:52Z",
       "side": 1,
       "message": "I see also \"Sign in with your Google Account to create issues and add comments\" on the top, is that fine?",
+      "range": {
+        "startLine": 35,
+        "startChar": 8,
+        "endLine": 35,
+        "endChar": 74
+      },
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "98cecccb_fa62e9d2",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1179484
+      },
+      "writtenOn": "2019-12-06T13:06:02Z",
+      "side": 1,
+      "message": "Don\u0027t remember exactly, but I think there\u0027s some other rule that eliminates that entire block. Have you tried running this?",
+      "parentUuid": "e474ef9d_fc6c3786",
       "range": {
         "startLine": 35,
         "startChar": 8,
@@ -113,6 +203,30 @@
     },
     {
       "key": {
+        "uuid": "63de9248_c43a4aac",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1179484
+      },
+      "writtenOn": "2019-12-06T13:06:02Z",
+      "side": 1,
+      "message": "This is an argument to LinkExtractor. I think OffsiteMiddleware is not involved, just the member variable name happens to match. The reason that OffsiteMiddleware is not needed is that I never create any off-site requests in the first place. Adding it would be a no-op probably.",
+      "parentUuid": "eacb9c0a_c418ea56",
+      "range": {
+        "startLine": 82,
+        "startChar": 14,
+        "endLine": 82,
+        "endChar": 48
+      },
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "62229ba3_be99de7b",
         "filename": "appengine/rietveld_crawler/crawler.py",
         "patchSetId": 1
@@ -136,6 +250,30 @@
     },
     {
       "key": {
+        "uuid": "918fb684_97e57a70",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1179484
+      },
+      "writtenOn": "2019-12-06T13:06:02Z",
+      "side": 1,
+      "message": "Good idea.",
+      "parentUuid": "62229ba3_be99de7b",
+      "range": {
+        "startLine": 94,
+        "startChar": 4,
+        "endLine": 94,
+        "endChar": 8
+      },
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f2351e7f_694b4e5b",
         "filename": "appengine/rietveld_crawler/crawler.py",
         "patchSetId": 1
@@ -147,6 +285,30 @@
       "writtenOn": "2019-12-06T12:55:52Z",
       "side": 1,
       "message": "Should this be True? We set some AUTOTHROTTLE configs but it is disabled.",
+      "range": {
+        "startLine": 160,
+        "startChar": 27,
+        "endLine": 160,
+        "endChar": 32
+      },
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fcae47e6_fbb39350",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1179484
+      },
+      "writtenOn": "2019-12-06T13:06:02Z",
+      "side": 1,
+      "message": "Hm yes I think it should be True",
+      "parentUuid": "f2351e7f_694b4e5b",
       "range": {
         "startLine": 160,
         "startChar": 27,
