@@ -48,7 +48,9 @@ def _internal_callback():
         modules.get_default_version(module_name), target_fields=target_fields)
 
 
-def initialize(app=None, is_enabled_fn=None, cron_module='default',
+def initialize(app,
+               is_enabled_fn=None,
+               cron_module='default',
                is_local_unittest=None):
   """Instruments webapp2 `app` with gae_ts_mon metrics.
 
@@ -74,10 +76,9 @@ def initialize(app=None, is_enabled_fn=None, cron_module='default',
   if is_enabled_fn is not None:
     interface.state.flush_enabled_fn = is_enabled_fn
 
-  if app is not None:
-    instrument_wsgi_application(app)
-    if is_local_unittest or modules.get_current_module_name() == cron_module:
-      instrument_wsgi_application(handlers.app)
+  if app is None:
+    raise Exception('app cannot be None')
+  instrument_wsgi_application(app)
 
   # Use the application ID as the service name and the module name as the job
   # name.
