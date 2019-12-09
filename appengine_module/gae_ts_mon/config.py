@@ -76,8 +76,6 @@ def initialize(app=None, is_enabled_fn=None, cron_module='default',
 
   if app is not None:
     instrument_wsgi_application(app)
-    if is_local_unittest or modules.get_current_module_name() == cron_module:
-      instrument_wsgi_application(handlers.app)
 
   # Use the application ID as the service name and the module name as the job
   # name.
