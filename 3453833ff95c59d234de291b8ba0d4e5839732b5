@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "248b43f4_43f9c515",
+        "filename": "recipes/led.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2019-12-09T18:25:34Z",
+      "side": 1,
+      "message": "probably don\u0027t want this in the cl",
+      "range": {
+        "startLine": 6,
+        "startChar": 5,
+        "endLine": 6,
+        "endChar": 20
+      },
+      "revId": "3453833ff95c59d234de291b8ba0d4e5839732b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
