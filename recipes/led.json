@@ -1,0 +1,286 @@
+{
+  "swarming_hostname": "chromium-swarm.appspot.com",
+  "top_level": {
+    "name": "led: bb-8894962203892388112-infra/try/ChromiumOS downstream Recipe Roll tester from Recipe Engine",
+    "priority": "30",
+    "service_account": "fuchsia-try-builder@fuchsia-infra.iam.gserviceaccount.com",
+    "tags": [
+      "luci_project:infra"
+    ],
+    "user": ""
+  },
+  "job_slices": [
+    {
+      "userland": {
+        "recipe_isolated_hash": "",
+        "recipe_cipd_source": {
+          "package": "infra/recipe_bundles/chromium.googlesource.com/infra/infra",
+          "version": "refs/heads/master"
+        },
+        "recipe_name": "recipe_roll_tryjob",
+        "recipe_properties": {
+          "$kitchen": {
+            "emulate_gce": true
+          },
+          "$recipe_engine/buildbucket": {
+            "build": {
+              "builder": {
+                "bucket": "try",
+                "builder": "ChromiumOS downstream Recipe Roll tester from Recipe Engine",
+                "project": "infra"
+              },
+              "createTime": "2019-12-04T22:53:42.951639Z",
+              "createdBy": "user:5071639625-1lppvbtck1morgivc6sq4dul7klu27sd@developer.gserviceaccount.com",
+              "exe": {
+                "cipdPackage": "infra/recipe_bundles/chromium.googlesource.com/infra/infra",
+                "cipdVersion": "refs/heads/master"
+              },
+              "executionTimeout": "1800s",
+              "id": "8894962203892388112",
+              "infra": {
+                "buildbucket": {
+                  "hostname": "cr-buildbucket.appspot.com"
+                },
+                "logdog": {
+                  "hostname": "logs.chromium.org",
+                  "prefix": "buildbucket/cr-buildbucket.appspot.com/8894962203892388112",
+                  "project": "infra"
+                },
+                "resultdb": {},
+                "swarming": {
+                  "caches": [
+                    {
+                      "name": "git",
+                      "path": "git",
+                      "waitForWarmCache": "0s"
+                    },
+                    {
+                      "envVar": "VPYTHON_VIRTUALENV_ROOT",
+                      "name": "vpython",
+                      "path": "vpython",
+                      "waitForWarmCache": "0s"
+                    },
+                    {
+                      "name": "goma_v2",
+                      "path": "goma",
+                      "waitForWarmCache": "0s"
+                    },
+                    {
+                      "name": "builder_00d57a7e7aa7ede5ed1a84b9127f4bf5bbe8d3046d77b151a895fefb6db90976_v2",
+                      "path": "builder",
+                      "waitForWarmCache": "240s"
+                    }
+                  ],
+                  "hostname": "chromium-swarm.appspot.com",
+                  "priority": 30,
+                  "taskDimensions": [
+                    {
+                      "expiration": "0s",
+                      "key": "pool",
+                      "value": "luci.fuchsia.try"
+                    }
+                  ],
+                  "taskServiceAccount": "fuchsia-try-builder@fuchsia-infra.iam.gserviceaccount.com"
+                }
+              },
+              "input": {
+                "gerritChanges": [
+                  {
+                    "change": "1951780",
+                    "host": "chromium-review.googlesource.com",
+                    "patchset": "2",
+                    "project": "infra/luci/recipes-py"
+                  }
+                ]
+              },
+              "schedulingTimeout": "21600s",
+              "tags": [
+                {
+                  "key": "buildset",
+                  "value": "patch/gerrit/chromium-review.googlesource.com/1951780/2"
+                },
+                {
+                  "key": "cq_attempt_key",
+                  "value": "a681b58cbf8edd3d690b081f43ed097480b13b4b640d34ad1a7bc730"
+                },
+                {
+                  "key": "cq_cl_owner",
+                  "value": "ltina@google.com"
+                },
+                {
+                  "key": "cq_experimental",
+                  "value": "false"
+                },
+                {
+                  "key": "cq_triggerer",
+                  "value": "ltina@google.com"
+                },
+                {
+                  "key": "user_agent",
+                  "value": "cq"
+                }
+              ]
+            },
+            "hostname": "cr-buildbucket.appspot.com"
+          },
+          "$recipe_engine/cq": {
+            "active": true,
+            "top_level": true
+          },
+          "$recipe_engine/runtime": {
+            "is_experimental": true,
+            "is_luci": true
+          },
+          "blamelist": [
+            "ltina@google.com"
+          ],
+          "buildername": "ChromiumOS downstream Recipe Roll tester from Recipe Engine",
+          "downstream_id": "chromiumos",
+          "downstream_url": "https://chromium.googlesource.com/chromiumos/infra/recipes",
+          "patch_gerrit_url": "https://chromium-review.googlesource.com",
+          "patch_issue": 1951780,
+          "patch_project": "infra/luci/recipes-py",
+          "patch_ref": "refs/changes/80/1951780/2",
+          "patch_repository_url": "https://chromium.googlesource.com/infra/luci/recipes-py",
+          "patch_set": 2,
+          "patch_storage": "gerrit",
+          "recipe": "recipe_roll_tryjob",
+          "repository": "https://chromium.googlesource.com/infra/luci/recipes-py",
+          "revision": "HEAD",
+          "upstream_id": "recipe_engine",
+          "upstream_url": "https://chromium.googlesource.com/infra/luci/recipes-py"
+        },
+        "changelist_url": "",
+        "dimensions": {
+          "pool": "luci.fuchsia.try"
+        }
+      },
+      "systemland": {
+        "kitchen_args": {
+          "checkout_dir": "kitchen-checkout",
+          "recipe_result_byte_limit": 0,
+          "properties": null,
+          "properties_file": "",
+          "cache_dir": "cache",
+          "temp_dir": "tmp",
+          "build_url": "https://ci.chromium.org/b/8894962203892388112",
+          "output_result_json": "",
+          "recipe_name": "",
+          "system_account": "system",
+          "known_gerrit_host": [
+            "android.googlesource.com",
+            "boringssl.googlesource.com",
+            "chromium.googlesource.com",
+            "dart.googlesource.com",
+            "dawn.googlesource.com",
+            "fuchsia.googlesource.com",
+            "gn.googlesource.com",
+            "go.googlesource.com",
+            "llvm.googlesource.com",
+            "pdfium.googlesource.com",
+            "skia.googlesource.com",
+            "webrtc.googlesource.com"
+          ],
+          "buildbucket_build_id": 8894962203892388112,
+          "buildbucket_hostname": "cr-buildbucket.appspot.com",
+          "call_update_build": false,
+          "annotation_url": {
+            "host": "logs.chromium.org",
+            "project": "infra",
+            "path": "TRY_RECIPE_GENERATE_LOGDOG_TOKEN/+/annotations"
+          },
+          "global_tags": {},
+          "null_output": false
+        },
+        "env": {
+          "BUILDBUCKET_EXPERIMENTAL": "FALSE"
+        },
+        "cipd_packages": {
+          ".": {
+            "infra/tools/luci/bbagent/${platform}": "latest",
+            "infra/tools/luci/kitchen/${platform}": "git_revision:aa771eea701398c44e27cf591f7a58618bb82984"
+          },
+          "cipd_bin_packages": {
+            "infra/git/${platform}": "version:2.21.0.chromium16",
+            "infra/tools/bb/${platform}": "git_revision:b740542334fb3d8b46d7c0ee04e7f669eb861059",
+            "infra/tools/buildbucket/${platform}": "git_revision:a27ace719dcaeacad62228948a9e7f642024b8ed",
+            "infra/tools/cloudtail/${platform}": "git_revision:edd5644be66d37cdf82978efb0e5d6504d0d552f",
+            "infra/tools/git/${platform}": "git_revision:b04590046ad20239b5e59ff132850f6479784f4a",
+            "infra/tools/luci-auth/${platform}": "git_revision:edd5644be66d37cdf82978efb0e5d6504d0d552f",
+            "infra/tools/luci/docker-credential-luci/${platform}": "git_revision:4dee0ef5a74893d559f4cef7b26258851336fe34",
+            "infra/tools/luci/git-credential-luci/${platform}": "git_revision:edd5644be66d37cdf82978efb0e5d6504d0d552f",
+            "infra/tools/luci/lucicfg/${platform}": "git_revision:0416cda1121e51b63139063a2439055563497cd1",
+            "infra/tools/luci/vpython-native/${platform}": "git_revision:e317c7d2c17d4c3460ee37524dfce4e1dee4306a",
+            "infra/tools/luci/vpython/${platform}": "git_revision:e317c7d2c17d4c3460ee37524dfce4e1dee4306a",
+            "infra/tools/prpc/${platform}": "git_revision:edd5644be66d37cdf82978efb0e5d6504d0d552f"
+          },
+          "cipd_bin_packages/cpython": {
+            "infra/python/cpython/${platform}": "version:2.7.15.chromium14"
+          },
+          "cipd_bin_packages/cpython3": {
+            "infra/python/cpython3/${platform}": "version:3.8.0b1.chromium.1"
+          },
+          "kitchen-checkout": {}
+        },
+        "task_slice": {
+          "expiration_secs": "21360",
+          "properties": {
+            "caches": [
+              {
+                "name": "builder_00d57a7e7aa7ede5ed1a84b9127f4bf5bbe8d3046d77b151a895fefb6db90976_v2",
+                "path": "cache/builder"
+              },
+              {
+                "name": "git",
+                "path": "cache/git"
+              },
+              {
+                "name": "goma_v2",
+                "path": "cache/goma"
+              },
+              {
+                "name": "vpython",
+                "path": "cache/vpython"
+              }
+            ],
+            "cipd_input": {
+              "client_package": {
+                "package_name": "infra/tools/cipd/${platform}",
+                "version": "git_revision:b740542334fb3d8b46d7c0ee04e7f669eb861059"
+              },
+              "server": "https://chrome-infra-packages.appspot.com"
+            },
+            "containment": {
+              "containment_type": "NOT_SPECIFIED"
+            },
+            "env_prefixes": [
+              {
+                "key": "PATH",
+                "value": [
+                  "cipd_bin_packages",
+                  "cipd_bin_packages/bin",
+                  "cipd_bin_packages/cpython",
+                  "cipd_bin_packages/cpython/bin",
+                  "cipd_bin_packages/cpython3",
+                  "cipd_bin_packages/cpython3/bin"
+                ]
+              },
+              {
+                "key": "VPYTHON_VIRTUALENV_ROOT",
+                "value": [
+                  "cache/vpython"
+                ]
+              }
+            ],
+            "execution_timeout_secs": "1800",
+            "grace_period_secs": "30",
+            "inputs_ref": {
+              "isolatedserver": "https://isolateserver.appspot.com",
+              "namespace": "default-gzip"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
