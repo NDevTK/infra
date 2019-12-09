@@ -22,6 +22,30 @@
       "revId": "3453833ff95c59d234de291b8ba0d4e5839732b5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "01068d97_6d76db34",
+        "filename": "recipes/led.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1347995
+      },
+      "writtenOn": "2019-12-09T18:32:19Z",
+      "side": 1,
+      "message": "Oops, must\u0027ve done a `git add .` by accident",
+      "parentUuid": "248b43f4_43f9c515",
+      "range": {
+        "startLine": 6,
+        "startChar": 5,
+        "endLine": 6,
+        "endChar": 20
+      },
+      "revId": "3453833ff95c59d234de291b8ba0d4e5839732b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
