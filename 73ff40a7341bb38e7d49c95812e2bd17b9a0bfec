@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "49ed94a7_98c16126",
+        "filename": "go/src/infra/appengine/crosskylabadmin/api/fleet/v1/inventory.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 272,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-12-09T06:48:25Z",
+      "side": 1,
+      "message": "https://developers.google.com/protocol-buffers/docs/proto3#assigning-field-numbers\n\nit\u0027s not backward-compatible, use new number (5) for setup_labstation.",
+      "range": {
+        "startLine": 271,
+        "startChar": 0,
+        "endLine": 272,
+        "endChar": 28
+      },
+      "revId": "73ff40a7341bb38e7d49c95812e2bd17b9a0bfec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
