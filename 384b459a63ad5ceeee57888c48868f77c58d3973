@@ -50,6 +50,30 @@
     },
     {
       "key": {
+        "uuid": "a25a9e84_7a795225",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1179484
+      },
+      "writtenOn": "2019-12-10T23:56:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d1c3f49a_0a312ef1",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 1
+      },
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a7f321c4_3404571d",
         "filename": "appengine/rietveld_crawler/crawler.py",
         "patchSetId": 1
@@ -216,6 +240,24 @@
       "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4ec7eb54_1cfe10f6",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1179484
+      },
+      "writtenOn": "2019-12-10T23:56:20Z",
+      "side": 1,
+      "message": "Well, I even removed Py3 *syntax*, but the linter still complains about everything else.\nHow to get rid of it?",
+      "parentUuid": "506017e8_f3acae14",
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     },
     {
       "key": {
