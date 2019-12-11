@@ -279,6 +279,24 @@
     },
     {
       "key": {
+        "uuid": "6671c0bf_187add50",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1179484
+      },
+      "writtenOn": "2019-12-11T09:03:20Z",
+      "side": 1,
+      "message": "I\u0027m familiar with intricate details about each of these complaints, but that\u0027s not the point. They are not valid and they would all be downgrades.\nIn 20 days there won\u0027t even exist an affected version of Python.",
+      "parentUuid": "e5e44227_111b56d6",
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e474ef9d_fc6c3786",
         "filename": "appengine/rietveld_crawler/crawler.py",
         "patchSetId": 1
