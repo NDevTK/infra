@@ -261,6 +261,24 @@
     },
     {
       "key": {
+        "uuid": "e5e44227_111b56d6",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1178490
+      },
+      "writtenOn": "2019-12-11T08:08:05Z",
+      "side": 1,
+      "message": "No idea. Let\u0027s wait for Edward to take a look.\n\nSome of them require you to avoid to call super() without params. Others about missing methods I don\u0027t really know (maybe for urllib see https://cs.chromium.org/chromium/infra/luci/client/cipd.py?l\u003d19\u0026rcl\u003d4b248196bd277ea5c6395e8225dc55e4bb608e90 ?)",
+      "parentUuid": "4ec7eb54_1cfe10f6",
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e474ef9d_fc6c3786",
         "filename": "appengine/rietveld_crawler/crawler.py",
         "patchSetId": 1
