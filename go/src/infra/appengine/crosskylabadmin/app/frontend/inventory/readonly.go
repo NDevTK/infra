@@ -426,10 +426,14 @@ func getDUT(ctx context.Context, hostname string) (*inventory.DeviceUnderTest, e
 	return dut, nil
 }
 
+func isLabstation(hostname string) bool {
+	return strings.Contains(hostname, "labstation")
+}
+
 // getCrosVersionFromServoHost returns the cros version associated with a particular servo host
 // hostname : hostname of the servo host (e.g. labstation)
 func getCrosVersionFromServoHost(ctx context.Context, hostname string) (string, error) {
-	if strings.Contains(hostname, "labstation") {
+	if isLabstation(hostname) {
 		logging.Infof(ctx, "getCrosVersionFromServoHost: identified labstation servohost hostname (%s)", hostname)
 		dut, err := getDUT(ctx, hostname)
 		if err != nil {
