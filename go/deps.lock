@@ -282,9 +282,6 @@ imports:
 - name: github.com/mgutz/ansi
   version: 9520e82c474b0a04dd04f8a40959027271bab992
   repo: https://chromium.googlesource.com/external/github.com/mgutz/ansi.git
-- name: github.com/microsoft/go-winio
-  version: fc70bd9a86b5562b3b5eb1040e803febee1e90a1
-  repo: https://chromium.googlesource.com/external/github.com/microsoft/go-winio.git
 - name: github.com/Microsoft/go-winio
   version: fc70bd9a86b5562b3b5eb1040e803febee1e90a1
   repo: https://chromium.googlesource.com/external/github.com/microsoft/go-winio.git
