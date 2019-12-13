@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "4e59362c_d0ec0f53",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/readonly.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 429,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-12-13T04:50:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b63e08b4_fb311294",
+      "revId": "94da70a078494b375109a1da1dd22dc6b7f57e02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9ed1551f_9194af79",
         "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/readonly.go",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "94da70a078494b375109a1da1dd22dc6b7f57e02",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bbef1eea_dcac4f6f",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/readonly.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 452,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-12-13T04:50:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9ed1551f_9194af79",
+      "revId": "94da70a078494b375109a1da1dd22dc6b7f57e02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
