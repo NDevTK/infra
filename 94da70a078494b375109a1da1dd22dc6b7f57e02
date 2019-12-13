@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b63e08b4_fb311294",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/readonly.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 429,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2019-12-13T00:52:12Z",
+      "side": 1,
+      "message": "can we call this function `looksLikeLabstation` ?\n\nThis is a heuristic to check if something is a labstation and might be wrong.",
+      "revId": "94da70a078494b375109a1da1dd22dc6b7f57e02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9ed1551f_9194af79",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/readonly.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 452,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2019-12-13T00:52:12Z",
+      "side": 1,
+      "message": "can we factor this out into a `looksLikeServo` function for consistency?",
+      "revId": "94da70a078494b375109a1da1dd22dc6b7f57e02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
