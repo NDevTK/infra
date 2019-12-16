@@ -46,6 +46,30 @@
       "revId": "8161e6cde98f65da868784cff1c162ed428f8287",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8c139742_1ec845a7",
+        "filename": "go/src/infra/appengine/cros/lab_inventory/app/config/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2019-12-16T23:28:56Z",
+      "side": 1,
+      "message": "I\u0027m a little bit confused, if we have sth in datastore, why we need to use config file.\nIf it\u0027s already in config file, why not directly use it...",
+      "parentUuid": "0a415549_2a5add6a",
+      "range": {
+        "startLine": 55,
+        "startChar": 4,
+        "endLine": 55,
+        "endChar": 43
+      },
+      "revId": "8161e6cde98f65da868784cff1c162ed428f8287",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
