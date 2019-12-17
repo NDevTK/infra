@@ -333,6 +333,24 @@
     },
     {
       "key": {
+        "uuid": "1a460961_3b0aa1d6",
+        "filename": "appengine/rietveld_crawler/crawler.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2019-12-17T17:31:10Z",
+      "side": 1,
+      "message": "You can add No-Presubmit: true to the description change.\nAlso, please add #!/usr/bin/env python3 to these files. \nI\u0027ll file a bug to make presubmit use pylint3 for Python 3 files when python3 is specified in the shebang.",
+      "parentUuid": "8b8c6d80_77fe65d6",
+      "revId": "384b459a63ad5ceeee57888c48868f77c58d3973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e474ef9d_fc6c3786",
         "filename": "appengine/rietveld_crawler/crawler.py",
         "patchSetId": 1
