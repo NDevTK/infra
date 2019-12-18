@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0eedc4da_1003083b",
+        "filename": "appengine/monorail/static_src/elements/framework/mr-issue-list/mr-issue-list.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2019-12-18T22:11:46Z",
+      "side": 1,
+      "message": "ALL CAPS const variables must truly be immutable.",
+      "revId": "7568fbed692f4e39dd36fd57a770f96754977304",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
