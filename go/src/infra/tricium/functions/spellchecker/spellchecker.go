@@ -158,8 +158,9 @@ func main() {
 		}
 	}
 
-	// Also check the commit message.
-	analyzeFile(bufio.NewScanner(strings.NewReader(input.CommitMessage)), "", true, nil, results)
+	// TODO(crbug.com/1008712): Consider checking commit description, but only
+	// if we can avoid false positives on people's names. People's names are
+	// expected in many footers, e.g. Commit-Queue, Auto-Submit, Reviewed-by.
 
 	// Write Tricium RESULTS data.
 	path, err := tricium.WriteDataType(*outputDir, results)
