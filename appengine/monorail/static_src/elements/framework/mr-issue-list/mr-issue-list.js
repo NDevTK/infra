@@ -8,6 +8,7 @@ import page from 'page';
 import {connectStore, store} from 'reducers/base.js';
 import * as project from 'reducers/project.js';
 import * as issue from 'reducers/issue.js';
+import * as sitewide from 'reducers/sitewide.js';
 import 'elements/framework/links/mr-issue-link/mr-issue-link.js';
 import 'elements/framework/links/mr-crbug-link/mr-crbug-link.js';
 import 'elements/framework/mr-dropdown/mr-dropdown.js';
@@ -228,7 +229,7 @@ export class MrIssueList extends connectStore(LitElement) {
               title="Show columns"
               menuAlignment="right"
               .columns=${this.columns}
-              .queryParams=${this.queryParams}
+              .queryParams=${this._queryParams}
               .phaseNames=${this._phaseNames}
             ></mr-show-columns-dropdown>
           </th>
@@ -477,7 +478,7 @@ export class MrIssueList extends connectStore(LitElement) {
            <mr-issue-link
             .projectName=${this.projectName}
             .issue=${issue}
-            .queryParams=${this.queryParams}
+            .queryParams=${this._queryParams}
             short
           ></mr-issue-link>
         `;
@@ -545,8 +546,9 @@ export class MrIssueList extends connectStore(LitElement) {
        * parameters themselves to get values like columns, sort, or q. This
        * separation is important because we don't want to tightly couple this
        * list component with a specific URL system.
+       * @private
        */
-      queryParams: {type: Object},
+      _queryParams: {type: Object},
       /**
        * The initial cursor that a list view uses. This attribute allows users
        * of the list component to specify and control the cursor. When the
@@ -600,7 +602,7 @@ export class MrIssueList extends connectStore(LitElement) {
     /** @type {string} */
     this.projectName;
     /** @type {Object} */
-    this.queryParams = {};
+    this._queryParams = {};
     /** @type {string} */
     this.currentQuery = '';
     /** @type {boolean} */
@@ -654,6 +656,7 @@ export class MrIssueList extends connectStore(LitElement) {
     this._phaseNames = (issue.issueListPhaseNames(state) || []);
     this._extractFieldValuesFromIssue = project.extractFieldValuesFromIssue(
         state);
+    this._queryParams = sitewide.queryParams(state);
   }
 
   /** @override */
@@ -853,7 +856,7 @@ export class MrIssueList extends connectStore(LitElement) {
    */
   updateSortSpec(column, descending = false) {
     column = column.toLowerCase();
-    const oldSpec = this.queryParams.sort || '';
+    const oldSpec = this._queryParams.sort || '';
     const columns = parseColSpec(oldSpec.toLowerCase());
 
     // Remove any old instances of the same sort spec.
@@ -923,7 +926,7 @@ export class MrIssueList extends connectStore(LitElement) {
    * @param {Array} deletedParams keys to be cleared from queryParams.
    */
   _updateQueryParams(newParams = {}, deletedParams = []) {
-    const url = urlWithNewParams(this._baseUrl(), this.queryParams, newParams,
+    const url = urlWithNewParams(this._baseUrl(), this._queryParams, newParams,
         deletedParams);
     this._page(url);
   }
@@ -1199,7 +1202,7 @@ export class MrIssueList extends connectStore(LitElement) {
    */
   _navigateToIssue(issue, newTab) {
     const link = issueRefToUrl(issueToIssueRef(issue),
-        this.queryParams);
+        this._queryParams);
 
     if (newTab) {
       // Whether the link opens in a new tab or window is based on the
