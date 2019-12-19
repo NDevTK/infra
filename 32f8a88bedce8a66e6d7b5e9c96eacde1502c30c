@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5bcf8227_419cb91b",
+        "filename": "go/src/infra/tricium/functions/spellchecker/spellchecker.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2019-12-19T17:53:17Z",
+      "side": 1,
+      "message": ":/ I feel a naive implementation isn\u0027t that hard.\n\nl :\u003d strings.Split(strings.TrimRightFunc(input.CommitMessage, unicode.IsSpace), \"\\n\")\nfor i :\u003d len(l) - 1; i \u003e\u003d 0; i-- {\n  if len(l[i]) \u003d\u003d 0 || !strings.Contains(l[i], \":\") {\n    break\n  }\n  l \u003d l[i+1]\n}\nanalyzeFile(bufio.NewScanner(strings.Join(l, \"\\n\")), \"\", true, nil, results)",
+      "revId": "32f8a88bedce8a66e6d7b5e9c96eacde1502c30c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
