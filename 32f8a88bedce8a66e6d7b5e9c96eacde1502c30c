@@ -16,6 +16,24 @@
       "revId": "32f8a88bedce8a66e6d7b5e9c96eacde1502c30c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "58085952_80cfb5ab",
+        "filename": "go/src/infra/tricium/functions/spellchecker/spellchecker.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2019-12-23T22:38:07Z",
+      "side": 1,
+      "message": "Fair enough :-)\n\nThis CL now strips footer lines out, in a way similar to the above. Added test and comments. Note that we wouldn\u0027t necessarily want to break at the first line not containing a colon, since in theory we could see:\n\n    Commit summary line\n\n    Bug: 1234\n    Reviewed-by: Personn Naime\n    Some-footer: Some value\n    This line doesn\u0027t actually interrupt the footer paragaph\n    Other-footer: Still a valid footer",
+      "parentUuid": "5bcf8227_419cb91b",
+      "revId": "32f8a88bedce8a66e6d7b5e9c96eacde1502c30c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
