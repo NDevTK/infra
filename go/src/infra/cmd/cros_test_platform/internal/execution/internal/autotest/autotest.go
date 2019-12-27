@@ -23,6 +23,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
+	"infra/cmd/cros_test_platform/internal/execution/bb"
 	"infra/cmd/cros_test_platform/internal/execution/internal/autotest/parse"
 	"infra/cmd/cros_test_platform/internal/execution/internal/common"
 	"infra/cmd/cros_test_platform/internal/execution/isolate"
@@ -50,7 +51,7 @@ func New(tests []*steps.EnumerationResponse_AutotestInvocation, params *test_pla
 }
 
 // LaunchAndWait launches an autotest execution and waits for it to complete.
-func (r *Runner) LaunchAndWait(ctx context.Context, client swarming.Client, _ isolate.GetterFactory) error {
+func (r *Runner) LaunchAndWait(ctx context.Context, client swarming.Client, _ isolate.GetterFactory, _ bb.Client) error {
 	if len(r.requestParams.GetDecorations().GetTags()) != 0 {
 		logging.Warningf(ctx, "request specified tags %s; this is unsupported in autotest backend, and ignored", r.requestParams.GetDecorations().GetTags())
 	}

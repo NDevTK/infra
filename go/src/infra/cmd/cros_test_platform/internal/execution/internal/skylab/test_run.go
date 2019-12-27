@@ -6,6 +6,7 @@ package skylab
 
 import (
 	"context"
+	"infra/cmd/cros_test_platform/internal/execution/bb"
 	"infra/cmd/cros_test_platform/internal/execution/swarming"
 	"math"
 
@@ -83,13 +84,13 @@ func (t *testRun) ValidateDependencies(ctx context.Context, client swarming.Clie
 	return exists, nil
 }
 
-func (t *testRun) LaunchAttempt(ctx context.Context, client swarming.Client) error {
+func (t *testRun) LaunchAttempt(ctx context.Context, client swarming.Client, bbClient bb.Client) error {
 	args, err := t.argsGenerator.GenerateArgs(ctx)
 	if err != nil {
 		return err
 	}
 	a := attempt{args: args}
-	if err := a.Launch(ctx, client); err != nil {
+	if err := a.Launch(ctx, client, bbClient); err != nil {
 		return err
 	}
 	t.attempts = append(t.attempts, &a)

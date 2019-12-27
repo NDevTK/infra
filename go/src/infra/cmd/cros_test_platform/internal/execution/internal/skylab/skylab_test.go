@@ -260,7 +260,7 @@ func TestLaunchForNonExistentBot(t *testing.T) {
 			ts, err := skylab.NewTaskSet(ctx, invs, basicParams(), basicConfig(), "foo-parent-task-id")
 			So(err, ShouldBeNil)
 			run := skylab.NewRunner(ts)
-			err = run.LaunchAndWait(ctx, swarming, gf)
+			err = run.LaunchAndWait(ctx, swarming, gf, nil)
 			So(err, ShouldBeNil)
 
 			resp := getSingleResponse(run, swarming)
@@ -301,7 +301,7 @@ func TestLaunchAndWaitTest(t *testing.T) {
 			So(err, ShouldBeNil)
 			run := skylab.NewRunner(ts)
 
-			err = run.LaunchAndWait(ctx, swarming, gf)
+			err = run.LaunchAndWait(ctx, swarming, gf, nil)
 			So(err, ShouldBeNil)
 
 			resp := getSingleResponse(run, swarming)
@@ -379,7 +379,7 @@ func TestTaskStates(t *testing.T) {
 				ts, err := skylab.NewTaskSet(ctx, invs, basicParams(), basicConfig(), "foo-parent-task-id")
 				So(err, ShouldBeNil)
 				run := skylab.NewRunner(ts)
-				err = run.LaunchAndWait(ctx, swarming, gf)
+				err = run.LaunchAndWait(ctx, swarming, gf, nil)
 				So(err, ShouldBeNil)
 
 				Convey("then the task state is correct.", func() {
@@ -406,7 +406,7 @@ func TestServiceError(t *testing.T) {
 
 		Convey("when the swarming service immediately returns errors, that error is surfaced as a launch error.", func() {
 			swarming.setError(fmt.Errorf("foo error"))
-			err := run.LaunchAndWait(ctx, swarming, gf)
+			err := run.LaunchAndWait(ctx, swarming, gf, nil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "launch attempt")
 			So(err.Error(), ShouldContainSubstring, "foo error")
@@ -416,7 +416,7 @@ func TestServiceError(t *testing.T) {
 			swarming.setCallback(func() {
 				swarming.setError(fmt.Errorf("foo error"))
 			})
-			err := run.LaunchAndWait(ctx, swarming, gf)
+			err := run.LaunchAndWait(ctx, swarming, gf, nil)
 			So(err.Error(), ShouldContainSubstring, "tick for task")
 			So(err.Error(), ShouldContainSubstring, "foo error")
 		})
@@ -436,7 +436,7 @@ func TestTaskURL(t *testing.T) {
 		So(err, ShouldBeNil)
 		run := skylab.NewRunner(ts)
 
-		err = run.LaunchAndWait(ctx, swarming, gf)
+		err = run.LaunchAndWait(ctx, swarming, gf, nil)
 		So(err, ShouldBeNil)
 
 		resp := getSingleResponse(run, swarming)
@@ -464,7 +464,7 @@ func TestIncompleteWait(t *testing.T) {
 		wg := sync.WaitGroup{}
 		wg.Add(1)
 		go func() {
-			err = run.LaunchAndWait(ctx, swarming, gf)
+			err = run.LaunchAndWait(ctx, swarming, gf, nil)
 			wg.Done()
 		}()
 
@@ -500,7 +500,7 @@ func TestRequestArguments(t *testing.T) {
 		So(err, ShouldBeNil)
 		run := skylab.NewRunner(ts)
 
-		err = run.LaunchAndWait(ctx, swarming, gf)
+		err = run.LaunchAndWait(ctx, swarming, gf, nil)
 		So(err, ShouldBeNil)
 
 		Convey("the launched task request should have correct parameters.", func() {
@@ -653,7 +653,7 @@ func TestInvocationKeyvals(t *testing.T) {
 			So(err, ShouldBeNil)
 			run := skylab.NewRunner(ts)
 
-			err = run.LaunchAndWait(ctx, swarming, gf)
+			err = run.LaunchAndWait(ctx, swarming, gf, nil)
 			So(err, ShouldBeNil)
 			Convey("created command includes invocation suite keyval", func() {
 				So(swarming.createCalls, ShouldHaveLength, 1)
@@ -679,7 +679,7 @@ func TestInvocationKeyvals(t *testing.T) {
 			So(err, ShouldBeNil)
 			run := skylab.NewRunner(ts)
 
-			err = run.LaunchAndWait(ctx, swarming, gf)
+			err = run.LaunchAndWait(ctx, swarming, gf, nil)
 			So(err, ShouldBeNil)
 			Convey("created command includes request suite keyval", func() {
 				So(swarming.createCalls, ShouldHaveLength, 1)
@@ -748,7 +748,7 @@ func TestKeyvalsAcrossTestRuns(t *testing.T) {
 				ts, err := skylab.NewTaskSet(ctx, invs, p, basicConfig(), "foo-parent-task-id")
 				So(err, ShouldBeNil)
 				run := skylab.NewRunner(ts)
-				err = run.LaunchAndWait(ctx, swarming, gf)
+				err = run.LaunchAndWait(ctx, swarming, gf, nil)
 				So(err, ShouldBeNil)
 
 				So(swarming.createCalls, ShouldHaveLength, 2)
@@ -790,7 +790,7 @@ func TestEnumerationResponseWithRetries(t *testing.T) {
 				ts, err := skylab.NewTaskSet(ctx, invs, params, basicConfig(), "foo-parent-task-id")
 				So(err, ShouldBeNil)
 				run := skylab.NewRunner(ts)
-				err = run.LaunchAndWait(ctx, swarming, gf)
+				err = run.LaunchAndWait(ctx, swarming, gf, nil)
 				So(err, ShouldBeNil)
 				resp := getSingleResponse(run, swarming)
 				Convey("response should contain two enumerated results", func() {
@@ -1034,7 +1034,7 @@ func TestRetries(t *testing.T) {
 				ts, err := skylab.NewTaskSet(ctx, c.invocations, params, basicConfig(), "foo-parent-task-id")
 				So(err, ShouldBeNil)
 				run := skylab.NewRunner(ts)
-				err = run.LaunchAndWait(ctx, swarming, gf)
+				err = run.LaunchAndWait(ctx, swarming, gf, nil)
 				So(err, ShouldBeNil)
 				resp := getSingleResponse(run, swarming)
 
@@ -1114,7 +1114,7 @@ func TestClientTestArg(t *testing.T) {
 		So(err, ShouldBeNil)
 		run := skylab.NewRunner(ts)
 
-		err = run.LaunchAndWait(ctx, swarming, fakeGetterFactory(newFakeGetter()))
+		err = run.LaunchAndWait(ctx, swarming, fakeGetterFactory(newFakeGetter()), nil)
 		So(err, ShouldBeNil)
 
 		Convey("the launched task request should have correct parameters.", func() {
@@ -1143,7 +1143,7 @@ func TestQuotaSchedulerAccount(t *testing.T) {
 		So(err, ShouldBeNil)
 		run := skylab.NewRunner(ts)
 
-		err = run.LaunchAndWait(ctx, swarming, fakeGetterFactory(newFakeGetter()))
+		err = run.LaunchAndWait(ctx, swarming, fakeGetterFactory(newFakeGetter()), nil)
 		So(err, ShouldBeNil)
 
 		Convey("the launched task request should have a tag specifying the correct quota account and run in the quota pool.", func() {
@@ -1175,7 +1175,7 @@ func TestUnmanagedPool(t *testing.T) {
 		So(err, ShouldBeNil)
 		run := skylab.NewRunner(ts)
 
-		err = run.LaunchAndWait(ctx, swarming, fakeGetterFactory(newFakeGetter()))
+		err = run.LaunchAndWait(ctx, swarming, fakeGetterFactory(newFakeGetter()), nil)
 		So(err, ShouldBeNil)
 
 		Convey("the launched task request run in the unmanaged pool.", func() {
@@ -1229,7 +1229,7 @@ func TestResponseVerdict(t *testing.T) {
 				defer wg.Done()
 				// Can't verify error returned is nil because Convey() doesn't
 				// like assertions in goroutines.
-				_ = run.LaunchAndWait(ctx, swarming, gf)
+				_ = run.LaunchAndWait(ctx, swarming, gf, nil)
 			}()
 
 			resp := getSingleResponse(run, swarming)
@@ -1240,7 +1240,7 @@ func TestResponseVerdict(t *testing.T) {
 		Convey("when the test passed, response verdict is correct.", func() {
 			getter.SetAutotestResultGenerator(autotestResultAlwaysPass)
 
-			run.LaunchAndWait(ctx, swarming, gf)
+			run.LaunchAndWait(ctx, swarming, gf, nil)
 			resp := getSingleResponse(run, swarming)
 			So(resp.State.LifeCycle, ShouldEqual, test_platform.TaskState_LIFE_CYCLE_COMPLETED)
 			So(resp.State.Verdict, ShouldEqual, test_platform.TaskState_VERDICT_PASSED)
@@ -1248,7 +1248,7 @@ func TestResponseVerdict(t *testing.T) {
 
 		Convey("when the test failed, response verdict is correct.", func() {
 			getter.SetAutotestResultGenerator(autotestResultAlwaysFail)
-			run.LaunchAndWait(ctx, swarming, gf)
+			run.LaunchAndWait(ctx, swarming, gf, nil)
 			resp := getSingleResponse(run, swarming)
 			So(resp.State.LifeCycle, ShouldEqual, test_platform.TaskState_LIFE_CYCLE_COMPLETED)
 			So(resp.State.Verdict, ShouldEqual, test_platform.TaskState_VERDICT_FAILED)
@@ -1261,7 +1261,7 @@ func TestResponseVerdict(t *testing.T) {
 			wg.Add(1)
 			var err error
 			go func() {
-				err = run.LaunchAndWait(ctx, swarming, gf)
+				err = run.LaunchAndWait(ctx, swarming, gf, nil)
 				wg.Done()
 			}()
 
@@ -1328,7 +1328,7 @@ func TestIncompatibleDependencies(t *testing.T) {
 				ts, err := skylab.NewTaskSet(ctx, c.Invs, c.Params, basicConfig(), "foo-parent-task-id")
 				So(err, ShouldBeNil)
 				run := skylab.NewRunner(ts)
-				err = run.LaunchAndWait(ctx, swarming, fakeGetterFactory(newFakeGetter()))
+				err = run.LaunchAndWait(ctx, swarming, fakeGetterFactory(newFakeGetter()), nil)
 				So(err, ShouldBeNil)
 
 				resp := getSingleResponse(run, swarming)
