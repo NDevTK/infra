@@ -128,7 +128,7 @@ func TestLaunch(t *testing.T) {
 		Convey("when running a autotest execution", func() {
 			run := autotest.New(invs, basicParams(), basicConfig())
 
-			run.LaunchAndWait(ctx, swarming, nil)
+			run.LaunchAndWait(ctx, swarming, nil, nil)
 			Convey("then a single run_suite proxy job is created, with correct arguments.", func() {
 				So(swarming.createCalls, ShouldHaveLength, 1)
 				So(swarming.createCalls[0].TaskSlices, ShouldHaveLength, 1)
@@ -177,7 +177,7 @@ func TestLaunchLegacy(t *testing.T) {
 			}
 			run := autotest.New(invs, p, basicConfig())
 
-			run.LaunchAndWait(ctx, swarming, nil)
+			run.LaunchAndWait(ctx, swarming, nil, nil)
 			Convey("then a single run_suite proxy job is created, with correct arguments.", func() {
 				So(swarming.createCalls, ShouldHaveLength, 1)
 				So(swarming.createCalls[0].TaskSlices, ShouldHaveLength, 1)
@@ -215,7 +215,7 @@ func TestLaunchWithDisplayName(t *testing.T) {
 
 		Convey("when running an autotest execution", func() {
 			run := autotest.New(invs, basicParams(), basicConfig())
-			err := run.LaunchAndWait(ctx, swarming, nil)
+			err := run.LaunchAndWait(ctx, swarming, nil, nil)
 			So(err, ShouldBeNil)
 			Convey("then autotest invocation uses display name for the control file name.", func() {
 				So(swarming.createCalls, ShouldHaveLength, 1)
@@ -248,7 +248,7 @@ func TestLaunchWithTestArgsReturnsError(t *testing.T) {
 
 		Convey("running an autotest execution with test args should return error", func() {
 			run := autotest.New(invs, basicParams(), basicConfig())
-			err := run.LaunchAndWait(ctx, swarming, nil)
+			err := run.LaunchAndWait(ctx, swarming, nil, nil)
 			So(err, ShouldNotBeNil)
 		})
 	})
@@ -271,7 +271,7 @@ func TestLaunchWithSuiteKeyvals(t *testing.T) {
 			p.Decorations = nil
 			Convey("then autotest invocation includes invocation suite keyval", func() {
 				run := autotest.New(invs, p, basicConfig())
-				err := run.LaunchAndWait(ctx, swarming, nil)
+				err := run.LaunchAndWait(ctx, swarming, nil, nil)
 				So(err, ShouldBeNil)
 				So(swarming.createCalls, ShouldHaveLength, 1)
 				So(swarming.createCalls[0].TaskSlices, ShouldHaveLength, 1)
@@ -287,7 +287,7 @@ func TestLaunchWithSuiteKeyvals(t *testing.T) {
 			}
 			Convey("then autotest invocation includes request suite keyval", func() {
 				run := autotest.New(invs, p, basicConfig())
-				err := run.LaunchAndWait(ctx, swarming, nil)
+				err := run.LaunchAndWait(ctx, swarming, nil, nil)
 				So(err, ShouldBeNil)
 				So(swarming.createCalls, ShouldHaveLength, 1)
 				So(swarming.createCalls[0].TaskSlices, ShouldHaveLength, 1)
@@ -312,7 +312,7 @@ func TestFreeFormAttributes(t *testing.T) {
 			}
 			run := autotest.New(invs, p, basicConfig())
 
-			err := run.LaunchAndWait(ctx, swarming, nil)
+			err := run.LaunchAndWait(ctx, swarming, nil, nil)
 			So(err, ShouldBeNil)
 			Convey("then a single run_suite proxy job is created, with correct arguments.", func() {
 				So(swarming.createCalls, ShouldHaveLength, 1)
@@ -336,7 +336,7 @@ func TestWaitAndCollect(t *testing.T) {
 		wg.Add(1)
 		var err error
 		go func() {
-			err = run.LaunchAndWait(ctx, swarming, nil)
+			err = run.LaunchAndWait(ctx, swarming, nil, nil)
 			wg.Done()
 		}()
 

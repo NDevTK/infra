@@ -93,7 +93,8 @@ func (c *skylabExecuteRun) innerRun(a subcommands.Application, args []string, en
 		maxDuration = 12 * time.Hour
 	}
 
-	resps, err := c.handleRequests(ctx, maxDuration, runner, client, gf)
+	// TODO(crbug/1033291): create a new BB client.
+	resps, err := c.handleRequests(ctx, maxDuration, runner, client, gf, nil)
 	if err != nil && !containsSomeResponse(resps) {
 		// Catastrophic error. There is no reasonable response to write.
 		return err

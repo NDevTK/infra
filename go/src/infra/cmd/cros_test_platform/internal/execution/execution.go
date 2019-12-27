@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cmd/cros_test_platform/internal/execution/bb"
 	"infra/cmd/cros_test_platform/internal/execution/internal/autotest"
 	"infra/cmd/cros_test_platform/internal/execution/internal/skylab"
 	"infra/cmd/cros_test_platform/internal/execution/isolate"
@@ -22,7 +23,7 @@ import (
 // Runner defines the interface implemented by Skylab or Autotest execution
 // runners.
 type Runner interface {
-	LaunchAndWait(context.Context, swarming.Client, isolate.GetterFactory) error
+	LaunchAndWait(context.Context, swarming.Client, isolate.GetterFactory, bb.Client) error
 	Responses(swarming.URLer) []*steps.ExecuteResponse
 }
 

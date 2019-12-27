@@ -19,6 +19,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 
 	"infra/cmd/cros_test_platform/internal/execution"
+	"infra/cmd/cros_test_platform/internal/execution/bb"
 	"infra/cmd/cros_test_platform/internal/execution/isolate"
 	"infra/libs/skylab/common/errctx"
 	"infra/libs/skylab/swarming"
@@ -110,10 +111,10 @@ func (c *commonExecuteRun) zipTaggedResponses(ts []string, rs []*steps.ExecuteRe
 	return m
 }
 
-func (c *commonExecuteRun) handleRequests(ctx context.Context, maximumDuration time.Duration, runner execution.Runner, t *swarming.Client, gf isolate.GetterFactory) ([]*steps.ExecuteResponse, error) {
+func (c *commonExecuteRun) handleRequests(ctx context.Context, maximumDuration time.Duration, runner execution.Runner, t *swarming.Client, gf isolate.GetterFactory, bbClient bb.Client) ([]*steps.ExecuteResponse, error) {
 	ctx, cancel := errctx.WithTimeout(ctx, maximumDuration, fmt.Errorf("cros_test_platform request timeout (after %s)", maximumDuration))
 	defer cancel(context.Canceled)
-	err := runner.LaunchAndWait(ctx, t, gf)
+	err := runner.LaunchAndWait(ctx, t, gf, bbClient)
 	return runner.Responses(t), err
 }
 

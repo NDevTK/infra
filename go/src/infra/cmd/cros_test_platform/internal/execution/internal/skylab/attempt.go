@@ -6,6 +6,7 @@ package skylab
 
 import (
 	"context"
+	"infra/cmd/cros_test_platform/internal/execution/bb"
 	"infra/cmd/cros_test_platform/internal/execution/isolate"
 	"infra/cmd/cros_test_platform/internal/execution/swarming"
 	"infra/libs/skylab/request"
@@ -31,7 +32,8 @@ func (a *attempt) TaskName() string {
 	return a.args.Cmd.TaskName
 }
 
-func (a *attempt) Launch(ctx context.Context, client swarming.Client) error {
+func (a *attempt) Launch(ctx context.Context, client swarming.Client, _ bb.Client) error {
+	// TODO(crbug/1033291): Implement BB case.
 	req, err := a.args.SwarmingNewTaskRequest()
 	if err != nil {
 		return errors.Annotate(err, "launch attempt for %s", a.TaskName()).Err()
@@ -80,7 +82,8 @@ func (a *attempt) Verdict() test_platform.TaskState_Verdict {
 
 // FetchResults fetches the latest swarming and isolate state of the given attempt,
 // and updates the attempt accordingly.
-func (a *attempt) FetchResults(ctx context.Context, client swarming.Client, gf isolate.GetterFactory) error {
+func (a *attempt) FetchResults(ctx context.Context, client swarming.Client, gf isolate.GetterFactory, _ bb.Client) error {
+	// TODO(crbug/1033291): Implement the bb case.
 	results, err := client.GetResults(ctx, []string{a.taskID})
 	if err != nil {
 		return errors.Annotate(err, "fetch results").Err()

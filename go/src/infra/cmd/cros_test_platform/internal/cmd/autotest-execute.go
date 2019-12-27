@@ -80,7 +80,7 @@ func (c *autotestExecuteRun) innerRun(a subcommands.Application, args []string, 
 		maxDuration = 12 * time.Hour
 	}
 
-	resps, err := c.handleRequests(ctx, maxDuration, runner, client, nil)
+	resps, err := c.handleRequests(ctx, maxDuration, runner, client, nil, nil)
 	if err != nil && !containsSomeResponse(resps) {
 		// Catastrophic error. There is no reasonable response to write.
 		return err
