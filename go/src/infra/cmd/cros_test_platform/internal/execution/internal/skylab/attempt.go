@@ -12,6 +12,7 @@ import (
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	swarming_api "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/swarming/proto/jsonrpc"
@@ -24,7 +25,8 @@ type attempt struct {
 	// Note: If we ever begin supporting other harnesses's result formats
 	// then this field will change to a *skylab_test_runner.Result.
 	// For now, the autotest-specific variant is more convenient.
-	autotestResult *skylab_test_runner.Result_Autotest
+	autotestResult    *skylab_test_runner.Result_Autotest
+	offloadedLogsPath *swarming_api.SwarmingRpcsFilesRef
 }
 
 func (a *attempt) TaskName() string {
@@ -89,6 +91,9 @@ func (a *attempt) FetchResults(ctx context.Context, client swarming.Client, gf i
 	if err != nil {
 		return errors.Annotate(err, "fetch results").Err()
 	}
+	if err = a.assembleOutputURL(result.OutputsRef); err != nil {
+		return errors.Annotate(err, "fetch results").Err()
+	}
 	state, err := swarming.AsTaskState(result.State)
 	if err != nil {
 		return errors.Annotate(err, "fetch results").Err()
@@ -110,5 +115,15 @@ func (a *attempt) FetchResults(ctx context.Context, client swarming.Client, gf i
 	// Task is still running.
 	default:
 	}
+	return nil
+}
+
+// Populates attempt.offloadedLogsPath from Swarming result and
+func (a *attempt) assembleOutputURL(ref *swarming_api.SwarmingRpcsFilesRef) error {
+	// TODO(jkop): Implement this using the Isolated API
+	// For the moment, just use the same ref as the OutputURL.
+	// We will definitely need to do something with that relative path
+	_ = a.autotestResult.client_offload_relative_path
+	a.offloadedLogsPath = ref
 	return nil
 }
