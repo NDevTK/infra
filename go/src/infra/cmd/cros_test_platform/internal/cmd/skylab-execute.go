@@ -21,6 +21,7 @@ import (
 	"go.chromium.org/luci/common/isolatedclient"
 
 	"infra/cmd/cros_test_platform/internal/execution"
+	"infra/cmd/cros_test_platform/internal/execution/bb"
 	"infra/cmd/cros_test_platform/internal/execution/isolate"
 	"infra/cmd/cros_test_platform/internal/execution/isolate/getter"
 )
@@ -93,8 +94,12 @@ func (c *skylabExecuteRun) innerRun(a subcommands.Application, args []string, en
 		maxDuration = 12 * time.Hour
 	}
 
-	// TODO(crbug/1033291): create a new BB client.
-	resps, err := c.handleRequests(ctx, maxDuration, runner, client, gf, nil)
+	bbc, err := bb.NewClient(ctx, cfg.GetTestRunner().GetBuildbucket().Host)
+	if err != nil {
+		return err
+	}
+
+	resps, err := c.handleRequests(ctx, maxDuration, runner, client, gf, bbc)
 	if err != nil && !containsSomeResponse(resps) {
 		// Catastrophic error. There is no reasonable response to write.
 		return err
