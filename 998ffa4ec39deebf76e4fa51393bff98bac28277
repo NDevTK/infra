@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c74ef239_f10d56a8",
+        "filename": "appengine/monorail/api/api_proto/issue_objects.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-01-03T19:59:27Z",
+      "side": 1,
+      "message": "nevermind, we should keep this here. So it\u0027s clear that all the *_removes below are for this issue.",
+      "range": {
+        "startLine": 139,
+        "startChar": 2,
+        "endLine": 139,
+        "endChar": 13
+      },
+      "revId": "998ffa4ec39deebf76e4fa51393bff98bac28277",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "eb20151d_82f48524",
+        "filename": "appengine/monorail/api/api_proto/issue_objects.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-01-03T19:59:27Z",
+      "side": 1,
+      "message": "I\u0027m assuming all the refs will be replaced by resource names.",
+      "revId": "998ffa4ec39deebf76e4fa51393bff98bac28277",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7c834893_423ac376",
+        "filename": "appengine/monorail/api/api_proto/issues.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-01-03T19:59:27Z",
+      "side": 1,
+      "message": "NotifyType notify_type \u003d 2;\n\nwhere:\nNotifyType {\n  EMAIL \u003d 0;\n  NONE \u003d 1;\n}",
+      "range": {
+        "startLine": 127,
+        "startChar": 2,
+        "endLine": 127,
+        "endChar": 17
+      },
+      "revId": "998ffa4ec39deebf76e4fa51393bff98bac28277",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
