@@ -112,7 +112,7 @@ message ListApplicableFieldDefsResponse {
 
 
 // Next available tag: 9
-message UpdateIssueRequest {
+message DeprecatedUpdateIssueRequest {
   IssueRef issue_ref = 2;
   bool send_email = 3;
   IssueDelta delta = 4;
@@ -122,6 +122,11 @@ message UpdateIssueRequest {
   repeated int64 kept_attachments = 8;
 }
 
+message ChangeIssuesRequest {
+  repeated IssueDelta
+  bool send_email
+  string comment_content
+}
 
 // Next available tag: 4
 message StarIssueRequest {
