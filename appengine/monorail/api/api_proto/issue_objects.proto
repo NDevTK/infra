@@ -132,27 +132,20 @@ message Issue {
 
 // Next available tag: 18
 message IssueDelta {
-  // Note: We use StringValue instead of string so that we can
-  // check if delta.HasField('status').  Proto3 only allows that
-  // for nested messages and provides "boxed" values for this purpose.
-  // In JSON, a StringValue is represented as a simple string.
-  google.protobuf.StringValue status = 1;
-  UserRef owner_ref = 2;
-  repeated UserRef cc_refs_add = 3;
+  string name
+  Issue issue
+  // Repeated fields in `update_mask` will have values found in
+  // `issue` appended.
+  FieldMask update_mask
   repeated UserRef cc_refs_remove = 4;
-  repeated ComponentRef comp_refs_add = 5;
   repeated ComponentRef comp_refs_remove = 6;
-  repeated LabelRef label_refs_add = 7;
   repeated LabelRef label_refs_remove = 8;
-  repeated FieldValue field_vals_add = 9;
   repeated FieldValue field_vals_remove = 10;
   repeated FieldRef fields_clear = 11;
-  repeated IssueRef blocked_on_refs_add = 12;
   repeated IssueRef blocked_on_refs_remove = 13;
-  repeated IssueRef blocking_refs_add = 14;
   repeated IssueRef blocking_refs_remove = 15;
-  IssueRef merged_into_ref = 16;
-  google.protobuf.StringValue summary = 17;
+  repeated AttachmentUpload uploads = 7;
+  repeated int64 kept_attachments = 8;
 }
 
 
