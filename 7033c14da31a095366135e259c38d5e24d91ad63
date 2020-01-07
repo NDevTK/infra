@@ -16,6 +16,24 @@
       "revId": "7033c14da31a095366135e259c38d5e24d91ad63",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f4504c66_103f34f2",
+        "filename": "go/src/infra/tricium/functions/spellchecker/spellchecker_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 735,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2020-01-07T23:19:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "21f4ec65_84e4683e",
+      "revId": "7033c14da31a095366135e259c38d5e24d91ad63",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
