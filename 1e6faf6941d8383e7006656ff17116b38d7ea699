@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0b61a104_93bdea98",
+        "filename": "appengine/monorail/static_src/elements/chops/chops-button/chops-button.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2020-01-07T19:11:52Z",
+      "side": 1,
+      "message": "I think this is the cause - I forgot to change these from window.addEventListener to this.addEventListener after getting rid of focus handling.",
+      "range": {
+        "startLine": 133,
+        "startChar": 4,
+        "endLine": 133,
+        "endChar": 74
+      },
+      "revId": "1e6faf6941d8383e7006656ff17116b38d7ea699",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
