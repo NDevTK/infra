@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "935cf270_ccb6ade3",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/mr-issue-page/mr-restriction-indicator.js",
+        "patchSetId": 4
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1303432
+      },
+      "writtenOn": "2020-01-08T23:29:03Z",
+      "side": 1,
+      "message": "I think it\u0027s actually\n* reporter\n* owner/assignee\n* people with permission",
+      "revId": "14bafbd46f7576987289d90aea159e66a908a9f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
