@@ -23,6 +23,7 @@ import (
 	"go.chromium.org/luci/common/isolatedclient"
 	"go.chromium.org/luci/common/logging"
 
+	"infra/cmd/cros_test_platform/internal/execution/bb"
 	"infra/cmd/cros_test_platform/internal/execution/isolate"
 	"infra/cmd/cros_test_platform/internal/execution/isolate/getter"
 	"infra/cmd/cros_test_platform/internal/execution/skylab"
@@ -120,7 +121,8 @@ func (c *skylabExecuteRun) innerRun(a subcommands.Application, args []string, en
 		maxDuration = 12 * time.Hour
 	}
 
-	resps, err := c.handleRequests(ctx, maxDuration, runner, client, gf)
+	// TODO(crbug/1033291): create a new BB client.
+	resps, err := c.handleRequests(ctx, maxDuration, runner, client, gf, nil)
 	if err != nil && !containsSomeResponse(resps) {
 		// Catastrophic error. There is no reasonable response to write.
 		return err
@@ -225,10 +227,10 @@ func (c *skylabExecuteRun) validateRequestConfig(cfg *config.Config) error {
 	}
 	return nil
 }
-func (c *skylabExecuteRun) handleRequests(ctx context.Context, maximumDuration time.Duration, runner *skylab.Runner, t *swarming.Client, gf isolate.GetterFactory) ([]*steps.ExecuteResponse, error) {
+func (c *skylabExecuteRun) handleRequests(ctx context.Context, maximumDuration time.Duration, runner *skylab.Runner, t *swarming.Client, gf isolate.GetterFactory, bbClient bb.Client) ([]*steps.ExecuteResponse, error) {
 	ctx, cancel := errctx.WithTimeout(ctx, maximumDuration, fmt.Errorf("cros_test_platform request timeout (after %s)", maximumDuration))
 	defer cancel(context.Canceled)
-	err := runner.LaunchAndWait(ctx, t, gf)
+	err := runner.LaunchAndWait(ctx, t, gf, bbClient)
 	return runner.Responses(t), err
 }
 
