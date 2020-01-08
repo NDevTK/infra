@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/swarming/proto/jsonrpc"
 
+	"infra/cmd/cros_test_platform/internal/execution/bb"
 	"infra/cmd/cros_test_platform/internal/execution/isolate"
 	"infra/cmd/cros_test_platform/internal/execution/swarming"
 	"infra/libs/skylab/inventory"
@@ -62,7 +63,7 @@ func inferGlobalMaxRetries(params *test_platform.Request_Params) int32 {
 }
 
 // LaunchTasks launches initial tasks for all the testRuns in this task set.
-func (r *TaskSet) LaunchTasks(ctx context.Context, client swarming.Client) error {
+func (r *TaskSet) LaunchTasks(ctx context.Context, client swarming.Client, bbClient bb.Client) error {
 	for _, testRun := range r.testRuns {
 		runnable, err := testRun.ValidateDependencies(ctx, client)
 		if err != nil {
@@ -72,7 +73,7 @@ func (r *TaskSet) LaunchTasks(ctx context.Context, client swarming.Client) error
 			testRun.MarkNotRunnable()
 			continue
 		}
-		if err := testRun.LaunchAttempt(ctx, client); err != nil {
+		if err := testRun.LaunchAttempt(ctx, client, bbClient); err != nil {
 			return err
 		}
 	}
@@ -81,14 +82,14 @@ func (r *TaskSet) LaunchTasks(ctx context.Context, client swarming.Client) error
 
 // CheckTasksAndRetry checks the status of currently running tasks and retries
 // failed tasks when allowed.
-func (r *TaskSet) CheckTasksAndRetry(ctx context.Context, client swarming.Client, gf isolate.GetterFactory) error {
+func (r *TaskSet) CheckTasksAndRetry(ctx context.Context, client swarming.Client, gf isolate.GetterFactory, bbClient bb.Client) error {
 	for _, testRun := range r.testRuns {
 		if testRun.Completed() {
 			continue
 		}
 
 		latestAttempt := testRun.GetLatestAttempt()
-		if err := latestAttempt.FetchResults(ctx, client, gf); err != nil {
+		if err := latestAttempt.FetchResults(ctx, client, gf, bbClient); err != nil {
 			return errors.Annotate(err, "tick for task %s", latestAttempt.taskID).Err()
 		}
 
@@ -104,7 +105,7 @@ func (r *TaskSet) CheckTasksAndRetry(ctx context.Context, client swarming.Client
 		}
 		if shouldRetry {
 			logging.Debugf(ctx, "Retrying %s", testRun.Name)
-			if err := testRun.LaunchAttempt(ctx, client); err != nil {
+			if err := testRun.LaunchAttempt(ctx, client, bbClient); err != nil {
 				return errors.Annotate(err, "tick for task %s: retry test", latestAttempt.taskID).Err()
 			}
 			r.retries++
