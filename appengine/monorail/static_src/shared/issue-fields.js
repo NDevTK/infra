@@ -361,19 +361,15 @@ export const stringValuesForIssueField = (issue, fieldName, projectName,
     }
   }
 
-  // Label options are last in precedence.
-  if (labelPrefixSet.has(fieldKey)) {
-    const matchingLabels = (issue.labelRefs || []).filter((labelRef) => {
-      const labelPrefixKey = labelNameToLabelPrefix(
-          labelRef.label).toLowerCase();
-      return fieldKey === labelPrefixKey;
-    });
-    const labelPrefix = fieldKey + '-';
-    return matchingLabels.map(
-        (labelRef) => removePrefix(labelRef.label, labelPrefix));
-  }
-
-  return [];
+  // Handle custom labels and ad hoc labels last.
+  const matchingLabels = (issue.labelRefs || []).filter((labelRef) => {
+    const labelPrefixKey = labelNameToLabelPrefix(
+        labelRef.label).toLowerCase();
+    return fieldKey === labelPrefixKey;
+  });
+  const labelPrefix = fieldKey + '-';
+  return matchingLabels.map(
+      (labelRef) => removePrefix(labelRef.label, labelPrefix));
 };
 
 // TODO(zhangtiff): Implement hotlist specific fields: Rank, Added, Adder.
