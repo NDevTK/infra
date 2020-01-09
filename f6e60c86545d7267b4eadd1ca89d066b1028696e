@@ -22,6 +22,30 @@
       "revId": "f6e60c86545d7267b4eadd1ca89d066b1028696e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a47a51d4_daf23f9d",
+        "filename": "appengine/monorail/static_src/shared/issue-fields.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 365,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-01-09T23:34:12Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "40e21fc5_debfff61",
+      "range": {
+        "startLine": 365,
+        "startChar": 6,
+        "endLine": 365,
+        "endChar": 20
+      },
+      "revId": "f6e60c86545d7267b4eadd1ca89d066b1028696e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
