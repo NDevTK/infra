@@ -16,6 +16,40 @@
       "revId": "14bafbd46f7576987289d90aea159e66a908a9f7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5153af1c_a0efd705",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/mr-issue-page/mr-restriction-indicator.js",
+        "patchSetId": 4
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2020-01-09T00:09:13Z",
+      "side": 1,
+      "message": "Issue reporters don\u0027t get to edit, they only get to view.",
+      "revId": "14bafbd46f7576987289d90aea159e66a908a9f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d2b35565_b2d4a888",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/mr-issue-page/mr-restriction-indicator.js",
+        "patchSetId": 4
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1163684
+      },
+      "writtenOn": "2020-01-09T00:09:13Z",
+      "side": 1,
+      "message": "Same.",
+      "revId": "14bafbd46f7576987289d90aea159e66a908a9f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
