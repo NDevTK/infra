@@ -380,5 +380,17 @@ describe('stringValuesForIssueField', () => {
       assert.deepEqual(stringValuesForIssueField(issue, 'Milestone',
           projectName, fieldDefMap, labelPrefixSet), ['UI', 'Goodies']);
     });
+
+    it('gets values even for undefined label prefixes', () => {
+      const projectName = 'chromium';
+      const fieldDefMap = new Map();
+      const labelPrefixSet = new Set();
+      assert.deepEqual(stringValuesForIssueField(issue, 'test',
+          projectName, fieldDefMap, labelPrefixSet), ['label', 'label-2']);
+      assert.deepEqual(stringValuesForIssueField(issue, 'Milestone',
+          projectName, fieldDefMap, labelPrefixSet), ['UI', 'Goodies']);
+      assert.deepEqual(stringValuesForIssueField(issue, 'ignore',
+          projectName, fieldDefMap, labelPrefixSet), ['me']);
+    });
   });
 });
