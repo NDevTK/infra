@@ -15,6 +15,13 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/maruel/subcommands"
 
+	"infra/cmd/cros_test_platform/internal/execution/bb"
+	"infra/cmd/cros_test_platform/internal/execution/isolate"
+	"infra/cmd/cros_test_platform/internal/execution/isolate/getter"
+	"infra/cmd/cros_test_platform/internal/execution/skylab"
+	"infra/libs/skylab/common/errctx"
+	"infra/libs/skylab/swarming"
+
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	"go.chromium.org/luci/auth"
@@ -22,13 +29,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/isolatedclient"
 	"go.chromium.org/luci/common/logging"
-
-	"infra/cmd/cros_test_platform/internal/execution/bb"
-	"infra/cmd/cros_test_platform/internal/execution/isolate"
-	"infra/cmd/cros_test_platform/internal/execution/isolate/getter"
-	"infra/cmd/cros_test_platform/internal/execution/skylab"
-	"infra/libs/skylab/common/errctx"
-	"infra/libs/skylab/swarming"
 )
 
 // SkylabExecute subcommand: Run a set of enumerated tests against skylab backend.
@@ -117,8 +117,12 @@ func (c *skylabExecuteRun) innerRun(a subcommands.Application, args []string, en
 		maxDuration = 12 * time.Hour
 	}
 
-	// TODO(crbug/1033291): create a new BB client.
-	resps, err := c.handleRequests(ctx, maxDuration, runner, client, gf, nil)
+	bbc, err := bb.NewClient(ctx, cfg.GetTestRunner().GetBuildbucket().Host)
+	if err != nil {
+		return err
+	}
+
+	resps, err := c.handleRequests(ctx, maxDuration, runner, client, gf, bbc)
 	if err != nil && !containsSomeResponse(resps) {
 		// Catastrophic error. There is no reasonable response to write.
 		return err
