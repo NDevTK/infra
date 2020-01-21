@@ -46,6 +46,30 @@
       "revId": "84d88e5a072e9f5d98105ac25e9476abf155573c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4426517d_5817dc82",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2020-01-21T22:04:09Z",
+      "side": 1,
+      "message": "Chatted offline.",
+      "parentUuid": "9beb598d_7818a38f",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 23
+      },
+      "revId": "84d88e5a072e9f5d98105ac25e9476abf155573c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
