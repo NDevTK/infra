@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7f4996a9_de13850a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-01-21T04:34:51Z",
+      "side": 1,
+      "message": "hmm, I think if the labstation is not deployed to inventory before this device is deployed, the deployment should be refused.",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 23
+      },
+      "revId": "84d88e5a072e9f5d98105ac25e9476abf155573c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
