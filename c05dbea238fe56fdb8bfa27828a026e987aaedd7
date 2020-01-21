@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cc0317ae_f57f26f3",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-01-21T23:19:27Z",
+      "side": 1,
+      "message": "Alternatively, you can make the WithTaskAccount print a warning and return nil instead of failing completely",
+      "revId": "c05dbea238fe56fdb8bfa27828a026e987aaedd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
