@@ -246,3 +246,9 @@ func parseResultsOrPanic(content string) *ValidationResult {
 	}
 	return &out
 }
+
+func unmarshalOrPanic(content string, dest interface{}) {
+	if err := json.Unmarshal([]byte(content), dest); err != nil {
+		panic(err.Error())
+	}
+}
