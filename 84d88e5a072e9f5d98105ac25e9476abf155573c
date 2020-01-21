@@ -22,6 +22,30 @@
       "revId": "84d88e5a072e9f5d98105ac25e9476abf155573c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9beb598d_7818a38f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2020-01-21T19:49:35Z",
+      "side": 1,
+      "message": "Is there any technical reason blocks us to automatically deploy that? \nAnd another question is, do we allow user to deploy labstation and DUTs together in one RPC? If not, why?",
+      "parentUuid": "7f4996a9_de13850a",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 23
+      },
+      "revId": "84d88e5a072e9f5d98105ac25e9476abf155573c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
