@@ -52,6 +52,10 @@ peripherals: {
 os_type: 2
 model: "modelval"
 sku: "skuval"
+hwid_component: "battery/battery_label1"
+hwid_component: "battery/battery_label2"
+hwid_component: "storage/storage_label1"
+hwid_component: "storage/storage_label2"
 hwid_sku: "eve_IntelR_CoreTM_i7_7Y75_CPU_1_30GHz_16GB"
 brand: "HOMH"
 ec_type: 1
@@ -131,6 +135,10 @@ var fullLabels = []string{
 	"huddly",
 	"hw_video_acc_enc_vp9",
 	"hw_video_acc_enc_vp9_2",
+	"hwid_component:battery/battery_label1",
+	"hwid_component:battery/battery_label2",
+	"hwid_component:storage/storage_label1",
+	"hwid_component:storage/storage_label2",
 	"internal_display",
 	"lucidsleep",
 	"meet_app",
