@@ -305,22 +305,29 @@ func TestUpdateDeviceSetup(t *testing.T) {
 		devsToAdd := []*lab.ChromeOSDevice{
 			mockDut("dut1", "UUID:01", "labstation1"),
 			mockLabstation("labstation1", "UUID:02"),
+			mockLabstation("labstation2", "UUID:03"),
 		}
 		_, err := AddDevices(ctx, devsToAdd, false)
 		So(err, ShouldBeNil)
+		labConfig := getLabConfigByID(ctx, t, DeviceEntityID("UUID:01"))
+		So(int(labConfig.GetDut().GetPeripherals().GetServo().GetServoPort()), ShouldEqual, 8888)
 
 		datastore.GetTestable(ctx).Consistent(true)
 		Convey("Update non-existing devices", func() {
+			dut1 := mockDut("dut1", "UUID:01", "labstation2")
+			dut1.GetDut().GetPeripherals().GetServo().ServoPort = 0
 			result, err := UpdateDeviceSetup(ctx, []*lab.ChromeOSDevice{
-				mockDut("dut1", "UUID:ghost", ""),
-				mockDut("dut1", "UUID:01", "labstation2"),
-			})
+				mockDut("dut1", "UUID:ghost", "labstation1"),
+				dut1,
+			}, true)
 			if err != nil {
 				t.Fatal(err)
 			}
 			passed := result.Passed()
 			So(passed, ShouldHaveLength, 1)
 			So(passed[0].Entity.ID, ShouldEqual, "UUID:01")
+			labConfig := getLabConfigByID(ctx, t, DeviceEntityID("UUID:01"))
+			So(int(labConfig.GetDut().GetPeripherals().GetServo().GetServoPort()), ShouldEqual, 9999)
 
 			failed := result.Failed()
 			So(failed, ShouldHaveLength, 1)
@@ -338,6 +345,7 @@ func TestUpdateDutMeta(t *testing.T) {
 
 		devsToAdd := []*lab.ChromeOSDevice{
 			mockDut("dut1", "UUID:01", "labstation1"),
+			mockLabstation("labstation1", ""),
 		}
 		_, err := AddDevices(ctx, devsToAdd, false)
 		So(err, ShouldBeNil)
