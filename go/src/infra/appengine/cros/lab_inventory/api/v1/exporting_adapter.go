@@ -9,12 +9,13 @@ import (
 	"runtime/debug"
 	"strings"
 
+	"infra/libs/skylab/inventory"
+
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/chromiumos/infra/proto/go/lab"
 	"go.chromium.org/chromiumos/infra/proto/go/manufacturing"
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
-	"infra/libs/skylab/inventory"
 )
 
 var (
@@ -215,6 +216,8 @@ func setManufacturingConfig(l *inventory.SchedulableLabels, m *manufacturing.Con
 	}
 	wifiChip := m.GetWifiChip()
 	l.WifiChip = &wifiChip
+	hwidComponent := m.GetHwidComponent()
+	l.HwidComponent = hwidComponent
 }
 
 func setDeviceConfig(labels *inventory.SchedulableLabels, d *device.Config) {
