@@ -446,7 +446,7 @@ func TestUpdateCrosDevicesSetup(t *testing.T) {
 		tf, validate := newTestFixtureWithContext(ctx, t)
 		defer validate()
 
-		for _, d := range []*lab.ChromeOSDevice{&dut1, &labstation1} {
+		for _, d := range []*lab.ChromeOSDevice{&labstation1, &dut1} {
 			req := &api.AddCrosDevicesRequest{
 				Devices: []*lab.ChromeOSDevice{d},
 			}
