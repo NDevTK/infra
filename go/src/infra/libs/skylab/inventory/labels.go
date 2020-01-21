@@ -58,6 +58,7 @@ func NewSchedulableLabels() *SchedulableLabels {
 		Phase:           new(SchedulableLabels_Phase),
 		ReferenceDesign: new(string),
 		WifiChip:        new(string),
+		HwidComponent:   new([]string),
 		TestCoverageHints: &TestCoverageHints{
 			ChaosDut:        new(bool),
 			ChaosNightly:    new(bool),
