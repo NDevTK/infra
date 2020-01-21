@@ -5,8 +5,9 @@
 package manufacturingconfig
 
 import (
-	"go.chromium.org/chromiumos/infra/proto/go/manufacturing"
 	"infra/libs/skylab/inventory"
+
+	"go.chromium.org/chromiumos/infra/proto/go/manufacturing"
 )
 
 // ConvertMCToV1Labels converts manufacturing configs to the git-based skylab inventory.
@@ -30,4 +31,5 @@ func ConvertMCToV1Labels(m *manufacturing.Config, l *inventory.SchedulableLabels
 		l.WifiChip = new(string)
 	}
 	*l.WifiChip = m.GetWifiChip()
+	l.HwidComponent = m.GetHwidComponent()
 }
