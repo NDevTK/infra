@@ -34,6 +34,24 @@
       "revId": "c05dbea238fe56fdb8bfa27828a026e987aaedd7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f350a3c5_600f4a55",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-01-22T00:36:58Z",
+      "side": 1,
+      "message": "I probably will choose to refactor this later to add warning and then remove the repair job restriction.\n\nThe problem is not that it fails early, because if it doesn\u0027t have correct task service account, it will fail later anyway as it cannot update inventory.",
+      "parentUuid": "db9e7e81_4b66fd95",
+      "revId": "c05dbea238fe56fdb8bfa27828a026e987aaedd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
