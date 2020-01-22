@@ -22,6 +22,30 @@
       "revId": "ac911a214c53b336395b72945bbcb2926a70dd17",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f3611194_86aaebba",
+        "filename": "go/src/infra/cmd/stable_version2/internal/cmd/validateconfig/internal/querygs/querygs_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2020-01-22T20:48:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4c76dca2_298b60bd",
+      "range": {
+        "startLine": 229,
+        "startChar": 2,
+        "endLine": 231,
+        "endChar": 0
+      },
+      "revId": "ac911a214c53b336395b72945bbcb2926a70dd17",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
