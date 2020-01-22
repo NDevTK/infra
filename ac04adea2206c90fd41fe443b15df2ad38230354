@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "27ad47cf_487772a8",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/devices.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 307,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-01-22T18:30:13Z",
+      "side": 1,
+      "message": "I get a little bit confused about this change. If it doesn\u0027t update servo at all in update, do we still need to assign new servo port?",
+      "revId": "ac04adea2206c90fd41fe443b15df2ad38230354",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
