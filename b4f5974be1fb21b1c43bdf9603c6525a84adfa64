@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "bc0e2d81_167d5ad6",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-01-23T20:44:04Z",
+      "side": 1,
+      "message": "not sure if unittest should be changed correspondingly",
+      "parentUuid": "352d606d_56aeb5f6",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 15
+      },
+      "revId": "b4f5974be1fb21b1c43bdf9603c6525a84adfa64",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "465420a3_26bf2952",
         "filename": "go/src/infra/appengine/cros/lab_inventory/api/v1/importing_adapter.go",
         "patchSetId": 1
