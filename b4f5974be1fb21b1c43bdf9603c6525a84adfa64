@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "352d606d_56aeb5f6",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-01-23T20:43:37Z",
+      "side": 1,
+      "message": "hmm, then we need to add more field for labstation.",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 15
+      },
+      "revId": "b4f5974be1fb21b1c43bdf9603c6525a84adfa64",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "465420a3_26bf2952",
+        "filename": "go/src/infra/appengine/cros/lab_inventory/api/v1/importing_adapter.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-01-23T20:43:37Z",
+      "side": 1,
+      "message": "Not sure about why we need to change this part. This change doesn\u0027t make difference (plus make not too much sense for me).\n\n1) before if no servo in V1, the function will return a pointer to an empty Servo (not an uninitialized variable, as by default everything is empty if it\u0027s not initialized). Currently it does the same thing.\n\n2) initialize an address make it 100% a nil.",
+      "range": {
+        "startLine": 117,
+        "startChar": 0,
+        "endLine": 117,
+        "endChar": 21
+      },
+      "revId": "b4f5974be1fb21b1c43bdf9603c6525a84adfa64",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
