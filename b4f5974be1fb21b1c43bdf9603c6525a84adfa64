@@ -69,6 +69,30 @@
       "revId": "b4f5974be1fb21b1c43bdf9603c6525a84adfa64",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "51196e0a_4723063c",
+        "filename": "go/src/infra/appengine/cros/lab_inventory/api/v1/importing_adapter.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2020-01-23T20:57:00Z",
+      "side": 1,
+      "message": "If there\u0027s no servo in spec, we return \u0027\u0026servo\u0027, which is an pointer to an empty servo. Thought the servo itself is empty, the pointer itself isn\u0027t nil.",
+      "parentUuid": "465420a3_26bf2952",
+      "range": {
+        "startLine": 117,
+        "startChar": 0,
+        "endLine": 117,
+        "endChar": 21
+      },
+      "revId": "b4f5974be1fb21b1c43bdf9603c6525a84adfa64",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
