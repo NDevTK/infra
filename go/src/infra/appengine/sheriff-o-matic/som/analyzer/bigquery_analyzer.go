@@ -119,7 +119,7 @@ LIMIT
 `
 
 // This list of builders is from
-// https://cs.chromium.org/chromium/build/scripts/slave/recipe_modules/gatekeeper/resources/gatekeeper_trees.json?l=44
+// https://cs.chromium.org/chromium/build/scripts/slave/recipe_modules/gatekeeper/resources/gatekeeper_trees.json?l=60
 const iosFailuresQuery = selectFromWhere + `
 	project = "chromium"
 	AND MasterName IN ("chromium.mac")
@@ -128,6 +128,7 @@ const iosFailuresQuery = selectFromWhere + `
 		"ios-device-xcode-clang",
 		"ios-simulator",
 		"ios-simulator-full-configs",
+        "ios-simulator-noncq",
 		"ios-simulator-xcode-clang"
 	)
 `

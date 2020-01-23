@@ -319,6 +319,7 @@ func TestGenerateSQLQuery(t *testing.T) {
 					"ios-device-xcode-clang",
 					"ios-simulator",
 					"ios-simulator-full-configs",
+                    "ios-simulator-noncq",
 					"ios-simulator-xcode-clang"
 				)
 		`
