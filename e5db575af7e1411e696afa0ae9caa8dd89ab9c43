@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "b234dfdb_1d684db5",
+        "filename": "appengine/monorail/static_src/shared/helpers.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-01-23T22:44:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9d785b78_3a3c2360",
+      "range": {
+        "startLine": 47,
+        "startChar": 12,
+        "endLine": 47,
+        "endChar": 19
+      },
+      "revId": "e5db575af7e1411e696afa0ae9caa8dd89ab9c43",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "85e9281c_cf8a02ea",
         "filename": "appengine/monorail/static_src/shared/helpers.js",
         "patchSetId": 2
@@ -59,6 +83,30 @@
       "writtenOn": "2020-01-23T22:29:54Z",
       "side": 1,
       "message": "Would it make sense to consider sharing more of the fetching logic between the two pages? ie: maybe we could turn all/most of \u003cmr-list-page\u003e\u0027s _shouldRefresh() function into a shared helper.",
+      "range": {
+        "startLine": 202,
+        "startChar": 0,
+        "endLine": 202,
+        "endChar": 59
+      },
+      "revId": "e5db575af7e1411e696afa0ae9caa8dd89ab9c43",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4eddc748_b62b581e",
+        "filename": "appengine/monorail/static_src/shared/helpers.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-01-23T22:44:05Z",
+      "side": 1,
+      "message": "Probably a good idea. I want to make sure the flip to list_new is complete first though.",
+      "parentUuid": "85e9281c_cf8a02ea",
       "range": {
         "startLine": 202,
         "startChar": 0,
