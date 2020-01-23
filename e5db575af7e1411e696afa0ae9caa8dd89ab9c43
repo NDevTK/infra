@@ -116,6 +116,30 @@
       "revId": "e5db575af7e1411e696afa0ae9caa8dd89ab9c43",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a5664897_e5632951",
+        "filename": "appengine/monorail/static_src/shared/helpers.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2020-01-23T22:44:57Z",
+      "side": 1,
+      "message": "SGTM, minimizing risk of regressions at this point is wise.",
+      "parentUuid": "4eddc748_b62b581e",
+      "range": {
+        "startLine": 202,
+        "startChar": 0,
+        "endLine": 202,
+        "endChar": 59
+      },
+      "revId": "e5db575af7e1411e696afa0ae9caa8dd89ab9c43",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
