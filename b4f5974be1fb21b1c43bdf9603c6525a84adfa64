@@ -93,6 +93,30 @@
       "revId": "b4f5974be1fb21b1c43bdf9603c6525a84adfa64",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c7b1de9c_dffac4c0",
+        "filename": "go/src/infra/appengine/cros/lab_inventory/api/v1/importing_adapter.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-01-24T01:38:01Z",
+      "side": 1,
+      "message": "hmm, you want to return nil? I see, please make comment for this function that what\u0027s the expected return + add a test case for this.",
+      "parentUuid": "51196e0a_4723063c",
+      "range": {
+        "startLine": 117,
+        "startChar": 0,
+        "endLine": 117,
+        "endChar": 21
+      },
+      "revId": "b4f5974be1fb21b1c43bdf9603c6525a84adfa64",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
