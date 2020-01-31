@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e9d723cf_67a544e6",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1377977
+      },
+      "writtenOn": "2020-01-31T16:59:53Z",
+      "side": 1,
+      "message": "FYI only, I wish we could converge the default values of this between proto and Python and remove the resulting double-negatives in the business logic.",
+      "range": {
+        "startLine": 39,
+        "startChar": 9,
+        "endLine": 39,
+        "endChar": 16
+      },
+      "revId": "04fe06edd8b6c2dc11b5c966fbaa0111a6d74fbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "87f5bf29_2260bb01",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1377977
+      },
+      "writtenOn": "2020-01-31T16:59:53Z",
+      "side": 1,
+      "message": "I think you might be able to do this more aesthetically with:\n\n```\napi_hotlist.hotlist_privacy \u003d (\n    feature_objects_pb2.Hotlist.HotlistPrivacy.Value(\u0027PUBLIC\u0027))\n```",
+      "range": {
+        "startLine": 40,
+        "startChar": 34,
+        "endLine": 40,
+        "endChar": 53
+      },
+      "revId": "04fe06edd8b6c2dc11b5c966fbaa0111a6d74fbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2bf093b9_65c13a58",
+        "filename": "appengine/monorail/api/v1/hotlists_servicer.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1377977
+      },
+      "writtenOn": "2020-01-31T16:59:53Z",
+      "side": 1,
+      "message": "Type annotations and possibly a more meaningful docstring?\n\nYou get to set the standard for future methods in this service!",
+      "range": {
+        "startLine": 46,
+        "startChar": 6,
+        "endLine": 46,
+        "endChar": 16
+      },
+      "revId": "04fe06edd8b6c2dc11b5c966fbaa0111a6d74fbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fd3c6e1f_cb1953df",
+        "filename": "appengine/monorail/api/v1/test/converters_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1377977
+      },
+      "writtenOn": "2020-01-31T16:59:53Z",
+      "side": 1,
+      "message": "Recommend empty line below.",
+      "range": {
+        "startLine": 6,
+        "startChar": 45,
+        "endLine": 6,
+        "endChar": 53
+      },
+      "revId": "04fe06edd8b6c2dc11b5c966fbaa0111a6d74fbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
