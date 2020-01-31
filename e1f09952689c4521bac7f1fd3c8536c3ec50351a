@@ -47,6 +47,30 @@
       "revId": "e1f09952689c4521bac7f1fd3c8536c3ec50351a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8ed86ec8_70ff777d",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-01-31T21:28:29Z",
+      "side": 1,
+      "message": "I believe the linter was an intern project, is in (dev) mode and no one is currently working on it. So I never knew how accurate it was.\nI\u0027m happy to change to stop these comments.",
+      "parentUuid": "4173b4c8_7c7d2483",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 1
+      },
+      "revId": "e1f09952689c4521bac7f1fd3c8536c3ec50351a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
