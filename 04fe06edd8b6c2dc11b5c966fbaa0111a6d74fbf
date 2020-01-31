@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "760d00ef_c75f2a23",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-01-31T20:15:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "87f5bf29_2260bb01",
+      "range": {
+        "startLine": 40,
+        "startChar": 34,
+        "endLine": 40,
+        "endChar": 53
+      },
+      "revId": "04fe06edd8b6c2dc11b5c966fbaa0111a6d74fbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2bf093b9_65c13a58",
         "filename": "appengine/monorail/api/v1/hotlists_servicer.py",
         "patchSetId": 4
@@ -59,6 +83,30 @@
       "writtenOn": "2020-01-31T16:59:53Z",
       "side": 1,
       "message": "Type annotations and possibly a more meaningful docstring?\n\nYou get to set the standard for future methods in this service!",
+      "range": {
+        "startLine": 46,
+        "startChar": 6,
+        "endLine": 46,
+        "endChar": 16
+      },
+      "revId": "04fe06edd8b6c2dc11b5c966fbaa0111a6d74fbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ad47d33a_14a4d4ae",
+        "filename": "appengine/monorail/api/v1/hotlists_servicer.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-01-31T20:15:33Z",
+      "side": 1,
+      "message": "PTAL. I don\u0027t want to take space for Args and Returns in the docstring since it should be clear form the type annotations and all @monorail_servicer.PRPCMethod will always be taking in the `mc`, \u003cmethod-name\u003eRequest object and return the \u003cmethod-name\u003eResponse object.",
+      "parentUuid": "2bf093b9_65c13a58",
       "range": {
         "startLine": 46,
         "startChar": 6,
@@ -91,6 +139,30 @@
       "revId": "04fe06edd8b6c2dc11b5c966fbaa0111a6d74fbf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "70e34557_65f7188f",
+        "filename": "appengine/monorail/api/v1/test/converters_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-01-31T20:15:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fd3c6e1f_cb1953df",
+      "range": {
+        "startLine": 6,
+        "startChar": 45,
+        "endLine": 6,
+        "endChar": 53
+      },
+      "revId": "04fe06edd8b6c2dc11b5c966fbaa0111a6d74fbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
