@@ -23,6 +23,30 @@
       "revId": "e1f09952689c4521bac7f1fd3c8536c3ec50351a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4173b4c8_7c7d2483",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1377977
+      },
+      "writtenOn": "2020-01-31T20:55:26Z",
+      "side": 1,
+      "message": "For my own understanding, is there a historical reason that we include a link here but the linter feels we shouldn\u0027t include it? Would it make sense to change either our header or the linter to be in agreement?",
+      "parentUuid": "b21824d6_47cec462",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 1
+      },
+      "revId": "e1f09952689c4521bac7f1fd3c8536c3ec50351a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
