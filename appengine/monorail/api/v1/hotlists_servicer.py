@@ -10,6 +10,7 @@ from __future__ import absolute_import
 from google.protobuf import empty_pb2
 
 from api import resource_name_converters as rnc
+from api.v1 import converters
 from api.v1 import monorail_servicer
 from api.v1.api_proto import feature_objects_pb2
 from api.v1.api_proto import hotlists_pb2
@@ -39,3 +40,15 @@ class HotlistsServicer(monorail_servicer.MonorailServicer):
           hotlist_id, moved_issue_ids, request.target_position)
 
     return empty_pb2.Empty()
+
+
+  @monorail_servicer.PRPCMethod
+  def GetHotlist(self, mc, request):
+    """Get a Hotlist."""
+
+    hotlist_id = rnc.IngestHotlistName(request.name)
+
+    with work_env.WorkEnv(mc, self.services) as we:
+      hotlist = we.GetHotlist(hotlist_id)
+
+    return converters.ConvertHotlist(hotlist)
