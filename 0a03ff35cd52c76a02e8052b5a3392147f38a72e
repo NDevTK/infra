@@ -16,6 +16,24 @@
       "revId": "0a03ff35cd52c76a02e8052b5a3392147f38a72e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0c7f3289_504d42d9",
+        "filename": "go/src/infra/libs/cros/lab_inventory/utilization/utilization.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 277,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-02-11T22:27:08Z",
+      "side": 1,
+      "message": "I don\u0027t think (99%) dutstate will be \"running\". but not 100% sure.",
+      "parentUuid": "5956655b_35ab7e33",
+      "revId": "0a03ff35cd52c76a02e8052b5a3392147f38a72e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
