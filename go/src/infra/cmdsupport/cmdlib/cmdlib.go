@@ -51,18 +51,35 @@ func (f commonFlags) DebugLogger(a subcommands.Application) *log.Logger {
 	return log.New(out, a.GetName(), log.LstdFlags|log.Lshortfile)
 }
 
-// NewHTTPClient returns an HTTP client with authentication set up.
-func NewHTTPClient(ctx context.Context, f *authcli.Flags) (*http.Client, error) {
+// NewAuthenticator creates a new authenticator based on flags.
+func NewAuthenticator(ctx context.Context, f *authcli.Flags) (*auth.Authenticator, error) {
 	o, err := f.Options()
+	if err != nil {
+		return nil, errors.Annotate(err, "create authenticator").Err()
+	}
+	return auth.NewAuthenticator(ctx, auth.SilentLogin, o), nil
+}
+
+// NewHTTPClient creates a new HTTP Client with the given authentication options.
+func NewHTTPClient(ctx context.Context, f *authcli.Flags) (*http.Client, error) {
+	at, err := NewAuthenticator(ctx, f)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to get auth options").Err()
 	}
-	a := auth.NewAuthenticator(ctx, auth.OptionalLogin, o)
-	c, err := a.Client()
+	c, err := at.Client()
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to create HTTP client").Err()
 	}
 	return c, nil
+}
+
+// NewAuthenticatedTransport creates a new authenticated transport
+func NewAuthenticatedTransport(ctx context.Context, f *authcli.Flags) (http.RoundTripper, error) {
+	at, err := NewAuthenticator(ctx, f)
+	if err != nil {
+		return nil, errors.Annotate(err, "create authenticated transport").Err()
+	}
+	return at.Transport()
 }
 
 // UserErrorReporter reports a detailed error message to the user.

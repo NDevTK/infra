@@ -13,6 +13,9 @@ import (
 	"sync"
 	"time"
 
+	"cloud.google.com/go/storage"
+	"go.chromium.org/luci/common/gcloud/gs"
+
 	fleetAPI "infra/appengine/cros/lab_inventory/api/v1"
 	"infra/libs/fleet/protos"
 )
@@ -21,20 +24,25 @@ import (
 // doing so. This helps to save work and restart the application in case an update
 // fails
 type Updater struct {
-	dtChannel   chan *fleet.ChopsAsset   // Used to send asset data to registration system
-	logFile     *csv.Writer              // Log for all the input data received
-	logFilePath string                   // The path of the log file
-	resFile     *csv.Writer              // Log for all the input data with success/failure
-	resFilePath string                   // The path of the res file
-	logFileLoc  string                   // Directory to save all the logs to
-	timeStamp   time.Time                // The time that this updater is run and logged
-	client      fleetAPI.InventoryClient // RPC client
-	ctx         context.Context
-	wg          sync.WaitGroup // Used to sync updater thread
+	dtChannel     chan *fleet.ChopsAsset   // Used to send asset data to registration system
+	logFile       *csv.Writer              // Log for all the input data received
+	logFilePath   string                   // The path of the log file
+	resFile       *csv.Writer              // Log for all the input data with success/failure
+	resFilePath   string                   // The path of the res file
+	logFileLoc    string                   // Directory to save all the logs to
+	timeStamp     time.Time                // The time that this updater is run and logged
+	client        fleetAPI.InventoryClient // RPC client
+	gsClient      gs.Client
+	storageClient *storage.Client // The Google Storage client
+	username      string          // The Google Storage bucket to upload the logs
+	ctx           context.Context
+	wg            sync.WaitGroup // Used to sync updater thread
 }
 
 // Maximum number of the assets in the same location is 10.
 const maxAssetPerLocation = 10
+
+///assetScanLogs"
 
 func makeFile(logDir, filename string) (*os.File, error) {
 	of, err := os.Create(filepath.Join(logDir, filename))
@@ -45,7 +53,7 @@ func makeFile(logDir, filename string) (*os.File, error) {
 }
 
 // NewUpdater create a new updater
-func NewUpdater(ctx context.Context, c fleetAPI.InventoryClient, logDir string) (u *Updater, err error) {
+func NewUpdater(ctx context.Context, c fleetAPI.InventoryClient, gsc gs.Client, sc *storage.Client, logDir string, username string) (u *Updater, err error) {
 	// Logfiles are prefixed with timestamp
 	curTime := time.Now()
 	timestamp := curTime.Format(timeFormat)
@@ -62,15 +70,18 @@ func NewUpdater(ctx context.Context, c fleetAPI.InventoryClient, logDir string) 
 
 	channel := make(chan *fleet.ChopsAsset, maxAssetPerLocation)
 	u = &Updater{
-		logFile:     csv.NewWriter(logFile),
-		logFilePath: filepath.Join(logDir, logFileName),
-		resFile:     csv.NewWriter(resFile),
-		resFilePath: filepath.Join(logDir, resFileName),
-		timeStamp:   curTime,
-		client:      c,
-		dtChannel:   channel,
-		logFileLoc:  logDir,
-		ctx:         ctx,
+		logFile:       csv.NewWriter(logFile),
+		logFilePath:   filepath.Join(logDir, logFileName),
+		resFile:       csv.NewWriter(resFile),
+		resFilePath:   filepath.Join(logDir, resFileName),
+		timeStamp:     curTime,
+		client:        c,
+		gsClient:      gsc,
+		storageClient: sc,
+		username:      username,
+		dtChannel:     channel,
+		logFileLoc:    logDir,
+		ctx:           ctx,
 	}
 
 	// Update waitgroup before starting the routine
@@ -95,6 +106,9 @@ func (u *Updater) Close() {
 	u.wg.Wait()
 	u.logFile.Flush()
 	u.resFile.Flush()
+	if err := u.uploadLogs(); err != nil {
+		fmt.Println(err)
+	}
 	logStats, err := populateStatistics(u.logFilePath, u.resFilePath, u.timeStamp)
 	if err != nil {
 		fmt.Printf("Fail to generate statistics for this round of scan: %s\n", err.Error())
@@ -215,4 +229,19 @@ func (u *Updater) logResults(state string, asset *fleet.ChopsAsset, action, err 
 	status = append(status, assetToStringList(asset)...)
 	status = append(status, action, err)
 	u.resFile.Write(status)
+}
+
+func (u *Updater) uploadLogs() error {
+	fmt.Printf("Uploading %s\n", u.logFilePath)
+	//if err := upload(u.ctx, u.storageClient, u.logFilePath, u.username, gsBucket); err != nil {
+	//	return err
+	//}
+	if err := upload2(u.gsClient, u.logFilePath, u.username); err != nil {
+		return err
+	}
+	fmt.Printf("Uploading %s\n", u.resFilePath)
+	//if err := upload(u.ctx, u.storageClient, u.resFilePath, u.username, gsBucket); err != nil {
+	//	return err
+	//}
+	return nil
 }

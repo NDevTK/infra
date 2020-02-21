@@ -6,11 +6,15 @@ package audit
 
 import (
 	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
+
+	"infra/cmd/labtool/site"
 )
 
 type audit struct {
 	subcommands.CommandRunBase
+	authFlags authcli.Flags
 }
 
 // AuditCmd contains audit command specification
@@ -20,6 +24,7 @@ var AuditCmd = &subcommands.Command{
 	LongDesc:  "Collection of tools for use in lab auditing",
 	CommandRun: func() subcommands.CommandRun {
 		c := &audit{}
+		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		return c
 	},
 }
