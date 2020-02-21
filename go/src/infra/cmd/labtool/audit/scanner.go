@@ -8,14 +8,17 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/gcloud/gs"
 	"go.chromium.org/luci/grpc/prpc"
 
@@ -113,8 +116,16 @@ func (c *bcScanner) exec(a subcommands.Application, args []string, env subcomman
 	if err != nil {
 		return err
 	}
+
+	username, err := getUsername(ctx, &c.authFlags, a.GetOut())
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Username: %s\n", username)
+
 	e := c.envFlags.Env()
 	fmt.Printf("Using inventory service %s\n", e)
+
 	ic := fleetAPI.NewInventoryPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.InventoryService,
@@ -130,7 +141,7 @@ func (c *bcScanner) exec(a subcommands.Application, args []string, env subcomman
 		return err
 	}
 
-	u, err := utils.NewUpdater(ctx, ic, gsc, c.logDir)
+	u, err := utils.NewUpdater(ctx, ic, gsc, c.logDir, username)
 	if err != nil {
 		return err
 	}
@@ -138,6 +149,24 @@ func (c *bcScanner) exec(a subcommands.Application, args []string, env subcomman
 	go c.signalCatcher()
 	c.parseLoop()
 	return err
+}
+
+func getUsername(ctx context.Context, f *authcli.Flags, w io.Writer) (string, error) {
+	at, err := cmdlib.NewAuthenticator(ctx, f)
+	if err != nil {
+		return "", err
+	}
+	username, err := at.GetEmail()
+	if err != nil {
+		prompt := cmdlib.CLIPrompt(w, os.Stdin)
+		username = prompt("Your username:")
+		if username == "" {
+			return "", errors.New("Please type in a non-empty username for further uploading logs")
+		}
+	} else {
+		username = strings.Split(username, "@")[0]
+	}
+	return username, nil
 }
 
 func getGSClient(ctx context.Context, f *authcli.Flags) (gs.Client, error) {
