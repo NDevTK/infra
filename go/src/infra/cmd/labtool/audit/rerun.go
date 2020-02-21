@@ -89,7 +89,23 @@ func (c *rerun) innerRun(a subcommands.Application, args []string, env subcomman
 		Options: site.DefaultPRPCOptions,
 	})
 
-	u, err := utils.NewUpdater(ctx, ic, c.logDir)
+	username, err := getUsername(ctx, &c.authFlags, a.GetOut())
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Username: %s\n", username)
+
+	sc, err := getStorageClient(ctx, &c.authFlags)
+	if err != nil {
+		return err
+	}
+
+	gsc, err := getGSClient(ctx, &c.authFlags)
+	if err != nil {
+		return err
+	}
+
+	u, err := utils.NewUpdater(ctx, ic, gsc, sc, c.logDir, username)
 	if err != nil {
 		return err
 	}

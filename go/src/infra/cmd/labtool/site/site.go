@@ -7,10 +7,14 @@ package site
 
 import (
 	"flag"
+	"os"
+	"path/filepath"
 
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
+
+	"go.chromium.org/luci/common/gcloud/gs"
 )
 
 // Environment contains environment specific values.
@@ -49,8 +53,20 @@ func (f EnvFlags) Env() Environment {
 // DefaultAuthOptions is an auth.Options struct prefilled with chrome-infra
 // defaults.
 var DefaultAuthOptions = chromeinfra.SetDefaultAuthOptions(auth.Options{
-	Scopes: []string{auth.OAuthScopeEmail},
+	Scopes:     append(gs.ReadWriteScopes, auth.OAuthScopeEmail),
+	SecretsDir: SecretsDir(),
+	//https://www.googleapis.com/auth/cloud-platform"},
 })
+
+// SecretsDir determines the location for auth-related secrets and consults
+// the standard environment variable XDG_CACHE_HOME
+func SecretsDir() string {
+	configDir := os.Getenv("XDG_CACHE_HOME")
+	if configDir == "" {
+		configDir = filepath.Join(os.Getenv("HOME"), ".cache")
+	}
+	return filepath.Join(configDir, "labtool", "auth")
+}
 
 // DefaultPRPCOptions is used for PRPC clients.  If it is nil, the
 // default value is used.  See prpc.Options for details.

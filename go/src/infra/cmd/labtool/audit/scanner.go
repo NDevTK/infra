@@ -6,16 +6,23 @@ package audit
 
 import (
 	"bufio"
+	"context"
 	"fmt"
+	"io"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"regexp"
+	"strings"
 
+	"cloud.google.com/go/storage"
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/gcloud/gs"
 	"go.chromium.org/luci/grpc/prpc"
+	"google.golang.org/api/option"
 
 	fleetAPI "infra/appengine/cros/lab_inventory/api/v1"
 	"infra/cmd/labtool/site"
@@ -111,6 +118,13 @@ func (c *bcScanner) exec(a subcommands.Application, args []string, env subcomman
 	if err != nil {
 		return err
 	}
+
+	username, err := getUsername(ctx, &c.authFlags, a.GetOut())
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Username: %s\n", username)
+
 	e := c.envFlags.Env()
 	fmt.Printf("Using inventory service %s\n", e)
 	ic := fleetAPI.NewInventoryPRPCClient(&prpc.Client{
@@ -122,7 +136,18 @@ func (c *bcScanner) exec(a subcommands.Application, args []string, env subcomman
 	if err := createLogDir(c.logDir); err != nil {
 		return err
 	}
-	u, err := utils.NewUpdater(ctx, ic, c.logDir)
+
+	sc, err := getStorageClient(ctx, &c.authFlags)
+	if err != nil {
+		return err
+	}
+
+	gsc, err := getGSClient(ctx, &c.authFlags)
+	if err != nil {
+		return err
+	}
+
+	u, err := utils.NewUpdater(ctx, ic, gsc, sc, c.logDir, username)
 	if err != nil {
 		return err
 	}
@@ -130,6 +155,48 @@ func (c *bcScanner) exec(a subcommands.Application, args []string, env subcomman
 	go c.signalCatcher()
 	c.parseLoop()
 	return err
+}
+
+func getUsername(ctx context.Context, f *authcli.Flags, w io.Writer) (string, error) {
+	at, err := cmdlib.NewAuthenticator(ctx, f)
+	if err != nil {
+		return "", err
+	}
+	username, err := at.GetEmail()
+	if err != nil {
+		prompt := cmdlib.CLIPrompt(w, os.Stdin)
+		username = prompt("Your username:")
+		if username == "" {
+			return "", errors.New("Please type in a non-empty username for further uploading logs")
+		}
+	} else {
+		username = strings.Split(username, "@")[0]
+	}
+	return username, nil
+}
+
+func getStorageClient(ctx context.Context, f *authcli.Flags) (*storage.Client, error) {
+	at, err := cmdlib.NewAuthenticator(ctx, f)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to initialize storage.Client").Err()
+	}
+	ts, err := at.TokenSource()
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to initialize storage.Client").Err()
+	}
+	client, err := storage.NewClient(ctx, option.WithTokenSource(ts))
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to initialize storage.Client").Err()
+	}
+	return client, nil
+}
+
+func getGSClient(ctx context.Context, f *authcli.Flags) (gs.Client, error) {
+	t, err := cmdlib.NewAuthenticatedTransport(ctx, f)
+	if err != nil {
+		return nil, err
+	}
+	return gs.NewProdClient(ctx, t)
 }
 
 var currLoc *fleet.Location
