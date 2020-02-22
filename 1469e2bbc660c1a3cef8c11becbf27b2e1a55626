@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0329ef39_6fa40a52",
+        "filename": "python_pb2/Makefile",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2020-02-22T01:38:59Z",
+      "side": 1,
+      "message": "yup. If someone finds a better way to do this, patches welcome. I think at some point, this protoc invocation will run out of RAM.",
+      "range": {
+        "startLine": 32,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 42
+      },
+      "revId": "1469e2bbc660c1a3cef8c11becbf27b2e1a55626",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
