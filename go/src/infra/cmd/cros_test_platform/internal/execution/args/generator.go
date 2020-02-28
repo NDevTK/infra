@@ -16,7 +16,10 @@ import (
 	"strings"
 	"time"
 
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+
 	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	build_api "go.chromium.org/chromiumos/infra/proto/go/chromite/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
@@ -103,6 +106,8 @@ func (g *Generator) getUnsupportedDependencies() []string {
 	return unsupported.ToSlice()
 }
 
+const displayNameKey = "label"
+
 // GenerateArgs generates request.Args, combining all the inputs to
 // argsGenerator.
 func (g *Generator) GenerateArgs(ctx context.Context) (request.Args, error) {
@@ -121,9 +126,7 @@ func (g *Generator) GenerateArgs(ctx context.Context) (request.Args, error) {
 		return request.Args{}, errors.Annotate(err, "create request args").Err()
 	}
 
-	kv := g.baseKeyvals()
-	g.updateWithInvocationKeyvals(kv)
-	g.addKeyvalsForDisplayName(ctx, kv)
+	kv := g.keyvals(ctx)
 
 	cmd := &worker.Command{
 		ClientTest:      isClient,
@@ -140,6 +143,11 @@ func (g *Generator) GenerateArgs(ctx context.Context) (request.Args, error) {
 		return request.Args{}, errors.Annotate(err, "create request args").Err()
 	}
 
+	trr, err := g.testRunnerRequest(ctx)
+	if err != nil {
+		return request.Args{}, errors.Annotate(err, "create request args").Err()
+	}
+
 	return request.Args{
 		Cmd:                     *cmd,
 		SchedulableLabels:       *labels,
@@ -149,6 +157,7 @@ func (g *Generator) GenerateArgs(ctx context.Context) (request.Args, error) {
 		ProvisionableDimensions: provisionableDimensions,
 		StatusTopic:             g.params.GetNotification().GetPubsubTopic(),
 		SwarmingTags:            g.swarmingTags(cmd),
+		TestRunnerRequest:       trr,
 		Timeout:                 timeout,
 	}, nil
 
@@ -234,6 +243,26 @@ func (g *Generator) provisionableDimensions() ([]string, error) {
 	return dims, nil
 }
 
+func (g *Generator) provisionableLabels() (map[string]string, error) {
+	deps := g.params.SoftwareDependencies
+	builds, err := extractBuilds(deps)
+	if err != nil {
+		return nil, errors.Annotate(err, "get provisionable labels").Err()
+	}
+
+	dims := make(map[string]string)
+	if b := builds.ChromeOS; b != "" {
+		dims[prefixChromeOS] = b
+	}
+	if b := builds.FirmwareRO; b != "" {
+		dims[prefixFirmwareRO] = b
+	}
+	if b := builds.FirmwareRW; b != "" {
+		dims[prefixFirmwareRW] = b
+	}
+	return dims, nil
+}
+
 func (g *Generator) timeout() (time.Duration, error) {
 	if g.params.Time == nil {
 		return 0, errors.Reason("get timeout: nil params.time").Err()
@@ -245,14 +274,11 @@ func (g *Generator) timeout() (time.Duration, error) {
 	return duration, nil
 }
 
-func (g *Generator) addKeyvalsForDisplayName(ctx context.Context, kv map[string]string) {
-	const displayNameKey = "label"
-
+func (g *Generator) displayName(ctx context.Context, kv map[string]string) string {
 	if g.invocation.DisplayName != "" {
-		kv[displayNameKey] = g.invocation.DisplayName
-		return
+		return g.invocation.DisplayName
 	}
-	kv[displayNameKey] = g.constructDisplayNameFromRequestParams(ctx, kv)
+	return g.constructDisplayNameFromRequestParams(ctx, kv)
 }
 
 const (
@@ -286,6 +312,14 @@ func (g *Generator) constructDisplayNameFromRequestParams(ctx context.Context, k
 	}
 
 	return build + "/" + suite + "/" + testName
+}
+
+func (g *Generator) keyvals(ctx context.Context) map[string]string {
+	kv := g.baseKeyvals()
+	g.updateWithInvocationKeyvals(kv)
+	displayName := g.displayName(ctx, kv)
+	kv[displayNameKey] = displayName
+	return kv
 }
 
 func (g *Generator) updateWithInvocationKeyvals(kv map[string]string) {
@@ -371,4 +405,45 @@ func extractBuilds(deps []*test_platform.Request_Params_SoftwareDependency) (*bu
 		}
 	}
 	return b, nil
+}
+
+func (g *Generator) testRunnerRequest(ctx context.Context) (*skylab_test_runner.Request, error) {
+	isClient, err := g.isClientTest()
+	if err != nil {
+		return nil, errors.Annotate(err, "create test runner request").Err()
+	}
+	pl, err := g.provisionableLabels()
+	if err != nil {
+		return nil, errors.Annotate(err, "create test runner request").Err()
+	}
+	d, err := timeToProto(g.deadline)
+	if err != nil {
+		return nil, errors.Annotate(err, "create test runner request").Err()
+	}
+	kv := g.keyvals(ctx)
+	return &skylab_test_runner.Request{
+		Deadline: d,
+		Prejob: &skylab_test_runner.Request_Prejob{
+			ProvisionableLabels: pl,
+		},
+		Test: &skylab_test_runner.Request_Test{
+			Harness: &skylab_test_runner.Request_Test_Autotest_{
+				Autotest: &skylab_test_runner.Request_Test_Autotest{
+					DisplayName:  g.displayName(ctx, kv),
+					IsClientTest: isClient,
+					Name:         g.invocation.Test.Name,
+					Keyvals:      kv,
+					TestArgs:     g.invocation.TestArgs,
+				},
+			},
+		},
+	}, nil
+}
+
+// The default conversion does not map the zero values correctly.
+func timeToProto(t time.Time) (*timestamp.Timestamp, error) {
+	if t.IsZero() {
+		return nil, nil
+	}
+	return ptypes.TimestampProto(t)
 }
