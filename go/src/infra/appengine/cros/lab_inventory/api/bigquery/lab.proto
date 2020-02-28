@@ -14,4 +14,7 @@ message LabInventory {
     string hostname = 2;
     lab.ChromeOSDevice device = 3;
     google.protobuf.Timestamp updated_time = 4;
+    // observed_on records when the current state was observed,
+    // It should always be later than or equal to the udpate_time.
+    google.protobuf.Timestamp observed_on = 5;
 }
