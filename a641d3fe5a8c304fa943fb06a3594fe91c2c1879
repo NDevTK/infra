@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "12e52adf_55fd5772",
+        "filename": "appengine/monorail/services/test/config_svc_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-02-28T00:10:07Z",
+      "side": 1,
+      "message": "user_ids in monorail tests are normally just three digits.\nlet\u0027s follow that and do 111, 222, 333 etc.",
+      "range": {
+        "startLine": 197,
+        "startChar": 36,
+        "endLine": 197,
+        "endChar": 46
+      },
+      "revId": "a641d3fe5a8c304fa943fb06a3594fe91c2c1879",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "35d3886a_ddec811b",
+        "filename": "appengine/monorail/services/test/config_svc_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 673,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-02-28T00:10:07Z",
+      "side": 1,
+      "message": "hello!\nremove  please :)",
+      "revId": "a641d3fe5a8c304fa943fb06a3594fe91c2c1879",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d4f531cc_50ca6090",
+        "filename": "appengine/monorail/services/test/config_svc_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 696,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-02-28T00:10:07Z",
+      "side": 1,
+      "message": "hello",
+      "range": {
+        "startLine": 696,
+        "startChar": 4,
+        "endLine": 696,
+        "endChar": 22
+      },
+      "revId": "a641d3fe5a8c304fa943fb06a3594fe91c2c1879",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
