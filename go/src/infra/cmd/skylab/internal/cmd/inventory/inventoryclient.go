@@ -18,6 +18,7 @@ import (
 	invV1Api "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/cmd/skylab/internal/cmd/cmdlib"
 	skycmdlib "infra/cmd/skylab/internal/cmd/cmdlib"
+	"infra/cmd/skylab/internal/cmd/meta"
 	"infra/cmd/skylab/internal/site"
 	"infra/libs/skylab/inventory"
 )
@@ -50,12 +51,15 @@ type inventoryClientV2 struct {
 
 // NewInventoryClient creates a new instance of inventory client.
 func NewInventoryClient(hc *http.Client, env site.Environment, useDefaultInventory bool) Client {
+	options := site.DefaultPRPCOptions
+	options.UserAgent = fmt.Sprintf("skylab/%s", meta.HumanReableVersion)
+
 	if env.DefaultInventory == "v2" && useDefaultInventory || env.DefaultInventory == "v1" && !useDefaultInventory {
 		return &inventoryClientV2{
 			ic: invV2Api.NewInventoryPRPCClient(&prpc.Client{
 				C:       hc,
 				Host:    env.InventoryService,
-				Options: site.DefaultPRPCOptions,
+				Options: options,
 			}),
 		}
 	}
@@ -63,7 +67,7 @@ func NewInventoryClient(hc *http.Client, env site.Environment, useDefaultInvento
 		ic: invV1Api.NewInventoryPRPCClient(&prpc.Client{
 			C:       hc,
 			Host:    env.AdminService,
-			Options: site.DefaultPRPCOptions,
+			Options: options,
 		}),
 	}
 }
