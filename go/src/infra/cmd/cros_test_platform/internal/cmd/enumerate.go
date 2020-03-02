@@ -124,8 +124,8 @@ func (c *enumerateRun) innerRun(a subcommands.Application, args []string, env su
 	resps := make(map[string]*steps.EnumerationResponse)
 	merr = errors.NewMultiError()
 	for t, r := range taggedRequests {
-		if ts, err := c.enumerate(tms[t], r); err != nil {
-			merr = append(merr, err)
+		if ts, imerr := c.enumerate(tms[t], r); imerr != nil {
+			merr = append(merr, annotateEach(imerr, "enumerate %s", t)...)
 		} else {
 			resps[t] = &steps.EnumerationResponse{AutotestInvocations: ts}
 		}
@@ -140,20 +140,22 @@ func (c *enumerateRun) innerRun(a subcommands.Application, args []string, env su
 	return c.writeResponsesWithError(resps, writableErr)
 }
 
+func annotateEach(imerr errors.MultiError, fmt string, args ...interface{}) errors.MultiError {
+	var merr errors.MultiError
+	for _, err := range imerr {
+		merr = append(merr, errors.Annotate(err, fmt, args...).Err())
+	}
+	return merr
+}
+
 func (c *enumerateRun) debugDump(ctx context.Context, reqs map[string]*steps.EnumerationRequest, tms map[string]*api.TestMetadataResponse, resps map[string]*steps.EnumerationResponse, merr errors.MultiError) {
 	logging.Infof(ctx, "## Begin debug dump")
-	if len(reqs) != len(tms) {
-		panic(fmt.Sprintf("%d metadata for %d requests", len(tms), len(reqs)))
-	}
-	if len(reqs) != len(resps) {
-		panic(fmt.Sprintf("%d responses for %d requests", len(resps), len(reqs)))
-	}
 
 	logging.Infof(ctx, "Errors encountered...")
 	if merr.First() != nil {
 		for _, e := range merr {
 			if e != nil {
-				logging.Infof(ctx, "%s", e)
+				logging.Warningf(ctx, "%s", e)
 			}
 		}
 	}
@@ -163,8 +165,16 @@ func (c *enumerateRun) debugDump(ctx context.Context, reqs map[string]*steps.Enu
 	for t := range reqs {
 		logging.Infof(ctx, "Tag: %s", t)
 		logging.Infof(ctx, "Request: %s", pretty.Sprint(reqs[t]))
-		logging.Infof(ctx, "Response: %s", pretty.Sprint(resps[t]))
-		logging.Infof(ctx, "Test Metadata: %s", pretty.Sprint(tms[t]))
+		if r, ok := resps[t]; ok {
+			logging.Infof(ctx, "Response: %s", pretty.Sprint(r))
+		} else {
+			logging.Warningf(ctx, "No response for %s", t)
+		}
+		if m, ok := tms[t]; ok {
+			logging.Infof(ctx, "Test Metadata: %s", pretty.Sprint(m))
+		} else {
+			logging.Warningf(ctx, "No metadata for %s", t)
+		}
 		logging.Infof(ctx, "")
 	}
 	logging.Infof(ctx, "## End debug dump")
@@ -240,18 +250,53 @@ func (c *enumerateRun) newGSClient(ctx context.Context) (gs.Client, error) {
 	return gs.NewProdClient(ctx, t)
 }
 
-func (c *enumerateRun) enumerate(tm *api.TestMetadataResponse, request *steps.EnumerationRequest) ([]*steps.EnumerationResponse_AutotestInvocation, error) {
+func (c *enumerateRun) enumerate(tm *api.TestMetadataResponse, request *steps.EnumerationRequest) ([]*steps.EnumerationResponse_AutotestInvocation, errors.MultiError) {
 	var ts []*steps.EnumerationResponse_AutotestInvocation
 
 	g, err := enumeration.GetForTests(tm.Autotest, request.TestPlan.Test)
 	if err != nil {
-		return nil, err
+		return nil, errors.NewMultiError(err)
 	}
 	ts = append(ts, g...)
 
 	ts = append(ts, enumeration.GetForSuites(tm.Autotest, request.TestPlan.Suite)...)
 	ts = append(ts, enumeration.GetForEnumeration(request.TestPlan.GetEnumeration())...)
+
+	if merr := validateEnumeration(ts); merr != nil {
+		return nil, merr
+	}
 	return ts, nil
+}
+
+func validateEnumeration(ts []*steps.EnumerationResponse_AutotestInvocation) errors.MultiError {
+	if len(ts) == 0 {
+		return errors.NewMultiError(errors.Reason("empty enumeration").Err())
+	}
+
+	var merr errors.MultiError
+	for _, t := range ts {
+		if err := validateInvocation(t); err != nil {
+			merr = append(merr, errors.Annotate(err, "validate %s", t).Err())
+		}
+	}
+	return errorsOrNil(merr)
+}
+
+func errorsOrNil(merr errors.MultiError) errors.MultiError {
+	if merr.First() != nil {
+		return merr
+	}
+	return nil
+}
+
+func validateInvocation(t *steps.EnumerationResponse_AutotestInvocation) error {
+	if t.GetTest().GetName() == "" {
+		return errors.Reason("empty name").Err()
+	}
+	if t.GetTest().GetExecutionEnvironment() == api.AutotestTest_EXECUTION_ENVIRONMENT_UNSPECIFIED {
+		return errors.Reason("unspecified execution environment").Err()
+	}
+	return nil
 }
 
 func computeMetadata(localPaths artifacts.LocalPaths, workspace string) (*api.TestMetadataResponse, error) {
