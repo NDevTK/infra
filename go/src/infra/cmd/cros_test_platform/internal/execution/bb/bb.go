@@ -8,22 +8,44 @@ package bb
 import (
 	"context"
 	"infra/cmd/cros_test_platform/internal/execution/skylab"
+	"infra/cmd/cros_test_platform/internal/execution/swarming"
 	"infra/libs/skylab/request"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 )
 
 type bbSkylabClient struct {
+	swarmingClient swarming.Client
 }
 
 // NewSkylabClient creates a new skylab.Client.
 func NewSkylabClient(ctx context.Context, cfg *config.Config) (skylab.Client, error) {
-	return &bbSkylabClient{}, nil
+	sc, err := swarming.NewClient(ctx, cfg.SkylabSwarming)
+	if err != nil {
+		return nil, errors.Annotate(err, "create Skylab client").Err()
+	}
+	return &bbSkylabClient{
+		swarmingClient: sc,
+	}, nil
 }
 
-// ValidateArgs stub.
+// ValidateArgs checks whether this test has dependencies satisfied by
+// at least one Skylab bot.
 func (c *bbSkylabClient) ValidateArgs(ctx context.Context, args *request.Args) (bool, error) {
-	panic("Not yet implemented.")
+	dims, err := args.StaticDimensions()
+	if err != nil {
+		return false, errors.Annotate(err, "validate dependencies").Err()
+	}
+	exists, err := c.swarmingClient.BotExists(ctx, dims)
+	if err != nil {
+		return false, errors.Annotate(err, "validate dependencies").Err()
+	}
+	if !exists {
+		logging.Warningf(ctx, "Dependency validation failed for %s: no bot exists with dimensions %+v.", args.TestRunnerRequest.GetTest().GetAutotest().GetName(), dims)
+	}
+	return exists, nil
 }
 
 // LaunchTask stub.
