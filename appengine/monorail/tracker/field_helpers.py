@@ -33,7 +33,8 @@ ParsedFieldDef = collections.namedtuple(
     'needs_member, needs_perm, grants_perm, notify_on, is_required, '
     'is_niche, importance, is_multivalued, field_docstring, choices_text, '
     'applicable_type, applicable_predicate, revised_labels, date_action_str, '
-    'approvers_str, survey, parent_approval_name, is_phase_field')
+    'approvers_str, survey, parent_approval_name, is_phase_field, '
+    'is_restricted_field')
 
 
 def ParseFieldDefRequest(post_data, config):
@@ -78,13 +79,15 @@ def ParseFieldDefRequest(post_data, config):
   # phases can have labels.
   is_phase_field = ('is_phase_field' in post_data) and (
       field_type_str not in ['approval_type', 'enum_type'])
+  is_restricted_field = post_data.get('is_restricted_field')
 
   return ParsedFieldDef(
-      field_name, field_type_str, min_value, max_value, regex,
-      needs_member, needs_perm, grants_perm, notify_on, is_required, is_niche,
-      importance, is_multivalued, field_docstring, choices_text,
-      applicable_type, applicable_predicate, revised_labels, date_action_str,
-      approvers_str, survey, parent_approval_name, is_phase_field)
+      field_name, field_type_str, min_value, max_value, regex, needs_member,
+      needs_perm, grants_perm, notify_on, is_required, is_niche, importance,
+      is_multivalued, field_docstring, choices_text, applicable_type,
+      applicable_predicate, revised_labels, date_action_str, approvers_str,
+      survey, parent_approval_name, is_phase_field, is_restricted_field)
+
 
 
 def _ParseChoicesIntoWellKnownLabels(
@@ -340,3 +343,20 @@ def ReviseFieldDefFromParsed(parsed, old_fd):
       parsed.grants_perm, parsed.notify_on, date_action, parsed.field_docstring,
       False, approval_id=old_fd.approval_id or None,
       is_phase_field=old_fd.is_phase_field)
+
+
+def ReviseParsedFieldDefAssertions(parsed):
+  """Checks if new/updated FieldDef is not violating basic assertions"""
+  error_msg = None
+  if (parsed.is_required is not None) and (parsed.is_niche is not None):
+    if (parsed.is_required and parsed.is_niche):
+      error_msg = 'A field cannot be both required and niche.'
+  if (parsed.is_restricted_field is not None) and (parsed.field_type_str is
+                                                   not None):
+    if (parsed.is_restricted_field and
+        parsed.field_type_str == 'approval_type'):
+      error_msg = 'An approval field cannot be restricted.'
+  if parsed.date_action_str is not None:
+    if parsed.date_action_str not in config_svc.DATE_ACTION_ENUM:
+      error_msg = 'There were problems with the date action.'
+  return error_msg

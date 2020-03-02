@@ -1241,6 +1241,7 @@ class ConfigService(object):
       date_action_str,
       docstring,
       admin_ids,
+      editor_ids,
       approval_id=None,
       is_phase_field=False,
       is_restricted_field=False):
@@ -1285,6 +1286,7 @@ class ConfigService(object):
       date_action=None,
       docstring=None,
       admin_ids=None,
+      editor_ids=None,
       is_restricted_field=None):
     config = self.GetProjectConfig(cnxn, project_id)
     fd = tracker_bizobj.FindFieldDefByID(field_id, config)
@@ -1303,6 +1305,8 @@ class ConfigService(object):
       fd.date_action = config_svc.DATE_ACTION_ENUM.index(date_action)
     if docstring is not None: fd.docstring = docstring
     if admin_ids is not None: fd.admin_ids = admin_ids
+    if editor_ids is not None:
+      fd.editor_ids = editor_ids
     if is_restricted_field is not None:
       fd.is_restricted_field = is_restricted_field
     self.StoreConfig(cnxn, config)
