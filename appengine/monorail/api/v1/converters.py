@@ -13,6 +13,10 @@ from google.protobuf import timestamp_pb2
 from api import resource_name_converters as rnc
 from api.v1.api_proto import feature_objects_pb2
 from api.v1.api_proto import issue_objects_pb2
+from api.v1.api_proto import user_objects_pb2
+
+from framework import framework_bizobj
+from framework import framework_helpers
 
 
 def ConvertHotlist(hotlist):
@@ -93,14 +97,58 @@ def ConvertHotlistItems(cnxn, hotlist_id, items, services):
 
   api_items = []
   for item in found_items:
-      api_item = feature_objects_pb2.HotlistItem(
-          name=resource_names_dict.get(item.issue_id),
-          issue=issue_names_dict.get(item.issue_id),
-          rank=friendly_ranks_dict[item.rank],
-          adder=adder_names_dict.get(item.adder_id),
-          note=item.note)
-      if item.date_added:
-        api_item.create_time.FromSeconds(item.date_added)
-      api_items.append(api_item)
+    api_item = feature_objects_pb2.HotlistItem(
+        name=resource_names_dict.get(item.issue_id),
+        issue=issue_names_dict.get(item.issue_id),
+        rank=friendly_ranks_dict[item.rank],
+        adder=adder_names_dict.get(item.adder_id),
+        note=item.note)
+    if item.date_added:
+      api_item.create_time.FromSeconds(item.date_added)
+    api_items.append(api_item)
 
   return api_items
+
+
+def ConvertUsers(users_by_id, user_auth, project):
+  # Dict(int: protorpc.User), AuthData, protoprc.Project ->
+  # api_proto.user_objects_pb2.User
+  """Convert dict of users into list of protoc Users.
+
+  Args:
+    users_by_id: Dictionary of protorpc.Users
+    user_auth: AuthData of requester
+    project: currently viewed project
+
+  Returns:
+    List of equivalent protoc Users.
+
+  """
+  output = []
+
+  # Aggregate list of users and user ids
+  all_users = []
+  all_user_ids = []
+  for user_id, user in users_by_id.items():
+    all_users.append(user)
+    all_user_ids.append(user_id)
+
+  # Get resource names for users
+  user_resource_names_dict = rnc.ConvertUserNames(all_user_ids)
+
+  # Get display names for users
+  display_names = framework_bizobj.CreateUserDisplayNames(
+      user_auth, all_users, project)
+
+  for user_id, user in users_by_id.items():
+    name = user_resource_names_dict.get(user_id)
+    display_name = display_names.get(user_id)
+    availability_message = framework_helpers.GetUserAvailability(user)[0]
+
+    output.append(
+        user_objects_pb2.User(
+            name=name,
+            display_name=display_name,
+            availability_message=availability_message))
+
+  return output
