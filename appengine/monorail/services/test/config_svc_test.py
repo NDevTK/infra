@@ -919,6 +919,8 @@ class ConfigServiceTest(unittest.TestCase):
         commit=False).AndReturn(1)
     self.config_service.fielddef2admin_tbl.InsertRows(
         self.cnxn, config_svc.FIELDDEF2ADMIN_COLS, [], commit=False)
+    self.config_service.fielddef2editor_tbl.InsertRows(
+        self.cnxn, config_svc.FIELDDEF2EDITOR_COLS, [], commit=False)
     self.cnxn.Commit()
 
   def testCreateFieldDef(self):
@@ -943,7 +945,7 @@ class ConfigServiceTest(unittest.TestCase):
         None,
         0,
         'no_action',
-        'doc', [],
+        'doc', [], [],
         is_restricted_field=True)
     self.mox.VerifyAll()
     self.assertEqual(1, field_id)
@@ -966,6 +968,10 @@ class ConfigServiceTest(unittest.TestCase):
         self.cnxn, field_id=field_id, commit=False)
     self.config_service.fielddef2admin_tbl.InsertRows(
         self.cnxn, config_svc.FIELDDEF2ADMIN_COLS, [], commit=False)
+    self.config_service.fielddef2editor_tbl.Delete(
+        self.cnxn, field_id=field_id, commit=False)
+    self.config_service.fielddef2editor_tbl.InsertRows(
+        self.cnxn, config_svc.FIELDDEF2EDITOR_COLS, [], commit=False)
     self.cnxn.Commit()
 
   def testUpdateFieldDef_NoOp(self):
@@ -973,7 +979,8 @@ class ConfigServiceTest(unittest.TestCase):
     self.SetUpUpdateFieldDef(1, new_values)
 
     self.mox.ReplayAll()
-    self.config_service.UpdateFieldDef(self.cnxn, 789, 1, admin_ids=[])
+    self.config_service.UpdateFieldDef(
+        self.cnxn, 789, 1, admin_ids=[], editor_ids=[])
     self.mox.VerifyAll()
 
   def testUpdateFieldDef_Normal(self):
@@ -999,7 +1006,7 @@ class ConfigServiceTest(unittest.TestCase):
     new_values = new_values.copy()
     new_values['notify_on'] = 1
     self.config_service.UpdateFieldDef(
-        self.cnxn, 789, 1, admin_ids=[], **new_values)
+        self.cnxn, 789, 1, admin_ids=[], editor_ids=[], **new_values)
     self.mox.VerifyAll()
 
   ### Component definitions
@@ -1154,6 +1161,8 @@ class ConfigServiceTest(unittest.TestCase):
         for t in tracker_constants.DEFAULT_TEMPLATES]
     templates[0].owner_id = 111
     templates[0].admin_ids = [111, 222]
-    config.field_defs = [tracker_pb2.FieldDef(admin_ids=[333])]
+    config.field_defs = [
+        tracker_pb2.FieldDef(admin_ids=[333], editor_ids=[444])
+    ]
     actual = self.config_service.UsersInvolvedInConfig(config, templates)
-    self.assertEqual({111, 222, 333}, actual)
+    self.assertEqual({111, 222, 333, 444}, actual)
