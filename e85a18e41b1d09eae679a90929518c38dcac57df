@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "6645863e_5c983c3a",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-03T21:58:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a2794266_9c141d95",
+      "range": {
+        "startLine": 114,
+        "startChar": 35,
+        "endLine": 114,
+        "endChar": 43
+      },
+      "revId": "e85a18e41b1d09eae679a90929518c38dcac57df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ca45ffe7_ebb063f8",
         "filename": "appengine/monorail/api/v1/converters.py",
         "patchSetId": 3
@@ -39,6 +63,24 @@
       "revId": "e85a18e41b1d09eae679a90929518c38dcac57df",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3426a302_e27dd4b5",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-03T21:58:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ca45ffe7_ebb063f8",
+      "revId": "e85a18e41b1d09eae679a90929518c38dcac57df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -65,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "d78d50d4_2d685137",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-03T21:58:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0d7590d2_aa030ed5",
+      "range": {
+        "startLine": 127,
+        "startChar": 2,
+        "endLine": 127,
+        "endChar": 8
+      },
+      "revId": "e85a18e41b1d09eae679a90929518c38dcac57df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b8761065_e557aba5",
         "filename": "appengine/monorail/api/v1/converters.py",
         "patchSetId": 3
@@ -85,6 +151,30 @@
       "revId": "e85a18e41b1d09eae679a90929518c38dcac57df",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "05a1b3f8_31d48aa0",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-03T21:58:03Z",
+      "side": 1,
+      "message": "_availability_status would be an unused variable and would not pass linter",
+      "parentUuid": "b8761065_e557aba5",
+      "range": {
+        "startLine": 138,
+        "startChar": 4,
+        "endLine": 138,
+        "endChar": 73
+      },
+      "revId": "e85a18e41b1d09eae679a90929518c38dcac57df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
