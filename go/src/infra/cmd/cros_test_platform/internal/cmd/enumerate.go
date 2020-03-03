@@ -109,13 +109,13 @@ func (c *enumerateRun) innerRun(a subcommands.Application, args []string, env su
 			return err
 		}
 
-		tm, err := computeMetadata(lp, w)
-		if err != nil && tm == nil {
+		tm, errs := computeMetadata(lp, w)
+		if errs != nil && tm == nil {
 			// Catastrophic error. There is no reasonable response to write.
-			return err
+			return errs
 		}
 		tms[t] = tm
-		merr = append(merr, err)
+		merr = append(merr, annotateEach(errs, "compuete metadata for %s", t)...)
 	}
 	dl.LogTestMetadata(ctx, tms)
 	if merr.First() != nil {
@@ -140,6 +140,14 @@ func (c *enumerateRun) innerRun(a subcommands.Application, args []string, env su
 	return writeResponse(c.outputPath, &steps.EnumerationResponses{
 		TaggedResponses: resps,
 	})
+}
+
+func annotateEach(imerr errors.MultiError, fmt string, args ...interface{}) errors.MultiError {
+	var merr errors.MultiError
+	for _, err := range imerr {
+		merr = append(merr, errors.Annotate(err, fmt, args...).Err())
+	}
+	return merr
 }
 
 func (c *enumerateRun) processCLIArgs(args []string) error {
@@ -219,13 +227,44 @@ func (c *enumerateRun) enumerate(tm *api.TestMetadataResponse, request *steps.En
 	return ts, nil
 }
 
-func computeMetadata(localPaths artifacts.LocalPaths, workspace string) (*api.TestMetadataResponse, error) {
+func validateEnumeration(ts []*steps.EnumerationResponse_AutotestInvocation) errors.MultiError {
+	if len(ts) == 0 {
+		return errors.NewMultiError(errors.Reason("empty enumeration").Err())
+	}
+
+	var merr errors.MultiError
+	for _, t := range ts {
+		if err := validateInvocation(t); err != nil {
+			merr = append(merr, errors.Annotate(err, "validate %s", t).Err())
+		}
+	}
+	return errorsOrNil(merr)
+}
+
+func errorsOrNil(merr errors.MultiError) errors.MultiError {
+	if merr.First() != nil {
+		return merr
+	}
+	return nil
+}
+
+func validateInvocation(t *steps.EnumerationResponse_AutotestInvocation) error {
+	if t.GetTest().GetName() == "" {
+		return errors.Reason("empty name").Err()
+	}
+	if t.GetTest().GetExecutionEnvironment() == api.AutotestTest_EXECUTION_ENVIRONMENT_UNSPECIFIED {
+		return errors.Reason("unspecified execution environment").Err()
+	}
+	return nil
+}
+
+func computeMetadata(localPaths artifacts.LocalPaths, workspace string) (*api.TestMetadataResponse, errors.MultiError) {
 	extracted := filepath.Join(workspace, "extracted")
 	if err := os.Mkdir(extracted, 0750); err != nil {
-		return nil, errors.Annotate(err, "compute metadata").Err()
+		return nil, errors.NewMultiError(errors.Annotate(err, "compute metadata").Err())
 	}
 	if err := artifacts.ExtractControlFiles(localPaths, extracted); err != nil {
-		return nil, errors.Annotate(err, "compute metadata").Err()
+		return nil, errors.NewMultiError(errors.Annotate(err, "compute metadata").Err())
 	}
 	return testspec.Get(extracted)
 }
