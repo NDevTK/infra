@@ -109,13 +109,13 @@ func (c *enumerateRun) innerRun(a subcommands.Application, args []string, env su
 			return err
 		}
 
-		tm, err := computeMetadata(lp, w)
-		if err != nil && tm == nil {
+		tm, errs := computeMetadata(lp, w)
+		if errs != nil && tm == nil {
 			// Catastrophic error. There is no reasonable response to write.
-			return err
+			return errs
 		}
 		tms[t] = tm
-		merr = append(merr, err)
+		merr = append(merr, annotateEach(errs, "compuete metadata for %s", t)...)
 	}
 	dl.LogTestMetadata(ctx, tms)
 	if merr.First() != nil {
@@ -262,13 +262,13 @@ func validateInvocation(t *steps.EnumerationResponse_AutotestInvocation) error {
 	return nil
 }
 
-func computeMetadata(localPaths artifacts.LocalPaths, workspace string) (*api.TestMetadataResponse, error) {
+func computeMetadata(localPaths artifacts.LocalPaths, workspace string) (*api.TestMetadataResponse, errors.MultiError) {
 	extracted := filepath.Join(workspace, "extracted")
 	if err := os.Mkdir(extracted, 0750); err != nil {
-		return nil, errors.Annotate(err, "compute metadata").Err()
+		return nil, errors.NewMultiError(errors.Annotate(err, "compute metadata").Err())
 	}
 	if err := artifacts.ExtractControlFiles(localPaths, extracted); err != nil {
-		return nil, errors.Annotate(err, "compute metadata").Err()
+		return nil, errors.NewMultiError(errors.Annotate(err, "compute metadata").Err())
 	}
 	return testspec.Get(extracted)
 }

@@ -165,10 +165,10 @@ func TestGetTestInNonExistentSuite(t *testing.T) {
 // canned must map *contents of the control file* to their parse results. The
 // returned parseTestControlFn returns error for any control file not in canned.
 func newFakeParseTestControlFn(canned map[string]*testMetadata) parseTestControlFn {
-	return func(text string) (*testMetadata, error) {
+	return func(text string) (*testMetadata, errors.MultiError) {
 		tm, ok := canned[text]
 		if !ok {
-			return nil, errors.Reason("uncanned control file: %s", text).Err()
+			return nil, errors.NewMultiError(errors.Reason("uncanned control file: %s", text).Err())
 		}
 		return tm, nil
 	}
@@ -190,10 +190,10 @@ func testWithNameAndSuites(name string, suites []string) *testMetadata {
 // returned parseSuiteControlFn returns error for any control file not in
 // canned.
 func newFakeParseSuiteControlFn(canned map[string]*api.AutotestSuite) parseSuiteControlFn {
-	return func(text string) (*api.AutotestSuite, error) {
+	return func(text string) (*api.AutotestSuite, errors.MultiError) {
 		as, ok := canned[text]
 		if !ok {
-			return nil, errors.Reason("uncanned control file: %s", text).Err()
+			return nil, errors.NewMultiError(errors.Reason("uncanned control file: %s", text).Err())
 		}
 		return as, nil
 	}

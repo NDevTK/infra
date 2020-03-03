@@ -14,47 +14,63 @@ import (
 	"go.chromium.org/luci/common/errors"
 )
 
-func parseTestControl(text string) (*testMetadata, error) {
+func parseTestControl(text string) (*testMetadata, errors.MultiError) {
 	var merr errors.MultiError
 	var tm testMetadata
-	parseTestName(text, &tm)
-	parseExecutionEnvironment(text, &tm)
+	merr = append(merr, parseTestName(text, &tm))
+	merr = append(merr, parseExecutionEnvironment(text, &tm))
 	merr = append(merr, parseSyncCount(text, &tm))
 	merr = append(merr, parseRetries(text, &tm))
 	merr = append(merr, parseDependencies(text, &tm))
 	parseSuites(text, &tm)
-	return &tm, unwrapMultiErrorIfNil(merr)
+	return &tm, removeNilErrors(merr)
 }
 
-func parseSuiteControl(text string) (*api.AutotestSuite, error) {
+func parseSuiteControl(text string) (*api.AutotestSuite, errors.MultiError) {
 	var as api.AutotestSuite
 	parseSuiteName(text, &as)
 	parseChildDependencies(text, &as)
 	return &as, nil
 }
 
-func unwrapMultiErrorIfNil(merr errors.MultiError) error {
-	if merr.First() == nil {
-		return nil
+func removeNilErrors(merr errors.MultiError) errors.MultiError {
+	var ret errors.MultiError
+	for _, err := range merr {
+		if err != nil {
+			ret = append(ret, err)
+		}
 	}
-	return merr
+	if len(ret) > 0 {
+		return ret
+	}
+	return nil
 }
 
-func parseTestName(text string, tm *testMetadata) {
+func parseTestName(text string, tm *testMetadata) error {
 	ms := findMatchesInAllLines(text, namePattern)
-	tm.Name, _ = stripMatchingQuotes(unwrapLastSubmatch(ms, "parseTestName"))
+	var ok bool
+	if tm.Name, ok = stripMatchingQuotes(unwrapLastSubmatch(ms, "parseTestName")); !ok {
+		return errors.Reason("corrupt test name").Err()
+	}
+	return nil
 }
 
-func parseExecutionEnvironment(text string, tm *testMetadata) {
+func parseExecutionEnvironment(text string, tm *testMetadata) error {
 	ms := findMatchesInAllLines(text, testTypePattern)
-	env, _ := stripMatchingQuotes(unwrapLastSubmatch(ms, "parseExecutionEnvironment"))
+	env, ok := stripMatchingQuotes(unwrapLastSubmatch(ms, "parseExecutionEnvironment"))
+	if !ok {
+		return errors.Reason("corrupt execution environment").Err()
+	}
 	env = strings.ToLower(env)
 	switch env {
 	case "client":
 		tm.ExecutionEnvironment = api.AutotestTest_EXECUTION_ENVIRONMENT_CLIENT
 	case "server":
 		tm.ExecutionEnvironment = api.AutotestTest_EXECUTION_ENVIRONMENT_SERVER
+	default:
+		return errors.Reason("corrupt execution environment").Err()
 	}
+	return nil
 }
 
 func findMatchesInAllLines(text string, re *regexp.Regexp) [][]string {
