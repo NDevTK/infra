@@ -23,6 +23,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/gcloud/gs"
 	"go.chromium.org/luci/common/logging"
@@ -70,6 +71,8 @@ func (c *enumerateRun) innerRun(a subcommands.Application, args []string, env su
 	ctx := cli.GetContext(a, c, env)
 	ctx = setupLogging(ctx)
 
+	dl := debugLogger{enabled: c.debug}
+
 	taggedRequests, err := c.readRequests()
 	if err != nil {
 		return err
@@ -77,6 +80,7 @@ func (c *enumerateRun) innerRun(a subcommands.Application, args []string, env su
 	if len(taggedRequests) == 0 {
 		return errors.Reason("zero requests").Err()
 	}
+	dl.LogRequests(ctx, taggedRequests)
 
 	workspace, err := ioutil.TempDir("", "enumerate")
 	if err != nil {
@@ -120,6 +124,7 @@ func (c *enumerateRun) innerRun(a subcommands.Application, args []string, env su
 	if merr.First() != nil {
 		writableErr = merr
 	}
+	dl.LogTestMetadata(ctx, tms)
 
 	resps := make(map[string]*steps.EnumerationResponse)
 	merr = errors.NewMultiError()
@@ -130,10 +135,9 @@ func (c *enumerateRun) innerRun(a subcommands.Application, args []string, env su
 			resps[t] = &steps.EnumerationResponse{AutotestInvocations: ts}
 		}
 	}
+	dl.LogResponses(ctx, resps)
+	dl.LogErrors(ctx, merr)
 
-	if c.debug {
-		c.debugDump(ctx, taggedRequests, tms, resps, merr)
-	}
 	if merr.First() != nil {
 		return merr
 	}
@@ -146,38 +150,6 @@ func annotateEach(imerr errors.MultiError, fmt string, args ...interface{}) erro
 		merr = append(merr, errors.Annotate(err, fmt, args...).Err())
 	}
 	return merr
-}
-
-func (c *enumerateRun) debugDump(ctx context.Context, reqs map[string]*steps.EnumerationRequest, tms map[string]*api.TestMetadataResponse, resps map[string]*steps.EnumerationResponse, merr errors.MultiError) {
-	logging.Infof(ctx, "## Begin debug dump")
-
-	logging.Infof(ctx, "Errors encountered...")
-	if merr.First() != nil {
-		for _, e := range merr {
-			if e != nil {
-				logging.Warningf(ctx, "%s", e)
-			}
-		}
-	}
-	logging.Infof(ctx, "###")
-	logging.Infof(ctx, "")
-
-	for t := range reqs {
-		logging.Infof(ctx, "Tag: %s", t)
-		logging.Infof(ctx, "Request: %s", pretty.Sprint(reqs[t]))
-		if r, ok := resps[t]; ok {
-			logging.Infof(ctx, "Response: %s", pretty.Sprint(r))
-		} else {
-			logging.Warningf(ctx, "No response for %s", t)
-		}
-		if m, ok := tms[t]; ok {
-			logging.Infof(ctx, "Test Metadata: %s", pretty.Sprint(m))
-		} else {
-			logging.Warningf(ctx, "No metadata for %s", t)
-		}
-		logging.Infof(ctx, "")
-	}
-	logging.Infof(ctx, "## End debug dump")
 }
 
 func (c *enumerateRun) processCLIArgs(args []string) error {
@@ -308,4 +280,80 @@ func computeMetadata(localPaths artifacts.LocalPaths, workspace string) (*api.Te
 		return nil, errors.Annotate(err, "compute metadata").Err()
 	}
 	return testspec.Get(extracted)
+}
+
+// debugLogger logs various intermiedate PODs, only when enabled.
+type debugLogger struct {
+	enabled bool
+
+	requestTags stringset.Set
+}
+
+func (l *debugLogger) LogRequests(ctx context.Context, reqs map[string]*steps.EnumerationRequest) {
+	if !l.enabled {
+		return
+	}
+
+	defer l.debugBlock(ctx, "requests")()
+	l.requestTags = stringset.New(len(reqs))
+	for t := range reqs {
+		l.requestTags.Add(t)
+		logging.Infof(ctx, "Request[%s]: %s", t, pretty.Sprint(reqs[t]))
+	}
+}
+
+func (l *debugLogger) LogTestMetadata(ctx context.Context, tms map[string]*api.TestMetadataResponse) {
+	if !l.enabled {
+		return
+	}
+
+	defer l.debugBlock(ctx, "metadata")()
+	ts := stringset.New(len(tms))
+	for t := range tms {
+		ts.Add(t)
+		logging.Infof(ctx, "Test Metadata[%s]: %s", t, pretty.Sprint(tms[t]))
+	}
+	if ms := l.requestTags.Difference(ts); len(ms) > 0 {
+		logging.Warningf(ctx, "No metadata for requests %s", ms)
+	}
+}
+
+func (l *debugLogger) LogResponses(ctx context.Context, resps map[string]*steps.EnumerationResponse) {
+	if !l.enabled {
+		return
+	}
+
+	defer l.debugBlock(ctx, "responses")()
+	ts := stringset.New(len(resps))
+	for t := range resps {
+		ts.Add(t)
+		logging.Infof(ctx, "Response[%s]: %s", t, pretty.Sprint(resps[t]))
+	}
+	if ms := l.requestTags.Difference(ts); len(ms) > 0 {
+		logging.Warningf(ctx, "No response for requests %s", ms)
+	}
+}
+
+func (l *debugLogger) LogErrors(ctx context.Context, merr errors.MultiError) {
+	if !l.enabled {
+		return
+	}
+	if merr.First() == nil {
+		return
+	}
+
+	defer l.debugBlock(ctx, "errors")()
+	for _, err := range merr {
+		logging.Errorf(ctx, "%s", err)
+	}
+}
+
+// Begins a block of debug log.
+//
+// The returned function should be deferred to close the block.
+func (l *debugLogger) debugBlock(ctx context.Context, title string) func() {
+	logging.Infof(ctx, "## BEGIN DEBUG LOG [%s]", title)
+	return func() {
+		logging.Infof(ctx, "## END DEBUG LOG")
+	}
 }
