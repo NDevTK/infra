@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {LitElement, html, css} from 'lit-element';
+import {prpcClient} from 'prpc-client-instance.js';
 
 /**
  * `<mr-issue-entry-page>`
@@ -25,6 +26,18 @@ export class MrIssueEntryPage extends LitElement {
     return html`
       <div>SPA issue entry page place holder</div>
     `;
+  }
+
+  /** @override */
+  async connectedCallback() {
+    super.connectedCallback();
+
+    const message = {parent: 'projects/test-project-name'};
+    await prpcClient.call(
+        'monorail.v1.Projects',
+        'ListIssueTemplates',
+        message,
+    );
   }
 }
 
