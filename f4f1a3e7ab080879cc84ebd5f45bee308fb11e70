@@ -1,0 +1,159 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9c59d524_e78d90d6",
+        "filename": "appengine/monorail/api/test/projects_servicer_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 549,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-03T20:58:43Z",
+      "side": 1,
+      "message": "pull these out and set them as empty lists.",
+      "range": {
+        "startLine": 549,
+        "startChar": 48,
+        "endLine": 549,
+        "endChar": 73
+      },
+      "revId": "f4f1a3e7ab080879cc84ebd5f45bee308fb11e70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b1b6a5f7_22deeab6",
+        "filename": "appengine/monorail/businesslogic/test/work_env_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-03T20:58:43Z",
+      "side": 1,
+      "message": "set these to empty lists once the fake CreateFieldDef has been fixed.",
+      "range": {
+        "startLine": 212,
+        "startChar": 8,
+        "endLine": 212,
+        "endChar": 18
+      },
+      "revId": "f4f1a3e7ab080879cc84ebd5f45bee308fb11e70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b46510eb_86b8bfee",
+        "filename": "appengine/monorail/services/config_svc.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1104,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-03T20:58:43Z",
+      "side": 1,
+      "message": "fix indenting here",
+      "range": {
+        "startLine": 1103,
+        "startChar": 6,
+        "endLine": 1104,
+        "endChar": 10
+      },
+      "revId": "f4f1a3e7ab080879cc84ebd5f45bee308fb11e70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "641f3ca8_f67e771f",
+        "filename": "appengine/monorail/services/config_svc.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1277,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-03T20:58:43Z",
+      "side": 1,
+      "message": "We have a bug here, that, thankfully hasn\u0027t been triggered.\n\nWhile this method sets \"admin_ids \u003d None\" as default in the arguments, which implies that this method would work if admin_ids\u003dNone, the line below\n,for InsertRows would actually fail.\n\n the list comprehension [(field_id, admin_id) for admin_id in admin_ids],\nwould fail with \"\u0027NoneType\u0027 object is not iterable\" if admin_ids \u003d None\n\nPlease add two simple if-statements before the Delete and InsertRows operations of admin_ids and editors_ids, to check that `admin_ids is not None` before continuing.  \n\nThis might require adjusting a few more tests, but this is an important bug to fix.\n\n\nNote, in the CreateFieldDef method, it\u0027s not as necessary to check if \"{editor_ids|admin_ids} is None\" because those inputs are required, and we expect that the caller should know (by reading the docs) that it expects a list. However, that does mean that passing in an empty admin_ids \u003d [] would result in the \"InsertRows\" call to be a no-op. So if we wanted to check \"if admin_ids\" before calling InsertRows, we could do that. Though it\u0027s not necessary now.",
+      "revId": "f4f1a3e7ab080879cc84ebd5f45bee308fb11e70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6445bc11_52f4a1b3",
+        "filename": "appengine/monorail/testing/fake.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1257,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-03T20:58:43Z",
+      "side": 1,
+      "message": "The real CreateFieldDef does not check for None so neither should the fake. Otherwise, if we have code that is setting admin_ids \u003d None, the tests would pass but when it gets deployed, production would fail because\nself.fielddef2admin_tbl.InsertRows(\n        cnxn, FIELDDEF2ADMIN_COLS,\n        [(field_id, admin_id) for admin_id in admin_ids],\n        commit\u003dFalse)\n\nexpects a list and does not expect a None.\n\nSo this fake code should just set fd.admin_ids \u003d admin_ids and that would help prevent us from committing any code where someone is calling CreateFieldDef(admin_ids\u003dNone). If there are no admin_ids we expect the caller to pass in an empty list.",
+      "range": {
+        "startLine": 1257,
+        "startChar": 4,
+        "endLine": 1257,
+        "endChar": 29
+      },
+      "revId": "f4f1a3e7ab080879cc84ebd5f45bee308fb11e70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "880d1802_32669643",
+        "filename": "appengine/monorail/testing/fake.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1259,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-03T20:58:43Z",
+      "side": 1,
+      "message": "same as above comment. remove.",
+      "range": {
+        "startLine": 1259,
+        "startChar": 4,
+        "endLine": 1259,
+        "endChar": 30
+      },
+      "revId": "f4f1a3e7ab080879cc84ebd5f45bee308fb11e70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e56ca43c_6ecfaca8",
+        "filename": "appengine/monorail/testing/fake.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1312,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-03T20:58:43Z",
+      "side": 1,
+      "message": "Note these checks are correct given we make the changes I recommend above for the real UpdateFieldDef method.",
+      "range": {
+        "startLine": 1312,
+        "startChar": 4,
+        "endLine": 1312,
+        "endChar": 30
+      },
+      "revId": "f4f1a3e7ab080879cc84ebd5f45bee308fb11e70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
