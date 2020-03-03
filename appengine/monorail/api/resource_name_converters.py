@@ -22,6 +22,10 @@ from framework import exceptions
 from project import project_constants
 
 # Constants that hold regex patterns for resource names.
+PROJECT_NAME_PATTERN = (r'projects\/(?P<project_name>%s)' %
+                 project_constants.PROJECT_NAME_PATTERN)
+PROJECT_NAME_RE = re.compile(r'%s$' % PROJECT_NAME_PATTERN)
+
 HOTLIST_PATTERN = r'hotlists\/(?P<hotlist_id>\d+)'
 HOTLIST_NAME_RE = re.compile(r'%s$' % HOTLIST_PATTERN)
 HOTLIST_ITEM_NAME_RE = re.compile(
@@ -43,6 +47,8 @@ HOTLIST_ITEM_NAME_TMPL = '%s/items/{project_name}.{local_id}' % (
 ISSUE_NAME_TMPL = 'projects/{project}/issues/{local_id}'
 
 USER_NAME_TMPL = 'users/{user_id}'
+
+ISSUE_TEMPLATE_TMPL = 'projects/{project_name}/templates/{template_name}'
 
 
 def _GetResourceNameMatch(name, regex):
@@ -300,3 +306,40 @@ def ConvertUserNames(user_ids):
     user_ids_to_names[user_id] = USER_NAME_TMPL.format(user_id=user_id)
 
   return user_ids_to_names
+
+
+# Projects
+
+def IngestProjectName(name):
+  # str -> str
+  """Takes a Project resource name and returns the project name.
+
+  Args:
+    name: Resource name of a Project.
+
+  Returns:
+    The project's name
+
+  Raises:
+    InputException if the given name does not have a valid format.
+  """
+  match = _GetResourceNameMatch(name, PROJECT_NAME_RE)
+  return match.group('project_name')
+
+
+def GetTemplateResourceName(project_name, template_name):
+  # str, str -> str
+  """Output template resource name in the format of api.crbug.com/Template
+     given project_name and template_name
+
+  Args:
+    project_name: Project's name
+    template_name: Template's name
+
+  Returns:
+    The template resource name
+  """
+
+  return ISSUE_TEMPLATE_TMPL.format(
+    project_name=project_name,
+    template_name=template_name)
