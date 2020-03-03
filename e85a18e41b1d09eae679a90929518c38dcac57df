@@ -175,6 +175,30 @@
       "revId": "e85a18e41b1d09eae679a90929518c38dcac57df",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f503763b_8477e5ce",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-03T22:04:53Z",
+      "side": 1,
+      "message": "linters should ignore unused values if the name starts with \"_\"",
+      "parentUuid": "05a1b3f8_31d48aa0",
+      "range": {
+        "startLine": 138,
+        "startChar": 4,
+        "endLine": 138,
+        "endChar": 73
+      },
+      "revId": "e85a18e41b1d09eae679a90929518c38dcac57df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
