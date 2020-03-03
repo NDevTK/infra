@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a10754ea_fe60ab0b",
+        "filename": "appengine/monorail/api/test/issues_servicer_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1563,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-03T23:27:09Z",
+      "side": 1,
+      "message": "nice catch, thanks!",
+      "range": {
+        "startLine": 1563,
+        "startChar": 4,
+        "endLine": 1563,
+        "endChar": 18
+      },
+      "revId": "523433e06a5a5df4732065c143bf5d1b4780e644",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
