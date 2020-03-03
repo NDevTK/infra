@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a2794266_9c141d95",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-03T20:22:02Z",
+      "side": 1,
+      "message": "protorpc",
+      "range": {
+        "startLine": 114,
+        "startChar": 35,
+        "endLine": 114,
+        "endChar": 43
+      },
+      "revId": "e85a18e41b1d09eae679a90929518c38dcac57df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ca45ffe7_ebb063f8",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-03T20:22:02Z",
+      "side": 1,
+      "message": "rm extra line",
+      "revId": "e85a18e41b1d09eae679a90929518c38dcac57df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0d7590d2_aa030ed5",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-03T20:22:02Z",
+      "side": 1,
+      "message": "rename `api_users`",
+      "range": {
+        "startLine": 127,
+        "startChar": 2,
+        "endLine": 127,
+        "endChar": 8
+      },
+      "revId": "e85a18e41b1d09eae679a90929518c38dcac57df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b8761065_e557aba5",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-03T20:22:02Z",
+      "side": 1,
+      "message": "can you make this something like\navailability_message, _availability_status \u003d framework_helpers.GetUserAvailability(user)\n\nSo it\u0027s clear to the reader on exactly what GetUserAvailability returns.",
+      "range": {
+        "startLine": 138,
+        "startChar": 4,
+        "endLine": 138,
+        "endChar": 73
+      },
+      "revId": "e85a18e41b1d09eae679a90929518c38dcac57df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
