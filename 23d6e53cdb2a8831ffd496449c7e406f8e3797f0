@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "14aa542e_3e0b5b27",
+        "filename": "appengine/monorail/services/test/config_svc_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 923,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-04T01:53:21Z",
+      "side": 1,
+      "message": "here and below, use different user_ids just so we\u0027re sure that admin_ids aren\u0027t being used for editors ids and vice versa",
+      "range": {
+        "startLine": 923,
+        "startChar": 57,
+        "endLine": 923,
+        "endChar": 61
+      },
+      "revId": "23d6e53cdb2a8831ffd496449c7e406f8e3797f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b6e6d684_04851592",
+        "filename": "appengine/monorail/services/test/config_svc_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 964,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-04T01:53:21Z",
+      "side": 1,
+      "message": "it\u0027s more accurate to call these \u0027admin_rows\u0027 and \u0027editor_rows\u0027",
+      "range": {
+        "startLine": 964,
+        "startChar": 54,
+        "endLine": 964,
+        "endChar": 75
+      },
+      "revId": "23d6e53cdb2a8831ffd496449c7e406f8e3797f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
