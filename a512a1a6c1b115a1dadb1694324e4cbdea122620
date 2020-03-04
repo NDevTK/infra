@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "aba6db1a_83bc296a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-03-04T18:18:10Z",
+      "side": 1,
+      "message": "Drop IMO. Commit messages live long (unlike review comments). The more objective they are, the less distraction there is.",
+      "range": {
+        "startLine": 12,
+        "startChar": 1,
+        "endLine": 12,
+        "endChar": 4
+      },
+      "revId": "a512a1a6c1b115a1dadb1694324e4cbdea122620",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "559ab0c7_835cfa72",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-03-04T18:18:10Z",
+      "side": 1,
+      "message": "Ack.",
+      "range": {
+        "startLine": 13,
+        "startChar": 63,
+        "endLine": 14,
+        "endChar": 51
+      },
+      "revId": "a512a1a6c1b115a1dadb1694324e4cbdea122620",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da3fdc80_984b3c4e",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/bb/bb.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-03-04T18:18:10Z",
+      "side": 1,
+      "message": "Add a TODO on both implementations directing the reader to update both if there are any changes, and listing the bug that will result in the code duplication disappear.",
+      "range": {
+        "startLine": 34,
+        "startChar": 1,
+        "endLine": 35,
+        "endChar": 27
+      },
+      "revId": "a512a1a6c1b115a1dadb1694324e4cbdea122620",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9771baae_00e38960",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/bb/bb_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-03-04T18:18:10Z",
+      "side": 1,
+      "message": "Have I seen this before? Does it makes sense to implement a fakeSwarming package that unittests can share? Or is it not worth it again because this is used in two places, and one of them is being deprecated?\n\nYou might still be able to save some work if you simply extract the fakeSwarming from existing unittests.",
+      "range": {
+        "startLine": 18,
+        "startChar": 5,
+        "endLine": 18,
+        "endChar": 17
+      },
+      "revId": "a512a1a6c1b115a1dadb1694324e4cbdea122620",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "533af49d_586ea7cb",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/bb/bb_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-03-04T18:18:10Z",
+      "side": 1,
+      "message": "This is where I think a fake is far superior to a stub. Both of these tests actually _ignore_ the arguments entirely. The only difference is the canned response.\n\nSo, both tests will pass if the implementation of skylab.ValidateArgs() drops the arguments to the floor and simply calls BotExists() with some trash.\n\nStubs / mocks are not very robust because they try to orchestrate the test too much. Instead if you implemented a fakeSwarming, where the exists call actually checks for bots in some map... \n\n- the tests look more natural: the setup actually adds a bot with some dimensions, and the ValidateArgs() call includes (doesn\u0027t include) those dimensions.\n- the tests document the actual API of skylab (instead of passing dummy arguments in)\n- the tests actually test what you want.",
+      "range": {
+        "startLine": 43,
+        "startChar": 9,
+        "endLine": 43,
+        "endChar": 50
+      },
+      "revId": "a512a1a6c1b115a1dadb1694324e4cbdea122620",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
