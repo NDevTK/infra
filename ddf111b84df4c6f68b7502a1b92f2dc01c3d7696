@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "91b232d2_5033b666",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-03-05T21:00:54Z",
+      "side": 1,
+      "message": "Log should say that this is optional, or people will file bugs again",
+      "range": {
+        "startLine": 236,
+        "startChar": 14,
+        "endLine": 236,
+        "endChar": 18
+      },
+      "revId": "ddf111b84df4c6f68b7502a1b92f2dc01c3d7696",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
