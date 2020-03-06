@@ -164,3 +164,98 @@ def ConvertUsers(cnxn, user_ids, user_auth, project, services):
         availability_message=availability_message)
 
   return user_ids_to_names
+
+
+def ConvertFieldValues(cnxn, field_values, project_id, phases, services):
+  # MonorailConnection, Sequence[proto.tracker_pb2.FieldValue], int
+  #     Sequence[proto.tracker_pb2.Phase], Services ->
+  #     Sequence[api_proto.issue_objects_pb2.Issue.FieldValue]
+  """Convert sequence of field_values to protoc FieldValues.
+     This method does not handle enum_type fields
+
+  Args:
+    cnxn: MonorailConnection object.
+    field_values: List of FieldValues
+    project_id: ID of the Project that is ancestor to all given `field_values`.
+    phases: List of Phases
+    services: Services object for connections to backend services.
+
+  Returns:
+    Sequence of protoc Issue.FieldValue in the same order they are given in
+    `field_values`. In the event that any issues in `field_values` are not
+    found, they will be omitted from the result.
+  """
+  config = services.config.GetProjectConfig(cnxn, project_id)
+
+  phase_names_by_id = {phase.phase_id: phase.name for phase in phases}
+  fds_by_id = {fd.field_id: fd for fd in config.field_defs}
+  resource_names_dict = rnc.ConvertFieldDefNames(
+      cnxn, fds_by_id.keys(), project_id, services)
+
+  api_items = []
+  for fv in field_values:
+    field_def = fds_by_id.get(fv.field_id)
+    if not field_def:
+      logging.info(
+          'Ignoring field value referencing a non-existent field: %r', fv)
+      continue
+
+    # Get resource name
+    name = resource_names_dict.get(fv.field_id)
+    # Compute value
+    value = _ComputeFieldValueValue(fv)
+    # Compute derivation
+    derivation = _ComputeFieldValueDerivation(fv)
+    # Get phase
+    phase = phase_names_by_id.get(fv.phase_id)
+
+    api_item = issue_objects_pb2.Issue.FieldValue(
+        field=name, value=value, derivation=derivation, phase=phase)
+
+    api_items.append(api_item)
+
+  return api_items
+
+
+def _ComputeFieldValueValue(field_value):
+  # proto.tracker_pb2.FieldValue -> str
+  """Convert a FieldValue to its value string
+
+  Args:
+    field_value: protorpc FieldValue
+
+  Returns:
+    Issue.FieldValue.value of given `field_value`
+  """
+  if field_value is None:
+    return None
+  elif field_value.int_value is not None:
+    return str(field_value.int_value)
+  elif field_value.str_value is not None:
+    return field_value.str_value
+  elif field_value.user_id is not None:
+    return rnc.ConvertUserNames([field_value.user_id]).get(field_value.user_id)
+  elif field_value.date_value is not None:
+    return str(field_value.date_value)
+  elif field_value.url_value is not None:
+    return field_value.url_value
+  else:
+    return None
+
+
+def _ComputeFieldValueDerivation(field_value):
+  # proto.tracker_pb2.FieldValue -> api_proto.issue_objects_pb2.Issue.FieldValue
+  """Convert a FieldValue to its derivation value
+
+  Args:
+    field_value: protorpc FieldValue
+
+  Returns:
+    Issue.Derivation of given `field_value`
+  """
+  if field_value.derived == True:
+    return issue_objects_pb2.Issue.Derivation.RULE
+  elif field_value.derived == False:
+    return issue_objects_pb2.issue.Derivation.EXPLICT
+  else:
+    return issue_objects_pb2.issue.Derivation.DERIVATION_UNSPECIFIED
