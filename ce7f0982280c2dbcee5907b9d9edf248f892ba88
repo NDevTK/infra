@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1b7110_e87170cf",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/cmd/skylab-execute.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-03-06T21:41:35Z",
+      "side": 0,
+      "message": "The bug in the earlier attempt was this. Should\u0027ve been:\n\n  tErr :\u003d timeoutTag.Apply(tErr)",
+      "range": {
+        "startLine": 211,
+        "startChar": 1,
+        "endLine": 211,
+        "endChar": 22
+      },
+      "revId": "ce7f0982280c2dbcee5907b9d9edf248f892ba88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
