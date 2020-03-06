@@ -1,0 +1,210 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c792c5cb_8516033a",
+        "filename": "appengine/monorail/api/v1/api_proto/issue_objects.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-06T22:21:02Z",
+      "side": 1,
+      "message": "Just \"value\" or \"enum value\" should not include the field name",
+      "range": {
+        "startLine": 126,
+        "startChar": 29,
+        "endLine": 126,
+        "endChar": 55
+      },
+      "revId": "4d168846e902caad7b8cc3cdbfe47f0256284ead",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c9e4e5cb_119122df",
+        "filename": "appengine/monorail/api/v1/api_proto/issue_objects.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-06T22:21:02Z",
+      "side": 1,
+      "message": "\"the User\u0027s resource name\"\nsee comment below",
+      "range": {
+        "startLine": 129,
+        "startChar": 25,
+        "endLine": 129,
+        "endChar": 49
+      },
+      "revId": "4d168846e902caad7b8cc3cdbfe47f0256284ead",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1afcc525_881d7b51",
+        "filename": "appengine/monorail/api/v1/api_proto/issue_objects.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-06T22:21:02Z",
+      "side": 1,
+      "message": "\"Approval Type values are expressed in ApprovalValue messages.\"",
+      "range": {
+        "startLine": 132,
+        "startChar": 24,
+        "endLine": 132,
+        "endChar": 30
+      },
+      "revId": "4d168846e902caad7b8cc3cdbfe47f0256284ead",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "76de6e0f_e662424f",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-06T22:21:02Z",
+      "side": 1,
+      "message": "can this be a default \"phases\u003dNone\"",
+      "range": {
+        "startLine": 169,
+        "startChar": 66,
+        "endLine": 169,
+        "endChar": 72
+      },
+      "revId": "4d168846e902caad7b8cc3cdbfe47f0256284ead",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5808aede_b601510f",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-06T22:21:02Z",
+      "side": 1,
+      "message": "Add a note that this method does not handle enum_type fields",
+      "revId": "4d168846e902caad7b8cc3cdbfe47f0256284ead",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b6acc9c1_f3295236",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-06T22:21:02Z",
+      "side": 1,
+      "message": "\"ID of the Project that is ancestor to all given `field_values`.\"",
+      "revId": "4d168846e902caad7b8cc3cdbfe47f0256284ead",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8f1b80f6_28447868",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-06T22:21:02Z",
+      "side": 1,
+      "message": "\"Phases\"",
+      "range": {
+        "startLine": 181,
+        "startChar": 24,
+        "endLine": 181,
+        "endChar": 25
+      },
+      "revId": "4d168846e902caad7b8cc3cdbfe47f0256284ead",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7cfe392e_9c94ae46",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-06T22:21:02Z",
+      "side": 1,
+      "message": "Consider making this handle a list of field_values,\nso the \"GetProject\" call below only needs to be done once and return as a {field_id: api_value...} dict",
+      "revId": "4d168846e902caad7b8cc3cdbfe47f0256284ead",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5090dda6_cb68fb2a",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-06T22:21:02Z",
+      "side": 1,
+      "message": "This is not actually a converting a full object/resource.\nso maybe rename to _FormatFieldValue or something",
+      "range": {
+        "startLine": 225,
+        "startChar": 4,
+        "endLine": 225,
+        "endChar": 26
+      },
+      "revId": "4d168846e902caad7b8cc3cdbfe47f0256284ead",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6857bc6d_906b7430",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-06T22:21:02Z",
+      "side": 1,
+      "message": "we should do the resource name of the user here.\nthe display_name is not enough for the SPA anyways because they need \"availability_message\" and other info to autolink to the user\u0027s profile.\n\nif we just give display_name, SPA also wouldn\u0027t have enough info to fetch the User object  because display_name may be an obscured email.\n\nIt\u0027ll be a little weird that all other field types will be represented by the actual value.\nBut we\u0027ll just make note of it in the API docs and comments in the proto.",
+      "revId": "4d168846e902caad7b8cc3cdbfe47f0256284ead",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
