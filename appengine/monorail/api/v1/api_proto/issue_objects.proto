@@ -122,6 +122,14 @@ message Issue {
     string field = 1
         [(google.api.resource_reference) = { type: "api.crbug.com/FieldDef" }];
     // The value associated with the field.
+    // Mapping of field types to string value:
+    // ENUM_TYPE(int) => str(<field_name>-<field_value>)
+    // INT_TYPE(int) => str(value)
+    // STR_TYPE(str) => value
+    // USER_TYPE(int) => that user's display name
+    // DATE_TYPE(int) => str(int) representing time in seconds since epoch
+    // URL_TYPE => value
+    // APPROVAL_TYPE => unused
     string value = 2;
     // How the value was derived.
     Derivation derivation = 3;
