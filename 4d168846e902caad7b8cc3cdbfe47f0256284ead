@@ -118,6 +118,30 @@
     },
     {
       "key": {
+        "uuid": "0be5e3e9_92771af3",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-06T23:00:06Z",
+      "side": 1,
+      "message": "either \"phases\u003dNone\"\nor in list comprehension below\n`\nphase_names_by_id \u003d {phase.phase_id: phase.name for phase in phases or []}\n`\n\nremove the \"or []\" part.\n\nif we always expect a list, empty or not, then our code should just handle those two situations, not a third \"None\" situation.",
+      "parentUuid": "9ad15f19_bdeb3969",
+      "range": {
+        "startLine": 169,
+        "startChar": 66,
+        "endLine": 169,
+        "endChar": 72
+      },
+      "revId": "4d168846e902caad7b8cc3cdbfe47f0256284ead",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5808aede_b601510f",
         "filename": "appengine/monorail/api/v1/converters.py",
         "patchSetId": 1
