@@ -1,0 +1,233 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6ed7644c_71f22b75",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-07T01:00:48Z",
+      "side": 1,
+      "message": "field_values",
+      "range": {
+        "startLine": 185,
+        "startChar": 42,
+        "endLine": 185,
+        "endChar": 48
+      },
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8511237d_6adeff5c",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-07T01:00:48Z",
+      "side": 1,
+      "message": "can you call this \n\"api_field_values\" or \"api_fvs\"",
+      "range": {
+        "startLine": 195,
+        "startChar": 6,
+        "endLine": 195,
+        "endChar": 11
+      },
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "91bf6f5a_1bf93d15",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-07T01:00:48Z",
+      "side": 1,
+      "message": "I don\u0027t think these comments (here up to and including \"Get Phase\") add any value and adds to clutter of code. Can we remove?",
+      "range": {
+        "startLine": 203,
+        "startChar": 4,
+        "endLine": 203,
+        "endChar": 23
+      },
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0d32833a_d35a5d90",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-07T01:00:48Z",
+      "side": 1,
+      "message": "can this be \n\"_ComputeFieldValueString\" to give more info in the name",
+      "range": {
+        "startLine": 220,
+        "startChar": 22,
+        "endLine": 220,
+        "endChar": 27
+      },
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3f5aaea2_a44d309a",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-07T01:00:48Z",
+      "side": 1,
+      "message": "nit: \"FieldValue\u0027s value to a string.\"",
+      "range": {
+        "startLine": 222,
+        "startChar": 15,
+        "endLine": 222,
+        "endChar": 25
+      },
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "61d4820f_62e1cd6d",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-07T01:00:48Z",
+      "side": 1,
+      "message": "When do we expect this to happen? Or why should we support this case?\nIf we don\u0027t expect this to happen can we raise an exception or just not check for this case?",
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aba9d847_d2b2debf",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-07T01:00:48Z",
+      "side": 1,
+      "message": "I think this should raise an exception",
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fef7e534_b90eac46",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-07T01:00:48Z",
+      "side": 1,
+      "message": "\"Derivation\"",
+      "range": {
+        "startLine": 247,
+        "startChar": 70,
+        "endLine": 247,
+        "endChar": 80
+      },
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3fc9a78c_77c3858e",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-07T01:00:48Z",
+      "side": 1,
+      "message": "nit: \"FieldValue\u0027s \u0027derived\u0027 to a protoc Issue.Derivation.\"",
+      "range": {
+        "startLine": 248,
+        "startChar": 15,
+        "endLine": 248,
+        "endChar": 49
+      },
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7aa178fd_bee6a66f",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-07T01:00:48Z",
+      "side": 1,
+      "message": "\"if field_value.derived:\"",
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b017e12b_6c8e9b9b",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-07T01:00:48Z",
+      "side": 1,
+      "message": "Since the derived boolean defaults to false anyways, can we just make this \u0027elif\u0027 the else case and remove the \"DERIVATION_UNSPECIFIED\" chunk below?",
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
