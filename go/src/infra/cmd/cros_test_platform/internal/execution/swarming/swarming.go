@@ -10,6 +10,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/golang/protobuf/jsonpb"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
@@ -46,7 +47,7 @@ type rawSwarmingSkylabClient struct {
 
 // NewSkylabClient creates a new skylab.Client.
 func NewSkylabClient(ctx context.Context, cfg *config.Config) (skylab.Client, error) {
-	sc, err := swarmingClient(ctx, cfg.SkylabSwarming)
+	sc, err := NewClient(ctx, cfg.SkylabSwarming)
 	if err != nil {
 		return nil, errors.Annotate(err, "create Skylab client").Err()
 	}
@@ -82,7 +83,8 @@ func httpClient(ctx context.Context, authJSONPath string) (*http.Client, error) 
 	return h, nil
 }
 
-func swarmingClient(ctx context.Context, c *config.Config_Swarming) (*swarming.Client, error) {
+// NewClient creates a new Client.
+func NewClient(ctx context.Context, c *config.Config_Swarming) (*swarming.Client, error) {
 	logging.Debugf(ctx, "Creating swarming client from config %v", c)
 	hClient, err := httpClient(ctx, c.AuthJsonPath)
 	if err != nil {
@@ -99,6 +101,10 @@ func swarmingClient(ctx context.Context, c *config.Config_Swarming) (*swarming.C
 
 // ValidateArgs checks whether this test has dependencies satisfied by
 // at least one Skylab bot.
+//
+// Any changes to this implementation should be also reflected in
+// bbSkylabClient.ValidateArgs
+// TODO(crbug.com/1033287): Remove this implementation.
 func (c *rawSwarmingSkylabClient) ValidateArgs(ctx context.Context, args *request.Args) (bool, error) {
 	dims, err := args.StaticDimensions()
 	if err != nil {
@@ -109,7 +115,12 @@ func (c *rawSwarmingSkylabClient) ValidateArgs(ctx context.Context, args *reques
 		return false, errors.Annotate(err, "validate dependencies").Err()
 	}
 	if !exists {
-		logging.Warningf(ctx, "Dependency validation failed for %s: no bot exists with dimensions %+v.", args.Cmd.TaskName, dims)
+		var ds []string
+		for _, dim := range dims {
+			ds = append(ds, fmt.Sprintf("%+v", dim))
+		}
+		logging.Warningf(ctx, "Dependency validation failed for %s: no bot exists with dimensions: %s", args.Cmd.TaskName, strings.Join(ds, ", "))
+
 	}
 	return exists, nil
 }

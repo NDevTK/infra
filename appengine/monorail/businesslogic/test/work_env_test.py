@@ -209,7 +209,7 @@ class WorkEnvTest(unittest.TestCase):
     self.services.config.CreateFieldDef(
         self.cnxn, self.project.project_id, 'Field', 'STR_TYPE', None, None,
         None, None, None, None, None, None, None, None, None, None, None, None,
-        None)
+        [], [])
     self.SignIn()
     with self.work_env as we:
       self.assertIsNotNone(we.CheckFieldName(
@@ -217,13 +217,13 @@ class WorkEnvTest(unittest.TestCase):
 
   def testCheckFieldName_FieldIsPrefixOfAnother(self):
     self.services.config.CreateFieldDef(
-        self.cnxn, self.project.project_id, 'Foo', 'STR_TYPE', None, None,
-        None, None, None, None, None, None, None, None, None, None, None, None,
-        None)
+        self.cnxn, self.project.project_id, 'Foo', 'STR_TYPE', None, None, None,
+        None, None, None, None, None, None, None, None, None, None, None, [],
+        [])
     self.services.config.CreateFieldDef(
         self.cnxn, self.project.project_id, 'Field-Foo', 'STR_TYPE', None, None,
         None, None, None, None, None, None, None, None, None, None, None, None,
-        None)
+        [], [])
     self.SignIn()
     with self.work_env as we:
       self.assertIsNotNone(we.CheckFieldName(
@@ -233,7 +233,7 @@ class WorkEnvTest(unittest.TestCase):
     self.services.config.CreateFieldDef(
         self.cnxn, self.project.project_id, 'Field', 'STR_TYPE', None, None,
         None, None, None, None, None, None, None, None, None, None, None, None,
-        None)
+        [], [])
     self.SignIn()
     with self.work_env as we:
       self.assertIsNotNone(we.CheckFieldName(
@@ -618,7 +618,7 @@ class WorkEnvTest(unittest.TestCase):
     self.SignIn()  # user 111 is a member of self.project
 
     with self.work_env as we:
-      actual = we.ListProjectTemplates(self.project)
+      actual = we.ListProjectTemplates(self.project.project_id)
 
     self.assertEqual(actual, [private_tmpl, public_tmpl])
     self.services.template.GetProjectTemplates.assert_called_once_with(
@@ -631,7 +631,7 @@ class WorkEnvTest(unittest.TestCase):
         private_tmpl, public_tmpl]
 
     with self.work_env as we:
-      actual = we.ListProjectTemplates(self.project)
+      actual = we.ListProjectTemplates(self.project.project_id)
 
     self.assertEqual(actual, [public_tmpl])
     self.services.template.GetProjectTemplates.assert_called_once_with(

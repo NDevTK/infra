@@ -22,6 +22,10 @@ from framework import exceptions
 from project import project_constants
 
 # Constants that hold regex patterns for resource names.
+PROJECT_NAME_PATTERN = (
+    r'projects\/(?P<project_name>%s)' % project_constants.PROJECT_NAME_PATTERN)
+PROJECT_NAME_RE = re.compile(r'%s$' % PROJECT_NAME_PATTERN)
+
 HOTLIST_PATTERN = r'hotlists\/(?P<hotlist_id>\d+)'
 HOTLIST_NAME_RE = re.compile(r'%s$' % HOTLIST_PATTERN)
 HOTLIST_ITEM_NAME_RE = re.compile(
@@ -43,6 +47,12 @@ HOTLIST_ITEM_NAME_TMPL = '%s/items/{project_name}.{local_id}' % (
 ISSUE_NAME_TMPL = 'projects/{project}/issues/{local_id}'
 
 USER_NAME_TMPL = 'users/{user_id}'
+
+ISSUE_TEMPLATE_TMPL = 'projects/{project_name}/templates/{template_name}'
+STATUS_DEF_TMPL = 'projects/{project_name}/statusDefs/{status}'
+LABEL_DEF_TMPL = 'projects/{project_name}/labelDefs/{label}'
+COMPONENT_DEF_TMPL = 'projects/{project_name}/componentDefs/{component_id}'
+FIELD_DEF_TMPL = 'projects/{project_name}/fieldDefs/{field_name}'
 
 
 def _GetResourceNameMatch(name, regex):
@@ -300,3 +310,171 @@ def ConvertUserNames(user_ids):
     user_ids_to_names[user_id] = USER_NAME_TMPL.format(user_id=user_id)
 
   return user_ids_to_names
+
+
+# Projects
+
+
+def IngestProjectName(cnxn, name, services):
+  # str -> int
+  """Takes a Project resource name and returns the project id.
+
+  Args:
+    name: Resource name of a Project.
+
+  Returns:
+    The project's id
+
+  Raises:
+    InputException if the given name does not have a valid format.
+  """
+  match = _GetResourceNameMatch(name, PROJECT_NAME_RE)
+  project_name = match.group('project_name')
+
+  id_dict = services.project.LookupProjectIDs(cnxn, [project_name])
+
+  return id_dict.get(project_name)
+
+
+def ConvertTemplateNames(cnxn, project_id, template_ids, services):
+  # MonorailConnection, int, Collection[int] Service -> Mapping[int, str]
+  """Takes Template IDs and returns the Templates' resource names
+
+  Args:
+    cnxn: MonorailConnection object.
+    project_id: project id of project that templates belong to
+    template_ids: list of template ids
+    services: Service object.
+
+  Returns:
+    Dict of template ID to template resource names for all found template ids.
+
+  Raises:
+    NoSuchProjectException if no project exists with given id.
+  """
+  id_to_resource_names = {}
+
+  project_name = services.project.LookupProjectNames(
+      cnxn, [project_id]).get(project_id)
+  if project_name is None:
+    raise exceptions.NoSuchProjectException(project_id)
+  templates = services.template.GetTemplatesById(cnxn, template_ids)
+
+  for template in templates:
+    id_to_resource_names[template.template_id] = ISSUE_TEMPLATE_TMPL.format(
+        project_name=project_name, template_name=template.name)
+
+  return id_to_resource_names
+
+
+def ConvertStatusDefName(cnxn, status, project_id, services):
+  # MonorailConnection, str, int, Service -> str
+  """Takes a status string and returns a StatusDef resource name
+
+  Args:
+    cnxn: MonorailConnection object.
+    status: status name as string
+    project_id: project id of project this belongs to
+    services: Service object.
+
+  Returns:
+    String of status's resource name
+
+  Raises:
+    NoSuchProjectException if no project exists with given id.
+  """
+  project = services.project.GetProject(cnxn, project_id)
+
+  return STATUS_DEF_TMPL.format(
+      project_name=project.project_name, status=status)
+
+
+def ConvertLabelDefNames(cnxn, labels, project_id, services):
+  # MonorailConnection, Collection[str], int, Service -> Mapping[str, str]
+  """Takes a list of labels and returns LabelDef resource names
+
+  Args:
+    cnxn: MonorailConnection object.
+    labels: List of labels as string
+    project_id: project id of project this belongs to
+    services: Service object.
+
+  Returns:
+    Dict of label string to label's resource name for all given `labels`.
+
+  Raises:
+    NoSuchProjectException if no project exists with given id.
+  """
+  project = services.project.GetProject(cnxn, project_id)
+
+  name_dict = {}
+
+  for label in labels:
+    name_dict[label] = LABEL_DEF_TMPL.format(
+        project_name=project.project_name, label=label)
+
+  return name_dict
+
+
+def ConvertComponentDefNames(cnxn, component_ids, project_id, services):
+  # MonorailConnection, Collection[int], int, Service -> Mapping[int, str]
+  """Takes Component IDs and returns ComponentDef resource names
+
+  Args:
+    cnxn: MonorailConnection object.
+    component_ids: List of component ids
+    project_id: project id of project this belongs to
+    services: Service object.
+
+  Returns:
+    Dict of component ID to component's resource name for all given
+    `component_ids`
+
+  Raises:
+    NoSuchProjectException if no project exists with given id.
+  """
+  project = services.project.GetProject(cnxn, project_id)
+
+  id_dict = {}
+
+  for component_id in component_ids:
+    id_dict[component_id] = COMPONENT_DEF_TMPL.format(
+        project_name=project.project_name, component_id=component_id)
+
+  return id_dict
+
+
+def ConvertFieldDefNames(cnxn, field_ids, project_id, services):
+  # MonorailConnection, Collection[int], int, Service -> Mapping[int, str]
+  """Takes Field IDs and returns FieldDef resource names
+
+  Args:
+    cnxn: MonorailConnection object.
+    component_ids: List of field ids
+    project_id: project id of project this belongs to
+    services: Service object.
+
+  Returns:
+    Dict of field ID to FieldDef resource name for field defs that are found.
+
+  Raises:
+    NoSuchProjectException if no project exists with given id.
+  """
+  project = services.project.GetProject(cnxn, project_id)
+  config = services.config.GetProjectConfig(cnxn, project_id)
+
+  fds_by_id = {fd.field_id: fd for fd in config.field_defs}
+
+  id_dict = {}
+
+  for field_id in field_ids:
+    field_def = fds_by_id.get(field_id)
+    if not field_def:
+      logging.info('Ignoring field referencing a non-existent id: %s', field_id)
+      continue
+    field_name = field_def.field_name
+
+    id_dict[field_id] = FIELD_DEF_TMPL.format(
+        project_name=project.project_name, field_name=field_name)
+
+  return id_dict

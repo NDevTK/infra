@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/manufacturing"
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
+
 	"infra/libs/cros/lab_inventory/deviceconfig"
 	"infra/libs/skylab/inventory"
 )
@@ -202,6 +203,16 @@ func setManufacturingConfig(l *inventory.SchedulableLabels, m *manufacturing.Con
 		return
 	}
 	l.Phase = (*inventory.SchedulableLabels_Phase)(&(m.DevicePhase))
+	wifiChip := m.GetWifiChip()
+	l.WifiChip = &wifiChip
+	hwidComponent := m.GetHwidComponent()
+	l.HwidComponent = hwidComponent
+
+	// Temporarily get manufacturing config from config file to unblock testing as
+	// push is delayed.
+	// See crbug.com/1057145 for the root cause.
+	// See crbug.com/1059086 for the following issues if we don't respect manufacturing
+	// config before autotest pushing.
 	l.Cr50Phase = (*inventory.SchedulableLabels_CR50_Phase)(&(m.Cr50Phase))
 	cr50Env := ""
 	switch m.Cr50KeyEnv {
@@ -215,10 +226,6 @@ func setManufacturingConfig(l *inventory.SchedulableLabels, m *manufacturing.Con
 	} else {
 		l.Cr50RoKeyid = &emptyString
 	}
-	wifiChip := m.GetWifiChip()
-	l.WifiChip = &wifiChip
-	hwidComponent := m.GetHwidComponent()
-	l.HwidComponent = hwidComponent
 }
 
 func setDeviceConfig(labels *inventory.SchedulableLabels, d *device.Config) {
@@ -313,28 +320,55 @@ func setHwidData(l *inventory.SchedulableLabels, h *HwidData) {
 	}
 }
 
-func setDutStateHelper(s lab.PeripheralState, target **bool) {
-	switch s {
-	case lab.PeripheralState_WORKING:
-		fallthrough
-	case lab.PeripheralState_BROKEN:
-		*target = &trueValue
-	case lab.PeripheralState_NOT_CONNECTED:
-		*target = &falseValue
+func setDutStateHelper(s lab.PeripheralState) *bool {
+	var val bool
+	if s == lab.PeripheralState_UNKNOWN || s == lab.PeripheralState_NOT_CONNECTED {
+		val = false
+	} else {
+		val = true
 	}
-}
-func setServoState(s lab.PeripheralState, target **inventory.PeripheralState) {
-	if s != lab.PeripheralState_UNKNOWN {
-		value := inventory.PeripheralState(s)
-		*target = &value
-	}
+	return &val
 }
 
-func setDutState(p *inventory.Peripherals, s *lab.DutState) {
-	setServoState(s.GetServo(), &(p.ServoState))
-	setDutStateHelper(s.GetServo(), &(p.Servo))
-	setDutStateHelper(s.GetChameleon(), &(p.Chameleon))
-	setDutStateHelper(s.GetAudioLoopbackDongle(), &(p.AudioLoopbackDongle))
+func setServoState(s lab.PeripheralState) *inventory.PeripheralState {
+	target := inventory.PeripheralState_UNKNOWN
+	if s != lab.PeripheralState_UNKNOWN {
+		target = inventory.PeripheralState(s)
+	}
+	return &target
+}
+
+func setCr50Configs(l *inventory.SchedulableLabels, s *lab.DutState) {
+	switch s.GetCr50Phase() {
+	case lab.DutState_CR50_PHASE_PVT:
+		l.Cr50Phase = inventory.SchedulableLabels_CR50_PHASE_PVT.Enum()
+	case lab.DutState_CR50_PHASE_PREPVT:
+		l.Cr50Phase = inventory.SchedulableLabels_CR50_PHASE_PREPVT.Enum()
+	default:
+		l.Cr50Phase = inventory.SchedulableLabels_CR50_PHASE_INVALID.Enum()
+	}
+
+	cr50Env := ""
+	switch s.GetCr50KeyEnv() {
+	case lab.DutState_CR50_KEYENV_PROD:
+		cr50Env = "prod"
+	case lab.DutState_CR50_KEYENV_DEV:
+		cr50Env = "dev"
+	}
+	l.Cr50RoKeyid = &cr50Env
+}
+
+func setDutState(l *inventory.SchedulableLabels, s *lab.DutState) {
+	p := l.Peripherals
+	p.ServoState = setServoState(s.GetServo())
+	p.Servo = setDutStateHelper(s.GetServo())
+	p.Chameleon = setDutStateHelper(s.GetChameleon())
+	p.AudioLoopbackDongle = setDutStateHelper(s.GetAudioLoopbackDongle())
+
+	if n := s.GetWorkingBluetoothBtpeer(); n > 0 {
+		p.WorkingBluetoothBtpeer = &n
+	}
+	setCr50Configs(l, s)
 }
 
 func createDutLabels(lc *lab.ChromeOSDevice, osType *inventory.SchedulableLabels_OSType) *inventory.SchedulableLabels {
@@ -418,10 +452,10 @@ func adaptV2DutToV1DutSpec(data *ExtendedDeviceData) (*inventory.DeviceUnderTest
 
 	setDutPools(labels, lc.GetDut().GetPools())
 	setDutPeripherals(labels, p)
+	setDutState(labels, data.GetDutState())
 	setDeviceConfig(labels, data.GetDeviceConfig())
 	setManufacturingConfig(labels, data.GetManufacturingConfig())
 	setHwidData(labels, data.GetHwidData())
-	setDutState(labels.Peripherals, data.GetDutState())
 
 	id := lc.GetId().GetValue()
 	hostname := lc.GetDut().Hostname

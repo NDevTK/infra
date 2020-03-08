@@ -51,6 +51,7 @@ peripherals: {
   audio_box: true
   audio_board: true
   router_802_11ax: true
+  working_bluetooth_btpeer: 3
 }
 os_type: 2
 model: "modelval"
@@ -160,14 +161,15 @@ var fullDimensions = Dimensions{
 		"VIDEO_ACCELERATION_ENC_VP9",
 		"VIDEO_ACCELERATION_ENC_VP9_2",
 	},
-	"label-webcam":          {"True"},
-	"label-wificell":        {"True"},
-	"label-cr50_phase":      {"CR50_PHASE_PVT"},
-	"label-cr50_ro_keyid":   {"a"},
-	"label-cr50_ro_version": {"11.12.13"},
-	"label-cr50_rw_keyid":   {"b"},
-	"label-cr50_rw_version": {"21.22.23"},
-	"label-wifi_chip":       {"wireless_xxxx"},
+	"label-webcam":                   {"True"},
+	"label-wificell":                 {"True"},
+	"label-cr50_phase":               {"CR50_PHASE_PVT"},
+	"label-cr50_ro_keyid":            {"a"},
+	"label-cr50_ro_version":          {"11.12.13"},
+	"label-cr50_rw_keyid":            {"b"},
+	"label-cr50_rw_version":          {"21.22.23"},
+	"label-wifi_chip":                {"wireless_xxxx"},
+	"label-working_bluetooth_btpeer": {"1", "2", "3"},
 }
 
 func TestConvertEmpty(t *testing.T) {
@@ -200,6 +202,7 @@ var servoStateConvertStateCases = []struct {
 	{1, false, "WORKING"},
 	{2, false, "NOT_CONNECTED"},
 	{3, false, "BROKEN"},
+	{4, false, "WRONG_CONFIG"},
 	{5, true, ""}, //wrong value
 }
 
@@ -250,6 +253,8 @@ var servoStateRevertCaseTests = []struct {
 	{"BroKen", inventory.PeripheralState_BROKEN},
 	{"BROKEN", inventory.PeripheralState_BROKEN},
 	{"broken", inventory.PeripheralState_BROKEN},
+	{"Wrong_config", inventory.PeripheralState_WRONG_CONFIG},
+	{"WRONG_CONFIG", inventory.PeripheralState_WRONG_CONFIG},
 }
 
 func TestRevertServoStateInCaseEffect(t *testing.T) {
@@ -290,4 +295,22 @@ func cloneDimensions(d Dimensions) Dimensions {
 		copy(ret[k], v)
 	}
 	return ret
+}
+
+const fullTextProtoSpecial = `
+variant: ""
+`
+
+var fullDimensionsSpecial = Dimensions{}
+
+func TestConvertSpecial(t *testing.T) {
+	t.Parallel()
+	var ls inventory.SchedulableLabels
+	if err := proto.UnmarshalText(fullTextProtoSpecial, &ls); err != nil {
+		t.Fatalf("Error unmarshalling example text: %s", err)
+	}
+	got := Convert(&ls)
+	if diff := pretty.Compare(fullDimensionsSpecial, got); diff != "" {
+		t.Errorf("labels differ -want +got, %s", diff)
+	}
 }

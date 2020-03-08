@@ -12,6 +12,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/chromiumos/infra/proto/go/lab"
 	"go.chromium.org/chromiumos/infra/proto/go/manufacturing"
+
 	"infra/libs/skylab/inventory"
 )
 
@@ -48,8 +49,11 @@ var devInV2 = lab.ChromeOSDevice{
 			Peripherals: &lab.Peripherals{
 				Servo: &servoInV2,
 				Chameleon: &lab.Chameleon{
-					ChameleonPeripherals: []lab.ChameleonType{lab.ChameleonType_CHAMELEON_TYPE_BT_BLE_HID, lab.ChameleonType_CHAMELEON_TYPE_BT_PEER},
-					AudioBoard:           true,
+					ChameleonPeripherals: []lab.ChameleonType{
+						lab.ChameleonType_CHAMELEON_TYPE_BT_BLE_HID,
+						lab.ChameleonType_CHAMELEON_TYPE_BT_PEER,
+					},
+					AudioBoard: true,
 				},
 				Rpm: &lab.RPM{
 					PowerunitName:   "test_power_unit_name",
@@ -123,9 +127,12 @@ var devInV2State = lab.DutState{
 	Id: &lab.ChromeOSDeviceID{
 		Value: "test_dut",
 	},
-	Servo:               lab.PeripheralState_BROKEN,
-	Chameleon:           lab.PeripheralState_WORKING,
-	AudioLoopbackDongle: lab.PeripheralState_NOT_CONNECTED,
+	Servo:                  lab.PeripheralState_BROKEN,
+	Chameleon:              lab.PeripheralState_WORKING,
+	AudioLoopbackDongle:    lab.PeripheralState_NOT_CONNECTED,
+	WorkingBluetoothBtpeer: 3,
+	Cr50Phase:              lab.DutState_CR50_PHASE_PVT,
+	Cr50KeyEnv:             lab.DutState_CR50_KEYENV_PROD,
 }
 
 var labstationInV2 = lab.ChromeOSDevice{
@@ -162,6 +169,7 @@ var labstationInV2 = lab.ChromeOSDevice{
 
 var data = ExtendedDeviceData{
 	LabConfig: &devInV2,
+	DutState:  &devInV2State,
 	DeviceConfig: &device.Config{
 		Id: &device.ConfigId{
 			PlatformId: &device.PlatformId{
@@ -201,8 +209,9 @@ var data = ExtendedDeviceData{
 			Value: "test_hwid",
 		},
 		DevicePhase: manufacturing.Config_PHASE_DVT,
-		Cr50Phase:   manufacturing.Config_CR50_PHASE_PVT,
-		Cr50KeyEnv:  manufacturing.Config_CR50_KEYENV_PROD,
+		// Respect manufacturing config more.
+		Cr50Phase:  manufacturing.Config_CR50_PHASE_PVT,
+		Cr50KeyEnv: manufacturing.Config_CR50_KEYENV_PROD,
 	},
 }
 
@@ -274,6 +283,7 @@ common {
 		peripherals {
 			audio_board: true
 			audio_box: true
+			audio_loopback_dongle: false
 			chameleon: true
 			chameleon_type: CHAMELEON_TYPE_BT_BLE_HID
 			chameleon_type: CHAMELEON_TYPE_BT_PEER
@@ -282,8 +292,11 @@ common {
 			mimo: true
 			ptzpro2: true
 			camerabox: true
+			servo: true
+   		servo_state: BROKEN
 			wificell: true
 			router_802_11ax: true
+			working_bluetooth_btpeer: 3
 		}
 		phase: PHASE_DVT
 		platform: "coral"
@@ -530,11 +543,12 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 			})
 			So(s1, ShouldEqual, s2)
 		})
-		Convey("servo_state is empty by default", func() {
+		Convey("servo_state is UNKNOWN/false by default", func() {
+			dataCopy.DutState = &lab.DutState{}
 			d, err := AdaptToV1DutSpec(&dataCopy)
 			So(err, ShouldBeNil)
-			So(d.GetCommon().GetLabels().GetPeripherals().ServoState, ShouldBeNil)
-			So(d.GetCommon().GetLabels().GetPeripherals().Servo, ShouldBeNil)
+			So(*d.GetCommon().GetLabels().GetPeripherals().ServoState, ShouldEqual, inventory.PeripheralState_UNKNOWN)
+			So(*d.GetCommon().GetLabels().GetPeripherals().Servo, ShouldBeFalse)
 		})
 		Convey("servo_state is broken", func() {
 			dataCopy.DutState = &lab.DutState{}
@@ -544,6 +558,16 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 			So(*d.GetCommon().GetLabels().GetPeripherals().ServoState,
 				ShouldEqual,
 				inventory.PeripheralState_BROKEN)
+			So(*d.GetCommon().GetLabels().GetPeripherals().Servo, ShouldEqual, true)
+		})
+		Convey("servo_state is wrong_config", func() {
+			dataCopy.DutState = &lab.DutState{}
+			dataCopy.DutState.Servo = lab.PeripheralState_WRONG_CONFIG
+			d, err := AdaptToV1DutSpec(&dataCopy)
+			So(err, ShouldBeNil)
+			So(*d.GetCommon().GetLabels().GetPeripherals().ServoState,
+				ShouldEqual,
+				inventory.PeripheralState_WRONG_CONFIG)
 			So(*d.GetCommon().GetLabels().GetPeripherals().Servo, ShouldEqual, true)
 		})
 		Convey("servo_state is working", func() {

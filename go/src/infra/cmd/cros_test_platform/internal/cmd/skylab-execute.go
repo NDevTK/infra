@@ -13,10 +13,12 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/maruel/subcommands"
 
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/proto/google"
 
 	"infra/cmd/cros_test_platform/internal/execution"
@@ -100,20 +102,16 @@ func (c *skylabExecuteRun) innerRun(a subcommands.Application, args []string, en
 	}
 
 	resps, err := c.handleRequests(ctx, d, runner, client)
-	if err != nil && !containsSomeResponse(resps) {
-		// Catastrophic error. There is no reasonable response to write.
+	if err != nil {
 		return err
 	}
-	return c.writeResponsesWithError(resps, err)
-}
-
-func containsSomeResponse(rs map[string]*steps.ExecuteResponse) bool {
-	for _, r := range rs {
-		if r != nil {
-			return true
-		}
-	}
-	return false
+	c.updateWithEnumerationErrors(ctx, resps, request.TaggedRequests)
+	return writeResponse(
+		c.outputPath,
+		&steps.ExecuteResponses{
+			TaggedResponses: resps,
+		},
+	)
 }
 
 func extractOneConfig(trs map[string]*steps.ExecuteRequest) *config.Config {
@@ -205,14 +203,56 @@ func (c *skylabExecuteRun) validateRequestConfig(cfg *config.Config) error {
 	}
 	return nil
 }
+
 func (c *skylabExecuteRun) handleRequests(ctx context.Context, deadline time.Time, runner *execution.Runner, skylab skylab.Client) (map[string]*steps.ExecuteResponse, error) {
-	ctx, cancel := errctx.WithDeadline(ctx, deadline, fmt.Errorf("hit cros_test_platform request deadline (%s)", deadline))
-	defer cancel(context.Canceled)
-	err := runner.LaunchAndWait(ctx, skylab)
-	return runner.Responses(), err
+	tErr, fErr := runWithDeadline(
+		ctx,
+		func(ctx context.Context) error {
+			return runner.LaunchAndWait(ctx, skylab)
+		},
+		deadline,
+	)
+	if tErr != nil {
+		// Timeout while waiting for tasks is not considered an Test Platform
+		// infrastructure error because root cause is mostly related to fleet
+		// capacity or long test runtimes.
+		logging.Warningf(ctx, "Exited wait dut to timeout: %s", tErr)
+		logging.Warningf(ctx, "Execution responses will contain test failures as a consequence of the timeout.")
+	}
+	return runner.Responses(), fErr
 }
 
-func (c *skylabExecuteRun) writeResponsesWithError(resps map[string]*steps.ExecuteResponse, err error) error {
-	r := &steps.ExecuteResponses{TaggedResponses: resps}
-	return writeResponseWithError(c.outputPath, r, err)
+func (c *skylabExecuteRun) updateWithEnumerationErrors(ctx context.Context, resps map[string]*steps.ExecuteResponse, reqs map[string]*steps.ExecuteRequest) {
+	for t, resp := range resps {
+		req, ok := reqs[t]
+		if !ok {
+			panic(fmt.Sprintf("request for non-existent request for %s", t))
+		}
+		if es := req.GetEnumeration().GetErrorSummary(); es != "" {
+			if resp.State == nil {
+				resp.State = &test_platform.TaskState{}
+			}
+			resp.State.Verdict = test_platform.TaskState_VERDICT_FAILED
+			logging.Infof(ctx, "Set request %s to VERDICT_FAILED because of enumeration error: %s", t, es)
+		}
+	}
+}
+
+var timeoutTag = errors.BoolTag{Key: errors.NewTagKey("this error occurred because of timeout")}
+
+// runWithDeadline runs f() with the given deadline.
+//
+// In case of a timeout, the error is returned as timeoutError. All other errors
+// are returned as fErr.
+func runWithDeadline(ctx context.Context, f func(context.Context) error, deadline time.Time) (timeoutError error, fErr error) {
+	tErr := fmt.Errorf("hit cros_test_platform request deadline (%s)", deadline)
+	tErr = timeoutTag.Apply(tErr)
+	ctx, cancel := errctx.WithDeadline(ctx, deadline, tErr)
+	defer cancel(context.Canceled)
+
+	ierr := f(ctx)
+	if timeoutTag.In(ierr) {
+		return ierr, nil
+	}
+	return nil, ierr
 }

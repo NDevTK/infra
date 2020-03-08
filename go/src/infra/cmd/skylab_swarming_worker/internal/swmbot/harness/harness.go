@@ -233,7 +233,8 @@ func (u labelUpdater) update(dutID string, old *inventory.DeviceUnderTest, new *
 	}
 	resp, err := client.UpdateDutLabels(ctx, req)
 	if err != nil {
-		return errors.Annotate(err, "update inventory labels").Err()
+		log.Printf("(not fatal) fail to update to inventory V1: %#v", err)
+		return nil
 	}
 	if url := resp.GetUrl(); url != "" {
 		log.Printf("Updated DUT labels at %s", url)
@@ -241,6 +242,7 @@ func (u labelUpdater) update(dutID string, old *inventory.DeviceUnderTest, new *
 	return nil
 }
 
+// TODO(xixuan): move it to lib.
 func getStatesFromLabel(dutID string, l *inventory.SchedulableLabels) *lab.DutState {
 	state := lab.DutState{
 		Id: &lab.ChromeOSDeviceID{Value: dutID},
@@ -258,18 +260,23 @@ func getStatesFromLabel(dutID string, l *inventory.SchedulableLabels) *lab.DutSt
 		}
 		if p.GetChameleon() {
 			state.Chameleon = lab.PeripheralState_WORKING
-		} else {
-			state.Chameleon = lab.PeripheralState_UNKNOWN
 		}
 		if p.GetAudioLoopbackDongle() {
 			state.AudioLoopbackDongle = lab.PeripheralState_WORKING
-		} else {
-			state.AudioLoopbackDongle = lab.PeripheralState_UNKNOWN
 		}
-	} else {
-		state.Servo = lab.PeripheralState_UNKNOWN
-		state.Chameleon = lab.PeripheralState_UNKNOWN
-		state.AudioLoopbackDongle = lab.PeripheralState_UNKNOWN
+		state.WorkingBluetoothBtpeer = p.GetWorkingBluetoothBtpeer()
+		switch l.GetCr50Phase() {
+		case inventory.SchedulableLabels_CR50_PHASE_PVT:
+			state.Cr50Phase = lab.DutState_CR50_PHASE_PVT
+		case inventory.SchedulableLabels_CR50_PHASE_PREPVT:
+			state.Cr50Phase = lab.DutState_CR50_PHASE_PREPVT
+		}
+		switch l.GetCr50RoKeyid() {
+		case "prod":
+			state.Cr50KeyEnv = lab.DutState_CR50_KEYENV_PROD
+		case "dev":
+			state.Cr50KeyEnv = lab.DutState_CR50_KEYENV_DEV
+		}
 	}
 	return &state
 }

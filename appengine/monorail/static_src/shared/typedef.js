@@ -439,11 +439,11 @@
 /**
  * A Hotlist Object returned by the pRPC v1 API from feature_objects.proto.
  *
- * @typedef {Object} HotlistV1
+ * @typedef {Object} HotlistV3
  * @property {string} name
  * @property {string=} displayName
- * @property {string=} owner
- * @property {Array<string>=} editors
+ * @property {UserV3=} owner
+ * @property {Array<UserV3>=} editors
  * @property {string=} summary
  * @property {string=} description
  * @property {Array<IssuesListColumn>=} defaultColumns
@@ -464,11 +464,11 @@
 /**
  * A HotlistItem Object returned by the pRPC v1 API from feature_objects.proto.
  *
- * @typedef {Object} HotlistItemV1
+ * @typedef {Object} HotlistItemV3
  * @property {string=} name
  * @property {string=} issue
  * @property {number=} rank
- * @property {string=} adder
+ * @property {UserV3=} adder
  * @property {string=} createTime
  * @property {string=} note
  */
@@ -487,4 +487,13 @@
  * @property {string=} availability
  * @property {UserRef=} linkedParentRef
  * @property {Array<UserRef>=} linkedChildRefs
+ */
+
+/**
+ * A User Object returned by the pRPC v1 API from user_objects.proto.
+ *
+ * @typedef {Object} UserV3
+ * @property {string=} name
+ * @property {string=} displayName
+ * @property {string=} availabilityMessage
  */

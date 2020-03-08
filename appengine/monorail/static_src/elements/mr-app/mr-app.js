@@ -21,12 +21,13 @@ import {trackPageChange} from 'shared/ga-helpers.js';
 import 'elements/issue-list/mr-list-page/mr-list-page.js';
 import 'elements/issue-entry/mr-issue-entry-page.js';
 import 'elements/framework/mr-header/mr-header.js';
-import 'elements/framework/mr-keystrokes/mr-keystrokes.js';
 import 'elements/help/mr-cue/mr-cue.js';
 import {cueNames} from 'elements/help/mr-cue/cue-helpers.js';
 import 'elements/chops/chops-snackbar/chops-snackbar.js';
 
 import {SHARED_STYLES} from 'shared/shared-styles.js';
+
+const QUERY_PARAMS_THAT_RESET_SCROLL = ['q', 'mode', 'id'];
 
 /**
  * `<mr-app>`
@@ -69,11 +70,6 @@ export class MrApp extends connectStore(LitElement) {
   /** @override */
   render() {
     return html`
-      <mr-keystrokes
-        .issueId=${this.queryParams.id}
-        .queryParams=${this.queryParams}
-        .issueEntryUrl=${this.issueEntryUrl}
-      ></mr-keystrokes>
       <mr-header
         .userDisplayName=${this.userDisplayName}
         .issueEntryUrl=${this.issueEntryUrl}
@@ -220,7 +216,7 @@ export class MrApp extends connectStore(LitElement) {
      * The context of the page. This should not be a LitElement property
      * because we don't want to re-render when updating this.
      */
-    this._currentContext = undefined;
+    this._lastContext = undefined;
   }
 
   /** @override */
@@ -308,9 +304,9 @@ export class MrApp extends connectStore(LitElement) {
    */
   _preRouteHandler(ctx, next) {
     // We're not really navigating anywhere, so don't do anything.
-    if (this._currentContext && this._currentContext.path &&
-      ctx.path === this._currentContext.path) {
-      Object.assign(ctx, this._currentContext);
+    if (this._lastContext && this._lastContext.path &&
+      ctx.path === this._lastContext.path) {
+      Object.assign(ctx, this._lastContext);
       // Set ctx.handled to false, so we don't push the state to browser's
       // history.
       ctx.handled = false;
@@ -321,7 +317,7 @@ export class MrApp extends connectStore(LitElement) {
     // page.
     const discardMessage = this._confirmDiscardMessage();
     if (discardMessage && !confirm(discardMessage)) {
-      Object.assign(ctx, this._currentContext);
+      Object.assign(ctx, this._lastContext);
       // Set ctx.handled to false, so we don't push the state to browser's
       // history.
       ctx.handled = false;
@@ -369,11 +365,31 @@ export class MrApp extends connectStore(LitElement) {
     // Clear dirty forms when entering a new page.
     store.dispatch(ui.clearDirtyForms());
 
-    // Save the context of this page to be compared to later.
-    this._currentContext = ctx;
 
-    // Reset the scroll position after a new page has rendered.
-    window.scrollTo(0, 0);
+    if (!this._lastContext || this._lastContext.pathname !== ctx.pathname ||
+        this._hasReleventParamChanges(ctx.queryParams,
+            this._lastContext.queryParams)) {
+      // Reset the scroll position after a new page has rendered.
+      window.scrollTo(0, 0);
+    }
+
+    // Save the context of this page to be compared to later.
+    this._lastContext = ctx;
+  }
+
+  /**
+   * Finds if a route change changed query params in a way that should cause
+   * scrolling to reset.
+   * @param {Object} currentParams
+   * @param {Object} oldParams
+   * @param {Array<string>=} paramsToCompare Which params to check.
+   * @return {boolean} Whether any of the relevant query params changed.
+   */
+  _hasReleventParamChanges(currentParams, oldParams,
+      paramsToCompare = QUERY_PARAMS_THAT_RESET_SCROLL) {
+    return paramsToCompare.some((paramName) => {
+      return currentParams[paramName] !== oldParams[paramName];
+    });
   }
 
   /**
