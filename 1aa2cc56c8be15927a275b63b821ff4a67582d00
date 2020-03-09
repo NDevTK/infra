@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8db77207_b1c7c8fc",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/autotest/testspec/metadata.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-03-09T21:12:18Z",
+      "side": 1,
+      "message": "Perhaps, \"missing\"? \"corrupt\" suggests that there is a non-empty value of an incorrect format.",
+      "range": {
+        "startLine": 53,
+        "startChar": 37,
+        "endLine": 53,
+        "endChar": 44
+      },
+      "revId": "1aa2cc56c8be15927a275b63b821ff4a67582d00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "60f0ecc8_126f5edf",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/autotest/testspec/metadata.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-03-09T21:12:18Z",
+      "side": 1,
+      "message": "Perhaps, use annotateEach to remove boilerplate?",
+      "range": {
+        "startLine": 93,
+        "startChar": 3,
+        "endLine": 93,
+        "endChar": 27
+      },
+      "revId": "1aa2cc56c8be15927a275b63b821ff4a67582d00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "34254a14_22dd9227",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/cmd/enumerate.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-03-09T21:12:18Z",
+      "side": 1,
+      "message": "Also annotate these?",
+      "range": {
+        "startLine": 115,
+        "startChar": 10,
+        "endLine": 115,
+        "endChar": 14
+      },
+      "revId": "1aa2cc56c8be15927a275b63b821ff4a67582d00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eb865dbc_14a62b26",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/cmd/enumerate.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-03-09T21:12:18Z",
+      "side": 1,
+      "message": "What\u0027s the reasoning for switching this one to a multi-error? If it stays a simple error, no annotateEach is necessary.",
+      "range": {
+        "startLine": 230,
+        "startChar": 107,
+        "endLine": 230,
+        "endChar": 117
+      },
+      "revId": "1aa2cc56c8be15927a275b63b821ff4a67582d00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
