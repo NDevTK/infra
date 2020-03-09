@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "12ab665f_0e2cfacf",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/autotest/testspec/metadata.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-03-09T22:24:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8db77207_b1c7c8fc",
+      "range": {
+        "startLine": 53,
+        "startChar": 37,
+        "endLine": 53,
+        "endChar": 44
+      },
+      "revId": "1aa2cc56c8be15927a275b63b821ff4a67582d00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "60f0ecc8_126f5edf",
         "filename": "go/src/infra/cmd/cros_test_platform/internal/autotest/testspec/metadata.go",
         "patchSetId": 5
@@ -45,6 +69,30 @@
       "revId": "1aa2cc56c8be15927a275b63b821ff4a67582d00",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e16a22af_be606cff",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/autotest/testspec/metadata.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-03-09T22:24:36Z",
+      "side": 1,
+      "message": "Oh wow! Who wrote that wonderful helper function?",
+      "parentUuid": "60f0ecc8_126f5edf",
+      "range": {
+        "startLine": 93,
+        "startChar": 3,
+        "endLine": 93,
+        "endChar": 27
+      },
+      "revId": "1aa2cc56c8be15927a275b63b821ff4a67582d00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "357199d0_e94f39f4",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/cmd/enumerate.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-03-09T22:24:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "34254a14_22dd9227",
+      "range": {
+        "startLine": 115,
+        "startChar": 10,
+        "endLine": 115,
+        "endChar": 14
+      },
+      "revId": "1aa2cc56c8be15927a275b63b821ff4a67582d00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "eb865dbc_14a62b26",
         "filename": "go/src/infra/cmd/cros_test_platform/internal/cmd/enumerate.go",
         "patchSetId": 5
@@ -91,6 +163,30 @@
       "revId": "1aa2cc56c8be15927a275b63b821ff4a67582d00",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1a4d1361_87705f56",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/cmd/enumerate.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-03-09T22:24:36Z",
+      "side": 1,
+      "message": "testspec.Get() returns a MultiError.\nIf you convert back to a error too soon, the default formatting of the log skips most errors (just saying \"100 other errors...\")",
+      "parentUuid": "eb865dbc_14a62b26",
+      "range": {
+        "startLine": 230,
+        "startChar": 107,
+        "endLine": 230,
+        "endChar": 117
+      },
+      "revId": "1aa2cc56c8be15927a275b63b821ff4a67582d00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
