@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b291d18b_748f454d",
+        "filename": "appengine/monorail/businesslogic/work_env.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 2589,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-03-10T18:33:57Z",
+      "side": 1,
+      "message": "Can you clarify what the difference is between this and RemoveIssuesFromHotlists?",
+      "range": {
+        "startLine": 2589,
+        "startChar": 6,
+        "endLine": 2589,
+        "endChar": 24
+      },
+      "revId": "90fdeb0881e8982a6726e6b6ab0a4b79bb30eaee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
