@@ -4603,6 +4603,22 @@ class WorkEnvTest(unittest.TestCase):
       with self.work_env as we:
         we.AddIssuesToHotlists([1, 2, 3], [4, 5, 6], None)
 
+  def testRemoveHotlistItems(self):
+    """We can remove issues from a hotlist."""
+    pass
+
+  def testRemoveHotlistItems_NoHotlistPermissions(self):
+    pass
+
+  def testRemoveHotlistItems_NoSuchHotlist(self):
+    pass
+
+  def testRemoveHotlistItems_NoSuchIssue(self):
+    pass
+
+  def testRemoveHotlistItems_ItemNotFound(self):
+    pass
+
   def createRerankHotlist(self):
     owner_ids = [self.user_1.user_id]
     editor_ids = [self.user_2.user_id]

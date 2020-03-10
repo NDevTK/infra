@@ -2586,6 +2586,22 @@ class WorkEnv(object):
           self.mc.cnxn, hotlist_ids, added_tuples, self.services.issue,
           self.services.chart)
 
+  def RemoveHotlistItems(self, hotlist_id, remove_issue_ids):
+    hotlist = self.GetHotlist(hotlist_id)
+    self._AssertUserCanEditHotlist(hotlist)
+    if not removed_issue_ids:
+      raise exceptions.InputException('`remove_issue_ids` empty.')
+
+    item_issue_ids = {item.issue_id for item in hotlist.items}
+    if not (set(remove_issue_ids).issubset(item_issue_ids)):
+      raise exceptions.InputException('')
+
+    # TODO(crbug/monorail/7318): Check user has permission to view every issue
+
+    self.services.features.UpdateHotlistIssues(
+        self.mc.cnxn, hotlist_id, [], remove_issue_ids, self.services.issue,
+        self.services.chart)
+
   def RerankHotlistItems(self, hotlist_id, moved_issue_ids, target_position):
     # type: (int, list(int), int) -> Hotlist
     """Rerank the moved items for a hotlist.
