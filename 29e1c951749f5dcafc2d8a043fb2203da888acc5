@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3133b549_3a211904",
+        "filename": "appengine/monorail/tracker/issuebulkedit.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-10T20:44:50Z",
+      "side": 1,
+      "message": "here and below ezt.boolean(True)",
+      "range": {
+        "startLine": 114,
+        "startChar": 24,
+        "endLine": 114,
+        "endChar": 29
+      },
+      "revId": "29e1c951749f5dcafc2d8a043fb2203da888acc5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "67d17cda_825be96a",
+        "filename": "appengine/monorail/tracker/test/issuebulkedit_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-10T20:44:50Z",
+      "side": 1,
+      "message": "why is this needed?",
+      "revId": "29e1c951749f5dcafc2d8a043fb2203da888acc5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "deef49f0_ab854ba3",
+        "filename": "appengine/monorail/tracker/tracker_views.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 402,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-10T20:44:50Z",
+      "side": 1,
+      "message": "Make a note here that FieldValueView does not handle determining if it\u0027s editable by the logged-in user.",
+      "revId": "29e1c951749f5dcafc2d8a043fb2203da888acc5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1e60466d_561c4793",
+        "filename": "appengine/monorail/tracker/tracker_views.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 403,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-10T20:44:50Z",
+      "side": 1,
+      "message": "make this ezt.boolean(True) to make this the appropriate \"ezt boolean format\" like 387",
+      "range": {
+        "startLine": 403,
+        "startChar": 23,
+        "endLine": 403,
+        "endChar": 27
+      },
+      "revId": "29e1c951749f5dcafc2d8a043fb2203da888acc5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
