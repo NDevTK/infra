@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "0b4038c4_e970d139",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-03-10T18:55:24Z",
+      "side": 1,
+      "message": "Nit: blank line after oneline docstring",
+      "range": {
+        "startLine": 174,
+        "startChar": 0,
+        "endLine": 174,
+        "endChar": 49
+      },
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6ed7644c_71f22b75",
         "filename": "appengine/monorail/api/v1/converters.py",
         "patchSetId": 7
@@ -225,6 +248,75 @@
       "writtenOn": "2020-03-07T01:00:48Z",
       "side": 1,
       "message": "Since the derived boolean defaults to false anyways, can we just make this \u0027elif\u0027 the else case and remove the \"DERIVATION_UNSPECIFIED\" chunk below?",
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f8774be7_a536b374",
+        "filename": "appengine/monorail/api/v1/test/converters_test.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-03-10T18:55:24Z",
+      "side": 1,
+      "message": "Nit: use docstrings instead of comments?",
+      "range": {
+        "startLine": 190,
+        "startChar": 0,
+        "endLine": 190,
+        "endChar": 62
+      },
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a15a10cb_79895336",
+        "filename": "appengine/monorail/api/v1/test/converters_test.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-03-10T18:55:24Z",
+      "side": 1,
+      "message": "I believe the key is the field ID, not the field def itself. \n\nFor unit tests, use dict[key] rather than .get so that we get an error if the key isn\u0027t present",
+      "range": {
+        "startLine": 196,
+        "startChar": 23,
+        "endLine": 196,
+        "endChar": 44
+      },
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "25a3e70b_b025335c",
+        "filename": "appengine/monorail/api/v1/test/converters_test.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-03-10T18:55:24Z",
+      "side": 1,
+      "message": "this isn\u0027t used?",
+      "range": {
+        "startLine": 260,
+        "startChar": 0,
+        "endLine": 260,
+        "endChar": 39
+      },
       "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
