@@ -400,6 +400,8 @@ class FieldValueView(object):
         self.values or self.derived_values or
         (self.applicable and not fd.is_niche))
 
+    self.is_editable = True
+
 
 def _PrecomputeInfoForValueViews(labels, derived_labels, field_values, config,
                                  phases):
@@ -569,6 +571,7 @@ class FieldDefView(template_helpers.PBProxy):
     super(FieldDefView, self).__init__(field_def)
 
     self.type_name = str(field_def.field_type)
+    self.field_def = field_def
 
     self.choices = []
     if field_def.field_type == tracker_pb2.FieldTypes.ENUM_TYPE:
