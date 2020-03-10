@@ -22,6 +22,30 @@
       "revId": "90fdeb0881e8982a6726e6b6ab0a4b79bb30eaee",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b9a7c227_18211e2a",
+        "filename": "appengine/monorail/businesslogic/work_env.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 2589,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-10T18:50:20Z",
+      "side": 1,
+      "message": "sorry sorry, i meant to do this but forgot as I marked this ready for review.\n\nAdded a TODO, but also\n\nRemoveIssuesFromHotlists is called by v0 API hotlist management paths. \nIt manages removing issues from several hotlists at once \nand calls a different features_svc method that we eventually also want to remove. https://source.chromium.org/chromium/infra/infra/+/master:appengine/monorail/services/features_svc.py;l\u003d917?q\u003dfeatures_svc\u0026ss\u003dchromium%2Finfra%2Finfra:appengine%2Fmonorail%2F\n\nWe\u0027re not sure if we want to support adding to several hotlists at once in v3 or how we would want to do this and I don\u0027t want to merge the v3 and v0 paths right now because I think that would make deleting v0 paths more complicated later and possibly result in a messier final v3 path implementation.\nThis method is needed currently to support Dave\u0027s work to remove issues from a hotlist.",
+      "parentUuid": "b291d18b_748f454d",
+      "range": {
+        "startLine": 2589,
+        "startChar": 6,
+        "endLine": 2589,
+        "endChar": 24
+      },
+      "revId": "90fdeb0881e8982a6726e6b6ab0a4b79bb30eaee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
