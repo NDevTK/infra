@@ -124,6 +124,7 @@ func validateRunTestRequest(r phosphorus.RunTestRequest) error {
 func runTestStep(ctx context.Context, r phosphorus.RunTestRequest) (*autoservResult, error) {
 	j := getMainJob(r.Config)
 
+	// TODO(crbug.com/830912): "Temporary" for STARTING -> SKYLAB_PROVISION
 	dir := filepath.Join(r.Config.Task.ResultsDir, "autoserv_test")
 
 	t := &atutil.HostTest{
