@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "5a3aa7d9_63bbe714",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-11T20:32:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0b4038c4_e970d139",
+      "range": {
+        "startLine": 174,
+        "startChar": 0,
+        "endLine": 174,
+        "endChar": 49
+      },
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6ed7644c_71f22b75",
         "filename": "appengine/monorail/api/v1/converters.py",
         "patchSetId": 7
@@ -45,6 +69,30 @@
       "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a5bd4878_c3e72012",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-11T20:32:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6ed7644c_71f22b75",
+      "range": {
+        "startLine": 185,
+        "startChar": 42,
+        "endLine": 185,
+        "endChar": 48
+      },
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "efb6b9dc_681cfd61",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-11T20:32:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8511237d_6adeff5c",
+      "range": {
+        "startLine": 195,
+        "startChar": 6,
+        "endLine": 195,
+        "endChar": 11
+      },
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "91bf6f5a_1bf93d15",
         "filename": "appengine/monorail/api/v1/converters.py",
         "patchSetId": 7
@@ -91,6 +163,30 @@
       "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ced17829_cdd7b162",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-11T20:32:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "91bf6f5a_1bf93d15",
+      "range": {
+        "startLine": 203,
+        "startChar": 4,
+        "endLine": 203,
+        "endChar": 23
+      },
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "523b028c_3ed7228c",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-11T20:32:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0d32833a_d35a5d90",
+      "range": {
+        "startLine": 220,
+        "startChar": 22,
+        "endLine": 220,
+        "endChar": 27
+      },
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3f5aaea2_a44d309a",
         "filename": "appengine/monorail/api/v1/converters.py",
         "patchSetId": 7
@@ -140,6 +260,30 @@
     },
     {
       "key": {
+        "uuid": "0171ce71_a9b2e374",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-11T20:32:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3f5aaea2_a44d309a",
+      "range": {
+        "startLine": 222,
+        "startChar": 15,
+        "endLine": 222,
+        "endChar": 25
+      },
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "61d4820f_62e1cd6d",
         "filename": "appengine/monorail/api/v1/converters.py",
         "patchSetId": 7
@@ -157,6 +301,24 @@
     },
     {
       "key": {
+        "uuid": "cb1344d2_a47a50fe",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-11T20:32:06Z",
+      "side": 1,
+      "message": "I see that Monorail has used the pattern that if something is None we mostly raise an exception. I\u0027ll update and raise an exception.\nMy only concern with that is making this method too restrictive in case some future usecase can pass in a None FieldValue. But that can be a problem for future coders.",
+      "parentUuid": "61d4820f_62e1cd6d",
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aba9d847_d2b2debf",
         "filename": "appengine/monorail/api/v1/converters.py",
         "patchSetId": 7
@@ -171,6 +333,24 @@
       "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "605873d1_05e29ab4",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-11T20:32:06Z",
+      "side": 1,
+      "message": "Mostly the same comment as above, I believe class FieldValue\u0027s constructor should be raising the exception for an instance where no values exist, but no need to bikeshed over this. I\u0027ll update and raise an exception",
+      "parentUuid": "aba9d847_d2b2debf",
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -197,6 +377,30 @@
     },
     {
       "key": {
+        "uuid": "7b2f045d_5ca5a688",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-11T20:32:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fef7e534_b90eac46",
+      "range": {
+        "startLine": 247,
+        "startChar": 70,
+        "endLine": 247,
+        "endChar": 80
+      },
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3fc9a78c_77c3858e",
         "filename": "appengine/monorail/api/v1/converters.py",
         "patchSetId": 7
@@ -220,6 +424,30 @@
     },
     {
       "key": {
+        "uuid": "192c32a2_f277d985",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-11T20:32:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3fc9a78c_77c3858e",
+      "range": {
+        "startLine": 248,
+        "startChar": 15,
+        "endLine": 248,
+        "endChar": 49
+      },
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7aa178fd_bee6a66f",
         "filename": "appengine/monorail/api/v1/converters.py",
         "patchSetId": 7
@@ -237,6 +465,24 @@
     },
     {
       "key": {
+        "uuid": "ab067226_4010e6f8",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-11T20:32:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7aa178fd_bee6a66f",
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b017e12b_6c8e9b9b",
         "filename": "appengine/monorail/api/v1/converters.py",
         "patchSetId": 7
@@ -248,6 +494,24 @@
       "writtenOn": "2020-03-07T01:00:48Z",
       "side": 1,
       "message": "Since the derived boolean defaults to false anyways, can we just make this \u0027elif\u0027 the else case and remove the \"DERIVATION_UNSPECIFIED\" chunk below?",
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4b392ac6_1571fe1a",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-11T20:32:06Z",
+      "side": 1,
+      "message": "The same argument could be said about the v3 API proto, since the backend proto defaults to False and never None, why have that enum option in the first place?\n\nI think the compute and convert should be permissible.",
+      "parentUuid": "b017e12b_6c8e9b9b",
       "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -300,6 +564,30 @@
     },
     {
       "key": {
+        "uuid": "8a16c43a_f9997bb0",
+        "filename": "appengine/monorail/api/v1/test/converters_test.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-11T20:32:06Z",
+      "side": 1,
+      "message": "self.field_def_1 is the key",
+      "parentUuid": "a15a10cb_79895336",
+      "range": {
+        "startLine": 196,
+        "startChar": 23,
+        "endLine": 196,
+        "endChar": 44
+      },
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "25a3e70b_b025335c",
         "filename": "appengine/monorail/api/v1/test/converters_test.py",
         "patchSetId": 7
@@ -320,6 +608,30 @@
       "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "83d81040_616bd32a",
+        "filename": "appengine/monorail/api/v1/test/converters_test.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-11T20:32:06Z",
+      "side": 1,
+      "message": "Ah good catch!",
+      "parentUuid": "25a3e70b_b025335c",
+      "range": {
+        "startLine": 260,
+        "startChar": 0,
+        "endLine": 260,
+        "endChar": 39
+      },
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
