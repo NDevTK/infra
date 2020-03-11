@@ -518,6 +518,24 @@
     },
     {
       "key": {
+        "uuid": "1aa34c10_7c3f633b",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-11T22:14:11Z",
+      "side": 1,
+      "message": "https://aip.dev/126\nThe backend layer is separate from the API layer and protos that we expose to clients.\nIf there\u0027s a chance that there can be additional options in the future, we should make it an ENUM in the API, so we can add an enum option very easily w/out disrupting how our existing API clients use it. The backend representation can stay as-is, and if we add another option we can represent that however we want, update how we convert that representation to the API in this method w/out disrupting our users and potentially having to release another API version.\n\nWe are erring on the side of using ENUMs for all backend boolean fields where there\u0027s any possibility that adding other value options might happen, even if that chance is small, because the cost of having to release a new version of our API is very high.",
+      "parentUuid": "4b392ac6_1571fe1a",
+      "revId": "1b184fd0a39473b3351a802d25feb9d3d69f5cbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f8774be7_a536b374",
         "filename": "appengine/monorail/api/v1/test/converters_test.py",
         "patchSetId": 7
