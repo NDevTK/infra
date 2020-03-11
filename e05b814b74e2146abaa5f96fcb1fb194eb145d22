@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7241104c_7d564a4d",
+        "filename": "appengine/monorail/api/v1/test/hotlists_servicer_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-03-11T01:32:19Z",
+      "side": 1,
+      "message": "I think it would be good to use [] indexing rather than .get",
+      "range": {
+        "startLine": 148,
+        "startChar": 42,
+        "endLine": 148,
+        "endChar": 46
+      },
+      "revId": "e05b814b74e2146abaa5f96fcb1fb194eb145d22",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ba85b2e1_c5563ef2",
+        "filename": "appengine/monorail/api/v1/test/hotlists_servicer_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-03-11T01:32:19Z",
+      "side": 1,
+      "message": "optional: add a comment that self.hotlist_1 originally had 4 items",
+      "range": {
+        "startLine": 159,
+        "startChar": 0,
+        "endLine": 159,
+        "endChar": 51
+      },
+      "revId": "e05b814b74e2146abaa5f96fcb1fb194eb145d22",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
