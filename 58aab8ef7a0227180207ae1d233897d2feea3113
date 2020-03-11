@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5ec3f90f_33dc20b9",
+        "filename": "appengine/monorail/api/v1/api_proto/issue_objects.proto",
+        "patchSetId": 10
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-11T20:38:48Z",
+      "side": 1,
+      "message": "After generating the new protos I got a merge conflict. So I\u0027ll just generate the new protos in a separate CL after this is merged.",
+      "range": {
+        "startLine": 79,
+        "startChar": 4,
+        "endLine": 79,
+        "endChar": 12
+      },
+      "revId": "58aab8ef7a0227180207ae1d233897d2feea3113",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
