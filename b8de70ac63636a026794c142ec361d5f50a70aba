@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "8e4ea199_d68681ba",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/cmd/run-test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2020-03-12T20:31:13Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "0b93edec_b84e5f0a",
+      "range": {
+        "startLine": 127,
+        "startChar": 0,
+        "endLine": 127,
+        "endChar": 72
+      },
+      "revId": "b8de70ac63636a026794c142ec361d5f50a70aba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d12a508e_a95e4c00",
         "filename": "go/src/infra/cros/cmd/phosphorus/internal/cmd/upload-to-gs.go",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "b8de70ac63636a026794c142ec361d5f50a70aba",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "824abe3c_7d26b535",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/cmd/upload-to-gs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2020-03-12T20:31:13Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "d12a508e_a95e4c00",
+      "range": {
+        "startLine": 100,
+        "startChar": 1,
+        "endLine": 100,
+        "endChar": 69
+      },
+      "revId": "b8de70ac63636a026794c142ec361d5f50a70aba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
