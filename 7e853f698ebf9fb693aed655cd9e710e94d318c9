@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "35e4ac4a_f42f837a",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/cmd/upload-to-gs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-03-12T23:07:08Z",
+      "side": 1,
+      "message": "Is this made obsolete by crrev.com/c/2099434?",
+      "range": {
+        "startLine": 101,
+        "startChar": 0,
+        "endLine": 101,
+        "endChar": 75
+      },
+      "revId": "7e853f698ebf9fb693aed655cd9e710e94d318c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
