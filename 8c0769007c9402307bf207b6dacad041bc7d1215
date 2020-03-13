@@ -1,0 +1,170 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4f89b8f4_8abbfae1",
+        "filename": "appengine/monorail/api/resource_name_converters.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 485,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-13T18:35:56Z",
+      "side": 1,
+      "message": "I know there are some other parts of the existing code that does this. \nBut this format technically would not pass the type analyzer we might be using\n\nso when writing new code or touching existing code, we should try to follow the format \nof \n# type: (args, ..) -\u003e \u003creturn\u003e\nhttps://google.github.io/pytype/errors.html#invalid-function-type-comment",
+      "revId": "8c0769007c9402307bf207b6dacad041bc7d1215",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6e2481a8_f37bffc0",
+        "filename": "appengine/monorail/api/resource_name_converters.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 485,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-13T18:35:56Z",
+      "side": 1,
+      "message": "\"Services\"\nhttps://source.chromium.org/chromium/infra/infra/+/master:appengine/monorail/services/service_manager.py;l\u003d28?q\u003d%22Services%22\u0026ss\u003dchromium%2Finfra%2Finfra:appengine%2Fmonorail%2F",
+      "range": {
+        "startLine": 485,
+        "startChar": 46,
+        "endLine": 485,
+        "endChar": 53
+      },
+      "revId": "8c0769007c9402307bf207b6dacad041bc7d1215",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "61d1a20f_dc38fc99",
+        "filename": "appengine/monorail/api/resource_name_converters.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 492,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-13T18:35:56Z",
+      "side": 1,
+      "message": "Services",
+      "range": {
+        "startLine": 492,
+        "startChar": 14,
+        "endLine": 492,
+        "endChar": 21
+      },
+      "revId": "8c0769007c9402307bf207b6dacad041bc7d1215",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f6ac9ae7_add1b768",
+        "filename": "appengine/monorail/api/resource_name_converters.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 512,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-13T18:35:56Z",
+      "side": 1,
+      "message": "approval_id",
+      "range": {
+        "startLine": 512,
+        "startChar": 64,
+        "endLine": 512,
+        "endChar": 73
+      },
+      "revId": "8c0769007c9402307bf207b6dacad041bc7d1215",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f7b2ca3_58cbb767",
+        "filename": "appengine/monorail/api/test/resource_name_converters_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 314,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-13T18:35:56Z",
+      "side": 1,
+      "message": "Nit: It\u0027s more readable to only create variables right before they\u0027re needed. So these two `expected_` should go right before teh assertEqual below.",
+      "revId": "8c0769007c9402307bf207b6dacad041bc7d1215",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6498c57f_57a70ad5",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-13T18:35:56Z",
+      "side": 1,
+      "message": "missing comma \",\"",
+      "range": {
+        "startLine": 291,
+        "startChar": 74,
+        "endLine": 291,
+        "endChar": 77
+      },
+      "revId": "8c0769007c9402307bf207b6dacad041bc7d1215",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "659da212_cb34c4f5",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 309,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-13T18:35:56Z",
+      "side": 1,
+      "message": "list comprehension would be easier to understand.\n[av.approval_id for av in approval_values]",
+      "range": {
+        "startLine": 309,
+        "startChar": 17,
+        "endLine": 309,
+        "endChar": 76
+      },
+      "revId": "8c0769007c9402307bf207b6dacad041bc7d1215",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aeb37cce_b8603df5",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 315,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-13T18:35:56Z",
+      "side": 1,
+      "message": "if resource_names_dict returns None, which it could, we should skip this `av`\nsimilar to how we skip a fd not found in ConvertFieldValues.",
+      "revId": "8c0769007c9402307bf207b6dacad041bc7d1215",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
