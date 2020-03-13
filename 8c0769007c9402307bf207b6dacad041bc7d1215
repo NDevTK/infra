@@ -357,6 +357,24 @@
       "revId": "8c0769007c9402307bf207b6dacad041bc7d1215",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "da7ba03c_dc2b307f",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 315,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-13T20:54:51Z",
+      "side": 1,
+      "message": "Oh I see your point",
+      "parentUuid": "45d7c37c_0dbc9661",
+      "revId": "8c0769007c9402307bf207b6dacad041bc7d1215",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
