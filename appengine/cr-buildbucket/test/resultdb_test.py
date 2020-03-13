@@ -60,12 +60,12 @@ class ResultDBTest(testing.AppengineTestCase):
 
   def test_no_hostname(self):
     self.build = _make_build(1, hostname=None)
-    self.assertFalse(resultdb.sync(self.build))
+    self.assertFalse(resultdb.create_invocation(self.build))
     self.assertFalse(net.request_async.called)
 
   def test_has_invocation(self):
     self.build = _make_build(2, invocation='invocations/build:2')
-    self.assertFalse(resultdb.sync(self.build))
+    self.assertFalse(resultdb.create_invocation(self.build))
     self.assertFalse(net.request_async.called)
 
   def test_cannot_create_invocation(self):
@@ -81,7 +81,7 @@ class ResultDBTest(testing.AppengineTestCase):
         )
     ]
     with self.assertRaises(client.RpcError):
-      resultdb.sync(self.build)
+      resultdb.create_invocation(self.build)
 
   def test_invocation_created(self):
     self.build = _make_build(4)
@@ -90,9 +90,9 @@ class ResultDBTest(testing.AppengineTestCase):
     net.request_async.side_effect = _mock_create_request_async(
         response, 'FakeUpdateToken'
     )
-    self.assertTrue(resultdb.sync(self.build))
-    # if called a second time there should be no changes written to datastore.
-    self.assertFalse(resultdb.sync(self.build))
+    self.assertTrue(resultdb.create_invocation(self.build))
+    # if called a second time there should be no changes written to the build.
+    self.assertFalse(resultdb.create_invocation(self.build))
 
 
 class ResultDBEnqueueFinalizeTaskTest(testing.AppengineTestCase):

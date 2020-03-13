@@ -11,7 +11,6 @@ from google.appengine.ext import ndb
 import webapp2
 
 from components import decorators
-from components import net
 from components.prpc import client
 from components.prpc import codes
 from go.chromium.org.luci.buildbucket.proto import common_pb2
@@ -23,54 +22,26 @@ import model
 import tq
 
 
-def sync(build):
-  """Syncs the build with resultdb.
+def create_invocation(build):
+  """Creates an invocation for the build.
 
-  Currently, only creates an invocation for the build if none exists yet.
+  Modifies the build entity given and its infra property to record the new
+  invocation and its update token.
 
-  Returns a boolean indicating whether datastore changes were made.
+  Returns a boolean indicating whether a new invocation was created (and the
+  build's fields modified).
   """
   rdb = build.proto.infra.resultdb
   if not rdb.hostname or rdb.invocation:
     return False
 
-  new_invocation, update_token = _create_invocation(build)
-  assert new_invocation
-  assert new_invocation.name, 'Empty invocation name in %s' % (new_invocation)
-  assert update_token
-
-  @ndb.transactional
-  def txn():
-    bundle = model.BuildBundle.get(build, infra=True)
-    assert bundle and bundle.infra, bundle
-    with bundle.infra.mutate() as infra:
-      rdb = infra.resultdb
-      if rdb.invocation:
-        logging.warning('build already has an invocation %r', rdb.invocation)
-        assert bundle.build.resultdb_update_token
-        return False
-      rdb.invocation = new_invocation.name
-    assert not bundle.build.resultdb_update_token
-    bundle.build.resultdb_update_token = update_token
-    bundle.put()
-    return True
-
-  return txn()
-
-
-def _create_invocation(build):
-  """Creates an invocation in resultdb for |build|."""
-  # TODO(crbug.com/1056006): Populate bigquery_exports
-  # TODO(crbug.com/1056007): Create an invocation like
-  #     "build:<project>/<bucket>/<builder>/<number>" if number is available,
-  #     and make it include the "build:<id>" inv.
   invocation_id = 'build:%d' % build.proto.id
   response_metadata = {}
   recorder = client.Client(
       build.proto.infra.resultdb.hostname,
       recorder_prpc_pb2.RecorderServiceDescription,
   )
-  ret = recorder.CreateInvocation(
+  new_invocation = recorder.CreateInvocation(
       recorder_pb2.CreateInvocationRequest(
           invocation_id=invocation_id,
           invocation=invocation_pb2.Invocation(),
@@ -79,7 +50,15 @@ def _create_invocation(build):
       credentials=client.service_account_credentials(),
       response_metadata=response_metadata,
   )
-  return ret, response_metadata['update-token']
+  update_token = response_metadata['update-token']
+
+  assert new_invocation
+  assert new_invocation.name, 'Empty invocation name in %s' % (new_invocation)
+  assert update_token
+
+  rdb.invocation = new_invocation.name
+  build.resultdb_update_token = update_token
+  return True
 
 
 def enqueue_invocation_finalization_async(build):

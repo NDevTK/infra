@@ -30,6 +30,7 @@ import flatten_swarmingcfg
 import errors
 import events
 import model
+import resultdb
 import search
 import sequence
 import swarming
@@ -335,6 +336,10 @@ class NewBuild(object):
 
     b = self.build
     bp = b.proto
+
+    # Create an invocation for this build (if configured).
+    # Modifies b and b.proto.infra.
+    resultdb.create_invocation(b)
 
     sync_task = None
     if self.builder_cfg:  # pragma: no branch

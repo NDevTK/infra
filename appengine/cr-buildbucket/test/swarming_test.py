@@ -66,7 +66,6 @@ class BaseTest(testing.AppengineTestCase):
     self.patch(
         'components.utils.utcnow', autospec=True, side_effect=lambda: self.now
     )
-    self.patch('resultdb.sync', autospec=True, return_value=False)
 
     self.settings = service_config_pb2.SettingsCfg(
         swarming=dict(
