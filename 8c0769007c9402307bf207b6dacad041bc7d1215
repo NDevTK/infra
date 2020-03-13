@@ -339,6 +339,24 @@
       "revId": "8c0769007c9402307bf207b6dacad041bc7d1215",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "45d7c37c_0dbc9661",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 315,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-13T20:43:55Z",
+      "side": 1,
+      "message": "I meant we could just confirm that resource_names_dict.get() does not return None,\nif it does, we can skip.\n\nfetching config and checking the approval_ids exist is already done in ConvertApprovalDefNames()\nAnd include a simple one-line note about how if name is None that means the Def with approval_id was not found in ConvertApprovalDefNames(), so we\u0027re skipping.\n\nTechnically the same is true for ConvertFieldValues.",
+      "parentUuid": "093d520f_f8983ed0",
+      "revId": "8c0769007c9402307bf207b6dacad041bc7d1215",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
