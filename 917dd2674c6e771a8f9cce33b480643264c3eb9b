@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6abbef69_78863f1f",
+        "filename": "go/src/infra/cmd/cloudbuildhelper/gitignore/excluder.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2020-03-17T23:57:06Z",
+      "side": 1,
+      "message": "I picked it because we already have it in deps.yaml.",
+      "range": {
+        "startLine": 16,
+        "startChar": 1,
+        "endLine": 16,
+        "endChar": 53
+      },
+      "revId": "917dd2674c6e771a8f9cce33b480643264c3eb9b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
