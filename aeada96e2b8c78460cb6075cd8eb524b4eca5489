@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "cb1c0263_08bd8e6a",
+        "filename": "appengine/monorail/api/v1/api_proto/hotlists.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2020-03-18T19:48:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2ead1ac3_06c061fb",
+      "range": {
+        "startLine": 205,
+        "startChar": 25,
+        "endLine": 205,
+        "endChar": 44
+      },
+      "revId": "aeada96e2b8c78460cb6075cd8eb524b4eca5489",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3f20c6cd_2306dc19",
         "filename": "appengine/monorail/api/v1/api_proto/hotlists.proto",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "aeada96e2b8c78460cb6075cd8eb524b4eca5489",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9550a91e_7354f42d",
+        "filename": "appengine/monorail/api/v1/api_proto/hotlists.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2020-03-18T19:48:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3f20c6cd_2306dc19",
+      "range": {
+        "startLine": 208,
+        "startChar": 44,
+        "endLine": 208,
+        "endChar": 49
+      },
+      "revId": "aeada96e2b8c78460cb6075cd8eb524b4eca5489",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -95,6 +143,30 @@
     },
     {
       "key": {
+        "uuid": "3618aaf3_c109db27",
+        "filename": "appengine/monorail/api/v1/api_proto/hotlists.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2020-03-18T19:48:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fade67c8_9be6fa04",
+      "range": {
+        "startLine": 209,
+        "startChar": 9,
+        "endLine": 209,
+        "endChar": 15
+      },
+      "revId": "aeada96e2b8c78460cb6075cd8eb524b4eca5489",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5125274c_43ab04bb",
         "filename": "appengine/monorail/api/v1/api_proto/hotlists.proto",
         "patchSetId": 1
@@ -127,6 +199,24 @@
       "revId": "aeada96e2b8c78460cb6075cd8eb524b4eca5489",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "16c2f1bb_a864201d",
+        "filename": "appengine/monorail/api/v1/api_proto/hotlists.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 213,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2020-03-18T19:48:26Z",
+      "side": 1,
+      "message": "Done, thanks for the clarification!",
+      "parentUuid": "3441e078_24ab6ffa",
+      "revId": "aeada96e2b8c78460cb6075cd8eb524b4eca5489",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
