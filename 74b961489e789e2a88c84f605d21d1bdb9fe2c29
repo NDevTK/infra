@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8e9b2708_77b23faf",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-18T22:25:37Z",
+      "side": 1,
+      "message": "nit: \n\"[Monorail] Set is_editable for field views in templatedetail.py.\"\n\n\"TemplateUpdateGather\" is not meaningful to everyone",
+      "range": {
+        "startLine": 7,
+        "startChar": 11,
+        "endLine": 7,
+        "endChar": 99
+      },
+      "revId": "74b961489e789e2a88c84f605d21d1bdb9fe2c29",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
