@@ -1,0 +1,141 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bfc479c4_e123eb23",
+        "filename": "go/src/infra/libs/cros/stableversion/filter/filter.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-03-19T22:07:09Z",
+      "side": 1,
+      "message": "Package needs a comment/doc\n\nSuggest merging with stableversion package.  I feel like this is channeling Java and splitting packages too finely.",
+      "revId": "da2ed402d429bce7dc473dcaaa92f312d60a992f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "64481b63_ff84a497",
+        "filename": "go/src/infra/libs/cros/stableversion/filter/filter.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-03-19T22:07:09Z",
+      "side": 1,
+      "message": "This is unclear whether this is exclude matching or exclude not matching.\n\nThe function name ByModel is not the most clear IMO, because I associate \"by foo\" with \"sort by foo, ascending/descending\" or \"partition/group by foo\".\n\nThe ideal API would be something like:\n\n Filter(xv, \"model \u003d\u003d %s\")\n Filter(xv, \"targets model %s\")\n\nBut doing generic expression parsing is overkill.  I think we can simplify the API to: \n\n Filter(xv, TargetsModel(targetModel))\n Filter(xv, ForModel(targetModel))\n Filter(xv, TargetsModelsWithTouchpad())\n\n func Filter(sv StableVersion, f ...FilterExpr) StableVersion\n type FilterExpr func(sv) sv\n type FilterExpr interface {\n   filterExpr() // Can ony be implemented by this package, basically free reign to implement.\n }\n\nI\u0027m ambivalent about adding the FilterExpr abstraction, but I think API-wise it\u0027s better for a reader.\n\nSummary: \nClarify the doc comment (action requested)\nConsider renaming function (no action requested)",
+      "range": {
+        "startLine": 11,
+        "startChar": 3,
+        "endLine": 12,
+        "endChar": 24
+      },
+      "revId": "da2ed402d429bce7dc473dcaaa92f312d60a992f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "76df4abb_4fd6c4c0",
+        "filename": "go/src/infra/libs/cros/stableversion/filter/filter.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-03-19T22:07:09Z",
+      "side": 1,
+      "message": "This never returns an error.",
+      "revId": "da2ed402d429bce7dc473dcaaa92f312d60a992f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f3e75193_d7e45984",
+        "filename": "go/src/infra/libs/cros/stableversion/filter/filter_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-03-19T22:07:09Z",
+      "side": 1,
+      "message": "Add field names to these, especially for the longer blocks below, it helps reading.",
+      "revId": "da2ed402d429bce7dc473dcaaa92f312d60a992f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "05bf45d0_b9f1a558",
+        "filename": "go/src/infra/libs/cros/stableversion/filter/filter_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-03-19T22:07:09Z",
+      "side": 1,
+      "message": "Don\u0027t overload the function like this\n\nAlso, this function isn\u0027t used?",
+      "range": {
+        "startLine": 195,
+        "startChar": 2,
+        "endLine": 195,
+        "endChar": 62
+      },
+      "revId": "da2ed402d429bce7dc473dcaaa92f312d60a992f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "86a6c7a9_39749b5e",
+        "filename": "go/src/infra/libs/cros/stableversion/filter/filter_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-03-19T22:07:09Z",
+      "side": 1,
+      "message": "This isn\u0027t used?",
+      "revId": "da2ed402d429bce7dc473dcaaa92f312d60a992f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1e343878_7aa299f6",
+        "filename": "go/src/infra/libs/cros/stableversion/filter/filter_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-03-19T22:07:09Z",
+      "side": 1,
+      "message": "nit: you can call this makeStableVersions or whatever.  This is an unexported function only compiled for tests so the scope for confusion is smaller.\n\nConvention is to call it mustParse*, e.g. see https://pkg.go.dev/text/template?tab\u003ddoc#Must",
+      "range": {
+        "startLine": 230,
+        "startChar": 5,
+        "endLine": 230,
+        "endChar": 31
+      },
+      "revId": "da2ed402d429bce7dc473dcaaa92f312d60a992f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
