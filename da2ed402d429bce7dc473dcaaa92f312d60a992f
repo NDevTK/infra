@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f5f0569b_63fd6492",
+        "filename": "go/src/infra/libs/cros/stableversion/filter/filter.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1351735
+      },
+      "writtenOn": "2020-03-20T00:03:27Z",
+      "side": 1,
+      "message": "Combining this with the stableversion package would cause an import cycle involving validateconfig.\n\nI will merge stableversion and validateconfig as a later CL after this one.",
+      "parentUuid": "bfc479c4_e123eb23",
+      "revId": "da2ed402d429bce7dc473dcaaa92f312d60a992f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "64481b63_ff84a497",
         "filename": "go/src/infra/libs/cros/stableversion/filter/filter.go",
         "patchSetId": 2
@@ -42,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "3e67ca33_f5aafd5c",
+        "filename": "go/src/infra/libs/cros/stableversion/filter/filter.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1351735
+      },
+      "writtenOn": "2020-03-20T00:03:27Z",
+      "side": 1,
+      "message": "I clarified the doc comment.\n\nI renamed the function to `WithModel`, which I think is reasonably clear.\n\nAPI redesign:\n\nI don\u0027t want to have a general API because the model filtration command is able to infer the board associated with a given model from the firmware entries.\n\nI would not expect a general API to have that kind of DWIM behavior. I think it\u0027s important to keep the DWIM behavior in this case to hide some complexity from the caller and keep it close to where the stableversion type is defined.",
+      "parentUuid": "64481b63_ff84a497",
+      "range": {
+        "startLine": 11,
+        "startChar": 3,
+        "endLine": 12,
+        "endChar": 24
+      },
+      "revId": "da2ed402d429bce7dc473dcaaa92f312d60a992f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "76df4abb_4fd6c4c0",
         "filename": "go/src/infra/libs/cros/stableversion/filter/filter.go",
         "patchSetId": 2
@@ -59,6 +101,24 @@
     },
     {
       "key": {
+        "uuid": "8ead1c08_565517d9",
+        "filename": "go/src/infra/libs/cros/stableversion/filter/filter.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1351735
+      },
+      "writtenOn": "2020-03-20T00:03:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "76df4abb_4fd6c4c0",
+      "revId": "da2ed402d429bce7dc473dcaaa92f312d60a992f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f3e75193_d7e45984",
         "filename": "go/src/infra/libs/cros/stableversion/filter/filter_test.go",
         "patchSetId": 2
@@ -73,6 +133,24 @@
       "revId": "da2ed402d429bce7dc473dcaaa92f312d60a992f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a433c4be_e82a0e81",
+        "filename": "go/src/infra/libs/cros/stableversion/filter/filter_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1351735
+      },
+      "writtenOn": "2020-03-20T00:03:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f3e75193_d7e45984",
+      "revId": "da2ed402d429bce7dc473dcaaa92f312d60a992f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -99,6 +177,30 @@
     },
     {
       "key": {
+        "uuid": "20aaddae_454694b6",
+        "filename": "go/src/infra/libs/cros/stableversion/filter/filter_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 1351735
+      },
+      "writtenOn": "2020-03-20T00:03:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "05bf45d0_b9f1a558",
+      "range": {
+        "startLine": 195,
+        "startChar": 2,
+        "endLine": 195,
+        "endChar": 62
+      },
+      "revId": "da2ed402d429bce7dc473dcaaa92f312d60a992f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "86a6c7a9_39749b5e",
         "filename": "go/src/infra/libs/cros/stableversion/filter/filter_test.go",
         "patchSetId": 2
@@ -113,6 +215,24 @@
       "revId": "da2ed402d429bce7dc473dcaaa92f312d60a992f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7584129f_c12b49fe",
+        "filename": "go/src/infra/libs/cros/stableversion/filter/filter_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1351735
+      },
+      "writtenOn": "2020-03-20T00:03:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "86a6c7a9_39749b5e",
+      "revId": "da2ed402d429bce7dc473dcaaa92f312d60a992f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -136,6 +256,30 @@
       "revId": "da2ed402d429bce7dc473dcaaa92f312d60a992f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cb2d73b4_05fc480e",
+        "filename": "go/src/infra/libs/cros/stableversion/filter/filter_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1351735
+      },
+      "writtenOn": "2020-03-20T00:03:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1e343878_7aa299f6",
+      "range": {
+        "startLine": 230,
+        "startChar": 5,
+        "endLine": 230,
+        "endChar": 31
+      },
+      "revId": "da2ed402d429bce7dc473dcaaa92f312d60a992f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
