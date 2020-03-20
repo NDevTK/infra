@@ -16,6 +16,24 @@
       "revId": "0558484b6f86c5b046e79ea0fc16a5970eec4700",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a14cff8e_7ea477b5",
+        "filename": "go/src/infra/libs/cros/stableversion/filter/filter.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2020-03-20T23:59:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fda9709c_928aa267",
+      "revId": "0558484b6f86c5b046e79ea0fc16a5970eec4700",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
