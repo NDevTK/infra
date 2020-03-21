@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e199f05c_4e15c542",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 634,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-21T00:10:05Z",
+      "side": 1,
+      "message": "please fit each portion on one line\nhttps://g3doc.corp.google.com/eng/doc/devguide/py/style/index.md?cl\u003dhead\n```\nfor...\nif....\nand... # since it cant fit on if line\n```",
+      "range": {
+        "startLine": 633,
+        "startChar": 45,
+        "endLine": 634,
+        "endChar": 79
+      },
+      "revId": "616ef3655777e4ed33f76f5a9f10474919261999",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "91764862_4652db2f",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 639,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-21T00:10:05Z",
+      "side": 1,
+      "message": "nit: move this to right above the second for loop",
+      "range": {
+        "startLine": 638,
+        "startChar": 0,
+        "endLine": 639,
+        "endChar": 51
+      },
+      "revId": "616ef3655777e4ed33f76f5a9f10474919261999",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5da69532_510137f1",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 649,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-21T00:10:05Z",
+      "side": 1,
+      "message": "FieldValue.field should be the resource name of the FieldDef\nhttps://source.chromium.org/chromium/infra/infra/+/master:appengine/monorail/api/v1/api_proto/issue_objects.proto;l\u003d124?q\u003dFieldValue\u0026ss\u003dchromium%2Finfra%2Finfra:appengine%2Fmonorail%2F\n\nnot the display name.",
+      "range": {
+        "startLine": 649,
+        "startChar": 24,
+        "endLine": 649,
+        "endChar": 34
+      },
+      "revId": "616ef3655777e4ed33f76f5a9f10474919261999",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
