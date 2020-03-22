@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3b99f7f2_51b0341f",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 634,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-22T01:59:21Z",
+      "side": 1,
+      "message": "I\u0027ve updated it to the way you\u0027ve suggested but anytime someone runs git cl format, this will revert.",
+      "parentUuid": "e199f05c_4e15c542",
+      "range": {
+        "startLine": 633,
+        "startChar": 45,
+        "endLine": 634,
+        "endChar": 79
+      },
+      "revId": "616ef3655777e4ed33f76f5a9f10474919261999",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "91764862_4652db2f",
         "filename": "appengine/monorail/api/v1/converters.py",
         "patchSetId": 3
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "231e7a20_7ed72c22",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 639,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-22T01:59:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "91764862_4652db2f",
+      "range": {
+        "startLine": 638,
+        "startChar": 0,
+        "endLine": 639,
+        "endChar": 51
+      },
+      "revId": "616ef3655777e4ed33f76f5a9f10474919261999",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5da69532_510137f1",
         "filename": "appengine/monorail/api/v1/converters.py",
         "patchSetId": 3
@@ -68,6 +116,30 @@
       "revId": "616ef3655777e4ed33f76f5a9f10474919261999",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e765a015_4338543f",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 649,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-22T01:59:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5da69532_510137f1",
+      "range": {
+        "startLine": 649,
+        "startChar": 24,
+        "endLine": 649,
+        "endChar": 34
+      },
+      "revId": "616ef3655777e4ed33f76f5a9f10474919261999",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
