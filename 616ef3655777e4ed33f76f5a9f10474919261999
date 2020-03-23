@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "2a6bd19a_9eea015d",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 634,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-23T17:15:29Z",
+      "side": 1,
+      "message": "Thanks! will see if we can change this with our formatter settings.",
+      "parentUuid": "3b99f7f2_51b0341f",
+      "range": {
+        "startLine": 633,
+        "startChar": 45,
+        "endLine": 634,
+        "endChar": 79
+      },
+      "revId": "616ef3655777e4ed33f76f5a9f10474919261999",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "91764862_4652db2f",
         "filename": "appengine/monorail/api/v1/converters.py",
         "patchSetId": 3
