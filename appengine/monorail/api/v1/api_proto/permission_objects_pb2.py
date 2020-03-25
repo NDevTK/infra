@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='monorail.v1',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n)api/v1/api_proto/permission_objects.proto\x12\x0bmonorail.v1\x1a,google_proto/google/api/field_behavior.proto\"O\n\rPermissionSet\x12\x10\n\x08resource\x18\x01 \x01(\t\x12,\n\x0bpermissions\x18\x02 \x03(\x0e\x32\x17.monorail.v1.Permission*b\n\nPermission\x12\x1a\n\x16PERMISSION_UNSPECIFIED\x10\x00\x12\x10\n\x0cHOTLIST_EDIT\x10\x01\x12\x16\n\x12HOTLIST_ADMINISTER\x10\x02\x12\x0e\n\nISSUE_EDIT\x10\x03\x62\x06proto3')
+  serialized_pb=_b('\n)api/v1/api_proto/permission_objects.proto\x12\x0bmonorail.v1\x1a,google_proto/google/api/field_behavior.proto\"k\n\rPermissionSet\x12\x10\n\x08resource\x18\x01 \x01(\t\x12,\n\x0bpermissions\x18\x02 \x03(\x0e\x32\x17.monorail.v1.Permission\x12\x1a\n\x12\x63ustom_permissions\x18\x03 \x03(\t*b\n\nPermission\x12\x1a\n\x16PERMISSION_UNSPECIFIED\x10\x00\x12\x10\n\x0cHOTLIST_EDIT\x10\x01\x12\x16\n\x12HOTLIST_ADMINISTER\x10\x02\x12\x0e\n\nISSUE_EDIT\x10\x03\x62\x06proto3')
   ,
   dependencies=[google__proto_dot_google_dot_api_dot_field__behavior__pb2.DESCRIPTOR,])
 
@@ -50,8 +50,8 @@ _PERMISSION = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=185,
-  serialized_end=283,
+  serialized_start=213,
+  serialized_end=311,
 )
 _sym_db.RegisterEnumDescriptor(_PERMISSION)
 
@@ -84,6 +84,13 @@ _PERMISSIONSET = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='custom_permissions', full_name='monorail.v1.PermissionSet.custom_permissions', index=2,
+      number=3, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -97,7 +104,7 @@ _PERMISSIONSET = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=104,
-  serialized_end=183,
+  serialized_end=211,
 )
 
 _PERMISSIONSET.fields_by_name['permissions'].enum_type = _PERMISSION

@@ -29,10 +29,13 @@ enum Permission {
 
 
 // The set of a user's permissions for a single resource.
-// Next available tag: 3
+// Next available tag: 4
 message PermissionSet {
   // The name of the resource `permissions` applies to.
   string resource = 1;
-  // All the permissions a user has for `resource`.
+  // All the standard permissions a user has for `resource`.
   repeated Permission permissions = 2;
+  // Custom permissions a user has for `resource`.
+  // Only Projects and Issues have `custom_permissions`.
+  repeated string custom_permissions = 3;
 }
