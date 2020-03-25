@@ -28,7 +28,6 @@ service Features {
   rpc RerankHotlistIssues (RerankHotlistIssuesRequest) returns (RerankHotlistIssuesResponse) {}
   rpc UpdateHotlistIssueNote (UpdateHotlistIssueNoteRequest) returns (UpdateHotlistIssueNoteResponse) {}
   rpc UpdateHotlistRoles (UpdateHotlistRolesRequest) returns (UpdateHotlistRolesResponse) {}
-  rpc UpdateHotlistSettings (UpdateHotlistSettingsRequest) returns (UpdateHotlistSettingsResponse) {}
   rpc DeleteHotlist (DeleteHotlistRequest) returns (DeleteHotlistResponse) {}
   rpc PredictComponent (PredictComponentRequest) returns (PredictComponentResponse) {}
 }
@@ -217,22 +216,6 @@ message UpdateHotlistRolesRequest {
 
 // Next available tag: 1
 message UpdateHotlistRolesResponse {
-}
-
-
-// Next available tag: 7
-message UpdateHotlistSettingsRequest {
-  HotlistRef hotlist_ref = 1;
-  google.protobuf.StringValue name = 2;
-  google.protobuf.StringValue summary = 3;
-  google.protobuf.StringValue description = 4;
-  google.protobuf.BoolValue is_private = 5;
-  google.protobuf.StringValue default_col_spec = 6;
-}
-
-
-// Next available tag: 1
-message UpdateHotlistSettingsResponse {
 }
 
 
