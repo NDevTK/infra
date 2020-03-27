@@ -22,6 +22,30 @@
       "revId": "22c0628a1297b789fb61ce531eb9a1b5d75c6941",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7596039f_10cd49e5",
+        "filename": "appengine/monorail/doc/code-practices/frontend.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2020-03-27T20:28:59Z",
+      "side": 1,
+      "message": "Good point. I\u0027ve noticed Gitiles seems to support this. Unfortunately it looks like source.chromium.org doesn\u0027t. D: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/master:src/platform/frecon/DESIGN-DOC.md \n\nI\u0027ll leave it in for now since we still usually link to our docs in Gitiles.",
+      "parentUuid": "79c108fc_036df0b2",
+      "range": {
+        "startLine": 13,
+        "startChar": 1,
+        "endLine": 13,
+        "endChar": 4
+      },
+      "revId": "22c0628a1297b789fb61ce531eb9a1b5d75c6941",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
