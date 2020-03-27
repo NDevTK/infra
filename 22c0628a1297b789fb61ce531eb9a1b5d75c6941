@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "79c108fc_036df0b2",
+        "filename": "appengine/monorail/doc/code-practices/frontend.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-27T20:23:47Z",
+      "side": 1,
+      "message": "I believe this is g3 doc specific and not a markdown standard. Not sure how gitles handles this.",
+      "range": {
+        "startLine": 13,
+        "startChar": 1,
+        "endLine": 13,
+        "endChar": 4
+      },
+      "revId": "22c0628a1297b789fb61ce531eb9a1b5d75c6941",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
