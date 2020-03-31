@@ -26,7 +26,16 @@ service Projects {
       body: "*"
     };
   }
+
+  // Returns all project specific configurations needed for the SPA client.
+  rpc FetchProjectEnvironment (FetchProjectEnvironmentRequest) returns (FetchProjectEnvironmentResponse) {
+    option (google.api.http) = {
+      post: "/prpc/monorail.v1.Projects/FetchProjectEnvironment"
+      body: "*"
+    };
+  }
 }
+
 
 // Request message for ListIssueTemplates
 // Next available tag: 4
@@ -45,6 +54,7 @@ message ListIssueTemplatesRequest {
   string page_token = 3;
 }
 
+
 // Response message for ListIssueTemplates
 // Next available tag: 3
 message ListIssueTemplatesResponse {
@@ -52,4 +62,66 @@ message ListIssueTemplatesResponse {
   // A token, which can be sent as `page_token` to retrieve the next page.
   // If this field is omitted, there are no subsequent pages.
   string next_page_token = 2;
+}
+
+
+// Request message for FetchProjectEnvironment
+// Next available tag: 2
+message FetchProjectEnvironmentRequest {
+  // The name of the project these config environments belong to.
+  string parent = 1 [
+    (google.api.resource_reference) = {type: "api.crbug.com/Project"},
+    (google.api.field_behavior) = REQUIRED ];
+}
+
+
+// Response message for FetchProjectEnvironment
+// Next available tag: 21
+message FetchProjectEnvironmentResponse {
+  // List of well known statuses that belong to this project.
+  repeated StatusDef status_defs = 1;
+  // List of well known labels that belong to this project.
+  repeated LabelDef label_defs = 2;
+  // List of components that belong to this project.
+  repeated ComponentDef component_defs = 3;
+  // List of custom fields that belong to this project.
+  repeated FieldDef field_defs = 4;
+  // List of approval fields that belong to this project.
+  repeated ApprovalDef approval_defs = 5;
+  // If an issue's status is one of these, show "Merge with:".
+  repeated StatusDef statuses_offer_merge = 6;
+  // An issue may only have one label that begins with these prefixes
+  // E.g. priority, since no issue can be both Priority-High and Priority-Low.
+  repeated string exclusive_label_prefixes = 7;
+  // Saved search queries that admins defined for this project.
+  repeated ProjectSavedQuery saved_queries = 8;
+  // Default search query for this project, only visible for project members.
+  string default_query = 9;
+  // Default sort specification for this project.
+  string default_sort = 10;
+  // Default list columns for this project.
+  string default_col_spec = 11;
+  // Default column dimension in grid view for this project.
+  string default_x_attr = 12;
+  // Default row dimension in grid view for this project.
+  string default_y_attr = 13;
+  // URL pointing to this project's logo image
+  string project_thumbnail_url = 14;
+  // URL format to browse source code revisions for this project.
+  string revision_url_format = 15;
+  // A project's custom URL for the "New issue" link, only if specified.
+  string custom_issue_entry_url = 16;
+  // Default template used for issue entry for members of this project.
+  IssueTemplate default_template_for_members = 17;
+  // Default template used for issue entry for non-members of this project.
+  IssueTemplate default_template_for_non_members = 18;
+
+  // It's debatable whether this is needed. For completeness of a resource,
+  // this should be included, but since this isn't a "standard" resource and
+  // the client already knows the project name it could be omitted.
+  // I can go either way
+  // Display name of this project, ie Monorail or Chromium
+  string project_name = 19;
+  // Short description of this project. Shown as tool-tip on project selector.
+  string project_summary = 20;
 }
