@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e1ba47e0_cafa1a72",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-31T23:46:05Z",
+      "side": 1,
+      "message": "Lemme know what you think on whether we should include project_name. I\u0027m fine with it going either way.\n\nSame goes for project_summary. Ideally we can get a list of project names and project summaries when the SPA fetches all projects the user is a member of. So that the project selector dropdown tooltips actually match the hovered project: \nhttps://screenshot.googleplex.com/MvE28MkM7dT",
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
