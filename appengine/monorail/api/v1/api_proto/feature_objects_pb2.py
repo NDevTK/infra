@@ -24,7 +24,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='monorail.v1',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n&api/v1/api_proto/feature_objects.proto\x12\x0bmonorail.v1\x1a,google_proto/google/api/field_behavior.proto\x1a&google_proto/google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a$api/v1/api_proto/issue_objects.proto\x1a#api/v1/api_proto/user_objects.proto\"\xa2\x03\n\x07Hotlist\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x19\n\x0c\x64isplay_name\x18\x02 \x01(\tB\x03\xe0\x41\x02\x12%\n\x05owner\x18\x03 \x01(\x0b\x32\x11.monorail.v1.UserB\x03\xe0\x41\x02\x12\"\n\x07\x65\x64itors\x18\x04 \x03(\x0b\x32\x11.monorail.v1.User\x12\x14\n\x07summary\x18\x05 \x01(\tB\x03\xe0\x41\x02\x12\x18\n\x0b\x64\x65scription\x18\x06 \x01(\tB\x03\xe0\x41\x02\x12\x36\n\x0f\x64\x65\x66\x61ult_columns\x18\x07 \x03(\x0b\x32\x1d.monorail.v1.IssuesListColumn\x12<\n\x0fhotlist_privacy\x18\x08 \x01(\x0e\x32#.monorail.v1.Hotlist.HotlistPrivacy\"J\n\x0eHotlistPrivacy\x12\x1f\n\x1bHOTLIST_PRIVACY_UNSPECIFIED\x10\x00\x12\x0b\n\x07PRIVATE\x10\x01\x12\n\n\x06PUBLIC\x10\x02:1\xea\x41.\n\x15\x61pi.crbug.com/Hotlist\x12\x15hotlists/{hotlist_id}\"\x8c\x02\n\x0bHotlistItem\x12\x0c\n\x04name\x18\x01 \x01(\t\x12*\n\x05issue\x18\x02 \x01(\tB\x1b\xfa\x41\x15\n\x13\x61pi.crbug.com/Issue\xe0\x41\x05\x12\x11\n\x04rank\x18\x03 \x01(\rB\x03\xe0\x41\x03\x12%\n\x05\x61\x64\x64\x65r\x18\x04 \x01(\x0b\x32\x11.monorail.v1.UserB\x03\xe0\x41\x03\x12\x34\n\x0b\x63reate_time\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x03\xe0\x41\x03\x12\x0c\n\x04note\x18\x06 \x01(\t:E\xea\x41\x42\n\x19\x61pi.crbug.com/HotlistItem\x12%hotlists/{hotlist_id}/items/{item_id}b\x06proto3')
+  serialized_pb=_b('\n&api/v1/api_proto/feature_objects.proto\x12\x0bmonorail.v1\x1a,google_proto/google/api/field_behavior.proto\x1a&google_proto/google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a$api/v1/api_proto/issue_objects.proto\x1a#api/v1/api_proto/user_objects.proto\"\xa2\x03\n\x07Hotlist\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x19\n\x0c\x64isplay_name\x18\x02 \x01(\tB\x03\xe0\x41\x02\x12%\n\x05owner\x18\x03 \x01(\x0b\x32\x11.monorail.v1.UserB\x03\xe0\x41\x02\x12\"\n\x07\x65\x64itors\x18\x04 \x03(\x0b\x32\x11.monorail.v1.User\x12\x14\n\x07summary\x18\x05 \x01(\tB\x03\xe0\x41\x02\x12\x18\n\x0b\x64\x65scription\x18\x06 \x01(\tB\x03\xe0\x41\x02\x12\x36\n\x0f\x64\x65\x66\x61ult_columns\x18\x07 \x03(\x0b\x32\x1d.monorail.v1.IssuesListColumn\x12<\n\x0fhotlist_privacy\x18\x08 \x01(\x0e\x32#.monorail.v1.Hotlist.HotlistPrivacy\"J\n\x0eHotlistPrivacy\x12\x1f\n\x1bHOTLIST_PRIVACY_UNSPECIFIED\x10\x00\x12\x0b\n\x07PRIVATE\x10\x01\x12\n\n\x06PUBLIC\x10\x02:1\xea\x41.\n\x15\x61pi.crbug.com/Hotlist\x12\x15hotlists/{hotlist_id}\"\x8c\x02\n\x0bHotlistItem\x12\x0c\n\x04name\x18\x01 \x01(\t\x12*\n\x05issue\x18\x02 \x01(\tB\x1b\xfa\x41\x15\n\x13\x61pi.crbug.com/Issue\xe0\x41\x05\x12\x11\n\x04rank\x18\x03 \x01(\rB\x03\xe0\x41\x03\x12%\n\x05\x61\x64\x64\x65r\x18\x04 \x01(\x0b\x32\x11.monorail.v1.UserB\x03\xe0\x41\x03\x12\x34\n\x0b\x63reate_time\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x03\xe0\x41\x03\x12\x0c\n\x04note\x18\x06 \x01(\t:E\xea\x41\x42\n\x19\x61pi.crbug.com/HotlistItem\x12%hotlists/{hotlist_id}/items/{item_id}\"q\n\nSavedQuery\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t\x12\r\n\x05query\x18\x03 \x01(\t:7\xea\x41\x34\n\x18\x61pi.crbug.com/SavedQuery\x12\x18savedQuerys/{savedQuery}\"\xb5\x02\n\x0eUserSavedQuery\x12\x0c\n\x04name\x18\x01 \x01(\t\x12,\n\x0bsaved_query\x18\x02 \x01(\x0b\x32\x17.monorail.v1.SavedQuery\x12G\n\x11subscription_mode\x18\x03 \x01(\x0e\x32,.monorail.v1.UserSavedQuery.SubscriptionMode\"Q\n\x10SubscriptionMode\x12!\n\x1dSUBSCRIPTION_MODE_UNSPECIFIED\x10\x00\x12\x0b\n\x07NOEMAIL\x10\x01\x12\r\n\tIMMEDIATE\x10\x02:K\xea\x41H\n\x1c\x61pi.crbug.com/UserSavedQuery\x12(users/{user_id}/savedQuerys/{savedQuery}b\x06proto3')
   ,
   dependencies=[google__proto_dot_google_dot_api_dot_field__behavior__pb2.DESCRIPTOR,google__proto_dot_google_dot_api_dot_resource__pb2.DESCRIPTOR,google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,api_dot_v1_dot_api__proto_dot_issue__objects__pb2.DESCRIPTOR,api_dot_v1_dot_api__proto_dot_user__objects__pb2.DESCRIPTOR,])
 
@@ -55,6 +55,32 @@ _HOTLIST_HOTLISTPRIVACY = _descriptor.EnumDescriptor(
   serialized_end=617,
 )
 _sym_db.RegisterEnumDescriptor(_HOTLIST_HOTLISTPRIVACY)
+
+_USERSAVEDQUERY_SUBSCRIPTIONMODE = _descriptor.EnumDescriptor(
+  name='SubscriptionMode',
+  full_name='monorail.v1.UserSavedQuery.SubscriptionMode',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='SUBSCRIPTION_MODE_UNSPECIFIED', index=0, number=0,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='NOEMAIL', index=1, number=1,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='IMMEDIATE', index=2, number=2,
+      serialized_options=None,
+      type=None),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=1208,
+  serialized_end=1289,
+)
+_sym_db.RegisterEnumDescriptor(_USERSAVEDQUERY_SUBSCRIPTIONMODE)
 
 
 _HOTLIST = _descriptor.Descriptor(
@@ -203,6 +229,97 @@ _HOTLISTITEM = _descriptor.Descriptor(
   serialized_end=939,
 )
 
+
+_SAVEDQUERY = _descriptor.Descriptor(
+  name='SavedQuery',
+  full_name='monorail.v1.SavedQuery',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='name', full_name='monorail.v1.SavedQuery.name', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='value', full_name='monorail.v1.SavedQuery.value', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='query', full_name='monorail.v1.SavedQuery.query', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=_b('\352A4\n\030api.crbug.com/SavedQuery\022\030savedQuerys/{savedQuery}'),
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=941,
+  serialized_end=1054,
+)
+
+
+_USERSAVEDQUERY = _descriptor.Descriptor(
+  name='UserSavedQuery',
+  full_name='monorail.v1.UserSavedQuery',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='name', full_name='monorail.v1.UserSavedQuery.name', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='saved_query', full_name='monorail.v1.UserSavedQuery.saved_query', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='subscription_mode', full_name='monorail.v1.UserSavedQuery.subscription_mode', index=2,
+      number=3, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+    _USERSAVEDQUERY_SUBSCRIPTIONMODE,
+  ],
+  serialized_options=_b('\352AH\n\034api.crbug.com/UserSavedQuery\022(users/{user_id}/savedQuerys/{savedQuery}'),
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1057,
+  serialized_end=1366,
+)
+
 _HOTLIST.fields_by_name['owner'].message_type = api_dot_v1_dot_api__proto_dot_user__objects__pb2._USER
 _HOTLIST.fields_by_name['editors'].message_type = api_dot_v1_dot_api__proto_dot_user__objects__pb2._USER
 _HOTLIST.fields_by_name['default_columns'].message_type = api_dot_v1_dot_api__proto_dot_issue__objects__pb2._ISSUESLISTCOLUMN
@@ -210,8 +327,13 @@ _HOTLIST.fields_by_name['hotlist_privacy'].enum_type = _HOTLIST_HOTLISTPRIVACY
 _HOTLIST_HOTLISTPRIVACY.containing_type = _HOTLIST
 _HOTLISTITEM.fields_by_name['adder'].message_type = api_dot_v1_dot_api__proto_dot_user__objects__pb2._USER
 _HOTLISTITEM.fields_by_name['create_time'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+_USERSAVEDQUERY.fields_by_name['saved_query'].message_type = _SAVEDQUERY
+_USERSAVEDQUERY.fields_by_name['subscription_mode'].enum_type = _USERSAVEDQUERY_SUBSCRIPTIONMODE
+_USERSAVEDQUERY_SUBSCRIPTIONMODE.containing_type = _USERSAVEDQUERY
 DESCRIPTOR.message_types_by_name['Hotlist'] = _HOTLIST
 DESCRIPTOR.message_types_by_name['HotlistItem'] = _HOTLISTITEM
+DESCRIPTOR.message_types_by_name['SavedQuery'] = _SAVEDQUERY
+DESCRIPTOR.message_types_by_name['UserSavedQuery'] = _USERSAVEDQUERY
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Hotlist = _reflection.GeneratedProtocolMessageType('Hotlist', (_message.Message,), dict(
@@ -228,6 +350,20 @@ HotlistItem = _reflection.GeneratedProtocolMessageType('HotlistItem', (_message.
   ))
 _sym_db.RegisterMessage(HotlistItem)
 
+SavedQuery = _reflection.GeneratedProtocolMessageType('SavedQuery', (_message.Message,), dict(
+  DESCRIPTOR = _SAVEDQUERY,
+  __module__ = 'api.v1.api_proto.feature_objects_pb2'
+  # @@protoc_insertion_point(class_scope:monorail.v1.SavedQuery)
+  ))
+_sym_db.RegisterMessage(SavedQuery)
+
+UserSavedQuery = _reflection.GeneratedProtocolMessageType('UserSavedQuery', (_message.Message,), dict(
+  DESCRIPTOR = _USERSAVEDQUERY,
+  __module__ = 'api.v1.api_proto.feature_objects_pb2'
+  # @@protoc_insertion_point(class_scope:monorail.v1.UserSavedQuery)
+  ))
+_sym_db.RegisterMessage(UserSavedQuery)
+
 
 _HOTLIST.fields_by_name['display_name']._options = None
 _HOTLIST.fields_by_name['owner']._options = None
@@ -239,4 +375,6 @@ _HOTLISTITEM.fields_by_name['rank']._options = None
 _HOTLISTITEM.fields_by_name['adder']._options = None
 _HOTLISTITEM.fields_by_name['create_time']._options = None
 _HOTLISTITEM._options = None
+_SAVEDQUERY._options = None
+_USERSAVEDQUERY._options = None
 # @@protoc_insertion_point(module_scope)

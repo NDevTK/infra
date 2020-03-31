@@ -81,3 +81,48 @@ message HotlistItem {
   // User-provided additional details about this item.
   string note = 6;
 }
+
+// Defines saved queries
+//
+// Next available tag: 6
+message SavedQuery {
+  option (google.api.resource) = {
+    type: "api.crbug.com/SavedQuery"
+    pattern: "savedQuerys/{savedQuery}"
+  };
+
+  // Resource name of this saved query.
+  string name = 1;
+  // Display name of this saved query, ie 'open issues'.
+  string value = 2;
+  // Search term of this saved query.
+  string query = 3;
+}
+
+
+// Defines saved queries that belong to a user
+//
+// Next available tag: 3
+message UserSavedQuery {
+  option (google.api.resource) = {
+    type: "api.crbug.com/UserSavedQuery"
+    pattern: "users/{user_id}/savedQuerys/{savedQuery}"
+  };
+
+  // Resource name of this saved query.
+  string name = 1;
+  // Content of the saved query such as display name and query string.
+  SavedQuery saved_query = 2;
+
+  // Subscription mode of this saved query
+  // Next available tag: 3
+  enum SubscriptionMode {
+    // Default API value. This value is unused.
+    SUBSCRIPTION_MODE_UNSPECIFIED = 0;
+    // Do not subscribe to notifications.
+    NOEMAIL = 1;
+    // Sbuscribe to notifications.
+    IMMEDIATE = 2;
+  }
+  SubscriptionMode subscription_mode = 3;
+}
