@@ -49,6 +49,53 @@
     },
     {
       "key": {
+        "uuid": "5c4bdc83_55997d7d",
+        "filename": "appengine/monorail/api/v1/api_proto/feature_objects.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-31T21:45:40Z",
+      "side": 1,
+      "message": "What is the benefit of having SavedQuery as a separate message?\nThey just share a \u0027display_name\u0027 and \u0027query\u0027.\nI don\u0027t think it\u0027s worth adding another layer",
+      "parentUuid": "8d5af139_233c5957",
+      "range": {
+        "startLine": 88,
+        "startChar": 0,
+        "endLine": 88,
+        "endChar": 20
+      },
+      "revId": "b19b9ec37cf293e5e041fd67c37cfc1ca3c1fc05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1c850acb_f82008c6",
+        "filename": "appengine/monorail/api/v1/api_proto/feature_objects.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-03-31T21:45:40Z",
+      "side": 1,
+      "message": "why `value` rather than `display_name`?",
+      "range": {
+        "startLine": 97,
+        "startChar": 10,
+        "endLine": 97,
+        "endChar": 14
+      },
+      "revId": "b19b9ec37cf293e5e041fd67c37cfc1ca3c1fc05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "bae882a5_61deb089",
         "filename": "appengine/monorail/api/v1/api_proto/feature_objects.proto",
         "patchSetId": 1
