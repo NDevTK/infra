@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "8d5af139_233c5957",
+        "filename": "appengine/monorail/api/v1/api_proto/feature_objects.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-31T21:01:45Z",
+      "side": 1,
+      "message": "Copied for reference:\n\nOption 1:\n\nmessage UserSavedQuery {\n  int rank [(google.api.field_behavior) \u003d OUTPUT_ONLY];\n  SavedQuery saved_query;\n  boolean subscription_mode;\n}\n\nSavedQuery is shared between UserSavedQuery and ProjectSavedQuery",
+      "parentUuid": "a55f652e_15971066",
+      "range": {
+        "startLine": 88,
+        "startChar": 0,
+        "endLine": 88,
+        "endChar": 20
+      },
+      "revId": "b19b9ec37cf293e5e041fd67c37cfc1ca3c1fc05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "bae882a5_61deb089",
         "filename": "appengine/monorail/api/v1/api_proto/feature_objects.proto",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2020-03-31T20:51:41Z",
       "side": 1,
       "message": "this should probably go in user_objects.proto\nhttps://osscs.corp.google.com/chromium/infra/infra/+/master:appengine/monorail/api/v1/api_proto/user_objects.proto?q\u003duser_objects.proto\u0026ss\u003dchromium%2Finfra%2Finfra",
+      "range": {
+        "startLine": 106,
+        "startChar": 8,
+        "endLine": 106,
+        "endChar": 22
+      },
+      "revId": "b19b9ec37cf293e5e041fd67c37cfc1ca3c1fc05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f8440d72_807c08c9",
+        "filename": "appengine/monorail/api/v1/api_proto/feature_objects.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-03-31T21:01:45Z",
+      "side": 1,
+      "message": "That\u0027s possible, if we split out the shared SavedQuery message as a \"common\" proto, or to just duplicate it in user and project saved queries.",
+      "parentUuid": "bae882a5_61deb089",
       "range": {
         "startLine": 106,
         "startChar": 8,
