@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a55f652e_15971066",
+        "filename": "appengine/monorail/api/v1/api_proto/feature_objects.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-03-31T20:51:41Z",
+      "side": 1,
+      "message": "I might have misunderstood the design doc. I thought there would be only ProjectSavedQueries and UserSavedQueries.",
+      "range": {
+        "startLine": 88,
+        "startChar": 0,
+        "endLine": 88,
+        "endChar": 20
+      },
+      "revId": "b19b9ec37cf293e5e041fd67c37cfc1ca3c1fc05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bae882a5_61deb089",
+        "filename": "appengine/monorail/api/v1/api_proto/feature_objects.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-03-31T20:51:41Z",
+      "side": 1,
+      "message": "this should probably go in user_objects.proto\nhttps://osscs.corp.google.com/chromium/infra/infra/+/master:appengine/monorail/api/v1/api_proto/user_objects.proto?q\u003duser_objects.proto\u0026ss\u003dchromium%2Finfra%2Finfra",
+      "range": {
+        "startLine": 106,
+        "startChar": 8,
+        "endLine": 106,
+        "endChar": 22
+      },
+      "revId": "b19b9ec37cf293e5e041fd67c37cfc1ca3c1fc05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "70ddcbc4_e86c3ab0",
+        "filename": "appengine/monorail/api/v1/api_proto/feature_objects.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-03-31T20:51:41Z",
+      "side": 1,
+      "message": "savedQueries",
+      "range": {
+        "startLine": 109,
+        "startChar": 30,
+        "endLine": 109,
+        "endChar": 41
+      },
+      "revId": "b19b9ec37cf293e5e041fd67c37cfc1ca3c1fc05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9c0327a1_00ff4ec9",
+        "filename": "appengine/monorail/api/v1/api_proto/feature_objects.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-03-31T20:51:41Z",
+      "side": 1,
+      "message": "NO_EMAIL\nor probably \nNO_NOTIFICATIONS\nwill be more future-proof",
+      "range": {
+        "startLine": 123,
+        "startChar": 4,
+        "endLine": 123,
+        "endChar": 11
+      },
+      "revId": "b19b9ec37cf293e5e041fd67c37cfc1ca3c1fc05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "357599c0_aa1c2456",
+        "filename": "appengine/monorail/api/v1/api_proto/feature_objects.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-03-31T20:51:41Z",
+      "side": 1,
+      "message": "subscribe",
+      "range": {
+        "startLine": 124,
+        "startChar": 7,
+        "endLine": 124,
+        "endChar": 16
+      },
+      "revId": "b19b9ec37cf293e5e041fd67c37cfc1ca3c1fc05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "91c2bb2b_1fcf0d18",
+        "filename": "appengine/monorail/api/v1/api_proto/feature_objects.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-03-31T20:51:41Z",
+      "side": 1,
+      "message": "IMMEDIATE_EMAIL?",
+      "range": {
+        "startLine": 125,
+        "startChar": 4,
+        "endLine": 125,
+        "endChar": 13
+      },
+      "revId": "b19b9ec37cf293e5e041fd67c37cfc1ca3c1fc05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
