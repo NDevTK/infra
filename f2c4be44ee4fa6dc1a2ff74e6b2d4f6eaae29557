@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "651be55a_bb42d24c",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-04-01T21:02:39Z",
+      "side": 1,
+      "message": "in other documentation. We will have a user guide doc which should include documentation about \nhow the rpc endpoints are:\n\"/prpc/monorail.v1.\u003cservice\u003e/\u003crpc\u003e\"",
+      "parentUuid": "f0e5ac8a_eea3be4a",
+      "range": {
+        "startLine": 32,
+        "startChar": 4,
+        "endLine": 34,
+        "endChar": 15
+      },
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e1ba47e0_cafa1a72",
         "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
         "patchSetId": 2
@@ -101,6 +125,30 @@
       "side": 1,
       "message": "I actually don\u0027t want to embed Project and ProjectConfig as a message field in ProjectEnvironment. Since this is a custom method to fetch what the SPA needs, this should work just fine. When Project and ProjectConfig gets defined, this can be refactored to use them fairly easily.",
       "parentUuid": "b5966251_34aceff8",
+      "range": {
+        "startLine": 95,
+        "startChar": 2,
+        "endLine": 126,
+        "endChar": 30
+      },
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "56f0c46b_5e446c0e",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-04-01T21:02:39Z",
+      "side": 1,
+      "message": "Can you elaborate. The first and last sentence of your comment seem to contradict.\nDo you not want to use Project and ProjectConfig in ProjectEnvironment at all or just not now?",
+      "parentUuid": "e41f1b54_8791e820",
       "range": {
         "startLine": 95,
         "startChar": 2,
