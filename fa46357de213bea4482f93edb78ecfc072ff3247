@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "af65a79e_d9f1585b",
+        "filename": "appengine/monorail/api/v1/test/converters_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-04-01T02:24:38Z",
+      "side": 1,
+      "message": "git cl format did this",
+      "range": {
+        "startLine": 63,
+        "startChar": 0,
+        "endLine": 63,
+        "endChar": 27
+      },
+      "revId": "fa46357de213bea4482f93edb78ecfc072ff3247",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
