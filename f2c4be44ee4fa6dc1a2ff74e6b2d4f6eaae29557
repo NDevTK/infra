@@ -73,6 +73,167 @@
     },
     {
       "key": {
+        "uuid": "9c874410_b9b0e728",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-04-01T22:57:34Z",
+      "side": 1,
+      "message": "well_known_statuses",
+      "range": {
+        "startLine": 82,
+        "startChar": 21,
+        "endLine": 82,
+        "endChar": 32
+      },
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2d71b21c_151b07c7",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-04-01T22:57:34Z",
+      "side": 1,
+      "message": "well_known_labels",
+      "range": {
+        "startLine": 84,
+        "startChar": 20,
+        "endLine": 84,
+        "endChar": 30
+      },
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f4f967e3_ffd9b5bc",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-04-01T22:57:34Z",
+      "side": 1,
+      "message": "components, etc below",
+      "range": {
+        "startLine": 86,
+        "startChar": 24,
+        "endLine": 86,
+        "endChar": 38
+      },
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a166cb56_011d178b",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-04-01T22:57:34Z",
+      "side": 1,
+      "message": "something like mergeable_statuses\n\nhttps://aip.dev/140#adjectives",
+      "range": {
+        "startLine": 92,
+        "startChar": 21,
+        "endLine": 92,
+        "endChar": 41
+      },
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f685b702_14fd4c95",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-04-01T22:57:34Z",
+      "side": 1,
+      "message": "consider creating a GridViewConfig submessage to make it easier for proto readers to understand what these are.",
+      "range": {
+        "startLine": 104,
+        "startChar": 2,
+        "endLine": 107,
+        "endChar": 29
+      },
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ff401714_c38e3f42",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-04-01T22:57:34Z",
+      "side": 1,
+      "message": "please further document what a URL format looks like",
+      "range": {
+        "startLine": 110,
+        "startChar": 0,
+        "endLine": 110,
+        "endChar": 65
+      },
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "38ce8fac_b51d84bb",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-04-01T22:57:34Z",
+      "side": 1,
+      "message": "are these always defined?",
+      "range": {
+        "startLine": 115,
+        "startChar": 0,
+        "endLine": 115,
+        "endChar": 50
+      },
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e1ba47e0_cafa1a72",
         "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
         "patchSetId": 2
