@@ -367,6 +367,30 @@
       "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "55d811c0_f4d3e607",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-04-02T18:48:32Z",
+      "side": 1,
+      "message": "To return ProjectEnvironmentResponse we still need all the code for converting all these field, which is work that will be needed for some ConvertProject and ConvertProjectConfig methods anyways.\n\nProjectEnvironmentResponse is not some separate resource and is only meant for bundling existing resources together. It will not contain anything that is not in Project, ProjectConfig, saved_queries, fields, components, etc. There will be a 100% overlap. \n\nI don\u0027t see any need to make decisions on what belongs in project and what belongs in projectconifg. We are more or less just mirroring https://source.chromium.org/chromium/infra/infra/+/master:appengine/monorail/proto/tracker_pb2.py;l\u003d492?q\u003dtracker_pb2\u0026ss\u003dchromium%2Finfra%2Finfra:appengine%2Fmonorail%2F\n\nand \nhttps://source.chromium.org/chromium/infra/infra/+/master:appengine/monorail/proto/project_pb2.py;l\u003d60\n\nProject {\nname\ndisplay_name\nsummary\n... leave other stuff out until we need them\n}\n\nProjectConfig {\n  name\n  repeated string exclusive_label_prefixes\n  \n  string default_query\n  string default_sort\n  string default_col_spec\n\n  GridViewConfig {\n    string default_x_attr\n    // Default row dimension in grid view for this project.\n    string default_y_attr \u003d 13;\n  }\n  GridViewConfig project_grid_config\n  string project_thumbnail_url\n  string revision_url_format\n  string custom_issue_entry_url\n  IssueTemplate default_template_for_members\n  IssueTemplate default_template_for_non_members\n}",
+      "parentUuid": "d3c8842d_3fe20866",
+      "range": {
+        "startLine": 95,
+        "startChar": 2,
+        "endLine": 126,
+        "endChar": 30
+      },
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
