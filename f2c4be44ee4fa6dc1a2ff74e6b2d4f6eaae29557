@@ -120,6 +120,30 @@
     },
     {
       "key": {
+        "uuid": "03839d95_08641cec",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-04-02T22:53:18Z",
+      "side": 1,
+      "message": "We don\u0027t currently allow ad hoc statuses. We did in the past, but AFAIK we\u0027re no longer supporting that in the future, as it is causing some unintended search problems.",
+      "parentUuid": "9c874410_b9b0e728",
+      "range": {
+        "startLine": 82,
+        "startChar": 21,
+        "endLine": 82,
+        "endChar": 32
+      },
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2d71b21c_151b07c7",
         "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
         "patchSetId": 2
@@ -143,6 +167,30 @@
     },
     {
       "key": {
+        "uuid": "22c2f608_a1a232d8",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-04-02T22:53:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2d71b21c_151b07c7",
+      "range": {
+        "startLine": 84,
+        "startChar": 20,
+        "endLine": 84,
+        "endChar": 30
+      },
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f4f967e3_ffd9b5bc",
         "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
         "patchSetId": 2
@@ -154,6 +202,30 @@
       "writtenOn": "2020-04-01T22:57:34Z",
       "side": 1,
       "message": "components, etc below",
+      "range": {
+        "startLine": 86,
+        "startChar": 24,
+        "endLine": 86,
+        "endChar": 38
+      },
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cd6ac59d_b9299ac7",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-04-02T22:53:18Z",
+      "side": 1,
+      "message": "We don\u0027t allow ad hoc components, so there is no concept as \"well known componet\" versus \"lesser known component\" From that perspective, this should probably be named components.",
+      "parentUuid": "f4f967e3_ffd9b5bc",
       "range": {
         "startLine": 86,
         "startChar": 24,
@@ -189,6 +261,30 @@
     },
     {
       "key": {
+        "uuid": "3d78d431_df275b14",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-04-02T22:53:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a166cb56_011d178b",
+      "range": {
+        "startLine": 92,
+        "startChar": 21,
+        "endLine": 92,
+        "endChar": 41
+      },
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f685b702_14fd4c95",
         "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
         "patchSetId": 2
@@ -209,6 +305,30 @@
       "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a0611ee_5eae7f0d",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-04-02T22:53:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f685b702_14fd4c95",
+      "range": {
+        "startLine": 104,
+        "startChar": 2,
+        "endLine": 107,
+        "endChar": 29
+      },
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -235,6 +355,30 @@
     },
     {
       "key": {
+        "uuid": "1c893eda_2f377636",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-04-02T22:53:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ff401714_c38e3f42",
+      "range": {
+        "startLine": 110,
+        "startChar": 0,
+        "endLine": 110,
+        "endChar": 65
+      },
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "38ce8fac_b51d84bb",
         "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
         "patchSetId": 2
@@ -246,6 +390,30 @@
       "writtenOn": "2020-04-01T22:57:34Z",
       "side": 1,
       "message": "are these always defined?",
+      "range": {
+        "startLine": 115,
+        "startChar": 0,
+        "endLine": 115,
+        "endChar": 50
+      },
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0a4932e7_20fd7b22",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-04-02T22:53:18Z",
+      "side": 1,
+      "message": "Yes",
+      "parentUuid": "38ce8fac_b51d84bb",
       "range": {
         "startLine": 115,
         "startChar": 0,
@@ -272,6 +440,24 @@
       "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "198940a4_beb0cd94",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-04-02T22:53:18Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "e1ba47e0_cafa1a72",
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -391,6 +577,30 @@
       "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0d312062_39021b55",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-04-02T22:53:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "55d811c0_f4d3e607",
+      "range": {
+        "startLine": 95,
+        "startChar": 2,
+        "endLine": 126,
+        "endChar": 30
+      },
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
