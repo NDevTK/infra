@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "5b9f1797_5a9a5415",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-04-02T18:02:47Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "651be55a_bb42d24c",
+      "range": {
+        "startLine": 32,
+        "startChar": 4,
+        "endLine": 34,
+        "endChar": 15
+      },
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9c874410_b9b0e728",
         "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
         "patchSetId": 2
@@ -310,6 +334,30 @@
       "side": 1,
       "message": "Can you elaborate. The first and last sentence of your comment seem to contradict.\nDo you not want to use Project and ProjectConfig in ProjectEnvironment at all or just not now?",
       "parentUuid": "e41f1b54_8791e820",
+      "range": {
+        "startLine": 95,
+        "startChar": 2,
+        "endLine": 126,
+        "endChar": 30
+      },
+      "revId": "f2c4be44ee4fa6dc1a2ff74e6b2d4f6eaae29557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d3c8842d_3fe20866",
+        "filename": "appengine/monorail/api/v1/api_proto/projects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-04-02T18:02:47Z",
+      "side": 1,
+      "message": "I don\u0027t want to implement Project and ProjectConfig at this moment. Making the decision on what field belongs to a Project versus ProjectConfig versus ProjectEnvironment can be deferred and is not needed for this method because this method\u0027s intent is to return all SPA-required fields, regardless of its semantic parent.\nAdditionally the generally available V3 API for project and project config may have additional or different requirements that does not relate to the SPA; therefore tying them together is unnecessary.\n\nIn the future, once Project and ProjectConfig is implemented if there is a nice overlap without significant unneeded fields FetchProjectEnvironment can be easily refactored to use the two. Refactor will be easy because there is only one client: SPA.\n\nThat\u0027s also why I\u0027ve left project name and project description in here.",
+      "parentUuid": "56f0c46b_5e446c0e",
       "range": {
         "startLine": 95,
         "startChar": 2,
