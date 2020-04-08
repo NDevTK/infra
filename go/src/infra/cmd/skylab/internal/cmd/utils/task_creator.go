@@ -17,13 +17,61 @@ import (
 	"go.chromium.org/luci/common/errors"
 )
 
+const (
+	// HostnameKind means that the search criterion is a literal hostname.
+	HostnameKind = iota
+	// ModelKind means that the search criterion is a model name.
+	ModelKind
+)
+
+// Criteria for filtering DUTs
+type Criteria struct {
+	// Kind is the type of search criterion that Value is.
+	Kind int
+	// Value is the actual search criterion.
+	Value string
+}
+
+// dimensions produces swarming dimensions for given search criteria.
+func (c *Criteria) dimensions() []*swarming_api.SwarmingRpcsStringPair {
+	switch c.Kind {
+	case HostnameKind:
+		return []*swarming_api.SwarmingRpcsStringPair{
+			{Key: "pool", Value: "ChromeOSSkylab"},
+			{Key: "dut_name", Value: c.Value},
+		}
+	case ModelKind:
+		return []*swarming_api.SwarmingRpcsStringPair{
+			{Key: "pool", Value: "ChromeOSSkylab"},
+			{Key: "label-model", Value: c.Value},
+			// We definitely do not want to steal DUTs from DUT_POOL_CTS
+			{Key: "label-pool", Value: "DUT_POOL_QUOTA"},
+			// Until we can implement real per-model caps, only allow people
+			// to steal repair_failed DUTs for leasing.
+			{Key: "dut_state", Value: "repair_failed"},
+		}
+	}
+	return nil
+}
+
+// tag returns a string that describes the search criteria as a swarming tag.
+func (c *Criteria) tag() string {
+	switch c.Kind {
+	case HostnameKind:
+		return fmt.Sprintf("dut-name:%s", c.Value)
+	case ModelKind:
+		return fmt.Sprintf("model-name:%s", c.Value)
+	}
+	return ""
+}
+
 // TaskCreator creates Swarming tasks
 type TaskCreator struct {
 	Client      *swarming.Client
 	Environment site.Environment
 }
 
-// RepairTask creates admin_repair task for particular DUT
+// RepairTask creates admin_repair task for particular DUT or model
 func (tc *TaskCreator) RepairTask(ctx context.Context, host string, customTags []string, expirationSec int) (taskID string, err error) {
 	c := worker.Command{
 		TaskName: "admin_repair",
@@ -65,16 +113,13 @@ func (tc *TaskCreator) RepairTask(ctx context.Context, host string, customTags [
 }
 
 // LeaseTask creates lease_task for particular DUT
-func (tc *TaskCreator) LeaseTask(ctx context.Context, host string, durationSec int, reason string) (taskID string, err error) {
+func (tc *TaskCreator) LeaseTask(ctx context.Context, criteria *Criteria, durationSec int, reason string) (taskID string, err error) {
 	c := []string{"/bin/sh", "-c", `while true; do sleep 60; echo Zzz...; done`}
 	slices := []*swarming_api.SwarmingRpcsTaskSlice{{
 		ExpirationSecs: int64(10 * 60),
 		Properties: &swarming_api.SwarmingRpcsTaskProperties{
-			Command: c,
-			Dimensions: []*swarming_api.SwarmingRpcsStringPair{
-				{Key: "pool", Value: "ChromeOSSkylab"},
-				{Key: "dut_name", Value: host},
-			},
+			Command:              c,
+			Dimensions:           criteria.dimensions(),
 			ExecutionTimeoutSecs: int64(durationSec),
 		},
 	}}
@@ -87,7 +132,7 @@ func (tc *TaskCreator) LeaseTask(ctx context.Context, host string, durationSec i
 			// in the prod skylab DUT_POOL_QUOTA pool; it is irrelevant and
 			// harmless otherwise.
 			"qs_account:leases",
-			fmt.Sprintf("dut-name:%s", host),
+			criteria.tag(),
 			fmt.Sprintf("lease-reason:%s", reason),
 		},
 		TaskSlices:     slices,
