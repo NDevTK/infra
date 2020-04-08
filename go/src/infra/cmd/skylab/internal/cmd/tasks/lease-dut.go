@@ -82,9 +82,15 @@ func (c *leaseDutRun) innerRun(a subcommands.Application, args []string, env sub
 	if userinput.ValidBug(c.leaseReason) {
 		return cmdlib.NewUsageError(c.Flags, "the lease reason must match crbug.com/NNNN or b/NNNN")
 	}
-	host := skycmdlib.FixSuspiciousHostname(args[0])
-	if host != args[0] {
-		fmt.Fprintf(a.GetErr(), "correcting (%s) to (%s)\n", args[0], host)
+
+	var matcher utils.HostMatcher = &utils.Model{Data: c.model}
+	host := ""
+	if hasOneHostname {
+		host = skycmdlib.FixSuspiciousHostname(args[0])
+		if host != args[0] {
+			fmt.Fprintf(a.GetErr(), "correcting (%s) to (%s)\n", args[0], host)
+		}
+		matcher = &utils.Hostname{Data: host}
 	}
 
 	ctx := cli.GetContext(a, c, env)
@@ -104,13 +110,16 @@ func (c *leaseDutRun) innerRun(a subcommands.Application, args []string, env sub
 		Client:      client,
 		Environment: e,
 	}
-	id, err := creator.LeaseTask(ctx, host, int(leaseDuration.Seconds()), c.leaseReason)
+	id, err := creator.LeaseTask(ctx, matcher, int(leaseDuration.Seconds()), c.leaseReason)
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(a.GetOut(), "Created lease task for host %s: %s\n", host, swarming.TaskURL(e.SwarmingService, id))
+	fmt.Fprintf(a.GetOut(), "Created lease task for %q: %s\n", matcher.Tag(), swarming.TaskURL(e.SwarmingService, id))
 
-	scheduleRepairTaskForLater(ctx, &creator, a, leaseDuration, host)
+	// TODO(gregorynisbet): Figure out how to schedule a repair task for a model-specific lease.
+	if hasOneHostname {
+		scheduleRepairTaskForLater(ctx, &creator, a, leaseDuration, host)
+	}
 	fmt.Fprintf(a.GetOut(), "Waiting for task to start; lease isn't active yet\n")
 poll:
 	for {
