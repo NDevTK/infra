@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e71404a5_eb616f85",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/tasks/lease-dut.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-04-08T20:33:56Z",
+      "side": 1,
+      "message": "Usage line should indicate the exclusiveness\n\n lease-dut HOST\n lease-dut -model MODEL\n\ne.g. see man dash",
+      "revId": "643f0718683bc913e0e4daa8ab8c868687f0f0c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
