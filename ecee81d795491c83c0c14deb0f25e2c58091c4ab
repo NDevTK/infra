@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "6aa28fab_9e502809",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-04-08T18:53:37Z",
+      "side": 1,
+      "message": "great point",
+      "parentUuid": "a2a119d4_df56a2c0",
+      "range": {
+        "startLine": 182,
+        "startChar": 4,
+        "endLine": 182,
+        "endChar": 9
+      },
+      "revId": "ecee81d795491c83c0c14deb0f25e2c58091c4ab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a5ef1be2_cf8db0a0",
         "filename": "appengine/monorail/api/v1/converters.py",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2020-04-08T18:47:37Z",
       "side": 1,
       "message": "nit: why not \u0027converted issue\u0027",
+      "range": {
+        "startLine": 184,
+        "startChar": 39,
+        "endLine": 184,
+        "endChar": 53
+      },
+      "revId": "ecee81d795491c83c0c14deb0f25e2c58091c4ab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "13db29be_5e015345",
+        "filename": "appengine/monorail/api/v1/converters.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-04-08T18:53:37Z",
+      "side": 1,
+      "message": "this was a mistake.",
+      "parentUuid": "a5ef1be2_cf8db0a0",
       "range": {
         "startLine": 184,
         "startChar": 39,
