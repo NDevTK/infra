@@ -23,7 +23,7 @@ type TaskCreator struct {
 	Environment site.Environment
 }
 
-// RepairTask creates admin_repair task for particular DUT
+// RepairTask creates admin_repair task for particular DUT or model
 func (tc *TaskCreator) RepairTask(ctx context.Context, host string, customTags []string, expirationSec int) (taskID string, err error) {
 	c := worker.Command{
 		TaskName: "admin_repair",
@@ -65,16 +65,16 @@ func (tc *TaskCreator) RepairTask(ctx context.Context, host string, customTags [
 }
 
 // LeaseTask creates lease_task for particular DUT
-func (tc *TaskCreator) LeaseTask(ctx context.Context, host string, durationSec int, reason string) (taskID string, err error) {
+func (tc *TaskCreator) LeaseTask(ctx context.Context, host string, model string, durationSec int, reason string) (taskID string, err error) {
+	if err := validateLeaseTaskArgs(host, model); err != nil {
+		return "", err
+	}
 	c := []string{"/bin/sh", "-c", `while true; do sleep 60; echo Zzz...; done`}
 	slices := []*swarming_api.SwarmingRpcsTaskSlice{{
 		ExpirationSecs: int64(10 * 60),
 		Properties: &swarming_api.SwarmingRpcsTaskProperties{
-			Command: c,
-			Dimensions: []*swarming_api.SwarmingRpcsStringPair{
-				{Key: "pool", Value: "ChromeOSSkylab"},
-				{Key: "dut_name", Value: host},
-			},
+			Command:              c,
+			Dimensions:           createSwarmingDimensions(host, model),
 			ExecutionTimeoutSecs: int64(durationSec),
 		},
 	}}
@@ -101,4 +101,37 @@ func (tc *TaskCreator) LeaseTask(ctx context.Context, host string, durationSec i
 		return "", errors.Annotate(err, "failed to create task").Err()
 	}
 	return resp.TaskId, nil
+}
+
+// validateLeaseTaskArgs performs local validation of LeaseTask before swarming gets a chance to see it.
+func validateLeaseTaskArgs(host string, model string) error {
+	hasHostname := host != ""
+	hasModel := model != ""
+	if hasHostname && hasModel {
+		return fmt.Errorf("cannot have both hostname and model")
+	}
+	if !hasHostname && !hasModel {
+		return fmt.Errorf("must have at least one of hostname or model")
+	}
+	return nil
+}
+
+// createSwarmingDimensions creates the swarming dimensions for a request targeting a model or hostname
+// createSwarmingDimensions assumes that exactly one of host or model is non-empty.
+func createSwarmingDimensions(host string, model string) []*swarming_api.SwarmingRpcsStringPair {
+	if host != "" {
+		return []*swarming_api.SwarmingRpcsStringPair{
+			{Key: "pool", Value: "ChromeOSSkylab"},
+			{Key: "dut_name", Value: host},
+		}
+	}
+	return []*swarming_api.SwarmingRpcsStringPair{
+		{Key: "pool", Value: "ChromeOSSkylab"},
+		{Key: "label-model", Value: model},
+		// We definitely do not want to steal DUTs from DUT_POOL_CTS
+		{Key: "label-pool", Value: "DUT_POOL_QUOTA"},
+		// Until we can implement real per-model caps, only allow people
+		// to steal repair_failed DUTs for leasing.
+		{Key: "dut_state", Value: "repair_failed"},
+	}
 }
