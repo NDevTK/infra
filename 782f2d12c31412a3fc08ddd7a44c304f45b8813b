@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e4bad541_7a11a06d",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-04-09T21:19:52Z",
+      "side": 1,
+      "message": "Forgot to delete?",
+      "revId": "782f2d12c31412a3fc08ddd7a44c304f45b8813b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
