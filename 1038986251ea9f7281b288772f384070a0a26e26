@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "a5091245_6e0e40cf",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2020-04-09T21:13:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f274f9b1_6f6db425",
+      "range": {
+        "startLine": 27,
+        "startChar": 26,
+        "endLine": 27,
+        "endChar": 30
+      },
+      "revId": "1038986251ea9f7281b288772f384070a0a26e26",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "94c23ea0_e8baa43d",
         "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
         "patchSetId": 7
@@ -42,6 +66,24 @@
     },
     {
       "key": {
+        "uuid": "fa903c4f_4fe5ebfe",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2020-04-09T21:13:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "94c23ea0_e8baa43d",
+      "revId": "1038986251ea9f7281b288772f384070a0a26e26",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "00218eec_de26d344",
         "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
         "patchSetId": 7
@@ -56,6 +98,24 @@
       "revId": "1038986251ea9f7281b288772f384070a0a26e26",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4231ddca_e92c8b14",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2020-04-09T21:13:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "00218eec_de26d344",
+      "revId": "1038986251ea9f7281b288772f384070a0a26e26",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
