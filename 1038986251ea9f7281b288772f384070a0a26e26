@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f274f9b1_6f6db425",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-04-09T20:08:14Z",
+      "side": 1,
+      "message": "period at end",
+      "range": {
+        "startLine": 27,
+        "startChar": 26,
+        "endLine": 27,
+        "endChar": 30
+      },
+      "revId": "1038986251ea9f7281b288772f384070a0a26e26",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "94c23ea0_e8baa43d",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-04-09T20:08:14Z",
+      "side": 1,
+      "message": "Should have a defined type for the enum",
+      "revId": "1038986251ea9f7281b288772f384070a0a26e26",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "00218eec_de26d344",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-04-09T20:08:14Z",
+      "side": 1,
+      "message": "You\u0027re emulating dynamic dispatch at this point, may as well create e.g. HostMatcher and ModelMatcher types.  It gets compiled to roughly the same thing, the kind field becomes dynamic type information.",
+      "revId": "1038986251ea9f7281b288772f384070a0a26e26",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
