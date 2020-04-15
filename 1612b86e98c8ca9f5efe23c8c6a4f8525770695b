@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "27c99d34_4ec7b773",
+        "filename": "go/src/infra/tools/led/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-04-15T23:33:40Z",
+      "side": 1,
+      "message": "yes, but we added this output feature to kitchen a while ago to dump it\u0027s last build.proto to a file (knowing that bbagent would only support build.proto)",
+      "parentUuid": "c1f8bd20_a1fa4186",
+      "range": {
+        "startLine": 66,
+        "startChar": 44,
+        "endLine": 66,
+        "endChar": 60
+      },
+      "revId": "1612b86e98c8ca9f5efe23c8c6a4f8525770695b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "32ff22bc_8780b1d6",
         "filename": "go/src/infra/tools/led/main.go",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2020-04-15T23:06:48Z",
       "side": 1,
       "message": "Oops.. I think after my change: https://chromium-review.googlesource.com/c/infra/luci/luci-go/+/2151685 , the host name here will become \u0027no-upload\u0027. Is this information critical for a led kitchen build?",
+      "range": {
+        "startLine": 78,
+        "startChar": 67,
+        "endLine": 78,
+        "endChar": 114
+      },
+      "revId": "1612b86e98c8ca9f5efe23c8c6a4f8525770695b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3dd9bc79_79c7a41b",
+        "filename": "go/src/infra/tools/led/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-04-15T23:33:40Z",
+      "side": 1,
+      "message": "discussed/fixed offline",
+      "parentUuid": "32ff22bc_8780b1d6",
       "range": {
         "startLine": 78,
         "startChar": 67,
