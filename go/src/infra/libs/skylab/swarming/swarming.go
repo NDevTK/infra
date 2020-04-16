@@ -269,6 +269,23 @@ func (c *Client) BotExists(ctx context.Context, dims []*swarming_api.SwarmingRpc
 	return len(resp.Items) > 0, nil
 }
 
+// GetBotIds get bot ids by dimensions
+func (c *Client) GetBotIds(ctx context.Context, dims []*swarming_api.SwarmingRpcsStringPair) ([]string, error) {
+	bots, err := c.GetBots(ctx, dims)
+	if err != nil {
+		return nil, err
+	}
+	var ids []string
+	for _, bot := range bots {
+		id, err := LookupDimension(bot.Dimensions, "id")
+		if err != nil {
+			continue
+		}
+		ids = append(ids, id)
+	}
+	return ids, nil
+}
+
 // getSwarmingRpcsBotList -- get a SwarmingRpcsBotList, retrying as appropriate for swarming
 func getSwarmingRpcsBotList(ctx context.Context, c *Client, call *swarming_api.BotsListCall) (*swarming_api.SwarmingRpcsBotList, error) {
 	var tl *swarming_api.SwarmingRpcsBotList
