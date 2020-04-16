@@ -16,6 +16,24 @@
       "revId": "094bd75206a03a71aa36dc575eb06f6f027277fb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4324dd05_d5e6346a",
+        "filename": "appengine/monorail/static_src/elements/hotlist/mr-hotlist-settings-page/mr-hotlist-settings-page.js",
+        "patchSetId": 2
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2020-04-16T18:39:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cd265e98_582a8e3c",
+      "revId": "094bd75206a03a71aa36dc575eb06f6f027277fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
