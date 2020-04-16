@@ -2,6 +2,7 @@ package gs
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -62,12 +63,12 @@ func NewDirWriter(localPath string, gsPath Path, client AuthedClient) (DirWriter
 func verifyPaths(localPath string, gsPath string) error {
 	problems := []string{}
 	if _, err := os.Stat(localPath); err != nil {
-		problems = append(problems, "invalid local path")
+		problems = append(problems, fmt.Sprintf("invalid local path (%s)", localPath))
 	} else if _, err := os.Open(localPath); err != nil {
-		problems = append(problems, "unreadable local path")
+		problems = append(problems, fmt.Sprintf("unreadable local path (%s)", localPath))
 	}
 	if _, err := url.Parse(gsPath); err != nil {
-		problems = append(problems, "invalid GS path")
+		problems = append(problems, fmt.Sprintf("invalid GS path (%s)", gsPath))
 	}
 	if len(problems) > 0 {
 		return errors.Reason("path errors: %s", strings.Join(problems, ", ")).Err()
@@ -97,6 +98,9 @@ func (w *prodDirWriter) WriteDir() error {
 		if err != nil {
 			return err
 		}
+		if info.Size() <= 0 {
+			return nil
+		}
 		writer, err := w.client.NewWriter(dest)
 		if err != nil {
 			return err
@@ -105,12 +109,22 @@ func (w *prodDirWriter) WriteDir() error {
 		if _, err = f.Read(bs); err != nil {
 			return err
 		}
-		if _, err = writer.Write(bs); err != nil {
-			return errors.Annotate(err, "writing from %s to %s", src, dest).Err()
+		if n, err := writer.Write(bs); err != nil || n <= 0 {
+			if err != nil {
+				return errors.Annotate(err, "writing from %s to %s", src, dest).Err()
+			}
+			return errors.Reason("nothing written to %s", dest).Err()
 		}
 		return nil
 	}
-	return filepath.Walk(w.localRootDir, writeOne)
+	if err := filepath.Walk(w.localRootDir, writeOne); err != nil {
+		return errors.Annotate(err, "writing dir %s to %s", w.localRootDir, w.gsRootDir).Err()
+	}
+	cli := (w.client).(*realAuthedClient).client
+	if _, err := cli.Attrs(w.gsRootDir); err != nil {
+		return errors.Annotate(err, "checking contents of %s", w.gsRootDir).Err()
+	}
+	return nil
 }
 
 func newAuthenticatedTransport(ctx context.Context, f *authcli.Flags) (http.RoundTripper, error) {
