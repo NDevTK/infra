@@ -94,6 +94,30 @@
     },
     {
       "key": {
+        "uuid": "5ebfa187_d4d8ba22",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2020-04-17T21:52:53Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "e4f32f57_0c2868d6",
+      "range": {
+        "startLine": 104,
+        "startChar": 0,
+        "endLine": 104,
+        "endChar": 23
+      },
+      "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4a249349_d76b65c7",
         "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
         "patchSetId": 6
@@ -140,6 +164,54 @@
     },
     {
       "key": {
+        "uuid": "90ae475c_d45e657b",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2020-04-17T21:52:53Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ee0b1b7e_8219ed25",
+      "range": {
+        "startLine": 119,
+        "startChar": 12,
+        "endLine": 119,
+        "endChar": 18
+      },
+      "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a93ec63_aefa5ce7",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2020-04-17T21:52:53Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "4a249349_d76b65c7",
+      "range": {
+        "startLine": 119,
+        "startChar": 0,
+        "endLine": 119,
+        "endChar": 20
+      },
+      "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c8019ad6_25304aa9",
         "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
         "patchSetId": 6
@@ -163,6 +235,30 @@
     },
     {
       "key": {
+        "uuid": "339ca8ad_e8c7c7d3",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2020-04-17T21:52:53Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c8019ad6_25304aa9",
+      "range": {
+        "startLine": 120,
+        "startChar": 0,
+        "endLine": 126,
+        "endChar": 22
+      },
+      "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ea5d2646_af72d56f",
         "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
         "patchSetId": 6
@@ -183,6 +279,30 @@
       "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "26c39d7d_dd2c50eb",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2020-04-17T21:52:53Z",
+      "side": 1,
+      "message": "In practice it is always going to be a realAuthedClient, since this version of the method is only on prodDirWriter. So I\u0027m giving it a switch statement to ignore the check for anything else it happens to get and calling that good.",
+      "parentUuid": "ea5d2646_af72d56f",
+      "range": {
+        "startLine": 131,
+        "startChar": 0,
+        "endLine": 131,
+        "endChar": 46
+      },
+      "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
