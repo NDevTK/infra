@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2603ff48_8c6708ea",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2020-04-17T04:35:25Z",
+      "side": 1,
+      "message": "please use a separate error message if the length of ids is greater than 1",
+      "revId": "4a274c5a6422791af1fd45295fd8dbb7e93b9422",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
