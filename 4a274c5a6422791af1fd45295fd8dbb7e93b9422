@@ -2,6 +2,52 @@
   "comments": [
     {
       "key": {
+        "uuid": "12924f66_fd855246",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-04-17T04:40:46Z",
+      "side": 1,
+      "message": "scheduling",
+      "range": {
+        "startLine": 7,
+        "startChar": 24,
+        "endLine": 7,
+        "endChar": 32
+      },
+      "revId": "4a274c5a6422791af1fd45295fd8dbb7e93b9422",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d457bdc9_3e029f86",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-04-17T04:40:46Z",
+      "side": 1,
+      "message": "bot id",
+      "range": {
+        "startLine": 7,
+        "startChar": 12,
+        "endLine": 7,
+        "endChar": 15
+      },
+      "revId": "4a274c5a6422791af1fd45295fd8dbb7e93b9422",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2603ff48_8c6708ea",
         "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
         "patchSetId": 1
