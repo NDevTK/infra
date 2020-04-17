@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0a5de82f_8b5356d0",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-04-17T05:18:12Z",
+      "side": 1,
+      "message": "(Unrelated to the CL in question)\nWe should probably close this at some point.",
+      "range": {
+        "startLine": 97,
+        "startChar": 0,
+        "endLine": 97,
+        "endChar": 24
+      },
+      "revId": "f33f5305b50f4f677c85d5fdf54be011d7dbf96e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

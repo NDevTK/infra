@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "409d2d10_9e068434",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-04-17T05:18:12Z",
+      "side": 1,
+      "message": "I figured out the mystery. There\u0027s a reason gs.Writer is an io.WriteCloser rather than simply io.Writer: it looks like the changes are only committed upon calling w.Close(). When I changed io.Writer to io.WriterCloser and called w.Close() before the content check, the content check passed and I verified the file being happily in GS.\n\nIt only occurred to me because of a comment I was going to make on an earlier patchset.",
+      "range": {
+        "startLine": 39,
+        "startChar": 23,
+        "endLine": 39,
+        "endChar": 29
+      },
+      "revId": "83db9dcd25a52887605578a67c0bcf019f7531e1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
