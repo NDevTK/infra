@@ -423,6 +423,30 @@
       "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4075c621_b9a4a652",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-04-17T23:14:06Z",
+      "side": 1,
+      "message": "I\u0027m strongly against hacky best effort things. One could argue that a lot of our problems arise from hacky things that started as best effort and people ended up relying on them too much (chromeperf upload code being a glaring example). I would rather remove it that have it in its current form.\n\nThat being said, the check functionality is useful, so it\u0027d be good to add it in a proper way (potentially in a follow up CL).",
+      "parentUuid": "274db336_2a8c11c3",
+      "range": {
+        "startLine": 131,
+        "startChar": 0,
+        "endLine": 131,
+        "endChar": 46
+      },
+      "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
