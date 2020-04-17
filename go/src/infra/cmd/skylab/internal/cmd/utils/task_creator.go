@@ -25,6 +25,20 @@ type TaskCreator struct {
 
 // RepairTask creates admin_repair task for particular DUT
 func (tc *TaskCreator) RepairTask(ctx context.Context, host string, customTags []string, expirationSec int) (taskID string, err error) {
+	dims := []*swarming_api.SwarmingRpcsStringPair{
+		{Key: "pool", Value: "ChromeOSSkylab"},
+		{Key: "dut_name", Value: host},
+	}
+	ids, err := tc.Client.GetBotIds(ctx, dims)
+	if err != nil {
+		return "", errors.Annotate(err, "failed to find bot").Err()
+	}
+	if len(ids) == 0 {
+		return "", fmt.Errorf("not found any bot with dut_name:%v", host)
+	}
+	if len(ids) > 1 {
+		return "", fmt.Errorf("more that one bot with dut_name:%v", host)
+	}
 	c := worker.Command{
 		TaskName: "admin_repair",
 	}
@@ -35,7 +49,7 @@ func (tc *TaskCreator) RepairTask(ctx context.Context, host string, customTags [
 			Command: c.Args(),
 			Dimensions: []*swarming_api.SwarmingRpcsStringPair{
 				{Key: "pool", Value: "ChromeOSSkylab"},
-				{Key: "dut_name", Value: host},
+				{Key: "id", Value: ids[0]},
 			},
 			ExecutionTimeoutSecs: 5400,
 		},
