@@ -375,6 +375,30 @@
       "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8077fe85_1d8d504c",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-04-17T22:05:48Z",
+      "side": 1,
+      "message": "As long as we\u0027re using knowledge about realAuthedClient that is not part of the interface, we\u0027re lying about what our interface truly is. Part of the point of such an interface is to document which parts of the underlying implementation we\u0027re relying on.",
+      "parentUuid": "26c39d7d_dd2c50eb",
+      "range": {
+        "startLine": 131,
+        "startChar": 0,
+        "endLine": 131,
+        "endChar": 46
+      },
+      "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
