@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "a79be88d_2a7ce74c",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/cmd/upload-to-gs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2020-04-17T22:03:13Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "773af968_9c07d24a",
+      "range": {
+        "startLine": 136,
+        "startChar": 21,
+        "endLine": 136,
+        "endChar": 28
+      },
+      "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5827cd0f_5797bffe",
         "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
         "patchSetId": 6
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "854095d1_8481ebe8",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2020-04-17T22:03:13Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "5827cd0f_5797bffe",
+      "range": {
+        "startLine": 86,
+        "startChar": 0,
+        "endLine": 86,
+        "endChar": 50
+      },
+      "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3ddd2811_4516e982",
         "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
         "patchSetId": 6
@@ -68,6 +116,30 @@
       "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "12d476ac_cb2f0fa5",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2020-04-17T22:03:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3ddd2811_4516e982",
+      "range": {
+        "startLine": 89,
+        "startChar": 24,
+        "endLine": 89,
+        "endChar": 46
+      },
+      "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
