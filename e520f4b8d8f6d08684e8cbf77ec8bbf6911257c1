@@ -33,6 +33,23 @@
       "revId": "e520f4b8d8f6d08684e8cbf77ec8bbf6911257c1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9521ab42_82dac9ea",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2020-04-17T21:34:58Z",
+      "side": 1,
+      "message": "Allen\u0027s errors.Reason comment applies here too.",
+      "revId": "e520f4b8d8f6d08684e8cbf77ec8bbf6911257c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
