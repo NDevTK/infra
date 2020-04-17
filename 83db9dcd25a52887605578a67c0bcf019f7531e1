@@ -22,6 +22,53 @@
       "revId": "83db9dcd25a52887605578a67c0bcf019f7531e1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "35e08966_e2e24b40",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2020-04-17T18:09:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "409d2d10_9e068434",
+      "range": {
+        "startLine": 39,
+        "startChar": 23,
+        "endLine": 39,
+        "endChar": 29
+      },
+      "revId": "83db9dcd25a52887605578a67c0bcf019f7531e1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2cc74fb0_6d3e6924",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2020-04-17T18:09:59Z",
+      "side": 1,
+      "message": "This check would never succeed on a \u0027directory\u0027, and therefore never succeed. I\u0027m not sure why it fails on \u0027directories\u0027, since the root library specified some ObjectAttrs which are only relevant for \u0027directories\u0027 (https://godoc.org/cloud.google.com/go/storage#ObjectAttrs, Prefix field), but it seems to be the case. It\u0027s not strictly necessary, so removing it rather than fixing the bugs, probably in the go.chromium.org/luci/common/gcloud/gs package, that cause the problem.\n\nNote: GS doesn\u0027t really have directories, it calls them \"synthetic \u0027directory entries\u0027\", which are basically just a string prefix and a specified separator character.",
+      "range": {
+        "startLine": 138,
+        "startChar": 0,
+        "endLine": 141,
+        "endChar": 2
+      },
+      "revId": "83db9dcd25a52887605578a67c0bcf019f7531e1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -22,6 +22,30 @@
       "revId": "f33f5305b50f4f677c85d5fdf54be011d7dbf96e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9d4cc35d_1858fe3c",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1238766
+      },
+      "writtenOn": "2020-04-17T18:09:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0a5de82f_8b5356d0",
+      "range": {
+        "startLine": 97,
+        "startChar": 0,
+        "endLine": 97,
+        "endChar": 24
+      },
+      "revId": "f33f5305b50f4f677c85d5fdf54be011d7dbf96e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
