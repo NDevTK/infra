@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "773af968_9c07d24a",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/cmd/upload-to-gs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-04-17T20:35:59Z",
+      "side": 1,
+      "message": "Describe what is being printed, otherwise this line will look cryptic to somebody unfamiliar with the code.",
+      "range": {
+        "startLine": 136,
+        "startChar": 21,
+        "endLine": 136,
+        "endChar": 28
+      },
+      "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5827cd0f_5797bffe",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-04-17T20:35:59Z",
+      "side": 1,
+      "message": "AFAIU currently there are two identical \"writing \u003clocal_root_dir\u003e\" right next to each other. Consider removing one of them or adding more description that would set them apart.",
+      "range": {
+        "startLine": 86,
+        "startChar": 0,
+        "endLine": 86,
+        "endChar": 50
+      },
+      "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3ddd2811_4516e982",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-04-17T20:35:59Z",
+      "side": 1,
+      "message": "That sounds weird. Perhaps just \"%s is a directory\" or \"path %s is a directory\",",
+      "range": {
+        "startLine": 89,
+        "startChar": 24,
+        "endLine": 89,
+        "endChar": 46
+      },
+      "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e4f32f57_0c2868d6",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-04-17T20:35:59Z",
+      "side": 1,
+      "message": "I think there\u0027s no harm supporting empty file offload. If we don\u0027t we should explicitly document it somewhere at the top level.",
+      "range": {
+        "startLine": 104,
+        "startChar": 0,
+        "endLine": 104,
+        "endChar": 23
+      },
+      "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4a249349_d76b65c7",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-04-17T20:35:59Z",
+      "side": 1,
+      "message": "No else needed since the if ends in a return.",
+      "range": {
+        "startLine": 119,
+        "startChar": 0,
+        "endLine": 119,
+        "endChar": 20
+      },
+      "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ee0b1b7e_8219ed25",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-04-17T20:35:59Z",
+      "side": 1,
+      "message": "As mentioned before n\u003d\u003d0 may be a valid use case. The real problem is when n !\u003d info.Size().",
+      "range": {
+        "startLine": 119,
+        "startChar": 12,
+        "endLine": 119,
+        "endChar": 18
+      },
+      "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c8019ad6_25304aa9",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-04-17T20:35:59Z",
+      "side": 1,
+      "message": "This is pretty complicated to follow and future refactorings can easily result in Close() not being called in one of the forks. Consider a way of calling Close() only once. I think it\u0027s fine to drop the joint error and only return error from Close() in the joint error case.\n\nRelated to that, the entire function grew pretty large and it does a variety of different things which are somewhat interleaved - it would be more readable to split it into aux functions, e.g. it could look like:\n- info.IsDir() early return is unchanged,\n- bs :\u003d readLocalFile(src)\n- dest :\u003d makePath(w.localRootDir, src)\n- writeToGS(bs, dest)\n- client.CheckExists(dest)\nThat way write.Close() can be put into a defer inside writeToGS.",
+      "range": {
+        "startLine": 120,
+        "startChar": 0,
+        "endLine": 126,
+        "endChar": 22
+      },
+      "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ea5d2646_af72d56f",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/gs/gs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-04-17T20:35:59Z",
+      "side": 1,
+      "message": "This is extremely brittle: we should not assume that the client is a realAuthedClient. The right way to do this is to add a CheckExists(gsDest) method to the AuthedClient interface and have its implementation wrap cli.Attrs.\n\nIf you\u0027re feeling extra fancy it can be CheckSize(size, gsDest): take info.Size() as an input and compare it against Size inside the return of Attrs.",
+      "range": {
+        "startLine": 131,
+        "startChar": 0,
+        "endLine": 131,
+        "endChar": 46
+      },
+      "revId": "ef64ac6e368177deb96d2806814ec005a63892a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
