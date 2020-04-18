@@ -8,11 +8,13 @@ import (
 	"fmt"
 
 	"github.com/maruel/subcommands"
-	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/cli"
 
+	skycmdlib "infra/cmd/skylab/internal/cmd/cmdlib"
 	"infra/cmd/skylab/internal/cmd/utils"
 	"infra/cmd/skylab/internal/site"
 	"infra/cmdsupport/cmdlib"
+	"infra/libs/skylab/swarming"
 )
 
 // Reset subcommand: Reset hosts.
@@ -50,5 +52,23 @@ func (c *resetRun) innerRun(a subcommands.Application, args []string, env subcom
 		return cmdlib.NewUsageError(c.Flags, "Expiration minutes (%d minutes) cannot exceed 1 day [%d minutes]", c.expirationMins, dayInMinutes)
 	}
 
-	return errors.Reason("not implemeneted yet").Err()
+	ctx := cli.GetContext(a, c, env)
+	creator, err := utils.NewTaskCreator(ctx, c)
+	if err != nil {
+		return err
+	}
+
+	expirationSec := c.expirationMins * 60
+	for _, host := range args {
+		dutName := skycmdlib.FixSuspiciousHostname(host)
+		if dutName != host {
+			fmt.Fprintf(a.GetErr(), "correcting (%s) to (%s)\n", host, dutName)
+		}
+		id, err := creator.ResetTask(ctx, dutName, expirationSec)
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(a.GetOut(), "Created Swarming task %s for host %s\n", swarming.TaskURL(creator.Environment.SwarmingService, id), dutName)
+	}
+	return nil
 }
