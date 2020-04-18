@@ -9,6 +9,7 @@ import (
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/common/errors"
 
 	skycmdlib "infra/cmd/skylab/internal/cmd/cmdlib"
 	"infra/cmd/skylab/internal/cmd/utils"
@@ -48,8 +49,11 @@ func (c *resetRun) Run(a subcommands.Application, args []string, env subcommands
 }
 
 func (c *resetRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
-	if c.expirationMins >= dayInMinutes {
+	switch {
+	case c.expirationMins >= dayInMinutes:
 		return cmdlib.NewUsageError(c.Flags, "Expiration minutes (%d minutes) cannot exceed 1 day [%d minutes]", c.expirationMins, dayInMinutes)
+	case len(args) == 0:
+		return errors.Reason("at least one host has to provided").Err()
 	}
 
 	ctx := cli.GetContext(a, c, env)
