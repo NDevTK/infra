@@ -85,6 +85,25 @@ class ResourceNameConverterTest(unittest.TestCase):
     with self.assertRaises(exceptions.InputException):
       rnc._GetResourceNameMatch('honque/honque', regex)
 
+  def testIngestFieldDefName(self):
+    """We can get a FieldDef's resource name match."""
+    self.assertEqual(
+        rnc.IngestFieldDefName(
+            self.cnxn, self.project_1.project_id,
+            'projects/proj/fieldDefs/test_field', self.services), 123)
+
+  def testIngestFieldDefName_InvalidName(self):
+    """An exception is raised if the FieldDef's resource name is invalid"""
+    with self.assertRaises(exceptions.InputException):
+      rnc.IngestFieldDefName(
+          self.cnxn, self.project_1.project_id, 'projects/proj/fieldDefs/7Dog',
+          self.services)
+
+    with self.assertRaises(exceptions.InputException):
+      rnc.IngestFieldDefName(
+          self.cnxn, self.project_1.project_id, 'friend/proj/fieldDefs/happy',
+          self.services)
+
   def testIngestHotlistName(self):
     """We can get a Hotlist's resource name match."""
     self.assertEqual(rnc.IngestHotlistName('hotlists/78909'), 78909)
