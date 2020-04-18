@@ -74,5 +74,6 @@ func (c *resetRun) innerRun(a subcommands.Application, args []string, env subcom
 		}
 		fmt.Fprintf(a.GetOut(), "Created Swarming task %s for host %s\n", swarming.TaskURL(creator.Environment.SwarmingService, id), dutName)
 	}
+	fmt.Fprintf(a.GetOut(), "\nBatch tasks URL: %s\n\n", swarming.TaskListURLForTags(creator.Environment.SwarmingService, creator.GetSessionTags()))
 	return nil
 }
