@@ -1,0 +1,210 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "baee7545_c3c3539b",
+        "filename": "appengine/monorail/api/resource_name_converters.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-04-20T22:29:29Z",
+      "side": 1,
+      "message": "nit: \u0027field_def\u0027",
+      "range": {
+        "startLine": 31,
+        "startChar": 25,
+        "endLine": 31,
+        "endChar": 33
+      },
+      "revId": "d4fec55b221e58727941fd4861e74a283df21144",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b33a7792_a13417bf",
+        "filename": "appengine/monorail/api/resource_name_converters.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-04-20T22:29:29Z",
+      "side": 1,
+      "message": "Could make this a constant in https://source.chromium.org/chromium/infra/infra/+/master:appengine/monorail/features/features_constants.py;l\u003d1?q\u003dfeatures_con\u0026ss\u003dchromium%2Finfra%2Finfra:appengine%2Fmonorail%2F\n\nand call that here instead",
+      "range": {
+        "startLine": 31,
+        "startChar": 34,
+        "endLine": 31,
+        "endChar": 61
+      },
+      "revId": "d4fec55b221e58727941fd4861e74a283df21144",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "04a1d687_ef35bd92",
+        "filename": "appengine/monorail/api/resource_name_converters.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-04-20T22:29:29Z",
+      "side": 1,
+      "message": "update and use format\n```\n# type: (\u003carg1\u003e, \u003carg2\u003e, ...) -\u003e int, int\n```\n\nWe forgot to follow this pattern in the beginning, but we should follow for all new code.",
+      "range": {
+        "startLine": 111,
+        "startChar": 4,
+        "endLine": 111,
+        "endChar": 14
+      },
+      "revId": "d4fec55b221e58727941fd4861e74a283df21144",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2bfa4e6d_2f428dbc",
+        "filename": "appengine/monorail/api/resource_name_converters.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-04-20T22:29:29Z",
+      "side": 1,
+      "message": "update, since it returns project ID as well.",
+      "range": {
+        "startLine": 112,
+        "startChar": 49,
+        "endLine": 112,
+        "endChar": 63
+      },
+      "revId": "d4fec55b221e58727941fd4861e74a283df21144",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f4454de5_d660d149",
+        "filename": "appengine/monorail/api/resource_name_converters.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-04-20T22:29:29Z",
+      "side": 1,
+      "message": "rm",
+      "revId": "d4fec55b221e58727941fd4861e74a283df21144",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d12e2f6_c0a97cab",
+        "filename": "appengine/monorail/api/resource_name_converters.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-04-20T22:29:29Z",
+      "side": 1,
+      "message": "update",
+      "revId": "d4fec55b221e58727941fd4861e74a283df21144",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e63c086a_1259097d",
+        "filename": "appengine/monorail/api/resource_name_converters.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-04-20T22:29:29Z",
+      "side": 1,
+      "message": "Add NoSuchProjectException and NoSuchFieldDefException",
+      "revId": "d4fec55b221e58727941fd4861e74a283df21144",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5b250d49_c6672cad",
+        "filename": "appengine/monorail/api/resource_name_converters.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-04-20T22:29:29Z",
+      "side": 1,
+      "message": "Please do\n\n```\nid_dict \u003d services.project.LookupProjectIDs(cnxn, [project_name])\n```\n\nCalling IngestProjectName when you don\u0027t really need to ingest a project name is misleading. Best to call the actual method you need.",
+      "revId": "d4fec55b221e58727941fd4861e74a283df21144",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a315def6_cd8910f6",
+        "filename": "appengine/monorail/api/resource_name_converters.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-04-20T22:29:29Z",
+      "side": 1,
+      "message": "check if this is None, and raise NoSuchFieldDefException, if so",
+      "range": {
+        "startLine": 130,
+        "startChar": 2,
+        "endLine": 130,
+        "endChar": 10
+      },
+      "revId": "d4fec55b221e58727941fd4861e74a283df21144",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e857d437_a54d3c4e",
+        "filename": "appengine/monorail/api/resource_name_converters.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-04-20T22:29:29Z",
+      "side": 1,
+      "message": "nit: order `project_id, field_id`\n\nAs a general, put the \u0027bigger\u0027 or \u0027parent\u0027 things in front.",
+      "range": {
+        "startLine": 132,
+        "startChar": 9,
+        "endLine": 132,
+        "endChar": 29
+      },
+      "revId": "d4fec55b221e58727941fd4861e74a283df21144",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
