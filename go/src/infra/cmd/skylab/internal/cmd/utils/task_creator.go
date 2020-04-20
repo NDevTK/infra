@@ -15,6 +15,7 @@ import (
 	"infra/libs/skylab/swarming"
 	"infra/libs/skylab/worker"
 
+	"github.com/google/uuid"
 	"go.chromium.org/luci/auth/client/authcli"
 	swarming_api "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/errors"
@@ -24,6 +25,7 @@ import (
 type TaskCreator struct {
 	Client      *swarming.Client
 	Environment site.Environment
+	session     string
 }
 
 // TaskFlags presents basic flags required to create a swarming client.
@@ -63,6 +65,7 @@ func NewTaskCreator(ctx context.Context, flager TaskFlager) (*TaskCreator, error
 	tc := &TaskCreator{
 		Client:      client,
 		Environment: env,
+		session:     uuid.New().String(),
 	}
 	return tc, nil
 }
@@ -143,14 +146,16 @@ func (tc *TaskCreator) ResetTask(ctx context.Context, host string, expirationSec
 		},
 		WaitForCapacity: true,
 	}}
+	tags := []string{
+		fmt.Sprintf("log_location:%s", c.LogDogAnnotationURL),
+		fmt.Sprintf("luci_project:%s", tc.Environment.LUCIProject),
+		"pool:ChromeOSSkylab",
+		"skylab-tool:reset",
+	}
+	tags = append(tags, tc.GetSessionTag())
 	r := &swarming_api.SwarmingRpcsNewTaskRequest{
-		Name: "admin_reset",
-		Tags: []string{
-			fmt.Sprintf("log_location:%s", c.LogDogAnnotationURL),
-			fmt.Sprintf("luci_project:%s", tc.Environment.LUCIProject),
-			"pool:ChromeOSSkylab",
-			"skylab-tool:reset",
-		},
+		Name:           "admin_reset",
+		Tags:           tags,
 		TaskSlices:     slices,
 		Priority:       25,
 		ServiceAccount: tc.Environment.ServiceAccount,
@@ -265,4 +270,9 @@ func (tc *TaskCreator) dutNameToBotID(ctx context.Context, host string) (string,
 		return "", errors.Reason("more that one bot with dut_name: %v", host).Err()
 	}
 	return ids[0], nil
+}
+
+// GetSessionTag return admin session tag for swarming.
+func (tc *TaskCreator) GetSessionTag() string {
+	return fmt.Sprintf("admin_session:%s", tc.session)
 }
