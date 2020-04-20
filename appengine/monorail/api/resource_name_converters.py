@@ -27,6 +27,11 @@ PROJECT_NAME_PATTERN = (
     r'projects\/(?P<project_name>%s)' % project_constants.PROJECT_NAME_PATTERN)
 PROJECT_NAME_RE = re.compile(r'%s$' % PROJECT_NAME_PATTERN)
 
+FIELDDEF_PATTERN = (
+    r'%s\/fieldDefs\/(?P<fieldDef>[a-zA-Z]([_-]?[a-zA-Z0-9])*)' %
+    PROJECT_NAME_PATTERN)
+FIELDDEF_NAME_RE = re.compile(r'%s$' % FIELDDEF_PATTERN)
+
 HOTLIST_PATTERN = r'hotlists\/(?P<hotlist_id>\d+)'
 HOTLIST_NAME_RE = re.compile(r'%s$' % HOTLIST_PATTERN)
 HOTLIST_ITEM_NAME_RE = re.compile(
@@ -98,6 +103,33 @@ def _IssueIdsFromLocalIds(cnxn, project_local_id_pairs, services):
   if misses:
     raise exceptions.NoSuchIssueException('Issue(s) %r not found' % misses)
   return issue_ids
+
+# FieldDefs
+
+
+def IngestFieldDefName(cnxn, name, services):
+  # str -> int
+  """Takes a FieldDef resource name and returns the FieldDef ID.
+
+  Args:
+    cnxn: MonorailConnection to the database.
+    project_id: project id of project that templates belong to
+    name: Resource name of a FieldDef.
+    services: Services object for connections to backend services.
+
+  Returns:
+    The FieldDef's ID
+
+  Raises:
+    InputException if the given name does not have a valid format.
+  """
+  match = _GetResourceNameMatch(name, FIELDDEF_NAME_RE)
+  field_name = match.group('fieldDef')
+  project_name = match.group('project_name')
+  project_id = IngestProjectName(cnxn, 'projects/' + project_name, services)
+  field_id = services.config.LookupFieldID(cnxn, project_id, field_name)
+
+  return field_id, project_id
 
 # Hotlists
 
@@ -261,7 +293,7 @@ def ConvertIssueName(cnxn, issue_id, services):
   """Takes an Issue ID and returns the corresponding Issue resource name.
 
   Args:
-    mc: MonorailConnection object.
+    cnxn: MonorailConnection object.
     issue_id: The ID of the issue.
     services: Services object.
 
