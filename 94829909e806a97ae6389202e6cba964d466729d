@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3d3d564e_506a190d",
+        "filename": "appengine/monorail/api/resource_name_converters.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-04-21T00:57:03Z",
+      "side": 1,
+      "message": "Upon closer look, we only want to have separate \"_PATTERN\" and \"_RE\" if the _PATTERN is actually needed elsewhere. \n\nIf not, we should aim for something more readable and just have \n```\nFIELD_DEF_NAME_RE \u003d re.compile(\n    r\u0027%s\\/fieldDefs\\/(?P\u003cfield_def\u003e%s)$\u0027 % \n    (PROJECT_NAME_PATTERN, features_constants.FIELD_DEF_NAME_PATTERN)\n```\n\nto avoid unnecessary layers.",
+      "revId": "94829909e806a97ae6389202e6cba964d466729d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "12b7307c_d8678e31",
+        "filename": "appengine/monorail/api/resource_name_converters.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-04-21T00:57:03Z",
+      "side": 1,
+      "message": "nit: `Project %s not found`",
+      "range": {
+        "startLine": 136,
+        "startChar": 45,
+        "endLine": 136,
+        "endChar": 61
+      },
+      "revId": "94829909e806a97ae6389202e6cba964d466729d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7267ffc5_c4319014",
+        "filename": "appengine/monorail/api/resource_name_converters.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-04-21T00:57:03Z",
+      "side": 1,
+      "message": "nit: `Field %s not found.`",
+      "range": {
+        "startLine": 140,
+        "startChar": 9,
+        "endLine": 140,
+        "endChar": 35
+      },
+      "revId": "94829909e806a97ae6389202e6cba964d466729d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
