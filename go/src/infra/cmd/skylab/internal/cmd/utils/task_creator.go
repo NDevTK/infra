@@ -9,10 +9,13 @@ import (
 	"fmt"
 	"time"
 
+	skycmdlib "infra/cmd/skylab/internal/cmd/cmdlib"
 	"infra/cmd/skylab/internal/site"
+	"infra/cmdsupport/cmdlib"
 	"infra/libs/skylab/swarming"
 	"infra/libs/skylab/worker"
 
+	"go.chromium.org/luci/auth/client/authcli"
 	swarming_api "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/errors"
 )
@@ -21,6 +24,47 @@ import (
 type TaskCreator struct {
 	Client      *swarming.Client
 	Environment site.Environment
+}
+
+// TaskFlags presents basic flags required to create a swarming client.
+type TaskFlags struct {
+	AuthFlags authcli.Flags
+	EnvFlags  skycmdlib.EnvFlags
+}
+
+// TaskFlager wrapper to access TaskFlags fields.
+type TaskFlager interface {
+	GetAuthFlags() *authcli.Flags
+	GetEnvFlags() skycmdlib.EnvFlags
+}
+
+// GetAuthFlags extracts flags related to authentication.
+func (tf *TaskFlags) GetAuthFlags() *authcli.Flags {
+	return &tf.AuthFlags
+}
+
+// GetEnvFlags extracts flags related to environment.
+func (tf *TaskFlags) GetEnvFlags() skycmdlib.EnvFlags {
+	return tf.EnvFlags
+}
+
+// NewTaskCreator creates and initialize the TaskCreator.
+func NewTaskCreator(ctx context.Context, flager TaskFlager) (*TaskCreator, error) {
+	h, err := cmdlib.NewHTTPClient(ctx, flager.GetAuthFlags())
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to create http client").Err()
+	}
+	env := flager.GetEnvFlags().Env()
+	client, err := swarming.New(ctx, h, env.SwarmingService)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to create Swarming client").Err()
+	}
+
+	tc := &TaskCreator{
+		Client:      client,
+		Environment: env,
+	}
+	return tc, nil
 }
 
 // RepairTask creates admin_repair task for particular DUT
