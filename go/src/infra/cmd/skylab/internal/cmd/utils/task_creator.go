@@ -68,6 +68,49 @@ func (tc *TaskCreator) RepairTask(ctx context.Context, host string, customTags [
 	return resp.TaskId, nil
 }
 
+// VerifyTask creates admin_verify task for particular DUT.
+func (tc *TaskCreator) VerifyTask(ctx context.Context, host string, expirationSec int) (taskID string, err error) {
+	id, err := tc.dutNameToBotID(ctx, host)
+	if err != nil {
+		return "", err
+	}
+	c := worker.Command{
+		TaskName: "admin_verify",
+	}
+	c.Config(tc.Environment.Wrapped())
+	slices := []*swarming_api.SwarmingRpcsTaskSlice{{
+		ExpirationSecs: int64(expirationSec),
+		Properties: &swarming_api.SwarmingRpcsTaskProperties{
+			Command: c.Args(),
+			Dimensions: []*swarming_api.SwarmingRpcsStringPair{
+				{Key: "pool", Value: "ChromeOSSkylab"},
+				{Key: "id", Value: id},
+			},
+			ExecutionTimeoutSecs: 5400,
+		},
+		WaitForCapacity: true,
+	}}
+	r := &swarming_api.SwarmingRpcsNewTaskRequest{
+		Name: "admin_verify",
+		Tags: []string{
+			fmt.Sprintf("log_location:%s", c.LogDogAnnotationURL),
+			fmt.Sprintf("luci_project:%s", tc.Environment.LUCIProject),
+			"pool:ChromeOSSkylab",
+			"skylab-tool:verify",
+		},
+		TaskSlices:     slices,
+		Priority:       25,
+		ServiceAccount: tc.Environment.ServiceAccount,
+	}
+	ctx, cf := context.WithTimeout(ctx, 60*time.Second)
+	defer cf()
+	resp, err := tc.Client.CreateTask(ctx, r)
+	if err != nil {
+		return "", errors.Annotate(err, "failed to create task").Err()
+	}
+	return resp.TaskId, nil
+}
+
 // LeaseByHostnameTask creates lease_task for particular DUT
 func (tc *TaskCreator) LeaseByHostnameTask(ctx context.Context, host string, durationSec int, reason string) (taskID string, err error) {
 	c := []string{"/bin/sh", "-c", `while true; do sleep 60; echo Zzz...; done`}
