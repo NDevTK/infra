@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "9ec4ca97_069a2bc7",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/auditor.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1409819
+      },
+      "writtenOn": "2020-04-22T18:34:33Z",
+      "side": 1,
+      "message": "Resolved in patchset 2.",
+      "parentUuid": "ab658920_57994c64",
+      "range": {
+        "startLine": 57,
+        "startChar": 33,
+        "endLine": 57,
+        "endChar": 36
+      },
+      "revId": "f42dfc827d382d32ccb5cb4cece910fccc8a8e16",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "12324038_4ed3bb3a",
         "filename": "go/src/infra/appengine/cr-audit-commits/app/auditor.go",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "f42dfc827d382d32ccb5cb4cece910fccc8a8e16",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8a4729db_0e602c2f",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/auditor.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1409819
+      },
+      "writtenOn": "2020-04-22T18:34:33Z",
+      "side": 1,
+      "message": "Resolved in patchset 2.",
+      "parentUuid": "12324038_4ed3bb3a",
+      "range": {
+        "startLine": 63,
+        "startChar": 33,
+        "endLine": 63,
+        "endChar": 36
+      },
+      "revId": "f42dfc827d382d32ccb5cb4cece910fccc8a8e16",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
