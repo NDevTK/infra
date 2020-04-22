@@ -78,5 +78,11 @@ func (c *verifyRun) innerRun(a subcommands.Application, args []string, env subco
 		}
 		fmt.Fprintf(a.GetOut(), "Created Swarming task %s for host %s\n", swarming.TaskURL(creator.Environment.SwarmingService, id), dutName)
 	}
+	if len(args) > 1 {
+		tags := []string{
+			creator.GetSessionTag(),
+		}
+		fmt.Fprintf(a.GetOut(), "\nBatch tasks URL: %s\n\n", swarming.TaskListURLForTags(creator.Environment.SwarmingService, tags))
+	}
 	return nil
 }
