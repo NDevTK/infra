@@ -15,6 +15,7 @@ import (
 	"infra/libs/skylab/swarming"
 	"infra/libs/skylab/worker"
 
+	"github.com/google/uuid"
 	"go.chromium.org/luci/auth/client/authcli"
 	swarming_api "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/errors"
@@ -24,6 +25,8 @@ import (
 type TaskCreator struct {
 	Client      *swarming.Client
 	Environment site.Environment
+	// used to mark and track all created tasks per one execution.
+	session string
 }
 
 // NewTaskCreator creates and initialize the TaskCreator.
@@ -41,6 +44,7 @@ func NewTaskCreator(ctx context.Context, authFlags *authcli.Flags, envFlags skyc
 	tc := &TaskCreator{
 		Client:      client,
 		Environment: env,
+		session:     uuid.New().String(),
 	}
 	return tc, nil
 }
@@ -119,6 +123,7 @@ func (tc *TaskCreator) VerifyTask(ctx context.Context, host string, expirationSe
 			fmt.Sprintf("luci_project:%s", tc.Environment.LUCIProject),
 			"pool:ChromeOSSkylab",
 			"skylab-tool:verify",
+			tc.GetSessionTag(),
 		},
 		TaskSlices:     slices,
 		Priority:       25,
@@ -263,4 +268,9 @@ func (tc *TaskCreator) dutNameToBotID(ctx context.Context, host string) (string,
 // DUT state will be set as 'needs_repair'
 func getLeaseCommand() []string {
 	return []string{"/bin/sh", "-c", `/opt/infra-tools/skylab_swarming_worker -task-name set_needs_repair; while true; do sleep 60; echo Zzz...; done`}
+}
+
+// GetSessionTag return admin session tag for swarming.
+func (tc *TaskCreator) GetSessionTag() string {
+	return fmt.Sprintf("admin_session:%s", tc.session)
 }

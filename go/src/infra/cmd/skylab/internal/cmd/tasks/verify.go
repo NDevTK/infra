@@ -51,8 +51,11 @@ func (c *verifyRun) Run(a subcommands.Application, args []string, env subcommand
 }
 
 func (c *verifyRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
-	if c.expirationMins >= dayInMinutes {
+	switch {
+	case c.expirationMins >= dayInMinutes:
 		return cmdlib.NewUsageError(c.Flags, "Expiration minutes (%d minutes) cannot exceed 1 day [%d minutes]", c.expirationMins, dayInMinutes)
+	case len(args) == 0:
+		return errors.Reason("at least one host has to provided").Err()
 	}
 	if len(args) == 0 {
 		return errors.Reason("at least one host has to provided").Err()
