@@ -53,6 +53,7 @@ import (
 
 const repairTaskName = "repair"
 const deployTaskName = "deploy"
+const auditTaskName = "audit"
 const setStateNeedsRepairTaskName = "set_needs_repair"
 
 const gcpProject = "chromeos-skylab"
@@ -195,7 +196,7 @@ func luciferFlow(ctx context.Context, a *args, i *harness.Info, annotWriter writ
 	}
 
 	switch {
-	case isAdminTask(a) || isDeployTask(a):
+	case isAdminTask(a) || isDeployTask(a) || isAuditTask(a):
 		// Show Stainless links here for admin tasks.
 		// For test tasks they are bundled with results.json.
 		annotations.BuildStep(annotWriter, "Epilog")
@@ -237,19 +238,21 @@ func harnessOptions(a *args) []harness.Option {
 // updatesInventory returns true if the task(repair/deploy)
 // should update the inventory else false.
 func updatesInventory(a *args) bool {
-	if isRepairTask(a) || isDeployTask(a) {
+	if isRepairTask(a) || isDeployTask(a) || isAuditTask(a) {
 		return true
 	}
 	return false
 }
 
-// getTaskName returns the task name(repair/deploy) for the task.
+// getTaskName returns the task name(repair/deploy/audit) for the task.
 func getTaskName(a *args) string {
 	switch {
 	case isRepairTask(a):
 		return repairTaskName
 	case isDeployTask(a):
 		return deployTaskName
+	case isAuditTask(a):
+		return auditTaskName
 	default:
 		return ""
 	}
@@ -260,6 +263,8 @@ func getActionsTaskName(a *args) string {
 	switch {
 	case isDeployTask(a):
 		return "deploytask"
+	case isAuditTask(a):
+		return "audittask"
 	default:
 		return ""
 	}
@@ -312,6 +317,12 @@ func isAdminTask(a *args) bool {
 // isDeployTask determines if the given task name corresponds to a deploy task.
 func isDeployTask(a *args) bool {
 	return a.taskName == deployTaskName
+}
+
+// isAuditTask determines if the given task name corresponds to a audit task.
+func isAuditTask(a *args) bool {
+	task, _ := getAdminTask(a.taskName)
+	return task == auditTaskName
 }
 
 // isRepairTask determines if the given task name corresponds to a repair task.
