@@ -30,6 +30,12 @@ type TaskCreator struct {
 	session string
 }
 
+// TaskInfo contains the result of the task creation in swarming
+type TaskInfo struct {
+	ID      string
+	TaskURL string // swarming URL to the task
+}
+
 // NewTaskCreator creates and initialize the TaskCreator.
 func NewTaskCreator(ctx context.Context, authFlags *authcli.Flags, envFlags skycmdlib.EnvFlags) (*TaskCreator, error) {
 	h, err := cmdlib.NewHTTPClient(ctx, authFlags)
@@ -96,10 +102,10 @@ func (tc *TaskCreator) RepairTask(ctx context.Context, host string, customTags [
 }
 
 // VerifyTask creates admin_verify task for particular DUT.
-func (tc *TaskCreator) VerifyTask(ctx context.Context, host string, expirationSec int) (taskID string, err error) {
+func (tc *TaskCreator) VerifyTask(ctx context.Context, host string, expirationSec int) (task TaskInfo, err error) {
 	id, err := tc.dutNameToBotID(ctx, host)
 	if err != nil {
-		return "", errors.Annotate(err, "fail to get bot ID for %s", host).Err()
+		return task, errors.Annotate(err, "fail to get bot ID for %s", host).Err()
 	}
 	c := worker.Command{
 		TaskName: "admin_verify",
@@ -134,9 +140,13 @@ func (tc *TaskCreator) VerifyTask(ctx context.Context, host string, expirationSe
 	defer cf()
 	resp, err := tc.Client.CreateTask(ctx, r)
 	if err != nil {
-		return "", errors.Annotate(err, "failed to create task").Err()
+		return task, errors.Annotate(err, "failed to create task").Err()
 	}
-	return resp.TaskId, nil
+	task = TaskInfo{
+		ID:      resp.TaskId,
+		TaskURL: tc.getTaskURL(resp.TaskId),
+	}
+	return task, nil
 }
 
 // LeaseByHostnameTask creates lease_task for particular DUT
@@ -371,4 +381,9 @@ func (tc *TaskCreator) GetSessionTasksURL() string {
 		tc.getSessionTag(),
 	}
 	return swarming.TaskListURLForTags(tc.Environment.SwarmingService, tags)
+}
+
+// getTaskURL generates URL to the task in swarming
+func (tc *TaskCreator) getTaskURL(id string) string {
+	return swarming.TaskURL(tc.Environment.SwarmingService, id)
 }
