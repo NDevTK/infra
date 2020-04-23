@@ -175,3 +175,39 @@ func TestNeedLucifer(t *testing.T) {
 		})
 	}
 }
+
+func TestActionsTasks(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		task             string
+		expected         bool
+		expectedTaskName string
+	}{
+		{deploy, true, "deploytask"},
+		{adminRepair, false, ""},
+		{adminReset, false, ""},
+		{adminSetStateNeedsRepair, false, ""},
+		{"something-else", false, ""},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.task, func(t *testing.T) {
+			t.Parallel()
+			a := &args{}
+			a.taskName = tc.task
+			taskname := getActionsTaskName(a)
+			switch {
+			case tc.expected && taskname != tc.expectedTaskName:
+				t.Errorf("Input task name was %s - check was incorrect, got: %#v, expected: %#v", tc.task, taskname, tc.expectedTaskName)
+			case !tc.expected && taskname != "":
+				t.Errorf("Input task name was %s - expected to be empty by got: %#v", tc.task, taskname)
+			}
+			output := isActionsTask(a)
+			if output != tc.expected {
+				t.Errorf("Input task was %s - check was incorrect, got: %t, expected: %t", tc.task, output, tc.expected)
+			}
+		})
+	}
+}
