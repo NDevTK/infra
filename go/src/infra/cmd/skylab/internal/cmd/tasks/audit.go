@@ -6,12 +6,15 @@ package tasks
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
+	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
 	skycmdlib "infra/cmd/skylab/internal/cmd/cmdlib"
+	"infra/cmd/skylab/internal/cmd/utils"
 	"infra/cmd/skylab/internal/site"
 	"infra/cmdsupport/cmdlib"
 )
@@ -60,5 +63,44 @@ func (c *auditRun) innerRun(a subcommands.Application, args []string, env subcom
 		return errors.Reason("at least one host has to provided").Err()
 	}
 
-	return errors.Reason("not implemented yet").Err()
+	actions, err := c.getActions()
+	if err != nil {
+		return err
+	}
+
+	ctx := cli.GetContext(a, c, env)
+	creator, err := utils.NewTaskCreator(ctx, &c.authFlags, c.envFlags)
+	if err != nil {
+		return err
+	}
+
+	for _, host := range args {
+		dutName := skycmdlib.FixSuspiciousHostname(host)
+		if dutName != host {
+			fmt.Fprintf(a.GetErr(), "correcting (%s) to (%s)\n", host, dutName)
+		}
+		task, err := creator.AuditTask(ctx, dutName, actions, c.expirationMins*60)
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(a.GetOut(), "Created Swarming task %s for host %s\n", task.TaskURL, dutName)
+	}
+	if len(args) > 1 {
+		fmt.Fprintf(a.GetOut(), "\nBatch tasks URL: %s\n\n", creator.GetSessionTasksURL())
+	}
+	return nil
+}
+
+func (c *auditRun) getActions() (string, error) {
+	a := make([]string, 0, 2)
+	if !c.skipVerifyDUTStorage {
+		a = append(a, "verify-dut-storage")
+	}
+	if !c.skipVerifyServoUSB {
+		a = append(a, "verify-servo-usb-drive")
+	}
+	if len(a) == 0 {
+		return "", errors.Reason("At least one action has to be allowed").Err()
+	}
+	return strings.Join(a, ","), nil
 }
