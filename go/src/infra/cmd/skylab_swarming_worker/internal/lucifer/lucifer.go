@@ -126,20 +126,26 @@ func AdminTaskCommand(c Config, a AdminTaskArgs) *exec.Cmd {
 	return cmd
 }
 
-// DeployTaskArgs contains the arguments for creating a lucifer deploytask
-// command.
-type DeployTaskArgs struct {
+// ActionsTaskArgs contains the arguments for creating a lucifer task command with actions.
+type ActionsTaskArgs struct {
 	TaskArgs
 	Host    string
+	Task    string
 	Actions string
 }
 
-// DeployTaskCommand creates an exec.Cmd for running a lucifer deploytask.
-func DeployTaskCommand(c Config, a DeployTaskArgs) *exec.Cmd {
+// ActionsTaskCommand creates an exec.Cmd for running a lucifer deploytask.
+func ActionsTaskCommand(c Config, a ActionsTaskArgs) *exec.Cmd {
 	p := filepath.Join(c.BinDir, "lucifer")
-	args := make([]string, 0, 6)
-	args = append(args, "deploytask")
-	args = append(args, "-autotestdir", c.AutotestPath)
+	args := convertActionsTaskArgs(a, c.AutotestPath)
+	cmd := exec.Command(p, args...)
+	return cmd
+}
+
+func convertActionsTaskArgs(a ActionsTaskArgs, autotestDir string) []string {
+	var args []string
+	args = append(args, a.Task)
+	args = append(args, "-autotestdir", autotestDir)
 	args = appendCommonArgs(args, a.TaskArgs)
 
 	args = append(args, "-host", a.Host)
@@ -149,9 +155,7 @@ func DeployTaskCommand(c Config, a DeployTaskArgs) *exec.Cmd {
 	if a.GCPProject != "" {
 		args = append(args, "-gcp-project", a.GCPProject)
 	}
-
-	cmd := exec.Command(p, args...)
-	return cmd
+	return args
 }
 
 func appendCommonArgs(args []string, a TaskArgs) []string {

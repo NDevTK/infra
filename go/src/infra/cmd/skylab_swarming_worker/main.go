@@ -70,7 +70,7 @@ func main() {
 type args struct {
 	adminService        string
 	deadline            time.Time
-	deployActions       string
+	actions             string
 	forceFreshInventory bool
 	isolatedOutdir      string
 	logdogAnnotationURL string
@@ -101,7 +101,7 @@ func parseArgs() *args {
 		"JSON string of job keyvals")
 	flag.StringVar(&a.xTestArgs, "test-args", "",
 		"Test args (meaning depends on test)")
-	flag.StringVar(&a.deployActions, "actions", "",
+	flag.StringVar(&a.actions, "actions", "",
 		"Actions to execute for a deploytask")
 	flag.StringVar(&a.isolatedOutdir, "isolated-outdir", "",
 		"Directory to place isolated output into. Generate no isolated output if not set.")
@@ -255,6 +255,16 @@ func getTaskName(a *args) string {
 	}
 }
 
+// getActionsTaskName returns name of the task understanded by lucifer.
+func getActionsTaskName(a *args) string {
+	switch {
+	case isDeployTask(a):
+		return "deploytask"
+	default:
+		return ""
+	}
+}
+
 func runLuciferTask(ctx context.Context, i *harness.Info, a *args, ta lucifer.TaskArgs) error {
 	if !a.deadline.IsZero() {
 		var c context.CancelFunc
@@ -262,11 +272,12 @@ func runLuciferTask(ctx context.Context, i *harness.Info, a *args, ta lucifer.Ta
 		defer c()
 	}
 	switch {
+	case isActionsTask(a):
+		n := getActionsTaskName(a)
+		return runActionsTask(ctx, i, n, a.actions, ta)
 	case isAdminTask(a):
 		n, _ := getAdminTask(a.taskName)
 		return runAdminTask(ctx, i, n, ta)
-	case isDeployTask(a):
-		return runDeployTask(ctx, i, a.deployActions, ta)
 	default:
 		return runTest(ctx, i, a, ta)
 	}
@@ -285,6 +296,11 @@ func getAdminTask(name string) (task string, ok bool) {
 // needLucifer determine when task will use lucifer to execute the task
 func needLucifer(a *args) bool {
 	return !isSetStateNeedsRepairTask(a)
+}
+
+// isActionsTask determine when task can be executed as an actions task.
+func isActionsTask(a *args) bool {
+	return getActionsTaskName(a) != ""
 }
 
 // isAdminTask determines whether the args specify an admin task
@@ -402,19 +418,20 @@ func runAdminTask(ctx context.Context, i *harness.Info, name string, ta lucifer.
 	return nil
 }
 
-// runDeployTask runs a deploy task using lucifer.
+// runActionsTask runs a task woth actions using lucifer.
 //
-// actions is a possibly empty comma separated list of deploy actions to run
-func runDeployTask(ctx context.Context, i *harness.Info, actions string, ta lucifer.TaskArgs) error {
-	r := lucifer.DeployTaskArgs{
+// actions is a possibly empty comma separated list of actions to run.
+func runActionsTask(ctx context.Context, i *harness.Info, name, actions string, ta lucifer.TaskArgs) error {
+	r := lucifer.ActionsTaskArgs{
 		TaskArgs: ta,
 		Host:     i.DUTName,
+		Task:     name,
 		Actions:  actions,
 	}
 
-	cmd := lucifer.DeployTaskCommand(i.LuciferConfig(), r)
+	cmd := lucifer.ActionsTaskCommand(i.LuciferConfig(), r)
 	if _, err := runLuciferCommand(ctx, cmd, i, r.AbortSock); err != nil {
-		return errors.Wrap(err, "run deploy task")
+		return errors.Wrapf(err, "failed to run %#v using lucifer", name)
 	}
 	return nil
 }
