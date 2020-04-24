@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5bc4afb9_aac030f9",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/tasks/audit.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-04-24T21:39:27Z",
+      "side": 1,
+      "message": "can be merged to c.validateArgs()",
+      "range": {
+        "startLine": 59,
+        "startChar": 1,
+        "endLine": 70,
+        "endChar": 0
+      },
+      "revId": "6cb20ee56114f362584481752c9a7e174f3294ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3e9c1e3e_25999a10",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/tasks/audit.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-04-24T21:39:27Z",
+      "side": 1,
+      "message": "should you include dutname if users needed to read errors?",
+      "range": {
+        "startLine": 85,
+        "startChar": 27,
+        "endLine": 85,
+        "endChar": 47
+      },
+      "revId": "6cb20ee56114f362584481752c9a7e174f3294ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c3a2a291_ebc8bd80",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/tasks/audit.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-04-24T21:39:27Z",
+      "side": 1,
+      "message": "print it here instead of above is better.\n\n### Failed to schedule ###\nhost1: blablabla\n\n\n### Successful Created ... ###\nhost1: swarming_task_url\n\n### Batch tasks URL ###\n...",
+      "range": {
+        "startLine": 91,
+        "startChar": 9,
+        "endLine": 91,
+        "endChar": 83
+      },
+      "revId": "6cb20ee56114f362584481752c9a7e174f3294ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1c716019_11998c3d",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/tasks/audit.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-04-24T21:39:27Z",
+      "side": 1,
+      "message": "Actions cannot be empty (or sth more clear)",
+      "range": {
+        "startLine": 111,
+        "startChar": 28,
+        "endLine": 111,
+        "endChar": 65
+      },
+      "revId": "6cb20ee56114f362584481752c9a7e174f3294ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b0d6a404_59e7deba",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-04-24T21:39:27Z",
+      "side": 1,
+      "message": "probably in a separate CL, here \u0026 the codes to get bot id are duplicated in all tasks, can be merged to a single function getDimensions.",
+      "range": {
+        "startLine": 167,
+        "startChar": 0,
+        "endLine": 170,
+        "endChar": 5
+      },
+      "revId": "6cb20ee56114f362584481752c9a7e174f3294ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ba7d20c2_a19386ff",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-04-24T21:39:27Z",
+      "side": 1,
+      "message": "most of the tags are common for all tasks. can be extracted.",
+      "range": {
+        "startLine": 177,
+        "startChar": 2,
+        "endLine": 183,
+        "endChar": 3
+      },
+      "revId": "6cb20ee56114f362584481752c9a7e174f3294ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
