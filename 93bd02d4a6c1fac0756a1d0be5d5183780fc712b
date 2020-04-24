@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b0353f10_83b9d08d",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-04-24T21:06:57Z",
+      "side": 1,
+      "message": "based on https://chromium-review.googlesource.com/c/infra/infra/+/2163906/4/go/src/infra/cmd/skylab_swarming_worker/internal/lucifer/lucifer.go#133, this should be named as getActionsTask. Also taskname is a little bit confused to me as it\u0027s similar to xxxTaskName in line #55.",
+      "range": {
+        "startLine": 262,
+        "startChar": 5,
+        "endLine": 262,
+        "endChar": 23
+      },
+      "revId": "93bd02d4a6c1fac0756a1d0be5d5183780fc712b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
