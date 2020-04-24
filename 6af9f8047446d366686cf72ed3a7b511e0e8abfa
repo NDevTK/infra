@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "75257bc3_0ed9aa30",
+        "filename": "go/src/infra/cros/cmd/tclint/internal/cmd/metadata.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1002858
+      },
+      "writtenOn": "2020-04-24T22:25:31Z",
+      "side": 1,
+      "message": "should this return an error if there were errors in the linting?",
+      "range": {
+        "startLine": 102,
+        "startChar": 1,
+        "endLine": 102,
+        "endChar": 11
+      },
+      "revId": "6af9f8047446d366686cf72ed3a7b511e0e8abfa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "570cf848_be632444",
+        "filename": "go/src/infra/cros/cmd/tclint/internal/metadata/lint.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1002858
+      },
+      "writtenOn": "2020-04-24T22:25:31Z",
+      "side": 1,
+      "message": "define as a method on a Specification? (and same for RTD Lint() below?)",
+      "range": {
+        "startLine": 20,
+        "startChar": 5,
+        "endLine": 20,
+        "endChar": 9
+      },
+      "revId": "6af9f8047446d366686cf72ed3a7b511e0e8abfa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "63d2ab4d_fd3431c5",
+        "filename": "go/src/infra/cros/cmd/tclint/internal/metadata/lint.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1002858
+      },
+      "writtenOn": "2020-04-24T22:25:31Z",
+      "side": 1,
+      "message": "is spec.RemoteTestDrivers the same as the output to spec.GetRemoteTestDrivers()?  seems weird to have/use both",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 14
+      },
+      "revId": "6af9f8047446d366686cf72ed3a7b511e0e8abfa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "562d9823_dea01e7a",
+        "filename": "go/src/infra/cros/cmd/tclint/internal/metadata/lint.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1002858
+      },
+      "writtenOn": "2020-04-24T22:25:31Z",
+      "side": 1,
+      "message": "lintRTDName?  checkRTDName?",
+      "range": {
+        "startLine": 40,
+        "startChar": 5,
+        "endLine": 40,
+        "endChar": 29
+      },
+      "revId": "6af9f8047446d366686cf72ed3a7b511e0e8abfa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "558b42d1_5f2128f3",
+        "filename": "go/src/infra/cros/cmd/tclint/internal/metadata/lint_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1002858
+      },
+      "writtenOn": "2020-04-24T22:25:31Z",
+      "side": 1,
+      "message": "why fail if there is no golden file when you also don\u0027t fail if said golden file cannot be loaded?",
+      "range": {
+        "startLine": 95,
+        "startChar": 3,
+        "endLine": 95,
+        "endChar": 61
+      },
+      "revId": "6af9f8047446d366686cf72ed3a7b511e0e8abfa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
