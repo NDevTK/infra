@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "f4b065b3_b51b87c4",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/tasks/audit.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2020-04-26T01:38:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5bc4afb9_aac030f9",
+      "range": {
+        "startLine": 59,
+        "startChar": 1,
+        "endLine": 70,
+        "endChar": 0
+      },
+      "revId": "6cb20ee56114f362584481752c9a7e174f3294ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3e9c1e3e_25999a10",
         "filename": "go/src/infra/cmd/skylab/internal/cmd/tasks/audit.go",
         "patchSetId": 2
@@ -45,6 +69,30 @@
       "revId": "6cb20ee56114f362584481752c9a7e174f3294ed",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9a559a73_68070b3b",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/tasks/audit.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2020-04-26T01:38:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3e9c1e3e_25999a10",
+      "range": {
+        "startLine": 85,
+        "startChar": 27,
+        "endLine": 85,
+        "endChar": 47
+      },
+      "revId": "6cb20ee56114f362584481752c9a7e174f3294ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "2a64c64d_b1e12062",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/tasks/audit.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2020-04-26T01:38:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c3a2a291_ebc8bd80",
+      "range": {
+        "startLine": 91,
+        "startChar": 9,
+        "endLine": 91,
+        "endChar": 83
+      },
+      "revId": "6cb20ee56114f362584481752c9a7e174f3294ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1c716019_11998c3d",
         "filename": "go/src/infra/cmd/skylab/internal/cmd/tasks/audit.go",
         "patchSetId": 2
@@ -91,6 +163,30 @@
       "revId": "6cb20ee56114f362584481752c9a7e174f3294ed",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "556fadaa_9d3880e2",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/tasks/audit.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2020-04-26T01:38:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1c716019_11998c3d",
+      "range": {
+        "startLine": 111,
+        "startChar": 28,
+        "endLine": 111,
+        "endChar": 65
+      },
+      "revId": "6cb20ee56114f362584481752c9a7e174f3294ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "de486947_04cea6b6",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2020-04-26T01:38:15Z",
+      "side": 1,
+      "message": "Made only for one task and will create separate CL for other tasks",
+      "parentUuid": "b0d6a404_59e7deba",
+      "range": {
+        "startLine": 167,
+        "startChar": 0,
+        "endLine": 170,
+        "endChar": 5
+      },
+      "revId": "6cb20ee56114f362584481752c9a7e174f3294ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba7d20c2_a19386ff",
         "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
         "patchSetId": 2
@@ -137,6 +257,30 @@
       "revId": "6cb20ee56114f362584481752c9a7e174f3294ed",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "24abe209_7ad96124",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2020-04-26T01:38:15Z",
+      "side": 1,
+      "message": "Made only for one task and will create separate CL for other tasks",
+      "parentUuid": "ba7d20c2_a19386ff",
+      "range": {
+        "startLine": 177,
+        "startChar": 2,
+        "endLine": 183,
+        "endChar": 3
+      },
+      "revId": "6cb20ee56114f362584481752c9a7e174f3294ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
