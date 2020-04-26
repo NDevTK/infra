@@ -30,6 +30,13 @@ type TaskCreator struct {
 	session string
 }
 
+// TaskInfo contains the result of the task creation info.
+type TaskInfo struct {
+	ID string
+	// TaskURL provides the URL to the task in Swarming.
+	TaskURL string
+}
+
 // NewTaskCreator creates and initialize the TaskCreator.
 func NewTaskCreator(ctx context.Context, authFlags *authcli.Flags, envFlags skycmdlib.EnvFlags) (*TaskCreator, error) {
 	h, err := cmdlib.NewHTTPClient(ctx, authFlags)
@@ -79,7 +86,7 @@ func (tc *TaskCreator) RepairTask(ctx context.Context, host string, expirationSe
 			fmt.Sprintf("luci_project:%s", tc.Environment.LUCIProject),
 			"pool:ChromeOSSkylab",
 			"skylab-tool:repair",
-			tc.getSessionTag(),
+			tc.sessionTag(),
 		},
 		TaskSlices:     slices,
 		Priority:       25,
@@ -95,10 +102,10 @@ func (tc *TaskCreator) RepairTask(ctx context.Context, host string, expirationSe
 }
 
 // VerifyTask creates admin_verify task for particular DUT.
-func (tc *TaskCreator) VerifyTask(ctx context.Context, host string, expirationSec int) (taskID string, err error) {
+func (tc *TaskCreator) VerifyTask(ctx context.Context, host string, expirationSec int) (*TaskInfo, error) {
 	id, err := tc.dutNameToBotID(ctx, host)
 	if err != nil {
-		return "", errors.Annotate(err, "fail to get bot ID for %s", host).Err()
+		return nil, errors.Annotate(err, "fail to get bot ID for %s", host).Err()
 	}
 	c := worker.Command{
 		TaskName: "admin_verify",
@@ -123,7 +130,7 @@ func (tc *TaskCreator) VerifyTask(ctx context.Context, host string, expirationSe
 			fmt.Sprintf("luci_project:%s", tc.Environment.LUCIProject),
 			"pool:ChromeOSSkylab",
 			"skylab-tool:verify",
-			tc.getSessionTag(),
+			tc.sessionTag(),
 		},
 		TaskSlices:     slices,
 		Priority:       25,
@@ -133,9 +140,13 @@ func (tc *TaskCreator) VerifyTask(ctx context.Context, host string, expirationSe
 	defer cf()
 	resp, err := tc.Client.CreateTask(ctx, r)
 	if err != nil {
-		return "", errors.Annotate(err, "failed to create task").Err()
+		return nil, errors.Annotate(err, "failed to create task").Err()
 	}
-	return resp.TaskId, nil
+	task := TaskInfo{
+		ID:      resp.TaskId,
+		TaskURL: tc.taskURL(resp.TaskId),
+	}
+	return &task, nil
 }
 
 // LeaseByHostnameTask creates lease_task for particular DUT
@@ -359,15 +370,20 @@ func getTagPrefix(s string) string {
 	return s[0:delimIdx]
 }
 
-// getSessionTag return admin session tag for swarming.
-func (tc *TaskCreator) getSessionTag() string {
+// sessionTag return admin session tag for swarming.
+func (tc *TaskCreator) sessionTag() string {
 	return fmt.Sprintf("admin_session:%s", tc.session)
 }
 
-// GetSessionTasksURL get URL to see all created tasks belong to the session
-func (tc *TaskCreator) GetSessionTasksURL() string {
+// SessionTasksURL gets URL to see all created tasks belong to the session.
+func (tc *TaskCreator) SessionTasksURL() string {
 	tags := []string{
-		tc.getSessionTag(),
+		tc.sessionTag(),
 	}
 	return swarming.TaskListURLForTags(tc.Environment.SwarmingService, tags)
+}
+
+// taskURL generates URL to the task in swarming.
+func (tc *TaskCreator) taskURL(id string) string {
+	return swarming.TaskURL(tc.Environment.SwarmingService, id)
 }
