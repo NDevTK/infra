@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3b4703b0_03a182cf",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2020-04-27T17:45:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "afaac796_d43bdc98",
+      "range": {
+        "startLine": 156,
+        "startChar": 0,
+        "endLine": 159,
+        "endChar": 2
+      },
+      "revId": "bf925fab1bef0a708b5acc9f41a4bc4a6fd0bb98",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c7d8fece_23ca617a",
         "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
         "patchSetId": 5
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "ceac36cf_bf055645",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2020-04-27T17:45:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c7d8fece_23ca617a",
+      "range": {
+        "startLine": 178,
+        "startChar": 18,
+        "endLine": 178,
+        "endChar": 20
+      },
+      "revId": "bf925fab1bef0a708b5acc9f41a4bc4a6fd0bb98",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "223d8b87_3424c02a",
         "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
         "patchSetId": 5
@@ -68,6 +116,30 @@
       "revId": "bf925fab1bef0a708b5acc9f41a4bc4a6fd0bb98",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bd396e1b_3992e002",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 441,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2020-04-27T17:45:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "223d8b87_3424c02a",
+      "range": {
+        "startLine": 441,
+        "startChar": 35,
+        "endLine": 441,
+        "endChar": 39
+      },
+      "revId": "bf925fab1bef0a708b5acc9f41a4bc4a6fd0bb98",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
