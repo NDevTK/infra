@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "afaac796_d43bdc98",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-04-27T07:24:40Z",
+      "side": 1,
+      "message": "this can be merged to dimsForBotID() as the only use for the bot id is to construct dims.",
+      "range": {
+        "startLine": 156,
+        "startChar": 0,
+        "endLine": 159,
+        "endChar": 2
+      },
+      "revId": "bf925fab1bef0a708b5acc9f41a4bc4a6fd0bb98",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c7d8fece_23ca617a",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-04-27T07:24:40Z",
+      "side": 1,
+      "message": "should be a const",
+      "range": {
+        "startLine": 178,
+        "startChar": 18,
+        "endLine": 178,
+        "endChar": 20
+      },
+      "revId": "bf925fab1bef0a708b5acc9f41a4bc4a6fd0bb98",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "223d8b87_3424c02a",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/utils/task_creator.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 441,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-04-27T07:24:40Z",
+      "side": 1,
+      "message": "nit: toolName",
+      "range": {
+        "startLine": 441,
+        "startChar": 35,
+        "endLine": 441,
+        "endChar": 39
+      },
+      "revId": "bf925fab1bef0a708b5acc9f41a4bc4a6fd0bb98",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
