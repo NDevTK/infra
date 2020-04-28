@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b8b89202_f96a124c",
+        "filename": "go/src/infra/cros/cmd/tclint/internal/metadata/lint.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-04-28T00:54:39Z",
+      "side": 1,
+      "message": "nit: Sound odd.\n\"at least one\"?",
+      "range": {
+        "startLine": 22,
+        "startChar": 49,
+        "endLine": 22,
+        "endChar": 57
+      },
+      "revId": "1f091505d5b26dafba29398358b4574aac59ce2e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "87643f05_d16f5780",
+        "filename": "go/src/infra/cros/cmd/tclint/internal/metadata/lint.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-04-28T00:54:39Z",
+      "side": 1,
+      "message": "double space",
+      "range": {
+        "startLine": 69,
+        "startChar": 51,
+        "endLine": 69,
+        "endChar": 53
+      },
+      "revId": "1f091505d5b26dafba29398358b4574aac59ce2e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "094c3869_27efcb6b",
+        "filename": "go/src/infra/cros/cmd/tclint/internal/metadata/lint.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-04-28T00:54:39Z",
+      "side": 1,
+      "message": "nit: this error is easier to debug if non-ascii is made explicitly visible, e.g. using strconv.QuoteToASCII.",
+      "range": {
+        "startLine": 115,
+        "startChar": 95,
+        "endLine": 115,
+        "endChar": 101
+      },
+      "revId": "1f091505d5b26dafba29398358b4574aac59ce2e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
