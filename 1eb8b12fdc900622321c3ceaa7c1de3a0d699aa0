@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c7e17a23_e11e06fe",
+        "filename": "go/src/infra/libs/cros/lab_inventory/deviceconfig/parser.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-04-29T09:19:17Z",
+      "side": 1,
+      "message": "Have questions about how to parse (or if we need to parse it):\n\ngpu_family\nGRAPHICS_GL/GRAPHICS_GLE\nHARDWARE_FEATURE_FLASHROM\nHARDWARE_FEATURE_HOTWORDING\nHARDWARE_FEATURE_INTERNAL_DISPLAY\nHARDWARE_FEATURE_LUCID_SLEEP\nHARDWARE_FEATURE_WEBCAM\nHARDWARE_FEATURE_TOUCHPAD\nPOWER_SUPPLY_BATTERY/POWER_SUPPLY_AC\nmore storage type like STORAGE_SSD/STORAGE_HDD/STORAGE_UFS\nVIDEO_ACCELERATION_H264/VP8/...\nSOC (SOC_BAY_TRAIL/SOC_GEMINI_LAKE/SOC_HASWELL/...), not sure which field is matching it",
+      "revId": "1eb8b12fdc900622321c3ceaa7c1de3a0d699aa0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
