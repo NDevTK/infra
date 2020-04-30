@@ -16,6 +16,24 @@
       "revId": "1eb8b12fdc900622321c3ceaa7c1de3a0d699aa0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "89da95e2_af9a1878",
+        "filename": "go/src/infra/libs/cros/lab_inventory/deviceconfig/parser.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-04-30T20:51:36Z",
+      "side": 1,
+      "message": "Use https://docs.google.com/document/d/1O8O_OYoFKYw0V5wNtcUxcbqp1OCj_aXfy4odLymHv9g/edit?ts\u003d5ea9efde# as my guidance",
+      "parentUuid": "c7e17a23_e11e06fe",
+      "revId": "1eb8b12fdc900622321c3ceaa7c1de3a0d699aa0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
