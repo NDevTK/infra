@@ -24,4 +24,8 @@ message Nic {
     // Record the last update timestamp of this machine (In UTC timezone)
     google.protobuf.Timestamp update_time = 3 [
             (google.api.field_behavior) = OUTPUT_ONLY];
+    // Refers to machine name
+    string machine = 4 [(google.api.resource_reference) = {
+        type: "unified-fleet-system.appspot.com/Machine"
+    }];
 }
