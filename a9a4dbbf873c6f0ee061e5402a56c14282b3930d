@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "97b61d87_3281801d",
+        "filename": "go/src/infra/unifiedfleet/app/model/registration/machine.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-05-01T20:31:25Z",
+      "side": 1,
+      "message": "can this be reused by other ListXXX?",
+      "range": {
+        "startLine": 93,
+        "startChar": 5,
+        "endLine": 93,
+        "endChar": 17
+      },
+      "revId": "a9a4dbbf873c6f0ee061e5402a56c14282b3930d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
