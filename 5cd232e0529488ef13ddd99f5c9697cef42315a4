@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ece016b6_8e9561a4",
+        "filename": "build/images/deterministic/unified-fleet-system/ufs-service.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2020-05-01T07:02:52Z",
+      "side": 1,
+      "message": "do you plan to make this something like\n\n  cmd/ufs/docker/Dockerfile\n\n?\n\notherwise it is inconsistent. also it is a good practice to put binaries under cmd/foo/",
+      "range": {
+        "startLine": 4,
+        "startChar": 50,
+        "endLine": 4,
+        "endChar": 51
+      },
+      "revId": "5cd232e0529488ef13ddd99f5c9697cef42315a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
