@@ -1,7 +1,7 @@
-name: unified-fleet-system
-extends: ../base.yaml
+name: unified-fleet-system/ufs-service
+extends: ../../base.yaml
 
-dockerfile: ../../../go/src/infra/unifiedfleet/docker/Dockerfile
+dockerfile: ../../../../go/src/infra/unifiedfleet/docker/Dockerfile
 deterministic: true
 
 build:
