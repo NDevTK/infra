@@ -46,6 +46,30 @@
       "revId": "8f689e2221b890765020865cf4c15b0a5604063f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8aca3704_809922ba",
+        "filename": "go/src/infra/libs/cros/lab_inventory/hart/pubsub.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-05-04T23:12:47Z",
+      "side": 1,
+      "message": "yeah, make sense, I didn\u0027t find this file is in libs :(",
+      "parentUuid": "9e004ec8_02df259f",
+      "range": {
+        "startLine": 36,
+        "startChar": 17,
+        "endLine": 36,
+        "endChar": 59
+      },
+      "revId": "8f689e2221b890765020865cf4c15b0a5604063f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
