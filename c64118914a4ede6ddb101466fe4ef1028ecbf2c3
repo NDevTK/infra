@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "967ffe30_28168a36",
+        "filename": "go/src/infra/unifiedfleet/api/v1/rpc/fleet.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-05-04T21:26:41Z",
+      "side": 1,
+      "message": "this\u0027s not imported right? I tried a little bit, but didn\u0027t find this package in infra/go.",
+      "range": {
+        "startLine": 39,
+        "startChar": 25,
+        "endLine": 39,
+        "endChar": 53
+      },
+      "revId": "c64118914a4ede6ddb101466fe4ef1028ecbf2c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
