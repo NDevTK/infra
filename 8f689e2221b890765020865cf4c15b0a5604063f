@@ -22,6 +22,30 @@
       "revId": "8f689e2221b890765020865cf4c15b0a5604063f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9e004ec8_02df259f",
+        "filename": "go/src/infra/libs/cros/lab_inventory/hart/pubsub.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2020-05-04T22:18:29Z",
+      "side": 1,
+      "message": "Configs are a part of cros-lab-inventory app, We should not be parsing them here because then we\u0027ll have to import config proto specific to the app in the libs folder. Or am I missing something?",
+      "parentUuid": "5c07fb79_6993e281",
+      "range": {
+        "startLine": 36,
+        "startChar": 17,
+        "endLine": 36,
+        "endChar": 59
+      },
+      "revId": "8f689e2221b890765020865cf4c15b0a5604063f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
