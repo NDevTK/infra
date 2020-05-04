@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5c07fb79_6993e281",
+        "filename": "go/src/infra/libs/cros/lab_inventory/hart/pubsub.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-05-04T22:03:49Z",
+      "side": 1,
+      "message": "You should parse the configs of proj, top, sub based on ctx here? these configs are not used in syncAssetInfoFromHaRT().",
+      "range": {
+        "startLine": 36,
+        "startChar": 17,
+        "endLine": 36,
+        "endChar": 59
+      },
+      "revId": "8f689e2221b890765020865cf4c15b0a5604063f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
