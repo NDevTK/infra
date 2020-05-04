@@ -22,6 +22,64 @@
       "revId": "c64118914a4ede6ddb101466fe4ef1028ecbf2c3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "33bd50ee_e74647b8",
+        "filename": "go/src/infra/unifiedfleet/api/v1/rpc/fleet.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-05-04T22:18:06Z",
+      "side": 1,
+      "message": "Yes. Its not there under luci. Since our data is less and we ll chunk it even if the data grows, I think its ok to not use long running operation.\n\nhttps://aip.dev/153\n\"The method must return a long-running operation (see AIP-151) unless the service can guarantee that it will never need more than a few seconds to complete.\"",
+      "parentUuid": "967ffe30_28168a36",
+      "range": {
+        "startLine": 39,
+        "startChar": 25,
+        "endLine": 39,
+        "endChar": 53
+      },
+      "revId": "c64118914a4ede6ddb101466fe4ef1028ecbf2c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c1d3f874_5e3ad648",
+        "filename": "go/src/infra/unifiedfleet/api/v1/rpc/fleet.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-05-04T22:18:06Z",
+      "side": 1,
+      "message": "parent field can be skipped as this is a top-level resource.\n\nhttps://aip.dev/132\n\"A parent field must be included unless the resource being listed is a top-level resource. \"",
+      "revId": "c64118914a4ede6ddb101466fe4ef1028ecbf2c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2aa05689_7a4c4298",
+        "filename": "go/src/infra/unifiedfleet/api/v1/rpc/fleet.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-05-04T22:18:06Z",
+      "side": 1,
+      "message": "https://aip.dev/153#request-object\n\nYou need to give something like this. Need to do the same for ImportChromePlatformRequest.\n  oneof source {\n    ChromePlatform chrome_platform \u003d 2;\n    ChromePlatformRow chrome_platform_row \u003d 3;\n  }",
+      "revId": "c64118914a4ede6ddb101466fe4ef1028ecbf2c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
