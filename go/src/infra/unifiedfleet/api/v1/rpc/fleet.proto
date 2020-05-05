@@ -33,6 +33,12 @@ service Fleet {
 
   // Delete delete the machine
   rpc DeleteMachine(DeleteMachineRequest) returns (google.protobuf.Empty);
+
+  // Import machines from sources
+  //
+  // This doesn't return google.longrunning.Operation as the corresponding
+  // package is not imported into chops go package.
+  rpc ImportMachines(ImportMachinesRequest) returns (ImportMachinesResponse);
 }
 
 message ImportChromePlatformsRequest {
@@ -114,6 +120,16 @@ message DeleteMachineRequest {
     (google.api.resource_reference) = { type: "unified-fleet-system.appspot.com/Machine" }
   ];
 }
+
+message ImportMachinesRequest {
+  string parent = 1;
+  oneof source {
+    MachineDBSource machine_db_source = 2;
+    ConfigSource config_source = 3;
+  }
+}
+
+message ImportMachinesResponse {}
 
 message MachineDBSource {
   string host = 1;

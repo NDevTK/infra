@@ -85,3 +85,11 @@ func (fs *FleetServerImpl) DeleteMachine(ctx context.Context, req *api.DeleteMac
 	err = registration.DeleteMachine(ctx, strings.TrimSpace(req.Name))
 	return &empty.Empty{}, err
 }
+
+// ImportMachines imports the machines from parent sources.
+func (fs *FleetServerImpl) ImportMachines(ctx context.Context, req *api.ImportMachinesRequest) (rsp *api.ImportMachinesResponse, err error) {
+	defer func() {
+		err = grpcutil.GRPCifyAndLogErr(ctx, err)
+	}()
+	return &api.ImportMachinesResponse{}, err
+}
