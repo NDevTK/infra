@@ -37,7 +37,12 @@ func TestImportChromePlatforms(t *testing.T) {
 	Convey("Import chrome platforms", t, func() {
 		Convey("happy path", func() {
 			req := &api.ImportChromePlatformsRequest{
-				LocalFilepath: "test.config",
+				Source: &api.ImportChromePlatformsRequest_ConfigSource{
+					ConfigSource: &api.ConfigSource{
+						ConfigServiceName: "",
+						FileName:          "test.config",
+					},
+				},
 			}
 			parsePlatformsFunc = mockParsePlatformsFunc
 			res, err := tf.Fleet.ImportChromePlatforms(ctx, req)
@@ -53,7 +58,12 @@ func TestImportChromePlatforms(t *testing.T) {
 		})
 		Convey("import duplicated platforms", func() {
 			req := &api.ImportChromePlatformsRequest{
-				LocalFilepath: "test.config",
+				Source: &api.ImportChromePlatformsRequest_ConfigSource{
+					ConfigSource: &api.ConfigSource{
+						ConfigServiceName: "",
+						FileName:          "test.config",
+					},
+				},
 			}
 			parsePlatformsFunc = func(_ string) (*crimsonconfig.Platforms, error) {
 				return &crimsonconfig.Platforms{

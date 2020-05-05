@@ -36,8 +36,11 @@ service Fleet {
 }
 
 message ImportChromePlatformsRequest {
-  // Support importing from local file.
-  string local_filepath = 1;
+  string parent = 1;
+  oneof source {
+    MachineDBSource machine_db_source = 2;
+    ConfigSource config_source = 3;
+  }
 }
 
 message ImportChromePlatformsResponse {
@@ -110,4 +113,14 @@ message DeleteMachineRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = { type: "unified-fleet-system.appspot.com/Machine" }
   ];
+}
+
+message MachineDBSource {
+  string host = 1;
+}
+
+message ConfigSource {
+  // Empty config_service means it's local file.
+  string config_service_name = 1;
+  string file_name = 2;
 }

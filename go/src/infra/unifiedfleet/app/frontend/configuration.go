@@ -5,6 +5,7 @@
 package frontend
 
 import (
+	"errors"
 	"net/http"
 
 	"go.chromium.org/luci/common/logging"
@@ -55,23 +56,27 @@ func (cs *FleetServerImpl) ImportChromePlatforms(ctx context.Context, req *api.I
 
 	var platforms []*proto.ChromePlatform
 	oldP := &crimsonconfig.Platforms{}
-	switch req.LocalFilepath {
+	configSource := req.GetConfigSource()
+	if configSource == nil {
+		return nil, errors.New("ImportChromePlatforms cannot import based on empty config source")
+	}
+	switch configSource.ConfigServiceName {
 	case "":
+		logging.Debugf(ctx, "Importing chrome platforms from local config file")
+		oldP, err = parsePlatformsFunc(configSource.FileName)
+		if err != nil {
+			return nil, err
+		}
+	default:
 		logging.Debugf(ctx, "Importing chrome platforms from luci-config")
 		cfgInterface := cs.newCfgInterface(ctx)
-		fetchedConfigs, err := cfgInterface.GetConfig(ctx, luciconfig.ServiceSet("machine-db-dev"), "platforms.cfg", false)
+		fetchedConfigs, err := cfgInterface.GetConfig(ctx, luciconfig.ServiceSet(configSource.ConfigServiceName), configSource.FileName, false)
 		if err != nil {
 			return nil, err
 		}
 		logging.Debugf(ctx, "fetched configs: %#v", fetchedConfigs)
 		resolver := textproto.Message(oldP)
 		resolver.Resolve(fetchedConfigs)
-	default:
-		logging.Debugf(ctx, "Importing chrome platforms from local config file")
-		oldP, err = parsePlatformsFunc(req.LocalFilepath)
-		if err != nil {
-			return nil, err
-		}
 	}
 	platforms = configuration.ToChromePlatforms(oldP)
 	logging.Debugf(ctx, "%d platforms in total", len(platforms))
