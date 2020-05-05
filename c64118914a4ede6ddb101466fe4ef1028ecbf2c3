@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "8f2a0ece_b914beb8",
+        "filename": "go/src/infra/unifiedfleet/api/v1/rpc/fleet.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-05-05T00:15:28Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "33bd50ee_e74647b8",
+      "range": {
+        "startLine": 39,
+        "startChar": 25,
+        "endLine": 39,
+        "endChar": 53
+      },
+      "revId": "c64118914a4ede6ddb101466fe4ef1028ecbf2c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c1d3f874_5e3ad648",
         "filename": "go/src/infra/unifiedfleet/api/v1/rpc/fleet.proto",
         "patchSetId": 1
@@ -60,6 +84,24 @@
       "writtenOn": "2020-05-04T22:18:06Z",
       "side": 1,
       "message": "parent field can be skipped as this is a top-level resource.\n\nhttps://aip.dev/132\n\"A parent field must be included unless the resource being listed is a top-level resource. \"",
+      "revId": "c64118914a4ede6ddb101466fe4ef1028ecbf2c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7314cce5_3e41a804",
+        "filename": "go/src/infra/unifiedfleet/api/v1/rpc/fleet.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-05-05T00:15:28Z",
+      "side": 1,
+      "message": "removed",
+      "parentUuid": "c1d3f874_5e3ad648",
       "revId": "c64118914a4ede6ddb101466fe4ef1028ecbf2c3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -95,6 +137,24 @@
       "side": 1,
       "message": "Sorry. It should be \u0026crimsonconfig.Platforms{} and not ChromePlatformRow chrome_platform_row.\nI got confused with BQ export and crimson Import.",
       "parentUuid": "2aa05689_7a4c4298",
+      "revId": "c64118914a4ede6ddb101466fe4ef1028ecbf2c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4c3af2c3_c5b0948e",
+        "filename": "go/src/infra/unifiedfleet/api/v1/rpc/fleet.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-05-05T00:15:28Z",
+      "side": 1,
+      "message": "add sources based on my understanding..",
+      "parentUuid": "556e673e_fe400c1e",
       "revId": "c64118914a4ede6ddb101466fe4ef1028ecbf2c3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
