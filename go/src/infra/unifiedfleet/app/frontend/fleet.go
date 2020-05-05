@@ -5,8 +5,9 @@
 package frontend
 
 import (
-	luciconfig "go.chromium.org/luci/config"
 	"golang.org/x/net/context"
+
+	luciconfig "go.chromium.org/luci/config"
 )
 
 // CfgInterfaceFactory is a contsructor for a luciconfig.Interface
