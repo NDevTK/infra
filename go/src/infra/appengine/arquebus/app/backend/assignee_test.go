@@ -87,6 +87,40 @@ func TestAssignee(t *testing.T) {
 			})
 		})
 
+		Convey("works with UserSource_Rotation", func() {
+			Convey("for assignees", func() {
+				assigner.AssigneesRaw = createRawUserSources(
+					rotationUserSource("Rotation 1", 0),
+				)
+				assigner.CCsRaw = createRawUserSources()
+				assignee, ccs, err := findAssigneeAndCCs(c, assigner, task)
+				So(err, ShouldBeNil)
+				So(
+					assignee, ShouldResemble,
+					findPrimaryOncall(sampleOncallShifts["Rotation 1"]),
+				)
+				So(ccs, ShouldBeNil)
+			})
+
+			Convey("for ccs", func() {
+				assigner.AssigneesRaw = createRawUserSources()
+				assigner.CCsRaw = createRawUserSources(
+					oncallUserSource("Rotation 1", config.Oncall_SECONDARY),
+				)
+				assignee, ccs, err := findAssigneeAndCCs(c, assigner, task)
+				So(err, ShouldBeNil)
+				So(assignee, ShouldBeNil)
+				So(
+					ccs[0], ShouldResemble,
+					findSecondaryOncalls(sampleOncallShifts["Rotation 1"])[0],
+				)
+				So(
+					ccs[1], ShouldResemble,
+					findSecondaryOncalls(sampleOncallShifts["Rotation 1"])[1],
+				)
+			})
+		})
+
 		Convey("pick the first available one as the assignee", func() {
 			Convey("with multiple UserSource_Emails", func() {
 				assigner.AssigneesRaw = createRawUserSources(
