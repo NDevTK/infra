@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "18076715_c3ee865a",
+        "filename": "go/src/infra/appengine/arquebus/app/backend/assignee.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2020-05-06T05:52:19Z",
+      "side": 1,
+      "message": "Can you handle the error here?",
+      "revId": "c5901317cba9b32735d796f576ecb442a98d95b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
