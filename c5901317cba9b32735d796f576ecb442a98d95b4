@@ -16,6 +16,24 @@
       "revId": "c5901317cba9b32735d796f576ecb442a98d95b4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d3bfb5a1_877cbcba",
+        "filename": "go/src/infra/appengine/arquebus/app/backend/assignee.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1272456
+      },
+      "writtenOn": "2020-05-06T05:55:58Z",
+      "side": 1,
+      "message": "Good catch, done.",
+      "parentUuid": "18076715_c3ee865a",
+      "revId": "c5901317cba9b32735d796f576ecb442a98d95b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
