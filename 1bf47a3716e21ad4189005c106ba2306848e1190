@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3c087ca0_8e19671b",
+        "filename": "go/src/infra/appengine/cros/lab_inventory/api/v1/service.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-05-08T21:47:13Z",
+      "side": 1,
+      "message": "is the change here related to this CL? It should belong to a separate CL about you try to update it.",
+      "range": {
+        "startLine": 137,
+        "startChar": 0,
+        "endLine": 137,
+        "endChar": 24
+      },
+      "revId": "1bf47a3716e21ad4189005c106ba2306848e1190",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
