@@ -99,6 +99,7 @@ var devInV2 = lab.ChromeOSDevice{
 						Type: lab.CableType_CABLE_HDMIAUDIO,
 					},
 				},
+				SmartUsbhub: true,
 			},
 		},
 	},
@@ -298,6 +299,7 @@ common {
 			servo: true
 			servo_state: BROKEN
 			servo_type: "v3"
+			smart_usbhub: true
 			storage_state: HARDWARE_NORMAL,
 			servo_usb_state: HARDWARE_NEED_REPLACEMENT,
 			wificell: true
@@ -433,8 +435,9 @@ common {
           conductive: false
           huddly: false
           mimo: false
-          servo: false
+		  servo: false
           servo_state: UNKNOWN
+          smart_usbhub: false
           stylus: false
           camerabox: false
           wificell: false
