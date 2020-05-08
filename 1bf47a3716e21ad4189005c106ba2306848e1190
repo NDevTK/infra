@@ -22,6 +22,30 @@
       "revId": "1bf47a3716e21ad4189005c106ba2306848e1190",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "59d002c2_61c91924",
+        "filename": "go/src/infra/appengine/cros/lab_inventory/api/v1/service.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2020-05-08T22:09:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3c087ca0_8e19671b",
+      "range": {
+        "startLine": 137,
+        "startChar": 0,
+        "endLine": 137,
+        "endChar": 24
+      },
+      "revId": "1bf47a3716e21ad4189005c106ba2306848e1190",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
