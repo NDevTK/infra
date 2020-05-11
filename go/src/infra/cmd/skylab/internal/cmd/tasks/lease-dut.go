@@ -157,9 +157,12 @@ func (c *leaseDutRun) leaseDutByHostname(ctx context.Context, a subcommands.Appl
 	fmt.Fprintf(a.GetOut(), "Created lease task for host %s: %s\n", host, swarming.TaskURL(e.SwarmingService, id))
 	fmt.Fprintf(a.GetOut(), "Waiting for task to start; lease isn't active yet\n")
 
-	if err := c.waitForTaskStart(ctx, sc, id); err != nil {
+	dims, err := c.waitForTaskStart(ctx, sc, id)
+	if err != nil {
 		return err
 	}
+	fqdn := dutNameToFQDN(dims["dut-name"])
+	fmt.Fprintf(a.GetOut(), "%s\n", fqdn)
 	// TODO(ayatane): The time printed here may be off by the poll interval above.
 	fmt.Fprintf(a.GetOut(), "DUT leased until %s\n", time.Now().Add(leaseDuration).Format(time.RFC1123))
 	return nil
@@ -189,9 +192,12 @@ func (c *leaseDutRun) leaseDUTByModel(ctx context.Context, a subcommands.Applica
 	}
 	fmt.Fprintf(a.GetOut(), "Created lease task for model %s: %s\n", c.model, swarming.TaskURL(e.SwarmingService, id))
 
-	if err := c.waitForTaskStart(ctx, sc, id); err != nil {
+	dims, err := c.waitForTaskStart(ctx, sc, id)
+	if err != nil {
 		return err
 	}
+	fqdn := dutNameToFQDN(dims["dut-name"])
+	fmt.Fprintf(a.GetOut(), "%s\n", fqdn)
 	// TODO(ayatane): The time printed here may be off by the poll interval above.
 	fmt.Fprintf(a.GetOut(), "DUT leased until %s\n", time.Now().Add(leaseDuration).Format(time.RFC1123))
 	return nil
@@ -222,9 +228,12 @@ func (c *leaseDutRun) leaseDUTByBoard(ctx context.Context, a subcommands.Applica
 	}
 	fmt.Fprintf(a.GetOut(), "Created lease task for board %s: %s\n", c.board, swarming.TaskURL(e.SwarmingService, id))
 
-	if err := c.waitForTaskStart(ctx, sc, id); err != nil {
+	dims, err := c.waitForTaskStart(ctx, sc, id)
+	if err != nil {
 		return err
 	}
+	fqdn := dutNameToFQDN(dims["botID"])
+	fmt.Fprintf(a.GetOut(), "%s\n", fqdn)
 	// TODO(ayatane): The time printed here may be off by the poll interval above.
 	fmt.Fprintf(a.GetOut(), "DUT leased until %s\n", time.Now().Add(leaseDuration).Format(time.RFC1123))
 	return nil
@@ -244,23 +253,27 @@ func (c *leaseDutRun) newSwarmingClient(ctx context.Context) (*swarming.Client, 
 	return client, nil
 }
 
-// waitForTaskStart waits for the task with the given id to start.
-func (c *leaseDutRun) waitForTaskStart(ctx context.Context, client *swarming.Client, id string) error {
+// waitForTaskStart waits for the task with the given id to start and return the id of the bot running the task.
+func (c *leaseDutRun) waitForTaskStart(ctx context.Context, client *swarming.Client, id string) (map[string]string, error) {
 	for {
 		result, err := client.GetTaskState(ctx, id)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		if len(result.States) != 1 {
-			return errors.Reason("Got unexpected task states: %#v; expected one state", result.States).Err()
+			return nil, errors.Reason("Got unexpected task states: %#v; expected one state", result.States).Err()
 		}
 		switch s := result.States[0]; s {
 		case "PENDING":
 			time.Sleep(10 * time.Second)
 		case "RUNNING":
-			return nil
+			m, err := client.GetFlatBotDimensionsForTask(ctx, id)
+			if err != nil {
+				return nil, err
+			}
+			return m, nil
 		default:
-			return errors.Reason("Got unexpected task state %#v", s).Err()
+			return nil, errors.Reason("Got unexpected task state %#v", s).Err()
 		}
 	}
 }
@@ -297,4 +310,10 @@ func exactlyOne(bools ...bool) bool {
 		}
 	}
 	return count == 1
+}
+
+// dutNameToFQDN converts a dutName of the form "HOSTNAME" to "HOSTNAME.corp.google.com".
+// dutNameToFQDN assumes that a dutName is a valid DUT name, if it is not, then the output is arbitrary.
+func dutNameToFQDN(botID string) string {
+	return fmt.Sprintf("%s.cros.corp.google.com", botID)
 }
