@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "eb9493c7_4b071f5c",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/tasks/lease-dut.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-05-12T23:56:09Z",
+      "side": 1,
+      "message": "(Forget to upload the patch that moving the error check outside?) you miss an error check (the error from leaseXXX) here before calling waitForTaskStart().",
+      "revId": "16612ac706afd535559a3398a48f935125c1533f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
