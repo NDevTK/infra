@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "fdc961c7_3c243cf5",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/tasks/lease-dut.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2020-05-12T23:40:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "71d0b740_ec57f984",
+      "range": {
+        "startLine": 125,
+        "startChar": 2,
+        "endLine": 127,
+        "endChar": 3
+      },
+      "revId": "0e257b01fe34967f1bc8afc62fec506d03928462",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "536a196c_0f4c2c2a",
         "filename": "go/src/infra/cmd/skylab/internal/cmd/tasks/lease-dut.go",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "6e32156f_976a5c59",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/tasks/lease-dut.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2020-05-12T23:40:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "536a196c_0f4c2c2a",
+      "range": {
+        "startLine": 130,
+        "startChar": 0,
+        "endLine": 132,
+        "endChar": 3
+      },
+      "revId": "0e257b01fe34967f1bc8afc62fec506d03928462",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "337126a7_9ce0365f",
         "filename": "go/src/infra/cmd/skylab/internal/cmd/tasks/lease-dut.go",
         "patchSetId": 1
@@ -68,6 +116,30 @@
       "revId": "0e257b01fe34967f1bc8afc62fec506d03928462",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "33b04d4d_14b37226",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/tasks/lease-dut.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2020-05-12T23:40:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "337126a7_9ce0365f",
+      "range": {
+        "startLine": 135,
+        "startChar": 2,
+        "endLine": 137,
+        "endChar": 3
+      },
+      "revId": "0e257b01fe34967f1bc8afc62fec506d03928462",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
