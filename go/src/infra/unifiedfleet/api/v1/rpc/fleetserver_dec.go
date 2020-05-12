@@ -417,3 +417,20 @@ func (s *DecoratedFleet) DeleteMachineLSE(ctx context.Context, req *DeleteMachin
 	}
 	return
 }
+
+func (s *DecoratedFleet) ImportDatacenters(ctx context.Context, req *ImportDatacentersRequest) (rsp *status.Status, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "ImportDatacenters", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.ImportDatacenters(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "ImportDatacenters", rsp, err)
+	}
+	return
+}

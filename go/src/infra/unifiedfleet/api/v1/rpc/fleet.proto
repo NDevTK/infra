@@ -90,6 +90,9 @@ service Fleet {
 
   // Delete delete the machineLSE
   rpc DeleteMachineLSE(DeleteMachineLSERequest) returns (google.protobuf.Empty);
+
+  // ImportDatacenters imports datacenter & its related info, including kvm & switch.
+  rpc ImportDatacenters(ImportDatacentersRequest) returns (google.rpc.Status);
 }
 
 // Contains the required information for creating a ChromePlatform represented in
@@ -379,4 +382,11 @@ message DeleteMachineLSERequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = { type: "unified-fleet-system.appspot.com/MachineLSE" }
   ];
+}
+
+message ImportDatacentersRequest {
+  oneof source {
+    MachineDBSource machine_db_source = 1;
+    ConfigSource config_source = 2;
+  }
 }
