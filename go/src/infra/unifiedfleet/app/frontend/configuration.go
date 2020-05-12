@@ -149,8 +149,8 @@ func (fs *FleetServerImpl) ImportChromePlatforms(ctx context.Context, req *api.I
 	var platforms []*proto.ChromePlatform
 	oldP := &crimsonconfig.Platforms{}
 	configSource := req.GetConfigSource()
-	if configSource == nil {
-		return nil, emptyConfigSourceStatus.Err()
+	if err := api.ValidateConfigSource(configSource); err != nil {
+		return nil, err
 	}
 
 	switch configSource.ConfigServiceName {

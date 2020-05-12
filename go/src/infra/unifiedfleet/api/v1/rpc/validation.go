@@ -30,6 +30,7 @@ const (
 var (
 	emptyMachineDBSourceStatus         = status.New(codes.InvalidArgument, "Invalid argument - MachineDB source is empty")
 	invalidHostInMachineDBSourceStatus = status.New(codes.InvalidArgument, "Invalid argument - Host in MachineDB source is empty/invalid")
+	emptyConfigSourceStatus            = status.New(codes.InvalidArgument, "Invalid argument - Config source is empty")
 )
 
 var idRegex = regexp.MustCompile(`^[a-zA-Z0-9-_]{4,63}$`)
@@ -218,6 +219,14 @@ func ValidateMachineDBSource(machinedb *MachineDBSource) error {
 	}
 	if machinedb.GetHost() == "" {
 		return invalidHostInMachineDBSourceStatus.Err()
+	}
+	return nil
+}
+
+// ValidateConfigSource validates the ConfigSource
+func ValidateConfigSource(cs *ConfigSource) error {
+	if cs == nil {
+		return emptyMachineDBSourceStatus.Err()
 	}
 	return nil
 }

@@ -7,6 +7,8 @@ package frontend
 import (
 	empty "github.com/golang/protobuf/ptypes/empty"
 	"go.chromium.org/luci/common/logging"
+	luciconfig "go.chromium.org/luci/config"
+	"go.chromium.org/luci/config/server/cfgclient/textproto"
 	"go.chromium.org/luci/grpc/grpcutil"
 	"golang.org/x/net/context"
 	status "google.golang.org/genproto/googleapis/rpc/status"
@@ -16,6 +18,7 @@ import (
 	"infra/unifiedfleet/app/model/registration"
 	"infra/unifiedfleet/app/util"
 
+	crimsonconfig "go.chromium.org/luci/machine-db/api/config/v1"
 	crimson "go.chromium.org/luci/machine-db/api/crimson/v1"
 )
 
@@ -256,4 +259,82 @@ func (fs *FleetServerImpl) ImportNics(ctx context.Context, req *api.ImportNicsRe
 	}
 	logging.Debugf(ctx, "Importing %d nics", len(resp.Nics))
 	return successStatus.Proto(), nil
+}
+
+// ImportDatacenters imports the datacenter and its related info in batch.
+func (fs *FleetServerImpl) ImportDatacenters(ctx context.Context, req *api.ImportDatacentersRequest) (response *status.Status, err error) {
+	defer func() {
+		err = grpcutil.GRPCifyAndLogErr(ctx, err)
+	}()
+	configSource := req.GetConfigSource()
+	if err := api.ValidateConfigSource(configSource); err != nil {
+		return nil, err
+	}
+	if configSource.ConfigServiceName == "" {
+		return nil, invalidConfigServiceName.Err()
+	}
+
+	logging.Debugf(ctx, "Importing datacenters from luci-config: %s", configSource.FileName)
+	cfgInterface := fs.newCfgInterface(ctx)
+	fetchedConfigs, err := cfgInterface.GetConfig(ctx, luciconfig.ServiceSet(configSource.ConfigServiceName), configSource.FileName, false)
+	if err != nil {
+		return nil, configServiceFailureStatus.Err()
+	}
+	dc := &crimsonconfig.Datacenter{}
+	logging.Debugf(ctx, "%#v", fetchedConfigs)
+	resolver := textproto.Message(dc)
+	resolver.Resolve(fetchedConfigs)
+	logging.Debugf(ctx, "processing datacenter: %s", dc.GetName())
+	racks, kvms, switches, dhcps := processDatacenters(dc)
+	logging.Debugf(ctx, "Got %d racks, %d kvms, %d switches, %d dhcp configs", len(racks), len(kvms), len(switches), len(dhcps))
+	return successStatus.Proto(), nil
+}
+
+func processDatacenters(dc *crimsonconfig.Datacenter) ([]*proto.Rack, []*proto.KVM, []*proto.Switch, []*proto.DHCPConfig) {
+	dcName := dc.GetName()
+	switches := make([]*proto.Switch, 0)
+	racks := make([]*proto.Rack, 0)
+	rackToKvms := make(map[string][]string, 0)
+	kvms := make([]*proto.KVM, 0)
+	dhcps := make([]*proto.DHCPConfig, 0)
+	for _, oldKVM := range dc.GetKvm() {
+		name := oldKVM.GetName()
+		k := &proto.KVM{
+			Name:           name,
+			MacAddress:     oldKVM.GetMacAddress(),
+			ChromePlatform: oldKVM.GetPlatform(),
+		}
+		kvms = append(kvms, k)
+		rackName := oldKVM.GetRack()
+		rackToKvms[rackName] = append(rackToKvms[rackName], name)
+		dhcps = append(dhcps, &proto.DHCPConfig{
+			MacAddress: oldKVM.GetMacAddress(),
+			Hostname:   name,
+			Ip:         oldKVM.GetIpv4(),
+		})
+	}
+	for _, old := range dc.GetRack() {
+		rackName := old.GetName()
+		switchNames := make([]string, 0)
+		for _, crimsonSwitch := range old.GetSwitch() {
+			s := &proto.Switch{
+				Name:         crimsonSwitch.GetName(),
+				CapacityPort: crimsonSwitch.GetPorts(),
+			}
+			switches = append(switches, s)
+			switchNames = append(switchNames, s.GetName())
+		}
+		r := &proto.Rack{
+			Name:     rackName,
+			Location: util.ToLocation(rackName, dcName),
+			Rack: &proto.Rack_ChromeBrowserRack{
+				ChromeBrowserRack: &proto.ChromeBrowserRack{
+					Switches: switchNames,
+					Kvms:     rackToKvms[rackName],
+				},
+			},
+		}
+		racks = append(racks, r)
+	}
+	return racks, kvms, switches, dhcps
 }

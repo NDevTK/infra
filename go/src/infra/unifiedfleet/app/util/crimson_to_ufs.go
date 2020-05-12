@@ -20,7 +20,7 @@ func ToChromeMachines(old []*crimson.Machine) []*fleet.Machine {
 		newObjects[i] = &fleet.Machine{
 			// Temporarily use existing display name as browser machine's name instead of serial number/assettag
 			Name:     o.Name,
-			Location: toLocation(o.Rack, o.Datacenter),
+			Location: ToLocation(o.Rack, o.Datacenter),
 			Device: &fleet.Machine_ChromeBrowserMachine{
 				ChromeBrowserMachine: &fleet.ChromeBrowserMachine{
 					DisplayName:    o.Name,
@@ -34,7 +34,8 @@ func ToChromeMachines(old []*crimson.Machine) []*fleet.Machine {
 	return newObjects
 }
 
-func toLocation(rack, datacenter string) *fleet.Location {
+// ToLocation converts individual location strings to UFS format.
+func ToLocation(rack, datacenter string) *fleet.Location {
 	l := &fleet.Location{
 		Rack: rack,
 	}
