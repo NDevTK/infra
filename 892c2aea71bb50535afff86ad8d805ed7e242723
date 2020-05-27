@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "10ce1939_f9a445df",
+        "filename": "appengine/monorail/api/v3/api_proto/project_objects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-05-27T19:40:19Z",
+      "side": 1,
+      "message": "do \n\nNotifyTriggers {\n  NOTIFY_TRIGGER_UNSPECIFIED \u003d 0\n  NEVER \u003d 1\n  ANY_COMMENT \u003d 2\n}\n\nsee https://google.aip.dev/126\n\nenum values will default to the first choice, so we set the first choice to *_UNSPECIFIED and we can have control over the actual default value. \ne.g. when a user creates a new user type field, if they leave notify on *_UNSPECIFIED, before creating it, we can change it to w/e default we choose and we can always change what we want the default value to be in the future w/out changing the proto shape.",
+      "range": {
+        "startLine": 233,
+        "startChar": 3,
+        "endLine": 235,
+        "endChar": 22
+      },
+      "revId": "892c2aea71bb50535afff86ad8d805ed7e242723",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "37a62698_c861a0ce",
         "filename": "appengine/monorail/api/v3/api_proto/project_objects.proto",
         "patchSetId": 2
@@ -18,6 +41,53 @@
         "startChar": 4,
         "endLine": 243,
         "endChar": 25
+      },
+      "revId": "892c2aea71bb50535afff86ad8d805ed7e242723",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2e825c20_70ac09d6",
+        "filename": "appengine/monorail/api/v3/api_proto/project_objects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-05-27T19:40:19Z",
+      "side": 1,
+      "message": "(sent this comment too early)\ni think this should be enum so future extensions, like requiring the user to be a project \"contributor\" can be done easily.",
+      "parentUuid": "37a62698_c861a0ce",
+      "range": {
+        "startLine": 243,
+        "startChar": 4,
+        "endLine": 243,
+        "endChar": 25
+      },
+      "revId": "892c2aea71bb50535afff86ad8d805ed7e242723",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0ae35b12_ae27d674",
+        "filename": "appengine/monorail/api/v3/api_proto/project_objects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-05-27T19:40:19Z",
+      "side": 1,
+      "message": "see above comment on enums",
+      "range": {
+        "startLine": 254,
+        "startChar": 5,
+        "endLine": 254,
+        "endChar": 20
       },
       "revId": "892c2aea71bb50535afff86ad8d805ed7e242723",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
