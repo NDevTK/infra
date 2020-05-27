@@ -1259,6 +1259,48 @@ def _GetEnumFieldValuesAndDocstrings(field_def, config):
   return tuples
 
 
+def ValidateIssueChanges(deltas_by_issue_id, issues_by_id):
+  pass
+
+def GroupDeltas(deltas_by_issue_id):
+  pass
+
+class ImpactedIssues():
+  def __init__(self):
+    all_iids = set()
+
+    removed_blocked_on = collections.defaultdict(list)
+    added_blocked_on = collections.defaultdict(list)
+    removed_blocking = collections.defaultdict(list)
+    added_blocking = collections.defaultdict(list)
+    added_merged_from = collections.defaultdict(list)
+    removed_merged_from = collections.defaultdict(list)
+
+  def TrackDelta(issue_id, delta):
+    for impacted_issue_id in delta.blocked_on_add:
+      removed_blocked_on[impacted_issue_id].append(issue_id)
+      all_iids.add(impacted_issue_id)
+    for impacted_issue_id in delta.blocked_on_remove:
+      # etc
+    for impacted_issue_id in delta.blocking_add:
+      # etc
+    for impacted_issue_id in delta.blocking_remove:
+      # etc
+    if delta.merged_into_remove:
+      # etc
+    if delta.merged_into_add:
+      # etc
+
+
+def ApplyIssueChanges(issue, delta):
+  pass
+
+
+def MergeCcs(issue, added_issues):
+  # call tracker_bizobj.MakeMergedIntoAmendment()
+  pass
+
+
 class Error(Exception):
   """Base class for errors from this module."""
 
