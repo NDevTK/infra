@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "37a62698_c861a0ce",
+        "filename": "appengine/monorail/api/v3/api_proto/project_objects.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-05-27T19:33:46Z",
+      "side": 1,
+      "message": "I think it would be a good idea to make this an enum",
+      "range": {
+        "startLine": 243,
+        "startChar": 4,
+        "endLine": 243,
+        "endChar": 25
+      },
+      "revId": "892c2aea71bb50535afff86ad8d805ed7e242723",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
