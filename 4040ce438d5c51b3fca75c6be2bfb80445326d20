@@ -2,6 +2,52 @@
   "comments": [
     {
       "key": {
+        "uuid": "427cd54d_ea8d569b",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/cron_prod.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1272456
+      },
+      "writtenOn": "2020-05-28T07:04:05Z",
+      "side": 1,
+      "message": "consider doing this every 24 hours. If we\u0027re keeping them for a week (and even if we reduce to 1 day in future) there\u0027s no need to flush so frequently.",
+      "range": {
+        "startLine": 36,
+        "startChar": 12,
+        "endLine": 36,
+        "endChar": 25
+      },
+      "revId": "4040ce438d5c51b3fca75c6be2bfb80445326d20",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "779eac72_9fbe75ed",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/cron_staging.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1272456
+      },
+      "writtenOn": "2020-05-28T07:04:05Z",
+      "side": 1,
+      "message": "we only add new alerts on staging every 24 hours, so consider setting this to 24 hours too",
+      "range": {
+        "startLine": 32,
+        "startChar": 18,
+        "endLine": 32,
+        "endChar": 19
+      },
+      "revId": "4040ce438d5c51b3fca75c6be2bfb80445326d20",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "da54bcbc_ca4be728",
         "filename": "go/src/infra/appengine/sheriff-o-matic/som/handler/alerts.go",
         "patchSetId": 3
@@ -36,6 +82,30 @@
       "writtenOn": "2020-05-28T06:26:06Z",
       "side": 1,
       "message": "Debugf does formatting itself, so the format string and arg can be moved into the Debugf call.",
+      "range": {
+        "startLine": 322,
+        "startChar": 1,
+        "endLine": 323,
+        "endChar": 21
+      },
+      "revId": "4040ce438d5c51b3fca75c6be2bfb80445326d20",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "89bfbed8_8edba58c",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/som/handler/alerts.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 323,
+      "author": {
+        "id": 1272456
+      },
+      "writtenOn": "2020-05-28T07:04:05Z",
+      "side": 1,
+      "message": "Looks like s is reused when writing to the http response though",
+      "parentUuid": "bab50a08_4c3220ae",
       "range": {
         "startLine": 322,
         "startChar": 1,
