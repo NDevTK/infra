@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da54bcbc_ca4be728",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/som/handler/alerts.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 316,
+      "author": {
+        "id": 1275796
+      },
+      "writtenOn": "2020-05-28T06:26:06Z",
+      "side": 1,
+      "message": "Could you use resolvedAlertExpiration directly from flushOldAlerts rather than passing it in as a parameter?",
+      "range": {
+        "startLine": 316,
+        "startChar": 38,
+        "endLine": 316,
+        "endChar": 61
+      },
+      "revId": "4040ce438d5c51b3fca75c6be2bfb80445326d20",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bab50a08_4c3220ae",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/som/handler/alerts.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 323,
+      "author": {
+        "id": 1275796
+      },
+      "writtenOn": "2020-05-28T06:26:06Z",
+      "side": 1,
+      "message": "Debugf does formatting itself, so the format string and arg can be moved into the Debugf call.",
+      "range": {
+        "startLine": 322,
+        "startChar": 1,
+        "endLine": 323,
+        "endChar": 21
+      },
+      "revId": "4040ce438d5c51b3fca75c6be2bfb80445326d20",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
