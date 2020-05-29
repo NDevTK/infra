@@ -124,7 +124,7 @@ message LabelDef {
 // Custom fields defined for the project.
 //
 // See monorail/doc/userguide/concepts.md#issue-fields-and-labels.
-// Next available tag: 10
+// Next available tag: 15
 message FieldDef {
   option (google.api.resource) = {
     type: "api.crbug.com/FieldDef"
@@ -148,7 +148,7 @@ message FieldDef {
     INT = 2;
     // This field can be filled with string(s).
     STR = 3;
-    // This field can be filled with users(s).
+    // This field can be filled with user(s).
     USER = 4;
     // This field can be filled with date(s).
     DATE = 5;
@@ -166,7 +166,7 @@ message FieldDef {
   ];
 
   // Traits of this field, ie is required or can support multiple values.
-  // Next available tag: 5
+  // Next available tag: 6
   enum Traits {
     // Default enum value. This value is unused.
     TRAIT_UNSPECIFIED = 0;
@@ -178,6 +178,9 @@ message FieldDef {
     MULTIVALUED = 3;
     // This is a phase field meaning it can only belong to gates.
     PHASE = 4;
+    // This field value(s) can only be edited in issues or templates by editors.
+    // Project owners and field admins are not subject of this restriction.
+    RESTRICTED = 5;
   }
   repeated Traits traits = 7;
 
@@ -202,11 +205,80 @@ message FieldDef {
   }
   EnumTypeSettings enum_settings = 9;
 
-  // TODO(monorail:7594): Implement int min/max settings.
-  // TODO(monorail:7595): Implement str regex settings.
-  // TODO(monorail:7596): Implement user settings.
-  // TODO(monorail:7597): Implement date settings.
-  // TODO(monorail:4993): Implement is_restricted_field.
+  // Settings specific to int type fields.
+  // Next available tag: 3
+  message IntTypeSettings {
+    // Minimum value that this field can have.
+    int32 min_value = 1;
+    // Maximum value that this field can have.
+    int32 max_value = 2;
+  }
+  IntTypeSettings int_settings = 10;
+
+  // Settings specific to str type fields.
+  // Next available tag: 2
+  message StrTypeSettings {
+    // Regex that this field value(s) must match.
+    string regex = 1;
+  }
+  StrTypeSettings str_settings = 11;
+
+  // Settings specific to user type fields.
+  // Next available tag: 5
+  message UserTypeSettings {
+    // Event that triggers a notification.
+    // Next available tag: 3
+    enum NotifyTriggers {
+      // Default notify trigger value. This value is unused.
+      NOTIFY_TRIGGER_UNSPECIFIED = 0;
+      // There are no notifications.
+      NEVER = 1;
+      // Notify whenever any comment is made.
+      ANY_COMMENT = 2;
+    }
+    NotifyTriggers notify_triggers = 1;
+    // Field value(s) can only be set to users that fulfill the role
+    // requirements.
+    // Next available tag: 3
+    enum RoleRequirements {
+      // Default role requirement value. This value is unused.
+      ROLE_REQUIREMENT_UNSPECIFIED = 0;
+      // There is no requirement.
+      NO_ROLE_REQUIREMENT = 1;
+      // Field value(s) can only be set to users who are members.
+      IS_MEMBER = 2;
+    }
+    RoleRequirements role_requirements = 2;
+    // User(s) named in this field are granted this permission.
+    string grants_perm = 3;
+    // Field value(s) can only be set to users with this permission.
+    string needs_perm = 4;
+  }
+  UserTypeSettings user_settings = 12;
+
+  // Settings specific to date type fields.
+  // Next available tag: 2
+  message DateTypeSettings {
+    // Action to do when a date field value arrives.
+    // Next available tag: 4
+    enum DateAction {
+      // Default date action value. This value is unused.
+      DATE_ACTION_UNSPECIFIED = 0;
+      // No action will be taken when a date arrives.
+      NO_ACTION = 1;
+      // Notify owner when a date arrives.
+      PING_OWNER_ONLY = 2;
+      // Notify all participants when a date arrives.
+      PING_PARTICIPANTS = 3;
+    }
+    DateAction date_action = 1;
+  }
+  DateTypeSettings date_settings = 13;
+
+  // Editors of this field (only for restricted fields).
+  repeated string editors = 14 [
+      (google.api.resource_reference) = { type: "api.crbug.com/User" }
+  ];
 }
 
 // A high level definition of the part of the software affected by an issue.
