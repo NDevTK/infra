@@ -16,6 +16,24 @@
       "revId": "92565966cfc680743856baec4e09f8fbd169ce8f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fd8f5f4e_6edf19dc",
+        "filename": "3pp/cpython3/install.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-05-29T16:12:20Z",
+      "side": 1,
+      "message": "yep, fair",
+      "parentUuid": "e09afaa4_06174deb",
+      "revId": "92565966cfc680743856baec4e09f8fbd169ce8f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
