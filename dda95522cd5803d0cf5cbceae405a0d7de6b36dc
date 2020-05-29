@@ -1,0 +1,251 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "977a6f85_ae81dd23",
+        "filename": "appengine/monorail/api/v3/api_proto/project_objects.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-05-29T17:58:03Z",
+      "side": 1,
+      "message": "This should be \n`TYPE_UNSPECIFIED`.\ncould you fix while you\u0027re touching this code",
+      "range": {
+        "startLine": 144,
+        "startChar": 4,
+        "endLine": 144,
+        "endChar": 18
+      },
+      "revId": "dda95522cd5803d0cf5cbceae405a0d7de6b36dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3130d59f_4800c791",
+        "filename": "appengine/monorail/api/v3/api_proto/project_objects.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-05-29T17:58:03Z",
+      "side": 1,
+      "message": "While you\u0027re here\ncan you change this to\nTRAITS_UNSPECIFIED",
+      "range": {
+        "startLine": 172,
+        "startChar": 4,
+        "endLine": 172,
+        "endChar": 9
+      },
+      "revId": "dda95522cd5803d0cf5cbceae405a0d7de6b36dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "caa1a2d3_a9bd7ae8",
+        "filename": "appengine/monorail/api/v3/api_proto/project_objects.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-05-29T17:58:03Z",
+      "side": 1,
+      "message": "Also while you\u0027re here\ncould you modify this to\n`// This field must be filled out in issues where it\u0027s applicable.`",
+      "range": {
+        "startLine": 173,
+        "startChar": 4,
+        "endLine": 173,
+        "endChar": 36
+      },
+      "revId": "dda95522cd5803d0cf5cbceae405a0d7de6b36dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fefa460b_6cd83640",
+        "filename": "appengine/monorail/api/v3/api_proto/project_objects.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-05-29T17:58:03Z",
+      "side": 1,
+      "message": "We\u0027ve only exposed the term \"gate\" to our users. So they\u0027re not familiar with the phrase \"phase\". There\u0027s a lot of history on why the backend uses phase and the frontend exposes \"gates\". but tl;dr users only understand \"gates\". so this should be \n`GATE \u003d 4;`\nThis needs to be handled in another CL because changing this requires fixing this part as well.\nhttps://source.chromium.org/chromium/infra/infra/+/master:appengine/monorail/api/v3/converters.py;l\u003d610?q\u003dconvertFieldDef\u0026ss\u003dchromium%2Finfra%2Finfra:appengine%2Fmonorail%2F\nSo could you just add a TODO (not for you to do) about it here.",
+      "range": {
+        "startLine": 179,
+        "startChar": 0,
+        "endLine": 180,
+        "endChar": 14
+      },
+      "revId": "dda95522cd5803d0cf5cbceae405a0d7de6b36dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "02bd2c6e_642d61e2",
+        "filename": "appengine/monorail/api/v3/api_proto/project_objects.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-05-29T17:58:03Z",
+      "side": 1,
+      "message": "nit:\n\"Values of this field..\"",
+      "range": {
+        "startLine": 181,
+        "startChar": 7,
+        "endLine": 181,
+        "endChar": 26
+      },
+      "revId": "dda95522cd5803d0cf5cbceae405a0d7de6b36dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "678a62bb_53acbe8d",
+        "filename": "appengine/monorail/api/v3/api_proto/project_objects.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 233,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-05-29T17:58:03Z",
+      "side": 1,
+      "message": "`NOTIFY_TRIGGERS_UN....` to match \nNotifyTriggers",
+      "range": {
+        "startLine": 233,
+        "startChar": 6,
+        "endLine": 233,
+        "endChar": 20
+      },
+      "revId": "dda95522cd5803d0cf5cbceae405a0d7de6b36dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "67beb749_93c1bddf",
+        "filename": "appengine/monorail/api/v3/api_proto/project_objects.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-05-29T17:58:03Z",
+      "side": 1,
+      "message": "see above",
+      "revId": "dda95522cd5803d0cf5cbceae405a0d7de6b36dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7a4ac76d_7ccc6755",
+        "filename": "appengine/monorail/api/v3/api_proto/project_objects.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-05-29T17:58:03Z",
+      "side": 1,
+      "message": "\u0027PROJECT_MEMBER\u0027 would be more clear",
+      "range": {
+        "startLine": 249,
+        "startChar": 6,
+        "endLine": 249,
+        "endChar": 15
+      },
+      "revId": "dda95522cd5803d0cf5cbceae405a0d7de6b36dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d1a18e7a_87d98851",
+        "filename": "appengine/monorail/api/v3/api_proto/project_objects.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-05-29T17:58:03Z",
+      "side": 1,
+      "message": "nit\nadd\n`.. in the issue.`",
+      "range": {
+        "startLine": 252,
+        "startChar": 62,
+        "endLine": 252,
+        "endChar": 63
+      },
+      "revId": "dda95522cd5803d0cf5cbceae405a0d7de6b36dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fb18ade1_a513ddfd",
+        "filename": "appengine/monorail/api/v3/api_proto/project_objects.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 270,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-05-29T17:58:03Z",
+      "side": 1,
+      "message": "I\u0027d like the API to be consistent with the vocabulary we use.\nSince we\u0027re using \"Notify\" elsewhere to mean some sort of notification\nI think \n```\nNOTIFY_OWNER \u003d 2;\nNOTIFY_PARTICIPANTS \u003d 3;\n```\n\nI also believe \"ONLY\" seemed redundant in the name. We could just have \nthe documentation\n`// Notify owner only when a date arrives.`",
+      "range": {
+        "startLine": 270,
+        "startChar": 6,
+        "endLine": 270,
+        "endChar": 22
+      },
+      "revId": "dda95522cd5803d0cf5cbceae405a0d7de6b36dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6b982bf4_74a44f71",
+        "filename": "appengine/monorail/api/v3/api_proto/project_objects.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 278,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-05-29T17:58:03Z",
+      "side": 1,
+      "message": "I think we should be more explicit\n`// Editors of this field, only used for RESTRICTED fields.`",
+      "range": {
+        "startLine": 278,
+        "startChar": 5,
+        "endLine": 278,
+        "endChar": 55
+      },
+      "revId": "dda95522cd5803d0cf5cbceae405a0d7de6b36dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
