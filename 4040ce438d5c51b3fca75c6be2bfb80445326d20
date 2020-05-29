@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "da6f36dc_68549ff0",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/cron_prod.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2020-05-29T00:01:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "427cd54d_ea8d569b",
+      "range": {
+        "startLine": 36,
+        "startChar": 12,
+        "endLine": 36,
+        "endChar": 25
+      },
+      "revId": "4040ce438d5c51b3fca75c6be2bfb80445326d20",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "779eac72_9fbe75ed",
         "filename": "go/src/infra/appengine/sheriff-o-matic/cron_staging.yaml",
         "patchSetId": 3
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "7b812dd9_9f51b47d",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/cron_staging.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2020-05-29T00:01:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "779eac72_9fbe75ed",
+      "range": {
+        "startLine": 32,
+        "startChar": 18,
+        "endLine": 32,
+        "endChar": 19
+      },
+      "revId": "4040ce438d5c51b3fca75c6be2bfb80445326d20",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da54bcbc_ca4be728",
         "filename": "go/src/infra/appengine/sheriff-o-matic/som/handler/alerts.go",
         "patchSetId": 3
@@ -68,6 +116,30 @@
       "revId": "4040ce438d5c51b3fca75c6be2bfb80445326d20",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e9974ade_fd1a59f9",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/som/handler/alerts.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 316,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2020-05-29T00:01:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da54bcbc_ca4be728",
+      "range": {
+        "startLine": 316,
+        "startChar": 38,
+        "endLine": 316,
+        "endChar": 61
+      },
+      "revId": "4040ce438d5c51b3fca75c6be2bfb80445326d20",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -115,6 +187,30 @@
       "revId": "4040ce438d5c51b3fca75c6be2bfb80445326d20",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "71d92498_e65c91dc",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/som/handler/alerts.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 323,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2020-05-29T00:01:58Z",
+      "side": 1,
+      "message": "Yes, that\u0027s true",
+      "parentUuid": "89bfbed8_8edba58c",
+      "range": {
+        "startLine": 322,
+        "startChar": 1,
+        "endLine": 323,
+        "endChar": 21
+      },
+      "revId": "4040ce438d5c51b3fca75c6be2bfb80445326d20",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
