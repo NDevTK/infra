@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0bab41da_cc43b6c1",
+        "filename": "3pp/cpython3/install.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-05-29T06:13:08Z",
+      "side": 1,
+      "message": "these tricium comments actually seem like good recommendations, fwiw\n\nI would even consider clearing and exporting PYTHONPATH at the top of this file, too.\n\nMay be worth backporting to the cpython package as well (though I guess cpython is functionally dead at this point so *shrug*)",
+      "range": {
+        "startLine": 226,
+        "startChar": 0,
+        "endLine": 226,
+        "endChar": 54
+      },
+      "revId": "4b0786be119c4cad19fb90899c750e0b11064945",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
