@@ -1,0 +1,170 @@
+{
+  "designs": {
+    "value": [
+      {
+        "configs": [
+          {
+            "hardwareFeatures": {
+              "formFactor": {
+                "formFactor": 1
+              },
+              "fwConfig": {}
+            },
+            "hardwareTopology": {
+              "formFactor": {
+                "description": {
+                  "EN": "Device cannot rotate past 180 degrees"
+                },
+                "hardwareFeature": {
+                  "formFactor": {
+                    "formFactor": 1
+                  }
+                },
+                "id": "CLAMSHELL",
+                "type": 2
+              }
+            },
+            "id": {
+              "value": "Puff:2147483647"
+            }
+          },
+          {
+            "hardwareFeatures": {
+              "formFactor": {
+                "formFactor": 1
+              },
+              "fwConfig": {}
+            },
+            "hardwareTopology": {
+              "formFactor": {
+                "description": {
+                  "EN": "Device cannot rotate past 180 degrees"
+                },
+                "hardwareFeature": {
+                  "formFactor": {
+                    "formFactor": 1
+                  }
+                },
+                "id": "CLAMSHELL",
+                "type": 2
+              }
+            },
+            "id": {
+              "value": "Puff:0"
+            }
+          },
+          {
+            "hardwareFeatures": {
+              "formFactor": {
+                "formFactor": 1
+              },
+              "fwConfig": {}
+            },
+            "hardwareTopology": {
+              "formFactor": {
+                "description": {
+                  "EN": "Device cannot rotate past 180 degrees"
+                },
+                "hardwareFeature": {
+                  "formFactor": {
+                    "formFactor": 1
+                  }
+                },
+                "id": "CLAMSHELL",
+                "type": 2
+              }
+            },
+            "id": {
+              "value": "Puff:1"
+            }
+          },
+          {
+            "hardwareFeatures": {
+              "formFactor": {
+                "formFactor": 1
+              },
+              "fwConfig": {}
+            },
+            "hardwareTopology": {
+              "formFactor": {
+                "description": {
+                  "EN": "Device cannot rotate past 180 degrees"
+                },
+                "hardwareFeature": {
+                  "formFactor": {
+                    "formFactor": 1
+                  }
+                },
+                "id": "CLAMSHELL",
+                "type": 2
+              }
+            },
+            "id": {
+              "value": "Puff:2"
+            }
+          }
+        ],
+        "id": {
+          "value": "Puff"
+        },
+        "name": "Puff",
+        "programId": {
+          "value": "Puff"
+        }
+      }
+    ]
+  },
+  "deviceBrands": {
+    "value": [
+      {
+        "brandCode": "TBD",
+        "brandName": "TBD",
+        "designId": {
+          "value": "Puff"
+        },
+        "id": {
+          "value": "TBD"
+        }
+      }
+    ]
+  },
+  "partners": {},
+  "programs": {},
+  "softwareConfigs": [
+    {
+      "designConfigId": {
+        "value": "Puff:2147483647"
+      },
+      "idScanConfig": {
+        "firmwareSku": 2147483647,
+        "smbiosNameMatch": "Puff"
+      }
+    },
+    {
+      "designConfigId": {
+        "value": "Puff:0"
+      },
+      "idScanConfig": {
+        "smbiosNameMatch": "Puff"
+      }
+    },
+    {
+      "designConfigId": {
+        "value": "Puff:1"
+      },
+      "idScanConfig": {
+        "firmwareSku": 1,
+        "smbiosNameMatch": "Puff"
+      }
+    },
+    {
+      "designConfigId": {
+        "value": "Puff:2"
+      },
+      "idScanConfig": {
+        "firmwareSku": 2,
+        "smbiosNameMatch": "Puff"
+      }
+    }
+  ]
+}
