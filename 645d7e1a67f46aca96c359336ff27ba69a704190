@@ -16,6 +16,24 @@
       "revId": "645d7e1a67f46aca96c359336ff27ba69a704190",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4b6b30b6_6b6262c1",
+        "filename": "go/src/infra/libs/cros/lab_inventory/deviceconfig/parser.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-06-03T21:14:27Z",
+      "side": 0,
+      "message": "we need a converter to translate configBundle to the labels that swarming can recognize. I think we will finally have a simpler device config proto owned by ourselves to do translation, instead of using v0 proto. Does it make sense?",
+      "parentUuid": "f6629349_d9ecd564",
+      "revId": "645d7e1a67f46aca96c359336ff27ba69a704190",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -45,6 +45,30 @@
       "revId": "9829aa4266faec5f106b773c09abc03897db9e80",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "542b757f_62f46add",
+        "filename": "go/src/infra/libs/cros/lab_inventory/deviceconfig/parser_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-06-03T21:14:27Z",
+      "side": 1,
+      "message": "oops, I forget to rename the proto here. should be test_device_config_v2.jsonproto..",
+      "parentUuid": "0622ce49_ca650408",
+      "range": {
+        "startLine": 23,
+        "startChar": 29,
+        "endLine": 23,
+        "endChar": 34
+      },
+      "revId": "9829aa4266faec5f106b773c09abc03897db9e80",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
