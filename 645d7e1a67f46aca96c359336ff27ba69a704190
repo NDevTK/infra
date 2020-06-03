@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f6629349_d9ecd564",
+        "filename": "go/src/infra/libs/cros/lab_inventory/deviceconfig/parser.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1325055
+      },
+      "writtenOn": "2020-06-03T19:24:19Z",
+      "side": 0,
+      "message": "If this is converting from ConfigBundle -\u003e deviceconfig v0 proto, does deviceconfig v0 proto ever go away? I.e. at some point in the future does lab inventory only speak ConfigBundle?",
+      "revId": "645d7e1a67f46aca96c359336ff27ba69a704190",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
