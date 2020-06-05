@@ -503,6 +503,155 @@ class Converter(object):
 
   # Field Defs
 
+  def IngestFieldDefs(self, cnxn, fields, services):
+    # type: (Sequence[api_proto.project_objects_pb2.FieldDef], int) ->
+    #     Sequence[Tuple[proto.tacker_pb2.FieldDef, LabelDefs]])
+    """Convert sequence of protoc FieldDefs to protorpc FieldDefs.
+
+    Args:
+      fields: List of protoc FieldDefs
+      project_id: ID of the Project that is ancestor to all given `fields`.
+
+    Returns:
+      Sequence of protorpc FieldDef in the same order they are given in
+      `field_defs`.
+
+    Raises:
+      InputException if there is no display_name or field_type in any field.
+    """
+    fields_and_label_defs = []
+
+    for field in fields:
+      if not field.display_name or not field.type:
+        raise exceptions.InputException(
+            'A name and a type are required when creating custom fields.')
+      field_type = self._IngestFieldDefType(field.type)
+      admin_ids = rnc.IngestUserNames(cnxn, field.admins, services)
+      editor_ids = rnc.IngestUserNames(cnxn, field.editors, services)
+
+      traits = project_objects_pb2.FieldDef.Traits
+      is_required = traits.Value('REQUIRED') in field.traits
+      is_niche = traits.Value('DEFAULT_HIDDEN') in field.traits
+      is_multivalued = traits.Value('MULTIVALUED') in field.traits
+      is_phase_field = traits.Value('PHASE') in field.traits
+      is_restricted_field = traits.Value('RESTRICTED') in field.traits
+
+      approval_id = None
+      if field.approval_parent:
+        _project_id, approval_id = rnc.IngestApprovalDefName(
+            cnxn, field.approval_parent, services)
+
+      label_defs = []
+      for choice in field.enum_settings.choices:
+        label_def = tracker_pb2.LabelDef(
+            label=choice.value,
+            label_docstring=choice.docstring,
+            deprecated=False)
+        label_defs.append(label_def)
+
+      notify_on = self._IngestNotifyTriggers(
+          field.user_settings.notify_triggers)
+      user_type_settings = project_objects_pb2.FieldDef.UserTypeSettings
+      needs_member = False
+      if field.user_settings.role_requirements == (
+          user_type_settings.RoleRequirements.Value('PROJECT_MEMBER')):
+        needs_member = True
+
+      date_action = self._IngestDateAction(field.date_settings.date_action)
+
+      protorpc_field = tracker_pb2.FieldDef(
+          field_name=field.display_name,
+          field_type=field_type,
+          applicable_type=field.applicable_issue_type,
+          is_required=is_required,
+          is_niche=is_niche,
+          is_multivalued=is_multivalued,
+          docstring=field.docstring,
+          admin_ids=admin_ids,
+          editor_ids=editor_ids,
+          min_value=field.int_settings.min_value,
+          max_value=field.int_settings.max_value,
+          regex=field.str_settings.regex,
+          needs_member=needs_member,
+          needs_perm=field.user_settings.needs_perm,
+          grants_perm=field.user_settings.grants_perm,
+          notify_on=notify_on,
+          date_action=date_action,
+          approval_id=approval_id,
+          is_phase_field=is_phase_field,
+          is_restricted_field=is_restricted_field)
+      fields_and_label_defs.append((protorpc_field, label_defs))
+
+    return fields_and_label_defs
+
+  def _IngestFieldDefType(self, field_type):
+    # type: (api_proto.project_objects_pb2.FieldDef.Type) ->
+    #     proto.tracker_pb2.FieldTypes
+    """Convert protoc FieldDef.Type to protorpc FieldType
+
+    Args:
+      field_type: protoc FieldDef.Type
+
+    Returns:
+      Corresponding protorpc FieldType
+
+    Raises:
+      ValueError if input `field_type` has no suitable supported FieldType,
+      or input `field_type` is not a recognized protoc FieldDef.Type
+    """
+    if field_type == project_objects_pb2.FieldDef.Type.Value('ENUM'):
+      return tracker_pb2.FieldTypes.ENUM_TYPE
+    elif field_type == project_objects_pb2.FieldDef.Type.Value('INT'):
+      return tracker_pb2.FieldTypes.INT_TYPE
+    elif field_type == project_objects_pb2.FieldDef.Type.Value('STR'):
+      return tracker_pb2.FieldTypes.STR_TYPE
+    elif field_type == project_objects_pb2.FieldDef.Type.Value('USER'):
+      return tracker_pb2.FieldTypes.USER_TYPE
+    elif field_type == project_objects_pb2.FieldDef.Type.Value('DATE'):
+      return tracker_pb2.FieldTypes.DATE_TYPE
+    elif field_type == project_objects_pb2.FieldDef.Type.Value('URL'):
+      return tracker_pb2.FieldTypes.URL_TYPE
+    else:
+      raise ValueError(
+          'Unsupported field_type was given. Approval types are found '
+          'in ApprovalDefs and boolean types are unsupported.')
+
+  def _IngestDateAction(self, date_action):
+    # type: api_proto.project_objects_pb2.FieldDef.DateTypeSettings.
+    #       DateAction -> proto.tracker_pb2.DateAction
+    """Convert protoc FieldDef.DateTypeSettings.DateAction to protorpc
+       DateAction"""
+    date_type_settings = project_objects_pb2.FieldDef.DateTypeSettings
+    if date_action == date_type_settings.DateAction.Value(
+        'DATE_ACTION_UNSPECIFIED'):
+      return None
+    elif date_action == date_type_settings.DateAction.Value('NO_ACTION'):
+      return tracker_pb2.DateAction.NO_ACTION
+    elif date_action == date_type_settings.DateAction.Value('NOTIFY_OWNER'):
+      return tracker_pb2.DateAction.PING_OWNER_ONLY
+    elif date_action == date_type_settings.DateAction.Value(
+        'NOTIFY_PARTICIPANTS'):
+      return tracker_pb2.DateAction.PING_PARTICIPANTS
+    else:
+      raise ValueError('Unsupported protoc DateAction Value')
+
+  def _IngestNotifyTriggers(self, notify_trigger):
+    # type: api_proto.project_objects_pb2.FieldDef.UserTypeSettings.
+    #     NotifyTriggers - > proto.tracker_pb2.NotifyTriggers
+    """Convert protoc FieldDef.UserTypeSettings.NotifyTriggers to protorpc
+       NotifyTriggers"""
+    user_type_settings = project_objects_pb2.FieldDef.UserTypeSettings
+    if notify_trigger == user_type_settings.NotifyTriggers.Value(
+        'NOTIFY_TRIGGERS_UNSPECIFIED'):
+      return None
+    elif notify_trigger == user_type_settings.NotifyTriggers.Value('NEVER'):
+      return tracker_pb2.NotifyTriggers.NEVER
+    elif notify_trigger == user_type_settings.NotifyTriggers.Value(
+        'ANY_COMMENT'):
+      return tracker_pb2.NotifyTriggers.ANY_COMMENT
+    else:
+      raise ValueError('Unsupported protoc NotifyTriggers Value')
+
   def ConvertFieldDefs(self, field_defs, project_id):
     # type: (Sequence[proto.tracker_pb2.FieldDef], int) ->
     #     Sequence[api_proto.project_objects_pb2.FieldDef]

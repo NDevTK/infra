@@ -58,6 +58,37 @@ class ConverterFunctionsTest(unittest.TestCase):
     self.services.project.TestAddProjectMembers(
         [self.user_1.user_id], self.project_1, 'CONTRIBUTOR_ROLE')
 
+    self.protoc_fd = project_objects_pb2.FieldDef(
+        display_name="protoc_fd_1",
+        docstring="dog_string_1",
+        admins=['users/one@example.com'],
+        traits=[project_objects_pb2.FieldDef.Traits.Value('RESTRICTED')],
+        int_settings=project_objects_pb2.FieldDef.IntTypeSettings(
+            min_value=5, max_value=10))
+    self.protoc_fd.type = project_objects_pb2.FieldDef.Type.Value('INT')
+
+    enum_type_settings = project_objects_pb2.FieldDef.EnumTypeSettings
+    self.protoc_enum_fd = project_objects_pb2.FieldDef(
+        display_name="protoc_enum_fd_2",
+        docstring="dog_string_2",
+        editors=['users/two@example.com'],
+        traits=[project_objects_pb2.FieldDef.Traits.Value('DEFAULT_HIDDEN')],
+        approval_parent='projects/proj/approvalDefs/approval_field_1',
+        enum_settings=enum_type_settings(
+            choices=[
+                enum_type_settings.Choice(value='a', docstring='dogstring1'),
+                enum_type_settings.Choice(value='b', docstring='dogstring2')
+            ]))
+    self.protoc_enum_fd.type = project_objects_pb2.FieldDef.Type.Value('ENUM')
+
+    self.protoc_fd_no_type = project_objects_pb2.FieldDef(
+        display_name="protoc_fd_3",
+        docstring="dog_string_3",
+        admins=['users/one@example.com'],
+        traits=[project_objects_pb2.FieldDef.Traits.Value('RESTRICTED')],
+        int_settings=project_objects_pb2.FieldDef.IntTypeSettings(
+            min_value=5, max_value=10))
+
     self.field_def_1_name = 'test_field_1'
     self.field_def_1 = self._CreateFieldDef(
         self.project_1.project_id,
@@ -1788,6 +1819,120 @@ class ConverterFunctionsTest(unittest.TestCase):
     self.assertEqual(
         'Cannot get value from label for non-enum-type field', str(
             cm.exception))
+
+  def testIngestFieldDefs(self):
+    """We can ingest field defs."""
+    fds_lbls = self.converter.IngestFieldDefs(
+        self.cnxn, [self.protoc_fd, self.protoc_enum_fd], self.services)
+
+    fd_1 = fds_lbls[0][0]
+    label_defs_1 = fds_lbls[0][1]
+    self.assertEqual(fd_1.field_name, self.protoc_fd.display_name)
+    self.assertEqual(fd_1.field_type, tracker_pb2.FieldTypes.INT_TYPE)
+    self.assertEqual(fd_1.docstring, 'dog_string_1')
+    self.assertEqual(fd_1.admin_ids, [111])
+    self.assertEqual(fd_1.min_value, self.protoc_fd.int_settings.min_value)
+    self.assertEqual(fd_1.max_value, self.protoc_fd.int_settings.max_value)
+    self.assertEqual(fd_1.is_restricted_field, True)
+    self.assertEqual(label_defs_1, [])
+
+    fd_2 = fds_lbls[1][0]
+    label_defs_2 = fds_lbls[1][1]
+    self.assertEqual(fd_2.field_name, self.protoc_enum_fd.display_name)
+    self.assertEqual(fd_2.field_type, tracker_pb2.FieldTypes.ENUM_TYPE)
+    self.assertEqual(fd_2.docstring, 'dog_string_2')
+    self.assertEqual(fd_2.editor_ids, [222])
+    self.assertEqual(fd_2.is_niche, True)
+    self.assertEqual(fd_2.approval_id, self.approval_def_1_id)
+    self.assertEqual(
+        label_defs_2, [
+            tracker_pb2.LabelDef(
+                label='a', label_docstring='dogstring1', deprecated=False),
+            tracker_pb2.LabelDef(
+                label='b', label_docstring='dogstring2', deprecated=False)
+        ])
+
+  def testIngestFieldDefs_NoTypeSpecified(self):
+    """We reject ingesting field defs if no type or name is provided."""
+    self.assertRaises(
+        exceptions.InputException, self.converter.IngestFieldDefs, self.cnxn,
+        [self.protoc_fd, self.protoc_fd_no_type], self.services)
+
+  def test_IngestDateAction(self):
+    """We can ingest from protoc to protorpc DateAction"""
+    date_type_settings = project_objects_pb2.FieldDef.DateTypeSettings
+
+    input_type = date_type_settings.DateAction.Value('DATE_ACTION_UNSPECIFIED')
+    actual = self.converter._IngestDateAction(input_type)
+    expected = None
+    self.assertEqual(expected, actual)
+
+    input_type = date_type_settings.DateAction.Value('NO_ACTION')
+    actual = self.converter._IngestDateAction(input_type)
+    expected = tracker_pb2.DateAction.NO_ACTION
+    self.assertEqual(expected, actual)
+
+    input_type = date_type_settings.DateAction.Value('NOTIFY_OWNER')
+    actual = self.converter._IngestDateAction(input_type)
+    expected = tracker_pb2.DateAction.PING_OWNER_ONLY
+    self.assertEqual(expected, actual)
+
+    input_type = date_type_settings.DateAction.Value('NOTIFY_PARTICIPANTS')
+    actual = self.converter._IngestDateAction(input_type)
+    expected = tracker_pb2.DateAction.PING_PARTICIPANTS
+    self.assertEqual(expected, actual)
+
+  def test_IngestFieldDefType(self):
+    """We can ingest from protoc FieldType to protorpc FieldDefType"""
+    input_type = project_objects_pb2.FieldDef.Type.Value('ENUM')
+    actual = self.converter._IngestFieldDefType(input_type)
+    expected = tracker_pb2.FieldTypes.ENUM_TYPE
+    self.assertEqual(expected, actual)
+
+    input_type = project_objects_pb2.FieldDef.Type.Value('INT')
+    actual = self.converter._IngestFieldDefType(input_type)
+    expected = tracker_pb2.FieldTypes.INT_TYPE
+    self.assertEqual(expected, actual)
+
+    input_type = project_objects_pb2.FieldDef.Type.Value('STR')
+    actual = self.converter._IngestFieldDefType(input_type)
+    expected = tracker_pb2.FieldTypes.STR_TYPE
+    self.assertEqual(expected, actual)
+
+    input_type = project_objects_pb2.FieldDef.Type.Value('USER')
+    actual = self.converter._IngestFieldDefType(input_type)
+    expected = tracker_pb2.FieldTypes.USER_TYPE
+    self.assertEqual(expected, actual)
+
+    input_type = project_objects_pb2.FieldDef.Type.Value('DATE')
+    actual = self.converter._IngestFieldDefType(input_type)
+    expected = tracker_pb2.FieldTypes.DATE_TYPE
+    self.assertEqual(expected, actual)
+
+    input_type = project_objects_pb2.FieldDef.Type.Value('URL')
+    actual = self.converter._IngestFieldDefType(input_type)
+    expected = tracker_pb2.FieldTypes.URL_TYPE
+    self.assertEqual(expected, actual)
+
+  def test_IngestNotifyTriggers(self):
+    """We can ingest from protoc to protorpc NotifyTriggers."""
+    user_type_settings = project_objects_pb2.FieldDef.UserTypeSettings
+
+    input_type = user_type_settings.NotifyTriggers.Value(
+        'NOTIFY_TRIGGERS_UNSPECIFIED')
+    actual = self.converter._IngestNotifyTriggers(input_type)
+    expected = None
+    self.assertEqual(expected, actual)
+
+    input_type = user_type_settings.NotifyTriggers.Value('NEVER')
+    actual = self.converter._IngestNotifyTriggers(input_type)
+    expected = tracker_pb2.NotifyTriggers.NEVER
+    self.assertEqual(expected, actual)
+
+    input_type = user_type_settings.NotifyTriggers.Value('ANY_COMMENT')
+    actual = self.converter._IngestNotifyTriggers(input_type)
+    expected = tracker_pb2.NotifyTriggers.ANY_COMMENT
+    self.assertEqual(expected, actual)
 
   def testConvertApprovalDefs(self):
     """We can convert ApprovalDefs"""
