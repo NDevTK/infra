@@ -118,6 +118,31 @@ class ResourceNameConverterTest(unittest.TestCase):
       rnc.IngestFieldDefName(
           self.cnxn, 'projects/proj/fieldDefs/non-real-field', self.services)
 
+  def testIngestApprovalDefName(self):
+    """We can get an ApprovalDef's resource name match."""
+    self.assertEqual(
+        rnc.IngestApprovalDefName(
+            self.cnxn, 'projects/proj/approvalDefs/approval_field_1',
+            self.services), (789, self.approval_def_1_id))
+
+  def testIngestApprovalDefName_InvalidName(self):
+    """An exception is raised if the ApprovalDef's resource name is invalid"""
+    with self.assertRaises(exceptions.InputException):
+      rnc.IngestApprovalDefName(
+          self.cnxn, 'projects/proj/approvalDefs/7Dog', self.services)
+
+    with self.assertRaises(exceptions.InputException):
+      rnc.IngestApprovalDefName(
+          self.cnxn, 'friend/proj/approvalDefs/test_field', self.services)
+
+    with self.assertRaises(exceptions.NoSuchProjectException):
+      rnc.IngestApprovalDefName(
+          self.cnxn, 'projects/asdf/approvalDefs/test_field', self.services)
+
+    with self.assertRaises(exceptions.NoSuchFieldDefException):
+      rnc.IngestApprovalDefName(
+          self.cnxn, 'projects/proj/approvalDefs/non-real-field', self.services)
+
   def testIngestHotlistName(self):
     """We can get a Hotlist's resource name match."""
     self.assertEqual(rnc.IngestHotlistName('hotlists/78909'), 78909)

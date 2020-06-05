@@ -33,6 +33,10 @@ FIELD_DEF_NAME_RE = re.compile(
     r'%s\/fieldDefs\/(?P<field_def>%s)$' %
     (PROJECT_NAME_PATTERN, features_constants.FIELD_DEF_NAME_PATTERN))
 
+APPROVAL_DEF_NAME_RE = re.compile(
+    r'%s\/approvalDefs\/(?P<approval_def>%s)$' %
+    (PROJECT_NAME_PATTERN, features_constants.FIELD_DEF_NAME_PATTERN))
+
 HOTLIST_PATTERN = r'hotlists\/(?P<hotlist_id>\d+)'
 HOTLIST_NAME_RE = re.compile(r'%s$' % HOTLIST_PATTERN)
 HOTLIST_ITEM_NAME_RE = re.compile(
@@ -145,6 +149,42 @@ def IngestFieldDefName(cnxn, name, services):
         'Field not found: %s.' % field_name)
 
   return project_id, field_id
+
+# ApprovalDefs
+
+
+def IngestApprovalDefName(cnxn, name, services):
+  # type: (MonorailConnection, str, Services) -> (int, int)
+  """Takes an ApprovalDef's resource name and returns the ApprovalDef's ID
+     and the Project's ID that it belongs.
+
+  Args:
+    cnxn: MonorailConnection to the database.
+    name: Resource name of an ApprovalDef.
+    services: Services object for connections to backend services.
+
+  Returns:
+    The ApprovalDef's ID, and the Project's ID.
+
+  Raises:
+    InputException if the given name does not have a valid format.
+    NoSuchProjectException if the given project name does not exists.
+    NoSuchFieldDefException if the given field name does not exists.
+  """
+  match = _GetResourceNameMatch(name, APPROVAL_DEF_NAME_RE)
+  approval_name = match.group('approval_def')
+  project_name = match.group('project_name')
+  id_dict = services.project.LookupProjectIDs(cnxn, [project_name])
+  project_id = id_dict.get(project_name)
+  if project_id is None:
+    raise exceptions.NoSuchProjectException(
+        'Project not found: %s.' % project_name)
+  approval_id = services.config.LookupFieldID(cnxn, project_id, approval_name)
+  if approval_id is None:
+    raise exceptions.NoSuchFieldDefException(
+        'ApprovalDef not found: %s.' % approval_name)
+
+  return project_id, approval_id
 
 # Hotlists
 
