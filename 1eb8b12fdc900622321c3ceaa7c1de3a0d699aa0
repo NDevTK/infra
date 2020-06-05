@@ -34,6 +34,24 @@
       "revId": "1eb8b12fdc900622321c3ceaa7c1de3a0d699aa0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a5b555c5_13c69578",
+        "filename": "go/src/infra/libs/cros/lab_inventory/deviceconfig/parser.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1325055
+      },
+      "writtenOn": "2020-06-05T16:57:48Z",
+      "side": 1,
+      "message": "I think in cases where ConfigBundle doesn\u0027t have an equivalent it is ok to skip for now.",
+      "parentUuid": "89da95e2_af9a1878",
+      "revId": "1eb8b12fdc900622321c3ceaa7c1de3a0d699aa0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

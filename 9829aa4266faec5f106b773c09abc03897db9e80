@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "6ec90e08_a618d901",
+        "filename": "go/src/infra/libs/cros/lab_inventory/deviceconfig/parser.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1325055
+      },
+      "writtenOn": "2020-06-05T16:57:48Z",
+      "side": 1,
+      "message": "Nit: Might be clearer to name \"configBundle\"?",
+      "range": {
+        "startLine": 16,
+        "startChar": 23,
+        "endLine": 16,
+        "endChar": 30
+      },
+      "revId": "9829aa4266faec5f106b773c09abc03897db9e80",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "01fa8443_261580c1",
         "filename": "go/src/infra/libs/cros/lab_inventory/deviceconfig/parser.go",
         "patchSetId": 5
@@ -18,6 +41,52 @@
         "startChar": 0,
         "endLine": 46,
         "endChar": 3
+      },
+      "revId": "9829aa4266faec5f106b773c09abc03897db9e80",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bdc9a02e_cb57b1f6",
+        "filename": "go/src/infra/libs/cros/lab_inventory/deviceconfig/parser.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1325055
+      },
+      "writtenOn": "2020-06-05T16:57:48Z",
+      "side": 1,
+      "message": "Would it be easier to use the maps between enum name and int + some string replacement?",
+      "range": {
+        "startLine": 59,
+        "startChar": 0,
+        "endLine": 75,
+        "endChar": 46
+      },
+      "revId": "9829aa4266faec5f106b773c09abc03897db9e80",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dd0984e1_1e13c9bf",
+        "filename": "go/src/infra/libs/cros/lab_inventory/deviceconfig/parser.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1325055
+      },
+      "writtenOn": "2020-06-05T16:57:48Z",
+      "side": 1,
+      "message": "Nit: I think \"parseArchitecture\" would be more clear.",
+      "range": {
+        "startLine": 148,
+        "startChar": 10,
+        "endLine": 148,
+        "endChar": 13
       },
       "revId": "9829aa4266faec5f106b773c09abc03897db9e80",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
@@ -65,6 +134,29 @@
         "startChar": 29,
         "endLine": 23,
         "endChar": 34
+      },
+      "revId": "9829aa4266faec5f106b773c09abc03897db9e80",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ade590c0_38e3fdd3",
+        "filename": "go/src/infra/libs/cros/lab_inventory/deviceconfig/test_device_config_v2.jsonproto",
+        "patchSetId": 5
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1325055
+      },
+      "writtenOn": "2020-06-05T16:57:48Z",
+      "side": 1,
+      "message": "Let\u0027s use the fake project in chromiumos/config instead (https://chromium.googlesource.com/chromiumos/config/+/refs/heads/master/test/project/fake/fake/generated/config.jsonproto). It would be better to not copy the private configs into a public repo, and the fake config probably has more components, hw features, etc.",
+      "range": {
+        "startLine": 28,
+        "startChar": 24,
+        "endLine": 28,
+        "endChar": 28
       },
       "revId": "9829aa4266faec5f106b773c09abc03897db9e80",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
