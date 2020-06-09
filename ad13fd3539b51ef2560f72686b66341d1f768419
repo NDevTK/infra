@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "374077c3_42493f8c",
+        "filename": "appengine/monorail/businesslogic/work_env.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-06-09T20:41:36Z",
+      "side": 1,
+      "message": "nit: consider just taking the issues rather than the deltas (so this remains a more generally useful method)",
+      "range": {
+        "startLine": 173,
+        "startChar": 0,
+        "endLine": 173,
+        "endChar": 50
+      },
+      "revId": "ad13fd3539b51ef2560f72686b66341d1f768419",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "523925fc_a74b161b",
+        "filename": "appengine/monorail/businesslogic/work_env.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1535,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-06-09T20:41:36Z",
+      "side": 1,
+      "message": "tiny-nit: the list creation I think isn\u0027t necessary here.",
+      "range": {
+        "startLine": 1535,
+        "startChar": 10,
+        "endLine": 1535,
+        "endChar": 11
+      },
+      "revId": "ad13fd3539b51ef2560f72686b66341d1f768419",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
