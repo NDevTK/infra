@@ -17,6 +17,7 @@ package backend
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"time"
 
@@ -33,8 +34,8 @@ import (
 	"infra/appengine/arquebus/app/config"
 	"infra/appengine/arquebus/app/util"
 	"infra/appengine/rotang/proto/rotangapi"
-	"infra/appengine/rotation-proxy/proto"
-	"infra/monorailv2/api/api_proto"
+	rotationproxy "infra/appengine/rotation-proxy/proto"
+	monorail "infra/monorailv2/api/api_proto"
 )
 
 var (
@@ -52,6 +53,8 @@ var (
 	// searchAndUpdateIssues().
 	nRetriesForSavingTaskEntity = 8
 )
+
+var errStaleAssigner = errors.New("stale assigner format")
 
 var ctxKeyMonorailClient = "monorail client"
 var ctxKeyRotaNGClient = "rotang client"
@@ -299,6 +302,8 @@ func endTaskRun(c context.Context, task *model.Task, nIssuesUpdated int32, issue
 	switch {
 	case issueUpdateError == context.DeadlineExceeded:
 		task.Status = model.TaskStatus_Aborted
+	case issueUpdateError == errStaleAssigner:
+		task.Status = model.TaskStatus_Cancelled
 	case issueUpdateError != nil:
 		task.Status = model.TaskStatus_Failed
 	default:
@@ -332,12 +337,24 @@ func runAssignerTaskHandler(c context.Context, tqTask proto.Message) error {
 	// a running task.
 	timedCtx, cancel := context.WithTimeout(c, maxIssueUpdatesExecutionTime)
 	defer cancel()
-	nIssuesUpdated, issueUpdateErr := searchAndUpdateIssues(
-		timedCtx, assigner, task,
-	)
+
+	var nIssuesUpdated int32
+	var issueUpdateErr error
+
+	if assigner.HasMostRecentFormat() {
+		nIssuesUpdated, issueUpdateErr = searchAndUpdateIssues(
+			timedCtx, assigner, task,
+		)
+	} else {
+		// Don't risk running the task with a stale Assigner. Better to wait until
+		// it is update.
+		task.WriteLog(c, "Skipping the task, its assigner config has stale format.")
+		issueUpdateErr = errStaleAssigner
+	}
+
 	// if the error was due to the context timeout, override issueUpdateErr
 	// with it so that endTaskRun() can recognize the timeout error.
-	if err != nil && timedCtx.Err() == context.DeadlineExceeded {
+	if issueUpdateErr != nil && timedCtx.Err() == context.DeadlineExceeded {
 		issueUpdateErr = context.DeadlineExceeded
 	}
 
