@@ -13,11 +13,12 @@ import (
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
 
+	"github.com/golang/protobuf/proto"
 	. "github.com/smartystreets/goconvey/convey"
 
 	"infra/appengine/arquebus/app/config"
 	"infra/appengine/rotang/proto/rotangapi"
-	"infra/monorailv2/api/api_proto"
+	monorail "infra/monorailv2/api/api_proto"
 )
 
 func TestSearchAndUpdateIssues(t *testing.T) {
@@ -47,7 +48,9 @@ func TestSearchAndUpdateIssues(t *testing.T) {
 
 		Convey("issues with opt-out label are filtered in search", func() {
 			countOptOptLabel := func(query string) int {
-				assigner.IssueQuery.Q = query
+				assigner.IssueQueryRaw, _ = proto.Marshal(&config.IssueQuery{
+					Q: query,
+				})
 				_, err := searchAndUpdateIssues(c, assigner, task)
 				So(err, ShouldBeNil)
 				req := getListIssuesRequest(c)
