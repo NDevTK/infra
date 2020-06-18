@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "31f7363d_10e211d4",
+        "filename": "appengine/monorail/Makefile",
+        "patchSetId": 1
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2020-06-18T18:45:02Z",
+      "side": 1,
+      "message": "What if we instead removed coverage from `make karma` and added `make karma_coverage` or similar instead? It seems to me that the case when you don\u0027t want a coverage report is likely more common than the case when you do.",
+      "range": {
+        "startLine": 127,
+        "startChar": 0,
+        "endLine": 127,
+        "endChar": 6
+      },
+      "revId": "4672788f3d4f9f82ed42e8259f404fcef3ed79f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
