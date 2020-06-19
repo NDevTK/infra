@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "16e0b02f_27a32c8b",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-06-19T21:07:28Z",
+      "side": 1,
+      "message": "better:\n\n switch a.taskName {\n case setStateNeedsRepairTaskName:\n    // code\n default:\n    //code\n }",
+      "revId": "7efca06d0259f3694d197cc5f156e4809f387ab9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
