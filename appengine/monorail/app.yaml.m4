@@ -99,6 +99,13 @@ libraries:
 includes:
 - gae_ts_mon
 
+vpc_access_connector:
+  name: "projects/monorail-dev/locations/us-central1/connectors/redis-connector"
+
+env_variables:
+  REDISHOST: '10.150.170.251'
+  REDISPORT: '6379'
+
 skip_files:
 - ^(.*/)?#.*#$
 - ^(.*/)?.*~$
