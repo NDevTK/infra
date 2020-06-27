@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "357c548d_a64f05d5",
+        "filename": "appengine/monorail/app.yaml.m4",
+        "patchSetId": 2
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2020-06-27T00:20:54Z",
+      "side": 1,
+      "message": "This file doesn\u0027t contain any other site-specific settings and we should keep all of those things in one place. I think that place is `settings.py`. Is it possible to keep this stuff in there? If not, we can think of some other solution.",
+      "revId": "b60cf66c45688ea6e6f2eecdfb19f64083fdc9c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "695b5c4b_221abeb2",
         "filename": "appengine/monorail/third_party/redis/README.monorail",
         "patchSetId": 2
