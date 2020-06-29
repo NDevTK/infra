@@ -86,3 +86,8 @@ func AddPrefix(collection, entity string) string {
 func GetUUIDName() string {
 	return uuid.New().String()
 }
+
+// FormatResourceName formats the resource name
+func FormatResourceName(old string) string {
+	return strings.Replace(old, " ", "_", -1)
+}
