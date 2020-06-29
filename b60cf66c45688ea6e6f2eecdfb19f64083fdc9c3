@@ -90,6 +90,24 @@
     },
     {
       "key": {
+        "uuid": "e51445ba_1bbdd494",
+        "filename": "appengine/monorail/app.yaml.m4",
+        "patchSetId": 2
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1425234
+      },
+      "writtenOn": "2020-06-29T18:35:36Z",
+      "side": 1,
+      "message": "Re: \"This will break external deployments of Monorail\" Why will this happen? As in external Monorail users will have to update the env_variables to have a matching IP address + port as the instance they are using?  \n\nI did add the env_variables to settings.py without any issue. As you mentioned, the Redis host IP address will have to change based on staging, but there are examples within the file that can handle that. I am not sure the severity of providing all of the information to connect to the Redis instance on an open-source repo. I will retrace my work to see if someone can connect with just the information that is available and without permissions. I need to read more about VPC networks as well, but from my understanding, both receiver and transmitter must be on the same network to communicate. \n\nRe: \"For Rob:\" I am starting on installing Redis locally now. I can also do a write-up for setting up Redis on App Engine for Monorail users!",
+      "parentUuid": "b67a296a_388623e6",
+      "revId": "b60cf66c45688ea6e6f2eecdfb19f64083fdc9c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "695b5c4b_221abeb2",
         "filename": "appengine/monorail/third_party/redis/README.monorail",
         "patchSetId": 2
