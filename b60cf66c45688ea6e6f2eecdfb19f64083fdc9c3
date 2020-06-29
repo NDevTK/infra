@@ -108,6 +108,24 @@
     },
     {
       "key": {
+        "uuid": "d19f41a2_55740dcb",
+        "filename": "appengine/monorail/app.yaml.m4",
+        "patchSetId": 2
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2020-06-29T18:44:49Z",
+      "side": 1,
+      "message": "Not this change specifically, but if Monorail depends on Redis, all the external deployers will have to set up and configure their own Redis instances for Monorail to continue working.",
+      "parentUuid": "e51445ba_1bbdd494",
+      "revId": "b60cf66c45688ea6e6f2eecdfb19f64083fdc9c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "695b5c4b_221abeb2",
         "filename": "appengine/monorail/third_party/redis/README.monorail",
         "patchSetId": 2
