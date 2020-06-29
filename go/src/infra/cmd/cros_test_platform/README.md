@@ -17,3 +17,11 @@ the build-under-test, to determine which tests to run, with what arguments.
 
 #### `autotest-execute` or `skylab-execute`
 Execute the enumerated tests, in the correct backend; wait for them to complete, and collect and summarize their results.
+
+
+## How to run unittests
+
+Make sure you run steps to [install](https://chromium.googlesource.com/infra/infra/+/master/go/#get-the-code) all required LUCI DEPS first.
+
+After that, invoke `go test` from the [`go/src`](../../../) folder, e.g:
+`$ go test infra/cmd/cros_test_platform/internal/execution`
