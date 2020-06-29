@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "d112687a_7562433e",
+        "filename": "appengine/monorail/app.yaml.m4",
+        "patchSetId": 2
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1425234
+      },
+      "writtenOn": "2020-06-29T17:31:46Z",
+      "side": 1,
+      "message": "The env_variables can easily be moved to `settings.py`, however, I am unaware of any other methods for adding the VPC network connector to the app. The google app engine docs only provide one method as you can see here: https://cloud.google.com/appengine/docs/standard/python/connecting-vpc",
+      "parentUuid": "357c548d_a64f05d5",
+      "revId": "b60cf66c45688ea6e6f2eecdfb19f64083fdc9c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "695b5c4b_221abeb2",
         "filename": "appengine/monorail/third_party/redis/README.monorail",
         "patchSetId": 2

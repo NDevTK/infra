@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d595f55c_8099edef",
+        "filename": "appengine/monorail/third_party/redis/update.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1425234
+      },
+      "writtenOn": "2020-06-29T17:31:46Z",
+      "side": 1,
+      "message": "\u003e Found empty line(s) at the end of the file\n\nPlease fix.",
+      "parentUuid": "9284d7bb_53364b93",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 0
+      },
+      "revId": "7698680db0e7b5f9cbba6a53320f88eaa9905bdd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
