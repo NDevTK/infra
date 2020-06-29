@@ -72,6 +72,24 @@
     },
     {
       "key": {
+        "uuid": "b67a296a_388623e6",
+        "filename": "appengine/monorail/app.yaml.m4",
+        "patchSetId": 2
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2020-06-29T18:18:01Z",
+      "side": 1,
+      "message": "Re: \"This will break external deployments of Monorail. It would be nice if we could warn them somehow\" - We could potentially reach external users of Monorail by sending a PSA to infra-announce@chromium.org. \n\nThis could be an opportunity to start an external monorail-users@chroium.org mailing list or similar that we could encourage external deployments of Monorail to subscribe to. Filed an issue on this to track further discussion here, so as to not derail this code review: https://crbug.com/monorail/7950\n\nFor Rob: This is also a place where publishing externally available docs on how to set up Redis on App Engine for use with Monorail would be helpful, so our external users deploying Monorail can follow those docs themselves to update their own Monorail instances.",
+      "parentUuid": "ca02f2f9_90b2d2db",
+      "revId": "b60cf66c45688ea6e6f2eecdfb19f64083fdc9c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "695b5c4b_221abeb2",
         "filename": "appengine/monorail/third_party/redis/README.monorail",
         "patchSetId": 2
