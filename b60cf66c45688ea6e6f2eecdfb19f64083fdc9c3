@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "86c39e56_f4fb4e3e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2020-06-29T17:33:01Z",
+      "side": 1,
+      "message": "One small high level nit: We should file a Monorail bug to track the Redis migration. :) (And have it block a larger bug for Python 2 -\u003e3 if one exists)",
+      "revId": "b60cf66c45688ea6e6f2eecdfb19f64083fdc9c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "357c548d_a64f05d5",
         "filename": "appengine/monorail/app.yaml.m4",
         "patchSetId": 2
