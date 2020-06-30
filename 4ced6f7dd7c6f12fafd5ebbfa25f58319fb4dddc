@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c5430a81_52193251",
+        "filename": "go/src/infra/cmd/cros_test_platform/README.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-06-30T00:00:10Z",
+      "side": 1,
+      "message": "nit: Would be good to emphasize that `eval ./env.py` is required if a new terminal is spawned rather than just when the initial checkout is done - it sets up some environment that does not persist.",
+      "range": {
+        "startLine": 24,
+        "startChar": 110,
+        "endLine": 24,
+        "endChar": 138
+      },
+      "revId": "4ced6f7dd7c6f12fafd5ebbfa25f58319fb4dddc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
