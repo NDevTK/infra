@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3856dc63_0d8fd603",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/device_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-06-30T21:19:48Z",
+      "side": 1,
+      "message": "not clear to me how the mock labstation1 is added... when dut3 is added, there\u0027s no labstation1 yet, labstation1 is added at that time? and the latter addition of labtation1 actually won\u0027t succeed?",
+      "range": {
+        "startLine": 224,
+        "startChar": 28,
+        "endLine": 224,
+        "endChar": 37
+      },
+      "revId": "5d9feccaab2d838f377ca848e79822c7622dc191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
