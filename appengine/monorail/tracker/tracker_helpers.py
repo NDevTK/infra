@@ -1370,6 +1370,77 @@ class IssueChangeImpactedIssues():
       if issue.merged_into:
         self.merged_from_remove[issue.merged_into].append(issue.issue_id)
 
+  def ApplyImpactedIssueChanges(self, cnxn, impacted_issue, issue_service):
+    # type: (MonorailConnection, Issue, IssueService) -> Collection[Amendment]
+    """Apply the tracked changes for the given impacted issue. """
+    issue_id = impacted_issue.issue_id
+    project_name = impacted_issue.project_name
+    amendments = []
+
+    blocking_add_refs = issue_service.LookupIssueRefs(
+        self.blocking_add.get(issue_id))
+    blocking_remove_refs = issue_service.LookupIssueRefs(
+        self.blocking_remove.get(issue_id))
+    if blocking_add_refs or blocking_remove_refs:
+      amendments.append(
+          tracker_bizobj.MakeBlockingAmendment(
+              blocking_add_refs.values(), blocking_remove_refs.values(),
+              default_project_name=project_name))
+
+    blocking_add = self.blocking_add.get(issue_id)
+    blocking_remove = self.blocking_remove.get(issue_id)
+    if blocking_add or blocking_remove:
+      old_blocking = set(impacted_issue.blocking_iids)
+
+
+    blocked_on_add_refs = issue_service.LookupIssueRefs(
+        self.blocked_on_add.get(issue_id))
+    blocked_on_remove_refs = issue_service.LookupIssueRefs(
+        self.blocked_on_remove.get(issue_id))
+    if blocked_on_add_refs or blocked_on_remove_refs:
+        amendments.append(
+            tracker_bizobj.MakeBlockedOnAmendment(
+                blocked_on_add_refs.values(), blocked_on_remove_refs.values(),
+                default_project_name=project_name))
+
+    merged_from_add_refs = issue_service.LookupIssueRefs(
+        self.merged_from_add.get(issue_id))
+    merged_from_remove_refs = issue_service.LookupIssueRefs(
+        self.merged_from_remove.get(issue_id))
+    if merged_from_add_refs or merged_from_remove_refs:
+        new_cc_ids = ComputeNewMergeIntoCcs(issue, merged_from_add)
+        amendments.append(
+            tracker_bizobj.MakeCcAmendment(new_cc_ids, []))
+        amendments.append(
+            tracker_bizobj.MakeMergedIntoAmendment(
+                merged_from_add_refs.values(), merged_from_remove_refs.values(),
+                default_project_name=project_name))
+    return amendments
+
+
+def ComputeNewMergeIntoCcs(target_issue, source_issues):
+  # type: (Issue, Collection[Issue]) -> Collection[int]
+  """Compute the new ccs from source_issues getting merged into target_issue."""
+
+  target_restrictions = permissions.GetRestrictions(target_issue)
+  target_restricts_view = permissions.HasRestrictions(target_issue, perm='View')
+  new_cc_ids = set()
+  for issue in source_issues:
+    # If there is a "View" restriction on the target issue we want to
+    # check that the source issue's restrictions are the same as the
+    # target_restrictions.
+    if target_restricts_view:
+      source_restrictions = permissions.GetRestrictions(issue)
+      if (issue.project_id != target_issue.project_id or
+          set(source_restrictions) != set(target_restrictions)):
+          continue
+
+    new_cc_ids.update(issue.cc_ids)
+    if issue.owner_id:
+        new_cc_ids.add(issue.owner_id)
+
+  return [cc_id for cc_id in new_cc_ids if cc_id not in target_issue.cc_ids]
+
 
 class Error(Exception):
   """Base class for errors from this module."""
