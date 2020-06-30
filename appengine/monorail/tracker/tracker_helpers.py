@@ -1371,6 +1371,28 @@ class IssueChangeImpactedIssues():
         self.merged_from_remove[issue.merged_into].append(issue.issue_id)
 
 
+  def ApplyImpactedIssueChanges(issue):
+    # copied directly over from work_env.py, code not adjusted for new location.
+    if impacted_issues.added_merged_from[issue_id]:
+            added_issue_ids = impacted_issues.added_merged_from[issue_id]
+            merge_amendment = tracker_helpers.MergeCcs(issue, added_issue_ids, self.services.issue)
+            tracker_helpers.MergeIssueStarrers(issue, added_issue_ids, self.services.issue_star)
+            amendments_by_issue_id[issue_id].append(merge_amendment)
+        if impacted_issues.removed_merged_from[issue_id]:
+            removed_issue_ids = impacted_issues.removed_merged_from[issue_id]
+            # TODO get refs of removed_issue_ids
+            removed_merge_amendment = tracker_bizobj.MakeMergedIntoAmendment(
+                removed_refsremoved_merged_from)
+            amendments_by_issue_id[issue_id].append(removed_merge_amendment)
+            # TODO(get remainng blocking/blocked on amendments)
+    return amendments
+
+
+def MergeCcs(issue, added_issues):
+  # call tracker_bizobj.MakeMergedIntoAmendment()
+  pass
+
+
 class Error(Exception):
   """Base class for errors from this module."""
 
