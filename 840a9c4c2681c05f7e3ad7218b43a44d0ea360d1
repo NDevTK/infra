@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ea383c11_d4313099",
+        "filename": "appengine/cr-buildbucket/resultdb.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2020-06-30T03:34:27Z",
+      "side": 1,
+      "message": "didn\u0027t you say that we must use composite_call_credentials?",
+      "range": {
+        "startLine": 82,
+        "startChar": 15,
+        "endLine": 82,
+        "endChar": 34
+      },
+      "revId": "840a9c4c2681c05f7e3ad7218b43a44d0ea360d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
