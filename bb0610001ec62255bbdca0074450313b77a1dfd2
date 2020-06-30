@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "328be275_b33865aa",
+        "filename": "go/src/infra/tools/recipe_bundler/cmd_bundle.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-06-30T03:39:04Z",
+      "side": 1,
+      "message": "maybe\n\n   if rmErr :\u003d os.Remove(...); !(rmErr \u003d\u003d nil || os.IsNotExist(rmErr)) {\n     return errors.Annotate(rmErr, \"removing git lockfile\").Err()\n   }\n\nThat way we can get reports for errors other than \"doesn\u0027t exist\"?",
+      "range": {
+        "startLine": 330,
+        "startChar": 3,
+        "endLine": 330,
+        "endChar": 4
+      },
+      "revId": "bb0610001ec62255bbdca0074450313b77a1dfd2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
