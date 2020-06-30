@@ -49,7 +49,6 @@ func mockLabstation(hostname, id string) *lab.ChromeOSDevice {
 		Device: &lab.ChromeOSDevice_Labstation{
 			Labstation: &lab.Labstation{
 				Hostname: hostname,
-				Servos:   []*lab.Servo{makeServo(hostname, "LabSerial", 9990)},
 			},
 		},
 	}

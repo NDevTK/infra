@@ -196,6 +196,11 @@ func DeleteDevicesByIds(ctx context.Context, ids []string) DeviceOpResults {
 					deviceResult.logError(errors.Annotate(err, "failed to delete servo from labstation for: %s", entity.Hostname).Err())
 					continue
 				}
+			} else if labstation := devProto.GetLabstation(); labstation != nil {
+				if len(labstation.GetServos()) > 0 {
+					deviceResult.logError(errors.Reason("cannot delete labstation: %s used by the DUTs", entity.Hostname).Err())
+					continue
+				}
 			}
 			entities = append(entities, entity)
 		}
@@ -274,7 +279,13 @@ func DeleteDevicesByHostnames(ctx context.Context, hostnames []string) DeviceOpR
 					removingResults[i].logError(errors.Annotate(err, "failed to delete servo from labstation for: %s", hostname).Err())
 					continue
 				}
+			} else if labstation := devProto.GetLabstation(); labstation != nil {
+				if len(labstation.GetServos()) > 0 {
+					removingResults[i].logError(errors.Reason("cannot delete labstation: %s used by the DUTs", hostname).Err())
+					continue
+				}
 			}
+
 			removingResults[i].Entity = entity
 			entities = append(entities, entity)
 			entityResults = append(entityResults, &removingResults[i])
