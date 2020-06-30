@@ -22,6 +22,30 @@
       "revId": "5d9feccaab2d838f377ca848e79822c7622dc191",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1b3f8b53_271ea71b",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/device_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2020-06-30T23:20:40Z",
+      "side": 1,
+      "message": "That is because https://source.corp.google.com/chromium_infra/go/src/infra/libs/cros/lab_inventory/datastore/devices.go;l\u003d112\n\nwe just creating labstation from query at the first and then working with DUTs",
+      "parentUuid": "3856dc63_0d8fd603",
+      "range": {
+        "startLine": 224,
+        "startChar": 28,
+        "endLine": 224,
+        "endChar": 37
+      },
+      "revId": "5d9feccaab2d838f377ca848e79822c7622dc191",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
