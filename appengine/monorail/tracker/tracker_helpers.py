@@ -1371,6 +1371,15 @@ class IssueChangeImpactedIssues():
         self.merged_from_remove[issue.merged_into].append(issue.issue_id)
 
 
+def ApplyIssueChanges(issue, delta):
+  pass
+
+
+def MergeCcs(issue, added_issues):
+  # call tracker_bizobj.MakeMergedIntoAmendment()
+  pass
+
+
 class Error(Exception):
   """Base class for errors from this module."""
 
