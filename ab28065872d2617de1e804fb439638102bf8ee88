@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b6eddf4f_86776f84",
+        "filename": "appengine/monorail/tracker/tracker_helpers.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 1379,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-06-30T20:14:34Z",
+      "side": 1,
+      "message": "should move this to Phase 6",
+      "range": {
+        "startLine": 1379,
+        "startChar": 12,
+        "endLine": 1379,
+        "endChar": 96
+      },
+      "revId": "ab28065872d2617de1e804fb439638102bf8ee88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
