@@ -48,7 +48,7 @@ message IssueQuery {
   repeated string project_names = 2;
 }
 
-// Oncall represents a rotation shift modelled in RotaNG.
+// Deprecated: Use Trooper instead.
 message Oncall {
   // The name of a rotation.
   string rotation = 1;
@@ -62,18 +62,39 @@ message Oncall {
   Position position = 2;
 }
 
+message Trooper {
+  // The name of the rotation to look for the current trooper from.
+  //
+  // This is the name of a rotation proxied in RotationProxy.
+  string rotation = 1;
+
+  enum Position {
+    UNSET = 0;
+    PRIMARY = 1;
+    SECONDARY = 2;
+  }
+  // The position of the trooper referred.
+  //
+  // The value must be either PRIMARY or SECONDARY. UNSET or omitting the value
+  // of this field will cause the config failed in validation.
+  Position position = 2;
+}
+
 // UserSource represents a single source to find a valid Monorail user to whom
 // Arquebus will assign or cc issues found.
 message UserSource {
   oneof from {
-    // Represents a rotation shift modelled in RotaNG.
-    Oncall oncall = 1;
+    // Deprecated: Use UserSource.Trooper instead.
+    Oncall oncall = 1 [deprecated = true];
 
-    // user refers to the email address of a Monorail user account.
+    // The email address of a Monorail user account.
     string email = 2; // e.g., user@chromium.org
 
-    // Represents a rotation shift modelled in rotation-proxy.
-    Oncall rotation = 3;
+    // Deprecated: Use UserSource.Trooper instead.
+    Oncall rotation = 3 [deprecated = true];
+
+    // A trooper of the current shift in a given rotation.
+    Trooper trooper = 4;
   }
 }
 
