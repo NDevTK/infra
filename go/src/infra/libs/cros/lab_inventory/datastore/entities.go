@@ -17,6 +17,7 @@ import (
 	"infra/libs/cros/lab_inventory/utils"
 	fleet "infra/libs/fleet/protos"
 	ufs "infra/libs/fleet/protos/go"
+	inv "infra/appengine/cros/lab_inventory/api/v1"
 )
 
 // DeviceEntityID represents the ID of a device. We prefer use asset id as the id.
@@ -206,3 +207,78 @@ func NewAssetInfo(a *ufs.AssetInfo) (*AssetInfoEntity, error) {
 }
 
 /* Asset Info and helper functions end */
+
+/* Device Manual Repair Record Entity and helper functions */
+
+// DeviceManualRepairRecordEntity is a datastore entity that tracks a manual
+// repair record of a device.
+//
+// Possible RepairState based on proto enum:
+//  STATE_INVALID = 0;
+// 	STATE_NOT_STARTED = 1;
+// 	STATE_IN_PROGRESS = 2;
+// 	STATE_COMPLETED = 3;
+type DeviceManualRepairRecordEntity struct {
+	_kind											string	`gae:"$kind,DeviceManualRepairRecord`
+	Hostname  								string
+	AssetTag 									string
+	RepairState								string
+	DeviceManualRepairRecord	[]byte	`gae:",noindex"`
+}
+
+// DeviceManualRepairRecordEntityKind is the datastore entity kind for
+// DeviceManualRepairRecord entities.
+const DeviceManualRepairRecordEntityKind = "DeviceManualRepairRecord"
+
+// NewDeviceManualRepairRecordEntity creates a new
+// DeviceManualRepairRecordEntity from a DeviceManualRepairRecord object.
+func NewDeviceManualRepairRecordEntity(r *inv.DeviceManualRepairRecord) (*DeviceManualRepairRecordEntity, error) {
+	hostname := r.GetHostname()
+	assetTag := r.GetAssetTag()
+
+	if hostname == "" {
+		return nil, errors.Reason("Missing hostname").Err()
+	} else if assetTag == "" {
+		return nil, errors.Reason("Missing asset tag").Err()
+	}
+
+	deviceManualRepairRecord, err := proto.Marshal(r)
+	if err != nil {
+		return nil, err
+	}
+
+	return &DeviceManualRepairRecordEntity{
+		Hostname: hostname,
+		AssetTag: assetTag,
+		RepairState: r.GetRepairState().String(),
+		DeviceManualRepairRecord: deviceManualRepairRecord,
+	}, nil
+}
+
+// UpdateDeviceManualRepairRecordEntity sets the proto data to the entity.
+func (e *DeviceManualRepairRecordEntity) UpdateDeviceManualRepairRecordEntity(r *inv.DeviceManualRepairRecord) (error) {
+	var oldMsg inv.DeviceManualRepairRecord
+	newState := r.GetRepairState().String()
+
+	if err := proto.Unmarshal(e.DeviceManualRepairRecord, &oldMsg); err != nil {
+		return err
+	}
+
+	// Update state if repair state has been changed.
+	if e.RepairState != newState {
+		e.RepairState = newState
+	}
+
+	// Update record if the message is different from the old one.
+	if !proto.Equal(r, &oldMsg) {
+		data, err := proto.Marshal(r)
+		if err != nil {
+			return err
+		}
+		e.DeviceManualRepairRecord = data
+	}
+
+	return nil
+}
+
+/* Device Manual Repair Record Entity and helper functions end */
