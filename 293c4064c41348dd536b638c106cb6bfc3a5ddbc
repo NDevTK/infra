@@ -92,6 +92,30 @@
       "revId": "293c4064c41348dd536b638c106cb6bfc3a5ddbc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9e32981d_f0881e02",
+        "filename": "go/src/infra/appengine/arquebus/app/config/config.proto",
+        "patchSetId": 7
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1272456
+      },
+      "writtenOn": "2020-07-01T07:11:47Z",
+      "side": 1,
+      "message": "Yes, that looks perfect to me actually. Let\u0027s do that instead.",
+      "parentUuid": "a887b2fc_5431c42a",
+      "range": {
+        "startLine": 97,
+        "startChar": 4,
+        "endLine": 97,
+        "endChar": 11
+      },
+      "revId": "293c4064c41348dd536b638c106cb6bfc3a5ddbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
