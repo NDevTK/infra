@@ -1609,6 +1609,108 @@ class WorkEnv(object):
             issue.issue_id, hostport, delta_blocked_on_iids,
             reporter_id, send_email=send_email)
 
+
+  # Method used for updating issues in the v3 API path.
+  def ModifyIssues(self, issue_id_delta_pairs, is_description, comment_content=None, send_email=True,
+                   inbound_message=None):
+    # type: (Tuple[int, IssueDelta], Boolean, Optional[str], Optional[Boolean],
+    #        Optional[str]) -> None
+    """Modify issues by the given deltas."""
+
+    issue_ids = [issue_id for issue_id, _delta in issue_id_delta_pairs]
+    issues_by_id = self.GetIssuesDict(main_issue_ids, use_cache=False)
+    issue_delta_pairs = [(issues_by_id.get(issue_id), delta)
+                         for (issue_id, delta) in issue_id_delta_pairs]
+
+    # PHASE 1: Assert changes can be made.
+    # pass in full issue pb objects
+    self.AssertUserCanModifyIssues(issue_delta_pairs, is_description, comment_content=comment_content)
+    tracker_helpers.AssertIssueChangesValid(self.cnxn, issue_delta_pairs, self.services)
+
+    # PHASE 2: Organize data and initiate dicts for tracking impacted issues.
+    unique_deltas, issues_for_deltas = tracker_helpers.GroupUniqueDeltaIssues(issue_delta_pairs)
+    impacted_issues = tracker_helpers.IssueChangeImpactedIssues()
+
+    issues_to_update = {}
+
+    amendments_by_iid = {}
+    old_owners_by_iid = {}
+    # PHASE 3: Update the main issue PBs (not indirectly impacted issues).
+    for delta, issue_ids in zip(unique_deltas, issues_for_deltas):
+        for issue_id in issue_ids:
+            issue = self.services.issue.GetIssue(issue_id)
+            old_owners_by_iid[issue_id] = issue.owner_id
+            amendments, impacted_iids = tracker_helpers.ApplyIssueDelta(issue, delta)
+            issues_to_update[issue.issue_id] = issue
+            amendments_by_iid[issue_id] = amendments
+            impacted_issues.TrackImpactedIssues(issue, delta)
+
+    imp_amendments_by_iid = {}
+    imp_comments_by_iid = {}
+    # PHASE 4: Update impacted issues.
+    for issue_id in impacted_issues.all_iids:
+        if issue_id not in issues_to_update:
+            issues_to_update[issue_id] = self.services.issue.GetIssue(issue_id)
+        issue = issues_to_update.get(issue_id)
+
+        # Apply Issue impact
+        amendments = impacted_issues.ApplyImpactedIssueChanges(issue)
+        imp_amendments_by_iid[issue.issue_id] = amendments
+
+    # PHASE 5: Apply Filter Rules
+    for issue in issues_to_update:
+        # TODO raise exceptions
+        filterrules_helpers.ApplyFilterRules(self.cnxn, self.services, issue, config)
+
+    # PHASE 6: UpdateIssues and CreateIssueComments Commit
+    project_ids = []
+    projects_dict = self.services.project.GetProjects(project_ids)
+    # for loop call new_bytes_used = ComputeNewQuotaBytesUsed
+    # UpdateProject(self.mc.cnxn, project_id, attachmnet_bytes_used=new)bytes_used)
+    self.services.issue.UpdateIssues(issues_to_update, commit=False)
+    for issue in issues_to_update:
+        amendments = amendments_by_issue_id[issue.issue_id]
+
+        comment_pb = self.services.issue.CreateIssueComment(
+            issue, self.mc.auth.user_id, comment_content, amendments, commit=False)
+        new_comments_by_id[issue_id] = comment_pb
+
+        impacted_amendments = imp_amendments_by_id[issue.issue_id]
+        impacted_comment_pb = self.services.issue.CreateIssueComment(
+            issue, self.mc.auth.user_id, content='', amendments=amendments, commit=False)
+        imp_comments_by_iid[issue_id] = impacted_comment_pb
+    self.cnxn.Commit()
+    # TODO invalidate
+
+
+    # PHASE 7: send notifications
+    for issues in issues_for_delta:
+        # Send one email to involved users for the issue.
+        if len(issues) == 1:
+            old_owner = old_owners_by_issue_id[issue_id]
+            comment_pb = new_comments_by_id[issue_id]
+            send_notifications.PrepareAndSendIssueChangeNotification(
+                issue_id, old_owner_id=old_owner_id, comment_id=comment_pb.id)
+        else:
+            # Send one bulk edit email for users involved in all updated issues.
+            old_owners = [old_owners_by_issue_id[issue_id] for issue_id in issue_ids]
+            amendments = itertools.chain(
+                [amendments_by_issue_id(issue_id, []) for issue_id in issue_ids])
+            send_notifications.PrepareAndSendBulkChangeNotification(
+                issue_ids, old_owners, comment_content, amendments)
+
+    for issue_id in impacted_issues.all_iids:
+      comment_pb = imp_comments_by_iid[issue_id]
+      # We do not need to track old owners because the only owner change that could
+      # have happened for impacted issues' changes is a change from no owner to
+      # a derived owner.
+      send_notifications.PrepareAndSendIssueChangeNotification(
+          issue_id, comment_id=comment_pb.id)
+
+
+    # Phase 8: Create new index issues task
+    # TODO(crbug.com/monorail/7657): Create issue indexing task.
+
   def DeleteIssue(self, issue, delete):
     """Mark or unmark the given issue as deleted."""
     self._AssertPermInIssue(issue, permissions.DELETE_ISSUE)
