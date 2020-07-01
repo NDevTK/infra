@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0d8a81d3_152431c8",
+        "filename": "go/src/infra/appengine/arquebus/app/config/config.proto",
+        "patchSetId": 7
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1272456
+      },
+      "writtenOn": "2020-07-01T03:31:08Z",
+      "side": 1,
+      "message": "Why do you need to create a new message? This is identical to Oncall. You could either just keep Oncall or rename it.",
+      "range": {
+        "startLine": 65,
+        "startChar": 0,
+        "endLine": 65,
+        "endChar": 17
+      },
+      "revId": "293c4064c41348dd536b638c106cb6bfc3a5ddbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "81cb7dd6_478bf44e",
+        "filename": "go/src/infra/appengine/arquebus/app/config/config.proto",
+        "patchSetId": 7
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1272456
+      },
+      "writtenOn": "2020-07-01T03:31:08Z",
+      "side": 1,
+      "message": "s/failed/to fail/",
+      "range": {
+        "startLine": 79,
+        "startChar": 41,
+        "endLine": 79,
+        "endChar": 47
+      },
+      "revId": "293c4064c41348dd536b638c106cb6bfc3a5ddbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3a966230_a4e82a5e",
+        "filename": "go/src/infra/appengine/arquebus/app/config/config.proto",
+        "patchSetId": 7
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1272456
+      },
+      "writtenOn": "2020-07-01T03:31:08Z",
+      "side": 1,
+      "message": "I like this idea, but I don\u0027t like the name Trooper since lots of the rotations aren\u0027t trooper rotations. I can\u0027t think of a better one that isn\u0027t already used though :/",
+      "range": {
+        "startLine": 97,
+        "startChar": 4,
+        "endLine": 97,
+        "endChar": 11
+      },
+      "revId": "293c4064c41348dd536b638c106cb6bfc3a5ddbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
