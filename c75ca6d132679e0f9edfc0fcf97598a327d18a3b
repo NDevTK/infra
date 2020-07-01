@@ -22,6 +22,30 @@
       "revId": "c75ca6d132679e0f9edfc0fcf97598a327d18a3b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4cde6c7d_b2e1322e",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 297,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2020-07-01T21:16:58Z",
+      "side": 1,
+      "message": "I was being defensive here. It\u0027s unclear from the doc[1] that the default is None or empty list if unset. I\u0027ll poke into unittest to verify.\n\n[1]: https://cloud.google.com/appengine/docs/standard/python/ndb/entity-property-reference",
+      "parentUuid": "11a5e94f_2184cad2",
+      "range": {
+        "startLine": 297,
+        "startChar": 12,
+        "endLine": 297,
+        "endChar": 23
+      },
+      "revId": "c75ca6d132679e0f9edfc0fcf97598a327d18a3b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
