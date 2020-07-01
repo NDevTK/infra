@@ -46,6 +46,30 @@
       "revId": "c75ca6d132679e0f9edfc0fcf97598a327d18a3b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "94c9d8f2_3db96a0b",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 297,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-07-01T21:18:04Z",
+      "side": 1,
+      "message": "From python\u0027s point of view, this should always be a list (unless my brain has totally forgotten everything it knew about ndb :)).",
+      "parentUuid": "4cde6c7d_b2e1322e",
+      "range": {
+        "startLine": 297,
+        "startChar": 12,
+        "endLine": 297,
+        "endChar": 23
+      },
+      "revId": "c75ca6d132679e0f9edfc0fcf97598a327d18a3b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
