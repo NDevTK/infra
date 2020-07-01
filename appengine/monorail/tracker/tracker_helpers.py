@@ -1371,6 +1371,40 @@ class IssueChangeImpactedIssues():
         self.merged_from_remove[issue.merged_into].append(issue.issue_id)
 
 
+  def ApplyImpactedIssueChanges(cnxn, issue, issue_service):
+      amendments, _impacted_iidstracker_bizobj.ApplyIssueBlockRelationChanges(
+          cnxn, issue, self.blocked_on_add[issue.issue_id],
+          self.blocked_on_remove[issue.issue_id], self.blocking_add[issue.issue_id],
+          self.blocking_remove[issue.issue_id], issue_service)
+
+      merged_from_add = self.merged_from_add[issue.issue_id]
+      merged_from_remove = self.merged_from_remove[issue.issue_id]
+      merged_from_remove = [iid from iid in merged_from_remove if iid not in merged_from_add]
+
+      if merged_from_add or merged_from_remove:
+        added_refs = issue_service.LookupIssueRefs(
+            cnxn, merged_from_add).values()
+        removed_refs = issue_service.LookupIssueRefs(
+            cnxn, merged_from_remove).values()
+        merged_am = tracker_bizobj.MakeMergedIntoAmendment(
+            added_refs, removed_refs, default_project_name=issue.project_name)
+        amendments.append(merged_am)
+
+        new_cc_ids = _ComputeNewCcsFromIssueMerge(issue, self.merged_from_add[issue.issue_id])
+        if new_cc_ids:
+            cc_amendment = tracker_bizobj.MakeCcAmendment(new_cc_ids, [])
+            issue.cc_ids.extend(new_cc_ids)
+            amendments.append(cc_amendment)
+
+    # TODO: add starrers merging to work_env.ModifyIssues()
+    return amendments
+
+
+def MergeCcs(issue, added_issues):
+  # call tracker_bizobj.MakeMergedIntoAmendment()
+  pass
+
+
 class Error(Exception):
   """Base class for errors from this module."""
 
