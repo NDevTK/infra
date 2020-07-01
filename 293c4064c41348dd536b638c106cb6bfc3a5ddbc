@@ -68,6 +68,30 @@
       "revId": "293c4064c41348dd536b638c106cb6bfc3a5ddbc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a887b2fc_5431c42a",
+        "filename": "go/src/infra/appengine/arquebus/app/config/config.proto",
+        "patchSetId": 7
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2020-07-01T06:51:05Z",
+      "side": 1,
+      "message": "What about \n```\nassigness: {rotation: {name: \"my-rotation\", position: PRIMARY}}\n```\n\nI didn\u0027t like term \"oncall\", because it\u0027s mostly used to refer to an Oncall engineer, but, used to refer to an oncall rotation in some context and rpc calls. Also, oncall.name may sound like the name of an oncall engineer. That\u0027s why I initially named the property \"rotation\".\n\nHowever, I believe that everyone would agree with what rotation.name refers to.",
+      "parentUuid": "3a966230_a4e82a5e",
+      "range": {
+        "startLine": 97,
+        "startChar": 4,
+        "endLine": 97,
+        "endChar": 11
+      },
+      "revId": "293c4064c41348dd536b638c106cb6bfc3a5ddbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
