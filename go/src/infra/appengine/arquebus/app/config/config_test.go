@@ -51,6 +51,12 @@ func createRotationSource(rotation string) *UserSource_Rotation {
 	}
 }
 
+func createTrooperSource(rotation string) *UserSource_Trooper {
+	return &UserSource_Trooper{
+		Trooper: &Trooper{Rotation: rotation, Position: Trooper_PRIMARY},
+	}
+}
+
 func TestMiddleware(t *testing.T) {
 	t.Parallel()
 
@@ -197,6 +203,10 @@ func TestConfigValidator(t *testing.T) {
 				So(validate(cfg), ShouldBeNil)
 				source.From = createRotationSource("grotation:foo-bar")
 				So(validate(cfg), ShouldBeNil)
+				source.From = createTrooperSource("oncallator:foo-bar")
+				So(validate(cfg), ShouldBeNil)
+				source.From = createTrooperSource("grotation:foo-bar")
+				So(validate(cfg), ShouldBeNil)
 			})
 		})
 
@@ -234,6 +244,16 @@ func TestConfigValidator(t *testing.T) {
 				source.From = createRotationSource("oncallator:foo:bar")
 				So(validate(cfg), ShouldErrLike, invalidID)
 				source.From = createRotationSource("oncallator:[foo-bar]")
+				So(validate(cfg), ShouldErrLike, invalidID)
+				source.From = createTrooperSource("")
+				So(validate(cfg), ShouldErrLike, invalidID)
+				source.From = createTrooperSource("foo-bar")
+				So(validate(cfg), ShouldErrLike, invalidID)
+				source.From = createTrooperSource("oncallator: foo-bar")
+				So(validate(cfg), ShouldErrLike, invalidID)
+				source.From = createTrooperSource("oncallator:foo:bar")
+				So(validate(cfg), ShouldErrLike, invalidID)
+				source.From = createTrooperSource("oncallator:[foo-bar]")
 				So(validate(cfg), ShouldErrLike, invalidID)
 			})
 
