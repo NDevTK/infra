@@ -142,13 +142,16 @@ func validateAssigner(c *validation.Context, assigner *Assigner) {
 }
 
 func validateUserSource(c *validation.Context, source *UserSource) {
-	if oncall := source.GetOncall(); oncall != nil {
-		validateOncall(c, oncall)
-	} else if rotation := source.GetRotation(); rotation != nil {
-		validateRotation(c, rotation)
-	} else if email := source.GetEmail(); email != "" {
-		validateEmail(c, email)
-	} else {
+	switch {
+	case source.GetOncall() != nil:
+		validateOncall(c, source.GetOncall())
+	case source.GetRotation() != nil:
+		validateRotation(c, source.GetRotation())
+	case source.GetEmail() != "":
+		validateEmail(c, source.GetEmail())
+	case source.GetTrooper() != nil:
+		validateTrooper(c, source.GetTrooper())
+	default:
 		c.Errorf("missing or unknown user source")
 	}
 }
@@ -183,5 +186,18 @@ func validateEmail(c *validation.Context, email string) {
 	// All Monorail users should be valid email addresses.
 	if _, err := mail.ParseAddress(email); err != nil {
 		c.Errorf("invalid email: %s", err)
+	}
+}
+
+func validateTrooper(c *validation.Context, trooper *Trooper) {
+	if !rotationProxyNameRegex.MatchString(trooper.Rotation) {
+		c.Errorf(
+			"invalid id; prefix must be 'oncallator:' or 'grotation:' " +
+				"followed by a name containing only alphanumeric " +
+				"characters and dashes.",
+		)
+	}
+	if trooper.Position == Trooper_UNSET {
+		c.Errorf("missing rotation position")
 	}
 }
