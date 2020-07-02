@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "99dde595_5d9e9c35",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 9
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2020-07-02T09:21:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bdbc5c64_940473ec",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 3
+      },
+      "revId": "1c63da1c64b0e29db0618bc1fd3f65bfdf17d74a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "51f1ad90_25e61d92",
         "filename": "go/src/infra/appengine/arquebus/app/config/config.proto",
         "patchSetId": 9
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "84a61dae_11472863",
+        "filename": "go/src/infra/appengine/arquebus/app/config/config.proto",
+        "patchSetId": 9
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2020-07-02T09:21:17Z",
+      "side": 1,
+      "message": "https://source.chromium.org/chromium/infra/infra/+/master:go/src/infra/appengine/arquebus/app/appengine/templates/pages/assigner.html;l\u003d84-87\n\nAFAIK, {{.GetRotation}} or {{.GetOncall}} will render the jsonized version of the protos, and I expect that it will not render empty-string fields, which I\u0027m not actually sure.\ne.g.,\n  {rotation: {name: \"abc\"}}\n\nI\u0027d like to try it, but it seems that the existing pages are broken and renders empty lists in \"Assignees\" and \"CCs\" columns.\n: https://arquebus.appspot.com/assigner/chrome-ops-foundation-auto-assigner\n\nI will debug it further tomorrow and submit a separate CL with a fix.",
+      "parentUuid": "51f1ad90_25e61d92",
+      "range": {
+        "startLine": 64,
+        "startChar": 2,
+        "endLine": 64,
+        "endChar": 18
+      },
+      "revId": "1c63da1c64b0e29db0618bc1fd3f65bfdf17d74a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cc71c45b_e8e2feb9",
         "filename": "go/src/infra/appengine/arquebus/app/devcfg/services/dev/config-template.cfg",
         "patchSetId": 9
@@ -68,6 +116,30 @@
       "revId": "1c63da1c64b0e29db0618bc1fd3f65bfdf17d74a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bdc87b37_6ba140ef",
+        "filename": "go/src/infra/appengine/arquebus/app/devcfg/services/dev/config-template.cfg",
+        "patchSetId": 9
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2020-07-02T09:21:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cc71c45b_e8e2feb9",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 1
+      },
+      "revId": "1c63da1c64b0e29db0618bc1fd3f65bfdf17d74a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
