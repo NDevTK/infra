@@ -459,7 +459,7 @@ func (tc *TaskCreator) dimsWithBotID(ctx context.Context, host string) ([]*swarm
 func operationTaskDims(dutID string) []*swarming_api.SwarmingRpcsStringPair {
 	return []*swarming_api.SwarmingRpcsStringPair{
 		{Key: "pool", Value: swarming.SkylabPool},
-		{Key: "id", Value: dutID},
+		{Key: "dut_id", Value: dutID},
 	}
 }
 
