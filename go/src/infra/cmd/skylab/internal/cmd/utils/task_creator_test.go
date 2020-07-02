@@ -271,7 +271,7 @@ func TestDeployTask(t *testing.T) {
 				switch d.Key {
 				case "pool":
 					So(d.Value, ShouldEqual, "ChromeOSSkylab")
-				case "id":
+				case "dut_id":
 					So(d.Value, ShouldEqual, "fake_dut_id")
 				}
 			}
