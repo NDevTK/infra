@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e4da7378_abb4fa0f",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/inventory/update-dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-07-02T01:18:01Z",
+      "side": 1,
+      "message": "Will this use case create any problem? UpdateDut succeeds and DeployTask fails.\nIt will create inconsistent data in invV2.",
+      "revId": "7579c3284d26cd385d157e851e36fa455552f818",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bc57cc8e_ea6dd866",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/inventory/update-dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-07-02T01:18:01Z",
+      "side": 1,
+      "message": "inventory V2",
+      "revId": "7579c3284d26cd385d157e851e36fa455552f818",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
