@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "09088055_d3669856",
+        "filename": "go/src/infra/appengine/arquebus/app/config/config.proto",
+        "patchSetId": 7
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2020-07-02T07:12:02Z",
+      "side": 1,
+      "message": "kept oncall.",
+      "parentUuid": "0d8a81d3_152431c8",
+      "range": {
+        "startLine": 65,
+        "startChar": 0,
+        "endLine": 65,
+        "endChar": 17
+      },
+      "revId": "293c4064c41348dd536b638c106cb6bfc3a5ddbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "81cb7dd6_478bf44e",
         "filename": "go/src/infra/appengine/arquebus/app/config/config.proto",
         "patchSetId": 7
@@ -45,6 +69,30 @@
       "revId": "293c4064c41348dd536b638c106cb6bfc3a5ddbc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b5aa1782_12d67e8a",
+        "filename": "go/src/infra/appengine/arquebus/app/config/config.proto",
+        "patchSetId": 7
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2020-07-02T07:12:02Z",
+      "side": 1,
+      "message": "comment removed.",
+      "parentUuid": "81cb7dd6_478bf44e",
+      "range": {
+        "startLine": 79,
+        "startChar": 41,
+        "endLine": 79,
+        "endChar": 47
+      },
+      "revId": "293c4064c41348dd536b638c106cb6bfc3a5ddbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -107,6 +155,30 @@
       "side": 1,
       "message": "Yes, that looks perfect to me actually. Let\u0027s do that instead.",
       "parentUuid": "a887b2fc_5431c42a",
+      "range": {
+        "startLine": 97,
+        "startChar": 4,
+        "endLine": 97,
+        "endChar": 11
+      },
+      "revId": "293c4064c41348dd536b638c106cb6bfc3a5ddbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "538169c8_777135e4",
+        "filename": "go/src/infra/appengine/arquebus/app/config/config.proto",
+        "patchSetId": 7
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2020-07-02T07:12:02Z",
+      "side": 1,
+      "message": "done. PTAL",
+      "parentUuid": "9e32981d_f0881e02",
       "range": {
         "startLine": 97,
         "startChar": 4,
