@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "35f56391_3e79bf59",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2020-07-02T06:03:19Z",
+      "side": 1,
+      "message": "Go code must be updated before this is deployed",
+      "revId": "f7f6b35c9c52b451cd5c1dc827ea7db2dd39c87d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "136399bb_e21d1452",
         "filename": "appengine/cr-buildbucket/model.py",
         "patchSetId": 3
