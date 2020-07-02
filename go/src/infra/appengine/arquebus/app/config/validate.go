@@ -126,7 +126,7 @@ func validateAssigner(c *validation.Context, assigner *Assigner) {
 	}
 
 	if len(assigner.Assignees) == 0 && len(assigner.Ccs) == 0 {
-		c.Errorf("at least one of assignees or ccs must be given.")
+		c.Errorf("at least one of assignees or ccs must be given")
 	} else {
 		for i, source := range assigner.Assignees {
 			c.Enter("assignee %d", i+1)
@@ -167,11 +167,24 @@ func validateOncall(c *validation.Context, oncall *Oncall) {
 }
 
 func validateRotation(c *validation.Context, rotation *Oncall) {
-	if !rotationProxyNameRegex.MatchString(rotation.Rotation) {
+	var name string
+	if rotation.Name != "" {
+		if rotation.Rotation != "" {
+			c.Errorf("both name and rotation are specified")
+		}
+		name = rotation.Name
+	} else {
+		if rotation.Rotation == "" {
+			c.Errorf("either name or rotation must be specified")
+		}
+		name = rotation.Rotation
+	}
+
+	if name != "" && !rotationProxyNameRegex.MatchString(name) {
 		c.Errorf(
 			"invalid id; prefix must be 'oncallator:' or 'grotation:' " +
 				"followed by a name containing only alphanumeric " +
-				"characters and dashes.",
+				"characters and dashes",
 		)
 	}
 	if rotation.Position == Oncall_UNSET {
