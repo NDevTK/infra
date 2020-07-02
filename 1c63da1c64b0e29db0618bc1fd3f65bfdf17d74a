@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bdbc5c64_940473ec",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 9
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1272456
+      },
+      "writtenOn": "2020-07-02T07:25:48Z",
+      "side": 1,
+      "message": "Commit message needs rewriting.",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 3
+      },
+      "revId": "1c63da1c64b0e29db0618bc1fd3f65bfdf17d74a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cc71c45b_e8e2feb9",
+        "filename": "go/src/infra/appengine/arquebus/app/devcfg/services/dev/config-template.cfg",
+        "patchSetId": 9
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1272456
+      },
+      "writtenOn": "2020-07-02T07:25:48Z",
+      "side": 1,
+      "message": "i know this is only for dev, but suggest deleting this assigner since devx trooper no longer exists",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 1
+      },
+      "revId": "1c63da1c64b0e29db0618bc1fd3f65bfdf17d74a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
