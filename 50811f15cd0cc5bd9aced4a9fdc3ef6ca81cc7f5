@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4219ecb9_51d5be28",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/inventory/update-dut.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-02T00:34:51Z",
+      "side": 1,
+      "message": "this is still used by add-dut now",
+      "range": {
+        "startLine": 134,
+        "startChar": 5,
+        "endLine": 134,
+        "endChar": 19
+      },
+      "revId": "50811f15cd0cc5bd9aced4a9fdc3ef6ca81cc7f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
