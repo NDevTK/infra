@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5e05dc9d_9032ec0e",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/inventory/update-dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-03T06:44:11Z",
+      "side": 1,
+      "message": "It won\u0027t cause any inconsistency, just probably cause test failures later as it didn\u0027t pass the deployment proccess here to verify it\u0027s ready for testing. The same problem will happen in the existing implementations in crosskylabadmin. \n\nAdded more clear error msg to users to let them rerun update-dut.",
+      "parentUuid": "e4da7378_abb4fa0f",
+      "revId": "7579c3284d26cd385d157e851e36fa455552f818",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "bc57cc8e_ea6dd866",
         "filename": "go/src/infra/cmd/skylab/internal/cmd/inventory/update-dut.go",
         "patchSetId": 3
@@ -33,6 +51,24 @@
       "revId": "7579c3284d26cd385d157e851e36fa455552f818",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "db41ec4a_a105b284",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/inventory/update-dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-03T06:44:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bc57cc8e_ea6dd866",
+      "revId": "7579c3284d26cd385d157e851e36fa455552f818",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
