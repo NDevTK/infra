@@ -96,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "d66357ef_6c7cd3dd",
+        "filename": "go/src/infra/appengine/arquebus/app/config/config.proto",
+        "patchSetId": 9
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2020-07-04T09:36:31Z",
+      "side": 1,
+      "message": "https://crrev.com/c/2275560 was not deployed to both of Arquebus prod and staging before. After a new push, the UI started displaying correct assignees and cces.\n\nAs I mentioned in the previous comment, the HTML template simply dumps the proto of UserSource_Oncall in json. Once all configs are migrated to the latest schema, by replacing `rotation` with `name`, I will remove UserSource_Oncall.Rotation in the proto, and the UI will only display \"name\" field.\ni.e., I believe that no template change is required.\n\nThanks for pointing it out.",
+      "parentUuid": "84a61dae_11472863",
+      "range": {
+        "startLine": 64,
+        "startChar": 2,
+        "endLine": 64,
+        "endChar": 18
+      },
+      "revId": "1c63da1c64b0e29db0618bc1fd3f65bfdf17d74a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cc71c45b_e8e2feb9",
         "filename": "go/src/infra/appengine/arquebus/app/devcfg/services/dev/config-template.cfg",
         "patchSetId": 9
