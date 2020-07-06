@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "cd04edec_6a21a79b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2020-07-06T22:34:59Z",
+      "side": 1,
+      "message": "ah.. glad that Sana asked to correct my understanding. I can certainly populate `input.experiments` field in build proto during creation. I\u0027m wondering if they could possibly go out of sync? Can a user update one of the `experiments` property in the Build entity or `input.experiments` field in build.proto but not the other once build is created?",
+      "parentUuid": "d8ad5c88_f29dc23f",
+      "revId": "f7f6b35c9c52b451cd5c1dc827ea7db2dd39c87d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "35f56391_3e79bf59",
         "filename": "appengine/cr-buildbucket/model.py",
         "patchSetId": 3
