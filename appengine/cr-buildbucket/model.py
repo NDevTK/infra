@@ -131,6 +131,7 @@ class Build(ndb.Model):
   #   output.properties: see BuildOutputProperties
   #   steps: see BuildSteps.
   #   tags: stored in tags attribute, because we have to index them anyway.
+  #   input.experiments: computed from experiments attributes.
   #   input.properties: see BuildInputProperties.
   #     CAVEAT: field input.properties does exist during build creation, and
   #     moved into BuildInputProperties right before initial datastore.put.
@@ -196,6 +197,10 @@ class Build(ndb.Model):
   experimental = ndb.ComputedProperty(
       lambda self: self.proto.input.experimental
   )
+
+  # A list of experiments enabled or disabled on this build.
+  # Each entry should look like "[-+]$experiment_name".
+  experiments = ndb.StringProperty(repeated=True)
 
   # Value of proto.created_by.
   # Making this property computed is not-entirely trivial because
@@ -271,6 +276,13 @@ class Build(ndb.Model):
     tag_delm = buildtags.DELIMITER
     assert not self.tags or all(tag_delm in t for t in self.tags)
 
+    assert not self.experiments or (
+        all(exp.startswith((
+            '+',
+            '-',
+        )) for exp in self.experiments)
+    )
+
     assert self.proto.HasField('create_time')
     assert self.proto.HasField('end_time') == is_ended
     assert not is_started or self.proto.HasField('start_time')
@@ -281,7 +293,9 @@ class Build(ndb.Model):
     assert not _ts_less(self.proto.start_time, self.proto.create_time)
     assert not _ts_less(self.proto.end_time, self.proto.create_time)
     assert not _ts_less(self.proto.end_time, self.proto.start_time)
+
     self.tags = sorted(set(self.tags))
+    self.experiments = sorted(set(self.experiments))
 
   def update_v1_status_fields(self):
     """Updates V1 status fields."""
