@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "840bf9a1_d7a81fb0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2020-07-06T18:22:05Z",
+      "side": 1,
+      "message": "This is my understanding for the design. Robbie, please correct me if I am wrong.\n\nI don\u0027t think we store the experiments in the build proto. The `experiments` field in build.proto is a sorted list of *enabled* experiments[1], which is computed by picking only the experiments start with `+` stored in the property at get time (I have a follow up CL for that). I believe the reason behind this design (i.e. having a separate property in the entity to store) is for bigQuery export and support declaring it in BuildPredicate in SearchBuildReqeust?\n\n[1]: https://chromium.googlesource.com/infra/luci/luci-go/+/7dc7afca34853dd207a5e70ec4d48ee97fcc15d2/buildbucket/proto/build.proto#82",
+      "parentUuid": "f8bae9b4_254250ee",
+      "revId": "f7f6b35c9c52b451cd5c1dc827ea7db2dd39c87d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "35f56391_3e79bf59",
         "filename": "appengine/cr-buildbucket/model.py",
         "patchSetId": 3
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "111164ef_7aba4e52",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2020-07-06T18:22:05Z",
+      "side": 1,
+      "message": "Noted! Thanks for reminding :) I will have another CL to upload corresponding go code.",
+      "parentUuid": "35f56391_3e79bf59",
+      "revId": "f7f6b35c9c52b451cd5c1dc827ea7db2dd39c87d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "136399bb_e21d1452",
         "filename": "appengine/cr-buildbucket/model.py",
         "patchSetId": 3
@@ -47,6 +83,30 @@
       "writtenOn": "2020-07-01T21:38:57Z",
       "side": 1,
       "message": "I\u0027ll remove this once I have the change in build creation ready.",
+      "range": {
+        "startLine": 278,
+        "startChar": 37,
+        "endLine": 278,
+        "endChar": 55
+      },
+      "revId": "f7f6b35c9c52b451cd5c1dc827ea7db2dd39c87d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5e1b8277_5a418d87",
+        "filename": "appengine/cr-buildbucket/model.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 278,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2020-07-06T18:22:05Z",
+      "side": 1,
+      "message": "dumb me :( Added test in model test.",
+      "parentUuid": "136399bb_e21d1452",
       "range": {
         "startLine": 278,
         "startChar": 37,
