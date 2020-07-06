@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b4935cf1_6a827dbf",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2020-07-06T19:34:09Z",
+      "side": 1,
+      "message": "nit: It seems you already built and test run updated cmd with a DUT, move test related description under TEST section?",
+      "revId": "808dab09e0faeda44c0d7593f2703480e9bce51c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
