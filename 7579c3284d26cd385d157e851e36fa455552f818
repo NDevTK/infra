@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "0eb758b5_6fc982b2",
+        "filename": "go/src/infra/cmd/skylab/internal/cmd/inventory/update-dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-07-06T17:11:12Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "5e05dc9d_9032ec0e",
+      "revId": "7579c3284d26cd385d157e851e36fa455552f818",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bc57cc8e_ea6dd866",
         "filename": "go/src/infra/cmd/skylab/internal/cmd/inventory/update-dut.go",
         "patchSetId": 3
