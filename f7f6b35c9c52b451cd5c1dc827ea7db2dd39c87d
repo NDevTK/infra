@@ -73,6 +73,24 @@
     },
     {
       "key": {
+        "uuid": "26b132f1_bf55c964",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-07-06T23:13:03Z",
+      "side": 1,
+      "message": "Since \u0027experiments\u0027 is under the \u0027input\u0027 section, it should be immutable from the time the Build is created.",
+      "parentUuid": "cd04edec_6a21a79b",
+      "revId": "f7f6b35c9c52b451cd5c1dc827ea7db2dd39c87d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "35f56391_3e79bf59",
         "filename": "appengine/cr-buildbucket/model.py",
         "patchSetId": 3
