@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "f8bae9b4_254250ee",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2020-07-06T16:37:06Z",
+      "side": 1,
+      "message": "Code seems fine, but just curious, why do you need this? Aren\u0027t these experiments already set in the proto? What\u0027s gained by duplicating them as a field in the model (which already contains the proto)? Convenience? Indexing?",
+      "revId": "f7f6b35c9c52b451cd5c1dc827ea7db2dd39c87d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "35f56391_3e79bf59",
         "filename": "appengine/cr-buildbucket/model.py",
         "patchSetId": 3
