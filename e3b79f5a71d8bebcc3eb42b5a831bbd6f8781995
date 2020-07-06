@@ -16,6 +16,391 @@
       "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "08cff9ba_4528aff6",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/entities.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-06T22:25:39Z",
+      "side": 1,
+      "message": "I find a problem that using assettag+hostname as ID cannot distinguish the repeated repair record for the same DUT, you probably need to add sth like timestamp",
+      "range": {
+        "startLine": 223,
+        "startChar": 1,
+        "endLine": 223,
+        "endChar": 31
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b714a97c_ef29b1e0",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/entities.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-06T22:25:39Z",
+      "side": 1,
+      "message": "needs to be a helper function called by both writers and readers to ensure the consistency",
+      "range": {
+        "startLine": 252,
+        "startChar": 15,
+        "endLine": 252,
+        "endChar": 40
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cd9c8f30_0c9fd3b6",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/entities.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 261,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-06T22:25:39Z",
+      "side": 1,
+      "message": "need to validate this record? what if the callers call it with different assetTag+hostname (i.e. ID)?",
+      "range": {
+        "startLine": 261,
+        "startChar": 85,
+        "endLine": 261,
+        "endChar": 109
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e59c004b_06a6f7db",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/entities.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 273,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-06T22:25:39Z",
+      "side": 1,
+      "message": "no need to check the \"if\"? can set it directly:\n\ne.RepairState \u003d r.GetRepairState().String()\n\nalso move it to the \"if\" below. repairState doesn\u0027t need to be updated if message is the same.",
+      "range": {
+        "startLine": 269,
+        "startChar": 1,
+        "endLine": 273,
+        "endChar": 0
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "49b91656_f2594b99",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-06T22:25:39Z",
+      "side": 1,
+      "message": "can be set inline",
+      "range": {
+        "startLine": 30,
+        "startChar": 2,
+        "endLine": 34,
+        "endChar": 3
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ed7baf40_0d25b806",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-06T22:25:39Z",
+      "side": 1,
+      "message": "\u0026DeviceManualRepairRecordsOpRes{\n    Entity: \u0026DeviceManualRepairRecordEntity{\n\tID: id,\n    },\n}",
+      "range": {
+        "startLine": 35,
+        "startChar": 14,
+        "endLine": 35,
+        "endChar": 17
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "af35d6dc_236601b5",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-06T22:25:39Z",
+      "side": 1,
+      "message": "use the enum directly, e.g. inv.DeviceManualRepairRecord_TYPE_DUT",
+      "range": {
+        "startLine": 18,
+        "startChar": 35,
+        "endLine": 18,
+        "endChar": 37
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b9b8925c_a41f1564",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-06T22:25:39Z",
+      "side": 1,
+      "message": "same here, use enum",
+      "range": {
+        "startLine": 19,
+        "startChar": 35,
+        "endLine": 19,
+        "endChar": 37
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7ff4a8f8_e1d8c029",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-06T22:25:39Z",
+      "side": 1,
+      "message": "use enum instead of int",
+      "range": {
+        "startLine": 28,
+        "startChar": 85,
+        "endLine": 28,
+        "endChar": 95
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "71710024_6493b9a0",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-06T22:25:39Z",
+      "side": 1,
+      "message": "use enum",
+      "range": {
+        "startLine": 40,
+        "startChar": 35,
+        "endLine": 41,
+        "endChar": 37
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "405bc14a_66fb377c",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-06T22:25:39Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 50,
+        "startChar": 85,
+        "endLine": 50,
+        "endChar": 95
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6d8d85a7_ec768733",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-06T22:25:39Z",
+      "side": 1,
+      "message": "you still need to call Get(***) to retrieve the records from datastore to test they\u0027re actually added\n\nSame for other add functions.",
+      "range": {
+        "startLine": 77,
+        "startChar": 3,
+        "endLine": 77,
+        "endChar": 4
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "12df3f55_40ca18ac",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-06T22:25:39Z",
+      "side": 1,
+      "message": "this happy path should be tested in other add/update functions already",
+      "range": {
+        "startLine": 124,
+        "startChar": 2,
+        "endLine": 124,
+        "endChar": 8
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2e378aa4_acbce463",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-06T22:25:39Z",
+      "side": 1,
+      "message": "need a getXXX to verify the old record",
+      "range": {
+        "startLine": 171,
+        "startChar": 0,
+        "endLine": 175,
+        "endChar": 0
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7b9d59d5_aec524b9",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-06T22:25:39Z",
+      "side": 1,
+      "message": "call the helper function",
+      "range": {
+        "startLine": 177,
+        "startChar": 4,
+        "endLine": 177,
+        "endChar": 45
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b7524758_2ac66f2c",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-06T22:25:39Z",
+      "side": 1,
+      "message": "need a getXXX to verify the new record",
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "65b01da0_585f9300",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-06T22:25:39Z",
+      "side": 1,
+      "message": "need to verify by getXXX instead of verifying res directly",
+      "range": {
+        "startLine": 195,
+        "startChar": 2,
+        "endLine": 195,
+        "endChar": 49
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
