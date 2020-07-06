@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "738b1e47_9e92d6a9",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/entities.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-06T19:10:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "16d2bfe4_f6f840f4",
+      "range": {
+        "startLine": 221,
+        "startChar": 5,
+        "endLine": 221,
+        "endChar": 35
+      },
+      "revId": "c3be24f98fe25e9f41131348c49cce3e54e177e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "79922d65_4c0102ce",
         "filename": "go/src/infra/libs/cros/lab_inventory/datastore/entities.go",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "c3be24f98fe25e9f41131348c49cce3e54e177e0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8b0e8754_a37487a7",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/entities.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-06T19:10:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "79922d65_4c0102ce",
+      "range": {
+        "startLine": 226,
+        "startChar": 1,
+        "endLine": 226,
+        "endChar": 25
+      },
+      "revId": "c3be24f98fe25e9f41131348c49cce3e54e177e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "8eea7946_bb68f51e",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/entities.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-06T19:10:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "41755ded_c739f836",
+      "range": {
+        "startLine": 222,
+        "startChar": 0,
+        "endLine": 227,
+        "endChar": 1
+      },
+      "revId": "c3be24f98fe25e9f41131348c49cce3e54e177e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e5702c3d_4445cdb7",
         "filename": "go/src/infra/libs/cros/lab_inventory/datastore/entities.go",
         "patchSetId": 1
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "182249cc_6f38891a",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/entities.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-06T19:10:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e5702c3d_4445cdb7",
+      "range": {
+        "startLine": 245,
+        "startChar": 1,
+        "endLine": 245,
+        "endChar": 25
+      },
+      "revId": "c3be24f98fe25e9f41131348c49cce3e54e177e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d2df9de8_c6d29497",
         "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record.go",
         "patchSetId": 1
@@ -114,6 +210,30 @@
       "revId": "c3be24f98fe25e9f41131348c49cce3e54e177e0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "72307e19_a1acc5ea",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-06T19:10:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d2df9de8_c6d29497",
+      "range": {
+        "startLine": 38,
+        "startChar": 11,
+        "endLine": 38,
+        "endChar": 40
+      },
+      "revId": "c3be24f98fe25e9f41131348c49cce3e54e177e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
