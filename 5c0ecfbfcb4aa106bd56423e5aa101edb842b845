@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a96da1a6_c365a555",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2020-07-07T23:58:48Z",
+      "side": 1,
+      "message": "I\u0027ll TBR this to unblock the roll.",
+      "revId": "5c0ecfbfcb4aa106bd56423e5aa101edb842b845",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
