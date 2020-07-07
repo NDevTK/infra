@@ -39,6 +39,30 @@
       "revId": "b863353477b5a9ba9b47ffe02dc53f3731014925",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2d36c8dc_b07760a2",
+        "filename": "appengine/monorail/api/v3/api_proto/issues.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2020-07-07T23:34:47Z",
+      "side": 1,
+      "message": "Following up in https://crrev.com/c/2285508",
+      "parentUuid": "8ee99ad5_58715653",
+      "range": {
+        "startLine": 83,
+        "startChar": 0,
+        "endLine": 83,
+        "endChar": 31
+      },
+      "revId": "b863353477b5a9ba9b47ffe02dc53f3731014925",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
