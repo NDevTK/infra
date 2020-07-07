@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "21a12c4d_d53cea67",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-07T17:24:27Z",
+      "side": 1,
+      "message": "Core code looks great! one question and 1 suggestion",
+      "revId": "38f0da135c523be38182f7d92518685046d573c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "05e938c2_7d360801",
+        "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 1773,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-07T17:24:27Z",
+      "side": 1,
+      "message": "is it intended that 8 is reused and that the 8 above is defined before 7?",
+      "range": {
+        "startLine": 1773,
+        "startChar": 34,
+        "endLine": 1773,
+        "endChar": 36
+      },
+      "revId": "38f0da135c523be38182f7d92518685046d573c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e28f5dca_3b0e8d0e",
+        "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 1780,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-07T17:24:27Z",
+      "side": 1,
+      "message": "for this or for `blocking`, consider having one issue that is not removed.",
+      "range": {
+        "startLine": 1780,
+        "startChar": 19,
+        "endLine": 1780,
+        "endChar": 34
+      },
+      "revId": "38f0da135c523be38182f7d92518685046d573c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
