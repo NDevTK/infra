@@ -1023,6 +1023,48 @@ class WorkEnvTest(unittest.TestCase):
             789, 'sum', 'New', 222, [333], ['Hot'], [], [], 'desc',
             send_email=False, reporter_id=222, timestamp=PAST_TIME)
 
+  @mock.patch(
+      'features.send_notifications.PrepareAndSendIssueBlockingNotification')
+  @mock.patch(
+      'features.send_notifications.PrepareAndSendIssueChangeNotification')
+  def testCreateIssue_AppliesFilterRules(self, _fake_pasicn, _fake_pasibn):
+    """We raise FilterRuleException if filter rule should show error."""
+    self.services.features.TestAddFilterRule(
+        789, '-has:component', add_labels=['no-component'])
+
+    self.SignIn(user_id=111)
+    with self.work_env as we:
+      actual_issue, _ = we.CreateIssue(
+          789,
+          'sum',
+          'New',
+          222, [333], [], [], [],
+          'desc',
+          raise_filter_errors=True)
+    self.assertEqual(len(actual_issue.derived_labels), 1)
+    self.assertEqual(actual_issue.derived_labels[0], 'no-component')
+
+  @mock.patch(
+      'features.send_notifications.PrepareAndSendIssueBlockingNotification')
+  @mock.patch(
+      'features.send_notifications.PrepareAndSendIssueChangeNotification')
+  def testCreateIssue_RaiseFilterErrors(self, _fake_pasicn, _fake_pasibn):
+    """We raise FilterRuleException if filter rule should show error."""
+    self.services.features.TestAddFilterRule(789, '-has:component', error='er')
+    PAST_TIME = 123456
+    self.SignIn(user_id=111)
+    with self.assertRaises(exceptions.FilterRuleException):
+      with self.work_env as we:
+        we.CreateIssue(
+            789,
+            'sum',
+            'New',
+            222, [], [], [], [],
+            'desc',
+            send_email=False,
+            timestamp=PAST_TIME,
+            raise_filter_errors=True)
+
   def testCreateIssueFromDelta(self):
     # TODO(crbug/monorail/7197): implement tests
     pass
