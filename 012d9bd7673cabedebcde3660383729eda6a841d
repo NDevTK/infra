@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4a5f5a2d_f815e546",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2020-07-07T18:36:02Z",
+      "side": 1,
+      "message": "Will run `make prpc_proto_v3` after approval and before merging.",
+      "revId": "012d9bd7673cabedebcde3660383729eda6a841d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
