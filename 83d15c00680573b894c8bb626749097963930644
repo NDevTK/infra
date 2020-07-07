@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "818d8829_5be10309",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-07T22:25:04Z",
+      "side": 1,
+      "message": "Only nits",
+      "revId": "83d15c00680573b894c8bb626749097963930644",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "39c0e45e_910d9ce5",
+        "filename": "appengine/monorail/businesslogic/work_env.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 920,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-07T22:25:04Z",
+      "side": 1,
+      "message": "Per backend dev guide, please add type hints.\n\nLooks like this may be a good opportunity to use the inline comment style mentioned there.\n\nhttps://www.python.org/dev/peps/pep-0484/#suggested-syntax-for-python-2-7-and-straddling-code",
+      "range": {
+        "startLine": 920,
+        "startChar": 0,
+        "endLine": 920,
+        "endChar": 18
+      },
+      "revId": "83d15c00680573b894c8bb626749097963930644",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0a3fb106_6b1e96f1",
+        "filename": "appengine/monorail/businesslogic/work_env.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 966,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-07T22:25:04Z",
+      "side": 1,
+      "message": "I think we should make this the default going forward? (and just update the existing calls to use False).",
+      "range": {
+        "startLine": 966,
+        "startChar": 0,
+        "endLine": 966,
+        "endChar": 77
+      },
+      "revId": "83d15c00680573b894c8bb626749097963930644",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "664e4723_2d4186ff",
+        "filename": "appengine/monorail/businesslogic/work_env.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1042,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-07T22:25:04Z",
+      "side": 1,
+      "message": "Nit: I\u0027d put this in the method docstring rather than in the code. (Or even better, just as a comment on the existing usages, if we make the default True rather than False)\n\nIt feels a bit distracting here, given that all we need to know is that the caller requested raising errors.\n\nAlso looks like this is used one more place\nhttps://osscs.corp.google.com/chromium/infra/infra/+/master:appengine/monorail/features/alert2issue.py;l\u003d159?q\u003df:monorail%20%5C.createissue\u0026ss\u003dchromium%2Finfra%2Finfra",
+      "range": {
+        "startLine": 1042,
+        "startChar": 0,
+        "endLine": 1042,
+        "endChar": 77
+      },
+      "revId": "83d15c00680573b894c8bb626749097963930644",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
