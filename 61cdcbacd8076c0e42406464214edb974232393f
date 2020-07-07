@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "86f26325_43e5acdd",
+        "filename": "go/src/infra/cmd/shivas/utils/userinput.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 762,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-07T22:03:00Z",
+      "side": 1,
+      "message": "is this to check if the labstation is already deployed?\n\nIf so, could you make the error msg more clear to say that the specified labstation is not deployed, please use *** to deploy labstation %s first?",
+      "range": {
+        "startLine": 762,
+        "startChar": 4,
+        "endLine": 762,
+        "endChar": 57
+      },
+      "revId": "61cdcbacd8076c0e42406464214edb974232393f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
