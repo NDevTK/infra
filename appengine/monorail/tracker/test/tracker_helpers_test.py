@@ -8,6 +8,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import copy
 import mock
 import unittest
 
@@ -1668,6 +1669,11 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
 class IssueChangeImpactedIssuesTest(unittest.TestCase):
   """Tests for the IssueChangeImpactedIssues class."""
 
+  def setUp(self):
+    self.services = service_manager.Services(
+        issue=fake.IssueService())
+    self.cnxn = 'fake connection'
+
   def testTrackImpactedIssues(self):
     issue_delta_pairs = []
 
@@ -1727,3 +1733,84 @@ class IssueChangeImpactedIssuesTest(unittest.TestCase):
             78901: [issue_4.issue_id],
             78902: [issue_3.issue_id]
         })
+
+  def testApplyImpactedIssueChanges(self):
+    impacted_tracker = tracker_helpers.IssueChangeImpactedIssues()
+    impacted_issue = _Issue('proj', 1, 'summary', 'Available')
+    impacted_iid = impacted_issue.issue_id
+
+    # Setup.
+    bo_add = _Issue('proj', 2, '', '')
+    self.services.issue.TestAddIssue(bo_add)
+    impacted_tracker.blocked_on_add[impacted_iid].extend([bo_add.issue_id])
+
+    bo_remove = _Issue('proj', 3, '', '')
+    self.services.issue.TestAddIssue(bo_remove)
+    impacted_tracker.blocked_on_remove[impacted_iid].extend(
+        [bo_remove.issue_id])
+
+    b_add = _Issue('proj', 4, '', '')
+    self.services.issue.TestAddIssue(b_add)
+    impacted_tracker.blocking_add[impacted_iid].extend(
+        [b_add.issue_id])
+
+    b_remove = _Issue('proj', 5, '', '')
+    self.services.issue.TestAddIssue(b_remove)
+    impacted_tracker.blocking_remove[impacted_iid].extend(
+        [b_remove.issue_id])
+
+    m_add = _Issue('proj', 6, '', '')
+    m_add.cc_ids = [666, 777]
+    self.services.issue.TestAddIssue(m_add)
+    m_add_no_ccs = _Issue('proj', 8, '', '')
+    self.services.issue.TestAddIssue(m_add_no_ccs)
+    impacted_tracker.merged_from_add[impacted_iid].extend(
+        [m_add.issue_id, m_add_no_ccs.issue_id])
+
+    m_remove = _Issue('proj', 7, '', '')
+    m_remove.cc_ids = [888]
+    self.services.issue.TestAddIssue(m_remove)
+    m_add_no_ccs = _Issue('proj', 8, '', '')
+    self.services.issue.TestAddIssue(m_add_no_ccs)
+    impacted_tracker.merged_from_remove[impacted_iid].extend(
+        [m_remove.issue_id])
+
+
+    impacted_issue.cc_ids = [666]
+    impacted_issue.blocked_on_iids = [bo_remove.issue_id]
+    impacted_issue.blocking_iids = [b_remove.issue_id]
+    expected_issue = copy.deepcopy(impacted_issue)
+
+    # Verify.
+    amendments = impacted_tracker.ApplyImpactedIssueChanges(
+        self.cnxn, impacted_issue, self.services.issue)
+    expected_amendments = [
+        tracker_bizobj.MakeBlockedOnAmendment(
+            [('proj', bo_add.local_id)],
+            [('proj', bo_remove.local_id)], default_project_name='proj'),
+        tracker_bizobj.MakeBlockingAmendment(
+            [('proj', b_add.local_id)],
+            [('proj', b_remove.local_id)], default_project_name='proj'),
+        tracker_bizobj.MakeCcAmendment([777], []),
+        tracker_bizobj.MakeMergedIntoAmendment(
+            [('proj', m_add_no_ccs.local_id), ('proj', m_add.local_id)],
+            [('proj', m_remove.local_id)], default_project_name='proj')
+        ]
+    self.assertEqual(amendments, expected_amendments)
+
+    expected_issue.cc_ids.append(777)
+    expected_issue.blocked_on_iids = [bo_add.issue_id]
+    expected_issue.blocked_on_ranks = [0]
+    expected_issue.blocking_iids = [b_add.issue_id]
+    self.assertEqual(expected_issue, impacted_issue)
+
+  def testApplyImpactedIssueChanges_Empty(self):
+    impacted_tracker = tracker_helpers.IssueChangeImpactedIssues()
+    impacted_issue = _Issue('proj', 1, 'summary', 'Available')
+    expected_issue = copy.deepcopy(impacted_issue)
+
+    amendments = impacted_tracker.ApplyImpactedIssueChanges(
+        self.cnxn, impacted_issue, self.services.issue)
+
+    self.assertEqual(amendments, [])
+    self.assertEqual(expected_issue, impacted_issue)
