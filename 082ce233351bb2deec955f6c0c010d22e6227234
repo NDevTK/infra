@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b611390b_defe1fdc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-07T23:35:16Z",
+      "side": 1,
+      "message": "Thanks for the quick fix and test!\n\nNoticed a few minor things remaining.",
+      "revId": "082ce233351bb2deec955f6c0c010d22e6227234",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "43dcde9d_b333b3aa",
+        "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 1753,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-07T23:35:16Z",
+      "side": 1,
+      "message": "I think I\u0027d like to make these default arguments on _Issue so you can skip the boilerplate here.",
+      "range": {
+        "startLine": 1753,
+        "startChar": 29,
+        "endLine": 1753,
+        "endChar": 37
+      },
+      "revId": "082ce233351bb2deec955f6c0c010d22e6227234",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b5e53c58_f3436ce2",
+        "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 1813,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-07T23:35:16Z",
+      "side": 1,
+      "message": "Got it. Thank you. It took some more detailed reading of SortBlockedOn to figure out what\u0027s happening.\n\nConfirming my understanding\n\nIf we had\n\nimpacted_issue.blocked_on_iids \u003d [bo_remove.issue_id, 78404]\nimpacted_issue.blocked_on_ranks \u003d [0, 10]\n\nThen the result would be\n\nimpacted_issue.blocked_on_iids \u003d [78404, bo_add.issue_id]\nimpacted_issue.blocked_on_ranks \u003d [10, 0]",
+      "range": {
+        "startLine": 1811,
+        "startChar": 0,
+        "endLine": 1813,
+        "endChar": 40
+      },
+      "revId": "082ce233351bb2deec955f6c0c010d22e6227234",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3e788db5_b10ed609",
+        "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 1816,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-07T23:35:16Z",
+      "side": 1,
+      "message": "It looks like elsewhere in this test (and file) we have used assertEqual(actual, expected). It will make reading test failures a bit easier if we\u0027re consistent.\n\nDo we have a convention we want to follow in general?\n\n\n(Unfortunately it looks like python assert methods themselves are inconsistent https://docs.python.org/2/library/unittest.html#unittest.TestCase.assertItemsEqual\nhttps://docs.python.org/2/library/unittest.html#unittest.TestCase.assertDictEqual)",
+      "range": {
+        "startLine": 1816,
+        "startChar": 0,
+        "endLine": 1816,
+        "endChar": 52
+      },
+      "revId": "082ce233351bb2deec955f6c0c010d22e6227234",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "731cf5cc_0c7bad20",
+        "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 1830,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-07T23:35:16Z",
+      "side": 1,
+      "message": "nit: merged_from may be slightly easier to read.",
+      "range": {
+        "startLine": 1830,
+        "startChar": 28,
+        "endLine": 1830,
+        "endChar": 29
+      },
+      "revId": "082ce233351bb2deec955f6c0c010d22e6227234",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
