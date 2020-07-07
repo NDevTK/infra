@@ -80,10 +80,14 @@ message GetIssueRequest {
 }
 
 // The request message for Issues.BatchGetIssues.
-// Next available tag: 2
+// Next available tag: 3
 message BatchGetIssuesRequest {
-  // The names of the Issues to request.
-  repeated string names = 1 [
+  // The project name from which to batch get issues. If included, the parent
+  // of all the issues specified in `names` must match this field.
+  string parent = 1 [
+    (google.api.resource_reference) = {type: "api.crbug.com/Project"} ];
+  // The names of the issues to request.
+  repeated string names = 2 [
       (google.api.resource_reference) = {type: "api.crbug.com/Issue"},
       (google.api.field_behavior) = REQUIRED ];
 }
