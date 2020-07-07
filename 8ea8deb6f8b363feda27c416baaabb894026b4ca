@@ -1,0 +1,136 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e980daf2_38f2d820",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-07T22:09:29Z",
+      "side": 1,
+      "message": "Thanks for updating tests.\n\nFound a couple of things I missed in my first review.",
+      "revId": "8ea8deb6f8b363feda27c416baaabb894026b4ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1cc3787d_e127359e",
+        "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 1745,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-07T22:09:29Z",
+      "side": 1,
+      "message": "I might be missing something obvious, but wouldn\u0027t append work for most of these cases?",
+      "range": {
+        "startLine": 1745,
+        "startChar": 50,
+        "endLine": 1745,
+        "endChar": 58
+      },
+      "revId": "8ea8deb6f8b363feda27c416baaabb894026b4ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1d77efe5_c07d30cb",
+        "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 1770,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-07T22:09:29Z",
+      "side": 1,
+      "message": "swap with 8 above?",
+      "range": {
+        "startLine": 1770,
+        "startChar": 30,
+        "endLine": 1770,
+        "endChar": 31
+      },
+      "revId": "8ea8deb6f8b363feda27c416baaabb894026b4ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "71ba3b2c_94e425d4",
+        "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 1801,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-07T22:09:29Z",
+      "side": 1,
+      "message": "Can you add a comment about why these are both 0?\n\nI\u0027m sure I could figure it out, but it wasn\u0027t obvious to me where/when the ranks get applied with a couple minutes of looking.",
+      "range": {
+        "startLine": 1801,
+        "startChar": 0,
+        "endLine": 1801,
+        "endChar": 44
+      },
+      "revId": "8ea8deb6f8b363feda27c416baaabb894026b4ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1b88ba46_c642e982",
+        "filename": "appengine/monorail/tracker/tracker_helpers.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 1424,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-07T22:09:29Z",
+      "side": 1,
+      "message": "can you use merged_from_add defined above?",
+      "range": {
+        "startLine": 1424,
+        "startChar": 16,
+        "endLine": 1424,
+        "endChar": 50
+      },
+      "revId": "8ea8deb6f8b363feda27c416baaabb894026b4ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7498e119_676b60b8",
+        "filename": "appengine/monorail/tracker/tracker_helpers.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 1426,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-07T22:09:29Z",
+      "side": 1,
+      "message": "I believe it\u0027s possible that this or the above is None due to odd behavior from defaultdict\n\n\u003e\u003e\u003e from collections import defaultdict\n\u003e\u003e\u003e d \u003d defaultdict(list)\n\u003e\u003e\u003e type(d.get(1))\n\u003ctype \u0027NoneType\u0027\u003e\n\u003e\u003e\u003e type(d[1])\n\u003ctype \u0027list\u0027\u003e\n\nTesting:\n\nWhen I traced through the code, it looks like LookupIssueRefs should throw an error if we give it None, so I guess this case may not be covered in existing tests. Please add a test that causes this error to double check.\n\nFixing:\n\nI\u0027m fine if you either use the subscript rather than get(), or if you just check for None before using it in functions that expect a list.",
+      "range": {
+        "startLine": 1426,
+        "startChar": 16,
+        "endLine": 1426,
+        "endChar": 53
+      },
+      "revId": "8ea8deb6f8b363feda27c416baaabb894026b4ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
