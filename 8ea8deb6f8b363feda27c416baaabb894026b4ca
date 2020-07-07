@@ -42,6 +42,30 @@
     },
     {
       "key": {
+        "uuid": "31ac085f_411ca47c",
+        "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 1745,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-07-07T22:50:58Z",
+      "side": 1,
+      "message": "ooph",
+      "parentUuid": "1cc3787d_e127359e",
+      "range": {
+        "startLine": 1745,
+        "startChar": 50,
+        "endLine": 1745,
+        "endChar": 58
+      },
+      "revId": "8ea8deb6f8b363feda27c416baaabb894026b4ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1d77efe5_c07d30cb",
         "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
         "patchSetId": 6
@@ -62,6 +86,30 @@
       "revId": "8ea8deb6f8b363feda27c416baaabb894026b4ca",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1a0da2fa_bdd376b0",
+        "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 1770,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-07-07T22:50:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1d77efe5_c07d30cb",
+      "range": {
+        "startLine": 1770,
+        "startChar": 30,
+        "endLine": 1770,
+        "endChar": 31
+      },
+      "revId": "8ea8deb6f8b363feda27c416baaabb894026b4ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -88,6 +136,30 @@
     },
     {
       "key": {
+        "uuid": "5d1800f8_55150e9b",
+        "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 1801,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-07-07T22:50:58Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "71ba3b2c_94e425d4",
+      "range": {
+        "startLine": 1801,
+        "startChar": 0,
+        "endLine": 1801,
+        "endChar": 44
+      },
+      "revId": "8ea8deb6f8b363feda27c416baaabb894026b4ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1b88ba46_c642e982",
         "filename": "appengine/monorail/tracker/tracker_helpers.py",
         "patchSetId": 6
@@ -111,6 +183,30 @@
     },
     {
       "key": {
+        "uuid": "19dfc02e_03df3daf",
+        "filename": "appengine/monorail/tracker/tracker_helpers.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 1424,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-07-07T22:50:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1b88ba46_c642e982",
+      "range": {
+        "startLine": 1424,
+        "startChar": 16,
+        "endLine": 1424,
+        "endChar": 50
+      },
+      "revId": "8ea8deb6f8b363feda27c416baaabb894026b4ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7498e119_676b60b8",
         "filename": "appengine/monorail/tracker/tracker_helpers.py",
         "patchSetId": 6
@@ -131,6 +227,30 @@
       "revId": "8ea8deb6f8b363feda27c416baaabb894026b4ca",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b634c6f0_58817fc7",
+        "filename": "appengine/monorail/tracker/tracker_helpers.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 1426,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-07-07T22:50:58Z",
+      "side": 1,
+      "message": "thanks for the detailed review to catch this.\nwent with the subscript. \nAnd added a test which did indeed fail before I made the change to subscript.",
+      "parentUuid": "7498e119_676b60b8",
+      "range": {
+        "startLine": 1426,
+        "startChar": 16,
+        "endLine": 1426,
+        "endChar": 53
+      },
+      "revId": "8ea8deb6f8b363feda27c416baaabb894026b4ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
