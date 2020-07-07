@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ae42aae3_0ce7e31f",
+        "filename": "appengine/monorail/api/v3/api_proto/issues.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-07T23:53:36Z",
+      "side": 1,
+      "message": "remove REQUIRED",
+      "range": {
+        "startLine": 93,
+        "startChar": 6,
+        "endLine": 93,
+        "endChar": 46
+      },
+      "revId": "14a8fba7cf9f369f36d60974659369d70e981f40",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
