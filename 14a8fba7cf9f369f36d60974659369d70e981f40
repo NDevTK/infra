@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "f04f5927_a1c9eff8",
+        "filename": "appengine/monorail/api/v3/api_proto/issues.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2020-07-08T00:01:22Z",
+      "side": 1,
+      "message": "Do we only want to allow one parent per request? or would we want to allow multiple parents?\n\nThis field should be required if only 1 parent per request is allowed.",
+      "range": {
+        "startLine": 88,
+        "startChar": 2,
+        "endLine": 88,
+        "endChar": 15
+      },
+      "revId": "14a8fba7cf9f369f36d60974659369d70e981f40",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ae42aae3_0ce7e31f",
         "filename": "appengine/monorail/api/v3/api_proto/issues.proto",
         "patchSetId": 3
@@ -22,6 +45,30 @@
       "revId": "14a8fba7cf9f369f36d60974659369d70e981f40",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a478e09d_fa8b1916",
+        "filename": "appengine/monorail/api/v3/api_proto/issues.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2020-07-08T00:01:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ae42aae3_0ce7e31f",
+      "range": {
+        "startLine": 93,
+        "startChar": 6,
+        "endLine": 93,
+        "endChar": 46
+      },
+      "revId": "14a8fba7cf9f369f36d60974659369d70e981f40",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
