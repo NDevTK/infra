@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "255d7b4a_6baf6247",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/entities.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-08T18:55:02Z",
+      "side": 1,
+      "message": "You need to check if the indexes are empty or not? just like what you do in NewDeviceManualRepairRecordEntity.",
+      "range": {
+        "startLine": 269,
+        "startChar": 1,
+        "endLine": 269,
+        "endChar": 30
+      },
+      "revId": "ab1d7720b252a7998a350711f3409fc48d82aca2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "140db656_88c89565",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/entities.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 283,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-08T18:55:02Z",
+      "side": 1,
+      "message": "need to make sure the generated ID is valid, e.g. hostname, assetTag, createTime all cannot be empty in case wrong format of ID is saved to datastore",
+      "range": {
+        "startLine": 283,
+        "startChar": 0,
+        "endLine": 283,
+        "endChar": 1
+      },
+      "revId": "ab1d7720b252a7998a350711f3409fc48d82aca2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b7fee8dc_1a0ac55a",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-08T18:55:02Z",
+      "side": 1,
+      "message": "verify other properties like hostname ...",
+      "range": {
+        "startLine": 102,
+        "startChar": 3,
+        "endLine": 102,
+        "endChar": 30
+      },
+      "revId": "ab1d7720b252a7998a350711f3409fc48d82aca2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "34e50504_f582ff20",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-08T18:55:02Z",
+      "side": 1,
+      "message": "verify other properties keep unchanged",
+      "range": {
+        "startLine": 125,
+        "startChar": 3,
+        "endLine": 126,
+        "endChar": 30
+      },
+      "revId": "ab1d7720b252a7998a350711f3409fc48d82aca2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "940b1c73_2e81d48d",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-08T18:55:02Z",
+      "side": 1,
+      "message": "the error should be like \"*** cannot be empty\" as if record5.Hostname, record5.AssetTag, record5.CreatedTime.String() are all empty the ID of a wrong record could be \"--\", it may cause troubles as sth is wrongly saved to datastore with a weird ID",
+      "range": {
+        "startLine": 256,
+        "startChar": 3,
+        "endLine": 256,
+        "endChar": 24
+      },
+      "revId": "ab1d7720b252a7998a350711f3409fc48d82aca2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
