@@ -160,6 +160,30 @@
     },
     {
       "key": {
+        "uuid": "30971d01_3248402d",
+        "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 1816,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-08T00:42:59Z",
+      "side": 1,
+      "message": "Sorry I think I wrote this in a misleading way.\n\nI didn\u0027t want any renaming. I also prefer the naming you have.\n\nI just was suggesting consistency of the order of the arguments.\n\ni.e.     \n\nself.assertEqual(expected_issue, impacted_issue)\n\nwould become\n\nself.assertEqual(impacted_issue, expected_issue)",
+      "parentUuid": "0c88e52d_f1b603a5",
+      "range": {
+        "startLine": 1816,
+        "startChar": 0,
+        "endLine": 1816,
+        "endChar": 52
+      },
+      "revId": "082ce233351bb2deec955f6c0c010d22e6227234",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "731cf5cc_0c7bad20",
         "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
         "patchSetId": 7
