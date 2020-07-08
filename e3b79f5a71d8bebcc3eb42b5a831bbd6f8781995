@@ -42,6 +42,30 @@
     },
     {
       "key": {
+        "uuid": "9eb06c59_dd69b045",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/entities.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-08T18:41:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "08cff9ba_4528aff6",
+      "range": {
+        "startLine": 223,
+        "startChar": 1,
+        "endLine": 223,
+        "endChar": 31
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b714a97c_ef29b1e0",
         "filename": "go/src/infra/libs/cros/lab_inventory/datastore/entities.go",
         "patchSetId": 6
@@ -65,6 +89,30 @@
     },
     {
       "key": {
+        "uuid": "b1dcd7e7_ba8f2e85",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/entities.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-08T18:41:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b714a97c_ef29b1e0",
+      "range": {
+        "startLine": 252,
+        "startChar": 15,
+        "endLine": 252,
+        "endChar": 40
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cd9c8f30_0c9fd3b6",
         "filename": "go/src/infra/libs/cros/lab_inventory/datastore/entities.go",
         "patchSetId": 6
@@ -76,6 +124,30 @@
       "writtenOn": "2020-07-06T22:25:39Z",
       "side": 1,
       "message": "need to validate this record? what if the callers call it with different assetTag+hostname (i.e. ID)?",
+      "range": {
+        "startLine": 261,
+        "startChar": 85,
+        "endLine": 261,
+        "endChar": 109
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df2779d3_3de07385",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/entities.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 261,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-08T18:41:03Z",
+      "side": 1,
+      "message": "I\u0027m not sure what this means. Would comparing the old and new messages not work? Those should have the same hostname, assetTag, createdTime.",
+      "parentUuid": "cd9c8f30_0c9fd3b6",
       "range": {
         "startLine": 261,
         "startChar": 85,
@@ -111,6 +183,30 @@
     },
     {
       "key": {
+        "uuid": "0f375923_3782e206",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/entities.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 273,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-08T18:41:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e59c004b_06a6f7db",
+      "range": {
+        "startLine": 269,
+        "startChar": 1,
+        "endLine": 273,
+        "endChar": 0
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "49b91656_f2594b99",
         "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record.go",
         "patchSetId": 6
@@ -131,6 +227,30 @@
       "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "067eb79f_7112249f",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-08T18:41:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "49b91656_f2594b99",
+      "range": {
+        "startLine": 30,
+        "startChar": 2,
+        "endLine": 34,
+        "endChar": 3
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -157,6 +277,30 @@
     },
     {
       "key": {
+        "uuid": "adab5ee3_c3a99389",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-08T18:41:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ed7baf40_0d25b806",
+      "range": {
+        "startLine": 35,
+        "startChar": 14,
+        "endLine": 35,
+        "endChar": 17
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "af35d6dc_236601b5",
         "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
         "patchSetId": 6
@@ -177,6 +321,30 @@
       "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e4760b90_c89e7822",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-08T18:41:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "af35d6dc_236601b5",
+      "range": {
+        "startLine": 18,
+        "startChar": 35,
+        "endLine": 18,
+        "endChar": 37
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -203,6 +371,30 @@
     },
     {
       "key": {
+        "uuid": "22e3c3e9_c51eff6c",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-08T18:41:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b9b8925c_a41f1564",
+      "range": {
+        "startLine": 19,
+        "startChar": 35,
+        "endLine": 19,
+        "endChar": 37
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7ff4a8f8_e1d8c029",
         "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
         "patchSetId": 6
@@ -223,6 +415,30 @@
       "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9de811dd_147195a3",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-08T18:41:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7ff4a8f8_e1d8c029",
+      "range": {
+        "startLine": 28,
+        "startChar": 85,
+        "endLine": 28,
+        "endChar": 95
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -249,6 +465,30 @@
     },
     {
       "key": {
+        "uuid": "476dc3d7_c5d97e7f",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-08T18:41:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "71710024_6493b9a0",
+      "range": {
+        "startLine": 40,
+        "startChar": 35,
+        "endLine": 41,
+        "endChar": 37
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "405bc14a_66fb377c",
         "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
         "patchSetId": 6
@@ -269,6 +509,30 @@
       "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a98d3f8c_4d4232d5",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-08T18:41:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "405bc14a_66fb377c",
+      "range": {
+        "startLine": 50,
+        "startChar": 85,
+        "endLine": 50,
+        "endChar": 95
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -295,6 +559,30 @@
     },
     {
       "key": {
+        "uuid": "d85d623f_ab168465",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-08T18:41:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6d8d85a7_ec768733",
+      "range": {
+        "startLine": 77,
+        "startChar": 3,
+        "endLine": 77,
+        "endChar": 4
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "12df3f55_40ca18ac",
         "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
         "patchSetId": 6
@@ -315,6 +603,30 @@
       "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ca81736f_b20618ab",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-08T18:41:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "12df3f55_40ca18ac",
+      "range": {
+        "startLine": 124,
+        "startChar": 2,
+        "endLine": 124,
+        "endChar": 8
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -341,6 +653,30 @@
     },
     {
       "key": {
+        "uuid": "e44bcb42_b3365346",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-08T18:41:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2e378aa4_acbce463",
+      "range": {
+        "startLine": 171,
+        "startChar": 0,
+        "endLine": 175,
+        "endChar": 0
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7b9d59d5_aec524b9",
         "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
         "patchSetId": 6
@@ -364,6 +700,30 @@
     },
     {
       "key": {
+        "uuid": "3ae71b50_91cd1e10",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-08T18:41:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7b9d59d5_aec524b9",
+      "range": {
+        "startLine": 177,
+        "startChar": 4,
+        "endLine": 177,
+        "endChar": 45
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b7524758_2ac66f2c",
         "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
         "patchSetId": 6
@@ -378,6 +738,24 @@
       "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0f3ddb94_b84dee52",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-08T18:41:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b7524758_2ac66f2c",
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -401,6 +779,30 @@
       "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9ee32cb3_4df87e97",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-08T18:41:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "65b01da0_585f9300",
+      "range": {
+        "startLine": 195,
+        "startChar": 2,
+        "endLine": 195,
+        "endChar": 49
+      },
+      "revId": "e3b79f5a71d8bebcc3eb42b5a831bbd6f8781995",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
