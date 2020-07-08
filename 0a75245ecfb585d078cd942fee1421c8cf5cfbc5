@@ -34,6 +34,24 @@
       "revId": "0a75245ecfb585d078cd942fee1421c8cf5cfbc5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "65851de1_1c18c974",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2020-07-08T17:44:09Z",
+      "side": 1,
+      "message": "I liked seeing the multiple comments because I could follow the thought process. 😊",
+      "parentUuid": "69e8a7f9_71e18992",
+      "revId": "0a75245ecfb585d078cd942fee1421c8cf5cfbc5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
