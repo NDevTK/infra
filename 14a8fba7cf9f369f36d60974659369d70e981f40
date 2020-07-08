@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "c09d381d_44cd91ef",
+        "filename": "appengine/monorail/api/v3/api_proto/issues.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-07-08T00:06:35Z",
+      "side": 1,
+      "message": "The backend can handle getting many issues from more than one project so I would be fine with allowing multiple parents.",
+      "parentUuid": "f04f5927_a1c9eff8",
+      "range": {
+        "startLine": 88,
+        "startChar": 2,
+        "endLine": 88,
+        "endChar": 15
+      },
+      "revId": "14a8fba7cf9f369f36d60974659369d70e981f40",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ae42aae3_0ce7e31f",
         "filename": "appengine/monorail/api/v3/api_proto/issues.proto",
         "patchSetId": 3
