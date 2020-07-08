@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4fbdc7f1_5f12d11e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-07-08T00:42:59Z",
+      "side": 1,
+      "message": "\u003e Patch Set 4:\n\u003e \n\u003e Although I see the argument, I would still recommend we include parent.\n\u003e \n\u003e For me the not mentioned big +  is consistency with AIP, so it will be easy for users.\n\u003e \n\u003e I don\u0027t recommend we do any optimizing around it currently, but it leaves us open to it in the future for the cost of one upfront check.\n\nthat\u0027s true, we can include the `parent` and not do the (+) I listed until we want to.\nI somehow forgot the big + for consistency with AIP. \nI support adding `parent`\nsry for the noise of all my comments as i processed things in several stages. ",
+      "revId": "0a75245ecfb585d078cd942fee1421c8cf5cfbc5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
