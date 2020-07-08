@@ -42,6 +42,30 @@
     },
     {
       "key": {
+        "uuid": "653c5d4a_f7ba8aa3",
+        "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 1753,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-07-08T00:19:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "43dcde9d_b333b3aa",
+      "range": {
+        "startLine": 1753,
+        "startChar": 29,
+        "endLine": 1753,
+        "endChar": 37
+      },
+      "revId": "082ce233351bb2deec955f6c0c010d22e6227234",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b5e53c58_f3436ce2",
         "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
         "patchSetId": 7
@@ -53,6 +77,30 @@
       "writtenOn": "2020-07-07T23:35:16Z",
       "side": 1,
       "message": "Got it. Thank you. It took some more detailed reading of SortBlockedOn to figure out what\u0027s happening.\n\nConfirming my understanding\n\nIf we had\n\nimpacted_issue.blocked_on_iids \u003d [bo_remove.issue_id, 78404]\nimpacted_issue.blocked_on_ranks \u003d [0, 10]\n\nThen the result would be\n\nimpacted_issue.blocked_on_iids \u003d [78404, bo_add.issue_id]\nimpacted_issue.blocked_on_ranks \u003d [10, 0]",
+      "range": {
+        "startLine": 1811,
+        "startChar": 0,
+        "endLine": 1813,
+        "endChar": 40
+      },
+      "revId": "082ce233351bb2deec955f6c0c010d22e6227234",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3f42b90e_e504b4bd",
+        "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 1813,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-07-08T00:19:15Z",
+      "side": 1,
+      "message": "yup that\u0027s my understanding",
+      "parentUuid": "b5e53c58_f3436ce2",
       "range": {
         "startLine": 1811,
         "startChar": 0,
@@ -88,6 +136,30 @@
     },
     {
       "key": {
+        "uuid": "0c88e52d_f1b603a5",
+        "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 1816,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-07-08T00:19:15Z",
+      "side": 1,
+      "message": "Perhaps:\nassertEqual(actual, expected) when we only need to compare one thing\n\nand assertEqual(actual_thing_1, expected_thing_1)\n    assertEqual(actual_thing_2, expected_thing_2)\nwhen it\u0027s more than one, like this case where we need to compare the issue and the returned amendments\n\n?\n\nFor this test that would mean:\n\nself.assertEqual(expected_issue, actual_issue)\nself.assertEqual(expected_amendments, actual_amendments)\n\ni kind of don\u0027t like that we went from impacted_issue -\u003e actual_issue as I feel like \"impacted\"\nis a useful descriptor here, which is why i didn\u0027t name it \u0027actual_issue\u0027 in the first place. But overall this isn\u0027t going to happen all the time and I would prefer an established convention that we follow and can point to during code reviews\n\n\nleaving tests as is for this patchset in case you had other suggestions, since this would be a pretty big change\ne.g. impacted_issue-\u003eactual_issue\n     impacted_iid -\u003e actual_iid",
+      "parentUuid": "3e788db5_b10ed609",
+      "range": {
+        "startLine": 1816,
+        "startChar": 0,
+        "endLine": 1816,
+        "endChar": 52
+      },
+      "revId": "082ce233351bb2deec955f6c0c010d22e6227234",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "731cf5cc_0c7bad20",
         "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
         "patchSetId": 7
@@ -108,6 +180,30 @@
       "revId": "082ce233351bb2deec955f6c0c010d22e6227234",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9ea41e9e_b6685b7d",
+        "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 1830,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-07-08T00:19:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "731cf5cc_0c7bad20",
+      "range": {
+        "startLine": 1830,
+        "startChar": 28,
+        "endLine": 1830,
+        "endChar": 29
+      },
+      "revId": "082ce233351bb2deec955f6c0c010d22e6227234",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
