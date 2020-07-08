@@ -97,6 +97,30 @@
     },
     {
       "key": {
+        "uuid": "37973e0e_112632a5",
+        "filename": "appengine/monorail/api/v3/api_proto/issues.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-07-08T00:33:01Z",
+      "side": 1,
+      "message": "(bullet point was originally a minus sign \"-\" to indicate a \"con\". but gerrit did some fancy formatting on it)",
+      "parentUuid": "35e5a7fc_388c1220",
+      "range": {
+        "startLine": 88,
+        "startChar": 2,
+        "endLine": 88,
+        "endChar": 15
+      },
+      "revId": "14a8fba7cf9f369f36d60974659369d70e981f40",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ae42aae3_0ce7e31f",
         "filename": "appengine/monorail/api/v3/api_proto/issues.proto",
         "patchSetId": 3
