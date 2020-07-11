@@ -167,8 +167,3 @@ class PageTokenException(Error):
 class FilterRuleException(Error):
   """Violates a filter rule that should show error."""
   pass
-
-
-class OverAttachmentQuota(Error):
-  """Project will exceed quota if the current operation is allowed."""
-  pass

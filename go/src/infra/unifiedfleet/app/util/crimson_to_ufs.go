@@ -35,7 +35,6 @@ func ToChromeMachines(old []*crimson.Machine, machineToNics map[string][]string,
 					DeploymentTicket: o.DeploymentTicket,
 				},
 			},
-			Realm: BrowserLabAdminRealm,
 		}
 	}
 	return newObjects

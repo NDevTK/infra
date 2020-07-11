@@ -12,45 +12,40 @@ import (
 	. "go.chromium.org/luci/common/testing/assertions"
 )
 
-func TestReduce(t *testing.T) {
+func TestExpand(t *testing.T) {
 	t.Parallel()
 
-	Convey(`Nearest ancestor`, t, func() {
-		m := &Mapping{
-			Dirs: map[string]*dirmetapb.Metadata{
-				".": {TeamEmail: "0"},
-			},
-		}
-		So(m.nearestAncestor("a/b/c").TeamEmail, ShouldEqual, "0")
-	})
-
-	Convey(`Reduce`, t, func() {
+	Convey(`Expand`, t, func() {
 		Convey(`Works`, func() {
 			input := &Mapping{
 				Dirs: map[string]*dirmetapb.Metadata{
 					".": {
 						TeamEmail: "team@example.com",
+						// Will be inherited entirely.
+						Wpt: &dirmetapb.WPT{Notify: dirmetapb.Trinary_YES},
+
+						// Will be inherited partially.
 						Monorail: &dirmetapb.Monorail{
 							Project: "chromium",
 						},
 					},
 					"a": {
-						TeamEmail: "team@example.com", // redundant
-						Wpt:       &dirmetapb.WPT{Notify: true},
+						TeamEmail: "team-email@chromium.org",
 						Monorail: &dirmetapb.Monorail{
-							Project:   "chromium", // redundant
 							Component: "Component",
 						},
 					},
 				},
 			}
-			actual := input.Reduce()
+			actual := input.Expand()
 			So(actual.Proto(), ShouldResembleProto, &dirmetapb.Mapping{
 				Dirs: map[string]*dirmetapb.Metadata{
 					".": input.Dirs["."], // did not change
 					"a": {
-						Wpt: &dirmetapb.WPT{Notify: true},
+						TeamEmail: "team-email@chromium.org",
+						Wpt:       &dirmetapb.WPT{Notify: dirmetapb.Trinary_YES},
 						Monorail: &dirmetapb.Monorail{
+							Project:   "chromium",
 							Component: "Component",
 						},
 					},
@@ -62,13 +57,23 @@ func TestReduce(t *testing.T) {
 			input := &Mapping{
 				Dirs: map[string]*dirmetapb.Metadata{
 					".":   {TeamEmail: "team@example.com"},
-					"a":   {TeamEmail: "team@example.com"},
-					"a/b": {TeamEmail: "team@example.com"},
+					"a":   {},
+					"a/b": {},
 				},
 			}
-			actual := input.Reduce()
-			So(actual.Dirs, ShouldNotContainKey, "a")
-			So(actual.Dirs, ShouldNotContainKey, "a/b")
+			actual := input.Expand()
+			So(actual.Dirs["a/b"].TeamEmail, ShouldEqual, "team@example.com")
+		})
+
+		Convey(`No root`, func() {
+			input := &Mapping{
+				Dirs: map[string]*dirmetapb.Metadata{
+					"a": {TeamEmail: "a"},
+					"b": {TeamEmail: "b"},
+				},
+			}
+			actual := input.Expand()
+			So(actual.Proto(), ShouldResembleProto, input.Proto())
 		})
 	})
 }

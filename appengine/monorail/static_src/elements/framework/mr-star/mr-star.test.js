@@ -143,56 +143,55 @@ describe('mr-star', () => {
     });
   });
 
-  describe('_starringEnabled', () => {
-    it('enabled when user is logged in and has permission', () => {
+  describe('disabling star button', () => {
+    it('enabled when user is logged in and has permission', async () => {
       element._isLoggedIn = true;
       element._canStar = true;
       element._isStarred = true;
       element._requesting = false;
 
-      assert.isTrue(element._starringEnabled);
+      await element.updateComplete;
+
+      const star = element.shadowRoot.querySelector('button');
+      assert.isFalse(star.disabled);
     });
 
-    it('disabled when user is logged out', () => {
+    it('enabled when user is logged out', async () => {
       element._isLoggedIn = false;
       element._canStar = false;
       element._isStarred = false;
       element._requesting = false;
 
+      await element.updateComplete;
+
+      const star = element.shadowRoot.querySelector('button');
+      assert.isFalse(star.disabled);
       assert.isFalse(element._starringEnabled);
     });
 
-    it('disabled when user has no permission', () => {
+    it('disabled when user has no permission', async () => {
       element._isLoggedIn = true;
       element._canStar = false;
       element._isStarred = true;
       element._requesting = false;
 
-      assert.isFalse(element._starringEnabled);
+      await element.updateComplete;
+
+      const star = element.shadowRoot.querySelector('button');
+      assert.isTrue(star.disabled);
     });
 
-    it('disabled when requesting star', () => {
+    it('disabled when requesting star', async () => {
       element._isLoggedIn = true;
       element._canStar = true;
       element._isStarred = true;
       element._requesting = true;
 
-      assert.isFalse(element._starringEnabled);
+      await element.updateComplete;
+
+      const star = element.shadowRoot.querySelector('button');
+      assert.isTrue(star.disabled);
     });
-  });
-
-  it('loading state shown when requesting', async () => {
-    element._requesting = true;
-    await element.updateComplete;
-
-    const star = element.shadowRoot.querySelector('button');
-
-    assert.isTrue(star.classList.contains('loading'));
-
-    element._requesting = false;
-    await element.updateComplete;
-
-    assert.isFalse(star.classList.contains('loading'));
   });
 
   it('isStarred changes displayed icon', async () => {

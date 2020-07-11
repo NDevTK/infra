@@ -30,8 +30,8 @@ func application() *cli.Application {
 		},
 		Commands: []*subcommands.Command{
 			cmdExport(),
-			cmdCompute(),
-			cmdValidate(),
+			cmdInherited(),
+			cmdChromiumUpload(),
 
 			{},
 			subcommands.CmdHelp,

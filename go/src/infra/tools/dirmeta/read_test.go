@@ -13,74 +13,42 @@ import (
 	. "go.chromium.org/luci/common/testing/assertions"
 )
 
-func TestMappingReader(t *testing.T) {
+func TestReadMapping(t *testing.T) {
 	t.Parallel()
 
-	Convey(`MappingReader`, t, func() {
-		var r MappingReader
-
-		Convey(`ReadAll(false)`, func() {
-			r.Root = "testdata/root"
-			err := r.ReadAll(false)
-			So(err, ShouldBeNil)
-			So(r.Mapping.Proto(), ShouldResembleProto, &dirmetapb.Mapping{
-				Dirs: map[string]*dirmetapb.Metadata{
-					".": {
-						TeamEmail: "chromium-review@chromium.org",
-						Os:        dirmetapb.OS_LINUX,
-					},
-					"subdir_with_owners": {
-						TeamEmail: "team-email@chromium.org",
-						// OS was not inherited
-						Monorail: &dirmetapb.Monorail{
-							Project:   "chromium",
-							Component: "Some>Component",
-						},
-					},
-					// "subdir_with_owners/empty_subdir" is not present because it has
-					// not metadata.
+	Convey(`ReadMapping`, t, func() {
+		actual, err := ReadMapping("testdata/root")
+		So(err, ShouldBeNil)
+		So(actual.Proto(), ShouldResembleProto, &dirmetapb.Mapping{
+			Dirs: map[string]*dirmetapb.Metadata{
+				".": {
+					TeamEmail: "chromium-review@chromium.org",
 				},
-			})
-		})
-
-		Convey(`ReadAll(true)`, func() {
-			r.Root = "testdata/root"
-			err := r.ReadAll(true)
-			So(err, ShouldBeNil)
-			So(r.Mapping.Proto(), ShouldResembleProto, &dirmetapb.Mapping{
-				Dirs: map[string]*dirmetapb.Metadata{
-					".": {
-						TeamEmail: "chromium-review@chromium.org",
-						Os:        dirmetapb.OS_LINUX,
-					},
-					"subdir_with_owners": {
-						TeamEmail: "team-email@chromium.org",
-						Os:        dirmetapb.OS_LINUX,
-						Monorail: &dirmetapb.Monorail{
-							Project:   "chromium",
-							Component: "Some>Component",
-						},
-					},
-					"subdir_with_owners/empty_subdir": {
-						TeamEmail: "team-email@chromium.org",
-						Os:        dirmetapb.OS_LINUX,
-						Monorail: &dirmetapb.Monorail{
-							Project:   "chromium",
-							Component: "Some>Component",
-						},
+				"subdir_with_owners": {
+					TeamEmail: "team-email@chromium.org",
+					Os:        dirmetapb.OS_IOS,
+					Monorail: &dirmetapb.Monorail{
+						Project:   "chromium",
+						Component: "Some>Component",
 					},
 				},
-			})
+			},
 		})
+	})
+}
 
-		Convey(`ReadInheritance`, func() {
-			r.Root = "testdata/inheritance"
-			err := r.ReadTowards("testdata/inheritance/a/b")
-			So(err, ShouldBeNil)
-			So(r.Dirs, ShouldHaveLength, 3)
-			So(r.Dirs, ShouldContainKey, ".")
-			So(r.Dirs, ShouldContainKey, "a")
-			So(r.Dirs, ShouldContainKey, "a/b")
+func TestReadInherited(t *testing.T) {
+	t.Parallel()
+
+	Convey(`ReadInheritance`, t, func() {
+		md, err := ReadInherited("testdata/inheritance", "testdata/inheritance/a/b")
+		So(err, ShouldBeNil)
+		So(md, ShouldResembleProto, &dirmetapb.Metadata{
+			TeamEmail: "chromium-review@chromium.org",
+			Monorail: &dirmetapb.Monorail{
+				Project:   "chromium",
+				Component: "Component",
+			},
 		})
 	})
 }
