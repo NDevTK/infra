@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 
 	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/luci/common/errors"
 
@@ -76,5 +77,44 @@ func ReadMapping(root string) (*Mapping, error) {
 		return nil, err
 	}
 
+	return ret, nil
+}
+
+// ReadInherited reads metadata inherited by the target.
+// The inheritance starts from the root.
+//
+// Reads only metadata from root towards target, as opposed to entire tree of
+// the root.
+func ReadInherited(root, target string) (*dirmetapb.Metadata, error) {
+	root = filepath.Clean(root)
+	target = filepath.Clean(target)
+
+	var toRead []string
+	for {
+		toRead = append(toRead, target)
+
+		if target == root {
+			break
+		}
+
+		parent := filepath.Dir(target)
+		if parent == target {
+			// We have reached the root of the file system, but did not reach
+			// the `root`.
+			return nil, errors.Reason("target must be same as root or a sub-directory of root").Err()
+		}
+		target = parent
+	}
+
+	// Read the metadata in the opposite order, starting from the root.
+	ret := &dirmetapb.Metadata{}
+	for i := len(toRead) - 1; i >= 0; i-- {
+		switch meta, err := ReadMetadata(toRead[i]); {
+		case err != nil:
+			return nil, errors.Annotate(err, "failed to read metadata of %q", toRead[i]).Err()
+		case meta != nil:
+			proto.Merge(ret, meta)
+		}
+	}
 	return ret, nil
 }
