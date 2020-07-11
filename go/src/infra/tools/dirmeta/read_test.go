@@ -13,26 +13,64 @@ import (
 	. "go.chromium.org/luci/common/testing/assertions"
 )
 
-func TestReadMapping(t *testing.T) {
+func TestMappingReader(t *testing.T) {
 	t.Parallel()
 
-	Convey(`ReadMapping`, t, func() {
-		actual, err := ReadMapping("testdata/root")
-		So(err, ShouldBeNil)
-		So(actual.Proto(), ShouldResembleProto, &dirmetapb.Mapping{
-			Dirs: map[string]*dirmetapb.Metadata{
-				".": {
-					TeamEmail: "chromium-review@chromium.org",
+	Convey(`MappingReader`, t, func() {
+		var r MappingReader
+
+		Convey(`ReadAll(false)`, func() {
+			r.Root = "testdata/root"
+			err := r.ReadAll(false)
+			So(err, ShouldBeNil)
+			So(r.Mapping.Proto(), ShouldResembleProto, &dirmetapb.Mapping{
+				Dirs: map[string]*dirmetapb.Metadata{
+					".": {
+						TeamEmail: "chromium-review@chromium.org",
+						Os:        dirmetapb.OS_LINUX,
+					},
+					"subdir_with_owners": {
+						TeamEmail: "team-email@chromium.org",
+						// OS was not inherited
+						Monorail: &dirmetapb.Monorail{
+							Project:   "chromium",
+							Component: "Some>Component",
+						},
+					},
+					// "subdir_with_owners/empty_subdir" is not present because it has
+					// not metadata.
 				},
-				"subdir_with_owners": {
-					TeamEmail: "team-email@chromium.org",
-					Os:        dirmetapb.OS_IOS,
-					Monorail: &dirmetapb.Monorail{
-						Project:   "chromium",
-						Component: "Some>Component",
+			})
+		})
+
+		Convey(`ReadAll(true)`, func() {
+			r.Root = "testdata/root"
+			err := r.ReadAll(true)
+			So(err, ShouldBeNil)
+			So(r.Mapping.Proto(), ShouldResembleProto, &dirmetapb.Mapping{
+				Dirs: map[string]*dirmetapb.Metadata{
+					".": {
+						TeamEmail: "chromium-review@chromium.org",
+						Os:        dirmetapb.OS_LINUX,
+					},
+					"subdir_with_owners": {
+						TeamEmail: "team-email@chromium.org",
+						Os:        dirmetapb.OS_LINUX,
+						Monorail: &dirmetapb.Monorail{
+							Project:   "chromium",
+							Component: "Some>Component",
+						},
+					},
+					"subdir_with_owners/empty_subdir": {
+						TeamEmail: "team-email@chromium.org",
+						Os:        dirmetapb.OS_LINUX,
+						Monorail: &dirmetapb.Monorail{
+							Project:   "chromium",
+							Component: "Some>Component",
+						},
 					},
 				},
-			},
+			})
 		})
 	})
 }

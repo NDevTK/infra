@@ -7,9 +7,12 @@ package dirmeta
 import (
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
+	"strings"
 
 	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/luci/common/errors"
 
@@ -42,39 +45,85 @@ func ReadMetadata(dir string) (*dirmetapb.Metadata, error) {
 	return &ret, nil
 }
 
-// ReadMapping reads metadata from the given directory tree.
+// MappingReader reads Mapping from the file system.
+type MappingReader struct {
+	// Root is a path to the root directory.
+	Root string
+	// Mapping is the result of reading.
+	Mapping
+}
+
+// ReadAll reads metadata from the entire directory tree, overwriting
+// r.Metadata.
 //
-// The returned metadata is neither reduced, not expanded. It represents
-// data from the files as is.
-func ReadMapping(root string) (*Mapping, error) {
-	ret := &Mapping{
-		Dirs: map[string]*dirmetapb.Metadata{},
-	}
-	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir() {
+// If expand is true, the returned mapping has an entry for each directory in
+// the tree, even if that directory does not define any metadata.
+// If expand is false, then the returned metadata is neither reduced nor
+// expanded, but represents data from the files as is.
+func (r *MappingReader) ReadAll(expand bool) error {
+	r.Mapping = Mapping{Dirs: map[string]*dirmetapb.Metadata{}}
+	return filepath.Walk(r.Root, func(dir string, info os.FileInfo, err error) error {
+		switch {
+		case err != nil:
+			return err
+		case !info.IsDir():
 			return nil
 		}
 
-		// The key in ret.Dirs must be relative to the root.
-		key, err := filepath.Rel(root, path)
-		if err != nil {
-			return err
-		}
-		// The key must be in canonical form.
-		key = filepath.ToSlash(key)
+		key := r.mustDirKey(dir)
 
-		switch meta, err := ReadMetadata(path); {
+		switch meta, err := ReadMetadata(dir); {
 		case err != nil:
-			return errors.Annotate(err, "failed to read metadata of %q", path).Err()
+			return errors.Annotate(err, "failed to read metadata of %q", dir).Err()
 
 		case meta != nil:
-			ret.Dirs[key] = meta
+			r.Dirs[key] = meta
 		}
+
+		if expand {
+			// Compute full metadata for the dir.
+			// Note: filepath.Walk walks in lexical order, so by this time we have
+			// expanded parent.
+			parentKey := path.Dir(key)
+			meta := r.Dirs[parentKey]
+			if meta == nil {
+				meta = &dirmetapb.Metadata{}
+			} else {
+				meta = proto.Clone(meta).(*dirmetapb.Metadata)
+			}
+			if r.Dirs[key] != nil {
+				Merge(meta, r.Dirs[key])
+			}
+			r.Dirs[key] = meta
+		}
+
 		return nil
 	})
+}
+
+// DirKey returns a r.Dirs key for the given dir on the file system.
+// The path must be a part of the tree under r.Root.
+func (r *MappingReader) DirKey(dir string) (string, error) {
+	key, err := filepath.Rel(r.Root, dir)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	return ret, nil
+	// Dir keys use forward slashes.
+	key = filepath.ToSlash(key)
+
+	if strings.HasPrefix(key, "../") {
+		return "", errors.Reason("the path %q must be under the root %q", dir, r.Root).Err()
+	}
+
+	return key, nil
+}
+
+// mustDirKey is like DirKey, but panics on failure.
+func (r *MappingReader) mustDirKey(dir string) string {
+	key, err := r.DirKey(dir)
+	if err != nil {
+		panic(err)
+	}
+	return key
 }
