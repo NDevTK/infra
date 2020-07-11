@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 
 	dirmetapb "infra/tools/dirmeta/proto"
 )
@@ -20,7 +21,7 @@ import (
 // The file implements reading of metadata from legacy OWNERS files.
 // TODO(crbug.com/1104246): delete this file.
 
-var ownerKeyValurPairRe = regexp.MustCompile(`#\s*(\w+)\s*:\s*(\S+)`)
+var ownerKeyValurPairRe = regexp.MustCompile(`#\s*([\w\-]+)\s*:\s*(\S+)`)
 
 // readOwners reads metadata from legacy OWNERS of the given directory.
 // Returns (nil, nil) if OWNERS file does not exist.
@@ -50,17 +51,30 @@ func parseOwners(r io.Reader) (*dirmetapb.Metadata, error) {
 		if m := ownerKeyValurPairRe.FindStringSubmatch(line); len(m) > 0 {
 			key, value := m[1], m[2]
 			switch key {
+
 			case "TEAM":
 				ret.TeamEmail = value
+
 			case "COMPONENT":
 				ret.Monorail = &dirmetapb.Monorail{
 					Project:   "chromium",
 					Component: value,
 				}
+
 			case "OS":
 				var err error
 				if ret.Os, err = parseOSFromOwners(value); err != nil {
 					return nil, err
+				}
+
+			case "WPT-NOTIFY":
+				switch strings.ToLower(value) {
+				case "true":
+					ret.Wpt = &dirmetapb.WPT{Notify: &wrapperspb.BoolValue{Value: true}}
+				case "false":
+					ret.Wpt = &dirmetapb.WPT{Notify: &wrapperspb.BoolValue{Value: false}}
+				default:
+					return nil, errors.Reason("WPT-NOTIFY: expected true or false, got %q", value).Err()
 				}
 			}
 		}
