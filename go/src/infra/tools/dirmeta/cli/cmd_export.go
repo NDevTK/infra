@@ -7,8 +7,6 @@ package cli
 import (
 	"context"
 
-	"google.golang.org/protobuf/encoding/protojson"
-
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/data/text"
@@ -30,7 +28,7 @@ func cmdExport() *subcommands.Command {
 		CommandRun: func() subcommands.CommandRun {
 			r := &exportRun{}
 			r.RegisterOutputFlag()
-			r.Flags.StringVar(&r.root, "root", ".", "Path to the root directory")
+			r.Flags.StringVar(&r.Root, "root", ".", "Path to the root directory")
 			r.Flags.BoolVar(&r.expand, "expand", false, `Expand the mapping, i.e. inherit values`)
 			r.Flags.BoolVar(&r.reduce, "reduce", false, `Reduce the mapping, i.e. remove all redundant information`)
 			return r
@@ -40,7 +38,7 @@ func cmdExport() *subcommands.Command {
 
 type exportRun struct {
 	baseCommandRun
-	root           string
+	dirmeta.MappingReader
 	expand, reduce bool
 }
 
@@ -67,21 +65,16 @@ func (r *exportRun) Run(a subcommands.Application, args []string, env subcommand
 }
 
 func (r *exportRun) run(ctx context.Context) error {
-	mapping, err := dirmeta.ReadMapping(r.root)
-	if err != nil {
+	if err := r.ReadFull(); err != nil {
 		return err
 	}
 
+	mapping := &r.Mapping
 	if r.expand {
 		mapping = mapping.Expand()
 	} else if r.reduce {
 		mapping = mapping.Reduce()
 	}
 
-	data, err := protojson.Marshal(mapping.Proto())
-	if err != nil {
-		return err
-	}
-
-	return r.writeTextOutput(data)
+	return r.writeMapping(mapping)
 }
