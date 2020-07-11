@@ -6,9 +6,11 @@ package cli
 
 import (
 	"context"
+	"infra/tools/dirmeta"
 	"os"
 
 	"github.com/maruel/subcommands"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"go.chromium.org/luci/common/logging"
 )
@@ -49,4 +51,13 @@ func (r *baseCommandRun) writeTextOutput(data []byte) error {
 		out.WriteString("\n")
 	}
 	return nil
+}
+
+func (r *baseCommandRun) writeMapping(m *dirmeta.Mapping) error {
+	data, err := protojson.Marshal(m.Proto())
+	if err != nil {
+		return err
+	}
+
+	return r.writeTextOutput(data)
 }
