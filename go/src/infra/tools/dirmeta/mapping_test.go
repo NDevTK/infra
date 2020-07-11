@@ -77,3 +77,69 @@ func TestExpand(t *testing.T) {
 		})
 	})
 }
+
+func TestInherited(t *testing.T) {
+	t.Parallel()
+
+	Convey(`ancestorsAndSelf`, t, func() {
+		Convey(`.`, func() {
+			actual := ancestorsAndSelf(".")
+			So(actual, ShouldResemble, []string{"."})
+		})
+		Convey(`a/b/c`, func() {
+			actual := ancestorsAndSelf("a/b/c")
+			So(actual, ShouldResemble, []string{
+				".",
+				"a",
+				"a/b",
+				"a/b/c",
+			})
+		})
+	})
+
+	Convey(`Inherited`, t, func() {
+		Convey(`Empty`, func() {
+			m := &Mapping{}
+			So(m.Inherited("a"), ShouldResembleProto, &dirmetapb.Metadata{})
+			So(m.Inherited("."), ShouldResembleProto, &dirmetapb.Metadata{})
+		})
+		Convey(`With just root`, func() {
+			m := &Mapping{
+				Dirs: map[string]*dirmetapb.Metadata{
+					".": {TeamEmail: "root"},
+				},
+			}
+			So(m.Inherited("a"), ShouldResembleProto, &dirmetapb.Metadata{TeamEmail: "root"})
+			So(m.Inherited("."), ShouldResembleProto, &dirmetapb.Metadata{TeamEmail: "root"})
+		})
+		Convey(`With root and subdir`, func() {
+			m := &Mapping{
+				Dirs: map[string]*dirmetapb.Metadata{
+					".": {TeamEmail: "root"},
+					"a": {Wpt: &dirmetapb.WPT{Notify: true}},
+				},
+			}
+			So(m.Inherited("a"), ShouldResembleProto, &dirmetapb.Metadata{
+				TeamEmail: "root",
+				Wpt:       &dirmetapb.WPT{Notify: true},
+			})
+
+			So(m.Inherited("a/b"), ShouldResembleProto, &dirmetapb.Metadata{
+				TeamEmail: "root",
+				Wpt:       &dirmetapb.WPT{Notify: true},
+			})
+		})
+		Convey(`Long change`, func() {
+			m := &Mapping{
+				Dirs: map[string]*dirmetapb.Metadata{
+					".":     {TeamEmail: "0"},
+					"a":     {TeamEmail: "1"},
+					"a/b":   {TeamEmail: "2"},
+					"a/b/c": {TeamEmail: "3"},
+				},
+			}
+			So(m.Inherited("a/b/c").TeamEmail, ShouldEqual, "3")
+			So(m.Inherited("a/b/c/d").TeamEmail, ShouldEqual, "3")
+		})
+	})
+}
