@@ -29,7 +29,7 @@ func application() *cli.Application {
 			return logCfg.Use(ctx)
 		},
 		Commands: []*subcommands.Command{
-			cmdExtract(),
+			cmdExport(),
 
 			{},
 			subcommands.CmdHelp,
