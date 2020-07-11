@@ -16,6 +16,23 @@
       "revId": "e55ab284c83e262dee1584d76e0f001aba8dc77c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7f02e137_c8dcc9b1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2020-07-11T00:49:42Z",
+      "side": 1,
+      "message": "Will review this on Monday :)\nI\u0027d like to have a better idea of what commands are you planning on implementing, and how they fit together.",
+      "revId": "e55ab284c83e262dee1584d76e0f001aba8dc77c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
