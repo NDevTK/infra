@@ -6,7 +6,6 @@ package cli
 
 import (
 	"context"
-	"os"
 
 	"google.golang.org/protobuf/encoding/protojson"
 
@@ -25,8 +24,8 @@ func cmdExtract() *subcommands.Command {
 		LongDesc:  "Extract metadata from a directory tree.",
 		CommandRun: func() subcommands.CommandRun {
 			r := &extractRun{}
+			r.RegisterOutputFlag()
 			r.Flags.StringVar(&r.root, "root", ".", "Path to the root directory")
-			r.Flags.StringVar(&r.output, "output", "-", `Path to the output. If "-", then print the output to stdout`)
 			r.Flags.StringVar(&r.formatFlag, "format", "proto-json", text.Doc(`
 				Format of the output. Valid values:
 				"proto-json" (JSON form of the chrome.dir_meta.Mapping protobuf message),
@@ -44,7 +43,6 @@ type extractRun struct {
 	root           string
 	formatFlag     string
 	format         outputFormat
-	output         string
 	expand, reduce bool
 }
 
@@ -92,15 +90,7 @@ func (r *extractRun) run(ctx context.Context) error {
 		return err
 	}
 
-	out := os.Stdout
-	if r.output != "-" {
-		if out, err = os.Create(r.output); err != nil {
-			return err
-		}
-		defer out.Close()
-	}
-	_, err = out.Write(data)
-	return err
+	return r.writeTextOutput(data)
 }
 
 // marshal marshals m using the format specified in r.format.
