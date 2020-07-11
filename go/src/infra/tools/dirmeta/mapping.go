@@ -5,6 +5,8 @@
 package dirmeta
 
 import (
+	"path"
+
 	"google.golang.org/protobuf/proto"
 
 	dirmetapb "infra/tools/dirmeta/proto"
@@ -20,6 +22,25 @@ func NewMapping(size int) *Mapping {
 	return &Mapping{
 		Dirs: make(map[string]*dirmetapb.Metadata, size),
 	}
+}
+
+// Compute computes metadata for the given directory key.
+func (m *Mapping) Compute(key string) *dirmetapb.Metadata {
+	parent := path.Dir(key)
+	if parent == key {
+		// Base case.
+		meta := m.Dirs[key]
+		if meta == nil {
+			return &dirmetapb.Metadata{}
+		}
+		return proto.Clone(meta).(*dirmetapb.Metadata)
+	}
+
+	ret := m.Compute(parent)
+	if meta := m.Dirs[key]; meta != nil {
+		Merge(ret, meta)
+	}
+	return ret
 }
 
 // Proto converts m back to the protobuf message.
