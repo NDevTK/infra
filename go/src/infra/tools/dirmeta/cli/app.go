@@ -30,6 +30,7 @@ func application() *cli.Application {
 		},
 		Commands: []*subcommands.Command{
 			cmdExport(),
+			cmdInherited(),
 
 			{},
 			subcommands.CmdHelp,
