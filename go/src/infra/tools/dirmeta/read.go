@@ -94,6 +94,44 @@ func (r *MappingReader) ReadAll(expand bool) error {
 	})
 }
 
+// ReadTowards reads metadata of directories on the node path from r.Root to
+// target. It skips directories for which it already has metadata.
+func (r *MappingReader) ReadTowards(target string) error {
+	root := filepath.Clean(r.Root)
+	target = filepath.Clean(target)
+
+	for {
+		switch key, err := r.DirKey(target); {
+		case err != nil:
+			return err
+		case r.Dirs[key] == nil:
+			switch meta, err := ReadMetadata(target); {
+			case err != nil:
+				return errors.Annotate(err, "failed to read metadata of %q", target).Err()
+
+			case meta != nil:
+				if r.Dirs == nil {
+					r.Dirs = map[string]*dirmetapb.Metadata{}
+				}
+				r.Dirs[key] = meta
+			}
+		}
+
+		if target == root {
+			return nil
+		}
+
+		// Go up.
+		parent := filepath.Dir(target)
+		if parent == target {
+			// We have reached the root of the file system, but not `root`.
+			// This is impossible because DirKey would have failed.
+			panic("impossible")
+		}
+		target = parent
+	}
+}
+
 // DirKey returns a r.Dirs key for the given dir on the file system.
 // The path must be a part of the tree under r.Root.
 func (r *MappingReader) DirKey(dir string) (string, error) {

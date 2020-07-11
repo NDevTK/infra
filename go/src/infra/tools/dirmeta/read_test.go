@@ -72,5 +72,15 @@ func TestMappingReader(t *testing.T) {
 				},
 			})
 		})
+
+		Convey(`ReadInheritance`, func() {
+			r.Root = "testdata/inheritance"
+			err := r.ReadTowards("testdata/inheritance/a/b")
+			So(err, ShouldBeNil)
+			So(r.Dirs, ShouldHaveLength, 3)
+			So(r.Dirs, ShouldContainKey, ".")
+			So(r.Dirs, ShouldContainKey, "a")
+			So(r.Dirs, ShouldContainKey, "a/b")
+		})
 	})
 }
