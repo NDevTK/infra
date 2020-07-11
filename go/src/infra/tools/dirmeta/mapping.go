@@ -23,6 +23,30 @@ func (m *Mapping) Proto() *dirmetapb.Mapping {
 	return (*dirmetapb.Mapping)(m)
 }
 
+// Compute computes metadata for the given directory key.
+func (m *Mapping) Compute(key string) *dirmetapb.Metadata {
+	// Compute the list of directories to inherit.
+	// The order is target-to-root.
+	var keys []string
+	for {
+		keys = append(keys, key)
+		parent := path.Dir(key)
+		if parent == key {
+			break
+		}
+		key = parent
+	}
+
+	// Read the metadata in the root-to-target order.
+	ret := &dirmetapb.Metadata{}
+	for i := len(keys) - 1; i >= 0; i-- {
+		if meta, ok := m.Dirs[keys[i]]; ok {
+			Merge(ret, meta)
+		}
+	}
+	return ret
+}
+
 // Reduce returns a new mapping with all redundancies removed.
 func (m *Mapping) Reduce() *Mapping {
 	panic("not implemented")
