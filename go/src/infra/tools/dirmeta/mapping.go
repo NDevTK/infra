@@ -83,3 +83,37 @@ func (m *Mapping) dirsSortedByLength() []string {
 	})
 	return ret
 }
+
+// Inherited returns inherited metadata of the directory.
+func (m *Mapping) Inherited(dir string) *dirmetapb.Metadata {
+	ret := &dirmetapb.Metadata{}
+	for _, dir := range ancestorsAndSelf(dir) {
+		if md := m.Dirs[dir]; md != nil {
+			proto.Merge(ret, md)
+		}
+	}
+	return ret
+}
+
+// ancestorsAndSelf returns all ancestors of the dir and the dir itself,
+// e.g. for "a/b/c" it returns [".", "a", "a/b", "a/b/c"].
+func ancestorsAndSelf(dir string) []string {
+	var ret []string
+
+	dir = path.Clean(dir)
+	for {
+		ret = append(ret, dir)
+
+		parent := path.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+
+	// Reverse, so that we start with the root.
+	for i, n := 0, len(ret); i < n/2; i++ {
+		ret[i], ret[n-1-i] = ret[n-1-i], ret[i]
+	}
+	return ret
+}
