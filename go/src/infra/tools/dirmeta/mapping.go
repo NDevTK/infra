@@ -59,7 +59,7 @@ func (m *Mapping) Expand() *Mapping {
 			ret.Dirs[dir] = m.Dirs[dir]
 		} else {
 			meta := proto.Clone(ancestor).(*dirmetapb.Metadata)
-			proto.Merge(meta, m.Dirs[dir])
+			Merge(meta, m.Dirs[dir])
 			ret.Dirs[dir] = meta
 		}
 	}
@@ -82,4 +82,13 @@ func (m *Mapping) dirsSortedByLength() []string {
 		return len(ret[i]) < len(ret[j])
 	})
 	return ret
+}
+
+// Merge merges metadata from src to dest, where dst contains inherited metadata
+// and src contains directory-specific metadata.
+//
+// The current implementation is just proto.Merge, but it may change in the
+// future.
+func Merge(dst, src *dirmetapb.Metadata) {
+	proto.Merge(dst, src)
 }
