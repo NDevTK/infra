@@ -28,6 +28,30 @@ func (m *Mapping) Reduce() *Mapping {
 	panic("not implemented")
 }
 
+// Compute computes metadata for the given directory key.
+func (m *Mapping) Compute(key string) *dirmetapb.Metadata {
+	// Compute the list of directories to inherit.
+	// The order is target-to-root.
+	var keys []string
+	for {
+		keys = append(keys, key)
+		parent := path.Dir(key)
+		if parent == key {
+			break
+		}
+		key = parent
+	}
+
+	// Read the metadata in the root-to-target order.
+	ret := &dirmetapb.Metadata{}
+	for i := len(keys) - 1; i >= 0; i-- {
+		if meta, ok := m.Dirs[keys[i]]; ok {
+			Merge(ret, meta)
+		}
+	}
+	return ret
+}
+
 // Expand returns a new mapping where each dir has attributes inherited
 // from the parent dir.
 func (m *Mapping) Expand() *Mapping {
@@ -59,7 +83,7 @@ func (m *Mapping) Expand() *Mapping {
 			ret.Dirs[dir] = m.Dirs[dir]
 		} else {
 			meta := proto.Clone(ancestor).(*dirmetapb.Metadata)
-			proto.Merge(meta, m.Dirs[dir])
+			Merge(meta, m.Dirs[dir])
 			ret.Dirs[dir] = meta
 		}
 	}
@@ -82,4 +106,13 @@ func (m *Mapping) dirsSortedByLength() []string {
 		return len(ret[i]) < len(ret[j])
 	})
 	return ret
+}
+
+// Merge merges metadata from src to dest, where dst contains inherited metadata
+// and src contains directory-specific metadata.
+//
+// The current implementation is just proto.Merge, but it may change in the
+// future.
+func Merge(dst, src *dirmetapb.Metadata) {
+	proto.Merge(dst, src)
 }
