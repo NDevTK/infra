@@ -78,3 +78,41 @@ func ReadMapping(root string) (*Mapping, error) {
 
 	return ret, nil
 }
+
+// ReadInherited reads metadata inherited by the target directory.
+// The inheritance starts from the root.
+//
+// Reads only metadata files on the path from root to target, as opposed to
+// the entire tree of under root.
+func ReadInherited(root, target string) (*dirmetapb.Metadata, error) {
+	root = filepath.Clean(root)
+	target = filepath.Clean(target)
+
+	var toRead []string
+	for {
+		toRead = append(toRead, target)
+
+		if target == root {
+			break
+		}
+
+		parent := filepath.Dir(target)
+		if parent == target {
+			// We have reached the root of the file system, but not `root`.
+			return nil, errors.Reason("target must be same as root or a sub-directory of root").Err()
+		}
+		target = parent
+	}
+
+	// Read the metadata in the root-to-target order.
+	ret := &dirmetapb.Metadata{}
+	for i := len(toRead) - 1; i >= 0; i-- {
+		switch meta, err := ReadMetadata(toRead[i]); {
+		case err != nil:
+			return nil, errors.Annotate(err, "failed to read metadata of %q", toRead[i]).Err()
+		case meta != nil:
+			Merge(ret, meta)
+		}
+	}
+	return ret, nil
+}
