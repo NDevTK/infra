@@ -36,3 +36,19 @@ func TestReadMapping(t *testing.T) {
 		})
 	})
 }
+
+func TestReadInherited(t *testing.T) {
+	t.Parallel()
+
+	Convey(`ReadInheritance`, t, func() {
+		md, err := ReadInherited("testdata/inheritance", "testdata/inheritance/a/b")
+		So(err, ShouldBeNil)
+		So(md, ShouldResembleProto, &dirmetapb.Metadata{
+			TeamEmail: "chromium-review@chromium.org",
+			Monorail: &dirmetapb.Monorail{
+				Project:   "chromium",
+				Component: "Component",
+			},
+		})
+	})
+}
