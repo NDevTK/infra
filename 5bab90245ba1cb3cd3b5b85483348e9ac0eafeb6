@@ -16,6 +16,46 @@
       "revId": "5bab90245ba1cb3cd3b5b85483348e9ac0eafeb6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e565e34f_9bff0269",
+        "filename": "go/src/infra/tools/dirmeta/mapping_test.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2020-07-13T22:01:15Z",
+      "side": 1,
+      "message": "Add a test where you check that false doesn\u0027t inherit true, so we don\u0027t regress in the future.",
+      "revId": "5bab90245ba1cb3cd3b5b85483348e9ac0eafeb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b8d3295f_784d7d87",
+        "filename": "go/src/infra/tools/dirmeta/owners.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2020-07-13T22:01:15Z",
+      "side": 1,
+      "message": "Can we add this to the testdata as well?",
+      "range": {
+        "startLine": 69,
+        "startChar": 9,
+        "endLine": 69,
+        "endChar": 19
+      },
+      "revId": "5bab90245ba1cb3cd3b5b85483348e9ac0eafeb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
