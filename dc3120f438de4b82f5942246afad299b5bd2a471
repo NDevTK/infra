@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "c417e3fc_f7e814b1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2020-07-13T17:47:02Z",
+      "side": 1,
+      "message": "Thank you for catching this! I think this might be a regression from a different hotlist change I made: https://chromium-review.googlesource.com/c/infra/infra/+/2293396\n\nI\u0027ll double check. Either way, this is a great find!",
+      "parentUuid": "cd555c78_5052f2b0",
+      "revId": "dc3120f438de4b82f5942246afad299b5bd2a471",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8ed60e4d_488f4397",
         "filename": "appengine/monorail/static_src/elements/framework/mr-header/mr-search-bar.js",
         "patchSetId": 3
@@ -47,6 +65,30 @@
       "writtenOn": "2020-07-13T17:29:04Z",
       "side": 1,
       "message": "Not related to CL, it just caught my eye: \n\nI believe we should remove global window references as much as possible. This might be refactorable to use this._page",
+      "range": {
+        "startLine": 438,
+        "startChar": 24,
+        "endLine": 438,
+        "endChar": 49
+      },
+      "revId": "dc3120f438de4b82f5942246afad299b5bd2a471",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6c68dedf_45a2066b",
+        "filename": "appengine/monorail/static_src/elements/framework/mr-header/mr-search-bar.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 438,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2020-07-13T17:47:02Z",
+      "side": 1,
+      "message": "I\u0027m actually unsure about the value of removing window.location references to be honest - although it sort of looks ugly, page.js is still using window/window.location under the hood as well. ie: https://github.com/visionmedia/page.js/blob/4f9991658f9b9e3de9b6059bade93693af24d6bd/page.js#L465 \n\nIt is ultimately the API that the browser provides for finding the current URL of a page and attempts to try to avoid using this seem like they would lead to making code more complex with limited benefit. \n\nNeither of the two major JS style guides I tend to reference, The Google style guide ( https://google.github.io/styleguide/jsguide.html ) and the AirBnB style guide ( https://github.com/airbnb/javascript ), seem to recommend removing as many window references as possible, which makes me think it\u0027s not really a problem, but I could be convinced otherwise if this is a documented best practice elsewhere.",
+      "parentUuid": "8ed60e4d_488f4397",
       "range": {
         "startLine": 438,
         "startChar": 24,
