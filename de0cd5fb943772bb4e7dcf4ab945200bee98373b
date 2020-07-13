@@ -16,6 +16,121 @@
       "revId": "de0cd5fb943772bb4e7dcf4ab945200bee98373b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "81d90c11_ccedd987",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-13T20:57:24Z",
+      "side": 1,
+      "message": "what\u0027s these part for? AddDeviceManualRepairRecords \u0026 GetDeviceManualRepairRecords are already tested in other unittests right?",
+      "range": {
+        "startLine": 199,
+        "startChar": 0,
+        "endLine": 219,
+        "endChar": 62
+      },
+      "revId": "de0cd5fb943772bb4e7dcf4ab945200bee98373b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5245b893_08b4d0f7",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-13T20:57:24Z",
+      "side": 1,
+      "message": "for _, r :\u003d range res {\n    So(r.Err, shouldbenil)\n    So(r.***hostname, shouldequal...)\n    So(r.***repairtype, shouldequal...)\n    So([]string{\"getByProp-111\", \"getByProp-222\"}, shouldcontain, r.**assettag)\n}",
+      "range": {
+        "startLine": 227,
+        "startChar": 3,
+        "endLine": 230,
+        "endChar": 4
+      },
+      "revId": "de0cd5fb943772bb4e7dcf4ab945200bee98373b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ffa50ef2_5f972aa3",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 233,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-13T20:57:24Z",
+      "side": 1,
+      "message": "remove these as their ID won\u0027t equal to each other definitely, otherwise datastore will reject your creation.",
+      "range": {
+        "startLine": 231,
+        "startChar": 0,
+        "endLine": 233,
+        "endChar": 57
+      },
+      "revId": "de0cd5fb943772bb4e7dcf4ab945200bee98373b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f3cbb943_547d146b",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-13T20:57:24Z",
+      "side": 1,
+      "message": "follow the above link to conduct for-loop in res instead of resc2\n\ncompare the time in a way like \nSo([]***, shouldcontain, r.updatedtime)",
+      "range": {
+        "startLine": 240,
+        "startChar": 3,
+        "endLine": 243,
+        "endChar": 4
+      },
+      "revId": "de0cd5fb943772bb4e7dcf4ab945200bee98373b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6d477ab9_c0031c43",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-13T20:57:24Z",
+      "side": 1,
+      "message": "remove",
+      "range": {
+        "startLine": 244,
+        "startChar": 2,
+        "endLine": 244,
+        "endChar": 57
+      },
+      "revId": "de0cd5fb943772bb4e7dcf4ab945200bee98373b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
