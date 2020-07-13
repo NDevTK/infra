@@ -33,7 +33,7 @@ func TestComputeAll(t *testing.T) {
 					".": {
 						TeamEmail: "team@example.com",
 						// Will be inherited entirely.
-						Wpt: &dirmetapb.WPT{Notify: true},
+						Wpt: &dirmetapb.WPT{Notify: dirmetapb.Trinary_YES},
 
 						// Will be inherited partially.
 						Monorail: &dirmetapb.Monorail{
@@ -54,7 +54,7 @@ func TestComputeAll(t *testing.T) {
 					".": m.Dirs["."], // did not change
 					"a": {
 						TeamEmail: "team-email@chromium.org",
-						Wpt:       &dirmetapb.WPT{Notify: true},
+						Wpt:       &dirmetapb.WPT{Notify: dirmetapb.Trinary_YES},
 						Monorail: &dirmetapb.Monorail{
 							Project:   "chromium",
 							Component: "Component",
