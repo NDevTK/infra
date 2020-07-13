@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "e38350bc_324a68ee",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 30
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2020-07-13T23:15:44Z",
+      "side": 1,
+      "message": "stale. removed",
+      "parentUuid": "4a5950f4_24923b8e",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 65
+      },
+      "revId": "600610bcc53d7f5d76c15dddca7611307c8645b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e9ae434f_1e5d88db",
         "filename": "go/src/infra/tools/dirmeta/read.go",
         "patchSetId": 30
@@ -36,6 +60,30 @@
       "writtenOn": "2020-07-13T22:10:46Z",
       "side": 1,
       "message": "Why not return a computed result?",
+      "range": {
+        "startLine": 98,
+        "startChar": 24,
+        "endLine": 98,
+        "endChar": 35
+      },
+      "revId": "600610bcc53d7f5d76c15dddca7611307c8645b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "db79145b_4c689463",
+        "filename": "go/src/infra/tools/dirmeta/read.go",
+        "patchSetId": 30
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2020-07-13T23:15:44Z",
+      "side": 1,
+      "message": "i am struggling with the function signature. It is a bit weird to return a computed result because this func does not compute it - that\u0027s not the responsibility of this func. The responsibility of this func literally read nodes on the path from the root to the target, skipping already-read ones. \n\nif we want to change the level of abstraction from low-level reading to high-level reading+computing, then we should probably come up with a new name. Note that name \"Compute\" or \"ReadCompute\" are bad because this func accepts a file path (potentially with back slashes), but MappingReader embeds Mapping which already has Compute() which accepts dir key (does not have back slashes).\n\nanother option is to make MappingReader internal, and expose only high level functions:\n\n  func ReadMapping(root string, form MappingForm) (Mapping, error)\n  func ReadCopmuted(root string, targets ...string) (Mapping, error)",
+      "parentUuid": "e9ae434f_1e5d88db",
       "range": {
         "startLine": 98,
         "startChar": 24,
