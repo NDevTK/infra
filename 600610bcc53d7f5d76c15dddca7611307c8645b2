@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4a5950f4_24923b8e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 30
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2020-07-13T22:10:46Z",
+      "side": 1,
+      "message": "Where?",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 65
+      },
+      "revId": "600610bcc53d7f5d76c15dddca7611307c8645b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e9ae434f_1e5d88db",
+        "filename": "go/src/infra/tools/dirmeta/read.go",
+        "patchSetId": 30
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2020-07-13T22:10:46Z",
+      "side": 1,
+      "message": "Why not return a computed result?",
+      "range": {
+        "startLine": 98,
+        "startChar": 24,
+        "endLine": 98,
+        "endChar": 35
+      },
+      "revId": "600610bcc53d7f5d76c15dddca7611307c8645b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
