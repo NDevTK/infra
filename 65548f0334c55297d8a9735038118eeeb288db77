@@ -22,6 +22,30 @@
       "revId": "65548f0334c55297d8a9735038118eeeb288db77",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b15a6f89_ceace446",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-07-13T19:22:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "37c6af13_0b3a27b4",
+      "range": {
+        "startLine": 186,
+        "startChar": 42,
+        "endLine": 186,
+        "endChar": 72
+      },
+      "revId": "65548f0334c55297d8a9735038118eeeb288db77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
