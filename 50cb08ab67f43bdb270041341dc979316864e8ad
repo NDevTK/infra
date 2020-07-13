@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ef57db26_22cde673",
+        "filename": "appengine/monorail/registerpages.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-07-13T17:29:04Z",
+      "side": 0,
+      "message": "I never noticed this before. How was this previously being used?",
+      "range": {
+        "startLine": 211,
+        "startChar": 0,
+        "endLine": 211,
+        "endChar": 69
+      },
+      "revId": "50cb08ab67f43bdb270041341dc979316864e8ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ecb42c8f_4e48ba2a",
+        "filename": "appengine/monorail/search/test/searchpipeline_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-07-13T17:29:04Z",
+      "side": 0,
+      "message": "Yay!",
+      "range": {
+        "startLine": 124,
+        "startChar": 10,
+        "endLine": 124,
+        "endChar": 39
+      },
+      "revId": "50cb08ab67f43bdb270041341dc979316864e8ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

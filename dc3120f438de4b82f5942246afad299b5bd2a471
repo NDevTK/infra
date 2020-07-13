@@ -16,6 +16,46 @@
       "revId": "dc3120f438de4b82f5942246afad299b5bd2a471",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cd555c78_5052f2b0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-07-13T17:29:04Z",
+      "side": 1,
+      "message": "Thanks for doing this!\nThe demo link\u0027s `penguine-list` hotlist isn\u0027t working for me:\nhttps://33251-50cb08a-tainted-zhangtiff-issue-list-dot-monorail-dev.appspot.com/u/dtu@chromium.org/hotlists/Penguin-List\n\nI see no issues and the console shows this error: \nUncaught ReferenceError: projectName is not defined\n    at createSummaryCell (render-hotlist-table.js:137)\n    at render-hotlist-table.js:273\n    at Array.forEach (\u003canonymous\u003e)\n    at renderHotlistRow (render-hotlist-table.js:267)\n    at render-hotlist-table.js:380\n    at Array.forEach (\u003canonymous\u003e)\n    at renderHotlistTable (render-hotlist-table.js:367)\n    at Array.\u003canonymous\u003e (Penguin-List:6906)\n    at window.onload (Penguin-List:112)\n\nNot sure if it\u0027s related though",
+      "revId": "dc3120f438de4b82f5942246afad299b5bd2a471",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8ed60e4d_488f4397",
+        "filename": "appengine/monorail/static_src/elements/framework/mr-header/mr-search-bar.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 438,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-07-13T17:29:04Z",
+      "side": 1,
+      "message": "Not related to CL, it just caught my eye: \n\nI believe we should remove global window references as much as possible. This might be refactorable to use this._page",
+      "range": {
+        "startLine": 438,
+        "startChar": 24,
+        "endLine": 438,
+        "endChar": 49
+      },
+      "revId": "dc3120f438de4b82f5942246afad299b5bd2a471",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
