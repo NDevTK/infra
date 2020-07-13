@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c6d7f9fb_0c3bf429",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1231539
+      },
+      "writtenOn": "2020-07-13T21:59:57Z",
+      "side": 1,
+      "message": "Not familiar with proto3 but the semantics LGTM.\n\nWe definitely need to distinguish UNSPECIFIED from NO or YES. (Tangent/side note: we might consider flipping the default/unspecified to mean YES in the future; this change would allow us to do that.) Thanks!\n\n(BTW, does the new default UNSPECIFIED value need to be tested somehow?)",
+      "revId": "5bab90245ba1cb3cd3b5b85483348e9ac0eafeb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
