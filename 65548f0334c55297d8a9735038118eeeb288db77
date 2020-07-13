@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "37c6af13_0b3a27b4",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-13T18:38:23Z",
+      "side": 1,
+      "message": "generally, use different record (different name, host, repair state) in different unittests. All unittests here are kicked off in parallel and share the same backend datastore. It\u0027s very easy to make it wrong like the record you query here is added actually in other tests, which makes it unstable.",
+      "range": {
+        "startLine": 186,
+        "startChar": 42,
+        "endLine": 186,
+        "endChar": 72
+      },
+      "revId": "65548f0334c55297d8a9735038118eeeb288db77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
