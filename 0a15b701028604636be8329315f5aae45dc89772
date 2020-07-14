@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ab55cb55_a0df7185",
+        "filename": "go/src/infra/tools/dirmeta/mapping_test.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2020-07-14T17:00:09Z",
+      "side": 1,
+      "message": "notify\nMaybe \"wpt.notify false value is not overwritten/ignored\" would be a more descriptive test name.",
+      "range": {
+        "startLine": 18,
+        "startChar": 14,
+        "endLine": 18,
+        "endChar": 20
+      },
+      "revId": "0a15b701028604636be8329315f5aae45dc89772",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
