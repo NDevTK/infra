@@ -16,7 +16,7 @@ import (
 func TestMappingReader(t *testing.T) {
 	t.Parallel()
 
-	Convey(`MappingReader`, t, func() {
+	Convey(`ReadAll`, t, func() {
 		r := &MappingReader{
 			Root: "testdata/root",
 		}
@@ -92,26 +92,38 @@ func TestMappingReader(t *testing.T) {
 					},
 				},
 			})
+		})
 
-			Convey(`Reduced`, func() {
-				err := r.ReadAll(dirmetapb.MappingForm_REDUCED)
-				So(err, ShouldBeNil)
-				So(r.Mapping.Proto(), ShouldResembleProto, &dirmetapb.Mapping{
-					Dirs: map[string]*dirmetapb.Metadata{
-						".": {
-							TeamEmail: "chromium-review@chromium.org",
-							Os:        dirmetapb.OS_LINUX,
-						},
-						"subdir_with_owners": {
-							TeamEmail: "team-email@chromium.org",
-							Monorail: &dirmetapb.Monorail{
-								Project:   "chromium",
-								Component: "Some>Component",
-							},
+		Convey(`Reduced`, func() {
+			err := r.ReadAll(dirmetapb.MappingForm_REDUCED)
+			So(err, ShouldBeNil)
+			So(r.Mapping.Proto(), ShouldResembleProto, &dirmetapb.Mapping{
+				Dirs: map[string]*dirmetapb.Metadata{
+					".": {
+						TeamEmail: "chromium-review@chromium.org",
+						Os:        dirmetapb.OS_LINUX,
+					},
+					"subdir_with_owners": {
+						TeamEmail: "team-email@chromium.org",
+						Monorail: &dirmetapb.Monorail{
+							Project:   "chromium",
+							Component: "Some>Component",
 						},
 					},
-				})
+				},
 			})
 		})
+	})
+
+	Convey(`ReadTowards`, t, func() {
+		r := &MappingReader{
+			Root: "testdata/inheritance",
+		}
+		err := r.ReadTowards("testdata/inheritance/a/b")
+		So(err, ShouldBeNil)
+		So(r.Dirs, ShouldHaveLength, 3)
+		So(r.Dirs, ShouldContainKey, ".")
+		So(r.Dirs, ShouldContainKey, "a")
+		So(r.Dirs, ShouldContainKey, "a/b")
 	})
 }
