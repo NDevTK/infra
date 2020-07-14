@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "78be29d7_0d3847c5",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-14T00:05:11Z",
+      "side": 1,
+      "message": "use static strings instead of using the referenced variables. More direct to test readers and avoid any possibility of \"using prod logic to test prod\".\n\nSame for other So() assertion",
+      "range": {
+        "startLine": 202,
+        "startChar": 39,
+        "endLine": 202,
+        "endChar": 60
+      },
+      "revId": "032d319bce3db917f8bbbb14e79b1ec5cd0532b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7bfb0d64_b2fd6b9e",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-14T00:05:11Z",
+      "side": 1,
+      "message": "their repair string is the same right? ShouldContain can be shouldequal",
+      "range": {
+        "startLine": 204,
+        "startChar": 16,
+        "endLine": 204,
+        "endChar": 49
+      },
+      "revId": "032d319bce3db917f8bbbb14e79b1ec5cd0532b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce522dc0_2b8128b9",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-14T00:05:11Z",
+      "side": 1,
+      "message": "use static strings, e.g. \"getByProp-111\", \"getByProp-222\", same for other So().",
+      "range": {
+        "startLine": 206,
+        "startChar": 16,
+        "endLine": 206,
+        "endChar": 60
+      },
+      "revId": "032d319bce3db917f8bbbb14e79b1ec5cd0532b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5c36bd09_4e9fffff",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-14T00:05:11Z",
+      "side": 1,
+      "message": "is this exactly the same as last line?",
+      "range": {
+        "startLine": 207,
+        "startChar": 4,
+        "endLine": 207,
+        "endChar": 101
+      },
+      "revId": "032d319bce3db917f8bbbb14e79b1ec5cd0532b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "670fc7d6_b4e6c925",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-14T00:05:11Z",
+      "side": 1,
+      "message": "similar comments for these So().",
+      "range": {
+        "startLine": 217,
+        "startChar": 4,
+        "endLine": 217,
+        "endChar": 6
+      },
+      "revId": "032d319bce3db917f8bbbb14e79b1ec5cd0532b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dd1dc0fa_23ddbdbf",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-14T00:05:11Z",
+      "side": 1,
+      "message": "similar here",
+      "range": {
+        "startLine": 228,
+        "startChar": 3,
+        "endLine": 228,
+        "endChar": 5
+      },
+      "revId": "032d319bce3db917f8bbbb14e79b1ec5cd0532b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
