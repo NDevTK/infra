@@ -16,7 +16,7 @@ import (
 func TestMappingReader(t *testing.T) {
 	t.Parallel()
 
-	Convey(`MappingReader`, t, func() {
+	Convey(`ReadAll`, t, func() {
 		r := &MappingReader{
 			Root: "testdata/root",
 		}
@@ -73,6 +73,7 @@ func TestMappingReader(t *testing.T) {
 			})
 		})
 
+<<<<<<< HEAD
 		Convey(`Computed`, func() {
 			err := r.ReadAll(dirmetapb.MappingForm_COMPUTED)
 			So(err, ShouldBeNil)
@@ -112,6 +113,16 @@ func TestMappingReader(t *testing.T) {
 					},
 				})
 			})
+		})
+
+		Convey(`Compute`, t, func() {
+			r.Root = "testdata/inheritance"
+			err := r.ReadTowards("testdata/inheritance/a/b")
+			So(err, ShouldBeNil)
+			So(r.Dirs, ShouldHaveLength, 3)
+			So(r.Dirs, ShouldContainKey, ".")
+			So(r.Dirs, ShouldContainKey, "a")
+			So(r.Dirs, ShouldContainKey, "a/b")
 		})
 	})
 }
