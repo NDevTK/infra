@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3e1c6571_f0756ac6",
+        "filename": "go/src/infra/tools/dirmeta/read.go",
+        "patchSetId": 36
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2020-07-14T17:31:59Z",
+      "side": 1,
+      "message": "Can we use ComputeAll for this?",
+      "range": {
+        "startLine": 70,
+        "startChar": 4,
+        "endLine": 70,
+        "endChar": 20
+      },
+      "revId": "83d5aa1ca7814a435ab0c489e90360c0b8430f36",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eb521a53_476a39c2",
+        "filename": "go/src/infra/tools/dirmeta/read.go",
+        "patchSetId": 36
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2020-07-14T17:31:59Z",
+      "side": 1,
+      "message": "If r.Dirs[key] exists, can we exit early?",
+      "range": {
+        "startLine": 142,
+        "startChar": 2,
+        "endLine": 142,
+        "endChar": 26
+      },
+      "revId": "83d5aa1ca7814a435ab0c489e90360c0b8430f36",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
