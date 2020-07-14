@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "8b21ebbb_13f45876",
+        "filename": "go/src/infra/tools/dirmeta/read.go",
+        "patchSetId": 36
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2020-07-14T17:40:05Z",
+      "side": 1,
+      "message": "Done.\n\nI did not remove Compute() though, because it may be useful",
+      "parentUuid": "3e1c6571_f0756ac6",
+      "range": {
+        "startLine": 70,
+        "startChar": 4,
+        "endLine": 70,
+        "endChar": 20
+      },
+      "revId": "83d5aa1ca7814a435ab0c489e90360c0b8430f36",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "eb521a53_476a39c2",
         "filename": "go/src/infra/tools/dirmeta/read.go",
         "patchSetId": 36
@@ -45,6 +69,30 @@
       "revId": "83d5aa1ca7814a435ab0c489e90360c0b8430f36",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "61481a5b_0b962847",
+        "filename": "go/src/infra/tools/dirmeta/read.go",
+        "patchSetId": 36
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2020-07-14T17:40:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "eb521a53_476a39c2",
+      "range": {
+        "startLine": 142,
+        "startChar": 2,
+        "endLine": 142,
+        "endChar": 26
+      },
+      "revId": "83d5aa1ca7814a435ab0c489e90360c0b8430f36",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
