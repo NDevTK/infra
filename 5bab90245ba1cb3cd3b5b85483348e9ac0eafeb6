@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "bf766528_de263eb6",
+        "filename": "go/src/infra/tools/dirmeta/mapping_test.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2020-07-14T00:17:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e565e34f_9bff0269",
+      "revId": "5bab90245ba1cb3cd3b5b85483348e9ac0eafeb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b8d3295f_784d7d87",
         "filename": "go/src/infra/tools/dirmeta/owners.go",
         "patchSetId": 11
@@ -56,6 +74,30 @@
       "revId": "5bab90245ba1cb3cd3b5b85483348e9ac0eafeb6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bf8b61a3_206a38a9",
+        "filename": "go/src/infra/tools/dirmeta/owners.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2020-07-14T00:17:26Z",
+      "side": 1,
+      "message": "added to owner_test.go",
+      "parentUuid": "b8d3295f_784d7d87",
+      "range": {
+        "startLine": 69,
+        "startChar": 9,
+        "endLine": 69,
+        "endChar": 19
+      },
+      "revId": "5bab90245ba1cb3cd3b5b85483348e9ac0eafeb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
