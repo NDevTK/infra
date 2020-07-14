@@ -62,21 +62,22 @@ func ReadMapping(root string, form dirmetapb.MappingForm) (*Mapping, error) {
 func ReadComputed(root string, targets ...string) (*Mapping, error) {
 	r := &mappingReader{Root: root}
 	for _, target := range targets {
-		if err := r.ReadTowards(target); err != nil {
+		if err := r.readUpMissing(target); err != nil {
 			return nil, errors.Annotate(err, "failed to read metadata for %q", target).Err()
 		}
 	}
 
-	// Compute metadata.
+	r.ComputeAll()
+
+	// Filter by targets.
 	ret := NewMapping(len(targets))
 	for _, target := range targets {
 		key, err := r.DirKey(target)
 		if err != nil {
 			panic(err) // Impossible: we have just used these paths above.
 		}
-		ret.Dirs[key] = r.Compute(key)
+		ret.Dirs[key] = r.Mapping.Dirs[key]
 	}
-
 	return ret, nil
 }
 
@@ -129,27 +130,31 @@ func (r *mappingReader) ReadAll(form dirmetapb.MappingForm) error {
 	return nil
 }
 
-// ReadTowards reads metadata of directories on the node path from r.Root to
-// target. It skips directories for which it already has metadata.
-func (r *mappingReader) ReadTowards(target string) error {
+// readUpMissing reads metadata of directories on the node path from target to
+// root, and stops as soon as it finds a directory with metadata.
+func (r *mappingReader) readUpMissing(target string) error {
 	root := filepath.Clean(r.Root)
 	target = filepath.Clean(target)
 
 	for {
-		switch key, err := r.DirKey(target); {
+		key, err := r.DirKey(target)
+		switch {
 		case err != nil:
 			return err
-		case r.Dirs[key] == nil:
-			switch meta, err := ReadMetadata(target); {
-			case err != nil:
-				return errors.Annotate(err, "failed to read metadata of %q", target).Err()
+		case r.Dirs[key] != nil:
+			// Exit early.
+			return nil
+		}
 
-			case meta != nil:
-				if r.Dirs == nil {
-					r.Dirs = map[string]*dirmetapb.Metadata{}
-				}
-				r.Dirs[key] = meta
+		switch meta, err := ReadMetadata(target); {
+		case err != nil:
+			return errors.Annotate(err, "failed to read metadata of %q", target).Err()
+
+		case meta != nil:
+			if r.Dirs == nil {
+				r.Dirs = map[string]*dirmetapb.Metadata{}
 			}
+			r.Dirs[key] = meta
 		}
 
 		if target == root {
