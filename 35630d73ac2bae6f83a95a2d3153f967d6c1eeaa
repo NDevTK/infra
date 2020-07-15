@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4e18ba1b_8774ab5e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-07-15T21:19:19Z",
+      "side": 1,
+      "message": "stdout",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 48
+      },
+      "revId": "35630d73ac2bae6f83a95a2d3153f967d6c1eeaa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ca722228_e893b94c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-07-15T21:19:19Z",
+      "side": 1,
+      "message": "LGTM % the logging can be kept using a different library, feel free to land this as it is and readd the logging later",
+      "revId": "35630d73ac2bae6f83a95a2d3153f967d6c1eeaa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

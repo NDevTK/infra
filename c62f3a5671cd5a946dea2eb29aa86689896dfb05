@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "653b468d_3c5326e3",
+        "filename": "go/src/infra/cros/cmd/result_flow/internal/cmd/publish.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1292473
+      },
+      "writtenOn": "2020-07-15T21:19:19Z",
+      "side": 0,
+      "message": "The debug messages can be logged to stdout without polluting the json output using the LUCI \"logging\" library, e.g. https://source.chromium.org/chromium/infra/infra/+/master:go/src/infra/cmd/cros_test_platform/internal/cmd/enumerate.go;l\u003d312;drc\u003d275edfe89819212ae4d6256a431e5ac8840a08b5",
+      "range": {
+        "startLine": 62,
+        "startChar": 0,
+        "endLine": 62,
+        "endChar": 13
+      },
+      "revId": "c62f3a5671cd5a946dea2eb29aa86689896dfb05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
