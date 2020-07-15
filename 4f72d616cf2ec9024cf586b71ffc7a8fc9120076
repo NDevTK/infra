@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a0c50c0_354e6b02",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2020-07-15T20:38:47Z",
+      "side": 1,
+      "message": "PTAL, the \"display_mode\" parameter is no longer used now that the new issue list and grid pages use the exact same ListIssues API (which in turn have no mode option). \n\nNotes: \n\n- Hotlists seem to have their own implementation of grid mode, separate from FrontendSearchPipeline, so that code is unaffected.\n- Endpoints API also allows specifying a mode, but it\u0027s unclear why a user would want to do this in an API call. ",
+      "revId": "4f72d616cf2ec9024cf586b71ffc7a8fc9120076",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
