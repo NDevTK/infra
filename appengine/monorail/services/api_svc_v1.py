@@ -998,7 +998,6 @@ class MonorailApi(remote.Service):
         mar.errors,
         mar.use_cached_searches,
         mar.profiler,
-        display_mode=mar.mode,
         project=mar.project)
     if not mar.errors.AnyErrors():
       pipeline.SearchForIIDs()

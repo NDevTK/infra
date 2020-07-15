@@ -1276,10 +1276,28 @@ class WorkEnv(object):
       group_by_spec,
       sort_spec,
       use_cached_searches,
-      display_mode=None,
       project=None):
-    """Do an issue search w/ mc + passed in args to return a pipeline object."""
-    # Permission to view a project is checked in Frontendsearchpipeline().
+    # type: (str, Sequence[str], int, int, int, int, str, str, bool,
+    #     proto.Project) ->
+    #     search.frontendsearchpipeline.FrontendSearchPipeline
+    """Do an issue search w/ mc + passed in args to return a pipeline object.
+
+    Args:
+      query_string: str with the query the user is searching for.
+      query_project_names: List of project names to query for.
+      me_user_id: Relevant user id. Usually the logged in user.
+      items_per_page: Max number of issues to include in the results.
+      paginate_start: Offset of issues to skip for pagination.
+      can: id of canned query to use.
+      group_by_spec: str used to specify how issues should be grouped.
+      sort_spec: str used to specify how issues should be sorted.
+      use_cached_searches: Whether to use the cache or not.
+      project: Project object for the current project the user is viewing.
+
+    Returns:
+      A FrontendSearchPipeline instance with data on issues found.
+    """
+    # Permission to view a project is checked in FrontendSearchPipeline().
     # Individual results are filtered by permissions in SearchForIIDs().
 
     with self.mc.profiler.Phase('searching issues'):
@@ -1300,7 +1318,6 @@ class WorkEnv(object):
           self.mc.errors,
           use_cached_searches,
           self.mc.profiler,
-          display_mode=display_mode,
           project=project)
       if not self.mc.errors.AnyErrors():
         pipeline.SearchForIIDs()
@@ -1340,7 +1357,6 @@ class WorkEnv(object):
           self.mc.errors,
           self.mc.use_cached_searches,
           self.mc.profiler,
-          display_mode=self.mc.mode,
           project=self.mc.project)
       if not self.mc.errors.AnyErrors():
         # Only do the search if the user's query parsed OK.
