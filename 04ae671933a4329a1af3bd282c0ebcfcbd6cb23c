@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0838fb4e_213a3a63",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2020-07-15T19:59:09Z",
+      "side": 1,
+      "message": "PTAL, thanks for finding this bug and the cause! This fixes the issue export page for me locally.",
+      "revId": "04ae671933a4329a1af3bd282c0ebcfcbd6cb23c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
