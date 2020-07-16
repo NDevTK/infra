@@ -22,6 +22,30 @@
       "revId": "c62f3a5671cd5a946dea2eb29aa86689896dfb05",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9b335687_cb5edbab",
+        "filename": "go/src/infra/cros/cmd/result_flow/internal/cmd/publish.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1336288
+      },
+      "writtenOn": "2020-07-16T00:14:52Z",
+      "side": 0,
+      "message": "The logging.Infof requires Context which is generated in innerRun. Also the critical error or debugging message is already logged, e.g. L80.\nSo I think it is Ok to just remove it from \"Run\" level.",
+      "parentUuid": "653b468d_3c5326e3",
+      "range": {
+        "startLine": 62,
+        "startChar": 0,
+        "endLine": 62,
+        "endChar": 13
+      },
+      "revId": "c62f3a5671cd5a946dea2eb29aa86689896dfb05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
