@@ -842,6 +842,38 @@ class ConverterFunctionsTest(unittest.TestCase):
             issue_objects_pb2.Issue.UserValue(
                 derivation=RULE_DERIVATION, user='users/333')
         ],
+        labels=[
+            issue_objects_pb2.Issue.LabelValue(
+                derivation=EXPLICIT_DERIVATION, label='a'),
+            issue_objects_pb2.Issue.LabelValue(
+                derivation=EXPLICIT_DERIVATION, label='enum-b'),
+            issue_objects_pb2.Issue.LabelValue(
+                derivation=RULE_DERIVATION, label='derived1'),
+            issue_objects_pb2.Issue.LabelValue(
+                derivation=RULE_DERIVATION, label='key-derived')
+        ],
+        field_values=[
+            issue_objects_pb2.FieldValue(
+                derivation=EXPLICIT_DERIVATION,
+                field='projects/proj/fieldDefs/test_field_1',
+                value=self.fv_1_value,
+            ),
+            issue_objects_pb2.FieldValue(
+                derivation=RULE_DERIVATION,
+                field='projects/proj/fieldDefs/test_field_1',
+                value=self.fv_1_value,
+            ),
+            issue_objects_pb2.FieldValue(
+                derivation=EXPLICIT_DERIVATION,
+                field='projects/proj/fieldDefs/days',
+                value='1',
+            ),
+            issue_objects_pb2.FieldValue(
+                derivation=RULE_DERIVATION,
+                field='projects/proj/fieldDefs/OS',
+                value='mac',
+            )
+        ],
         merged_into_issue_ref=issue_objects_pb2.IssueRef(ext_identifier='b/1'),
         blocked_on_issue_refs=[
             # Reversing natural ordering to ensure order is respected.
@@ -898,7 +930,7 @@ class ConverterFunctionsTest(unittest.TestCase):
     self.services.issue.TestAddIssue(blocked_on_2)
     self.services.issue.TestAddIssue(blocking)
 
-    actual = self.converter.IngestIssue(ingest)
+    actual = self.converter.IngestIssue(ingest, self.project_1.project_id)
 
     expected_cc1_id = self.services.user.LookupUserID(
         self.cnxn, 'new@user.com', autocreate=False)
@@ -908,6 +940,8 @@ class ConverterFunctionsTest(unittest.TestCase):
         owner_id=111,
         cc_ids=[expected_cc1_id, 333],
         merged_into_external='b/1',
+        #TODO test FVs moved into labels
+        #XXXTODO, FVs should be showing up in `actual`, but aren't yet
         blocked_on_iids=[blocked_on_2.issue_id, blocked_on_1.issue_id],
         blocking_iids=[blocking.issue_id],
         dangling_blocked_on_refs=[
@@ -929,9 +963,19 @@ class ConverterFunctionsTest(unittest.TestCase):
         summary='', # Summary gets set to empty str on conversion.
         status='new'
     )
-    self.assertEqual(self.converter.IngestIssue(minimal), expected)
+    actual = self.converter.IngestIssue(minimal, self.project_1.project_id)
+    self.assertEqual(actual, expected)
+
+  def testIngestIssue_NoSuchProject(self):
+    self.services.config.strict = True
+    ingest = issue_objects_pb2.Issue(
+        status=issue_objects_pb2.Issue.StatusValue(status='new')
+    )
+    with self.assertRaises(exceptions.NoSuchProjectException):
+        self.converter.IngestIssue(ingest, -1)
 
   def testIngestIssue_Errors(self):
+    #XXXTODO - a bunch of fieldvalue error cases.
     invalid_issue_ref = issue_objects_pb2.IssueRef(
         ext_identifier='b/1',
         issue='projects/proj/issues/1')
@@ -965,7 +1009,7 @@ class ConverterFunctionsTest(unittest.TestCase):
     ]
     error_messages_re = '\n'.join(error_messages)
     with self.assertRaisesRegexp(exceptions.InputException, error_messages_re):
-      self.converter.IngestIssue(ingest)
+      self.converter.IngestIssue(ingest, self.project_1.project_id)
 
   def testIngestIssuesListColumns(self):
     columns = [

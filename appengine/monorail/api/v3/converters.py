@@ -24,8 +24,9 @@ from framework import framework_helpers
 from proto import tracker_pb2
 from project import project_helpers
 from tracker import attachment_helpers
-from tracker import tracker_helpers
+from tracker import field_helpers
 from tracker import tracker_bizobj as tbo
+from tracker import tracker_helpers
 
 Choice = project_objects_pb2.FieldDef.EnumTypeSettings.Choice
 
@@ -415,19 +416,23 @@ class Converter(object):
       converted_issues.append(result)
     return converted_issues
 
-  def IngestIssue(self, issue):
-    # type: (api_proto.issue_objects_pb2.Issue) -> proto.tracker_pb2.Issue
+  def IngestIssue(self, issue, project_id):
+    # type: (api_proto.issue_objects_pb2.Issue, int) -> proto.tracker_pb2.Issue
     """Ingest a protoc Issue into a protorpc Issue.
 
     Args:
       issue: the protoc issue to ingest.
+      project_id: The project for which we're ingesting `issue`.
 
     Returns:
       protorpc version of `issue`, ignoring all OUTPUT_ONLY fields.
 
     Raises:
       InputException: if any provided fields were invalid.
+      ProjectNotFound: if the provided project ID is not found.
     """
+    # Get config first. We can't ingest the issue if the project isn't found.
+    config = self.services.config.GetProjectConfig(self.cnxn, project_id)
     ingestedDict = {
       'summary': issue.summary
     }
@@ -449,10 +454,22 @@ class Converter(object):
         err_agg.AddErrorMessage('Status is required when creating an issue')
 
       # TODO(jessan): Ingest component name.
-      # TODO(jessan): Migrate & use _RedistributeEnumFieldsIntoLabels from v0.
-
+      ingestedDict['labels'] = [lv.label for lv in issue.labels]
+      field_values = (fv for fv in issue.field_values)
+      ingestedDict['field_values'], _ = self._RedistributeEnumFieldsIntoLabels(
+          ingestedDict['labels'], [], field_values, [], config)
       self._ExtractIssueRefs(issue, ingestedDict, err_agg)
     return tracker_pb2.Issue(**ingestedDict)
+
+
+  def _IngestFieldValue(self, field_value):
+    # type: (api_proto.issue_objects.FieldValue) -> proto.tracker_pb2.FieldValue
+    """Returns protorpc FieldValues for the given protoc FieldValues."""
+    _project_id, field_def_id = rnc.IngestFieldDefName(
+        self.cnxn, field_value.field, self.services)
+    #XXXTODO: Get the FieldDef, Set the value.
+    return tracker_pb2.FieldValue(field_id=field_def_id)
+
 
   def _ExtractOwner(self, issue, ingestedDict, err_agg):
     # type: (api_proto.issue_objects_pb2.Issue, Dict[str, Any], ErrorAggregator)
@@ -524,6 +541,61 @@ class Converter(object):
         )
     raise exceptions.InputException(
         'IssueRefs MUST have least one of `issue` and `ext_identifier`')
+
+  def _RedistributeEnumFieldsIntoLabels(self,
+      labels_add, labels_remove, field_vals_add, field_vals_remove, config):
+    # type: (List[str], List[str],
+    #     Sequence[api_proto.issue_objects_pb2.FieldValue],
+    #     Sequence[api_proto.issue_objects_pb2.FieldValue],
+    #     proto.tracker_pb2.ProjectIssueConfig) ->
+    #     Sequence[proto.tracker_pb2.FieldValue],
+    #     Sequence[proto.tracker_pb2.FieldValue]
+    """Look at the custom field values and treat enum fields as labels.
+
+    Args:
+      labels_add: list of labels to add/set on the issue.
+      labels_remove: list of labels to remove from the issue.
+      field_val_add: list of protoc FieldValues to be added.
+      field_val_remove: list of protoc FieldValues to be removed.
+          remove.
+      config: ProjectIssueConfig PB including custom field definitions.
+
+    Returns:
+      Two revised lists of protoc FieldValues to be added and removed,
+        without enum_types.
+
+    SIDE-EFFECT: the labels and labels_remove lists will be extended with
+    key-value labels corresponding to the enum field values.
+    """
+    field_val_strs_add = {}
+    ingested_field_vals_add = (
+        self._IngestFieldValue(fv) for fv in field_vals_add)
+    for field_val in ingested_field_vals_add:
+      field_val_strs_add.setdefault(field_val.field_id, []).append(
+          field_val.str_value)#...HACK
+
+    # NOT YET MIGRATED
+    field_val_strs_remove = {}
+    for field_val in field_vals_remove:
+      field_val_strs_remove.setdefault(field_val.field, []).append(
+          field_val.value)
+   #
+    field_helpers.ShiftEnumFieldsIntoLabels(
+        labels_add, labels_remove, field_val_strs_add, field_val_strs_remove,
+        config)
+
+    # Filter out the fields that were shifted into labels.
+    updated_field_vals_add = [
+        fv for fv in ingested_field_vals_add
+        if fv.field_id in field_val_strs_add]
+    # NOT YET MIGRATED
+    updated_field_vals_remove = [
+        fv for fv in field_vals_remove
+        if fv.field_id in field_val_strs_remove]
+    #
+
+    return updated_field_vals_add, updated_field_vals_remove
+
 
   def IngestIssuesListColumns(self, issues_list_columns):
     # type: (Sequence[proto.issue_objects_pb2.IssuesListColumn] -> str
