@@ -38,7 +38,9 @@ func TestLegacy(t *testing.T) {
 				".": "chromium-review@chromium.org",
 				"subdir_with_owners": "team-email@chromium.org",
 				"subdir_with_owners/empty_subdir": "team-email@chromium.org"
-			}
+			},
+			"components-to-team":  {},
+			"teams-per-component": {}
 		}`)))
 	})
 }
