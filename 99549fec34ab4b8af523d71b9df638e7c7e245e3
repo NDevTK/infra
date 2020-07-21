@@ -16,6 +16,24 @@
       "revId": "99549fec34ab4b8af523d71b9df638e7c7e245e3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d9e20a4_a7d64b1c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-21T19:34:52Z",
+      "side": 1,
+      "message": "Thank you for looking into this and for the design chat on Monday!",
+      "parentUuid": "0a5ef422_5370e7a7",
+      "revId": "99549fec34ab4b8af523d71b9df638e7c7e245e3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
