@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "72efaef2_5060ca4a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-07-21T20:08:13Z",
+      "side": 1,
+      "message": "a comment on annotations, i don\u0027t feel strongly since I think few of our type annotations would work as-is. \nfeel free to merge",
+      "revId": "30a4ceaf4a7ee1228b729d1d325daa96c2b0c43d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cb9c6e65_abedafd7",
+        "filename": "appengine/monorail/api/v3/converters.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 479,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-07-21T20:08:13Z",
+      "side": 1,
+      "message": "If these annotations were actually enforced, I think this would need to be wrapped in\n`Tuple[Sequence[..], Mappint[..]]`",
+      "range": {
+        "startLine": 479,
+        "startChar": 4,
+        "endLine": 479,
+        "endChar": 5
+      },
+      "revId": "30a4ceaf4a7ee1228b729d1d325daa96c2b0c43d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
