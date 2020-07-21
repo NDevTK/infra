@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	ufspb "infra/unifiedfleet/api/v1/proto"
 )
 
 // message for filtering
@@ -101,4 +103,19 @@ func RemoveStringEntry(slice []string, entry string) []string {
 		}
 	}
 	return slice
+}
+
+// IsBrowserLab return true if its a browser lab
+func IsBrowserLab(lab ufspb.Lab) bool {
+	switch lab {
+	case ufspb.Lab_LAB_CHROME_ATLANTA,
+		ufspb.Lab_LAB_DATACENTER_ATL97,
+		ufspb.Lab_LAB_DATACENTER_IAD97,
+		ufspb.Lab_LAB_DATACENTER_MTV96,
+		ufspb.Lab_LAB_DATACENTER_MTV97,
+		ufspb.Lab_LAB_DATACENTER_FUCHSIA:
+		return true
+	default:
+		return false
+	}
 }
