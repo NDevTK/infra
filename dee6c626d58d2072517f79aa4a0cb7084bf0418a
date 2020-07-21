@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ff3d8fa3_c28a60cb",
+        "filename": "appengine/monorail/api/v3/converters.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 476,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-07-21T22:01:35Z",
+      "side": 1,
+      "message": "Not a big fan of this method signature.\nCould you elaborate on the trade off you preferred over the paste bin?",
+      "range": {
+        "startLine": 476,
+        "startChar": 6,
+        "endLine": 476,
+        "endChar": 24
+      },
+      "revId": "dee6c626d58d2072517f79aa4a0cb7084bf0418a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
