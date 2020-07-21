@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "d7c097b7_dbd8e466",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-21T21:40:01Z",
+      "side": 1,
+      "message": "Thanks. I figure if I\u0027m doing them I\u0027ll try to at least get them close to right :)",
+      "parentUuid": "72efaef2_5060ca4a",
+      "revId": "30a4ceaf4a7ee1228b729d1d325daa96c2b0c43d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cb9c6e65_abedafd7",
         "filename": "appengine/monorail/api/v3/converters.py",
         "patchSetId": 4
@@ -30,6 +48,30 @@
       "writtenOn": "2020-07-21T20:08:13Z",
       "side": 1,
       "message": "If these annotations were actually enforced, I think this would need to be wrapped in\n`Tuple[Sequence[..], Mappint[..]]`",
+      "range": {
+        "startLine": 479,
+        "startChar": 4,
+        "endLine": 479,
+        "endChar": 5
+      },
+      "revId": "30a4ceaf4a7ee1228b729d1d325daa96c2b0c43d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d8617c90_8a8c50b4",
+        "filename": "appengine/monorail/api/v3/converters.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 479,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-21T21:40:01Z",
+      "side": 1,
+      "message": "Thank you! I meant to look this up but forgot to.",
+      "parentUuid": "cb9c6e65_abedafd7",
       "range": {
         "startLine": 479,
         "startChar": 4,
