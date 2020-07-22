@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "bf3351f1_517399d6",
+        "filename": "go/src/infra/unifiedfleet/app/controller/rack.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-07-22T19:07:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4defc460_45a38d24",
+      "range": {
+        "startLine": 64,
+        "startChar": 2,
+        "endLine": 77,
+        "endChar": 0
+      },
+      "revId": "ddc288af779c58451d37d7fec32a5011c1270f0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "31439170_41591644",
         "filename": "go/src/infra/unifiedfleet/app/controller/rack.go",
         "patchSetId": 3
@@ -96,6 +120,30 @@
     },
     {
       "key": {
+        "uuid": "e73f7267_d8bb515d",
+        "filename": "go/src/infra/unifiedfleet/app/controller/rack.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-07-22T19:07:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "31439170_41591644",
+      "range": {
+        "startLine": 78,
+        "startChar": 8,
+        "endLine": 78,
+        "endChar": 14
+      },
+      "revId": "ddc288af779c58451d37d7fec32a5011c1270f0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7ec17ad4_3920ea04",
         "filename": "go/src/infra/unifiedfleet/app/util/common.go",
         "patchSetId": 3
@@ -116,6 +164,30 @@
       "revId": "ddc288af779c58451d37d7fec32a5011c1270f0e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "62d7aa36_09ce3394",
+        "filename": "go/src/infra/unifiedfleet/app/util/common.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-07-22T19:07:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7ec17ad4_3920ea04",
+      "range": {
+        "startLine": 109,
+        "startChar": 5,
+        "endLine": 109,
+        "endChar": 17
+      },
+      "revId": "ddc288af779c58451d37d7fec32a5011c1270f0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
