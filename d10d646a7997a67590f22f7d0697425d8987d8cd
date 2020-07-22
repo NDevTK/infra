@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8d1e4dbe_937d3309",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-22T19:09:34Z",
+      "side": 1,
+      "message": "LGTM % comments",
+      "revId": "d10d646a7997a67590f22f7d0697425d8987d8cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "336456a0_827f20f5",
+        "filename": "go/src/infra/unifiedfleet/app/util/common.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-22T19:09:34Z",
+      "side": 1,
+      "message": "remove?",
+      "range": {
+        "startLine": 128,
+        "startChar": 1,
+        "endLine": 143,
+        "endChar": 0
+      },
+      "revId": "d10d646a7997a67590f22f7d0697425d8987d8cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
