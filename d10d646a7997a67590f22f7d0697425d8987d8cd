@@ -39,6 +39,30 @@
       "revId": "d10d646a7997a67590f22f7d0697425d8987d8cd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a420c90b_81ce408f",
+        "filename": "go/src/infra/unifiedfleet/app/util/common.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-07-22T19:30:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "336456a0_827f20f5",
+      "range": {
+        "startLine": 128,
+        "startChar": 1,
+        "endLine": 143,
+        "endChar": 0
+      },
+      "revId": "d10d646a7997a67590f22f7d0697425d8987d8cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
