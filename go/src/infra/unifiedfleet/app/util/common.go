@@ -63,13 +63,26 @@ func FormatLabFilter(userFilter string) string {
 	return Lab + FilterConditionSeparator + userFilter
 }
 
-// IsInBrowserLab check if a given resource name indicates it's in browser lab.
+// IsInBrowserLab check if a given name(resource or lab name) indicates it's in browser lab.
 func IsInBrowserLab(name string) bool {
+	// check if it has a browser lab prefix
 	s := strings.Split(name, FilterConditionSeparator)
 	if len(s) >= 2 && s[0] == BrowserLab {
 		return true
 	}
-	return false
+
+	// check the actual lab name
+	switch name {
+	case "LAB_CHROME_ATLANTA",
+		"LAB_DATACENTER_ATL97",
+		"LAB_DATACENTER_IAD97",
+		"LAB_DATACENTER_MTV96",
+		"LAB_DATACENTER_MTV97",
+		"LAB_DATACENTER_FUCHSIA":
+		return true
+	default:
+		return false
+	}
 }
 
 // GetIPName returns a formatted IP name
@@ -111,3 +124,19 @@ func RemoveStringEntry(slice []string, entry string) []string {
 	}
 	return slice
 }
+
+/*
+// IsBrowserLab return true if its a browser lab
+func IsBrowserLab(lab ufspb.Lab) bool {
+	switch lab {
+	case ufspb.Lab_LAB_CHROME_ATLANTA,
+		ufspb.Lab_LAB_DATACENTER_ATL97,
+		ufspb.Lab_LAB_DATACENTER_IAD97,
+		ufspb.Lab_LAB_DATACENTER_MTV96,
+		ufspb.Lab_LAB_DATACENTER_MTV97,
+		ufspb.Lab_LAB_DATACENTER_FUCHSIA:
+		return true
+	default:
+		return false
+	}
+}*/
