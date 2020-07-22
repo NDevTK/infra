@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "60faa495_0d97eb80",
+        "filename": "go/src/infra/unifiedfleet/app/controller/rack.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-22T05:58:39Z",
+      "side": 1,
+      "message": "this can be merged with line 49-56.\n\nif rack.GetChromeBrowserRack() \u003d\u003d nil {\n    rack.Rack \u003d \u0026ufspb.Rack_ChromeBrowserRack{\n\tChromeBrowserRack: \u0026ufspb.ChromeBrowserRack{},\n    }\n}\nrack.GetChromeBrowserRack().Rpms \u003d oldRack.GetChromeBrowserRack().GetRpms()\nrack.GetChromeBrowserRack().Kvms \u003d oldRack.GetChromeBrowserRack().GetKvms()\nrack.GetChromeBrowserRack().Switches \u003d oldRack.GetChromeBrowserRack().GetSwitches()\n\neven if oldRack or its ChromeBrowserRack is nil, it still works.",
+      "range": {
+        "startLine": 64,
+        "startChar": 2,
+        "endLine": 77,
+        "endChar": 0
+      },
+      "revId": "ddc288af779c58451d37d7fec32a5011c1270f0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "31439170_41591644",
+        "filename": "go/src/infra/unifiedfleet/app/controller/rack.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-22T05:58:39Z",
+      "side": 1,
+      "message": "Update",
+      "range": {
+        "startLine": 78,
+        "startChar": 8,
+        "endLine": 78,
+        "endChar": 14
+      },
+      "revId": "ddc288af779c58451d37d7fec32a5011c1270f0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7ec17ad4_3920ea04",
+        "filename": "go/src/infra/unifiedfleet/app/util/common.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-22T05:58:39Z",
+      "side": 1,
+      "message": "after rebasing, can you modify https://source.corp.google.com/chromium_infra/go/src/infra/unifiedfleet/app/util/common.go;l\u003d67?q\u003dInBrowserLab\u0026sq\u003dpackage:%5Echromium_infra$?\n\nalso limiting the input to string can make the function more general",
+      "range": {
+        "startLine": 109,
+        "startChar": 5,
+        "endLine": 109,
+        "endChar": 17
+      },
+      "revId": "ddc288af779c58451d37d7fec32a5011c1270f0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
