@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "4b10b5d2_417aa639",
+        "filename": "go/src/infra/unifiedfleet/app/controller/rack.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-07-22T18:16:37Z",
+      "side": 1,
+      "message": "It can be a OS rack and we dont want to initialize it with browserrack.\nDoes it make sense?",
+      "parentUuid": "60faa495_0d97eb80",
+      "range": {
+        "startLine": 64,
+        "startChar": 2,
+        "endLine": 77,
+        "endChar": 0
+      },
+      "revId": "ddc288af779c58451d37d7fec32a5011c1270f0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "31439170_41591644",
         "filename": "go/src/infra/unifiedfleet/app/controller/rack.go",
         "patchSetId": 3
