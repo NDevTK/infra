@@ -22,6 +22,30 @@
       "revId": "dee6c626d58d2072517f79aa4a0cb7084bf0418a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6d86f22d_f004b71c",
+        "filename": "appengine/monorail/api/v3/converters.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 476,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-07-22T18:24:11Z",
+      "side": 1,
+      "message": "Checking back against the pastebin: these are the differences I see.\n\n1. config rather than project_id: I wanted project_id checking to happen first thing in ingestion, given that it is the \u0027parent\u0027\n2. Returning the tuple with the enums instead of just the FieldValues\n  - I wanted to be able to still use ShiftEnumFieldsIntoLabels, per the comment in my CL description around maximizing reuse.\n\nI would also not accept this method signature for a public method, but for private methods I\u0027m fine with messier signatures.\n\nPlease follow up in an email for if you want discussion so I can make sure I see it.",
+      "parentUuid": "ff3d8fa3_c28a60cb",
+      "range": {
+        "startLine": 476,
+        "startChar": 6,
+        "endLine": 476,
+        "endChar": 24
+      },
+      "revId": "dee6c626d58d2072517f79aa4a0cb7084bf0418a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
