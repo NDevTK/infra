@@ -9,6 +9,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
+	"runtime/debug"
 	"sync"
 
 	"github.com/maruel/subcommands"
@@ -92,6 +93,19 @@ func (r *cmdScanImpl) validateFlags(ctx context.Context, positionals []string, e
 	return err
 }
 
+func (r *cmdScanImpl) scanProject(ctx context.Context, inst migrator.API, proj migrator.Project) {
+	defer func() {
+		if rcov := recover(); rcov != nil {
+			// TODO(iannucci): report this better
+			logging.Errorf(ctx, "fatal error: %s", rcov)
+			logging.Errorf(ctx, string(debug.Stack()))
+			proj.Report("FATAL_ERROR", fmt.Sprintf("%s", rcov))
+		}
+	}()
+
+	inst.FindProblems(ctx, proj)
+}
+
 func (r *cmdScanImpl) dumpReport(ctx context.Context, reports plugsupport.ReportDump) error {
 	outFile, err := os.Create(r.projectDir.ReportPath())
 	if err != nil {
@@ -169,6 +183,8 @@ func (r *cmdScanImpl) execute(ctx context.Context) error {
 			for _, projPB := range projectPB.Projects {
 				projPB := projPB
 				ch <- func() (err error) {
+					inst := factory()
+
 					r.perProjectContext(ctx, projPB, func(ctx context.Context) bool {
 						defer func() {
 							reports := plugsupport.DumpReports(ctx)
@@ -182,7 +198,8 @@ func (r *cmdScanImpl) execute(ctx context.Context) error {
 							}
 						}()
 
-						panic("IMPLEMENT PROJECT SCANNING")
+						proj := plugsupport.RemoteProject(ctx, projPB.Id)
+						r.scanProject(ctx, inst, proj)
 
 						// No reports from scan? Clean up the repo if it exists.
 						if !plugsupport.HasReports(ctx) {
