@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c88dbe77_24c2ea02",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/cmd_scan.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2020-07-23T21:32:43Z",
+      "side": 1,
+      "message": "lol",
+      "range": {
+        "startLine": 59,
+        "startChar": 36,
+        "endLine": 59,
+        "endChar": 43
+      },
+      "revId": "a9018cd4e093d0c6c56c3fa88c20fe9f0409f1b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "99997bdc_f7456444",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/cmd_scan.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2020-07-23T21:32:43Z",
+      "side": 1,
+      "message": "have you considered a flag to limit what projects to target? E.g. if I want to fix only one, I don\u0027t want to checkout all of them.",
+      "range": {
+        "startLine": 158,
+        "startChar": 2,
+        "endLine": 158,
+        "endChar": 13
+      },
+      "revId": "a9018cd4e093d0c6c56c3fa88c20fe9f0409f1b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c060a9db_6c13b83b",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/cmd_scan.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2020-07-23T21:32:43Z",
+      "side": 1,
+      "message": "you can use instead:\n\n  projectPB :\u003d \u0026configpb.ProjectsCfg{}\n  err :\u003d cfgclient.Get(ctx, \"services/luci-config\", \"projects.cfg\", cfgclient.ProtoText(projectPB), nil)\n\nFew lines shorter, no need to pull config client out of the context or import lucipb.",
+      "range": {
+        "startLine": 160,
+        "startChar": 2,
+        "endLine": 163,
+        "endChar": 3
+      },
+      "revId": "a9018cd4e093d0c6c56c3fa88c20fe9f0409f1b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "be157232_9e40493b",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/cmd_scan.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2020-07-23T21:32:43Z",
+      "side": 1,
+      "message": "Consider moving this into ReportDump unless you vitally depend somewhere on it being an alias for a map.",
+      "range": {
+        "startLine": 165,
+        "startChar": 2,
+        "endLine": 165,
+        "endChar": 29
+      },
+      "revId": "a9018cd4e093d0c6c56c3fa88c20fe9f0409f1b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
