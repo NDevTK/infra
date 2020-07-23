@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "463fce51_0c58a61d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-07-23T07:31:07Z",
+      "side": 1,
+      "message": "Note that it would also be possible to just adjust the log level at the point where you enter the bb library, too.\n\nAnyhow, this lgtm.",
+      "revId": "4c081726620867bba12e5fe908004e3ad737f69b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
