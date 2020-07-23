@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4f92f270_e6489947",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/cmd_scan.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2020-07-23T21:40:43Z",
+      "side": 1,
+      "message": "consider using https://godoc.org/go.chromium.org/luci/common/runtime/paniccatcher#Do since we have it for some reason.. (but really, it formats the stack in some other way...)",
+      "range": {
+        "startLine": 97,
+        "startChar": 1,
+        "endLine": 104,
+        "endChar": 4
+      },
+      "revId": "7de6f1332f42de38e4bc0a0fde11f52be81b6082",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
