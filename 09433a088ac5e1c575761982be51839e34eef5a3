@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f4963d02_e95b4248",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/cmd_base.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2020-07-23T21:08:33Z",
+      "side": 1,
+      "message": "lol",
+      "range": {
+        "startLine": 31,
+        "startChar": 18,
+        "endLine": 31,
+        "endChar": 77
+      },
+      "revId": "09433a088ac5e1c575761982be51839e34eef5a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f5794b39_f11b3893",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/cmd_base.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2020-07-23T21:08:33Z",
+      "side": 1,
+      "message": "this stuff usually goes into \n\n  func (c *cmdBase) ModifyContext(ctx context.Context) context.Context { \n\treturn c.logFlags.Set(ctx)\n  }\n\nIf a command implement cli.ContextModificator it is called when preparing a context for it, after parsing flags.",
+      "range": {
+        "startLine": 64,
+        "startChar": 1,
+        "endLine": 64,
+        "endChar": 51
+      },
+      "revId": "09433a088ac5e1c575761982be51839e34eef5a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f8e6ff9a_43d764b5",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2020-07-23T21:08:33Z",
+      "side": 1,
+      "message": "nit: I like to use instead:\n\n  UserAgent \u003d \"migrator v0.0.1\"\n\nAnd then pass it to both versioncli.CmdVersion and to http.Client\u0027s.",
+      "range": {
+        "startLine": 29,
+        "startChar": 1,
+        "endLine": 29,
+        "endChar": 8
+      },
+      "revId": "09433a088ac5e1c575761982be51839e34eef5a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "574af6ec_d73ebb62",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2020-07-23T21:08:33Z",
+      "side": 1,
+      "message": "will https://chromium.googlesource.com/infra/luci/luci-go/+/refs/heads/master/common/system/signals/interrupt.go#24 be sufficient?",
+      "range": {
+        "startLine": 32,
+        "startChar": 5,
+        "endLine": 32,
+        "endChar": 23
+      },
+      "revId": "09433a088ac5e1c575761982be51839e34eef5a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8236154d_fcaba44d",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2020-07-23T21:08:33Z",
+      "side": 1,
+      "message": "nit: add version string here too for quickly identifying the version (e.g. see how `lucicfg` prints its version)",
+      "range": {
+        "startLine": 58,
+        "startChar": 11,
+        "endLine": 58,
+        "endChar": 24
+      },
+      "revId": "09433a088ac5e1c575761982be51839e34eef5a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "13cdf5c5_6caff11c",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2020-07-23T21:08:33Z",
+      "side": 1,
+      "message": "nit: I think this will be more readable in this case:\n\n  ctx \u003d gologger.StdConfig.Use(ctx)\n  ctx \u003d logging.SetLevel(ctx, logging.Info)\n\nedit: if each subcommand changes the logging level anyway, just keep only gologger.StdConfig.Use(ctx) here.",
+      "range": {
+        "startLine": 68,
+        "startChar": 3,
+        "endLine": 68,
+        "endChar": 72
+      },
+      "revId": "09433a088ac5e1c575761982be51839e34eef5a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "52284397_22a4f079",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/util.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2020-07-23T21:08:33Z",
+      "side": 1,
+      "message": "lol, this is an unexpected form of validation... Also need to close rsp.Body to avoid leaking a socket.\n\nConsider renaming the function to \"pingHost\" or something.",
+      "range": {
+        "startLine": 27,
+        "startChar": 15,
+        "endLine": 27,
+        "endChar": 43
+      },
+      "revId": "09433a088ac5e1c575761982be51839e34eef5a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
