@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5d379206_835c79cb",
+        "filename": "go/src/infra/tools/migrator/plugsupport/local_project.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2020-07-23T22:00:59Z",
+      "side": 1,
+      "message": "Do we need to skip .git? In case someone places their configs into the root of the repository.",
+      "range": {
+        "startLine": 38,
+        "startChar": 17,
+        "endLine": 38,
+        "endChar": 30
+      },
+      "revId": "d901d4ec9a2a62a76112e743cfae9d82d2df03f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
