@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "38a99640_49b331f9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2020-07-23T22:04:23Z",
+      "side": 1,
+      "message": "I\u0027ll be impressed if all PRESUBMIT.py would work without the rest of random crap they depend on...",
+      "range": {
+        "startLine": 9,
+        "startChar": 13,
+        "endLine": 9,
+        "endChar": 48
+      },
+      "revId": "562639b3f8c75777da727803756184be6a947e88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
