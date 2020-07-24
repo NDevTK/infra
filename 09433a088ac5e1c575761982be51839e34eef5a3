@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "1d27f9ee_bac18146",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/cmd_base.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-07-24T01:02:27Z",
+      "side": 1,
+      "message": "meh, it just smears the crap around :(. I tried doing this but it doesn\u0027t actually seem any cleaner, just different (or worse; I\u0027d have to put stuff like authOpts as fields on c to carry them across from flag validation to ModifyContext)",
+      "parentUuid": "f5794b39_f11b3893",
+      "range": {
+        "startLine": 64,
+        "startChar": 1,
+        "endLine": 64,
+        "endChar": 51
+      },
+      "revId": "09433a088ac5e1c575761982be51839e34eef5a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f8e6ff9a_43d764b5",
         "filename": "go/src/infra/tools/migrator/cmd/migrator/main.go",
         "patchSetId": 1
@@ -68,6 +92,30 @@
       "revId": "09433a088ac5e1c575761982be51839e34eef5a3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "96af2e31_4a891cb4",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-07-24T01:02:27Z",
+      "side": 1,
+      "message": "unfortunately I can\u0027t reuse it for cli.Application.Name at that point",
+      "parentUuid": "f8e6ff9a_43d764b5",
+      "range": {
+        "startLine": 29,
+        "startChar": 1,
+        "endLine": 29,
+        "endChar": 8
+      },
+      "revId": "09433a088ac5e1c575761982be51839e34eef5a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -94,6 +142,30 @@
     },
     {
       "key": {
+        "uuid": "a0f4e24b_73b1c0d4",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-07-24T01:02:27Z",
+      "side": 1,
+      "message": "great :)",
+      "parentUuid": "574af6ec_d73ebb62",
+      "range": {
+        "startLine": 32,
+        "startChar": 5,
+        "endLine": 32,
+        "endChar": 23
+      },
+      "revId": "09433a088ac5e1c575761982be51839e34eef5a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8236154d_fcaba44d",
         "filename": "go/src/infra/tools/migrator/cmd/migrator/main.go",
         "patchSetId": 1
@@ -114,6 +186,30 @@
       "revId": "09433a088ac5e1c575761982be51839e34eef5a3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "873a00ca_ce1d4503",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-07-24T01:02:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8236154d_fcaba44d",
+      "range": {
+        "startLine": 58,
+        "startChar": 11,
+        "endLine": 58,
+        "endChar": 24
+      },
+      "revId": "09433a088ac5e1c575761982be51839e34eef5a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -140,6 +236,30 @@
     },
     {
       "key": {
+        "uuid": "f0b34be9_57845dc9",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-07-24T01:02:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "13cdf5c5_6caff11c",
+      "range": {
+        "startLine": 68,
+        "startChar": 3,
+        "endLine": 68,
+        "endChar": 72
+      },
+      "revId": "09433a088ac5e1c575761982be51839e34eef5a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "52284397_22a4f079",
         "filename": "go/src/infra/tools/migrator/cmd/migrator/util.go",
         "patchSetId": 1
@@ -151,6 +271,30 @@
       "writtenOn": "2020-07-23T21:08:33Z",
       "side": 1,
       "message": "lol, this is an unexpected form of validation... Also need to close rsp.Body to avoid leaking a socket.\n\nConsider renaming the function to \"pingHost\" or something.",
+      "range": {
+        "startLine": 27,
+        "startChar": 15,
+        "endLine": 27,
+        "endChar": 43
+      },
+      "revId": "09433a088ac5e1c575761982be51839e34eef5a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c6d731e3_43bf7ffe",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/util.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-07-24T01:02:27Z",
+      "side": 1,
+      "message": "ugh copypasta\u0027d this from somewhere... turns out it\u0027s not actually used here, but I\u0027ll fix it in the copypasta place.",
+      "parentUuid": "52284397_22a4f079",
       "range": {
         "startLine": 27,
         "startChar": 15,
