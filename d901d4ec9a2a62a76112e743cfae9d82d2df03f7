@@ -22,6 +22,30 @@
       "revId": "d901d4ec9a2a62a76112e743cfae9d82d2df03f7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "06a4a865_46ff6005",
+        "filename": "go/src/infra/tools/migrator/plugsupport/local_project.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-07-24T21:05:00Z",
+      "side": 1,
+      "message": "good call. Done.",
+      "parentUuid": "5d379206_835c79cb",
+      "range": {
+        "startLine": 38,
+        "startChar": 17,
+        "endLine": 38,
+        "endChar": 30
+      },
+      "revId": "d901d4ec9a2a62a76112e743cfae9d82d2df03f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
