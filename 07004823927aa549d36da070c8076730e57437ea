@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "6d14d197_705a84f6",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/cmd_scan.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-07-24T04:19:23Z",
+      "side": 1,
+      "message": "Er, yeah you\u0027re right. Done.",
+      "parentUuid": "4a974c2b_6fc1e505",
+      "range": {
+        "startLine": 171,
+        "startChar": 20,
+        "endLine": 171,
+        "endChar": 23
+      },
+      "revId": "07004823927aa549d36da070c8076730e57437ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "67d6621b_42e67eba",
         "filename": "go/src/infra/tools/migrator/cmd/migrator/cmd_scan.go",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2020-07-23T21:52:12Z",
       "side": 1,
       "message": "maybe we should mandate the plugins must be idempotent and just always run applyFix?",
+      "range": {
+        "startLine": 259,
+        "startChar": 28,
+        "endLine": 259,
+        "endChar": 101
+      },
+      "revId": "07004823927aa549d36da070c8076730e57437ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "90097023_7693f2fb",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/cmd_scan.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-07-24T04:19:23Z",
+      "side": 1,
+      "message": "eh... I think I\u0027d prefer to keep it casual. Writing the plugin to make it idempotent would likely make the plugin code much larger. Better to just `rm -rf` the repo and try again.\n\nI intend for \u0027scan\u0027 to be run semi-frequently (with `-clean`) to re-assess the state of the world. I think it\u0027s likely that not all projects will apply patches and fix their state all at the same time.",
+      "parentUuid": "67d6621b_42e67eba",
       "range": {
         "startLine": 259,
         "startChar": 28,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "4618e70c_88b97b6f",
+        "filename": "go/src/infra/tools/migrator/plugsupport/repo.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-07-24T04:19:23Z",
+      "side": 1,
+      "message": "it\u0027s not all that magic, it\u0027s just not `refs/origin/something/normal` :)",
+      "parentUuid": "e40af855_518ad69f",
+      "range": {
+        "startLine": 43,
+        "startChar": 6,
+        "endLine": 43,
+        "endChar": 11
+      },
+      "revId": "07004823927aa549d36da070c8076730e57437ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "64c7acbb_05f3421c",
         "filename": "go/src/infra/tools/migrator/plugsupport/repo.go",
         "patchSetId": 1
@@ -82,6 +154,30 @@
       "writtenOn": "2020-07-23T21:52:12Z",
       "side": 1,
       "message": "Note that bufio.Scanner has a nasty caveat of breaking on long lines (longer than 64K). In this case I believe it will result in deadlock (git will try to write to a pipe the scanner is not reading anymore) and panics (on line 159). Consider replacing the scanner with bufio.Reader.ReadString(\u0027\\n\u0027) instead.",
+      "range": {
+        "startLine": 156,
+        "startChar": 7,
+        "endLine": 156,
+        "endChar": 21
+      },
+      "revId": "07004823927aa549d36da070c8076730e57437ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4a02c56_0b6fe3c8",
+        "filename": "go/src/infra/tools/migrator/plugsupport/repo.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-07-24T04:19:23Z",
+      "side": 1,
+      "message": "whattt... fixed now, I guess",
+      "parentUuid": "64c7acbb_05f3421c",
       "range": {
         "startLine": 156,
         "startChar": 7,
