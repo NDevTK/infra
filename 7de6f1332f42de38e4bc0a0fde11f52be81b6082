@@ -22,6 +22,30 @@
       "revId": "7de6f1332f42de38e4bc0a0fde11f52be81b6082",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c4053bd1_10128ab0",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/cmd_scan.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-07-24T03:52:45Z",
+      "side": 1,
+      "message": "eh, this is pretty short and I like how it formats the stack.",
+      "parentUuid": "4f92f270_e6489947",
+      "range": {
+        "startLine": 97,
+        "startChar": 1,
+        "endLine": 104,
+        "endChar": 4
+      },
+      "revId": "7de6f1332f42de38e4bc0a0fde11f52be81b6082",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
