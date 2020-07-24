@@ -22,6 +22,30 @@
       "revId": "44900117b1be9a9fc4768ceda669825e8f3e04dc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "845919de_0b7d4aa7",
+        "filename": "go/src/infra/tools/migrator/plugsupport/doc.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-07-24T01:11:54Z",
+      "side": 1,
+      "message": "done at end of chain",
+      "parentUuid": "1e2e1c69_fca52cda",
+      "range": {
+        "startLine": 7,
+        "startChar": 3,
+        "endLine": 7,
+        "endChar": 69
+      },
+      "revId": "44900117b1be9a9fc4768ceda669825e8f3e04dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
