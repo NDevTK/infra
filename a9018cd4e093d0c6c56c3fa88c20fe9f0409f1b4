@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "dd69a98f_716bd6c2",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/cmd_scan.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-07-24T02:37:46Z",
+      "side": 1,
+      "message": "You can control this via the plugin; Just have it exit unless the project id \u003d\u003d whatever.",
+      "parentUuid": "99997bdc_f7456444",
+      "range": {
+        "startLine": 158,
+        "startChar": 2,
+        "endLine": 158,
+        "endChar": 13
+      },
+      "revId": "a9018cd4e093d0c6c56c3fa88c20fe9f0409f1b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c060a9db_6c13b83b",
         "filename": "go/src/infra/tools/migrator/cmd/migrator/cmd_scan.go",
         "patchSetId": 1
@@ -71,6 +95,30 @@
     },
     {
       "key": {
+        "uuid": "625771c3_611a7009",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/cmd_scan.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-07-24T02:37:46Z",
+      "side": 1,
+      "message": "nice",
+      "parentUuid": "c060a9db_6c13b83b",
+      "range": {
+        "startLine": 160,
+        "startChar": 2,
+        "endLine": 163,
+        "endChar": 3
+      },
+      "revId": "a9018cd4e093d0c6c56c3fa88c20fe9f0409f1b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "be157232_9e40493b",
         "filename": "go/src/infra/tools/migrator/cmd/migrator/cmd_scan.go",
         "patchSetId": 1
@@ -91,6 +139,30 @@
       "revId": "a9018cd4e093d0c6c56c3fa88c20fe9f0409f1b4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9470b3a1_301bffa9",
+        "filename": "go/src/infra/tools/migrator/cmd/migrator/cmd_scan.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-07-24T02:37:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "be157232_9e40493b",
+      "range": {
+        "startLine": 165,
+        "startChar": 2,
+        "endLine": 165,
+        "endChar": 29
+      },
+      "revId": "a9018cd4e093d0c6c56c3fa88c20fe9f0409f1b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
