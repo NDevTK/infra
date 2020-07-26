@@ -68,6 +68,9 @@ func (c *addRack) innerRun(a subcommands.Application, args []string, env subcomm
 		if err := utils.ParseJSONFile(c.newSpecsFile, &rackRegistrationReq); err != nil {
 			return err
 		}
+		ufsLab := utils.ToUFSLab(c.labName)
+		rackRegistrationReq.GetRack().GetLocation().Lab = ufsLab
+		rackRegistrationReq.GetRack().Realm = utils.ToUFSRealm(ufsLab.String())
 	} else {
 		c.parseArgs(&rackRegistrationReq)
 	}
@@ -118,22 +121,19 @@ func (c *addRack) parseArgs(req *ufsAPI.RackRegistrationRequest) {
 }
 
 func (c *addRack) validateArgs() error {
+	if c.labName == "" {
+		return cmdlib.NewUsageError(c.Flags, "Wrong usage!!\n'-lab' is required.")
+	}
+	if !utils.IsUFSLab(c.labName) {
+		return cmdlib.NewUsageError(c.Flags, "Wrong usage!!\n%s is not a valid lab name, please check help info for '-lab'.", c.labName)
+	}
 	if c.newSpecsFile != "" {
 		if c.rackName != "" {
 			return cmdlib.NewUsageError(c.Flags, "Wrong usage!!\nThe JSON input file is already specified. '-name' cannot be specified at the same time.")
 		}
-		if c.labName != "" {
-			return cmdlib.NewUsageError(c.Flags, "Wrong usage!!\nThe JSON input file is already specified. '-lab' cannot be specified at the same time.")
-		}
 	} else {
 		if c.rackName == "" {
 			return cmdlib.NewUsageError(c.Flags, "Wrong usage!!\nNo mode ('-new-json-file') is setup, so '-name' is required.")
-		}
-		if c.labName == "" {
-			return cmdlib.NewUsageError(c.Flags, "Wrong usage!!\nNo mode ('-new-json-file') is setup, so '-lab' is required.")
-		}
-		if !utils.IsUFSLab(c.labName) {
-			return cmdlib.NewUsageError(c.Flags, "Wrong usage!!\n%s is not a valid lab name, please check help info for '-lab'.", c.labName)
 		}
 	}
 	return nil
