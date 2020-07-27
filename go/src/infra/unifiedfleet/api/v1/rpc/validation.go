@@ -375,6 +375,9 @@ func (r *GetRackRequest) Validate() error {
 
 // Validate validates input requests of ListRacks.
 func (r *ListRacksRequest) Validate() error {
+	if err := ValidateFilter(r.Filter); err != nil {
+		return err
+	}
 	return validatePageSize(r.PageSize)
 }
 
@@ -573,6 +576,9 @@ func (r *GetKVMRequest) Validate() error {
 
 // Validate validates input requests of ListKVMs.
 func (r *ListKVMsRequest) Validate() error {
+	if err := ValidateFilter(r.Filter); err != nil {
+		return err
+	}
 	return validatePageSize(r.PageSize)
 }
 
@@ -611,6 +617,9 @@ func (r *GetRPMRequest) Validate() error {
 
 // Validate validates input requests of ListRPMs.
 func (r *ListRPMsRequest) Validate() error {
+	if err := ValidateFilter(r.Filter); err != nil {
+		return err
+	}
 	return validatePageSize(r.PageSize)
 }
 
@@ -696,6 +705,9 @@ func (r *GetSwitchRequest) Validate() error {
 
 // Validate validates input requests of ListSwitches.
 func (r *ListSwitchesRequest) Validate() error {
+	if err := ValidateFilter(r.Filter); err != nil {
+		return err
+	}
 	return validatePageSize(r.PageSize)
 }
 
