@@ -692,7 +692,7 @@ func TestListRacks(t *testing.T) {
 		racks = append(racks, resp)
 	}
 	Convey("ListRacks", t, func() {
-		Convey("ListRacks - page_size negative", func() {
+		Convey("ListRacks - page_size negative - error", func() {
 			req := &ufsAPI.ListRacksRequest{
 				PageSize: -5,
 			}
@@ -702,54 +702,12 @@ func TestListRacks(t *testing.T) {
 			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidPageSize)
 		})
 
-		Convey("ListRacks - page_token invalid", func() {
-			req := &ufsAPI.ListRacksRequest{
-				PageSize:  5,
-				PageToken: "abc",
-			}
-			resp, err := tf.Fleet.ListRacks(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
-		})
-
-		Convey("ListRacks - Full listing Max PageSize", func() {
-			req := &ufsAPI.ListRacksRequest{
-				PageSize: 2000,
-			}
+		Convey("ListRacks - Full listing - happy path", func() {
+			req := &ufsAPI.ListRacksRequest{}
 			resp, err := tf.Fleet.ListRacks(tf.C, req)
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 			So(resp.Racks, ShouldResembleProto, racks)
-		})
-
-		Convey("ListRacks - Full listing with no pagination", func() {
-			req := &ufsAPI.ListRacksRequest{
-				PageSize: 0,
-			}
-			resp, err := tf.Fleet.ListRacks(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Racks, ShouldResembleProto, racks)
-		})
-
-		Convey("ListRacks - listing with pagination", func() {
-			req := &ufsAPI.ListRacksRequest{
-				PageSize: 3,
-			}
-			resp, err := tf.Fleet.ListRacks(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Racks, ShouldResembleProto, racks[:3])
-
-			req = &ufsAPI.ListRacksRequest{
-				PageSize:  3,
-				PageToken: resp.NextPageToken,
-			}
-			resp, err = tf.Fleet.ListRacks(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Racks, ShouldResembleProto, racks[3:])
 		})
 	})
 }
@@ -1170,7 +1128,7 @@ func TestImportDatacenters(t *testing.T) {
 			dhcps, _, err := configuration.ListDHCPConfigs(ctx, 100, "", nil, false)
 			So(err, ShouldBeNil)
 			So(dhcps, ShouldHaveLength, 3)
-			racks, _, err := registration.ListRacks(ctx, 100, "")
+			racks, _, err := registration.ListRacks(ctx, 100, "", nil, false)
 			So(err, ShouldBeNil)
 			So(racks, ShouldHaveLength, 2)
 			So(ufsAPI.ParseResources(racks, "Name"), ShouldResemble, []string{"cr20", "cr22"})
@@ -1181,12 +1139,12 @@ func TestImportDatacenters(t *testing.T) {
 					So(r.GetChromeBrowserRack().GetSwitches(), ShouldResemble, []string{"eq017.atl97"})
 				}
 			}
-			kvms, _, err := registration.ListKVMs(ctx, 100, "")
+			kvms, _, err := registration.ListKVMs(ctx, 100, "", nil, false)
 			So(err, ShouldBeNil)
 			So(kvms, ShouldHaveLength, 3)
 			So(ufsAPI.ParseResources(kvms, "Name"), ShouldResemble, []string{"cr20-kvm1", "cr22-kvm1", "cr22-kvm2"})
 			So(ufsAPI.ParseResources(kvms, "ChromePlatform"), ShouldResemble, []string{"Raritan_DKX3", "Raritan_DKX3", "Raritan_DKX3"})
-			switches, _, err := registration.ListSwitches(ctx, 100, "")
+			switches, _, err := registration.ListSwitches(ctx, 100, "", nil, false)
 			So(err, ShouldBeNil)
 			So(switches, ShouldHaveLength, 4)
 			So(ufsAPI.ParseResources(switches, "Name"), ShouldResemble, []string{"eq017.atl97", "eq041.atl97", "eq050.atl97", "eq113.atl97"})
@@ -1409,7 +1367,7 @@ func TestListKVMs(t *testing.T) {
 		KVMs = append(KVMs, resp)
 	}
 	Convey("ListKVMs", t, func() {
-		Convey("ListKVMs - page_size negative", func() {
+		Convey("ListKVMs - page_size negative - error", func() {
 			req := &ufsAPI.ListKVMsRequest{
 				PageSize: -5,
 			}
@@ -1419,54 +1377,12 @@ func TestListKVMs(t *testing.T) {
 			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidPageSize)
 		})
 
-		Convey("ListKVMs - page_token invalid", func() {
-			req := &ufsAPI.ListKVMsRequest{
-				PageSize:  5,
-				PageToken: "abc",
-			}
-			resp, err := tf.Fleet.ListKVMs(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
-		})
-
-		Convey("ListKVMs - Full listing Max PageSize", func() {
-			req := &ufsAPI.ListKVMsRequest{
-				PageSize: 2000,
-			}
+		Convey("ListKVMs - Full listing - happy path", func() {
+			req := &ufsAPI.ListKVMsRequest{}
 			resp, err := tf.Fleet.ListKVMs(tf.C, req)
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 			So(resp.KVMs, ShouldResembleProto, KVMs)
-		})
-
-		Convey("ListKVMs - Full listing with no pagination", func() {
-			req := &ufsAPI.ListKVMsRequest{
-				PageSize: 0,
-			}
-			resp, err := tf.Fleet.ListKVMs(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.KVMs, ShouldResembleProto, KVMs)
-		})
-
-		Convey("ListKVMs - listing with pagination", func() {
-			req := &ufsAPI.ListKVMsRequest{
-				PageSize: 3,
-			}
-			resp, err := tf.Fleet.ListKVMs(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.KVMs, ShouldResembleProto, KVMs[:3])
-
-			req = &ufsAPI.ListKVMsRequest{
-				PageSize:  3,
-				PageToken: resp.NextPageToken,
-			}
-			resp, err = tf.Fleet.ListKVMs(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.KVMs, ShouldResembleProto, KVMs[3:])
 		})
 	})
 }
@@ -1704,24 +1620,20 @@ func TestGetRPM(t *testing.T) {
 
 func TestListRPMs(t *testing.T) {
 	t.Parallel()
-	Convey("ListRPMs", t, func() {
-		ctx := testingContext()
-		tf, validate := newTestFixtureWithContext(ctx, t)
-		defer validate()
-		RPMs := make([]*ufspb.RPM, 0, 4)
-		for i := 0; i < 4; i++ {
-			RPM1 := mockRPM("")
-			req := &ufsAPI.CreateRPMRequest{
-				RPM:   RPM1,
-				RPMId: fmt.Sprintf("RPM-%d", i),
-			}
-			resp, err := tf.Fleet.CreateRPM(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, RPM1)
-			RPMs = append(RPMs, resp)
+	ctx := testingContext()
+	tf, validate := newTestFixtureWithContext(ctx, t)
+	defer validate()
+	RPMs := make([]*ufspb.RPM, 0, 4)
+	for i := 0; i < 4; i++ {
+		rpm := &ufspb.RPM{
+			Name: fmt.Sprintf("rpm-%d", i),
 		}
-
-		Convey("ListRPMs - page_size negative", func() {
+		resp, _ := registration.CreateRPM(tf.C, rpm)
+		resp.Name = util.AddPrefix(util.RPMCollection, resp.Name)
+		RPMs = append(RPMs, resp)
+	}
+	Convey("ListRPMs", t, func() {
+		Convey("ListRPMs - page_size negative - error", func() {
 			req := &ufsAPI.ListRPMsRequest{
 				PageSize: -5,
 			}
@@ -1731,18 +1643,7 @@ func TestListRPMs(t *testing.T) {
 			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidPageSize)
 		})
 
-		Convey("ListRPMs - page_token invalid", func() {
-			req := &ufsAPI.ListRPMsRequest{
-				PageSize:  5,
-				PageToken: "abc",
-			}
-			resp, err := tf.Fleet.ListRPMs(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
-		})
-
-		Convey("ListRPMs - Full listing Max PageSize", func() {
+		Convey("ListRPMs - Full listing - happy path", func() {
 			req := &ufsAPI.ListRPMsRequest{
 				PageSize: 2000,
 			}
@@ -1750,35 +1651,6 @@ func TestListRPMs(t *testing.T) {
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 			So(resp.RPMs, ShouldResembleProto, RPMs)
-		})
-
-		Convey("ListRPMs - Full listing with no pagination", func() {
-			req := &ufsAPI.ListRPMsRequest{
-				PageSize: 0,
-			}
-			resp, err := tf.Fleet.ListRPMs(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.RPMs, ShouldResembleProto, RPMs)
-		})
-
-		Convey("ListRPMs - listing with pagination", func() {
-			req := &ufsAPI.ListRPMsRequest{
-				PageSize: 3,
-			}
-			resp, err := tf.Fleet.ListRPMs(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.RPMs, ShouldResembleProto, RPMs[:3])
-
-			req = &ufsAPI.ListRPMsRequest{
-				PageSize:  3,
-				PageToken: resp.NextPageToken,
-			}
-			resp, err = tf.Fleet.ListRPMs(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.RPMs, ShouldResembleProto, RPMs[3:])
 		})
 	})
 }
@@ -2340,7 +2212,7 @@ func TestListSwitches(t *testing.T) {
 		switches = append(switches, resp)
 	}
 	Convey("ListSwitches", t, func() {
-		Convey("ListSwitches - page_size negative", func() {
+		Convey("ListSwitches - page_size negative - error", func() {
 			req := &ufsAPI.ListSwitchesRequest{
 				PageSize: -5,
 			}
@@ -2350,54 +2222,12 @@ func TestListSwitches(t *testing.T) {
 			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidPageSize)
 		})
 
-		Convey("ListSwitches - page_token invalid", func() {
-			req := &ufsAPI.ListSwitchesRequest{
-				PageSize:  5,
-				PageToken: "abc",
-			}
-			resp, err := tf.Fleet.ListSwitches(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
-		})
-
-		Convey("ListSwitches - Full listing Max PageSize", func() {
-			req := &ufsAPI.ListSwitchesRequest{
-				PageSize: 2000,
-			}
+		Convey("ListSwitches - Full listing - happy path", func() {
+			req := &ufsAPI.ListSwitchesRequest{}
 			resp, err := tf.Fleet.ListSwitches(tf.C, req)
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 			So(resp.Switches, ShouldResembleProto, switches)
-		})
-
-		Convey("ListSwitches - Full listing with no pagination", func() {
-			req := &ufsAPI.ListSwitchesRequest{
-				PageSize: 0,
-			}
-			resp, err := tf.Fleet.ListSwitches(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Switches, ShouldResembleProto, switches)
-		})
-
-		Convey("ListSwitches - listing with pagination", func() {
-			req := &ufsAPI.ListSwitchesRequest{
-				PageSize: 3,
-			}
-			resp, err := tf.Fleet.ListSwitches(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Switches, ShouldResembleProto, switches[:3])
-
-			req = &ufsAPI.ListSwitchesRequest{
-				PageSize:  3,
-				PageToken: resp.NextPageToken,
-			}
-			resp, err = tf.Fleet.ListSwitches(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Switches, ShouldResembleProto, switches[3:])
 		})
 	})
 }
