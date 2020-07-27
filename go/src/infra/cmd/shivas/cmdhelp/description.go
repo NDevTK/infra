@@ -322,9 +322,11 @@ https://chromium.googlesource.com/infra/infra/+/refs/heads/master/go/src/infra/u
 	AddHostLongDesc string = `Add a host(DUT, Labstation, Dev Server, Caching Server, VM Server, Host OS...) on a machine
 
 Examples:
-shivas add-host -f host.json -m {Machine name}
+shivas add-host -f host.json -machine machine0
 Adds a host by reading a JSON file input.
--m option is a required parameter to associate the host to the given machine.
+
+shivas add-host -machine machine0 -name host0 -prototype browser-lab:no-vm  -osversion chrome-version-0 -vm-capacity 3
+Adds a host by parameters without adding vms.
 
 shivas add-host -i
 Adds a host by reading input through interactive mode.`
@@ -343,7 +345,7 @@ shivas update-host -i
 Updates a host by reading input through interactive mode.`
 
 	// MachineLSEFileText description for machinelse/host file input
-	MachineLSEFileText string = `Path to a file containing host specification in JSON format.
+	MachineLSEFileText string = `[JSON mode] Path to a file containing host specification in JSON format.
 This file must contain one machine deployment JSON message
 
 Example host for a browser machine:
