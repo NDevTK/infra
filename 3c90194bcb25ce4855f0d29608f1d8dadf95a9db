@@ -1,0 +1,123 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "051ab62e_4aadcbe4",
+        "filename": "go/src/infra/cmd/shivas/cmdhelp/description.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 380,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-07-27T18:55:22Z",
+      "side": 1,
+      "message": "it has image field as well.",
+      "revId": "3c90194bcb25ce4855f0d29608f1d8dadf95a9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6c6b7374_8b10d337",
+        "filename": "go/src/infra/cmd/shivas/cmdhelp/description.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 585,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-07-27T18:55:22Z",
+      "side": 1,
+      "message": "nit:extra tab.",
+      "revId": "3c90194bcb25ce4855f0d29608f1d8dadf95a9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "004cd89d_15206609",
+        "filename": "go/src/infra/cmd/shivas/cmdhelp/description.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 639,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-07-27T18:55:22Z",
+      "side": 1,
+      "message": "nit:extra tab",
+      "revId": "3c90194bcb25ce4855f0d29608f1d8dadf95a9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8db03256_b7e75757",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/labsetup/host/add_host.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-07-27T18:55:22Z",
+      "side": 1,
+      "message": "Move to UFS server side?",
+      "revId": "3c90194bcb25ce4855f0d29608f1d8dadf95a9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bea08a7e_02f39cdb",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/labsetup/host/add_host.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-07-27T18:55:22Z",
+      "side": 1,
+      "message": "put an else initializing chromeos. Without this the machine will be neither chromeos/chrome browser hen we run BQ query.",
+      "revId": "3c90194bcb25ce4855f0d29608f1d8dadf95a9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0ded6e58_574d714e",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/labsetup/host/add_host.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-07-27T18:55:22Z",
+      "side": 1,
+      "message": "Shouldne this be moved to UFS server side. Many other clients will be using UFS apis.",
+      "revId": "3c90194bcb25ce4855f0d29608f1d8dadf95a9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bd5d6526_d5bd7385",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/labsetup/vm/add_vm.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-07-27T18:55:22Z",
+      "side": 1,
+      "message": "image field.",
+      "revId": "3c90194bcb25ce4855f0d29608f1d8dadf95a9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
