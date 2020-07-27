@@ -334,6 +334,9 @@ func (r *GetMachineRequest) Validate() error {
 
 // Validate validates input requests of ListMachines.
 func (r *ListMachinesRequest) Validate() error {
+	if err := ValidateFilter(r.Filter); err != nil {
+		return err
+	}
 	return validatePageSize(r.PageSize)
 }
 
@@ -526,6 +529,9 @@ func (r *GetNicRequest) Validate() error {
 
 // Validate validates input requests of ListNics.
 func (r *ListNicsRequest) Validate() error {
+	if err := ValidateFilter(r.Filter); err != nil {
+		return err
+	}
 	return validatePageSize(r.PageSize)
 }
 
@@ -646,6 +652,9 @@ func (r *GetDracRequest) Validate() error {
 
 // Validate validates input requests of ListDracs.
 func (r *ListDracsRequest) Validate() error {
+	if err := ValidateFilter(r.Filter); err != nil {
+		return err
+	}
 	return validatePageSize(r.PageSize)
 }
 
