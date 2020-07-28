@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "9b216432_c18c3dc5",
+        "filename": "go/src/infra/cmd/shivas/cmdhelp/description.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 380,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-28T00:13:55Z",
+      "side": 1,
+      "message": "remove the description here also. Use osVersion value to reference description and os image.",
+      "parentUuid": "051ab62e_4aadcbe4",
+      "revId": "3c90194bcb25ce4855f0d29608f1d8dadf95a9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6c6b7374_8b10d337",
         "filename": "go/src/infra/cmd/shivas/cmdhelp/description.go",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "3c90194bcb25ce4855f0d29608f1d8dadf95a9db",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e326b1b1_7b60062b",
+        "filename": "go/src/infra/cmd/shivas/cmdhelp/description.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 585,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-28T00:13:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6c6b7374_8b10d337",
+      "revId": "3c90194bcb25ce4855f0d29608f1d8dadf95a9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "3e992608_5db4a37e",
+        "filename": "go/src/infra/cmd/shivas/cmdhelp/description.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 639,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-28T00:13:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "004cd89d_15206609",
+      "revId": "3c90194bcb25ce4855f0d29608f1d8dadf95a9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8db03256_b7e75757",
         "filename": "go/src/infra/cmd/shivas/ufs/cmds/labsetup/host/add_host.go",
         "patchSetId": 1
@@ -64,6 +118,24 @@
       "writtenOn": "2020-07-27T18:55:22Z",
       "side": 1,
       "message": "Move to UFS server side?",
+      "revId": "3c90194bcb25ce4855f0d29608f1d8dadf95a9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b50b7c29_aa32bd4e",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/labsetup/host/add_host.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-28T00:13:55Z",
+      "side": 1,
+      "message": "guess it\u0027s a comment put in wrong place..",
+      "parentUuid": "8db03256_b7e75757",
       "revId": "3c90194bcb25ce4855f0d29608f1d8dadf95a9db",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "fc68de08_4a2bfb74",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/labsetup/host/add_host.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-28T00:13:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bea08a7e_02f39cdb",
+      "revId": "3c90194bcb25ce4855f0d29608f1d8dadf95a9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0ded6e58_574d714e",
         "filename": "go/src/infra/cmd/shivas/ufs/cmds/labsetup/host/add_host.go",
         "patchSetId": 1
@@ -104,6 +194,24 @@
     },
     {
       "key": {
+        "uuid": "322d3904_9e03bd6d",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/labsetup/host/add_host.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-28T00:13:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0ded6e58_574d714e",
+      "revId": "3c90194bcb25ce4855f0d29608f1d8dadf95a9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bd5d6526_d5bd7385",
         "filename": "go/src/infra/cmd/shivas/ufs/cmds/labsetup/vm/add_vm.go",
         "patchSetId": 1
@@ -118,6 +226,24 @@
       "revId": "3c90194bcb25ce4855f0d29608f1d8dadf95a9db",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "587ada93_5def9087",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/labsetup/vm/add_vm.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-07-28T00:13:55Z",
+      "side": 1,
+      "message": "omit image/description",
+      "parentUuid": "bd5d6526_d5bd7385",
+      "revId": "3c90194bcb25ce4855f0d29608f1d8dadf95a9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
