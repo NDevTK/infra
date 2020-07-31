@@ -642,24 +642,27 @@ The protobuf definition of prototype for rack deployment is part of
 https://chromium.googlesource.com/infra/infra/+/refs/heads/master/go/src/infra/unifiedfleet/api/v1/proto/lse_prototype.proto`
 
 	// AddChromePlatformLongDesc long description for AddChromePlatformCmd
-	AddChromePlatformLongDesc string = `Add chrome platform configuration for browser machine.
+	AddChromePlatformLongDesc string = `Add platform configuration for browser machine.
 
 Examples:
-shivas add-chrome-platform -f chromeplatform.json
-Adds a chrome platform by reading a JSON file input.
+shivas add-platform -f platform.json
+Adds a platform by reading a JSON file input.
 
-shivas add-chrome-platform -i
-Adds a chrome platform by reading input through interactive mode.`
+shivas add-platform -i
+Adds a platform by reading input through interactive mode.
+
+shivas add-platform -name DELL_R320 -manufacturer Dell -tags 'dell,8g'
+Adds a platform by specifying several attributes directly`
 
 	// UpdateChromePlatformLongDesc long description for UpdateChromePlatformCmd
-	UpdateChromePlatformLongDesc string = `Update chrome platform configuration for browser machine.
+	UpdateChromePlatformLongDesc string = `Update platform configuration for browser machine.
 
 Examples:
-shivas update-chrome-platform -f chromeplatform.json
-Updates a chrome platform by reading a JSON file input.
+shivas update-platform -f platform.json
+Updates a platform by reading a JSON file input.
 
-shivas update-chrome-platform -i
-Updates a chrome platform by reading input through interactive mode.`
+shivas update-platform -i
+Updates a platform by reading input through interactive mode.`
 
 	// ListChromePlatformLongDesc long description for ListChromePlatformCmd
 	ListChromePlatformLongDesc string = `List all platforms
@@ -679,17 +682,18 @@ Fetches 5 platforms and prints the output in JSON format
 `
 
 	// ChromePlatformFileText description for ChromePlatform file input
-	ChromePlatformFileText string = `Path to a file containing chrome platform configuration for browser machine specification in JSON format.
-This file must contain one chrome platform JSON message
+	ChromePlatformFileText string = `Path to a file containing platform configuration for browser machine specification in JSON format.
+This file must contain one platform JSON message
 
-Example chrome platform configuration:
+Example platform configuration:
 {
 	"name": "Dell_Signia",
 	"manufacturer": "Dell",
-	"description": "Dell x86 platform"
+	"description": "Dell x86 platform",
+	"tags": ["dell", "8g"]
 }
 
-The protobuf definition of chrome platform configuration for browser machine is part of
+The protobuf definition of platform configuration for browser machine is part of
 https://chromium.googlesource.com/infra/infra/+/refs/heads/master/go/src/infra/unifiedfleet/api/v1/proto/chrome_platform.proto`
 
 	// AddNicLongDesc long description for AddNicCmd

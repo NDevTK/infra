@@ -23,8 +23,8 @@ import (
 
 // UpdateChromePlatformCmd update ChromePlatform by given name.
 var UpdateChromePlatformCmd = &subcommands.Command{
-	UsageLine: "update-chrome-platform",
-	ShortDesc: "Update chrome platform configuration for browser machine",
+	UsageLine: "update-platform",
+	ShortDesc: "Update platform configuration for browser machine",
 	LongDesc:  cmdhelp.UpdateChromePlatformLongDesc,
 	CommandRun: func() subcommands.CommandRun {
 		c := &updateChromePlatform{}
@@ -38,8 +38,10 @@ var UpdateChromePlatformCmd = &subcommands.Command{
 
 type updateChromePlatform struct {
 	subcommands.CommandRunBase
-	authFlags    authcli.Flags
-	envFlags     site.EnvFlags
+	authFlags   authcli.Flags
+	envFlags    site.EnvFlags
+	commonFlags site.CommonFlags
+
 	newSpecsFile string
 	interactive  bool
 }
@@ -57,13 +59,14 @@ func (c *updateChromePlatform) innerRun(a subcommands.Application, args []string
 		return err
 	}
 	ctx := cli.GetContext(a, c, env)
-	ctx = utils.SetupContext(ctx)
 	hc, err := cmdlib.NewHTTPClient(ctx, &c.authFlags)
 	if err != nil {
 		return err
 	}
 	e := c.envFlags.Env()
-	fmt.Printf("Using UnifiedFleet service %s\n", e.UnifiedFleetService)
+	if c.commonFlags.Verbose() {
+		fmt.Printf("Using UFS service %s\n", e.UnifiedFleetService)
+	}
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
@@ -87,7 +90,7 @@ func (c *updateChromePlatform) innerRun(a subcommands.Application, args []string
 	}
 	res.Name = ufsUtil.RemovePrefix(res.Name)
 	utils.PrintProtoJSON(res)
-	fmt.Println()
+	fmt.Printf("Successfully updated the platform %s\n", res.Name)
 	return nil
 }
 
