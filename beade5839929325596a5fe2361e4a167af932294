@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4f7410f0_66388873",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-07-31T21:20:38Z",
+      "side": 1,
+      "message": "Again needed by we.ModifyIssues:\nhttps://chromium-review.googlesource.com/c/infra/infra/+/2321729/4/appengine/monorail/businesslogic/work_env.py#1872",
+      "revId": "beade5839929325596a5fe2361e4a167af932294",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
