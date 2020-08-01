@@ -9,14 +9,16 @@ import (
 	"fmt"
 	"strings"
 
+	"go.chromium.org/gae/service/datastore"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/proto"
 	"infra/unifiedfleet/app/model/configuration"
-	"infra/unifiedfleet/app/model/datastore"
+	ufsds "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/model/registration"
 )
 
@@ -26,8 +28,64 @@ func CreateChromePlatform(ctx context.Context, chromeplatform *ufspb.ChromePlatf
 }
 
 // UpdateChromePlatform updates chromeplatform in datastore.
-func UpdateChromePlatform(ctx context.Context, chromeplatform *ufspb.ChromePlatform) (*ufspb.ChromePlatform, error) {
-	return configuration.UpdateChromePlatform(ctx, chromeplatform)
+func UpdateChromePlatform(ctx context.Context, chromeplatform *ufspb.ChromePlatform, mask *field_mask.FieldMask) (*ufspb.ChromePlatform, error) {
+	f := func(ctx context.Context) error {
+		// Validate input
+		if err := validateUpdateChromePlatform(ctx, chromeplatform, mask); err != nil {
+			return errors.Annotate(err, "UpdateChromePlatform - validation failed").Err()
+		}
+
+		// Partial update by field mask
+		if mask != nil && len(mask.Paths) > 0 {
+			// Get the existing chromeplatform
+			oldChromeplatform, err := configuration.GetChromePlatform(ctx, chromeplatform.GetName())
+			if err != nil {
+				return errors.Annotate(err, "UpdateChromePlatform - get chrome platform %s failed", chromeplatform.GetName()).Err()
+			}
+
+			// update the fields in the existing chrome platform
+			for _, path := range mask.Paths {
+				switch path {
+				case "manufacturer":
+					oldChromeplatform.Manufacturer = chromeplatform.GetManufacturer()
+				case "description":
+					oldChromeplatform.Description = chromeplatform.GetDescription()
+				case "tags":
+					oldTags := oldChromeplatform.GetTags()
+					newTags := chromeplatform.GetTags()
+					if newTags == nil || len(newTags) == 0 {
+						oldTags = nil
+					} else {
+						if oldTags == nil || len(oldTags) == 0 {
+							oldTags = newTags
+						} else {
+							for _, tag := range newTags {
+								oldTags = append(oldTags, tag)
+							}
+						}
+					}
+					oldChromeplatform.Tags = oldTags
+				}
+			}
+
+			// copy existing chrome platform to new chrome platform
+			chromeplatform = oldChromeplatform
+		}
+
+		// Update the chrome platform
+		// we use this func as it is a non-atomic operation and can be used to
+		// run within a transaction to make it atomic. Datastore doesnt allow
+		// nested transactions.
+		if _, err := configuration.BatchUpdateChromePlatforms(ctx, []*ufspb.ChromePlatform{chromeplatform}); err != nil {
+			return errors.Annotate(err, "UpdateChromePlatform - failed to batch update chrome platforms in datastore: %s", chromeplatform.GetName()).Err()
+		}
+		return nil
+	}
+
+	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
+		return nil, errors.Annotate(err, "UpdateChromePlatform - failed to update chrome platform in datastore: %s", chromeplatform.GetName()).Err()
+	}
+	return chromeplatform, nil
 }
 
 // GetChromePlatform returns chromeplatform for the given id from datastore.
@@ -62,12 +120,12 @@ func DeleteChromePlatform(ctx context.Context, id string) error {
 }
 
 // ImportChromePlatforms inserts chrome platforms to datastore.
-func ImportChromePlatforms(ctx context.Context, platforms []*ufspb.ChromePlatform, pageSize int) (*datastore.OpResults, error) {
+func ImportChromePlatforms(ctx context.Context, platforms []*ufspb.ChromePlatform, pageSize int) (*ufsds.OpResults, error) {
 	deleteNonExistingPlatforms(ctx, platforms, pageSize)
 	return configuration.ImportChromePlatforms(ctx, platforms)
 }
 
-func deleteNonExistingPlatforms(ctx context.Context, platforms []*ufspb.ChromePlatform, pageSize int) (*datastore.OpResults, error) {
+func deleteNonExistingPlatforms(ctx context.Context, platforms []*ufspb.ChromePlatform, pageSize int) (*ufsds.OpResults, error) {
 	resMap := make(map[string]bool)
 	for _, r := range platforms {
 		resMap[r.GetName()] = true
@@ -132,6 +190,30 @@ func validateDeleteChromePlatform(ctx context.Context, id string) error {
 		}
 		logging.Errorf(ctx, errorMsg.String())
 		return status.Errorf(codes.FailedPrecondition, errorMsg.String())
+	}
+	return nil
+}
+
+func validateUpdateChromePlatform(ctx context.Context, chromeplatform *ufspb.ChromePlatform, mask *field_mask.FieldMask) error {
+	// Check if resource does not exist
+	if err := ResourceExist(ctx, []*Resource{GetChromePlatformResource(chromeplatform.GetName())}, nil); err != nil {
+		return err
+	}
+
+	// validate the give field mask
+	for _, path := range mask.Paths {
+		switch path {
+		case "name":
+			return status.Error(codes.InvalidArgument, "name cannot be updated, delete and create a new platform instead")
+		case "update_time":
+			return status.Error(codes.InvalidArgument, "update_time cannot be updated, it is a Output only field")
+		case "manufacturer":
+		case "description":
+		case "tags":
+			// valid fields, nothing to validate.
+		default:
+			return status.Errorf(codes.InvalidArgument, "unsupported update mask path %q", path)
+		}
 	}
 	return nil
 }
