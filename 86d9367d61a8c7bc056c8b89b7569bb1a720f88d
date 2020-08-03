@@ -46,6 +46,53 @@
       "revId": "86d9367d61a8c7bc056c8b89b7569bb1a720f88d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "59bae55c_35ecd03a",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/configuration/update_chrome_platform.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-08-03T17:16:24Z",
+      "side": 1,
+      "message": "oh, I get it, GetUpdateMask uses c.Flags to check. ignore me then..",
+      "parentUuid": "cd2f39a0_a41e4542",
+      "range": {
+        "startLine": 121,
+        "startChar": 2,
+        "endLine": 121,
+        "endChar": 46
+      },
+      "revId": "86d9367d61a8c7bc056c8b89b7569bb1a720f88d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a69ea09a_2b2d71eb",
+        "filename": "go/src/infra/cmd/shivas/utils/helper.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 386,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-08-03T17:16:24Z",
+      "side": 1,
+      "message": "can you add a comment to describe path?",
+      "range": {
+        "startLine": 386,
+        "startChar": 38,
+        "endLine": 386,
+        "endChar": 43
+      },
+      "revId": "86d9367d61a8c7bc056c8b89b7569bb1a720f88d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
