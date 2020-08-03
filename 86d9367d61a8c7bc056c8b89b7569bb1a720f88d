@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "75048cd8_5c54928c",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/configuration/update_chrome_platform.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-08-03T16:45:37Z",
+      "side": 1,
+      "message": "If I run `update-platform -manufacturer \"apple\"`, it will overwrite the description and tags for platform to empty string?\n\nShoudn\u0027t the UpdateMask changed based on the fields that user passes in?",
+      "range": {
+        "startLine": 121,
+        "startChar": 2,
+        "endLine": 121,
+        "endChar": 46
+      },
+      "revId": "86d9367d61a8c7bc056c8b89b7569bb1a720f88d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
