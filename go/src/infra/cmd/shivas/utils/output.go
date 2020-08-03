@@ -48,7 +48,7 @@ var (
 	RacklseprototypeTitle = []string{"Rack Prototype Name", "PeripheralTypes",
 		"Tags", "UpdateTime"}
 	ChromePlatformTitle = []string{"Platform Name", "Manufacturer",
-		"Description", "UpdateTime"}
+		"Description", "Tags", "UpdateTime"}
 	vmTitle = []string{"VM Name", "OS Version", "OS Desc", "MAC Address",
 		"VM Hostname"}
 	RackTitle = []string{"Rack Name", "Lab", "Switches", "KVMs", "RPMs",
@@ -688,6 +688,7 @@ func printChromePlatform(m *ufspb.ChromePlatform, keysOnly bool) {
 	out := fmt.Sprintf("%s\t", m.GetName())
 	out += fmt.Sprintf("%s\t", m.GetManufacturer())
 	out += fmt.Sprintf("%s\t", m.GetDescription())
+	out += fmt.Sprintf("%s\t", m.GetTags())
 	out += fmt.Sprintf("%s\t", ts)
 	fmt.Fprintln(tw, out)
 }
