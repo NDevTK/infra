@@ -22,6 +22,30 @@
       "revId": "86d9367d61a8c7bc056c8b89b7569bb1a720f88d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cd2f39a0_a41e4542",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/configuration/update_chrome_platform.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-08-03T17:03:29Z",
+      "side": 1,
+      "message": "I send only \"manufacturer\" string in field mask. Server gets the existing object and overwrites only manufacturer value and preserves desc and tags value as is.",
+      "parentUuid": "75048cd8_5c54928c",
+      "range": {
+        "startLine": 121,
+        "startChar": 2,
+        "endLine": 121,
+        "endChar": 46
+      },
+      "revId": "86d9367d61a8c7bc056c8b89b7569bb1a720f88d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
