@@ -93,6 +93,30 @@
       "revId": "86d9367d61a8c7bc056c8b89b7569bb1a720f88d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9b3a7dbe_faf118b1",
+        "filename": "go/src/infra/cmd/shivas/utils/helper.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 386,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-08-03T17:52:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a69ea09a_2b2d71eb",
+      "range": {
+        "startLine": 386,
+        "startChar": 38,
+        "endLine": 386,
+        "endChar": 43
+      },
+      "revId": "86d9367d61a8c7bc056c8b89b7569bb1a720f88d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
