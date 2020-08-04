@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "423add4b_9bc74738",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-08-04T22:05:03Z",
+      "side": 1,
+      "message": "On second thoughts, this CL is not different enough that I\u0027d like another look.",
+      "revId": "d19749dd742e462c1d98bd4fb2850ec2846c59be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
