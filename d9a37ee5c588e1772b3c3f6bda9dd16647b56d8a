@@ -22,6 +22,30 @@
       "revId": "d9a37ee5c588e1772b3c3f6bda9dd16647b56d8a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a22922f0_edb023b1",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/skylab/skylab.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-08-04T21:45:29Z",
+      "side": 1,
+      "message": "Go doesn\u0027t allow a mix of pre-declared and undeclared lvalues in an assignment.\n\nIf I use err here, I\u0027d have to use `\u003d` and would need to declare `var ok bool`.\n\nMatter of taste.",
+      "parentUuid": "456bad2e_2532408b",
+      "range": {
+        "startLine": 89,
+        "startChar": 25,
+        "endLine": 89,
+        "endChar": 28
+      },
+      "revId": "d9a37ee5c588e1772b3c3f6bda9dd16647b56d8a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
