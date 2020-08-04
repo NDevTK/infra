@@ -103,6 +103,30 @@
       "revId": "8e76f9ce054dbf3b0ce1de9cc8d58311eaea2e21",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6ec26f99_754f2407",
+        "filename": "appengine/monorail/api/v3/api_proto/issues.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-08-04T17:07:51Z",
+      "side": 1,
+      "message": "Sounds good.",
+      "parentUuid": "0806e169_567cab0a",
+      "range": {
+        "startLine": 284,
+        "startChar": 35,
+        "endLine": 284,
+        "endChar": 36
+      },
+      "revId": "8e76f9ce054dbf3b0ce1de9cc8d58311eaea2e21",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
