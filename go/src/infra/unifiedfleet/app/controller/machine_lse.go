@@ -361,22 +361,22 @@ func ListMachineLSEs(ctx context.Context, pageSize int32, pageToken, filter stri
 			}
 			return false
 		}
-		lses, _, err := inventory.ListMachineLSEs(ctx, pageSize, "", filterMap, false, validFunc)
+		res := make([]*ufspb.MachineLSE, 0)
+		var total int32
+		lses, _, err := inventory.ListMachineLSEs(ctx, -1, pageSize, "", filterMap, false, validFunc)
 		if err != nil {
 			return nil, "", err
 		}
-		res := make([]*ufspb.MachineLSE, 0)
-		var total int32
 		for _, lse := range lses {
 			res = append(res, lse)
 			total += lse.GetChromeBrowserMachineLse().GetVmCapacity() - int32(len(lse.GetChromeBrowserMachineLse().GetVms()))
 			if total >= pageSize {
-				break
+				return res, "", nil
 			}
 		}
 		return res, "", nil
 	}
-	return inventory.ListMachineLSEs(ctx, pageSize, pageToken, filterMap, keysOnly, nil)
+	return inventory.ListMachineLSEs(ctx, pageSize, pageSize, pageToken, filterMap, keysOnly, nil)
 }
 
 // DeleteMachineLSE deletes the machinelse in datastore
