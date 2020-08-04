@@ -46,6 +46,30 @@
       "revId": "d9a37ee5c588e1772b3c3f6bda9dd16647b56d8a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0d56ba4c_ee0a0c9f",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/skylab/skylab.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2020-08-04T22:51:22Z",
+      "side": 1,
+      "message": "In this case I don\u0027t think there\u0027s an issue, though I know that sometimes those mixes can be troublesome\n\nSee https://play.golang.org/p/maNZncxIDsn",
+      "parentUuid": "a22922f0_edb023b1",
+      "range": {
+        "startLine": 89,
+        "startChar": 25,
+        "endLine": 89,
+        "endChar": 28
+      },
+      "revId": "d9a37ee5c588e1772b3c3f6bda9dd16647b56d8a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
