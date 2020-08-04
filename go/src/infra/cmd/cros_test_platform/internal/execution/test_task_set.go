@@ -59,30 +59,48 @@ func (t *testTaskSet) AttemptedAtLeastOnce() bool {
 	return len(t.tasks) > 0
 }
 
+// InvalidDependencies tag indicates that an error was caused because
+// swarming dependencies for a task were invalid.
+var InvalidDependencies = errors.BoolTag{Key: errors.NewTagKey("invalid test dependencies")}
+
 // validateDependencies checks whether this test has dependencies satisfied by
 // at least one Skylab bot.
-func (t *testTaskSet) validateDependencies(ctx context.Context, c skylab.Client) (bool, error) {
+//
+// Invalid dependencies are reported via an error with the InvalidDependencies
+// tag.
+//
+// Other errors when validating dependencies are reported as generic errors.
+func (t *testTaskSet) validateDependencies(ctx context.Context, c skylab.Client) error {
 	if err := t.argsGenerator.CheckConsistency(); err != nil {
-		logging.Warningf(ctx, "Dependency validation failed for %s: %s.", t.Name, err)
-		return false, nil
+		return InvalidDependencies.Apply(err)
 	}
 
 	args, err := t.argsGenerator.GenerateArgs(ctx)
 	if err != nil {
-		return false, errors.Annotate(err, "validate dependencies").Err()
+		return errors.Annotate(err, "validate dependencies").Err()
 	}
-	return c.ValidateArgs(ctx, &args)
+	ok, err2 := c.ValidateArgs(ctx, &args)
+	if err2 != nil {
+		return errors.Annotate(err, "validate dependencies").Err()
+	}
+	if !ok {
+		return errors.Reason("no swarming bots with requested dimensions").Tag(InvalidDependencies).Err()
+	}
+	return nil
 }
 
 func (t *testTaskSet) LaunchTask(ctx context.Context, c skylab.Client) error {
-	runnable, err := t.validateDependencies(ctx, c)
-	if err != nil {
-		return err
-	}
-	if !runnable {
+	switch err := t.validateDependencies(ctx, c); {
+	case err == nil:
+		break
+	case InvalidDependencies.In(err):
+		logging.Warningf(ctx, "Dependency validation failed for %s: %s.", t.Name, err)
 		t.markNotRunnable()
 		return nil
+	default:
+		return err
 	}
+
 	a, err := skylab.NewTask(ctx, c, t.argsGenerator)
 	if err != nil {
 		return err
