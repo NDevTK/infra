@@ -19,6 +19,23 @@
     },
     {
       "key": {
+        "uuid": "b2705854_5ec428c4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-08-04T02:42:34Z",
+      "side": 1,
+      "message": "lgtm w/ 1 comment\nthanks for all the comment improvements!",
+      "revId": "8e76f9ce054dbf3b0ce1de9cc8d58311eaea2e21",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f7a38ede_7ecec4e7",
         "filename": "appengine/monorail/api/v3/api_proto/issues.proto",
         "patchSetId": 2
@@ -35,6 +52,53 @@
         "startChar": 0,
         "endLine": 69,
         "endChar": 27
+      },
+      "revId": "8e76f9ce054dbf3b0ce1de9cc8d58311eaea2e21",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c7fd3504_39bddf27",
+        "filename": "appengine/monorail/api/v3/api_proto/issues.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-08-04T02:42:34Z",
+      "side": 1,
+      "message": "We shouldn\u0027t ignore.\nv0 was only ignoring these because it\u0027s called on the bulk-editing page which has historically always ignored errors.",
+      "parentUuid": "f7a38ede_7ecec4e7",
+      "range": {
+        "startLine": 67,
+        "startChar": 0,
+        "endLine": 69,
+        "endChar": 27
+      },
+      "revId": "8e76f9ce054dbf3b0ce1de9cc8d58311eaea2e21",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0806e169_567cab0a",
+        "filename": "appengine/monorail/api/v3/api_proto/issues.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-08-04T02:42:34Z",
+      "side": 1,
+      "message": "Should there be field_behavior REQUIRED here?",
+      "range": {
+        "startLine": 284,
+        "startChar": 35,
+        "endLine": 284,
+        "endChar": 36
       },
       "revId": "8e76f9ce054dbf3b0ce1de9cc8d58311eaea2e21",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
