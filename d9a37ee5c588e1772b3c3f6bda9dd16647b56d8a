@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "456bad2e_2532408b",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/skylab/skylab.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2020-08-04T15:35:35Z",
+      "side": 1,
+      "message": "err2?\n\nI don\u0027t see why you need an err2 in the first place though. Couldn\u0027t you just reuse the err var name?",
+      "range": {
+        "startLine": 89,
+        "startChar": 25,
+        "endLine": 89,
+        "endChar": 28
+      },
+      "revId": "d9a37ee5c588e1772b3c3f6bda9dd16647b56d8a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
