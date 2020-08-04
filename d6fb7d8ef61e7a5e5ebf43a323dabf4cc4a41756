@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1b864b31_1f53daa2",
+        "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-08-04T03:06:04Z",
+      "side": 1,
+      "message": "Fetching directly from DB set\u0027s the issue\u0027s `assume_stale` to False,\nso adjusting tests for this.\nhttps://source.chromium.org/chromium/infra/infra/+/master:appengine/monorail/services/issue_svc.py;l\u003d843?q\u003d%22assume_stale%22\u0026ss\u003dchromium%2Finfra%2Finfra:appengine%2Fmonorail%2F",
+      "revId": "d6fb7d8ef61e7a5e5ebf43a323dabf4cc4a41756",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
