@@ -40,10 +40,23 @@ type Task struct {
 	url            string
 }
 
+// InvalidDependencies tag indicates that an error was caused because
+// swarming dependencies for a task were invalid.
+var InvalidDependencies = errors.BoolTag{Key: errors.NewTagKey("invalid test dependencies")}
+
 // NewTask creates a new buildbucket or swarming task for a test with the given
 // arguments.
+//
+// Errors caused by invalid dependencies are reported via an error with the
+// InvalidDependencies tag.
+//
+// Other errors in task creation are reported as generic errors.
 func NewTask(ctx context.Context, c Client, argsGenerator ArgsGenerator) (*Task, error) {
 	t := &Task{argsGenerator: argsGenerator}
+	if err := t.validateDependencies(ctx, c); err != nil {
+		return nil, errors.Annotate(err, "new task for %s", t.name()).Err()
+	}
+
 	args, err := t.argsGenerator.GenerateArgs(ctx)
 	if err != nil {
 		return nil, errors.Annotate(err, "new task for %s", t.name()).Err()
@@ -58,6 +71,27 @@ func NewTask(ctx context.Context, c Client, argsGenerator ArgsGenerator) (*Task,
 	t.url = c.URL(ref)
 	logging.Infof(ctx, "Launched attempt for %s as task %s", t.name(), t.url)
 	return t, nil
+}
+
+// validateDependencies checks whether this test has dependencies satisfied by
+// at least one Skylab bot.
+func (t *Task) validateDependencies(ctx context.Context, c Client) error {
+	if err := t.argsGenerator.CheckConsistency(); err != nil {
+		return InvalidDependencies.Apply(err)
+	}
+
+	args, err := t.argsGenerator.GenerateArgs(ctx)
+	if err != nil {
+		return errors.Annotate(err, "validate dependencies").Err()
+	}
+	ok, err2 := c.ValidateArgs(ctx, &args)
+	if err2 != nil {
+		return errors.Annotate(err, "validate dependencies").Err()
+	}
+	if !ok {
+		return errors.Reason("no swarming bots with requested dimensions").Tag(InvalidDependencies).Err()
+	}
+	return nil
 }
 
 // name is the task name as it is displayed in the UI.
