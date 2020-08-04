@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1709819e_f6f47f4d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-08-04T00:25:54Z",
+      "side": 1,
+      "message": "Thanks for answering all the questions today!\n\nOne design question in the comments.\n\nI\u0027ll generate protos after your review.",
+      "revId": "8e76f9ce054dbf3b0ce1de9cc8d58311eaea2e21",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f7a38ede_7ecec4e7",
+        "filename": "appengine/monorail/api/v3/api_proto/issues.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-08-04T00:25:54Z",
+      "side": 1,
+      "message": "In v0 we ignored these. Should we do the same here?\n\n(to start I kept it the same as ModifyIssues)",
+      "range": {
+        "startLine": 67,
+        "startChar": 0,
+        "endLine": 69,
+        "endChar": 27
+      },
+      "revId": "8e76f9ce054dbf3b0ce1de9cc8d58311eaea2e21",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
