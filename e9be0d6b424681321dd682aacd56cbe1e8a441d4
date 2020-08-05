@@ -256,6 +256,30 @@
       "revId": "e9be0d6b424681321dd682aacd56cbe1e8a441d4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2a4f6fc3_90fd39a3",
+        "filename": "appengine/monorail/tracker/tracker_helpers.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1413,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-08-05T17:44:46Z",
+      "side": 1,
+      "message": "Makes sense!",
+      "parentUuid": "7335f9d0_470fc0e3",
+      "range": {
+        "startLine": 1413,
+        "startChar": 2,
+        "endLine": 1413,
+        "endChar": 15
+      },
+      "revId": "e9be0d6b424681321dd682aacd56cbe1e8a441d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
