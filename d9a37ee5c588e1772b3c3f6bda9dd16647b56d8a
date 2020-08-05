@@ -70,6 +70,30 @@
       "revId": "d9a37ee5c588e1772b3c3f6bda9dd16647b56d8a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c15cd333_3683df35",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/skylab/skylab.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-08-05T12:53:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0d56ba4c_ee0a0c9f",
+      "range": {
+        "startLine": 89,
+        "startChar": 25,
+        "endLine": 89,
+        "endChar": 28
+      },
+      "revId": "d9a37ee5c588e1772b3c3f6bda9dd16647b56d8a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
