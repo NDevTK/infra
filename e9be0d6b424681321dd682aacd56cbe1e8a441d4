@@ -16,6 +16,23 @@
       "revId": "e9be0d6b424681321dd682aacd56cbe1e8a441d4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cdb57006_db19fce0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-08-05T07:14:17Z",
+      "side": 1,
+      "message": "per comment:\nhttps://chromium-review.googlesource.com/c/infra/infra/+/2335658/2/appengine/monorail/businesslogic/test/work_env_test.py#2799\n\n\npossible weird situations:\n1) an IssueDelta conflicts with itself:\n\n  IssueDelta(blocking_add\u003d1, blocking_remove\u003d1)\n  this is somewhat already handled in ApplyAllIssueChanges.\n  if issue has blocking \u003d 1, we remove it\n  if issue does not, we add it\n  No change in this behavior\n2) a_delta \u003d IssueDelta(blocking_add \u003d issue_b) b_delta \u003d IssueDelta(blocking_add \u003d issue_a)\n  this is weird but allowed, it doesn\u0027t break anything\n3) a_delta \u003d IssueDelta(merged_into \u003d issue_b) b_delta \u003d IssueDelta(merged_into \u003d issue_a)\n  weird but allowed, it doesn\u0027t break anything.\n4) a_delta \u003d IssueDelta(blocking_add \u003d issue_b) b_delta \u003d IssueDelta(blocked_on_remove \u003d issue_a)\n  What this CL prevents.\n(2), (3), and (4) don\u0027t break anything. I originally wanted to let them all happen, because I thought as long as it doesn\u0027t break monorail, users should be responsible for request issue updates that make sense. \nBefore this CL, (4) would have resulted in \n`issue_a.blocking \u003d []` and `issue_b.blocked_on \u003d [issue_a]` because impacted changes from another\u0027s delta are applied after its own delta FOR RAM ONLY.\nDuring the UpdateIssues, `_UpdateIsssuesRelation()` would have recorded the `issue_b.blocked_on \u003d [issue_a]` relationship, which effectively means issue_a.blocking\u003d[issue_b].\n\nI was fine with this, but with https://chromium-review.googlesource.com/c/infra/infra/+/2335658/2\n\nthis also would have resulted in two comments (main, and impacted), with impacted_comment being the latest comment. The latest comment(impacted comment) would describe issue_a.blocking: \u0027-issue_b\u0027 which would not reflect the actual latest issue state.\n\n(2) (3) are still fine afaict.",
+      "revId": "e9be0d6b424681321dd682aacd56cbe1e8a441d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
