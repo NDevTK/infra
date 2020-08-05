@@ -33,6 +33,133 @@
       "revId": "e9be0d6b424681321dd682aacd56cbe1e8a441d4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9cab0373_65ec4b23",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-08-05T17:02:10Z",
+      "side": 1,
+      "message": "Thank you for clarifying what happens with each of these\n\nfor 3) I didn\u0027t realize we allowed merge-cycles, but I now see that\u0027s possible even through the UI. I guess 2) is the same idea",
+      "parentUuid": "cdb57006_db19fce0",
+      "revId": "e9be0d6b424681321dd682aacd56cbe1e8a441d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c9549883_940d8c03",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-08-05T17:02:10Z",
+      "side": 1,
+      "message": "Thank you for the thorough testing!",
+      "revId": "e9be0d6b424681321dd682aacd56cbe1e8a441d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "12049a49_6652d198",
+        "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2021,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-08-05T17:02:10Z",
+      "side": 1,
+      "message": "one fewer newlines here?",
+      "range": {
+        "startLine": 2021,
+        "startChar": 0,
+        "endLine": 2021,
+        "endChar": 0
+      },
+      "revId": "e9be0d6b424681321dd682aacd56cbe1e8a441d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bee5714a_1b182ad1",
+        "filename": "appengine/monorail/tracker/tracker_helpers.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1383,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-08-05T17:02:10Z",
+      "side": 1,
+      "message": "nit/optional: I think if we operate on conflict_iids and save the ref conversion until the final if statement, then we could avoid defining this variable until when it is used for the error message creation.\n\nHowever the way you have it written means that changes coming from blocking_remove will all be printed before changes coming from blocked_on_remove, which might be nice.",
+      "range": {
+        "startLine": 1383,
+        "startChar": 0,
+        "endLine": 1383,
+        "endChar": 22
+      },
+      "revId": "e9be0d6b424681321dd682aacd56cbe1e8a441d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d1eca3d8_9aff7bbb",
+        "filename": "appengine/monorail/tracker/tracker_helpers.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1391,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-08-05T17:02:10Z",
+      "side": 1,
+      "message": "If I understand the code correctly, not all of these iids are necessarily conflicting. \n\nIf that is correct, then I think a different name would be good for this variable.",
+      "range": {
+        "startLine": 1391,
+        "startChar": 8,
+        "endLine": 1391,
+        "endChar": 20
+      },
+      "revId": "e9be0d6b424681321dd682aacd56cbe1e8a441d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "74d1bb3d_c0997795",
+        "filename": "appengine/monorail/tracker/tracker_helpers.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1413,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-08-05T17:02:10Z",
+      "side": 1,
+      "message": "Consider defining an IssueStr helper in this class that we can use instead of having to generate these refs here and in the tests.",
+      "range": {
+        "startLine": 1413,
+        "startChar": 2,
+        "endLine": 1413,
+        "endChar": 15
+      },
+      "revId": "e9be0d6b424681321dd682aacd56cbe1e8a441d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
