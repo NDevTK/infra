@@ -94,6 +94,30 @@
     },
     {
       "key": {
+        "uuid": "5133f5e2_1e16e8ec",
+        "filename": "appengine/monorail/tracker/test/tracker_helpers_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2021,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-08-05T17:26:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "12049a49_6652d198",
+      "range": {
+        "startLine": 2021,
+        "startChar": 0,
+        "endLine": 2021,
+        "endChar": 0
+      },
+      "revId": "e9be0d6b424681321dd682aacd56cbe1e8a441d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bee5714a_1b182ad1",
         "filename": "appengine/monorail/tracker/tracker_helpers.py",
         "patchSetId": 2
@@ -105,6 +129,30 @@
       "writtenOn": "2020-08-05T17:02:10Z",
       "side": 1,
       "message": "nit/optional: I think if we operate on conflict_iids and save the ref conversion until the final if statement, then we could avoid defining this variable until when it is used for the error message creation.\n\nHowever the way you have it written means that changes coming from blocking_remove will all be printed before changes coming from blocked_on_remove, which might be nice.",
+      "range": {
+        "startLine": 1383,
+        "startChar": 0,
+        "endLine": 1383,
+        "endChar": 22
+      },
+      "revId": "e9be0d6b424681321dd682aacd56cbe1e8a441d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1df68988_54053301",
+        "filename": "appengine/monorail/tracker/tracker_helpers.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1383,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-08-05T17:26:50Z",
+      "side": 1,
+      "message": "done",
+      "parentUuid": "bee5714a_1b182ad1",
       "range": {
         "startLine": 1383,
         "startChar": 0,
@@ -140,6 +188,30 @@
     },
     {
       "key": {
+        "uuid": "ee3294d6_15bc5d5f",
+        "filename": "appengine/monorail/tracker/tracker_helpers.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1391,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-08-05T17:26:50Z",
+      "side": 1,
+      "message": "-\u003e `possible_conflict_iids`",
+      "parentUuid": "d1eca3d8_9aff7bbb",
+      "range": {
+        "startLine": 1391,
+        "startChar": 8,
+        "endLine": 1391,
+        "endChar": 20
+      },
+      "revId": "e9be0d6b424681321dd682aacd56cbe1e8a441d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "74d1bb3d_c0997795",
         "filename": "appengine/monorail/tracker/tracker_helpers.py",
         "patchSetId": 2
@@ -160,6 +232,30 @@
       "revId": "e9be0d6b424681321dd682aacd56cbe1e8a441d4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7335f9d0_470fc0e3",
+        "filename": "appengine/monorail/tracker/tracker_helpers.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1413,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-08-05T17:26:50Z",
+      "side": 1,
+      "message": "Assuming something like\n```\nIssueStr(issue):\n  return \u0027%s:%d\u0027 % (issue.project_name, issue.local_id)\n```\n\nWe won\u0027t always have the full issue object readily available to us.\nE.g. for _AssertNoConflictingDeltas, a lot of times, we only have the iid when we want a ref for it and getting iid\u0027s full issue object would require creating another dict before hand as well.\n\nWith the current state/needs, I don\u0027t see IssueStr helping much.",
+      "parentUuid": "74d1bb3d_c0997795",
+      "range": {
+        "startLine": 1413,
+        "startChar": 2,
+        "endLine": 1413,
+        "endChar": 15
+      },
+      "revId": "e9be0d6b424681321dd682aacd56cbe1e8a441d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
