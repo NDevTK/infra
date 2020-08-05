@@ -22,6 +22,30 @@
       "revId": "c1a35d9c475d48002eeedc6badedb18b63e06438",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "06bf389d_5e405ffd",
+        "filename": "appengine/monorail/api/v3/api_proto/issues.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 297,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-08-05T16:57:04Z",
+      "side": 1,
+      "message": "https://chromium-review.googlesource.com/c/infra/infra/+/2339835",
+      "parentUuid": "3478e8ac_7f769355",
+      "range": {
+        "startLine": 297,
+        "startChar": 11,
+        "endLine": 297,
+        "endChar": 25
+      },
+      "revId": "c1a35d9c475d48002eeedc6badedb18b63e06438",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
