@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "260663a9_49b12dfa",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-08-18T22:34:26Z",
+      "side": 1,
+      "message": "did you walidate",
+      "revId": "70c4d315631823dcef1ced3189aecde38b910619",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "97e55011_f7299a03",
+        "filename": "go/src/infra/cmd/stable_version2/internal/cmd/validateconfig/internal/querygs/querygs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 253,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-08-18T22:34:26Z",
+      "side": 1,
+      "message": "Only for logging purpose makes this ctx seems not-needed. as you already return error here. Could you just inject buildTarget, crosVersion, remotePath to the error msg and print them at the upper upper layer?",
+      "range": {
+        "startLine": 253,
+        "startChar": 16,
+        "endLine": 253,
+        "endChar": 19
+      },
+      "revId": "70c4d315631823dcef1ced3189aecde38b910619",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
