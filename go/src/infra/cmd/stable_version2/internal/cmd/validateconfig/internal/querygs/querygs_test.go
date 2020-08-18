@@ -5,6 +5,7 @@
 package querygs
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"regexp"
@@ -57,15 +58,14 @@ const exampleMetadataJSON = `
 var testMaybeDownloadFileData = []struct {
 	uuid     string
 	metadata string
-	out      map[string]map[string]string
+	out      *map[string]map[string]map[string]string
 }{
 	{
 		"f959c762-214e-4293-b655-032cd791a85f",
 		exampleMetadataJSON,
-		map[string]map[string]string{
+		&map[string]map[string]map[string]string{
 			"nami": {
-				"sona":     "Google_Nami.42.43.44",
-				"akali360": "Google_Nami.52.53.54",
+				"f7e8bdf6-f67c-4d63-aea3-46fa5e980403": {"akali360": "Google_Nami.52.53.54", "sona": "Google_Nami.42.43.44"},
 			},
 		},
 	},
@@ -76,8 +76,9 @@ func TestMaybeDownloadFile(t *testing.T) {
 	for _, tt := range testMaybeDownloadFileData {
 		t.Run(tt.uuid, func(t *testing.T) {
 			var r Reader
+			bg := context.Background()
 			r.dld = makeConstantDownloader(tt.metadata)
-			e := r.maybeDownloadFile(DONTCARE, DONTCARE)
+			e := r.maybeDownloadFile(bg, DONTCARE, DONTCARE)
 			if e != nil {
 				msg := fmt.Sprintf("uuid (%s): unexpected error (%s)", tt.uuid, e.Error())
 				t.Errorf(msg)
@@ -125,8 +126,9 @@ func TestGetFirmwareVersion(t *testing.T) {
 	for _, tt := range testFirmwareVersionData {
 		t.Run(tt.name, func(t *testing.T) {
 			var r Reader
+			bg := context.Background()
 			r.dld = makeConstantDownloader(tt.metadata)
-			version, e := r.getFirmwareVersion(tt.bt, tt.model, tt.CrOSVersion)
+			version, e := r.getFirmwareVersion(bg, tt.bt, tt.model, tt.CrOSVersion)
 			if e != nil {
 				msg := fmt.Sprintf("name (%s): uuid (%s): unexpected error (%s)", tt.name, tt.uuid, e.Error())
 				t.Errorf(msg)
@@ -317,10 +319,11 @@ func TestValidateConfig(t *testing.T) {
 	for _, tt := range testValidateConfigData {
 		t.Run(tt.name, func(t *testing.T) {
 			var r Reader
+			bg := context.Background()
 			r.dld = makeConstantDownloader(tt.metadata)
 			sv := parseStableVersionsOrPanic(tt.in)
 			expected := parseResultsOrPanic(tt.out)
-			result, e := r.ValidateConfig(sv)
+			result, e := r.ValidateConfig(bg, sv)
 			if err := validateErrorContainsSubstring(e, tt.errorFragment); err != nil {
 				t.Errorf(err.Error())
 			}
@@ -453,6 +456,7 @@ func TestNonLowercaseIsMalformed(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+			bg := context.Background()
 			var out ValidationResult
 			unmarshalOrPanic(tt.out, &out)
 
@@ -460,7 +464,7 @@ func TestNonLowercaseIsMalformed(t *testing.T) {
 			r.dld = makeConstantDownloader(tt.fileContents)
 
 			in := parseStableVersionsOrPanic(tt.in)
-			res, err := r.ValidateConfig(in)
+			res, err := r.ValidateConfig(bg, in)
 			if err != nil {
 				t.Errorf("unexpected error %s", err)
 			}
