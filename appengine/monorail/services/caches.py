@@ -203,7 +203,7 @@ class AbstractTwoLevelCache(object):
     if use_redis:
       self.redis_client = redis_client or redis_utils.CreateRedisClient()
       self.use_redis = redis_utils.VerifyRedisConnection(
-          self.redis_client, msg=kind)
+          self.redis_client, msg=self.prefix)
     else:
       self.redis_client = None
       self.use_redis = False
@@ -417,16 +417,22 @@ class AbstractTwoLevelCache(object):
       retrieved_dict: Dictionary of key-value pairs to write to Redis.
     """
     try:
-      for key, value in retrieved_dict.items():
-        redis_key = redis_utils.FormatRedisKey(key, prefix=self.prefix)
-        redis_value = self._ValueToStr(value)
+      with self.redis_client.pipeline() as pipe:
+        pipe.multi()
+        for key, value in retrieved_dict.items():
+          redis_key = redis_utils.FormatRedisKey(key, prefix=self.prefix)
+          redis_value = self._ValueToStr(value)
+          pipe.set(
+              redis_key,
+              redis_value,
+              ex=framework_constants.CACHE_EXPIRATION,
+              nx=True)
 
-        self.redis_client.setex(
-            redis_key, framework_constants.CACHE_EXPIRATION, redis_value)
+        pipe.execute()
     except redis.RedisError as identifier:
       logging.error(
           'Redis error occurred during write operation: %s', identifier)
-      self._DeleteFromRedis(list(retrieved_dict.keys()))
+      self._DeleteFromRedis(*retrieved_dict.keys())
       return
     logging.info(
         'cached batch of %d values in redis %s', len(retrieved_dict),

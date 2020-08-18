@@ -7,8 +7,8 @@
 
 Each of several "besearch" backend jobs manages one shard of the overall set
 of issues in the system. The backend search pipeline retrieves the issues
-that match the user query, puts them into memcache, and returns them to
-the frontend search pipeline.
+that match the user query, puts them into second-layer cache, and returns them
+to the frontend search pipeline.
 """
 from __future__ import print_function
 from __future__ import division
@@ -25,6 +25,7 @@ from features import savedqueries_helpers
 from framework import authdata
 from framework import framework_constants
 from framework import framework_helpers
+from framework import redis_utils
 from framework import sorting
 from framework import sql
 from proto import ast_pb2
@@ -55,8 +56,14 @@ class BackendSearchPipeline(object):
   """
 
   def __init__(
-      self, mr, services, default_results_per_page,
-      query_project_names, logged_in_user_id, me_user_ids):
+      self,
+      mr,
+      services,
+      default_results_per_page,
+      query_project_names,
+      logged_in_user_id,
+      me_user_ids,
+      redis_client=None):
 
     self.mr = mr
     self.services = services
@@ -76,6 +83,7 @@ class BackendSearchPipeline(object):
     self.result_iids = None  # Sorted issue IDs that match the query
     self.search_limit_reached = False  # True if search results limit is hit.
     self.error = None
+    self.redis_client = redis_client or redis_utils.CreateRedisClient()
 
     self._MakePromises()
 
@@ -102,9 +110,8 @@ class BackendSearchPipeline(object):
         self.harmonized_config, self.mr.group_by_spec, self.mr.sort_spec)
 
     self.result_iids_promise = framework_helpers.Promise(
-        _GetQueryResultIIDs, self.mr.cnxn,
-        self.services, self.canned_query, self.user_query,
-        self.query_project_ids, self.harmonized_config, sd,
+        _GetQueryResultIIDs, self.mr.cnxn, self.services, self.canned_query,
+        self.user_query, self.query_project_ids, self.harmonized_config, sd,
         slice_term, self.mr.shard_id, self.mr.invalidation_timestep)
 
   def SearchForIIDs(self):
@@ -232,9 +239,17 @@ def _FilterSpam(query_ast):
   return query_ast
 
 def _GetQueryResultIIDs(
-    cnxn, services, canned_query, user_query,
-    query_project_ids, harmonized_config, sd, slice_term,
-    shard_id, invalidation_timestep):
+    cnxn,
+    services,
+    canned_query,
+    user_query,
+    query_project_ids,
+    harmonized_config,
+    sd,
+    slice_term,
+    shard_id,
+    invalidation_timestep,
+    redis_client=None):
   """Do a search and return a list of matching issue IDs.
 
   Args:
@@ -248,7 +263,8 @@ def _GetQueryResultIIDs(
     slice_term: additional query term to narrow results to a logical shard
         within a physical shard.
     shard_id: int number of the database shard to search.
-    invalidation_timestep: int timestep to use keep memcached items fresh.
+    invalidation_timestep: int timestep to use keep cached items fresh.
+    redis_client: redis.Redis object for interfacing with redis-server
 
   Returns:
     Tuple consisting of:
@@ -259,6 +275,7 @@ def _GetQueryResultIIDs(
       An error (subclass of Exception) encountered during query processing. None
       means that no error was encountered.
   """
+  logging.debug(settings.search_redis_flag)
   query_ast = _FilterSpam(query2ast.ParseUserQuery(
       user_query, canned_query, query2ast.BUILTIN_ISSUE_FIELDS,
       harmonized_config))
@@ -271,7 +288,7 @@ def _GetQueryResultIIDs(
       query_ast.conjunctions[0], tracker_fulltext.ISSUE_FULLTEXT_FIELDS))
   expiration = framework_constants.CACHE_EXPIRATION
   if is_fulltext_query:
-    expiration = framework_constants.FULLTEXT_MEMCACHE_EXPIRATION
+    expiration = framework_constants.FULLTEXT_CACHE_EXPIRATION
 
   # Might raise ast2ast.MalformedQuery or ast2select.NoPossibleResults.
   result_iids, search_limit_reached, error = SearchProjectCan(
@@ -284,42 +301,75 @@ def _GetQueryResultIIDs(
 
   projects_str = ','.join(str(pid) for pid in sorted(query_project_ids))
   projects_str = projects_str or 'all'
-  memcache_key = ';'.join([
-      projects_str, canned_query, user_query, ' '.join(sd), str(shard_id)])
-  memcache.set(memcache_key, (result_iids, invalidation_timestep),
-               time=expiration, namespace=settings.memcache_namespace)
-  logging.info('set memcache key %r', memcache_key)
+  cache_key = ';'.join(
+      [projects_str, canned_query, user_query, ' '.join(sd),
+       str(shard_id)])
+  if settings.search_redis_flag:
+    redis_client = redis_client or redis_utils.CreateRedisClient()
+    redis_client.setex(
+        cache_key, expiration,
+        redis_utils.SerializeValue((result_iids, invalidation_timestep)))
+  else:
+    memcache.set(
+        cache_key, (result_iids, invalidation_timestep), time=expiration)
 
-  search_limit_memcache_key = ';'.join([
-      projects_str, canned_query, user_query, ' '.join(sd),
-      'search_limit_reached', str(shard_id)])
-  memcache.set(search_limit_memcache_key,
-               (search_limit_reached, invalidation_timestep),
-               time=expiration, namespace=settings.memcache_namespace)
-  logging.info('set search limit memcache key %r',
-               search_limit_memcache_key)
+  logging.info('set second-layer cache key %r', cache_key)
 
-  timestamps_for_projects = memcache.get_multi(
-      keys=(['%d;%d' % (pid, shard_id) for pid in query_project_ids] +
-            ['all:%d' % shard_id]),
-      namespace=settings.memcache_namespace)
+  search_limit_cache_key = ';'.join(
+      [
+          projects_str, canned_query, user_query, ' '.join(sd),
+          'search_limit_reached',
+          str(shard_id)
+      ])
+
+  if settings.search_redis_flag:
+    redis_client.setex(
+        search_limit_cache_key, expiration,
+        redis_utils.SerializeValue(
+            (search_limit_reached, invalidation_timestep)))
+  else:
+    memcache.set(
+        search_limit_cache_key, (search_limit_reached, invalidation_timestep),
+        time=expiration)
+
+  logging.info('set search limit cache key %r', search_limit_cache_key)
+
+  timestamp_keys = ['%d;%d' % (pid, shard_id) for pid in query_project_ids
+                   ] + ['all:%d' % shard_id]
+
+  if settings.search_redis_flag:
+    timestamps_for_projects_list = redis_client.mget(timestamp_keys)
+    timestamps_for_projects_dict = {
+        key: redis_utils.DeserializeValue(value)
+        for key, value in zip(timestamp_keys, timestamps_for_projects_list)
+        if value
+    }
+  else:
+    timestamps_for_projects_dict = memcache.get_multi(keys=timestamp_keys)
 
   if query_project_ids:
     for pid in query_project_ids:
       key = '%d;%d' % (pid, shard_id)
-      if key not in timestamps_for_projects:
+      if key not in timestamps_for_projects_dict:
+        if settings.search_redis_flag:
+          redis_client.setex(
+              key, expiration,
+              redis_utils.SerializeValue(invalidation_timestep))
+        else:
+          memcache.set(
+              key,
+              invalidation_timestep,
+              time=framework_constants.CACHE_EXPIRATION)
+  else:
+    key = 'all;%d' % shard_id
+    if key not in timestamps_for_projects_dict:
+      if settings.search_redis_flag:
+        redis_client.setex(
+            key, expiration, redis_utils.SerializeValue(invalidation_timestep))
+      else:
         memcache.set(
             key,
             invalidation_timestep,
-            time=framework_constants.CACHE_EXPIRATION,
-            namespace=settings.memcache_namespace)
-  else:
-    key = 'all;%d' % shard_id
-    if key not in timestamps_for_projects:
-      memcache.set(
-          key,
-          invalidation_timestep,
-          time=framework_constants.CACHE_EXPIRATION,
-          namespace=settings.memcache_namespace)
+            time=framework_constants.CACHE_EXPIRATION)
 
   return result_iids, search_limit_reached, error

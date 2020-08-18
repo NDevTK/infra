@@ -8,6 +8,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import fakeredis
 import unittest
 import mox
 
@@ -34,8 +35,11 @@ class BackendSearchTest(unittest.TestCase):
     self.servlet = backendsearch.BackendSearch(
         'req', 'res', services=self.services)
     self.mox = mox.Mox()
+    self.redis_client = fakeredis.FakeRedis()
+    settings.search_redis_flag = True
 
   def tearDown(self):
+    self.redis_client.flushall()
     self.mox.UnsetStubs()
     self.mox.ResetAll()
 
@@ -48,8 +52,7 @@ class BackendSearchTest(unittest.TestCase):
         error=None)
     self.mox.StubOutWithMock(backendsearchpipeline, 'BackendSearchPipeline')
     backendsearchpipeline.BackendSearchPipeline(
-      self.mr, self.services, 100, ['proj'], 111, [222]
-      ).AndReturn(pipeline)
+        self.mr, self.services, 100, ['proj'], 111, [222]).AndReturn(pipeline)
     self.mox.ReplayAll()
 
     json_data = self.servlet.HandleRequest(self.mr)
@@ -58,7 +61,7 @@ class BackendSearchTest(unittest.TestCase):
     self.assertFalse(json_data['search_limit_reached'])
     self.assertEqual(None, json_data['error'])
 
-  def testHandleRequest_ResultsInOnePagainationPage(self):
+  def testHandleRequest_ResultsInOnePaginationPage(self):
     """Prefetch all result issues and return them."""
     allowed_iids = [1, 2, 3, 4, 5, 6, 7, 8]
     pipeline = testing_helpers.Blank(
@@ -68,8 +71,7 @@ class BackendSearchTest(unittest.TestCase):
         error=None)
     self.mox.StubOutWithMock(backendsearchpipeline, 'BackendSearchPipeline')
     backendsearchpipeline.BackendSearchPipeline(
-      self.mr, self.services, 100, ['proj'], 111, [222]
-      ).AndReturn(pipeline)
+        self.mr, self.services, 100, ['proj'], 111, [222]).AndReturn(pipeline)
     self.mox.StubOutWithMock(self.services.issue, 'GetIssues')
     # All issues are prefetched because they fit  on the first pagination page.
     self.services.issue.GetIssues(self.mr.cnxn, allowed_iids, shard_id=2)
@@ -81,7 +83,7 @@ class BackendSearchTest(unittest.TestCase):
     self.assertFalse(json_data['search_limit_reached'])
     self.assertEqual(None, json_data['error'])
 
-  def testHandleRequest_ResultsExceedPagainationPage(self):
+  def testHandleRequest_ResultsExceedPaginationPage(self):
     """Return all result issue IDs, but only prefetch the first page."""
     self.mr.num = 5
     pipeline = testing_helpers.Blank(
@@ -91,8 +93,7 @@ class BackendSearchTest(unittest.TestCase):
         error=None)
     self.mox.StubOutWithMock(backendsearchpipeline, 'BackendSearchPipeline')
     backendsearchpipeline.BackendSearchPipeline(
-      self.mr, self.services, 100, ['proj'], 111, [222]
-      ).AndReturn(pipeline)
+        self.mr, self.services, 100, ['proj'], 111, [222]).AndReturn(pipeline)
     self.mox.StubOutWithMock(self.services.issue, 'GetIssues')
     # First 5 issues are prefetched because num=5
     self.services.issue.GetIssues(self.mr.cnxn, [1, 2, 3, 4, 5], shard_id=2)
@@ -115,8 +116,7 @@ class BackendSearchTest(unittest.TestCase):
         error=error)
     self.mox.StubOutWithMock(backendsearchpipeline, 'BackendSearchPipeline')
     backendsearchpipeline.BackendSearchPipeline(
-      self.mr, self.services, 100, ['proj'], 111, [222]
-      ).AndReturn(pipeline)
+        self.mr, self.services, 100, ['proj'], 111, [222])
     self.mox.ReplayAll()
 
     json_data = self.servlet.HandleRequest(self.mr)

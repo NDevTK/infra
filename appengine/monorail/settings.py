@@ -197,6 +197,9 @@ redis_namespace = None
 redis_host = 'localhost'
 redis_port = '6379'
 
+# Flags for enabling Redis features
+search_redis_flag = True
+
 # Recompute derived issue fields via work items rather than while
 # the user is waiting for a page to load.
 recompute_derived_fields_in_worker = True
@@ -318,7 +321,7 @@ else:
     db_cloud_project = app_id
     branded_domains = branded_domains_staging
     domain_to_default_project = domain_to_default_project_staging
-    redis_host = '10.238.120.43'
+    redis_host = '10.252.150.83'
 
   elif app_id == 'monorail-dev':
     site_name = 'Monorail Dev'

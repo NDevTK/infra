@@ -60,9 +60,10 @@ class BackendSearch(jsonfeed.InternalTask):
     _prefetched_issues = self.services.issue.GetIssues(
         mr.cnxn, pipeline.result_iids[:mr.start + mr.num],
         shard_id=mr.shard_id)
-    logging.info('prefetched and memcached %d issues in %d ms',
-                 len(pipeline.result_iids[:mr.start + mr.num]),
-                 int(1000 * (time.time() - start)))
+    logging.info(
+        'prefetched and cached %d issues in %d ms',
+        len(pipeline.result_iids[:mr.start + mr.num]),
+        int(1000 * (time.time() - start)))
 
     if pipeline.error:
       error_message = pipeline.error.message

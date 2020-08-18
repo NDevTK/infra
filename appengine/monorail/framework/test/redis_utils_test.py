@@ -44,13 +44,15 @@ class RedisHelperTest(unittest.TestCase):
 
   def testSerializeDeserializeInt(self):
     serialized_int = redis_utils.SerializeValue(123)
-    self.assertEqual('123', serialized_int)
     self.assertEquals(123, redis_utils.DeserializeValue(serialized_int))
 
   def testSerializeDeserializeStr(self):
     serialized = redis_utils.SerializeValue('123')
-    self.assertEqual('"123"', serialized)
     self.assertEquals('123', redis_utils.DeserializeValue(serialized))
+
+  def testSerializeDeserializeSet(self):
+    serialized = redis_utils.SerializeValue({1, 2, 3})
+    self.assertEquals({1, 2, 3}, redis_utils.DeserializeValue(serialized))
 
   def testSerializeDeserializePB(self):
     features = features_pb2.Hotlist.HotlistItem(

@@ -8,14 +8,15 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import fakeredis
 import mox
 import unittest
 
-from google.appengine.api import memcache
 from google.appengine.ext import testbed
 
 import settings
 from framework import framework_helpers
+from framework import redis_utils
 from framework import sorting
 from framework import sql
 from proto import ast_pb2
@@ -54,10 +55,12 @@ class BackendSearchPipelineTest(unittest.TestCase):
     self.testbed = testbed.Testbed()
     self.testbed.activate()
     self.testbed.init_user_stub()
-    self.testbed.init_memcache_stub()
+    self.redis_client = fakeredis.FakeRedis()
+    settings.search_redis_flag = True
     sorting.InitializeArtValues(self.services)
 
   def tearDown(self):
+    self.redis_client.flushall()
     self.testbed.deactivate()
     self.mox.UnsetStubs()
     self.mox.ResetAll()
@@ -68,15 +71,15 @@ class BackendSearchPipelineTest(unittest.TestCase):
         backendsearchpipeline._GetQueryResultIIDs, self.mr.cnxn,
         self.services, 'is:open', exp_query, [789],
         mox.IsA(tracker_pb2.ProjectIssueConfig), ['project', 'id'],
-        ('Issue.shard = %s', [2]), 2, self.mr.invalidation_timestep
-        ).AndReturn('fake promise 1')
+        ('Issue.shard = %s', [2]), 2, self.mr.invalidation_timestep,
+        self.redis_client).AndReturn('fake promise 1')
 
   def testMakePromises_Anon(self):
     """A backend pipeline does not personalize the query of anon users."""
     self.SetUpPromises('Priority:High')
     self.mox.ReplayAll()
     backendsearchpipeline.BackendSearchPipeline(
-      self.mr, self.services, 100, ['proj'], None, [])
+        self.mr, self.services, 100, ['proj'], None, [])
     self.mox.VerifyAll()
 
   def testMakePromises_SignedIn(self):
@@ -85,14 +88,14 @@ class BackendSearchPipelineTest(unittest.TestCase):
     self.SetUpPromises('owner:111')
     self.mox.ReplayAll()
     backendsearchpipeline.BackendSearchPipeline(
-      self.mr, self.services, 100, ['proj'], 111, [111])
+        self.mr, self.services, 100, ['proj'], 111, [111])
     self.mox.VerifyAll()
 
   def testSearchForIIDs(self):
     self.SetUpPromises('Priority:High')
     self.mox.ReplayAll()
     be_pipeline = backendsearchpipeline.BackendSearchPipeline(
-      self.mr, self.services, 100, ['proj'], 111, [111])
+        self.mr, self.services, 100, ['proj'], 111, [111])
     be_pipeline.result_iids_promise = testing_helpers.Blank(
       WaitAndGetValue=lambda: ([10002, 10052], False, None))
     be_pipeline.SearchForIIDs()
@@ -123,9 +126,10 @@ class BackendSearchPipelineMethodsTest(unittest.TestCase):
     self.testbed = testbed.Testbed()
     self.testbed.activate()
     self.testbed.init_user_stub()
-    self.testbed.init_memcache_stub()
+    self.redis_client = fakeredis.FakeRedis()
 
   def tearDown(self):
+    self.redis_client.flushall()
     self.testbed.deactivate()
     self.mox.UnsetStubs()
     self.mox.ResetAll()
@@ -212,15 +216,24 @@ class BackendSearchPipelineMethodsTest(unittest.TestCase):
       ).AndReturn(([10002, 10052], False, None))
     self.mox.ReplayAll()
     result, capped, err = backendsearchpipeline._GetQueryResultIIDs(
-      self.cnxn, self.services, 'is:open', 'Priority:High',
-      [789], self.config, sd, slice_term, 2, 12345)
+        self.cnxn,
+        self.services,
+        'is:open',
+        'Priority:High', [789],
+        self.config,
+        sd,
+        slice_term,
+        2,
+        12345,
+        redis_client=self.redis_client)
     self.mox.VerifyAll()
     self.assertEqual([10002, 10052], result)
     self.assertFalse(capped)
     self.assertEqual(None, err)
     self.assertEqual(
-      ([10002, 10052], 12345),
-      memcache.get('789;is:open;Priority:High;project id;2'))
+        ([10002, 10052], 12345),
+        redis_utils.DeserializeValue(
+            self.redis_client.get('789;is:open;Priority:High;project id;2')))
 
   def testGetSpamQueryResultIIDs(self):
     sd = ['project', 'id']
@@ -239,12 +252,22 @@ class BackendSearchPipelineMethodsTest(unittest.TestCase):
       ).AndReturn(([10002, 10052], False, None))
     self.mox.ReplayAll()
     result, capped, err = backendsearchpipeline._GetQueryResultIIDs(
-      self.cnxn, self.services, 'is:open', 'Priority:High is:spam',
-      [789], self.config, sd, slice_term, 2, 12345)
+        self.cnxn,
+        self.services,
+        'is:open',
+        'Priority:High is:spam', [789],
+        self.config,
+        sd,
+        slice_term,
+        2,
+        12345,
+        redis_client=self.redis_client)
     self.mox.VerifyAll()
     self.assertEqual([10002, 10052], result)
     self.assertFalse(capped)
     self.assertEqual(None, err)
     self.assertEqual(
-      ([10002, 10052], 12345),
-      memcache.get('789;is:open;Priority:High is:spam;project id;2'))
+        ([10002, 10052], 12345),
+        redis_utils.DeserializeValue(
+            self.redis_client.get(
+                '789;is:open;Priority:High is:spam;project id;2')))

@@ -11,7 +11,6 @@ from __future__ import absolute_import
 import unittest
 import mox
 
-from google.appengine.api import memcache
 from google.appengine.ext import testbed
 
 from framework import permissions
@@ -42,7 +41,6 @@ class BackendNonviewableTest(unittest.TestCase):
     self.mox = mox.Mox()
     self.testbed = testbed.Testbed()
     self.testbed.activate()
-    self.testbed.init_memcache_stub()
 
   def tearDown(self):
     self.testbed.deactivate()

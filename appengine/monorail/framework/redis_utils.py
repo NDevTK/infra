@@ -2,32 +2,41 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """A utility module for interfacing with Redis conveniently. """
-import json
+import datetime
 import logging
+import pickle
 
 import redis
 
 import settings
 from protorpc import protobuf
 
-connection_pool = None
+redis_client = None
+
 
 def CreateRedisClient():
   # type: () -> redis.Redis
   """Creates a Redis object which implements Redis protocol and connection.
 
   Returns:
-    redis.Redis object initialized with a connection pool.
-    None on failure.
+    Redis Client object initialized with a connection pool.
   """
-  global connection_pool
-  if not connection_pool:
+  global redis_client
+  if not redis_client:
     connection_pool = redis.BlockingConnectionPool(
         host=settings.redis_host,
         port=settings.redis_port,
         max_connections=1,
-        timeout=2)
-  return redis.Redis(connection_pool=connection_pool)
+        timeout=10)
+    redis_client = redis.Redis(
+        connection_pool=connection_pool,
+        socket_timeout=None,
+        socket_connect_timeout=None,
+        socket_keepalive=None,
+        retry_on_timeout=False,
+        health_check_interval=0,
+        single_connection_client=False)
+  return redis_client
 
 
 def FormatRedisKey(key, prefix=None):
@@ -66,13 +75,21 @@ def VerifyRedisConnection(redis_client, msg=None):
     logging.info('Redis client is set to None on connect in %s', msg)
     return False
   try:
+    t1 = datetime.datetime.now()
     redis_client.ping()
-    logging.info('Redis client successfully connected to Redis in %s', msg)
+    t2 = datetime.datetime.now()
+    elapsed_time = t2 - t1
+    logging.info(
+        'Redis client successfully connected to Redis in %s on redis-host: %s. '
+        'Connection time: %s seconds', msg, settings.redis_host,
+        elapsed_time.total_seconds())
     return True
   except redis.RedisError as identifier:
+    t2 = datetime.datetime.now()
+    elapsed_time = t2 - t1
     logging.error(
-        'Redis error occurred while connecting to server in %s: %s', msg,
-        identifier)
+        'Redis error occurred while connecting to server in %s: %s '
+        'Error took %s seconds', msg, identifier, elapsed_time.total_seconds())
     return False
 
 
@@ -82,7 +99,7 @@ def SerializeValue(value, pb_class=None):
   if pb_class and pb_class is not int:
     return protobuf.encode_message(value)
   else:
-    return json.dumps(value)
+    return pickle.dumps(value)
 
 
 def DeserializeValue(value, pb_class=None):
@@ -91,4 +108,4 @@ def DeserializeValue(value, pb_class=None):
   if pb_class and pb_class is not int:
     return protobuf.decode_message(pb_class, value)
   else:
-    return json.loads(value)
+    return pickle.loads(value)

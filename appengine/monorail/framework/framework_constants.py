@@ -19,7 +19,7 @@ SECS_PER_DAY = SECS_PER_HOUR * 24
 SECS_PER_MONTH = SECS_PER_DAY * 30
 SECS_PER_YEAR = SECS_PER_DAY * 365
 
-# When we write to memcache, let the values expire so that we don't
+# When we write to second-layer cache, let the values expire so that we don't
 # get any unexpected super-old values as we make code changes over the
 # years.   Also, searches can contain date terms like [opened<today-1]
 # that would become wrong if cached for a long time.
@@ -30,7 +30,7 @@ CACHE_EXPIRATION = 6 * SECS_PER_HOUR
 # that use fulltext terms, the results might be stale.  We still do
 # cache them and use the cached values, but we expire them so that the
 # results cannot be stale for a long period of time.
-FULLTEXT_MEMCACHE_EXPIRATION = 3 * SECS_PER_MINUTE
+FULLTEXT_CACHE_EXPIRATION = 3 * SECS_PER_MINUTE
 
 # Size in bytes of the largest form submission that we will accept
 MAX_POST_BODY_SIZE = 10 * 1024 * 1024   # = 10 MB

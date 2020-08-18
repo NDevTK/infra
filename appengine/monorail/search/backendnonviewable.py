@@ -9,7 +9,7 @@ The GET request to a backend has query string parameters for the
 shard_id, a user_id, and list of project IDs.  It returns a
 JSON-formatted dict with issue_ids that that user is not allowed to
 view.  As a side-effect, this servlet updates multiple entries
-in memcache, including each "nonviewable:USER_ID;PROJECT_ID;SHARD_ID".
+in Redis, including each "nonviewable:USER_ID;PROJECT_ID;SHARD_ID".
 """
 from __future__ import print_function
 from __future__ import division
@@ -25,6 +25,7 @@ from framework import framework_constants
 from framework import framework_helpers
 from framework import jsonfeed
 from framework import permissions
+from framework import redis_utils
 from framework import sql
 from search import search_helpers
 
@@ -34,7 +35,7 @@ from search import search_helpers
 # that set when the issues are changed via Monorail.  Also, we limit the live
 # those cache entries so that changes in a user's (direct or indirect) roles
 # in a project will take effect.
-NONVIEWABLE_MEMCACHE_EXPIRATION = 15 * framework_constants.SECS_PER_MINUTE
+NONVIEWABLE_CACHE_EXPIRATION = 15 * framework_constants.SECS_PER_MINUTE
 
 
 class BackendNonviewable(jsonfeed.InternalTask):
@@ -42,7 +43,7 @@ class BackendNonviewable(jsonfeed.InternalTask):
 
   CHECK_SAME_APP = True
 
-  def HandleRequest(self, mr):
+  def HandleRequest(self, mr, redis_client=None):
     """Get all the user IDs that the specified user cannot view.
 
     Args:
@@ -64,19 +65,33 @@ class BackendNonviewable(jsonfeed.InternalTask):
     nonviewable_iids = self.GetNonviewableIIDs(
       mr.cnxn, auth.user_pb, auth.effective_ids, project, perms, mr.shard_id)
 
+    redis_client = redis_client or redis_utils.CreateRedisClient()
+
     cached_ts = mr.invalidation_timestep
-    if mr.specified_project_id:
+    if mr.specified_project_id and settings.search_redis_flag:
+      redis_client.setex(
+          'nonviewable:%d;%d;%d' % (project_id, user_id, mr.shard_id),
+          NONVIEWABLE_CACHE_EXPIRATION,
+          redis_utils.SerializeValue((nonviewable_iids, cached_ts)))
+
+    elif mr.specified_project_id and not settings.search_redis_flag:
       memcache.set(
-        'nonviewable:%d;%d;%d' % (project_id, user_id, mr.shard_id),
-        (nonviewable_iids, cached_ts),
-        time=NONVIEWABLE_MEMCACHE_EXPIRATION,
-        namespace=settings.memcache_namespace)
+          'nonviewable:%d;%d;%d' % (project_id, user_id, mr.shard_id),
+          (nonviewable_iids, cached_ts),
+          time=NONVIEWABLE_CACHE_EXPIRATION,
+          namespace=settings.memcache_namespace)
+
+    elif not mr.specified_project_id and settings.search_redis_flag:
+      redis_client.setex(
+          'nonviewable:all;%d;%d' % (user_id, mr.shard_id),
+          NONVIEWABLE_CACHE_EXPIRATION,
+          redis_utils.SerializeValue((nonviewable_iids, cached_ts)))
     else:
       memcache.set(
-        'nonviewable:all;%d;%d' % (user_id, mr.shard_id),
-        (nonviewable_iids, cached_ts),
-        time=NONVIEWABLE_MEMCACHE_EXPIRATION,
-        namespace=settings.memcache_namespace)
+          'nonviewable:all;%d;%d' % (user_id, mr.shard_id),
+          (nonviewable_iids, cached_ts),
+          time=NONVIEWABLE_CACHE_EXPIRATION,
+          namespace=settings.memcache_namespace)
 
     logging.info('set nonviewable:%s;%d;%d to %r', project_id, user_id,
                  mr.shard_id, nonviewable_iids)
