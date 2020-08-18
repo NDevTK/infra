@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "3438d875_31e8d4f3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-08-18T22:35:04Z",
+      "side": 1,
+      "message": "meant to ask if you validate it locally. Just saw the commit msg. Ignore me then..",
+      "parentUuid": "260663a9_49b12dfa",
+      "revId": "70c4d315631823dcef1ced3189aecde38b910619",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "97e55011_f7299a03",
         "filename": "go/src/infra/cmd/stable_version2/internal/cmd/validateconfig/internal/querygs/querygs.go",
         "patchSetId": 1
