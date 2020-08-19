@@ -16,6 +16,24 @@
       "revId": "063fe927d2f6aaa5f7b3eb2d610ad3a3d15310c7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bb3054bc_e5b6989c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-08-19T04:30:09Z",
+      "side": 1,
+      "message": "state/dhcp",
+      "parentUuid": "ecff68f1_12e850e6",
+      "revId": "063fe927d2f6aaa5f7b3eb2d610ad3a3d15310c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
