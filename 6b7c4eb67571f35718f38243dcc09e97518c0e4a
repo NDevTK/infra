@@ -46,6 +46,30 @@
       "revId": "6b7c4eb67571f35718f38243dcc09e97518c0e4a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "186ebdcb_47a3fc2a",
+        "filename": "go/src/infra/unifiedfleet/app/controller/machine_lse.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 472,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-08-19T06:38:09Z",
+      "side": 0,
+      "message": "Ack",
+      "parentUuid": "dba89ef2_0b84f2ab",
+      "range": {
+        "startLine": 472,
+        "startChar": 2,
+        "endLine": 472,
+        "endChar": 25
+      },
+      "revId": "6b7c4eb67571f35718f38243dcc09e97518c0e4a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
