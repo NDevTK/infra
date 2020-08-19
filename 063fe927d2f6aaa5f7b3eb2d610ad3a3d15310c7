@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ecff68f1_12e850e6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-08-19T04:29:43Z",
+      "side": 1,
+      "message": "Just check if any other delete(state/host) has any issue.",
+      "revId": "063fe927d2f6aaa5f7b3eb2d610ad3a3d15310c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
