@@ -39,6 +39,30 @@
       "revId": "00aff45e18b94363165b83bbdec3321b9b421327",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f9d1dd25_ff71441c",
+        "filename": "go/src/infra/appengine/cros/lab_inventory/app/ui/manual-repair/src/components/top-bar.ts",
+        "patchSetId": 9
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-08-20T19:24:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3d009c2a_4c135906",
+      "range": {
+        "startLine": 36,
+        "startChar": 4,
+        "endLine": 36,
+        "endChar": 7
+      },
+      "revId": "00aff45e18b94363165b83bbdec3321b9b421327",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
