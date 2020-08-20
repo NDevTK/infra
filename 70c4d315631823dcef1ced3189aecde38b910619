@@ -105,6 +105,30 @@
       "revId": "70c4d315631823dcef1ced3189aecde38b910619",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d31f0ef6_55d2c452",
+        "filename": "go/src/infra/cmd/stable_version2/internal/cmd/validateconfig/internal/querygs/querygs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 253,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2020-08-20T22:20:10Z",
+      "side": 1,
+      "message": "Discussed in person, the chromium logging facility produces nicely formatted messages, and many of logging messages produced here are for errors that we immediately recover from (such as a file in GS not existing). I don\u0027t think that sending these messages further up the stack just to produce log messages at higher levels is necessary.",
+      "parentUuid": "f1f02a89_f722cbb4",
+      "range": {
+        "startLine": 253,
+        "startChar": 16,
+        "endLine": 253,
+        "endChar": 19
+      },
+      "revId": "70c4d315631823dcef1ced3189aecde38b910619",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
