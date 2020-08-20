@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b8b685f4_83fc661f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-08-20T06:26:33Z",
+      "side": 1,
+      "message": "LGTM % nits",
+      "revId": "00aff45e18b94363165b83bbdec3321b9b421327",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3d009c2a_4c135906",
+        "filename": "go/src/infra/appengine/cros/lab_inventory/app/ui/manual-repair/src/components/top-bar.ts",
+        "patchSetId": 9
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-08-20T06:26:33Z",
+      "side": 1,
+      "message": "const? use const whenever is possible: https://g3doc.corp.google.com/javascript/typescript/g3doc/styleguide.md?cl\u003dhead#variables",
+      "range": {
+        "startLine": 36,
+        "startChar": 4,
+        "endLine": 36,
+        "endChar": 7
+      },
+      "revId": "00aff45e18b94363165b83bbdec3321b9b421327",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
