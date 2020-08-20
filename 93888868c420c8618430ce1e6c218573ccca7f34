@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2ce45ca4_cab848cd",
+        "filename": "appengine/monorail/framework/redis_utils.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-08-20T21:12:59Z",
+      "side": 1,
+      "message": "Why use pickle instead of json? JSON is human readable.",
+      "range": {
+        "startLine": 102,
+        "startChar": 11,
+        "endLine": 102,
+        "endChar": 17
+      },
+      "revId": "93888868c420c8618430ce1e6c218573ccca7f34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "89c17424_3f6f37a0",
+        "filename": "appengine/monorail/search/backendnonviewable.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-08-20T21:12:59Z",
+      "side": 1,
+      "message": "This seems a tad redundant, getting redis client on every request handling.",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 68,
+        "endChar": 66
+      },
+      "revId": "93888868c420c8618430ce1e6c218573ccca7f34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "87c0abbe_09528cf5",
+        "filename": "appengine/monorail/search/backendsearchpipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 278,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-08-20T21:12:59Z",
+      "side": 1,
+      "message": "Remove",
+      "range": {
+        "startLine": 278,
+        "startChar": 0,
+        "endLine": 278,
+        "endChar": 43
+      },
+      "revId": "93888868c420c8618430ce1e6c218573ccca7f34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "05a184cb_f11b7b2d",
+        "filename": "appengine/monorail/search/backendsearchpipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 333,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-08-20T21:12:59Z",
+      "side": 1,
+      "message": "Combine into 1 if",
+      "range": {
+        "startLine": 307,
+        "startChar": 2,
+        "endLine": 333,
+        "endChar": 24
+      },
+      "revId": "93888868c420c8618430ce1e6c218573ccca7f34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
