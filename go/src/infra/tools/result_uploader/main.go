@@ -30,8 +30,8 @@ func main() {
 			return logCfg.Use(ctx)
 		},
 		Commands: []*subcommands.Command{
-			// TODO(crbug.com/1108016): add subcommands.
-			// cmdGtest(),
+			cmdGtest(),
+			// TODO(crbug.com/1108016): add cmdJson.
 			// cmdJson(),
 
 			{}, // a separator
