@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "592bc480_a0e1df2e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-08-21T01:06:36Z",
+      "side": 1,
+      "message": "nit: `Motivation:` shouldn\u0027t butt against Change-Id (it looks like a weird git footer)",
+      "revId": "a1f72f1bedcf6764171413d946359cc5af3372f2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e0f55cf9_7700b1ae",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 1
@@ -16,6 +33,63 @@
       "revId": "a1f72f1bedcf6764171413d946359cc5af3372f2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "157a2120_6af8d5ce",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-08-21T01:06:36Z",
+      "side": 1,
+      "message": "I\u0027d love to see this tool for python and javascript, too, since I suspect that our apps there are also in bad shape.",
+      "revId": "a1f72f1bedcf6764171413d946359cc5af3372f2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "24af51b4_77b0f287",
+        "filename": "go/src/infra/importcounter/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-08-21T01:06:36Z",
+      "side": 1,
+      "message": "This should be\n\n  // Copyright ...\n  // block\n\n  // Command importcounter ...\n  // ...\n  package main",
+      "revId": "a1f72f1bedcf6764171413d946359cc5af3372f2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9165ee4a_95d91e29",
+        "filename": "go/src/infra/importcounter/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-08-21T01:06:36Z",
+      "side": 1,
+      "message": "what does \"external\" mean? Some docstrings here and on the functions inside would be helpful.\n\nI think the most interesting number is going to be third-party dependencies; I can\u0027t tell if this tool can calculate that.",
+      "range": {
+        "startLine": 40,
+        "startChar": 1,
+        "endLine": 40,
+        "endChar": 25
+      },
+      "revId": "a1f72f1bedcf6764171413d946359cc5af3372f2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
