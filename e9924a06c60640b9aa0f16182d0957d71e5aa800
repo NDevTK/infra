@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "96218079_1d455d74",
+        "filename": "3pp/pip_bootstrap/fetch.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1275796
+      },
+      "writtenOn": "2020-08-21T05:10:27Z",
+      "side": 1,
+      "message": "Nit: move this closer to its use? Or perhaps even inline it? I don\u0027t think the name provides much clarity considering the context in which it\u0027s used: `_get_version(\u0027setuptools\u0027, bad_versions\u003d_SETUPTOOLS_BAD_VERSIONS)`",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 24
+      },
+      "revId": "e9924a06c60640b9aa0f16182d0957d71e5aa800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a52c6df9_e464c14b",
+        "filename": "3pp/pip_bootstrap/fetch.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1275796
+      },
+      "writtenOn": "2020-08-21T05:10:27Z",
+      "side": 1,
+      "message": "Make this a set?",
+      "range": {
+        "startLine": 15,
+        "startChar": 27,
+        "endLine": 17,
+        "endChar": 1
+      },
+      "revId": "e9924a06c60640b9aa0f16182d0957d71e5aa800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4a0c40c7_72cf70f8",
+        "filename": "3pp/pip_bootstrap/fetch.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1275796
+      },
+      "writtenOn": "2020-08-21T05:10:27Z",
+      "side": 1,
+      "message": "You could consider instead defaulting bad_versions to an empty tuple.",
+      "range": {
+        "startLine": 30,
+        "startChar": 2,
+        "endLine": 30,
+        "endChar": 33
+      },
+      "revId": "e9924a06c60640b9aa0f16182d0957d71e5aa800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f8e2dc48_3bed6c67",
+        "filename": "3pp/pip_bootstrap/fetch.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1275796
+      },
+      "writtenOn": "2020-08-21T05:10:27Z",
+      "side": 1,
+      "message": "The change from returning `version` to `str(version)` seems orthogonal to this CL. Was it intentional?",
+      "range": {
+        "startLine": 42,
+        "startChar": 8,
+        "endLine": 42,
+        "endChar": 26
+      },
+      "revId": "e9924a06c60640b9aa0f16182d0957d71e5aa800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
