@@ -16,6 +16,29 @@
       "revId": "73cfa766c0ee505c64377ae0702e637ae3f6ef4b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cbceaeaa_528d9401",
+        "filename": "go/src/infra/tools/result_uploader/baserun.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2020-08-21T05:46:53Z",
+      "side": 1,
+      "message": "i think the reader will not understand what\u0027s wrong. this looks like something is wrong with this code\n\nin reality, there is no resultsink in the environment, so let\u0027s say that",
+      "range": {
+        "startLine": 61,
+        "startChar": 24,
+        "endLine": 61,
+        "endChar": 67
+      },
+      "revId": "73cfa766c0ee505c64377ae0702e637ae3f6ef4b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
