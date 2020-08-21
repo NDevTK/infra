@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "96eb8366_0f0b6efc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-08-21T06:17:45Z",
+      "side": 1,
+      "message": "lgtm",
+      "revId": "a651bb014f7a9e51d9cb1ebc8ff0f944e8aa9e1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8bbaa31a_1a3c3cac",
+        "filename": "3pp/cpython/3pp.pb",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-08-21T06:17:45Z",
+      "side": 1,
+      "message": ":)",
+      "range": {
+        "startLine": 9,
+        "startChar": 6,
+        "endLine": 9,
+        "endChar": 75
+      },
+      "revId": "a651bb014f7a9e51d9cb1ebc8ff0f944e8aa9e1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
