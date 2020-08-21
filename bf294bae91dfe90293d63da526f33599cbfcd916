@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9ce23d13_a7c8916b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2020-08-21T05:52:21Z",
+      "side": 1,
+      "message": "Tested on my Mac, this works now that the pip_bootstrap versions are py2-compatible again.",
+      "revId": "bf294bae91dfe90293d63da526f33599cbfcd916",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
