@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "6f397eee_70609571",
+        "filename": "3pp/pip_bootstrap/fetch.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2020-08-21T05:25:06Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "96218079_1d455d74",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 24
+      },
+      "revId": "e9924a06c60640b9aa0f16182d0957d71e5aa800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a52c6df9_e464c14b",
         "filename": "3pp/pip_bootstrap/fetch.py",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "e9924a06c60640b9aa0f16182d0957d71e5aa800",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e44a4b1f_c592f389",
+        "filename": "3pp/pip_bootstrap/fetch.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2020-08-21T05:25:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a52c6df9_e464c14b",
+      "range": {
+        "startLine": 15,
+        "startChar": 27,
+        "endLine": 17,
+        "endChar": 1
+      },
+      "revId": "e9924a06c60640b9aa0f16182d0957d71e5aa800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "b36b0d89_f0654ab3",
+        "filename": "3pp/pip_bootstrap/fetch.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2020-08-21T05:25:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4a0c40c7_72cf70f8",
+      "range": {
+        "startLine": 30,
+        "startChar": 2,
+        "endLine": 30,
+        "endChar": 33
+      },
+      "revId": "e9924a06c60640b9aa0f16182d0957d71e5aa800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f8e2dc48_3bed6c67",
         "filename": "3pp/pip_bootstrap/fetch.py",
         "patchSetId": 1
@@ -91,6 +163,30 @@
       "revId": "e9924a06c60640b9aa0f16182d0957d71e5aa800",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8ada4f66_dfcdca6a",
+        "filename": "3pp/pip_bootstrap/fetch.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2020-08-21T05:25:06Z",
+      "side": 1,
+      "message": "Previously it was getting implicitly converted to a string via print() formatting in do_latest(). That wasn\u0027t actually what I intended, and since I needed the string here anyway to look up in bad_versions, I made this change.",
+      "parentUuid": "f8e2dc48_3bed6c67",
+      "range": {
+        "startLine": 42,
+        "startChar": 8,
+        "endLine": 42,
+        "endChar": 26
+      },
+      "revId": "e9924a06c60640b9aa0f16182d0957d71e5aa800",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
