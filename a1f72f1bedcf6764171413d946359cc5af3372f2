@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e0f55cf9_7700b1ae",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2020-08-21T00:53:19Z",
+      "side": 1,
+      "message": "re: discussion about go dependencies in chops projects. Just FYI, this is how I\u0027m calculating some data points I may refer to later. Acknowledging that no metric is going to answer \"do we have too many dependencies?\" conclusively (so take with huge grains of salt etc).\n\n",
+      "revId": "a1f72f1bedcf6764171413d946359cc5af3372f2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
