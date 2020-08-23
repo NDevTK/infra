@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7b215d1e_69df6dea",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1284623
+      },
+      "writtenOn": "2020-08-23T23:58:53Z",
+      "side": 1,
+      "message": "Here\u0027s the starting point.  More to come in follow-up CLs, of course.",
+      "revId": "73a76e815b42467bbab96c8d834995809a54d84d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
