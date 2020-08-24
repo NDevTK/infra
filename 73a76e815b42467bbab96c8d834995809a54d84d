@@ -16,6 +16,115 @@
       "revId": "73a76e815b42467bbab96c8d834995809a54d84d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "27755b38_80f1b304",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1327821
+      },
+      "writtenOn": "2020-08-24T01:02:38Z",
+      "side": 1,
+      "message": "Good start, left a couple of comments on why not `Any`. I think it\u0027s a good approach but with incomplete implementation. I\u0027m happy to have a registry of URIs to proto types for serialisation/deserialisation if it makes sense to have that instead of hard-coding the dependencies.\n\nAt a high level, I think I\u0027d like to see some of these protobufs in the `pinpoint` directory instead of the engine -- like for instance the specific task input protos. The Event, Graph, and Vertex/Task types certainly should be part of the engine, but the Pinpoint specific ones ought to be in the Pinpoint module.\n\nThe reasoning for this is so that we can let other folks use the engine without bringing in the Pinpoint specific bits, perhaps if for example we would package this to be useful in recipes. The cost of keeping them separate is pretty low and we should keep them separate now to avoid having to disentangle them in the future.",
+      "revId": "73a76e815b42467bbab96c8d834995809a54d84d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a9e9ad33_c7135219",
+        "filename": "chromeperf/src/chromeperf/engine/pb/__init__.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1327821
+      },
+      "writtenOn": "2020-08-24T01:02:38Z",
+      "side": 1,
+      "message": "s/this/the/ ?",
+      "range": {
+        "startLine": 7,
+        "startChar": 11,
+        "endLine": 7,
+        "endChar": 15
+      },
+      "revId": "73a76e815b42467bbab96c8d834995809a54d84d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7fb3acd0_588a90af",
+        "filename": "chromeperf/src/chromeperf/engine/proto/event.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1327821
+      },
+      "writtenOn": "2020-08-24T01:02:38Z",
+      "side": 1,
+      "message": "The documentation suggests that the facilities for dealing with `Any` are still under development?\n\nhttps://developers.google.com/protocol-buffers/docs/proto3#any",
+      "range": {
+        "startLine": 32,
+        "startChar": 2,
+        "endLine": 32,
+        "endChar": 41
+      },
+      "revId": "73a76e815b42467bbab96c8d834995809a54d84d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cea91c99_91973dd1",
+        "filename": "chromeperf/src/chromeperf/engine/proto/quest_payloads.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1327821
+      },
+      "writtenOn": "2020-08-24T01:02:38Z",
+      "side": 1,
+      "message": "Yeah, this one we probably want to rename this at some point (or now).",
+      "range": {
+        "startLine": 6,
+        "startChar": 8,
+        "endLine": 6,
+        "endChar": 19
+      },
+      "revId": "73a76e815b42467bbab96c8d834995809a54d84d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0754f6af_60b4f4e1",
+        "filename": "chromeperf/src/chromeperf/engine/proto/task.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1327821
+      },
+      "writtenOn": "2020-08-24T01:02:38Z",
+      "side": 1,
+      "message": "Some of these can use the protos already in the Go implementation.",
+      "range": {
+        "startLine": 40,
+        "startChar": 2,
+        "endLine": 48,
+        "endChar": 47
+      },
+      "revId": "73a76e815b42467bbab96c8d834995809a54d84d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
