@@ -82,6 +82,30 @@
     },
     {
       "key": {
+        "uuid": "1868d0c9_14c67b7c",
+        "filename": "chromeperf/src/chromeperf/engine/proto/event.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1284623
+      },
+      "writtenOn": "2020-08-24T02:40:14Z",
+      "side": 1,
+      "message": "The Python libraries for this seem ready: https://developers.google.com/protocol-buffers/docs/reference/python-generated#any.\n\nLooks like Go supports them too via https://godoc.org/google.golang.org/protobuf/types/known/anypb.",
+      "parentUuid": "7fb3acd0_588a90af",
+      "range": {
+        "startLine": 32,
+        "startChar": 2,
+        "endLine": 32,
+        "endChar": 41
+      },
+      "revId": "73a76e815b42467bbab96c8d834995809a54d84d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "cea91c99_91973dd1",
         "filename": "chromeperf/src/chromeperf/engine/proto/quest_payloads.proto",
         "patchSetId": 6
@@ -116,6 +140,30 @@
       "writtenOn": "2020-08-24T01:02:38Z",
       "side": 1,
       "message": "Some of these can use the protos already in the Go implementation.",
+      "range": {
+        "startLine": 40,
+        "startChar": 2,
+        "endLine": 48,
+        "endChar": 47
+      },
+      "revId": "73a76e815b42467bbab96c8d834995809a54d84d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "110ba1a3_97f663de",
+        "filename": "chromeperf/src/chromeperf/engine/proto/task.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1284623
+      },
+      "writtenOn": "2020-08-24T02:40:14Z",
+      "side": 1,
+      "message": "Oh good point!",
+      "parentUuid": "0754f6af_60b4f4e1",
       "range": {
         "startLine": 40,
         "startChar": 2,
