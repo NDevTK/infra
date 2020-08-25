@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b5db6ee5_43422ebe",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1311766
+      },
+      "writtenOn": "2020-08-25T20:00:44Z",
+      "side": 1,
+      "message": "Hi Michael\n\nThis CL is a follow up to crrev.com/c/2373442. It changes the indent size for new skew test configs added to variants.pyl.\n\nPTAL\nRegards\nRakib Hasan",
+      "revId": "01beab22aac9b0bbee964b35ba47c1f8bacf999b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
