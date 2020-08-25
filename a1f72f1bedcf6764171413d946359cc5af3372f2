@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "b2234445_a7cdec6c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2020-08-25T20:47:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "592bc480_a0e1df2e",
+      "revId": "a1f72f1bedcf6764171413d946359cc5af3372f2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e0f55cf9_7700b1ae",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 1
@@ -70,6 +88,24 @@
     },
     {
       "key": {
+        "uuid": "21d2e328_70d7b675",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2020-08-25T20:47:31Z",
+      "side": 1,
+      "message": "#TIL we have experimental :) I\u0027ll move it there.",
+      "parentUuid": "64fede6a_28bbf655",
+      "revId": "a1f72f1bedcf6764171413d946359cc5af3372f2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "24af51b4_77b0f287",
         "filename": "go/src/infra/importcounter/main.go",
         "patchSetId": 1
@@ -87,6 +123,24 @@
     },
     {
       "key": {
+        "uuid": "48fb4656_3bab3e9b",
+        "filename": "go/src/infra/importcounter/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2020-08-25T20:47:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "24af51b4_77b0f287",
+      "revId": "a1f72f1bedcf6764171413d946359cc5af3372f2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9165ee4a_95d91e29",
         "filename": "go/src/infra/importcounter/main.go",
         "patchSetId": 1
@@ -98,6 +152,30 @@
       "writtenOn": "2020-08-21T01:06:36Z",
       "side": 1,
       "message": "what does \"external\" mean? Some docstrings here and on the functions inside would be helpful.\n\nI think the most interesting number is going to be third-party dependencies; I can\u0027t tell if this tool can calculate that.",
+      "range": {
+        "startLine": 40,
+        "startChar": 1,
+        "endLine": 40,
+        "endChar": 25
+      },
+      "revId": "a1f72f1bedcf6764171413d946359cc5af3372f2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7e565ea3_d1afa9f9",
+        "filename": "go/src/infra/importcounter/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2020-08-25T20:47:31Z",
+      "side": 1,
+      "message": "Added docstrings.\n\n\"External\" here means any package from outside of the package patterns specified by the patterns flag. e.g. If you run \n`% importcounter -patterns go.chromium.org/luci/...`\nany package *not* under \"go.chromium.org/luci/...\" would be counted in this value.\n\nPerhaps a second flag for \"narrow the aggregate counts to only packages matching these patterns\" would achieve this more flexibly?\n\nSo -patterns would specify which source packages to analyze (the import-ers), and -targets (if specified, the import-ees as a regex or glob etc) would specify which imported packages to count. \n\n`% importcounter -patterns go.chromium.org/luci/... -targets /third_party/`\n\nAnd the output only includes counts of imports that match /third_party/\n\n-targets isn\u0027t the best name, but something like that?",
+      "parentUuid": "9165ee4a_95d91e29",
       "range": {
         "startLine": 40,
         "startChar": 1,
