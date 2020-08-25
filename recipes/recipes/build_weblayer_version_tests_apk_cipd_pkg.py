@@ -98,7 +98,7 @@ def generate_skew_test_config_lines(library, version):
   milestone = version[:version.index('.')]
   args_tmpl = CLIENT_ARGS_TMPL if library == CLIENT else IMPL_ARGS_TMPL
   id_tmpl = CLIENT_ID_TMPL if library == CLIENT else IMPL_ID_TMPL
-  INDENT_SIZE = 8
+  INDENT_SIZE = 4
   lines.extend(
       ' ' * INDENT_SIZE + v.rstrip()
       for v in  args_tmpl.format(milestone=milestone).splitlines())
