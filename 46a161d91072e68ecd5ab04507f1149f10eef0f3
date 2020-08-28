@@ -22,6 +22,30 @@
       "revId": "46a161d91072e68ecd5ab04507f1149f10eef0f3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1f29f8b0_0ed18b1a",
+        "filename": "go/src/infra/cmd/shivas/site/site.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-08-28T23:32:24Z",
+      "side": 1,
+      "message": "found it\u0027s for retry. I don\u0027t think in general shivas needs this retry for end-users. If you need it for some special commands, could you add it separately?\n\nDefault: func() retry.Iterator {\n\t\t\treturn \u0026retry.ExponentialBackoff{\n\t\t\t\tLimited: retry.Limited{\n\t\t\t\t\tDelay:   time.Second,\n\t\t\t\t\tRetries: 5,\n\t\t\t\t},\n\t\t\t}\n\t\t},\n\nretry 5 time in every 1 second. It will cause lots of duplicated logs for our end-users.",
+      "parentUuid": "88f334dc_b33b5fd5",
+      "range": {
+        "startLine": 159,
+        "startChar": 18,
+        "endLine": 159,
+        "endChar": 32
+      },
+      "revId": "46a161d91072e68ecd5ab04507f1149f10eef0f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
