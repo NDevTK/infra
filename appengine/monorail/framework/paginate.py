@@ -76,7 +76,7 @@ def ValidateAndParsePageToken(token, request_contents):
   expected_token = GeneratePageToken(request_contents, start)
   if hmac.compare_digest(token, expected_token):
     return start
-  raise exceptions.PageTokenException('Incorrect page token.')
+  raise exceptions.PageTokenException('Invalid request for page token.')
 
 
 # If extracting items_per_page and start values from a MonorailRequest object,

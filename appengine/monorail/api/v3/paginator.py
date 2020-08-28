@@ -67,8 +67,14 @@ class Paginator(object):
     # type: (Optional[str]) -> int
     """Validates a request.page_token and returns the start index for it."""
     if page_token:
-      return paginate.ValidateAndParsePageToken(
-          page_token, self.request_contents)
+      # TODO(crbug.com/monorail/6758): Proto string fields are unicode types in
+      # python 2. In python 3 these unicode strings will be represented with
+      # string types. pager.GetStart requires a string token during validation
+      # (compare_digest()). While in python 2, we're converting the unicode
+      # page_token to a string so our existing type annotations can stay
+      # accurate now and after the python 3 migration.
+      token = str(page_token)
+      return paginate.ValidateAndParsePageToken(token, self.request_contents)
     return 0
 
   def GenerateNextPageToken(self, next_start):
