@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b29ba3b9_c6bacd47",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-08-28T22:54:50Z",
+      "side": 1,
+      "message": "The required `token \u003d str(request.page_token)` was only done for SearchIssues and not for ListComments, hence the bug.\n\nmoving the str() to the Paginator class so we don\u0027t have to think about this detail every time we add a new method with pagination.",
+      "revId": "c77382ed191451d1e30c8481621257ac0935acba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
