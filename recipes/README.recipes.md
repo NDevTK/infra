@@ -794,9 +794,9 @@ To build a new package for all platforms:
 
 [DEPS](/recipes/recipes/build_weblayer_version_tests_apk_cipd_pkg.py#8): [build/chromium][build/recipe_modules/chromium], [build/zip][build/recipe_modules/zip], [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/git\_cl][depot_tools/recipe_modules/git_cl], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/python][recipe_engine/recipe_modules/python], [recipe\_engine/url][recipe_engine/recipe_modules/url]
 
-&mdash; **def [RunSteps](/recipes/recipes/build_weblayer_version_tests_apk_cipd_pkg.py#312)(api):**
+&mdash; **def [RunSteps](/recipes/recipes/build_weblayer_version_tests_apk_cipd_pkg.py#316)(api):**
 
-&mdash; **def [build\_cipd\_pkgs](/recipes/recipes/build_weblayer_version_tests_apk_cipd_pkg.py#246)(api, cipd_pkgs_to_create):**
+&mdash; **def [build\_cipd\_pkgs](/recipes/recipes/build_weblayer_version_tests_apk_cipd_pkg.py#250)(api, cipd_pkgs_to_create):**
 
 &mdash; **def [check\_correct\_version](/recipes/recipes/build_weblayer_version_tests_apk_cipd_pkg.py#158)(api, version):**
 
@@ -816,7 +816,7 @@ To build a new package for all platforms:
 
 &mdash; **def [releases\_url](/recipes/recipes/build_weblayer_version_tests_apk_cipd_pkg.py#113)(platform, channel, num, api):**
 
-&mdash; **def [upload\_changes](/recipes/recipes/build_weblayer_version_tests_apk_cipd_pkg.py#288)(api, new_variants_lines, variants_pyl_path, cipd_pkgs_to_create):**
+&mdash; **def [upload\_changes](/recipes/recipes/build_weblayer_version_tests_apk_cipd_pkg.py#292)(api, new_variants_lines, variants_pyl_path, cipd_pkgs_to_create):**
 ### *recipes* / [build\_wheels](/recipes/recipes/build_wheels.py)
 
 [DEPS](/recipes/recipes/build_wheels.py#5): [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/python][recipe_engine/recipe_modules/python]

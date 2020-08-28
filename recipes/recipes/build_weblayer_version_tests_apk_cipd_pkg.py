@@ -216,13 +216,13 @@ def maybe_update_variants_pyl(api, variants_lines, variants_pyl_path):
         variants_id = tmpl % library
         if variants_id in variants_lines[lineno]:
           new_variants_lines.append(variants_lines[lineno])
-          new_variants_lines.extend(
-              generate_skew_test_config_lines(library, version))
           contains_current_version = False
           open_bracket_count = 1
           lineno += 1
+          current_config_lines = []
           while open_bracket_count:
             contains_current_version |= version in variants_lines[lineno]
+            current_config_lines.append(variants_lines[lineno])
             for c in variants_lines[lineno]:
               if c == '{':
                 open_bracket_count += 1
@@ -232,6 +232,10 @@ def maybe_update_variants_pyl(api, variants_lines, variants_pyl_path):
               lineno += 1
           if not contains_current_version:
             cipd_pkgs_to_create.add(version)
+            new_variants_lines.extend(
+                generate_skew_test_config_lines(library, version))
+          else:
+            new_variants_lines.extend(current_config_lines)
     new_variants_lines.append(variants_lines[lineno])
     lineno += 1
 
