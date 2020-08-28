@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bb34e592_80a4ab1e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-08-28T23:19:26Z",
+      "side": 1,
+      "message": "I will defer this change to @stagenut\u0027s decision",
+      "revId": "afe166ce26493d337c41a1c71cf7d60802362d0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
