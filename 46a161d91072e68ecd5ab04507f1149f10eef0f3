@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "88f334dc_b33b5fd5",
+        "filename": "go/src/infra/cmd/shivas/site/site.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-08-28T23:25:38Z",
+      "side": 1,
+      "message": "what\u0027s the difference there?",
+      "range": {
+        "startLine": 159,
+        "startChar": 18,
+        "endLine": 159,
+        "endChar": 32
+      },
+      "revId": "46a161d91072e68ecd5ab04507f1149f10eef0f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
