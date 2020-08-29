@@ -39,6 +39,30 @@
       "revId": "e503a88f8c978245d6ac72992e22f5e7991a8870",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ec084cd5_2de071ff",
+        "filename": "go/src/infra/cros/cmd/skylab_local_state/internal/ufs/ufs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2020-08-29T00:16:05Z",
+      "side": 1,
+      "message": "try to minimize the function and specify why we need it. do not like put inline to avoid massive code :)",
+      "parentUuid": "0c24e7b0_3bc9cbfe",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 69
+      },
+      "revId": "e503a88f8c978245d6ac72992e22f5e7991a8870",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
