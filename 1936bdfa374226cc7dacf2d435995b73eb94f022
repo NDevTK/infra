@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c0388f72_1f81aa80",
+        "filename": "go/src/infra/cmd/skylab/internal/site/site.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-08-31T05:59:28Z",
+      "side": 1,
+      "message": "similar to the other CL\u0027s comment. Making retry by default will cause lots of unnecessary retry loggings.",
+      "range": {
+        "startLine": 153,
+        "startChar": 5,
+        "endLine": 153,
+        "endChar": 28
+      },
+      "revId": "1936bdfa374226cc7dacf2d435995b73eb94f022",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
