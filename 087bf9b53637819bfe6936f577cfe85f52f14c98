@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "37cd06c1_42120b20",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-08-31T19:37:00Z",
+      "side": 1,
+      "message": "LGTM % comment",
+      "revId": "087bf9b53637819bfe6936f577cfe85f52f14c98",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b1d46041_16c15102",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/admin/admin.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-08-31T19:37:00Z",
+      "side": 1,
+      "message": "You don\u0027t need to convert to/from pointer.",
+      "range": {
+        "startLine": 69,
+        "startChar": 11,
+        "endLine": 71,
+        "endChar": 14
+      },
+      "revId": "087bf9b53637819bfe6936f577cfe85f52f14c98",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
