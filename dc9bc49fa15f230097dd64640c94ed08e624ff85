@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c9ea91cd_9d90b8f0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1311766
+      },
+      "writtenOn": "2020-08-31T17:31:42Z",
+      "side": 1,
+      "message": "Hi Michael\n\nWhen you get a chance, please take a look at this CL.\n\nRegards\nRakib Hasan",
+      "revId": "dc9bc49fa15f230097dd64640c94ed08e624ff85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
