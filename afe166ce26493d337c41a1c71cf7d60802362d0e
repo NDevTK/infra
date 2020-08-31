@@ -16,6 +16,23 @@
       "revId": "afe166ce26493d337c41a1c71cf7d60802362d0e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "54bd83e7_cdf81e24",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1304443
+      },
+      "writtenOn": "2020-08-31T16:40:18Z",
+      "side": 1,
+      "message": "Chatted with Anushruth, and confirmed that this will change the zone that hosts `2081-N` like desks/storage containers, however will not change the functionality of the shivas tool when scanning devices into these locations, they can still be specified as normal just will be automatically allocated to the correct zone. Considering that LGTM",
+      "revId": "afe166ce26493d337c41a1c71cf7d60802362d0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
