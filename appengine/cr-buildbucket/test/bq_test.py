@@ -56,7 +56,7 @@ class BigQueryExportTest(testing.AppengineTestCase):
         lambda: bq.enqueue_bq_export_async(build).get_result())()
 
     task_def = {
-        'method': 'PULL',
+        'url': '/internal/task/bq/export/1',
         'payload': {'id': 1},
     }
     enqueue_async.assert_any_call('bq-export', [task_def])

@@ -27,18 +27,49 @@ _SUCCESS, _TRANSIENT_FAILURE, _PERMANENT_FAILURE = range(3)
 
 
 def enqueue_bq_export_async(build):
-  """Enqueues a pull task to export a completed build to BigQuery."""
+  """Enqueues a task to export a completed build to BigQuery."""
   assert ndb.in_transaction()
   assert build
   assert build.is_ended
 
   task_def = {
-      'method': 'PULL',
+      'url': '/internal/task/bq/export/%d' % build.key.id(),
       'payload': {'id': build.key.id()},
   }
-  return tq.enqueue_async('bq-export', [task_def])
+  return tq.enqueue_async('backend-default', [task_def])
 
 
+class TaskExport(webapp2.RequestHandler):  # pragma: no cover
+  """Exports builds to a BigQuery table."""
+
+  @decorators.require_taskqueue('backend-default')
+  def post(self, build_id):
+    build_id = json.loads(self.request.body)['id']
+    bundle = model.BuildBundle.get(
+        build_id,
+        infra=True,
+        input_properties=True,
+        output_properties=True,
+        steps=True,
+    )
+    if not bundle:
+      return
+    build = build_pb2.Build()
+    bundle.to_proto(build, True)
+    result = _export_builds(
+        'raw', 'completed_builds', [build],
+        utils.utcnow() + datetime.timedelta(minutes=9)
+    )[build_id]
+    if result == _TRANSIENT_FAILURE:
+      logging.warning('transient failure')
+      # Raise a 500 to trigger a retry at the Cloud Tasks level.
+      self.abort(500)
+    if result == _PERMANENT_FAILURE:
+      logging.error('permanent failure')
+
+
+# TODO(crbug/1042991): Remove cron once pull queue is drained.
+# enqueue_bq_export_async was switched to use a push queue.
 class CronExportBuilds(webapp2.RequestHandler):  # pragma: no cover
   """Exports builds to a BigQuery table."""
 
