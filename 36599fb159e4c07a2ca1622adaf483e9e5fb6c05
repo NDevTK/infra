@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "77c77b97_0837e9b1",
+        "filename": "go/src/infra/unifiedfleet/api/v1/proto/location.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-09-01T17:55:24Z",
+      "side": 1,
+      "message": "Add this in util/input.go file as well. So that it is exposed in shivas.",
+      "revId": "36599fb159e4c07a2ca1622adaf483e9e5fb6c05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
