@@ -16,6 +16,24 @@
       "revId": "36599fb159e4c07a2ca1622adaf483e9e5fb6c05",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "854ab4d8_2b9e55af",
+        "filename": "go/src/infra/unifiedfleet/api/v1/proto/location.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2020-09-01T21:29:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "77c77b97_0837e9b1",
+      "revId": "36599fb159e4c07a2ca1622adaf483e9e5fb6c05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
