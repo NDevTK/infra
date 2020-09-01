@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "77844d27_e7bc8e25",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2020-09-01T22:35:12Z",
+      "side": 1,
+      "message": "i find this CL risky:\n- it switch traffic to the new codepath 100% at once\n- the new codepath is not covered by tests\n- in case of a failure in the new code path, for all builds that went through the new codepath, they will get stuck until next deployment with the fix",
+      "revId": "4cb0b60e508c59656d5d06306cfa105d8aac3dae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
