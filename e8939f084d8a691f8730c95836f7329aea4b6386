@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ab41f1f0_ff7fc1bc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-09-01T22:46:38Z",
+      "side": 1,
+      "message": "Note that this should not generate exceptions even on staging, as it only connects once.\n\nWhen I killed the instance and the next one started, that one also connected successfully the first time.\n\nRunning on this staging version. https://pantheon.corp.google.com/logs/viewer?project\u003dmonorail-staging\u0026resource\u003dgae_app%2Fmodule_id%2Fdefault%2Fversion_id%2F34773-172c139-tainted-jessan-asyncverify\u0026minLogLevel\u003d0\u0026expandAll\u003dfalse\u0026timestamp\u003d2020-09-01T22:44:13.910000000Z\u0026customFacets\u003d\u0026limitCustomFacetWidth\u003dtrue\u0026interval\u003dPT1H\u0026logName\u003dprojects%2Fmonorail-staging%2Flogs%2Fappengine.googleapis.com%252Frequest_log\u0026scrollTimestamp\u003d2020-09-01T22:37:02.394259000Z\u0026filters\u003dtext:redis\u0026dateRangeUnbound\u003dforwardInTime\u0026dateRangeStart\u003d2020-09-01T21:37:17.522Z",
+      "revId": "e8939f084d8a691f8730c95836f7329aea4b6386",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
