@@ -34,6 +34,24 @@
       "revId": "4cb0b60e508c59656d5d06306cfa105d8aac3dae",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a2e9569a_cea630f0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2020-09-02T17:25:04Z",
+      "side": 1,
+      "message": "\u003e New code path seems trivial, 90% of the work is calling the existing code to export the build. You did not have tests for the more complex CronExportBuilds.\n\nOnly two lines of code execute before _process_pull_task_batch() is called, which is tested. \n\n\u003e \n\u003e Adding features like \"if it breaks route through the old code path\" (I don\u0027t know if this is what you\u0027re implying with your third point) will only complicate it.\n\ni didn\u0027t mean that. Can you at least send only 10% of the traffic to the push queue, while the rest still goes to the pull queue?",
+      "parentUuid": "3dc792b7_fe964a7f",
+      "revId": "4cb0b60e508c59656d5d06306cfa105d8aac3dae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
