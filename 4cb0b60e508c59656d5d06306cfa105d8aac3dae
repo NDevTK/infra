@@ -52,6 +52,24 @@
       "revId": "4cb0b60e508c59656d5d06306cfa105d8aac3dae",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "26992370_c9e5b272",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2020-09-02T18:08:57Z",
+      "side": 1,
+      "message": "The logic is more complex. You have a loop with multiple exit conditions. My code just calls three tested functions in serial.\n\nAt any rate, fine. I\u0027ve removed the change which changes push -\u003e pull but I\u0027ve left the new handler. I\u0027ll release this, which is a no op, then in a follow up I\u0027ll do the push -\u003e pull conversion, and we can tune it using GAE traffic splitting. That way GAE split decides whether to enqueue push or pull and whichever side of the split is asked to handle the push task will have the handler code.",
+      "parentUuid": "a2e9569a_cea630f0",
+      "revId": "4cb0b60e508c59656d5d06306cfa105d8aac3dae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
