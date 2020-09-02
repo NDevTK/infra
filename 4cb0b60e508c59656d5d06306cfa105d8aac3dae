@@ -16,6 +16,24 @@
       "revId": "4cb0b60e508c59656d5d06306cfa105d8aac3dae",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3dc792b7_fe964a7f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2020-09-02T17:21:21Z",
+      "side": 1,
+      "message": "New code path seems trivial, 90% of the work is calling the existing code to export the build. You did not have tests for the more complex CronExportBuilds.\n\nAdding features like \"if it breaks route through the old code path\" (I don\u0027t know if this is what you\u0027re implying with your third point) will only complicate it.",
+      "parentUuid": "77844d27_e7bc8e25",
+      "revId": "4cb0b60e508c59656d5d06306cfa105d8aac3dae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
