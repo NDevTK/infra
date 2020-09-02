@@ -81,6 +81,30 @@
       "revId": "1936bdfa374226cc7dacf2d435995b73eb94f022",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c9f396be_f90553d3",
+        "filename": "go/src/infra/cmd/skylab/internal/site/site.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-09-02T22:41:33Z",
+      "side": 1,
+      "message": "My understanding is after this retry option is added, end users need to have the prior knowledge that skylab itself is auto-retrying so that they don\u0027t add additional retry when calling skylab tools. Also users will see consequent 5 error msgs if they hit some errors. We can argue this case is very rare though.\n\nIf the common knowledge is that all commandline tool by default has retry set inside, I\u0027m ok with that.",
+      "parentUuid": "7f837cd0_62c91669",
+      "range": {
+        "startLine": 153,
+        "startChar": 5,
+        "endLine": 153,
+        "endChar": 28
+      },
+      "revId": "1936bdfa374226cc7dacf2d435995b73eb94f022",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }
