@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "f4a3793c_4d820b66",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-09-02T20:06:08Z",
+      "side": 1,
+      "message": "resolve disagreement with xixuan first, anyway same comment as other CL.",
+      "revId": "1936bdfa374226cc7dacf2d435995b73eb94f022",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c0388f72_1f81aa80",
         "filename": "go/src/infra/cmd/skylab/internal/site/site.go",
         "patchSetId": 1
@@ -13,6 +30,30 @@
       "writtenOn": "2020-08-31T05:59:28Z",
       "side": 1,
       "message": "similar to the other CL\u0027s comment. Making retry by default will cause lots of unnecessary retry loggings.",
+      "range": {
+        "startLine": 153,
+        "startChar": 5,
+        "endLine": 153,
+        "endChar": 28
+      },
+      "revId": "1936bdfa374226cc7dacf2d435995b73eb94f022",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f837cd0_62c91669",
+        "filename": "go/src/infra/cmd/skylab/internal/site/site.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-09-02T20:06:08Z",
+      "side": 1,
+      "message": "I don\u0027t understand why you don\u0027t want to retry.  Why would there be lots of unnecessary logging, is the service that flaky?  If the service isn\u0027t flaky, retry shouldn\u0027t happen most of the time.",
+      "parentUuid": "c0388f72_1f81aa80",
       "range": {
         "startLine": 153,
         "startChar": 5,
