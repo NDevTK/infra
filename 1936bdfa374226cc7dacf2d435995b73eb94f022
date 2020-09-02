@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "dfc35a45_85badf75",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2020-09-02T20:48:22Z",
+      "side": 1,
+      "message": "I have talk to Xixuan.\nSolution: apply retry only one controller.\nI wanted to get one more opinion for that.",
+      "parentUuid": "f4a3793c_4d820b66",
+      "revId": "1936bdfa374226cc7dacf2d435995b73eb94f022",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c0388f72_1f81aa80",
         "filename": "go/src/infra/cmd/skylab/internal/site/site.go",
         "patchSetId": 1
