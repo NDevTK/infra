@@ -70,6 +70,24 @@
       "revId": "4cb0b60e508c59656d5d06306cfa105d8aac3dae",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fed27089_6b09b676",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2020-09-02T18:55:26Z",
+      "side": 1,
+      "message": "the code after _process_pull_task_batch in the cron job does not matter from the risk perspective. It is just an optimization. If it crashes, _process_pull_task_batch() will be called again in a minute by cron.",
+      "parentUuid": "26992370_c9e5b272",
+      "revId": "4cb0b60e508c59656d5d06306cfa105d8aac3dae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
