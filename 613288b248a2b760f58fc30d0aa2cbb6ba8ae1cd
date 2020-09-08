@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a0a97c4a_8c7760f1",
+        "filename": "appengine/monorail/static_src/reducers/projectV0.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 570,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2020-09-08T17:44:13Z",
+      "side": 1,
+      "message": "Don\u0027t want to block fixes for regressions, but if you have the time to do it, consider adding a  test for this.",
+      "revId": "613288b248a2b760f58fc30d0aa2cbb6ba8ae1cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
