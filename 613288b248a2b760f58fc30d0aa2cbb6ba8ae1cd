@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "9cbc6f99_dcbda8f6",
+        "filename": "appengine/monorail/static_src/reducers/projectV0.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 568,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-09-08T17:47:29Z",
+      "side": 1,
+      "message": "Oh my goodness I haven\u0027t touched JS in so long this shorthand syntax is making my head spin.",
+      "range": {
+        "startLine": 568,
+        "startChar": 31,
+        "endLine": 568,
+        "endChar": 80
+      },
+      "revId": "613288b248a2b760f58fc30d0aa2cbb6ba8ae1cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a0a97c4a_8c7760f1",
         "filename": "appengine/monorail/static_src/reducers/projectV0.js",
         "patchSetId": 1
