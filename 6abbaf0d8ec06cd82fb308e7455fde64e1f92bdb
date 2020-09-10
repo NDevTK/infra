@@ -68,6 +68,24 @@
       "revId": "6abbaf0d8ec06cd82fb308e7455fde64e1f92bdb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "87d2686f_a0c33612",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-09-10T18:55:17Z",
+      "side": 1,
+      "message": "ideally when users run `shivas help` or `shivas help \u003csome command\u003e`, they can know that the command is auto retrying.",
+      "parentUuid": "9f320ea9_62761875",
+      "revId": "6abbaf0d8ec06cd82fb308e7455fde64e1f92bdb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
