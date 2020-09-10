@@ -23,6 +23,8 @@ message User {
     pattern: "users/{user_id}"
   };
   // Resource name of the user.
+  // The API will always return User names with format: users/<user_id>.
+  // However the API will accept User names with formats: users/<user_id> or users/<email>.
   string name = 1;
   // Obscured or un-obscured user email or name to show other users using the site.
   string display_name = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
