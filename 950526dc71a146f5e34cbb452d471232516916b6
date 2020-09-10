@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3f2a165a_dcd66eec",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-09-10T18:19:07Z",
+      "side": 1,
+      "message": "generating protos after.",
+      "revId": "950526dc71a146f5e34cbb452d471232516916b6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba72c4ff_65ed5139",
+        "filename": "appengine/monorail/api/v3/api_proto/user_objects.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-09-10T18:19:07Z",
+      "side": 1,
+      "message": "I want to avoid cluttering the google.api.resource space.\nSo reserving google.api.resource.pattern as a simple/quick expression of what the API will spit out.\nand putting any additional details or explanations here.\nThis matches all cases i found in google3, where explanations were kept here and never added to \"google.api.resource\" above.",
+      "revId": "950526dc71a146f5e34cbb452d471232516916b6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
