@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e0d0b3ca_2684c870",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-09-10T20:30:33Z",
+      "side": 1,
+      "message": "LGTM, just need to generate protos before submitting",
+      "revId": "0cf6e102032b8d67161a68078dbef4798d245613",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
