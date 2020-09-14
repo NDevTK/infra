@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c2e66407_0a108818",
+        "filename": "go/src/infra/appengine/cr-rev/Makefile",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1367760
+      },
+      "writtenOn": "2020-09-14T20:55:01Z",
+      "side": 1,
+      "message": "eww Make",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 59
+      },
+      "revId": "97d1c34bda2149156488cebee419db71c759a89a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
