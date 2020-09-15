@@ -16,6 +16,24 @@
       "revId": "adc9c646f1ae663dafd54922ce2f9674e3f9c8cf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f2ed2cde_8970dd62",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2020-09-15T06:24:06Z",
+      "side": 1,
+      "message": "Worst case scenario we can divide the CL into smaller pieces. For example, first land requirements.txt and app.yaml without landing appengine_config.py.",
+      "parentUuid": "495883f5_5cbf66f7",
+      "revId": "adc9c646f1ae663dafd54922ce2f9674e3f9c8cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
