@@ -17,13 +17,15 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	infrassh "infra/cros/cmd/common-tls/internal/ssh"
 )
 
 type server struct {
 	tls.UnimplementedCommonServer
 	// wiringConn is a connection to the wiring service.
 	wiringConn *grpc.ClientConn
-	clientPool *sshClientPool
+	clientPool *infrassh.ClientPool
 	sshConfig  *ssh.ClientConfig
 	lroMgr     *lroManager
 }
@@ -36,7 +38,7 @@ func newServer(c *grpc.ClientConn, sshConfig *ssh.ClientConfig) server {
 }
 
 func (s *server) Serve(l net.Listener) error {
-	s.clientPool = newSSHClientPool(s.sshConfig)
+	s.clientPool = infrassh.NewClientPool(s.sshConfig)
 	defer s.clientPool.Close()
 	s.lroMgr = newLROManager()
 	defer s.lroMgr.Close()
@@ -152,14 +154,14 @@ func (s *server) ExecDutCommand(req *tls.ExecDutCommandRequest, stream tls.Commo
 	case nil:
 		resp.ExitInfo.Status = 0
 	case *ssh.ExitError:
-		c.knownGood = true
+		c.KnownGood = true
 		resp.ExitInfo.Status = int32(err.Waitmsg.ExitStatus())
 		if err.Waitmsg.Signal() != "" {
 			resp.ExitInfo.Signaled = true
 		}
 		resp.ExitInfo.ErrorMessage = err.Error()
 	case *ssh.ExitMissingError:
-		c.knownGood = true
+		c.KnownGood = true
 		resp.ExitInfo.ErrorMessage = err.Error()
 	default:
 		resp.ExitInfo.ErrorMessage = err.Error()
