@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "495883f5_5cbf66f7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-09-15T03:27:27Z",
+      "side": 1,
+      "message": "This whole ordeal of revert and reland happend because:\n\n1. Spinnaker deploy pipeline builds final Monorail image from a base image that\u0027s rebuilt at a cadence unknown to us, meaning it\u0027s almost always stale.\n2. Stale base image does not contain the new run hook to pip install introduced here: https://chromium-review.googlesource.com/c/infra/infra/+/2391796\n3. Deployment therefore did not contain monorail/lib, triggering the initial dev-deploy rollback\n\nTo add another wrinkle:\nEven if base image were more recent and contained the run hook to run pip install, if it did not contain the latest changes in requirements.py2.txt, the pip install command would miss the new dependencies to install, again triggering downstream problems.\n\nThe solution as suggested by apolito is to fetch prior to running gclient sync in the final build: cl/331681139",
+      "revId": "adc9c646f1ae663dafd54922ce2f9674e3f9c8cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
