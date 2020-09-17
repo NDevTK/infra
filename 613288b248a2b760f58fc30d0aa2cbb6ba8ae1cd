@@ -39,6 +39,24 @@
       "revId": "613288b248a2b760f58fc30d0aa2cbb6ba8ae1cd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "70f1bd7c_09589221",
+        "filename": "appengine/monorail/static_src/reducers/projectV0.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 570,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2020-09-17T16:22:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a0a97c4a_8c7760f1",
+      "revId": "613288b248a2b760f58fc30d0aa2cbb6ba8ae1cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
