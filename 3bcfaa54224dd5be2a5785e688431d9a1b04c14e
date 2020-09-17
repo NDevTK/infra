@@ -49,6 +49,47 @@
     },
     {
       "key": {
+        "uuid": "888bb647_aabf8b38",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-09-17T20:16:36Z",
+      "side": 1,
+      "message": "Yes, docstring is needed for all packages",
+      "parentUuid": "bd2297a7_773a8e91",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 11
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e0b82ee0_26d55182",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-09-17T20:16:36Z",
+      "side": 1,
+      "message": "Suggest sshpool so the package name doesn\u0027t conflict with the ssh package, as it is somewhat likely that both packages are used together.",
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "fcdbb386_46572127",
         "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
         "patchSetId": 1
@@ -84,6 +125,30 @@
       "side": 1,
       "message": "Can remove \"users\"\n\n\"Client is used by ClientPool to help close SSH connections.\"",
       "parentUuid": "fcdbb386_46572127",
+      "range": {
+        "startLine": 13,
+        "startChar": 35,
+        "endLine": 13,
+        "endChar": 64
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6cac1324_ca407530",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-09-17T20:16:36Z",
+      "side": 1,
+      "message": "+1 for Client wraps an ssh.Client obtained from a ClientPool",
+      "parentUuid": "7efc52f3_cc756db9",
       "range": {
         "startLine": 13,
         "startChar": 35,
@@ -236,6 +301,53 @@
     },
     {
       "key": {
+        "uuid": "c3a9ac27_52a88bc8",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-09-17T20:16:36Z",
+      "side": 1,
+      "message": "Client.close() is unexported.\n\np.Put(c) vs c.Return() isn\u0027t a huge difference, but I prefer the former.  The latter is \"magic\"; it\u0027s not clear from the call site what is happening, esp. that a p is involved.\n\nSince we\u0027re now checking the client in Get, we don\u0027t actually need to track knownGood when putting clients back.  We can get rid of the Client wrapper here entirely.",
+      "parentUuid": "02e5bce3_b14e7656",
+      "range": {
+        "startLine": 41,
+        "startChar": 3,
+        "endLine": 41,
+        "endChar": 68
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "59bf4f91_c0e4bd30",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-09-17T20:16:36Z",
+      "side": 1,
+      "message": "Rename to Pool since the ClientPool is redundant in this context.",
+      "range": {
+        "startLine": 45,
+        "startChar": 5,
+        "endLine": 45,
+        "endChar": 15
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "01a25e1d_efaab39e",
         "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
         "patchSetId": 1
@@ -300,6 +412,23 @@
         "endLine": 26,
         "endChar": 9
       },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "84ca71d1_272ce023",
+        "filename": "go/src/infra/cros/cmd/common-tls/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-09-17T20:16:36Z",
+      "side": 1,
+      "message": "Just delete this file?",
       "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
