@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c15cabd1_8092f933",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-09-17T17:12:10Z",
+      "side": 1,
+      "message": "Add package docstring.\n\nDidn\u0027t `go vet` complain? (should run on preupload)",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 11
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fcdbb386_46572127",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-09-17T17:12:10Z",
+      "side": 1,
+      "message": "nit: This is misleading. Reading this made me think that user has to call Client.Close()\n\nHow about simply: Client wraps an ssh.Client obtained from a ClientPool",
+      "range": {
+        "startLine": 13,
+        "startChar": 35,
+        "endLine": 13,
+        "endChar": 64
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "995a420a_b95fa600",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-09-17T17:12:10Z",
+      "side": 1,
+      "message": "s/Put/put/",
+      "range": {
+        "startLine": 16,
+        "startChar": 55,
+        "endLine": 16,
+        "endChar": 58
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "50913493_83951855",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-09-17T17:12:10Z",
+      "side": 1,
+      "message": "nit: Add newline after single line summary",
+      "range": {
+        "startLine": 29,
+        "startChar": 1,
+        "endLine": 29,
+        "endChar": 48
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dba4ec83_486d6d88",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-09-17T17:12:10Z",
+      "side": 1,
+      "message": "nit: Repeated.",
+      "range": {
+        "startLine": 38,
+        "startChar": 3,
+        "endLine": 38,
+        "endChar": 63
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1ec968eb_c3b5dab3",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-09-17T17:12:10Z",
+      "side": 1,
+      "message": "Why are we exposing Client.Close() to users at all?\n\nA simpler API would be:\n\n  p :\u003d NewClientPool(...)\n  ...\n  c :\u003d p.Get(...)\n  defer c.Put()\n\n  // Use c.Client\n\nDifferences from current API:\n\n- Replace Pool.Put(Client) with Client.Put()\n\nWe never want the users to be able to Put() a Client in twodifferent Pool instances, which my suggested API captures better.\n\nThis does mean that Client internally needs a reference to Pool, but that\u0027s worthwhile for a cleaner user API.\n\nSimilarly, exposing KnownGood as a variable doesn\u0027t feel right. All we want the users to be able to do is tell us whether they think a Client is still good when they put it back. So, support just that (and no more).\n\n  func (c *Client) Put(healthy bool) {\n    // No need to actually track via a KnownGood variable.\n    // We can simply delete the Client from the Pool if it is unhealthy.\n    // In Pool.Get() we anyway assume that the client is in an unknown state, and the users always assume the same for the returned client.\n  }",
+      "range": {
+        "startLine": 41,
+        "startChar": 3,
+        "endLine": 41,
+        "endChar": 68
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "01a25e1d_efaab39e",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-09-17T17:12:10Z",
+      "side": 1,
+      "message": "Whey are we doing this if we claim that the user needs to check state of the Client?",
+      "range": {
+        "startLine": 70,
+        "startChar": 0,
+        "endLine": 76,
+        "endChar": 11
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c874c87e_2e2ef2de",
+        "filename": "go/src/infra/cros/cmd/common-tls/provision.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-09-17T17:12:10Z",
+      "side": 1,
+      "message": "The word \"infra\" is in general very vague (different readers will have a very different meaning for infra in their heads).\n\nIn this case, we have more specific name handy: tlsssh ?",
+      "range": {
+        "startLine": 26,
+        "startChar": 1,
+        "endLine": 26,
+        "endChar": 9
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
