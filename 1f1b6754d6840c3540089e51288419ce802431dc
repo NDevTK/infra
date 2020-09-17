@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "857df889_9cabd377",
+        "filename": "go/src/infra/unifiedfleet/app/controller/network_updater.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2020-09-17T23:54:36Z",
+      "side": 1,
+      "message": "\"%s is a reserved IP for this vlan\" ? Make it clear what the issue is and where to look next...",
+      "range": {
+        "startLine": 102,
+        "startChar": 52,
+        "endLine": 102,
+        "endChar": 106
+      },
+      "revId": "1f1b6754d6840c3540089e51288419ce802431dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
