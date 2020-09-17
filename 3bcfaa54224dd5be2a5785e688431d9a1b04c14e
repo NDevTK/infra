@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "bd2297a7_773a8e91",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2020-09-17T18:10:28Z",
+      "side": 1,
+      "message": "`$ go vet common-tls/internal/ssh/ssh.go`\nDoesn\u0027t complain\n\nStill add docstring?",
+      "parentUuid": "c15cabd1_8092f933",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 11
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "fcdbb386_46572127",
         "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2020-09-17T17:12:10Z",
       "side": 1,
       "message": "nit: This is misleading. Reading this made me think that user has to call Client.Close()\n\nHow about simply: Client wraps an ssh.Client obtained from a ClientPool",
+      "range": {
+        "startLine": 13,
+        "startChar": 35,
+        "endLine": 13,
+        "endChar": 64
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7efc52f3_cc756db9",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2020-09-17T18:10:28Z",
+      "side": 1,
+      "message": "Can remove \"users\"\n\n\"Client is used by ClientPool to help close SSH connections.\"",
+      "parentUuid": "fcdbb386_46572127",
       "range": {
         "startLine": 13,
         "startChar": 35,
@@ -164,6 +212,30 @@
     },
     {
       "key": {
+        "uuid": "02e5bce3_b14e7656",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2020-09-17T18:10:28Z",
+      "side": 1,
+      "message": "We can remove KnownGood variable if we do this:\n\nSay hostname is tied with Client.\n```\nfunc Put(c *Client) {\n  # Check if Client is good still.\n  s, err :\u003d c.NewSession()\n  if err !\u003d nil {\n    c.close()\n    return\n  }\n  s.Close()\n  p.pool[c.host] \u003d append(p.pool[c.host], c)\n}\n```\n\nWhether Client\u0027s should be tied with the pool is up to you/@ayatane.",
+      "parentUuid": "9b2f5b92_94449520",
+      "range": {
+        "startLine": 41,
+        "startChar": 3,
+        "endLine": 41,
+        "endChar": 68
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "01a25e1d_efaab39e",
         "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
         "patchSetId": 1
@@ -175,6 +247,30 @@
       "writtenOn": "2020-09-17T17:12:10Z",
       "side": 1,
       "message": "Whey are we doing this if we claim that the user needs to check state of the Client?",
+      "range": {
+        "startLine": 70,
+        "startChar": 0,
+        "endLine": 76,
+        "endChar": 11
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8f410ab_664e6278",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2020-09-17T18:10:28Z",
+      "side": 1,
+      "message": "User\u0027s don\u0027t need to check the state of the Client.\nThey can simply use it.",
+      "parentUuid": "01a25e1d_efaab39e",
       "range": {
         "startLine": 70,
         "startChar": 0,
