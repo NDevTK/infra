@@ -325,6 +325,30 @@
     },
     {
       "key": {
+        "uuid": "2bbade3e_12a14717",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2020-09-17T20:23:39Z",
+      "side": 1,
+      "message": "The reason for using Client now would be to tie SSH client + hostname.\nSo there is no need to do Put(hostname, Client)",
+      "parentUuid": "c3a9ac27_52a88bc8",
+      "range": {
+        "startLine": 41,
+        "startChar": 3,
+        "endLine": 41,
+        "endChar": 68
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "59bf4f91_c0e4bd30",
         "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
         "patchSetId": 1
