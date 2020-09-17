@@ -140,6 +140,30 @@
     },
     {
       "key": {
+        "uuid": "9b2f5b92_94449520",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-09-17T17:12:58Z",
+      "side": 1,
+      "message": "As noted in another comment, I was confused by the docstring for Client that users had to call Close().\n\nThe rest of the comment above still stands.",
+      "parentUuid": "1ec968eb_c3b5dab3",
+      "range": {
+        "startLine": 41,
+        "startChar": 3,
+        "endLine": 41,
+        "endChar": 68
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "01a25e1d_efaab39e",
         "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
         "patchSetId": 1
