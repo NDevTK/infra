@@ -90,6 +90,48 @@
     },
     {
       "key": {
+        "uuid": "99d15ac4_34bc6118",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2020-09-18T00:28:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "888bb647_aabf8b38",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 11
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "747a2b4e_ace11f4f",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2020-09-18T00:28:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e0b82ee0_26d55182",
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fcdbb386_46572127",
         "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
         "patchSetId": 1
@@ -161,6 +203,30 @@
     },
     {
       "key": {
+        "uuid": "f6a8f985_1d9371b6",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2020-09-18T00:28:47Z",
+      "side": 1,
+      "message": "Client removed.",
+      "parentUuid": "6cac1324_ca407530",
+      "range": {
+        "startLine": 13,
+        "startChar": 35,
+        "endLine": 13,
+        "endChar": 64
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "995a420a_b95fa600",
         "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
         "patchSetId": 1
@@ -181,6 +247,30 @@
       "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "804e4343_67ee5fdf",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2020-09-18T00:28:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "995a420a_b95fa600",
+      "range": {
+        "startLine": 16,
+        "startChar": 55,
+        "endLine": 16,
+        "endChar": 58
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -207,6 +297,30 @@
     },
     {
       "key": {
+        "uuid": "ee46d532_f8e49ee9",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2020-09-18T00:28:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "50913493_83951855",
+      "range": {
+        "startLine": 29,
+        "startChar": 1,
+        "endLine": 29,
+        "endChar": 48
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dba4ec83_486d6d88",
         "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
         "patchSetId": 1
@@ -227,6 +341,30 @@
       "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3c4547f2_e22195ab",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2020-09-18T00:28:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dba4ec83_486d6d88",
+      "range": {
+        "startLine": 38,
+        "startChar": 3,
+        "endLine": 38,
+        "endChar": 63
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -373,6 +511,30 @@
     },
     {
       "key": {
+        "uuid": "01fcd098_4e52bd21",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2020-09-18T00:28:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f64d0953_d366fff9",
+      "range": {
+        "startLine": 41,
+        "startChar": 3,
+        "endLine": 41,
+        "endChar": 68
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "59bf4f91_c0e4bd30",
         "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
         "patchSetId": 1
@@ -393,6 +555,30 @@
       "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "853a4acd_e5def53e",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2020-09-18T00:28:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "59bf4f91_c0e4bd30",
+      "range": {
+        "startLine": 45,
+        "startChar": 5,
+        "endLine": 45,
+        "endChar": 15
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -443,6 +629,30 @@
     },
     {
       "key": {
+        "uuid": "03f2e0cc_4199f27d",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/ssh/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2020-09-18T00:28:47Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "a8f410ab_664e6278",
+      "range": {
+        "startLine": 70,
+        "startChar": 0,
+        "endLine": 76,
+        "endChar": 11
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c874c87e_2e2ef2de",
         "filename": "go/src/infra/cros/cmd/common-tls/provision.go",
         "patchSetId": 1
@@ -466,6 +676,30 @@
     },
     {
       "key": {
+        "uuid": "7af9689a_ef0c786b",
+        "filename": "go/src/infra/cros/cmd/common-tls/provision.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2020-09-18T00:28:47Z",
+      "side": 1,
+      "message": "using sshpool",
+      "parentUuid": "c874c87e_2e2ef2de",
+      "range": {
+        "startLine": 26,
+        "startChar": 1,
+        "endLine": 26,
+        "endChar": 9
+      },
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "84ca71d1_272ce023",
         "filename": "go/src/infra/cros/cmd/common-tls/ssh.go",
         "patchSetId": 1
@@ -480,6 +714,24 @@
       "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9c4008aa_6983903a",
+        "filename": "go/src/infra/cros/cmd/common-tls/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2020-09-18T00:28:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "84ca71d1_272ce023",
+      "revId": "3bcfaa54224dd5be2a5785e688431d9a1b04c14e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
