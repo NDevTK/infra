@@ -887,6 +887,42 @@ class WorkEnv(object):
       return templates
     return [template for template in templates if not template.members_only]
 
+  def CreateComponentDef(
+      self, project_id, path, description, admin_ids, cc_ids, labels):
+    # type: (int, str, str, Collection[int], Collection[int], Collection[str])
+    #     -> ComponentDef
+    """Creates a ComponentDef with the given information."""
+    project = self.GetProject(project_id)
+    # Assert user can edit this project.
+    self._AssertPermInProject(permissions.EDIT_PROJECT, project)
+
+    ancestor_path, leaf_name = None, path
+    if '>' in path:
+      ancestor_path, leaf_name = path.rsplit('>', 1)
+      ancestor_def = tracker_bizobj.FindComponentDef(ancestor_path, config)
+      if not ancestor_def:
+        raise exceptions.InputException(
+            'Ancestor path %s is invalid.' % ancestor_path)
+      if not permissions.CanEditComponentDef(
+          self.mc.auth.effective_ids, self.mc.perms, project, ancestor_def,
+          config):
+        raise permissions.PermissionException(
+            'User is not allowed to create a subcomponent under %s' %
+            ancestor_path)
+
+    if not tracker_constants.COMPONENT_NAME_RE.match(leaf_name):
+      raise exceptions.InputException('Invalid component path: %s' % leaf_name)
+
+    if tracker_bizobj.FindComponentDef(path, config):
+      raise exceptions.InputException('Component path %s already exists' % path)
+
+    self.services.config.LookupLabelIDs(
+        self.mc.cnxn, project_id, labels, autocreate=True)
+
+    self.services.project.CreateComponentDef(
+        self.mc.cnxn, project_id, path, description, False, admin_ids, cc_ids,
+        int(time.time()), self.mc.auth.user_id, label_ids)
+
   # FUTURE: labels, statuses, components, rules, templates, and views.
   # FUTURE: project saved queries.
   # FUTURE: GetProjectPermissionsForUser()
