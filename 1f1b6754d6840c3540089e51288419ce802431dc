@@ -42,6 +42,30 @@
     },
     {
       "key": {
+        "uuid": "faaf2728_e3a8dec2",
+        "filename": "go/src/infra/unifiedfleet/app/controller/network_updater.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-09-18T05:41:06Z",
+      "side": 1,
+      "message": "as it\u0027s an ip that given by user, we cannot easily reference its vlan if it\u0027s not belong to any vlan. It\u0027s may be reserved, may be just a wrong/non-existent ip based on given vlans. Will update the msg once we have a reserved field for IP so that we can reference the reason in later CLs.",
+      "parentUuid": "857df889_9cabd377",
+      "range": {
+        "startLine": 102,
+        "startChar": 52,
+        "endLine": 102,
+        "endChar": 106
+      },
+      "revId": "1f1b6754d6840c3540089e51288419ce802431dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "7eb7a54e_bf92e83d",
         "filename": "go/src/infra/unifiedfleet/app/util/network.go",
         "patchSetId": 1
@@ -53,6 +77,24 @@
       "writtenOn": "2020-09-18T01:26:05Z",
       "side": 1,
       "message": "This works, but we should discuss how vlans and subnets should be modeled in the future before we start automating DHCP configs.\n\nA VLAN resource should contain information like a DHCP range with a starting IP and ending IP as a configuration so this stuff does not have to be hard coded to values that might not make sense in every situation. Having that information in the VLAN resource would also make it easier to generate the subnet configs for DHCP.",
+      "revId": "1f1b6754d6840c3540089e51288419ce802431dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "24e612a2_7ec70668",
+        "filename": "go/src/infra/unifiedfleet/app/util/network.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-09-18T05:41:06Z",
+      "side": 1,
+      "message": "what if the IPs are not consequent after some reservation？all ips \u003d startIP to endIP - user-reserved-IPs?",
+      "parentUuid": "7eb7a54e_bf92e83d",
       "revId": "1f1b6754d6840c3540089e51288419ce802431dc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
