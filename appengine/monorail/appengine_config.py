@@ -11,6 +11,8 @@ from __future__ import absolute_import
 import os
 import sys
 
+import settings
+
 # Enable third-party imports
 from google.appengine.ext import vendor
 vendor.add(os.path.join(os.path.dirname(__file__), 'third_party'))
@@ -20,6 +22,8 @@ lib_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib')
 
 # Add libraries installed in the path folder.
 vendor.add(lib_path)
+
+
 # Add libraries to pkg_resources working set to find the distribution.
 import pkg_resources
 pkg_resources.working_set.add_entry(lib_path)
@@ -29,6 +33,10 @@ reload(six)
 
 import httplib2
 import oauth2client
+# Only need this for local development. gae_ts_mon.__init__.py inserting
+# protobuf_dir to front of sys.path seems to cause this problem.
+# See go/monorail-import-mystery for more context.
+from google.rpc import status_pb2
 
 from components import utils
 utils.fix_protobuf_package()
