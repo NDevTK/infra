@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "04aedbae_ed81ac82",
+        "filename": "appengine/monorail/businesslogic/work_env.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 898,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-09-21T23:09:32Z",
+      "side": 1,
+      "message": "Considered pulling this section into a separate helper method.\nBut the point of work_env methods is basically to do validity and permission check before calling the service level method that actually carries out the action.\nSaw no benefit (e.g. code that can be shared) in having a separate ValidateNewComponentDef.\nI think helper methods are only necessary for very complex methods (e.g. Modify/MakeIssue)\n\nCan always update later.",
+      "revId": "6db21ebe35b7f7845d60a0b494315ff678e7f36e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
