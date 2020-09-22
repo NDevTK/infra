@@ -25,6 +25,29 @@
     },
     {
       "key": {
+        "uuid": "58942609_0b27f1a9",
+        "filename": "appengine/monorail/businesslogic/work_env.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 895,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2020-09-22T22:38:00Z",
+      "side": 1,
+      "message": "It looks like this is only used on line 906? Should we move the declaration closer to that line?",
+      "range": {
+        "startLine": 895,
+        "startChar": 4,
+        "endLine": 895,
+        "endChar": 41
+      },
+      "revId": "6db21ebe35b7f7845d60a0b494315ff678e7f36e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "04aedbae_ed81ac82",
         "filename": "appengine/monorail/businesslogic/work_env.py",
         "patchSetId": 5
