@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d834ecbe_9103dc8c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-09-23T22:17:49Z",
+      "side": 1,
+      "message": "LGTM % comment",
+      "revId": "5d3b8d58a9ff7fd820483641e9504aad0755e69e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "28aae3d5_0e23c704",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/sshpool/sshpool.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-09-23T22:17:49Z",
+      "side": 1,
+      "message": "Recommend New() instead of NewPool(), the latter is redundant when the package name is included.",
+      "range": {
+        "startLine": 34,
+        "startChar": 5,
+        "endLine": 34,
+        "endChar": 12
+      },
+      "revId": "5d3b8d58a9ff7fd820483641e9504aad0755e69e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
