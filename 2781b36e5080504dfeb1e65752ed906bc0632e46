@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "8c602ee6_dc9f800b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2020-09-25T19:03:27Z",
+      "side": 1,
+      "message": "LGTM after resolving andrewjc@\u0027s comments.",
+      "revId": "2781b36e5080504dfeb1e65752ed906bc0632e46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7c5661f5_1126d8cd",
         "filename": "appengine/monorail/features/notify_helpers.py",
         "patchSetId": 2
