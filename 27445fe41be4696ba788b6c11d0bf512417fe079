@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "93325bd5_ba75717a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-09-25T02:41:12Z",
+      "side": 1,
+      "message": "Migrates notify_helpers from taskqueue to cloud tasks. Also updates upstream tests to mock cloud tasks.\n\nDemo:\n\n1. Visit https://35372-3789b60-kweng-monorail-8328-notify-helpe-dot-monorail-dev.appspot.com\n2. Find a bug that has only 1 commenter / reporter that\u0027s not yourself (example: p/monkeyrail/issues/detail?id\u003d6)\n3. Add a comment and expect page to behave normally.\n4. Examine logs for latency-insensitive module for version 35372-3789b60-kweng-monorail-8328-notify-helpe\n5. Expect to see 200 for /_task/notifyIssueChange.do (as many times as equal to number of people to notify)\n5a. Expand to see all and expect to see: \"Enqueueing /_task/outboundEmail.do task\"\n6. Examine logs for default latency-insensitive module\n7. Search for text \"/_task/outboundEmail.do\" and expect to see 200 response.",
+      "revId": "27445fe41be4696ba788b6c11d0bf512417fe079",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
