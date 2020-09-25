@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7c5661f5_1126d8cd",
+        "filename": "appengine/monorail/features/notify_helpers.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2020-09-25T16:44:14Z",
+      "side": 1,
+      "message": "Can we end these comments with a period?",
+      "range": {
+        "startLine": 106,
+        "startChar": 14,
+        "endLine": 108,
+        "endChar": 69
+      },
+      "revId": "2781b36e5080504dfeb1e65752ed906bc0632e46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "37414c50_5130e083",
+        "filename": "appengine/monorail/features/test/notify_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2020-09-25T16:44:14Z",
+      "side": 1,
+      "message": "Do we ever expect this to change?",
+      "range": {
+        "startLine": 76,
+        "startChar": 11,
+        "endLine": 76,
+        "endChar": 18
+      },
+      "revId": "2781b36e5080504dfeb1e65752ed906bc0632e46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d7d687bd_1543e8f2",
+        "filename": "appengine/monorail/features/test/notify_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2020-09-25T16:44:14Z",
+      "side": 1,
+      "message": "Why do we expect this character?",
+      "range": {
+        "startLine": 185,
+        "startChar": 22,
+        "endLine": 185,
+        "endChar": 31
+      },
+      "revId": "2781b36e5080504dfeb1e65752ed906bc0632e46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b0231408_cbfc5d82",
+        "filename": "appengine/monorail/features/test/notify_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2020-09-25T16:44:14Z",
+      "side": 1,
+      "message": "This approximate test pattern shows up 3 times across this test. I wonder if it would be helpful to extract it into its own helper method?",
+      "range": {
+        "startLine": 252,
+        "startChar": 4,
+        "endLine": 260,
+        "endChar": 54
+      },
+      "revId": "2781b36e5080504dfeb1e65752ed906bc0632e46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}
