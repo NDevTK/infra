@@ -184,6 +184,30 @@
     },
     {
       "key": {
+        "uuid": "bb584db3_657b4a81",
+        "filename": "appengine/monorail/features/test/notify_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2020-09-25T21:47:02Z",
+      "side": 1,
+      "message": "It would be kind of nice to know for future devs, since this character seems a big magical. I suppose something we could defer until the mail rewrite?",
+      "parentUuid": "2037084a_36fdb1f5",
+      "range": {
+        "startLine": 185,
+        "startChar": 22,
+        "endLine": 185,
+        "endChar": 31
+      },
+      "revId": "2781b36e5080504dfeb1e65752ed906bc0632e46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b0231408_cbfc5d82",
         "filename": "appengine/monorail/features/test/notify_test.py",
         "patchSetId": 2
@@ -228,6 +252,30 @@
       "revId": "2781b36e5080504dfeb1e65752ed906bc0632e46",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9c1b7c3f_0ee16056",
+        "filename": "appengine/monorail/features/test/notify_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2020-09-25T21:47:02Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "4f1a6d3e_973c89c3",
+      "range": {
+        "startLine": 252,
+        "startChar": 4,
+        "endLine": 260,
+        "endChar": 54
+      },
+      "revId": "2781b36e5080504dfeb1e65752ed906bc0632e46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
