@@ -113,6 +113,30 @@
     },
     {
       "key": {
+        "uuid": "dae7d3e5_1e499db0",
+        "filename": "appengine/monorail/features/test/notify_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-09-25T21:46:18Z",
+      "side": 1,
+      "message": "Discussed offline: interface unlikely to change.",
+      "parentUuid": "c213c80c_d570e225",
+      "range": {
+        "startLine": 76,
+        "startChar": 11,
+        "endLine": 76,
+        "endChar": 18
+      },
+      "revId": "2781b36e5080504dfeb1e65752ed906bc0632e46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d7d687bd_1543e8f2",
         "filename": "appengine/monorail/features/test/notify_test.py",
         "patchSetId": 2
