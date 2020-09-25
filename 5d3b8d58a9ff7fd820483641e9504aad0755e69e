@@ -39,6 +39,30 @@
       "revId": "5d3b8d58a9ff7fd820483641e9504aad0755e69e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "25a3afae_49f90f05",
+        "filename": "go/src/infra/cros/cmd/common-tls/internal/sshpool/sshpool.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2020-09-25T18:35:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "28aae3d5_0e23c704",
+      "range": {
+        "startLine": 34,
+        "startChar": 5,
+        "endLine": 34,
+        "endChar": 12
+      },
+      "revId": "5d3b8d58a9ff7fd820483641e9504aad0755e69e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
