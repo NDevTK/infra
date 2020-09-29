@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "104780c6_6da43dc4",
+        "filename": "appengine/monorail/api/resource_name_converters.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 277,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-09-29T20:55:12Z",
+      "side": 1,
+      "message": "Just followed the pattern set by FieldDef.",
+      "range": {
+        "startLine": 277,
+        "startChar": 0,
+        "endLine": 277,
+        "endChar": 47
+      },
+      "revId": "99af3b8e4a1375b7e2cf20407cd55212f9a5d43a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
