@@ -105,6 +105,23 @@
       "revId": "bc822c7cd7393960f6684bb87c405f186468ff94",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "463ca4ce_0dc1e533",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2020-09-29T18:46:35Z",
+      "side": 1,
+      "message": "Updated based on in-person conversation with Otabek. The new servo topology work is going to add a bunch of attributes. Those attributes should be hidden by default. So, I\u0027m changing this CL to just add more attributes to the list that are printed by default.",
+      "revId": "bc822c7cd7393960f6684bb87c405f186468ff94",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
