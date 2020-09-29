@@ -52,6 +52,24 @@
       "revId": "bc822c7cd7393960f6684bb87c405f186468ff94",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b6ecd86b_e5d73ffa",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2020-09-29T18:21:32Z",
+      "side": 1,
+      "message": "I think just showing all the attributes is simpler than picking a few of them and calling them \"servo attributes\".",
+      "parentUuid": "3ebf691f_8e8fb94f",
+      "revId": "bc822c7cd7393960f6684bb87c405f186468ff94",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
