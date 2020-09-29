@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1fb8d82e_16b19435",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2020-09-29T00:37:05Z",
+      "side": 1,
+      "message": "what is the reason to have them all by default? we can see them with -full",
+      "revId": "bc822c7cd7393960f6684bb87c405f186468ff94",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
