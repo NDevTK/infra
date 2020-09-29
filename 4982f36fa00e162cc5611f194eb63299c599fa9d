@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "db43151c_11c59a3a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2020-09-29T18:52:10Z",
+      "side": 1,
+      "message": "removing CR+1 since latest change changed a lot.",
+      "revId": "4982f36fa00e162cc5611f194eb63299c599fa9d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}
