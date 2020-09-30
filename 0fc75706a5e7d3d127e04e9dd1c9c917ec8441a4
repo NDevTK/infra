@@ -56,6 +56,30 @@
       "revId": "0fc75706a5e7d3d127e04e9dd1c9c917ec8441a4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a26bfeaa_35a0bdbc",
+        "filename": "appengine/monorail/api/v3/issues_servicer.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-09-30T02:28:20Z",
+      "side": 1,
+      "message": "Good catch! Thank you",
+      "parentUuid": "fcf2beb7_c53c5aeb",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 37
+      },
+      "revId": "0fc75706a5e7d3d127e04e9dd1c9c917ec8441a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }
