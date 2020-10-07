@@ -127,6 +127,24 @@ func TestGTestConversions(t *testing.T) {
 		})
 	})
 
+	Convey(`all_tests can be empty`, t, func() {
+		buf := []byte(
+			`{
+				"all_tests": [],
+				"disabled_tests": [],
+				"global_tags": ["CPU_64_BITS","MODE_RELEASE","OS_WIN"],
+				"per_iteration_data": [{}],
+				"test_locations": {}
+			}`)
+
+		results := &GTestResults{
+			buf: &strings.Builder{},
+		}
+		err := results.ConvertFromJSON(bytes.NewReader(buf))
+		So(err, ShouldBeNil)
+		So(len(results.AllTests), ShouldEqual, 0)
+	})
+
 	Convey("convertTestResult", t, func() {
 		convert := func(result *GTestRunResult) *sinkpb.TestResult {
 			r := &GTestResults{

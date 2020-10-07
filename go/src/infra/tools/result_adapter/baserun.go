@@ -120,6 +120,10 @@ func (r *baseRun) run(ctx context.Context, args []string, f converter) (ret int)
 		return r.done(err)
 	}
 
+	if trs == nil {
+		return ec
+	}
+
 	ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", "ResultSink "+r.sinkCtx.AuthToken)
 	if _, err := r.sinkC.ReportTestResults(ctx, &sinkpb.ReportTestResultsRequest{TestResults: trs}); err != nil {
 		return r.done(err)
