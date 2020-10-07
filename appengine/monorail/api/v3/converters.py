@@ -232,10 +232,10 @@ class Converter(object):
     results = []
     for attach in attachments:
       if attach.deleted:
-        state = issue_objects_pb2.IssueContentState.Value('DELETED')
+        state = issue_objects_pb2.State.Value('DELETED')
         size, thumbnail_uri, view_uri, download_uri = None, None, None, None
       else:
-        state = issue_objects_pb2.IssueContentState.Value('ACTIVE')
+        state = issue_objects_pb2.State.Value('ACTIVE')
         size = attach.filesize
         download_uri = attachment_helpers.GetDownloadURL(attach.attachment_id)
         view_uri = attachment_helpers.GetViewURL(
@@ -275,11 +275,11 @@ class Converter(object):
     converted_comments = []
     for comment in comments:
       if comment.is_spam:
-        state = issue_objects_pb2.IssueContentState.Value('SPAM')
+        state = issue_objects_pb2.State.Value('SPAM')
       elif comment.deleted_by:
-        state = issue_objects_pb2.IssueContentState.Value('DELETED')
+        state = issue_objects_pb2.State.Value('DELETED')
       else:
-        state = issue_objects_pb2.IssueContentState.Value('ACTIVE')
+        state = issue_objects_pb2.State.Value('ACTIVE')
       comment_type = issue_objects_pb2.Comment.Type.Value('COMMENT')
       if comment.is_description:
         comment_type = issue_objects_pb2.Comment.Type.Value('DESCRIPTION')
@@ -328,14 +328,14 @@ class Converter(object):
     converted_issues = []
     for issue in found_issues:
       status = self._ConvertStatusValue(issue)
-      content_state = issue_objects_pb2.IssueContentState.Value(
+      content_state = issue_objects_pb2.State.Value(
           'STATE_UNSPECIFIED')
       if issue.is_spam:
-        content_state = issue_objects_pb2.IssueContentState.Value('SPAM')
+        content_state = issue_objects_pb2.State.Value('SPAM')
       elif issue.deleted:
-        content_state = issue_objects_pb2.IssueContentState.Value('DELETED')
+        content_state = issue_objects_pb2.State.Value('DELETED')
       else:
-        content_state = issue_objects_pb2.IssueContentState.Value('ACTIVE')
+        content_state = issue_objects_pb2.State.Value('ACTIVE')
 
       owner = None
       # Explicit values override values derived from rules.
@@ -1547,7 +1547,7 @@ class Converter(object):
       protoc Issue filled with data from given `template`.
     """
     summary = template.summary
-    state = issue_objects_pb2.IssueContentState.Value('ACTIVE')
+    state = issue_objects_pb2.State.Value('ACTIVE')
     status = issue_objects_pb2.Issue.StatusValue(
         status=template.status,
         derivation=issue_objects_pb2.Derivation.Value('EXPLICIT'))

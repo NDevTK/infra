@@ -563,7 +563,7 @@ class ConverterFunctionsTest(unittest.TestCase):
         is_spam=True)
     expected_0 = issue_objects_pb2.Comment(
         name='projects/proj/issues/1/comments/0',
-        state=issue_objects_pb2.IssueContentState.Value('ACTIVE'),
+        state=issue_objects_pb2.State.Value('ACTIVE'),
         type=issue_objects_pb2.Comment.Type.Value('DESCRIPTION'),
         content='initial description',
         commenter='users/111',
@@ -571,7 +571,7 @@ class ConverterFunctionsTest(unittest.TestCase):
         attachments=[
             issue_objects_pb2.Comment.Attachment(
                 filename='example.png',
-                state=issue_objects_pb2.IssueContentState.Value('ACTIVE'),
+                state=issue_objects_pb2.State.Value('ACTIVE'),
                 size=12345,
                 media_type='image/png',
                 thumbnail_uri='attachment?aid=1&signed_aid=2&inline=1&thumb=1',
@@ -579,17 +579,17 @@ class ConverterFunctionsTest(unittest.TestCase):
                 download_uri='attachment?aid=1&signed_aid=2'),
             issue_objects_pb2.Comment.Attachment(
                 filename='deleted_example.png',
-                state=issue_objects_pb2.IssueContentState.Value('DELETED'),
+                state=issue_objects_pb2.State.Value('DELETED'),
                 media_type='image/png')
         ])
     expected_1 = issue_objects_pb2.Comment(
         name='projects/proj/issues/1/comments/1',
-        state=issue_objects_pb2.IssueContentState.Value('DELETED'),
+        state=issue_objects_pb2.State.Value('DELETED'),
         type=issue_objects_pb2.Comment.Type.Value('COMMENT'),
         create_time=timestamp_pb2.Timestamp(seconds=self.PAST_TIME))
     expected_2 = issue_objects_pb2.Comment(
         name='projects/proj/issues/1/comments/2',
-        state=issue_objects_pb2.IssueContentState.Value('ACTIVE'),
+        state=issue_objects_pb2.State.Value('ACTIVE'),
         type=issue_objects_pb2.Comment.Type.Value('COMMENT'),
         content='some amendments',
         commenter='users/111',
@@ -609,7 +609,7 @@ class ConverterFunctionsTest(unittest.TestCase):
         ])
     expected_3 = issue_objects_pb2.Comment(
         name='projects/proj/issues/1/comments/3',
-        state=issue_objects_pb2.IssueContentState.Value('SPAM'),
+        state=issue_objects_pb2.State.Value('SPAM'),
         type=issue_objects_pb2.Comment.Type.Value('COMMENT'),
         content='content',
         commenter='users/111',
@@ -683,7 +683,7 @@ class ConverterFunctionsTest(unittest.TestCase):
     expected_1 = issue_objects_pb2.Issue(
         name='projects/proj/issues/1',
         summary='sum',
-        state=issue_objects_pb2.IssueContentState.Value('ACTIVE'),
+        state=issue_objects_pb2.State.Value('ACTIVE'),
         status=issue_objects_pb2.Issue.StatusValue(
             derivation=EXPLICIT_DERIVATION, status='New'),
         reporter='users/111',
@@ -763,7 +763,7 @@ class ConverterFunctionsTest(unittest.TestCase):
     expected_2 = issue_objects_pb2.Issue(
         name='projects/goose/issues/2',
         summary='sum2',
-        state=issue_objects_pb2.IssueContentState.Value('SPAM'),
+        state=issue_objects_pb2.State.Value('SPAM'),
         status=issue_objects_pb2.Issue.StatusValue(
             derivation=RULE_DERIVATION, status='Fixed'),
         reporter='users/111',
@@ -800,7 +800,7 @@ class ConverterFunctionsTest(unittest.TestCase):
     self.services.issue.TestAddIssue(issue)
     expected_issue = issue_objects_pb2.Issue(
         name='projects/proj/issues/3',
-        state=issue_objects_pb2.IssueContentState.Value('ACTIVE'),
+        state=issue_objects_pb2.State.Value('ACTIVE'),
         summary='sum',
         status=issue_objects_pb2.Issue.StatusValue(
             derivation=EXPLICIT_DERIVATION, status='New'),
@@ -1191,7 +1191,7 @@ class ConverterFunctionsTest(unittest.TestCase):
         status=issue_objects_pb2.Issue.StatusValue(
             status='KingdomCome',
             derivation=issue_objects_pb2.Derivation.Value('RULE')),
-        state=issue_objects_pb2.IssueContentState.Value('DELETED'),
+        state=issue_objects_pb2.State.Value('DELETED'),
         reporter='users/222',
         cc_users=[
             issue_objects_pb2.Issue.UserValue(
@@ -1744,7 +1744,7 @@ class ConverterFunctionsTest(unittest.TestCase):
         ],
         # All the following fields should be ignored.
         name='projects/proj/issues/1',
-        state=issue_objects_pb2.IssueContentState.Value('SPAM'),
+        state=issue_objects_pb2.State.Value('SPAM'),
         reporter='users/111',
         create_time=timestamp_pb2.Timestamp(seconds=self.PAST_TIME),
         modify_time=timestamp_pb2.Timestamp(seconds=self.PAST_TIME),
@@ -2296,7 +2296,7 @@ class ConverterFunctionsTest(unittest.TestCase):
     self.assertFalse(result.name)
     self.assertEqual(result.summary, self.template_1.summary)
     self.assertEqual(
-        result.state, issue_objects_pb2.IssueContentState.Value('ACTIVE'))
+        result.state, issue_objects_pb2.State.Value('ACTIVE'))
     self.assertEqual(result.status.status, 'New')
     self.assertFalse(result.reporter)
     self.assertEqual(result.owner.user, 'users/{}'.format(self.user_1.user_id))

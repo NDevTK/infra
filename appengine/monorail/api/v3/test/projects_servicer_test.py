@@ -66,7 +66,7 @@ class ProjectsServicerTest(unittest.TestCase):
 
     expected_issue = issue_objects_pb2.Issue(
         summary=self.template_1.summary,
-        state=issue_objects_pb2.IssueContentState.Value('ACTIVE'),
+        state=issue_objects_pb2.State.Value('ACTIVE'),
         status=issue_objects_pb2.Issue.StatusValue(
             status=self.template_1.status,
             derivation=issue_objects_pb2.Derivation.Value('EXPLICIT')))

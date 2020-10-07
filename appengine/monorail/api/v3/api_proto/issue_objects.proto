@@ -43,7 +43,7 @@ message Comment {
     // It is possible for attachments to be deleted (and undeleted) by the
     // uploader. The name of deleted attachments are still shown, but the
     // content is not available.
-    IssueContentState state = 2;
+    State state = 2;
     // Size of the attached file in bytes.
     uint64 size = 3;
     // The type of content contained in the file, using the IANA's media type
@@ -81,7 +81,7 @@ message Comment {
   // Resource name of the comment.
   string name = 1;
   // The state of the comment.
-  IssueContentState state = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  State state = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
   // The type of comment.
   Type type = 3;
   // The text of the comment.
@@ -201,7 +201,7 @@ message Issue {
   // not. Resolve this discrepancy.
   string summary = 2;
   // The state of the issue.
-  IssueContentState state = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  State state = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
   // The current status of the issue.
   StatusValue status = 4 [(google.api.field_behavior) = REQUIRED];
   // The user who created the issue.
@@ -257,7 +257,7 @@ message Issue {
 
 // States that an issue or its comments can be in (aip.dev/216).
 // Next available tag: 4
-enum IssueContentState {
+enum State {
   // The default value. This value is used if the state is omitted.
   STATE_UNSPECIFIED = 0;
   // The Issue or Comment is available.
