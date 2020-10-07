@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "87698797_bfd8d296",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-10-07T18:56:30Z",
+      "side": 1,
+      "message": "Motivation: Doesn\u0027t make much sense for Comment\u0027s state to be specified by IssueContentState.\n\nWas introduced here without much fanfare: https://chromium-review.googlesource.com/c/infra/infra/+/2052333",
+      "revId": "f4ef5f0da57cb64c0f1d2d26d1ef655eadbbaa4c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
