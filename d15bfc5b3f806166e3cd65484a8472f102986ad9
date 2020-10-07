@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "835fcc9f_016d0a05",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1311766
+      },
+      "writtenOn": "2020-10-07T17:42:11Z",
+      "side": 1,
+      "message": "Hi Michael\n\nThis CL changes the interval between bot spawning to 10 mins.\n\nPTAL\nRegards\nRakib Hasan",
+      "revId": "d15bfc5b3f806166e3cd65484a8472f102986ad9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
