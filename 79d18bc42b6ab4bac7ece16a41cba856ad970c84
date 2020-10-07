@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "067b08fb_ddb340fc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2020-10-07T06:30:59Z",
+      "side": 1,
+      "message": "PTAL\n\nSample invocation: https://ci.chromium.org/ui/inv/u-chanli-2020-10-07-06-20-00-e3af959fb735e10d/test-results\n\nIt\u0027ll be an empty invocation though.",
+      "revId": "79d18bc42b6ab4bac7ece16a41cba856ad970c84",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
