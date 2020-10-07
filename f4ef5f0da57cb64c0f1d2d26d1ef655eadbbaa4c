@@ -33,6 +33,24 @@
       "message": "It seems to me that comments are issue content. I don\u0027t really care either way though. I defer to Joanna.",
       "revId": "f4ef5f0da57cb64c0f1d2d26d1ef655eadbbaa4c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "78142db6_cddd2bf1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-10-07T21:26:29Z",
+      "side": 1,
+      "message": "that\u0027s a good point. `IssueContentState` does seem to be a good way to communicate this but it can also be mis-interpreted the way kweng and i did.\n\nI only object to naming it the general \u0027State\u0027 in case we want to introduce another \u0027FooState\u0027 enum one day for some other set of resources. It\u0027d be annoying to have issue content states using the generally named \u0027State\u0027 and Foos using \u0027FooState\u0027.\nBeyond that I also don\u0027t care.\n\n@kweng up to you on how you want to move forward. Keep as-is or find a less misleading name for communicating what Jessan said.\n\nIf this does get merged it\u0027s a breaking change because we\u0027re changing the proto shape. Even though it\u0027s unlikely people are depending on this, I think we still need to announce this.",
+      "parentUuid": "92d213d0_97ae2759",
+      "revId": "f4ef5f0da57cb64c0f1d2d26d1ef655eadbbaa4c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
