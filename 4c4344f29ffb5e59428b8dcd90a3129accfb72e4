@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b89c76bc_637c34ef",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 336,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2020-10-08T07:11:23Z",
+      "side": 1,
+      "message": "should this be before the comment? the comment is about the next line",
+      "revId": "4c4344f29ffb5e59428b8dcd90a3129accfb72e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
