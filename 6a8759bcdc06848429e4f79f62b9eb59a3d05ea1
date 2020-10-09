@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ad6cfbbb_2ead9f27",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2020-10-09T00:40:04Z",
+      "side": 1,
+      "message": "Can it be provided by device configs or manufacture?",
+      "revId": "6a8759bcdc06848429e4f79f62b9eb59a3d05ea1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
