@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4ab3bac4_7fab5cf8",
+        "filename": "appengine/monorail/api/v3/issues_servicer.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 346,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-10-09T19:17:08Z",
+      "side": 1,
+      "message": "IIUC this is not the comment ID\ncould this be comment_num or comment_sequence to avoid confusion",
+      "range": {
+        "startLine": 346,
+        "startChar": 5,
+        "endLine": 346,
+        "endChar": 15
+      },
+      "revId": "db538cfe77e4a017b13ba87e24c651ac18d641e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b752172f_00c6101b",
+        "filename": "appengine/monorail/api/v3/issues_servicer.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 362,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-10-09T19:17:08Z",
+      "side": 1,
+      "message": "it feels like things could be more readable with the order switched\n```\nif comment.is_spam:\n  we.FlagComment()\nelif comment.deleted_by !\u003d 0:\n  we.DeleteComment()\n```\nunless I\u0027m missing something.",
+      "range": {
+        "startLine": 359,
+        "startChar": 0,
+        "endLine": 362,
+        "endChar": 47
+      },
+      "revId": "db538cfe77e4a017b13ba87e24c651ac18d641e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "95fb1380_80337cb1",
+        "filename": "appengine/monorail/api/v3/issues_servicer.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 389,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-10-09T19:17:08Z",
+      "side": 1,
+      "message": "Here and above where ListIssueComments is used:\nListIssueComments is currently marked to be deleted. Although if it\u0027s needed for v3 for w/e reason, i have nothing against keeping. \n\nIf the user request has gotten this far, (the user has perm to delete/mark as spam) then it\u0027s likely they can view the full issue. \n\nbut I don\u0027t think we should depend on that assumption and anything can change in the future.\n\nTo avoid/reduce privacy risks we should go through SafeListIssueComments (or at least replicate what it does.)",
+      "range": {
+        "startLine": 389,
+        "startChar": 29,
+        "endLine": 389,
+        "endChar": 46
+      },
+      "revId": "db538cfe77e4a017b13ba87e24c651ac18d641e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
