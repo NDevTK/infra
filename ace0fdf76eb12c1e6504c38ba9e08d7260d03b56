@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3b710d6e_882c5980",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-10-09T01:55:45Z",
+      "side": 1,
+      "message": "Uploaded at https://35676-e9196fe-tainted-kweng-monorail-7867-work-dot-monorail-dev.appspot.com",
+      "revId": "ace0fdf76eb12c1e6504c38ba9e08d7260d03b56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
