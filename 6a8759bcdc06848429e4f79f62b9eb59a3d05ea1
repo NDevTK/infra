@@ -16,6 +16,24 @@
       "message": "Can it be provided by device configs or manufacture?",
       "revId": "6a8759bcdc06848429e4f79f62b9eb59a3d05ea1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3319e878_87f19d88",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-10-09T17:48:10Z",
+      "side": 1,
+      "message": "sadly not for now.",
+      "parentUuid": "ad6cfbbb_2ead9f27",
+      "revId": "6a8759bcdc06848429e4f79f62b9eb59a3d05ea1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
