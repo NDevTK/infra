@@ -236,6 +236,30 @@
       },
       "revId": "db538cfe77e4a017b13ba87e24c651ac18d641e5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "970afe86_42ab09ca",
+        "filename": "appengine/monorail/api/v3/issues_servicer.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 389,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-10-09T23:53:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c881ca0f_e1a48155",
+      "range": {
+        "startLine": 389,
+        "startChar": 29,
+        "endLine": 389,
+        "endChar": 46
+      },
+      "revId": "db538cfe77e4a017b13ba87e24c651ac18d641e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
