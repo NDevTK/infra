@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "5190f664_331bc6c0",
+        "filename": "appengine/monorail/api/v3/issues_servicer.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 346,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-10-09T22:18:50Z",
+      "side": 1,
+      "message": "That\u0027s a good call",
+      "parentUuid": "4ab3bac4_7fab5cf8",
+      "range": {
+        "startLine": 346,
+        "startChar": 5,
+        "endLine": 346,
+        "endChar": 15
+      },
+      "revId": "db538cfe77e4a017b13ba87e24c651ac18d641e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "b752172f_00c6101b",
         "filename": "appengine/monorail/api/v3/issues_servicer.py",
         "patchSetId": 4
@@ -73,6 +97,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "f659531f_ac4c5e74",
+        "filename": "appengine/monorail/api/v3/issues_servicer.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 362,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-10-09T22:18:50Z",
+      "side": 1,
+      "message": "Sounds good to me.\nif is_spam followed by if deleted seems good.",
+      "parentUuid": "5a2c0303_97e38aa5",
+      "range": {
+        "startLine": 359,
+        "startChar": 0,
+        "endLine": 362,
+        "endChar": 47
+      },
+      "revId": "db538cfe77e4a017b13ba87e24c651ac18d641e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "95fb1380_80337cb1",
         "filename": "appengine/monorail/api/v3/issues_servicer.py",
         "patchSetId": 4
@@ -84,6 +132,30 @@
       "writtenOn": "2020-10-09T19:17:08Z",
       "side": 1,
       "message": "Here and above where ListIssueComments is used:\nListIssueComments is currently marked to be deleted. Although if it\u0027s needed for v3 for w/e reason, i have nothing against keeping. \n\nIf the user request has gotten this far, (the user has perm to delete/mark as spam) then it\u0027s likely they can view the full issue. \n\nbut I don\u0027t think we should depend on that assumption and anything can change in the future.\n\nTo avoid/reduce privacy risks we should go through SafeListIssueComments (or at least replicate what it does.)",
+      "range": {
+        "startLine": 389,
+        "startChar": 29,
+        "endLine": 389,
+        "endChar": 46
+      },
+      "revId": "db538cfe77e4a017b13ba87e24c651ac18d641e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "39b1fae2_a815ac2f",
+        "filename": "appengine/monorail/api/v3/issues_servicer.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 389,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-10-09T22:18:50Z",
+      "side": 1,
+      "message": "I opted to stick with ListIssueComments because it seems much more succinct than SafeList, less computation, and much simpler to use.\nOne, we don\u0027t need to iterate through every comment to determine if user can view.\nTwo, this method isn\u0027t concerned with pagination, whereas SafeList requires it as an input.\nThree, this method also doesn\u0027t need to compute users_involved_in_comments.\n\nThe best hypothetical usage here would be something like \"GetIssueComment(issue_id, comment_number)\"\n\n\nMy thought for deprecating ListIssueComments would be something like: make an identical method named \"UnsafeListIssueComments\", and still delete ListIssueComments.",
+      "parentUuid": "95fb1380_80337cb1",
       "range": {
         "startLine": 389,
         "startChar": 29,
