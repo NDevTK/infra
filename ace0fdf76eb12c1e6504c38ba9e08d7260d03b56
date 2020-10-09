@@ -16,6 +16,47 @@
       "message": "Uploaded at https://35676-e9196fe-tainted-kweng-monorail-7867-work-dot-monorail-dev.appspot.com",
       "revId": "ace0fdf76eb12c1e6504c38ba9e08d7260d03b56",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0704ec1e_44d0444b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-10-09T03:10:59Z",
+      "side": 1,
+      "message": "Demo:\n\nUse appscript: https://script.google.com/a/google.com/d/1beP4tltyz0eBDVrb2LzF1ef3yJaSM-Pfr0_9_2ORn98iSsTafFDpQy6K/edit\n\n1. Create a test function: https://paste.googleplex.com/6665038094925824\n1a. Note, must be pointed at https://35676-e9196fe-tainted-kweng-monorail-7867-work-dot-monorail-dev.appspot.com\n2. Run test function\n3. Expect success\n3a. Examine appscript execution log: https://script.google.com/corp/home/projects/1beP4tltyz0eBDVrb2LzF1ef3yJaSM-Pfr0_9_2ORn98iSsTafFDpQy6K/executions?run_as\u003d1 and expect success and to return updated comment resource\n3b. Visit targeted bug, ie https://monorail-dev.appspot.com/p/monkeyrail/issues/detail?id\u003d25 and expect to see comment 3 deleted (dev data is shared across versions)\n4. Adjust test to undelete via \u0027state\u0027: \u0027ACTIVE\u0027, run test function, and expect success\n4a. Examine execution log\n4b. Refresh monkeyrail/25 and expect to see comment 3 undeleted\n5. Adjust test to flag as spam via \u0027state\u0027: \u0027SPAM\u0027, run test function, and expect success\n5a. Examine execution log\n5b. Refresh monkeyrail/25, click on hamburber menu for comment 3 and expect to see \"Unflag comment\"\n6. Adjust test to unflag as spam via \u0027state\u0027: \u0027ACTIVE\u0027, run test function, and expect success.\n6a. Examine execution log\n6b. Refresh monkeyrail/25 expect to see comment 3 as viewable.\n7. Mark comment 3 as spam\n8. Adjust test to delete comment 3\n8b. Expect execution to fail",
+      "parentUuid": "3b710d6e_882c5980",
+      "revId": "ace0fdf76eb12c1e6504c38ba9e08d7260d03b56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0af5f147_c3a56b3d",
+        "filename": "appengine/monorail/api/v3/issues_servicer.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-10-09T03:10:59Z",
+      "side": 1,
+      "message": "I\u0027m not 100% convinced that we should use this exception, suggestions welcome.\n\nI don\u0027t love this because in exceptions.py we note this exception as \"\"\"The user is trying to do something we do not support yet.\"\"\" and we have no plans to support these state transitions. But I picked it over InputException because \nInputException is for \"\"\"Error in user input processing.\"\"\"\n\nTODO: If we stick with this, will need to add ActionNotSupported to monorail_servicer.py\u0027s exception mapping so we don\u0027t throw a 500 level internal error",
+      "range": {
+        "startLine": 374,
+        "startChar": 27,
+        "endLine": 374,
+        "endChar": 45
+      },
+      "revId": "ace0fdf76eb12c1e6504c38ba9e08d7260d03b56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
