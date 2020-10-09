@@ -212,6 +212,30 @@
       },
       "revId": "db538cfe77e4a017b13ba87e24c651ac18d641e5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c881ca0f_e1a48155",
+        "filename": "appengine/monorail/api/v3/issues_servicer.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 389,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-10-09T22:49:32Z",
+      "side": 1,
+      "message": "yeah SafeListIssueComments was implemented for another purpose (ListComments) but that doesn\u0027t change the fact that SafeList handles privacy concerns that ListComments does not. \n\nI\u0027m fine with not using SafeListIssueComments, but we need to replicate what it does and filter out comment content that the user should not see. \n\nI mentioned that we could reuse SafeListIssueComments because we can just make max_items \u003d 1 and start \u003d comment_sequence and reduce computation.",
+      "parentUuid": "39b1fae2_a815ac2f",
+      "range": {
+        "startLine": 389,
+        "startChar": 29,
+        "endLine": 389,
+        "endChar": 46
+      },
+      "revId": "db538cfe77e4a017b13ba87e24c651ac18d641e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
