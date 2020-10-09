@@ -331,16 +331,19 @@ class MonorailServicer(object):
     elif exc_type == exceptions.FieldDefAlreadyExists:
       prpc_context.set_code(codes.StatusCode.ALREADY_EXISTS)
       prpc_context.set_details('A field def with that name already exists.')
+    elif exc_type == exceptions.ActionNotSupported:
+      prpc_context.set_code(codes.StatusCode.INVALID_ARGUMENT)
+      prpc_context.set_details('Requested action not supported.')
+    elif exc_type == exceptions.InputException:
+      prpc_context.set_code(codes.StatusCode.INVALID_ARGUMENT)
+      prpc_context.set_details(
+          'Invalid arguments: %s' % cgi.escape(e.message, quote=True))
     elif exc_type == exceptions.InvalidComponentNameException:
       prpc_context.set_code(codes.StatusCode.INVALID_ARGUMENT)
       prpc_context.set_details('That component name is invalid.')
     elif exc_type == exceptions.FilterRuleException:
       prpc_context.set_code(codes.StatusCode.INVALID_ARGUMENT)
       prpc_context.set_details('Violates filter rule that should error.')
-    elif exc_type == exceptions.InputException:
-      prpc_context.set_code(codes.StatusCode.INVALID_ARGUMENT)
-      prpc_context.set_details(
-         'Invalid arguments: %s' % cgi.escape(e.message, quote=True))
     elif exc_type == ratelimiter.ApiRateLimitExceeded:
       prpc_context.set_code(codes.StatusCode.PERMISSION_DENIED)
       prpc_context.set_details('The requester has exceeded API quotas limit.')
