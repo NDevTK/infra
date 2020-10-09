@@ -81,6 +81,30 @@
       },
       "revId": "ace0fdf76eb12c1e6504c38ba9e08d7260d03b56",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f2aff2fc_7be131c5",
+        "filename": "appengine/monorail/api/v3/issues_servicer.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-10-09T22:54:46Z",
+      "side": 1,
+      "message": "sorry i missed this.\nIn the end we own these exceptions. If you want to change ActionNotSupported\u0027s docstring to remove the \u0027yet\u0027, you could\nBut either way the users\u0027s only going tot see it as INVALID_ARGUMENT",
+      "parentUuid": "9adecb5b_06de1c76",
+      "range": {
+        "startLine": 374,
+        "startChar": 27,
+        "endLine": 374,
+        "endChar": 45
+      },
+      "revId": "ace0fdf76eb12c1e6504c38ba9e08d7260d03b56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
