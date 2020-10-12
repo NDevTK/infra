@@ -193,6 +193,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "90118532_b67140bc",
+        "filename": "appengine/monorail/api/v3/issues_servicer.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 362,
+      "author": {
+        "id": 1375911
+      },
+      "writtenOn": "2020-10-12T18:10:59Z",
+      "side": 1,
+      "message": "Yes this is intended.\n\nwe.FlagComment also sometimes has the side effect of SoftDeleteComment if the user has VERDICT_SPAM permissions.",
+      "parentUuid": "83472167_b757b7ee",
+      "range": {
+        "startLine": 359,
+        "startChar": 0,
+        "endLine": 362,
+        "endChar": 47
+      },
+      "revId": "db538cfe77e4a017b13ba87e24c651ac18d641e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "95fb1380_80337cb1",
         "filename": "appengine/monorail/api/v3/issues_servicer.py",
         "patchSetId": 4
