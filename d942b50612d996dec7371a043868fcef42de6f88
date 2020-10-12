@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "647cb8c7_462c7909",
+        "filename": "go/src/infra/tools/vpython/pep425.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2020-10-12T05:07:45Z",
+      "side": 1,
+      "message": "Maybe putting a TODO on this?",
+      "range": {
+        "startLine": 194,
+        "startChar": 6,
+        "endLine": 195,
+        "endChar": 42
+      },
+      "revId": "d942b50612d996dec7371a043868fcef42de6f88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
