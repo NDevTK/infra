@@ -169,6 +169,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "83472167_b757b7ee",
+        "filename": "appengine/monorail/api/v3/issues_servicer.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 362,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-10-12T16:28:09Z",
+      "side": 1,
+      "message": "The latest patchset still shows \n```\nif...\nelif...\n```\nis that intended?",
+      "parentUuid": "eae9f5f5_3d992d18",
+      "range": {
+        "startLine": 359,
+        "startChar": 0,
+        "endLine": 362,
+        "endChar": 47
+      },
+      "revId": "db538cfe77e4a017b13ba87e24c651ac18d641e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "95fb1380_80337cb1",
         "filename": "appengine/monorail/api/v3/issues_servicer.py",
         "patchSetId": 4
