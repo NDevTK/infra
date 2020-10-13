@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2e07eff3_034bf1fe",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-10-13T18:28:50Z",
+      "side": 1,
+      "message": "\u0027cause I\u0027m going to use those heavily in incoming CLs to add TLS provision impl",
+      "revId": "210d7ad54dbe2164b9bad54738f762460fa3d0fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
