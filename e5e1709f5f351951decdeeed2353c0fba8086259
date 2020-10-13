@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d9aef196_a4549ec2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1311766
+      },
+      "writtenOn": "2020-10-13T18:35:40Z",
+      "side": 1,
+      "message": "Hi Michael\n\nThis CL initiates a dry run of patches uploaded from the skew test creator recipe.\n\nPTAL\nRegards\nRakib Hasan",
+      "revId": "e5e1709f5f351951decdeeed2353c0fba8086259",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
