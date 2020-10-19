@@ -16,6 +16,24 @@
       "message": "Thanks for cleaning this up!",
       "revId": "2b02d9e9e5b1d2c6f18811e7f1ad8dd857ec25bf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c182f87_829aee6d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1272456
+      },
+      "writtenOn": "2020-10-19T23:55:06Z",
+      "side": 1,
+      "message": "Thank you for migrating :D",
+      "parentUuid": "1828f4c4_a7629582",
+      "revId": "2b02d9e9e5b1d2c6f18811e7f1ad8dd857ec25bf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
