@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dc2b0d22_fc06aa1b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2020-10-19T20:31:52Z",
+      "side": 1,
+      "message": "Eh, the protobuf change breaks (at least) logdog. I\u0027ll pin the protobuf lib for now until logdog is fixed.",
+      "revId": "9b1a90fb2569e985383fcbb6576376ad996dcefb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
