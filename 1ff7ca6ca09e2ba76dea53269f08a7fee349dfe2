@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dd4c4c3b_c550c14b",
+        "filename": "go/src/infra/appengine/cros/lab_inventory/app/frontend/inventory.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 764,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-10-19T20:44:56Z",
+      "side": 1,
+      "message": "this is duplicated. could be in a helper function.",
+      "range": {
+        "startLine": 755,
+        "startChar": 1,
+        "endLine": 764,
+        "endChar": 2
+      },
+      "revId": "1ff7ca6ca09e2ba76dea53269f08a7fee349dfe2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9160f5a3_b7b3b556",
+        "filename": "go/src/infra/appengine/cros/lab_inventory/app/frontend/inventory.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 823,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-10-19T20:44:56Z",
+      "side": 1,
+      "message": "use inline variable directly",
+      "range": {
+        "startLine": 823,
+        "startChar": 61,
+        "endLine": 823,
+        "endChar": 71
+      },
+      "revId": "1ff7ca6ca09e2ba76dea53269f08a7fee349dfe2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d7728666_a2d1973b",
+        "filename": "go/src/infra/appengine/cros/lab_inventory/app/frontend/inventory.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 825,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-10-19T20:44:56Z",
+      "side": 1,
+      "message": "UpdateDeviceManualRepairRecord - fail to query in_progress host %s",
+      "range": {
+        "startLine": 825,
+        "startChar": 36,
+        "endLine": 825,
+        "endChar": 70
+      },
+      "revId": "1ff7ca6ca09e2ba76dea53269f08a7fee349dfe2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
