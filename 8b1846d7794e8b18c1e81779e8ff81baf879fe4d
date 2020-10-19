@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "43c5eb5f_7043ee69",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2020-10-19T19:34:16Z",
+      "side": 1,
+      "message": "https://go.googlesource.com/protobuf.git/+/aa45c467528943ba873128a111bf547a80fb942d may potentially brick Milo if it still uses conflicting names.",
+      "revId": "8b1846d7794e8b18c1e81779e8ff81baf879fe4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
