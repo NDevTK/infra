@@ -22,6 +22,30 @@
       },
       "revId": "0362479c18efc6a833b1d2a0d9b3db24a6e5c362",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8bdbb6ed_b3ac34de",
+        "filename": "infra/tools/dockerbuild/wheels.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 831,
+      "author": {
+        "id": 1275796
+      },
+      "writtenOn": "2020-10-19T05:56:03Z",
+      "side": 1,
+      "message": "Doesn\u0027t work. I\u0027ll fix it at some point, but I figured that going through the backlog of wheel requests is higher-priority than fixing the build for platforms that people haven\u0027t requested.",
+      "parentUuid": "7edb0080_fd2df18e",
+      "range": {
+        "startLine": 831,
+        "startChar": 40,
+        "endLine": 831,
+        "endChar": 55
+      },
+      "revId": "0362479c18efc6a833b1d2a0d9b3db24a6e5c362",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
