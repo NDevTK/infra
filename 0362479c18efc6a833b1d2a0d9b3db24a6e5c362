@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7edb0080_fd2df18e",
+        "filename": "infra/tools/dockerbuild/wheels.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 831,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2020-10-19T05:34:34Z",
+      "side": 1,
+      "message": "Just curious, does linux-arm not build, or just not tested?",
+      "range": {
+        "startLine": 831,
+        "startChar": 40,
+        "endLine": 831,
+        "endChar": 55
+      },
+      "revId": "0362479c18efc6a833b1d2a0d9b3db24a6e5c362",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
