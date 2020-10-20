@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aec42926_3f41b6bc",
+        "filename": "infra/tools/dockerbuild/wheels.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2020-10-20T02:39:56Z",
+      "side": 1,
+      "message": "packaged\u003d makes us use the binary from pypi.org for this, doesn\u0027t it? If so, why are we doing this?",
+      "range": {
+        "startLine": 178,
+        "startChar": 20,
+        "endLine": 178,
+        "endChar": 21
+      },
+      "revId": "7684d4502c57001c7e28400f0eb775cc17c71ba6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
