@@ -16,6 +16,46 @@
       "message": "PTAL We are adding OWNERS for chromeperf images dir",
       "revId": "ff856142538efc2c7c01490c176aab0d2bf65998",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "acb2dbc5_cbf1916c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1327821
+      },
+      "writtenOn": "2020-10-20T09:19:54Z",
+      "side": 1,
+      "message": "LGTM still, modulo one question.",
+      "revId": "ff856142538efc2c7c01490c176aab0d2bf65998",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c2b039f6_111f9a14",
+        "filename": "chromeperf/Dockerfile",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1327821
+      },
+      "writtenOn": "2020-10-20T09:19:54Z",
+      "side": 1,
+      "message": "I just noticed this and I\u0027m wondering why we need the google-appengine base image at all if we\u0027re deploying in GKE? AFAICT we don\u0027t actually use any of the appengine APIs.",
+      "range": {
+        "startLine": 1,
+        "startChar": 5,
+        "endLine": 1,
+        "endChar": 35
+      },
+      "revId": "ff856142538efc2c7c01490c176aab0d2bf65998",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
