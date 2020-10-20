@@ -171,6 +171,13 @@ SPECS.update({
             pyversions=['py2'],
         ),
         SourceOrPrebuilt(
+            'cffi',
+            '1.14.3',
+            pyversions=['py3'],
+            skip_plat=['mac-x64-cp38'],
+            packaged=['manylinux-x64-py3'],
+        ),
+        SourceOrPrebuilt(
             'coverage',
             '4.3.4',
             packaged=[
