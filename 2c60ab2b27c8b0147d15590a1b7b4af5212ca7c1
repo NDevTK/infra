@@ -16,6 +16,24 @@
       "message": "I think mastername property has been removed. Maybe gbeaty@ can confirm if this is the case.",
       "revId": "2c60ab2b27c8b0147d15590a1b7b4af5212ca7c1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "58026ddb_5a7292b6",
+        "filename": "appengine/findit/findit_v2/services/chromium_api.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2020-10-20T06:24:51Z",
+      "side": 1,
+      "message": "At least for chrome/chromium, I can see no build with mastername and without builder_group: https://screenshot.googleplex.com/BNGfziYtKU2TkbZ",
+      "parentUuid": "71209fea_e6f67883",
+      "revId": "2c60ab2b27c8b0147d15590a1b7b4af5212ca7c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
