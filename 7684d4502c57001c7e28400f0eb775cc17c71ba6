@@ -22,6 +22,30 @@
       },
       "revId": "7684d4502c57001c7e28400f0eb775cc17c71ba6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c43f82fc_b2ce16c9",
+        "filename": "infra/tools/dockerbuild/wheels.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1275796
+      },
+      "writtenOn": "2020-10-20T02:51:23Z",
+      "side": 1,
+      "message": "Oh right, yeah I guess we should be moving away from that. Fixed.",
+      "parentUuid": "aec42926_3f41b6bc",
+      "range": {
+        "startLine": 178,
+        "startChar": 20,
+        "endLine": 178,
+        "endChar": 21
+      },
+      "revId": "7684d4502c57001c7e28400f0eb775cc17c71ba6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
