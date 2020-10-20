@@ -34,6 +34,24 @@
       "parentUuid": "71209fea_e6f67883",
       "revId": "2c60ab2b27c8b0147d15590a1b7b4af5212ca7c1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d7df35e0_c23b48e5",
+        "filename": "appengine/findit/findit_v2/services/chromium_api.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1272456
+      },
+      "writtenOn": "2020-10-20T08:28:15Z",
+      "side": 1,
+      "message": "Thanks for looking into this. I\u0027ll remove all the mastername stuff in a separate CL though, since that\u0027s a separate concern to fixing the crash and will make the CL much larger.",
+      "parentUuid": "58026ddb_5a7292b6",
+      "revId": "2c60ab2b27c8b0147d15590a1b7b4af5212ca7c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
