@@ -39,4 +39,5 @@ setup(
         'uritemplate>=3.0.1',
         'urllib3>=1.25.10',
     ],
+    zip_ok=False,
 )
