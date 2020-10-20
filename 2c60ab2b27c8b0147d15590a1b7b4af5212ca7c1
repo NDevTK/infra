@@ -52,6 +52,24 @@
       "parentUuid": "58026ddb_5a7292b6",
       "revId": "2c60ab2b27c8b0147d15590a1b7b4af5212ca7c1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1df22723_6852e987",
+        "filename": "appengine/findit/findit_v2/services/chromium_api.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2020-10-20T21:31:21Z",
+      "side": 1,
+      "message": "I guess what I am missing here is how the crash happened. I can see from the statement:\n\n```\n    builder_group \u003d (\n        build.input.properties.get(\u0027builder_group\u0027) or\n        build.input.properties[\u0027mastername\u0027])\n```\n\nDoes the crash happen because build.input.properties does not have builder_group or mastername key, or because of the OR operation (it is ORing 2 strings here)\n\nIn short, I wonder if we can just fix the crash by\n```\ndef _GetBuilderGroup(input_properties):\n   return input_properties.get[\u0027builder_group\u0027]\n\n```\nsince there should be no scenario that the \u0027mastername\u0027 key exists and the \u0027builder_group\u0027 key doesn\u0027t\n?",
+      "parentUuid": "d7df35e0_c23b48e5",
+      "revId": "2c60ab2b27c8b0147d15590a1b7b4af5212ca7c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
