@@ -70,6 +70,24 @@
       "parentUuid": "d7df35e0_c23b48e5",
       "revId": "2c60ab2b27c8b0147d15590a1b7b4af5212ca7c1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b99e26bc_7d572121",
+        "filename": "appengine/findit/findit_v2/services/chromium_api.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1272456
+      },
+      "writtenOn": "2020-10-21T23:18:11Z",
+      "side": 1,
+      "message": "The crash happens because the \"get\" method doesn\u0027t exist. It should use square bracket notation like everywhere else.\n\n(Thanks, Python!)",
+      "parentUuid": "1df22723_6852e987",
+      "revId": "2c60ab2b27c8b0147d15590a1b7b4af5212ca7c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
