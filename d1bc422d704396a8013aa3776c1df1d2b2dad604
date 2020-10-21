@@ -22,6 +22,30 @@
       },
       "revId": "d1bc422d704396a8013aa3776c1df1d2b2dad604",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "334e53d2_9df263f7",
+        "filename": "appengine/monorail/tracker/test/tracker_bizobj_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1498,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2020-10-21T22:19:47Z",
+      "side": 0,
+      "message": "agree, i don\u0027t think noop changes for external refs were considered before this.",
+      "parentUuid": "d79bbe6f_62a8040e",
+      "range": {
+        "startLine": 1498,
+        "startChar": 29,
+        "endLine": 1498,
+        "endChar": 35
+      },
+      "revId": "d1bc422d704396a8013aa3776c1df1d2b2dad604",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
