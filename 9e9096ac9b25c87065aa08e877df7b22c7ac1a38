@@ -46,6 +46,30 @@
       },
       "revId": "9e9096ac9b25c87065aa08e877df7b22c7ac1a38",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "372618ed_ba81deca",
+        "filename": "appengine/monorail/tracker/tracker_bizobj.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1103,
+      "author": {
+        "id": 1374960
+      },
+      "writtenOn": "2020-10-21T22:22:04Z",
+      "side": 1,
+      "message": "Got it. Then this is ready for your review",
+      "parentUuid": "b9f33519_3b1f4dc9",
+      "range": {
+        "startLine": 1103,
+        "startChar": 0,
+        "endLine": 1103,
+        "endChar": 31
+      },
+      "revId": "9e9096ac9b25c87065aa08e877df7b22c7ac1a38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
