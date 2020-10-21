@@ -23,6 +23,30 @@
       },
       "revId": "901fb115203633f2a161eb8ff0d2324a3941fbd0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d960f4a6_ecf8a856",
+        "filename": "appengine/findit/model/test_location.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1423280
+      },
+      "writtenOn": "2020-10-21T18:12:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e4f3a467_d825e39d",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 1
+      },
+      "revId": "901fb115203633f2a161eb8ff0d2324a3941fbd0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
