@@ -56,6 +56,30 @@
       },
       "revId": "ff856142538efc2c7c01490c176aab0d2bf65998",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6b8664fa_6ca6f576",
+        "filename": "chromeperf/Dockerfile",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2020-10-21T00:44:37Z",
+      "side": 1,
+      "message": "https://github.com/GoogleCloudPlatform/python-runtime The document suggest that we can use the image in GKE. It\u0027s well maintained and lightweight. Maybe there are other options, but changing base image is not so painful in this usage.",
+      "parentUuid": "c2b039f6_111f9a14",
+      "range": {
+        "startLine": 1,
+        "startChar": 5,
+        "endLine": 1,
+        "endChar": 35
+      },
+      "revId": "ff856142538efc2c7c01490c176aab0d2bf65998",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
