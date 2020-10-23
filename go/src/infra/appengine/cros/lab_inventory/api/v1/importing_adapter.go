@@ -9,6 +9,8 @@ package api
 // to data defined by
 // https://chromium.googlesource.com/chromiumos/infra/proto/src/lab/device.proto
 import (
+	"encoding/base64"
+	"encoding/json"
 	"strconv"
 	"strings"
 
@@ -105,6 +107,16 @@ func importServo(servo *lab.Servo, key string, value string) error {
 			servoSetup = lab.ServoSetupType(ss)
 		}
 		servo.ServoSetup = servoSetup
+	case "servo_topology":
+		var topology *lab.ServoTopology
+		if value != "" {
+			jsonBytes, err := base64.StdEncoding.DecodeString(value)
+			if err == nil {
+				topology = &lab.ServoTopology{}
+				json.Unmarshal(jsonBytes, topology)
+			}
+		}
+		servo.ServoTopology = topology
 	}
 	return nil
 }
@@ -282,6 +294,7 @@ func createDut(devices *[]*lab.ChromeOSDevice, servoHostRegister servoHostRegist
 	peri := getPeripherals(olddata.GetLabels())
 	if servo != nil {
 		servo.ServoType = olddata.GetLabels().GetPeripherals().GetServoType()
+		servo.ServoTopology = getServoTopology(olddata.GetLabels().GetPeripherals().GetServoTopology())
 		peri.Servo = servo
 		servoHostRegister.addServo(servo)
 	}
@@ -332,6 +345,33 @@ func createLabstation(servoHostRegister servoHostRegister, olddata *inventory.Co
 	}
 	servoHostRegister[hostname] = servoHost
 	return nil
+}
+
+func createServoTopologyItem(i *inventory.ServoTopologyItem) *lab.ServoTopologyItem {
+	if i == nil {
+		return nil
+	}
+	return &lab.ServoTopologyItem{
+		Type:         i.GetType(),
+		SysfsProduct: i.GetSysfsProduct(),
+		Serial:       i.GetSerial(),
+		UsbHubPort:   i.GetUsbHubPort(),
+	}
+}
+
+func getServoTopology(st *inventory.ServoTopology) *lab.ServoTopology {
+	var t *lab.ServoTopology
+	if st != nil {
+		var children []*lab.ServoTopologyItem
+		for _, child := range st.GetChildren() {
+			children = append(children, createServoTopologyItem(child))
+		}
+		t = &lab.ServoTopology{
+			Main:     createServoTopologyItem(st.Main),
+			Children: children,
+		}
+	}
+	return t
 }
 
 func boolToDutState(state bool) lab.PeripheralState {

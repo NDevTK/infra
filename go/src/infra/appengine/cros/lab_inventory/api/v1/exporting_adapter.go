@@ -163,6 +163,7 @@ func setDutPeripherals(labels *inventory.SchedulableLabels, d *lab.Peripherals) 
 	if servo := d.GetServo(); servo != nil {
 		servoType := servo.GetServoType()
 		p.ServoType = &servoType
+		setServoTopology(p, servo.GetServoTopology())
 	}
 
 	if facing := d.GetCameraboxInfo().GetFacing(); facing != lab.Camerabox_FACING_UNKNOWN {
@@ -175,6 +176,33 @@ func setDutPeripherals(labels *inventory.SchedulableLabels, d *lab.Peripherals) 
 	}
 
 	p.SmartUsbhub = &(d.SmartUsbhub)
+}
+
+func copyServoTopologyItem(i *lab.ServoTopologyItem) *inventory.ServoTopologyItem {
+	if i == nil {
+		return nil
+	}
+	return &inventory.ServoTopologyItem{
+		Type:         getPointerString(i.GetType()),
+		SysfsProduct: getPointerString(i.GetSysfsProduct()),
+		Serial:       getPointerString(i.GetSerial()),
+		UsbHubPort:   getPointerString(i.GetUsbHubPort()),
+	}
+}
+
+func setServoTopology(p *inventory.Peripherals, st *lab.ServoTopology) {
+	var t *inventory.ServoTopology
+	if st != nil {
+		var children []*inventory.ServoTopologyItem
+		for _, child := range st.GetChildren() {
+			children = append(children, copyServoTopologyItem(child))
+		}
+		t = &inventory.ServoTopology{
+			Main:     copyServoTopologyItem(st.Main),
+			Children: children,
+		}
+	}
+	p.ServoTopology = t
 }
 
 func setDutPools(labels *inventory.SchedulableLabels, inputPools []string) {
@@ -553,4 +581,8 @@ func adaptV2LabstationToV1DutSpec(data *ExtendedDeviceData) (*inventory.DeviceUn
 		},
 	}
 	return dut, nil
+}
+
+func getPointerString(val string) *string {
+	return &val
 }
