@@ -5,6 +5,9 @@
 package labels
 
 import (
+	"bytes"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -89,6 +92,14 @@ func otherPeripheralsConverter(ls *inventory.SchedulableLabels) []string {
 
 	if servoType := p.GetServoType(); servoType != "" {
 		labels = append(labels, fmt.Sprintf("servo_type:%s", servoType))
+	}
+
+	if servoTopology := p.GetServoTopology(); servoTopology != nil {
+		topologyJSONBytes, err := jsonMarshal(servoTopology)
+		if err == nil {
+			topology := base64.StdEncoding.EncodeToString(topologyJSONBytes)
+			labels = append(labels, fmt.Sprintf("servo_topology:%s", topology))
+		}
 	}
 
 	if servoUSBState := p.GetServoUsbState(); servoUSBState != inventory.HardwareState_HARDWARE_UNKNOWN {
@@ -205,6 +216,16 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, labels []string) 
 			}
 		case "servo_type":
 			p.ServoType = &v
+		case "servo_topology":
+			var topology *inventory.ServoTopology
+			if v != "" {
+				jsonBytes, err := base64.StdEncoding.DecodeString(v)
+				if err == nil {
+					topology = &inventory.ServoTopology{}
+					json.Unmarshal(jsonBytes, topology)
+				}
+			}
+			p.ServoTopology = topology
 		case "working_bluetooth_btpeer":
 			i, err := strconv.Atoi(v)
 			if err != nil {
@@ -230,4 +251,19 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, labels []string) 
 		i--
 	}
 	return labels
+}
+
+func jsonMarshal(t interface{}) ([]byte, error) {
+	buffer := &bytes.Buffer{}
+	encoder := json.NewEncoder(buffer)
+	encoder.SetEscapeHTML(false)
+	err := encoder.Encode(t)
+	if err != nil {
+		return nil, err
+	}
+	b := buffer.Bytes()
+	if len(b) > 2 {
+		return b[:len(b)-1], nil
+	}
+	return b, nil
 }
