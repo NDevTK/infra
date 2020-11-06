@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "99ddb442_bd36aa65",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-11-06T06:26:16Z",
+      "side": 1,
+      "message": "I need composite indexes to apply filters and order by updated_time. I believe I need to use an index.yaml, but not sure how to use that during unittests. The tests fail even when I have the index defined in a index.yaml. I removed them for now and will implement as another CL.",
+      "revId": "a330d5bfdc89f5e67bb565de053fe55964dc5df9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b6accc0d_1550c1b5",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-11-06T06:26:16Z",
+      "side": 1,
+      "message": "I believe I need to use an index.yaml file. I\u0027m not sure how to apply it when running the tests though. Looking into it as another CL.",
+      "revId": "a330d5bfdc89f5e67bb565de053fe55964dc5df9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
