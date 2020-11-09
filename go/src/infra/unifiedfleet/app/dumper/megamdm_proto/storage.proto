@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package ops.macops.mdm.mega;
+
+option go_package = "infra/unifiedfleet/app/dumper/megamdm_proto;megamdm";
+
+// New commands begin in the PENDING state; once executed by the
+// client they transition to either SUCCESS or FAILURE.
+enum CommandStatus {
+  PENDING = 0;
+  SUCCESS = 1;
+  FAILURE = 2;
+  OBSOLETE = 3;
+}
+
+// Status of last-known client connection attempt.
+enum ConnectionStatus {
+  UNKNOWN = 0;
+  OK = 1;
+  CLIENT_BUSY = 2;
+  SERVER_BUSY = 3;
+}
+
+// Namespace represents an enumeration of use cases for the MDM.
+// Right now, managing gMac is the only developed use case.
+// The namespace is used for separation between inventory syncs
+// and storage of API tokens like the ABM credentials.
+enum Namespace {
+  GMAC = 0;
+  CHROME = 1;
+}
+
+// Payload for ConnectionQueue. This currently contains no data.
+message ConnectionQueuePayload {}

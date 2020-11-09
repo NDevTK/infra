@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package ops.macops.mdm.mega;
+
+option go_package = "infra/unifiedfleet/app/dumper/megamdm_proto;megamdm";
+
+import "google/api/annotations.proto";
+import "google/api/httpbody.proto";
+
+service CheckinService {
+  // Checkin authenticates MDM enrollments and maintains push tokens.
+  //
+  // Apple Doc:
+  // https://developer.apple.com/documentation/devicemanagement/check-in
+  rpc Checkin(CheckinRequest) returns (google.api.HttpBody) {
+    option (google.api.http) = {
+      put: "/v1/mdm/checkin"
+      body: "plist_data"
+    };
+  }
+
+  // Acknowledge requests come from the client after the device receives an APNS
+  // notification. The device will report readiness to accept a new command or
+  // and acknowledge the status of a previously issued command.
+  rpc Acknowledge(AcknowledgeRequest) returns (google.api.HttpBody) {
+    option (google.api.http) = {
+      put: "/v1/mdm/connect"
+      body: "plist_data"
+    };
+  }
+}
+
+message CheckinRequest {
+  google.api.HttpBody plist_data = 1;
+
+  // If present fleet specifies which fleet the device belongs to.
+  // The fleet parameter may be used for triggering specific workflows on the
+  // mdmclient.
+  string fleet = 2;
+}
+
+message AcknowledgeRequest {
+  google.api.HttpBody plist_data = 1;
+
+  // Same as CheckinRequest.fleet.
+  string fleet = 2;
+}
