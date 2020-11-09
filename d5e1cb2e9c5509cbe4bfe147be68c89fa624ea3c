@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "315e073e_40de8cdc",
+        "filename": "recipes/recipes/git_migrate_master_to_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2020-11-09T22:55:32Z",
+      "side": 1,
+      "message": "Nit: 2020",
+      "range": {
+        "startLine": 1,
+        "startChar": 12,
+        "endLine": 1,
+        "endChar": 16
+      },
+      "revId": "d5e1cb2e9c5509cbe4bfe147be68c89fa624ea3c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6780081e_605033f3",
+        "filename": "recipes/recipes/git_migrate_master_to_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2020-11-09T22:55:32Z",
+      "side": 1,
+      "message": "host, project",
+      "range": {
+        "startLine": 18,
+        "startChar": 6,
+        "endLine": 18,
+        "endChar": 10
+      },
+      "revId": "d5e1cb2e9c5509cbe4bfe147be68c89fa624ea3c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
