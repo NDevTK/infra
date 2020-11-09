@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "78c2486e_e96a3f70",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-11-09T23:18:02Z",
+      "side": 1,
+      "message": "hmm, seems I cannot add vvrantchan@google.com as reviewer, I will cc him in the buganizer bugs...",
+      "revId": "6b98146d7d349b2e7a4e26a0fd25890bc831a5a0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6eaed4d5_8c2a3f31",
