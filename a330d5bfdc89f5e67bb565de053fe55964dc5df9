@@ -51,6 +51,24 @@
       "parentUuid": "b6accc0d_1550c1b5",
       "revId": "a330d5bfdc89f5e67bb565de053fe55964dc5df9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d1ecbe31_781a13e9",
+        "filename": "go/src/infra/libs/cros/lab_inventory/datastore/repair_record.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-11-09T20:32:58Z",
+      "side": 1,
+      "message": "According to docs and also after testing with code, if I have queries using one or more filters and one or more sort orders, I have to define a composite index: https://cloud.google.com/datastore/docs/concepts/indexes#index_configuration\n\nOnce the index is defined, I can just use q.Order(...)",
+      "parentUuid": "be47d69a_3fcd640a",
+      "revId": "a330d5bfdc89f5e67bb565de053fe55964dc5df9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
