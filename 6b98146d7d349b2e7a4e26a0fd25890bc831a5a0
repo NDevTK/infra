@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "955cade4_55c6ce15",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-11-09T23:17:05Z",
+      "side": 1,
+      "message": "Not quite sure I\u0027m using the right endpoint \u0026 pass the right parameters. I refer to the current gmac/mdm unittest implementation.",
+      "revId": "6b98146d7d349b2e7a4e26a0fd25890bc831a5a0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6eaed4d5_8c2a3f31",
+        "filename": "go/src/infra/unifiedfleet/app/dumper/megamdm.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-11-09T23:17:05Z",
+      "side": 1,
+      "message": "Do we need to provide all UNKNOWN here?",
+      "range": {
+        "startLine": 36,
+        "startChar": 9,
+        "endLine": 36,
+        "endChar": 16
+      },
+      "revId": "6b98146d7d349b2e7a4e26a0fd25890bc831a5a0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
