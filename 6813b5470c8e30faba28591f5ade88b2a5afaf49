@@ -16,6 +16,41 @@
       "message": "I have a couple initial questions about this:\n\n - Is it correct that the infra repo is the right place for these?\n - Would it be possible to combine these, and if so would that be a good idea?",
       "revId": "6813b5470c8e30faba28591f5ade88b2a5afaf49",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "201e589d_ba987069",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2020-11-12T01:55:07Z",
+      "side": 1,
+      "message": "code looks good overall % please merge.",
+      "revId": "6813b5470c8e30faba28591f5ade88b2a5afaf49",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "77f927ab_b028d05a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2020-11-12T01:55:07Z",
+      "side": 1,
+      "message": "\u003e I have a couple initial questions about this:\n\u003e \n\u003e  - Is it correct that the infra repo is the right place for these?\n\nYeah, definitel.\n\n\u003e  - Would it be possible to combine these, and if so would that be a good idea?\n\nHm, i don\u0027t much difference between them, so I think we should combine them:\n * where to apply patch can use a hardcoded dictionary based on gerrit CL\u0027s project name. This also automatically leads to basepath.\n * similarly, map can determine which analyzers to run.\nDid I miss anything?\n\nFinally, both patch_root and analyzers list can be provided via proto config for the recipe and thus hardcoded inside our starlark config (infra/config). This is better than map in a recipe, as it makes recipe generic. For our use-case, it\u0027s probably not giving a huge advantage. However, it\u0027s useful for those, who use our recipe as an inspiration (read: copy-pasta or forking).",
+      "parentUuid": "c04542fe_486ff4f3",
+      "revId": "6813b5470c8e30faba28591f5ade88b2a5afaf49",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
