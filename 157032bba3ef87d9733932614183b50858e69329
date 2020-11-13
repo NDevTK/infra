@@ -22,6 +22,30 @@
       },
       "revId": "157032bba3ef87d9733932614183b50858e69329",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "53eb558f_9e3ecbc8",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2020-11-13T19:38:02Z",
+      "side": 1,
+      "message": "Reduced. I don\u0027t know if 2h would be enough, but I could try that.\nI plan to reduce it after I know how long it takes.",
+      "parentUuid": "b41a9b76_c9f1bca2",
+      "range": {
+        "startLine": 7,
+        "startChar": 62,
+        "endLine": 7,
+        "endChar": 63
+      },
+      "revId": "157032bba3ef87d9733932614183b50858e69329",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
