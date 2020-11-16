@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1e37e876_d41a941f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2020-11-16T20:50:57Z",
+      "side": 1,
+      "message": "Sidebar basically complete. Displaying all actions until modal is implemented so Lab Techs have full context.",
+      "revId": "51c7dbc4bc21cc6774f3129562fdb9268b13d033",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
