@@ -207,11 +207,27 @@ func (ip *indexPack) processExistingKzip(ctx context.Context, kzip string, kzipE
 	return nil
 }
 
+// validateUnit checks that the unit's source file is present in required inputs.
+func validateUnit(unit *kpb.CompilationUnit) bool {
+	for _, requiredInput := range unit.GetRequiredInput() {
+		if requiredInput.GetInfo().GetPath() == unit.GetSourceFile()[0] {
+			return true
+		}
+	}
+	return false
+}
+
 // unitFileToKzipEntry takes compilationUnits from unitProtoChannel and
 // creates a kzipEntry to be written to the kzip archive.
 func (ip *indexPack) unitFileToKzipEntry(ctx context.Context,
 	unitProtoChannel <-chan *kpb.CompilationUnit, kzipEntryChannel chan<- kzipEntry) error {
 	for unitProto := range unitProtoChannel {
+		if !validateUnit(unitProto) {
+			logging.Warningf(ctx,
+				"Skipping unit since source file %s was not in required inputs.", unitProto.GetSourceFile())
+			continue
+		}
+
 		logging.Debugf(ctx, "Unit argument: %s", unitProto.GetArgument())
 		indexedCompilationProto := &kpb.IndexedCompilation{
 			Unit: unitProto,
