@@ -109,9 +109,7 @@ func (c *addRPM) innerRun(a subcommands.Application, args []string, env subcomma
 	var rpm ufspb.RPM
 	var rpms []*ufspb.RPM
 	if c.interactive {
-		return errors.New("Interactive mode for this " +
-			"command is not yet implemented yet.")
-		//utils.GetRPMInteractiveInput(ctx, ic, &rpm, false)
+		utils.GetRPMInteractiveInput(ctx, ic, &rpm)
 	} else if c.newSpecsFile != "" {
 		if utils.IsCSVFile(c.newSpecsFile) {
 			rpms, err = c.parseMCSV()
@@ -125,10 +123,12 @@ func (c *addRPM) innerRun(a subcommands.Application, args []string, env subcomma
 			if rpm.GetRack() == "" {
 				return errors.New(fmt.Sprintf("rack field is empty in json. It is a required parameter for json input."))
 			}
-			rpms = append(rpms, &rpm)
 		}
 	} else {
 		c.parseArgs(&rpm)
+	}
+
+	if len(rpms) == 0 {
 		rpms = append(rpms, &rpm)
 	}
 
