@@ -16,6 +16,24 @@
       "message": "This file contains an example of how we\u0027re looking to define workflow templates, without having to specify the initial state of the graph. We can see whether this is sufficient or whether we need more fidelity at this level. The escape hatch for now is we\u0027ll keep the graph creation module in the engine service.",
       "revId": "11898688945266afc47e1cad47cf24fccc9337d1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "415d78f5_7555caae",
+        "filename": "go/src/infra/chromeperf/workflows_server/templates_server_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1327821
+      },
+      "writtenOn": "2020-11-18T01:52:57Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "6bf6db23_2144ed44",
+      "revId": "11898688945266afc47e1cad47cf24fccc9337d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
