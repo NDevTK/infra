@@ -10,7 +10,6 @@ from recipe_engine import post_process
 
 DEPS = [
   'build/chromium',
-  'build/goma',
   'build/zip',
   'depot_tools/bot_update',
   'depot_tools/depot_tools',
@@ -325,16 +324,11 @@ def maybe_build_cipd_pkgs(api, cipd_pkgs_to_create, existing_cipd_tags):
         mb_py_path = mb_path.join('mb.py')
         mb_args = [
            'zip', '--master=dummy.master', '--builder=dummy.builder',
-           '--goma-dir', str(api.path['cache'].join('goma', 'client')),
            '--luci-auth',
            '--config-file=%s' % str(mb_config_path), 'out/Release',
            'weblayer_instrumentation_test_apk', str(zip_path)]
-        try:
-          api.python('Building weblayer_instrumentation_test_apk',
-                     mb_py_path, mb_args)
-        except api.step.StepFailure as e:
-          api.goma.stop(e.retcode)
-          raise e
+        api.python('Building weblayer_instrumentation_test_apk', mb_py_path,
+                   mb_args)
 
         # Build weblayer instrumentation tests APK - x86 CIPD package
         api.zip.unzip('Uncompressing binaries', zip_path, extract_dir)
@@ -394,10 +388,6 @@ def RunSteps(api):
   api.gclient.apply_config('android')
   # Checkout chromium/src at ToT
   api.bot_update.ensure_checkout(with_tags=True)
-  # Ensure GOMA is installed
-  api.goma.ensure_goma()
-  # start the GOMA proxy
-  api.goma.start()
 
   # Set up git config
   api.git('config', 'user.name', 'Weblayer Skew Tests Version Updates',
@@ -416,7 +406,6 @@ def RunSteps(api):
       'Read %s' % VARIANTS_PYL_PATH, variants_pyl_path)
 
   maybe_update_variants_pyl(api, variants_pyl_content, variants_pyl_path)
-  api.goma.stop(0)
 
 
 def GenTests(api):
@@ -513,8 +502,12 @@ def GenTests(api):
 
   def url_lib_json_step_datas(versions):
     hashes = [str(hash(s)) for s in versions]
-    s1 = api.url.json('Getting Android beta channel releases',
-                      [{'hashes':{'chromium': h}} for h in hashes])
+    s1 = api.url.json('Getting Android beta channel releases', [{
+        'hashes': {
+            'chromium': h
+        }
+    } for h in hashes])
+
     def _create_step_data(h, v):
       name = ('Converting hashes released in Beta to Chromium versions.'
               'Fetch information on commit %s') % h
