@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "490ca8f8_8ded9b40",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-02T23:44:21Z",
+      "side": 1,
+      "message": "Need to look at ",
+      "revId": "0154c5da5fcf6cf37828d712f0d86252f0acc68f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5c05134c_b7bb43fe",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/rtd/invoke.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-02T23:44:21Z",
+      "side": 1,
+      "message": "Add constant for magic value.\n\nIs this temporary?",
+      "range": {
+        "startLine": 40,
+        "startChar": 41,
+        "endLine": 40,
+        "endChar": 55
+      },
+      "revId": "0154c5da5fcf6cf37828d712f0d86252f0acc68f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9b1225b5_69bf1bd1",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/rtd/invoke.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-02T23:44:21Z",
+      "side": 1,
+      "message": "I\u0027d start addding public methods to dockerImpl.CreateVolume() etc.\n\nIt\u0027ll make the code a lot more readable.",
+      "range": {
+        "startLine": 46,
+        "startChar": 54,
+        "endLine": 46,
+        "endChar": 168
+      },
+      "revId": "0154c5da5fcf6cf37828d712f0d86252f0acc68f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d372090b_386a3230",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/rtd/invoke.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-02T23:44:21Z",
+      "side": 1,
+      "message": "e.g., the run() call here ends up resetting stdoutBuf, which is very non-trivial from reading the code here. This is an unexpected side-effect of calling run().",
+      "range": {
+        "startLine": 46,
+        "startChar": 21,
+        "endLine": 46,
+        "endChar": 24
+      },
+      "revId": "0154c5da5fcf6cf37828d712f0d86252f0acc68f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0856d449_4bfdbab8",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/rtd/invoke.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-02T23:44:21Z",
+      "side": 1,
+      "message": "Why?\n\nIt seems to me that Invoke() should accept rtdCmd []string directly instead of manipulating the string here.",
+      "range": {
+        "startLine": 113,
+        "startChar": 46,
+        "endLine": 113,
+        "endChar": 72
+      },
+      "revId": "0154c5da5fcf6cf37828d712f0d86252f0acc68f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

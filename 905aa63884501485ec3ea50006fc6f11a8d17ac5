@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0180c26b_227114ae",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/cmd/invoke-rtd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-02T23:44:21Z",
+      "side": 1,
+      "message": "This is technically a uri (no protocol information).",
+      "range": {
+        "startLine": 26,
+        "startChar": 41,
+        "endLine": 26,
+        "endChar": 44
+      },
+      "revId": "905aa63884501485ec3ea50006fc6f11a8d17ac5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8ed08caa_07b1f5e9",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/rtd/docker.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-02T23:44:21Z",
+      "side": 1,
+      "message": "What\u0027s the value in doing this?\n\nI agree with https://www.integralist.co.uk/posts/go-interfaces/#accept-interfaces-return-concrete-types ( but not the very next point in that article ;) )\n\nDefine interfaces at the point-of-use. If a package exports an interface, it should be what the functions in the package _accept_, not wrappers for stuff the function return / concrete types the package exports.\n\ne.g., it makes sense for the user of realDocker to define an interface \n\n  type docker interface {\n    run(...)\n  }\n\nso that the tests for that user can use a fake instead.\n\nBut this package should simply export the concrete Docker type.\n\n\nTalking about packages, I also favor really small packages in Go. So.. I\u0027d extract this file into a package / think of this file as a package (i.e., public Docker concrete type with public Run() method etc.)",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 0
+      },
+      "revId": "905aa63884501485ec3ea50006fc6f11a8d17ac5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d34f7f26_c341882c",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/rtd/docker.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-02T23:44:21Z",
+      "side": 1,
+      "message": "Why bytes.Buffer vs io.Writer ?\n\nhttps://golang.org/pkg/os/exec/#Cmd actually just wants io.Writer (as I\u0027d expect).",
+      "range": {
+        "startLine": 22,
+        "startChar": 65,
+        "endLine": 22,
+        "endChar": 79
+      },
+      "revId": "905aa63884501485ec3ea50006fc6f11a8d17ac5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f144e070_0f8ef087",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/rtd/docker.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-02T23:44:21Z",
+      "side": 1,
+      "message": "- You probably want a \"\\n\" at the end\n- trimming formatted string is ugly.\n\nThis is better:\n\n  log.Printf(\"running %s %s\\n\", \"docker\", strings.Join(args, \" \"))",
+      "range": {
+        "startLine": 28,
+        "startChar": 1,
+        "endLine": 28,
+        "endChar": 76
+      },
+      "revId": "905aa63884501485ec3ea50006fc6f11a8d17ac5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9ad5ec0d_3f11f0c3",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/rtd/docker.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-02T23:44:21Z",
+      "side": 1,
+      "message": "Is this temporary?\n\nArbitrary docker command might dump a lot of output...\n\nI\u0027d keep run() internal and add methods like Start() etc, and _those_ can dump the stdout/stderr if they want to.\n\nBasically, the function that creates the stdoutBuf/stderrBuf owns the contents, and should decide what to do with the content (log.Printf / dump to file / /dev/null ...).",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 45
+      },
+      "revId": "905aa63884501485ec3ea50006fc6f11a8d17ac5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
