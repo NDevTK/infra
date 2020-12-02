@@ -23,6 +23,7 @@ func InvokeRTD() *subcommands.Command {
 			c := &invokeCmd{}
 			c.InitRTSFlags()
 			c.Flags.StringVar(&c.rtdCommand, "rtd-command", "", "The executable that will run the RTD, e.g. \"tast\"")
+			c.Flags.StringVar(&c.imageURL, "image-url", "", "URL for RTD image, e.g. gcr.io/chromeos-rtd-dev/sean-test")
 			return c
 		},
 	}
@@ -31,8 +32,8 @@ func InvokeRTD() *subcommands.Command {
 type invokeCmd struct {
 	flags
 
-	// TODO: currently not read anywhere
 	rtdCommand string
+	imageURL   string
 }
 
 func (inv *invokeCmd) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -56,10 +57,10 @@ func (inv *invokeCmd) innerRun(ctx context.Context) error {
 	}
 	logging.Infof(ctx, "Validated that gRPC servers are running for ProgressSinkService and TlsService")
 
-	if err := rtd.StartRTDContainer(ctx); err != nil {
+	if err := rtd.StartRTDContainer(ctx, inv.imageURL); err != nil {
 		return errors.Annotate(err, "failed StartRTDContainer").Err()
 	}
-	if err := rtd.Invoke(ctx, int32(inv.progressSinkPort), int32(inv.tlsCommonPort)); err != nil {
+	if err := rtd.Invoke(ctx, int32(inv.progressSinkPort), int32(inv.tlsCommonPort), inv.rtdCommand); err != nil {
 		return errors.Annotate(err, "failed Invoke").Err()
 	}
 	if err := rtd.StopRTDContainer(ctx); err != nil {
