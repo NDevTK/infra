@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e7de53b7_da3577aa",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393469
+      },
+      "writtenOn": "2020-12-03T23:38:48Z",
+      "side": 1,
+      "message": "lgtm with an open comment",
+      "revId": "95c217d85e5fb0adabe02a2d3208050e56a095d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "587c9ff8_24789d16",
+        "filename": "appengine/rietveld_staticgen/main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1393469
+      },
+      "writtenOn": "2020-12-03T23:38:48Z",
+      "side": 1,
+      "message": "Would such exception be raised on 500 or 429? If so, we should rely on Cloud Task retry. If not, carry on :)",
+      "revId": "95c217d85e5fb0adabe02a2d3208050e56a095d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
