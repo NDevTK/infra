@@ -97,6 +97,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "d68d609e_c06b6677",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/rtd/docker.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-03T18:14:26Z",
+      "side": 1,
+      "message": "I prefer the latter.\n\nI don\u0027t think of function calls as indirection necessarily. I like using functions _heavily_ for readability.\n\nSo, looking at your implementation of, e.g. StartRTDContainer(), I\u0027d quickly try to extract helper functions for startContainer(), createVolume() etc. so that StartRTDContainer() feels more linear and understandable. When trying to undestand the steps to StartRTDContainer(), I don\u0027t need to understand exactly how the container is started, the volume is created etc. So those functions create a useful conceptual abstraction.\n\nFrom there, it makes more sense for me to move those functions to be methods on the docker type, rather than free functions alongside StartRTDContainer() - this isn\u0027t adding another indirection, it is moving functions I\u0027d anyway have to a common place where they all do \"similar\" stuff / are at \"similar\" level of abstraction.",
+      "parentUuid": "87a933f0_f759a181",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 0
+      },
+      "revId": "905aa63884501485ec3ea50006fc6f11a8d17ac5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d34f7f26_c341882c",
         "filename": "go/src/infra/cros/cmd/prototype-rts/internal/rtd/docker.go",
         "patchSetId": 1
