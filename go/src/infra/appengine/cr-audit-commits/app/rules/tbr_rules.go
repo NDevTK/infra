@@ -97,8 +97,20 @@ func (r ChangeReviewed) Run(ctx context.Context, ap *AuditParams, rc *RelevantCo
 		return nil, err
 	}
 	owner := change.Owner.AccountID
-	crLabelInfo, exists := change.Labels["Code-Review"]
-	if !exists {
+	crLabelInfo, crExists := change.Labels["Code-Review"]
+	botCommitLabelInfo, bcExists := change.Labels["Bot-Commit"]
+	botCommitApproved := false
+	if bcExists {
+		bcVal, err := getMaxLabelValue(botCommitLabelInfo.Values)
+		if err != nil {
+			return nil, err
+		}
+		if bcVal == 1 {
+			botCommitApproved = true
+		}
+	}
+
+	if !crExists && !botCommitApproved {
 		return nil, fmt.Errorf("The gerrit change for Commit %v does not have the 'Code-Review' label", rc.CommitHash)
 	}
 	maxValue, err := getMaxLabelValue(crLabelInfo.Values)
@@ -122,7 +134,7 @@ func (r ChangeReviewed) Run(ctx context.Context, ap *AuditParams, rc *RelevantCo
 				result.SetToken(ctx, "TBRReminderSent", "Sent")
 				// Notify the CL that it needs to be approved by a valid reviewer
 				// within `gracePeriod`.
-				if err := postReminder(ctx, change, deadline, cs); err != nil {
+				if err := postReminder(ctx, change, deadline, cs, ap); err != nil {
 					logging.WithError(err).Errorf(
 						ctx, "Unable to post reminder on change %v", change.ChangeID)
 				}
@@ -154,9 +166,14 @@ func getChangeWithLabelDetails(ctx context.Context, ap *AuditParams, rc *Relevan
 	return cls[0], nil
 }
 
-func postReminder(ctx context.Context, change *gerrit.Change, deadline time.Time, cs *Clients) error {
+func postReminder(ctx context.Context, change *gerrit.Change, deadline time.Time, cs *Clients, ap *AuditParams) error {
+	msg := fmt.Sprintf("This change needs to be reviewed by a valid reviewer by %v", deadline)
+	chromeMsg := "This change needs to be reviewed by a valid reviewer. Beginning in Q1 2020, Chrome is disallowing TBRs. Learn more at go/chrome-cr-owners-site."
+	if strings.Contains(ap.RepoCfg.GerritURL, "chrom") {
+		msg = chromeMsg
+	}
 	ri := &gerrit.ReviewInput{
-		Message: fmt.Sprintf("This change needs to be reviewed by a valid reviewer by %v", deadline),
+		Message: msg,
 	}
 	_, err := cs.gerrit.SetReview(ctx, change.ChangeID, "current", ri)
 	return err
