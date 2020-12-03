@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "385354aa_e27243ec",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/cmd/invoke-rtd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2020-12-03T16:59:16Z",
+      "side": 1,
+      "message": "ah, good one. Thanks",
+      "parentUuid": "0180c26b_227114ae",
+      "range": {
+        "startLine": 26,
+        "startChar": 41,
+        "endLine": 26,
+        "endChar": 44
+      },
+      "revId": "905aa63884501485ec3ea50006fc6f11a8d17ac5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8ed08caa_07b1f5e9",
@@ -37,6 +61,30 @@
       "writtenOn": "2020-12-02T23:44:21Z",
       "side": 1,
       "message": "What\u0027s the value in doing this?\n\nI agree with https://www.integralist.co.uk/posts/go-interfaces/#accept-interfaces-return-concrete-types ( but not the very next point in that article ;) )\n\nDefine interfaces at the point-of-use. If a package exports an interface, it should be what the functions in the package _accept_, not wrappers for stuff the function return / concrete types the package exports.\n\ne.g., it makes sense for the user of realDocker to define an interface \n\n  type docker interface {\n    run(...)\n  }\n\nso that the tests for that user can use a fake instead.\n\nBut this package should simply export the concrete Docker type.\n\n\nTalking about packages, I also favor really small packages in Go. So.. I\u0027d extract this file into a package / think of this file as a package (i.e., public Docker concrete type with public Run() method etc.)",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 0
+      },
+      "revId": "905aa63884501485ec3ea50006fc6f11a8d17ac5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "87a933f0_f759a181",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/rtd/docker.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2020-12-03T16:59:16Z",
+      "side": 1,
+      "message": "are you suggesting that such an interface/concrete type have just a \"run\" command that accepts docker subcommands, or that it have \"run\", \"stop\", \"start\", etc.?\n\nI definitely think I prefer the former, since the latter would add a layer of indirection for little benefit",
+      "parentUuid": "8ed08caa_07b1f5e9",
       "range": {
         "startLine": 12,
         "startChar": 0,
