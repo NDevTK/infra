@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a7c31aef_1d27121d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1311766
+      },
+      "writtenOn": "2020-12-04T00:00:01Z",
+      "side": 1,
+      "message": "The recipe will actually fail since the mb_config.pyl used for compiling requires GOMA. I am deprecating this builder soon, I have a CL crrev.com/c/2573497. I will try to setup GOMA for the new builder taking it\u0027s place. This should all be resolved on Monday.",
+      "revId": "a49c289944315ca1156447623595f076ba2f7bec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
