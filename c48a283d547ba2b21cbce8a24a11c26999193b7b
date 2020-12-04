@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "97a08063_6d22c6d9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2020-12-04T22:07:31Z",
+      "side": 1,
+      "message": "Now changed the recipe to take a inputs proto message.\n\nIn order to specify analyzers in such a message, I think we have to specify them by listing names, which means I\u0027d like to add a mapping from names to analyzers. (Uploaded a separate CL to do that). WDYT?",
+      "revId": "c48a283d547ba2b21cbce8a24a11c26999193b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
