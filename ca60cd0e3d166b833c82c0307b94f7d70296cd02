@@ -400,6 +400,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a504cb71_7d538e8f",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/docker/exec.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-04T23:37:28Z",
+      "side": 1,
+      "message": "til",
+      "parentUuid": "822edaa1_5d4fecbe",
+      "range": {
+        "startLine": 41,
+        "startChar": 21,
+        "endLine": 41,
+        "endChar": 48
+      },
+      "revId": "ca60cd0e3d166b833c82c0307b94f7d70296cd02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c8871f2e_d7480cdc",
@@ -625,6 +649,30 @@
       "side": 1,
       "message": "does that add anything if the underlying error is already necessarily an Annotator style error? I guess it\u0027s defensive, but in this case it always just clutters the stacktrace",
       "parentUuid": "5fe3cacf_c7f75440",
+      "range": {
+        "startLine": 34,
+        "startChar": 9,
+        "endLine": 34,
+        "endChar": 12
+      },
+      "revId": "ca60cd0e3d166b833c82c0307b94f7d70296cd02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "15db46ab_9247076d",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/rtd/invoke.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-04T23:37:28Z",
+      "side": 1,
+      "message": "ack",
+      "parentUuid": "de1b2bb0_03e6d76f",
       "range": {
         "startLine": 34,
         "startChar": 9,
