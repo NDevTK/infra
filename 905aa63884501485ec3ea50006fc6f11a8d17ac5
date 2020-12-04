@@ -119,6 +119,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "52b19770_7db77ff2",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/rtd/docker.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2020-12-04T21:44:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d68d609e_c06b6677",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 0
+      },
+      "revId": "905aa63884501485ec3ea50006fc6f11a8d17ac5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d34f7f26_c341882c",
@@ -132,6 +156,30 @@
       "writtenOn": "2020-12-02T23:44:21Z",
       "side": 1,
       "message": "Why bytes.Buffer vs io.Writer ?\n\nhttps://golang.org/pkg/os/exec/#Cmd actually just wants io.Writer (as I\u0027d expect).",
+      "range": {
+        "startLine": 22,
+        "startChar": 65,
+        "endLine": 22,
+        "endChar": 79
+      },
+      "revId": "905aa63884501485ec3ea50006fc6f11a8d17ac5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a26e3341_98692363",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/rtd/docker.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2020-12-04T21:44:26Z",
+      "side": 1,
+      "message": "Works for me. It was previously that way to allow .String()ing",
+      "parentUuid": "d34f7f26_c341882c",
       "range": {
         "startLine": 22,
         "startChar": 65,
@@ -165,6 +213,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "34c586ad_39d4f2f0",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/rtd/docker.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2020-12-04T21:44:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f144e070_0f8ef087",
+      "range": {
+        "startLine": 28,
+        "startChar": 1,
+        "endLine": 28,
+        "endChar": 76
+      },
+      "revId": "905aa63884501485ec3ea50006fc6f11a8d17ac5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9ad5ec0d_3f11f0c3",
@@ -178,6 +250,30 @@
       "writtenOn": "2020-12-02T23:44:21Z",
       "side": 1,
       "message": "Is this temporary?\n\nArbitrary docker command might dump a lot of output...\n\nI\u0027d keep run() internal and add methods like Start() etc, and _those_ can dump the stdout/stderr if they want to.\n\nBasically, the function that creates the stdoutBuf/stderrBuf owns the contents, and should decide what to do with the content (log.Printf / dump to file / /dev/null ...).",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 45
+      },
+      "revId": "905aa63884501485ec3ea50006fc6f11a8d17ac5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d72db3a7_06b94280",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/rtd/docker.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2020-12-04T21:44:26Z",
+      "side": 1,
+      "message": "ya, this is just for the prototype code. It\u0027s useful for someone running it to see all the details. The prototype RTD won\u0027t log out all that much stuff",
+      "parentUuid": "9ad5ec0d_3f11f0c3",
       "range": {
         "startLine": 30,
         "startChar": 0,

@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "09490cbf_9e489375",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/rtd/invoke.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2020-12-04T21:44:26Z",
+      "side": 1,
+      "message": "Removed instead. In a real impl, presumably some timeout might be wanted? In the prototype, it seems fine to just wait",
+      "parentUuid": "5c05134c_b7bb43fe",
+      "range": {
+        "startLine": 40,
+        "startChar": 41,
+        "endLine": 40,
+        "endChar": 55
+      },
+      "revId": "0154c5da5fcf6cf37828d712f0d86252f0acc68f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9b1225b5_69bf1bd1",
@@ -87,6 +111,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7b74cb92_80bf7994",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/rtd/invoke.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2020-12-04T21:44:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9b1225b5_69bf1bd1",
+      "range": {
+        "startLine": 46,
+        "startChar": 54,
+        "endLine": 46,
+        "endChar": 168
+      },
+      "revId": "0154c5da5fcf6cf37828d712f0d86252f0acc68f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "61a09602_a7cf6810",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/rtd/invoke.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2020-12-04T21:44:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d372090b_386a3230",
+      "range": {
+        "startLine": 46,
+        "startChar": 21,
+        "endLine": 46,
+        "endChar": 24
+      },
+      "revId": "0154c5da5fcf6cf37828d712f0d86252f0acc68f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0856d449_4bfdbab8",
@@ -100,6 +172,30 @@
       "writtenOn": "2020-12-02T23:44:21Z",
       "side": 1,
       "message": "Why?\n\nIt seems to me that Invoke() should accept rtdCmd []string directly instead of manipulating the string here.",
+      "range": {
+        "startLine": 113,
+        "startChar": 46,
+        "endLine": 113,
+        "endChar": 72
+      },
+      "revId": "0154c5da5fcf6cf37828d712f0d86252f0acc68f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9415e35d_f49e3d04",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/rtd/invoke.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2020-12-04T21:44:26Z",
+      "side": 1,
+      "message": "Done in spirit. The parsing of the string into a slice of strings has to happen somewhere, but with the new docker package, it\u0027s more reasonable that it happens here",
+      "parentUuid": "0856d449_4bfdbab8",
       "range": {
         "startLine": 113,
         "startChar": 46,
