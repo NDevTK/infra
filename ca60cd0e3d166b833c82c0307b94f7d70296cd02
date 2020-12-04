@@ -1,0 +1,297 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2bf77f3c_269d676d",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/cmd/invoke-rtd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-04T22:10:53Z",
+      "side": 1,
+      "message": "nit: I\u0027d go so far as to call this just `o`. This function is short enough that descriptive name isn\u0027t needed. Yay!",
+      "range": {
+        "startLine": 61,
+        "startChar": 1,
+        "endLine": 61,
+        "endChar": 5
+      },
+      "revId": "ca60cd0e3d166b833c82c0307b94f7d70296cd02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a223064b_44793ed7",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/docker/exec.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-04T22:10:53Z",
+      "side": 1,
+      "message": "Rename file? This file is called \"exec.go\", but Exec() is only one of many methods exposed from here.",
+      "revId": "ca60cd0e3d166b833c82c0307b94f7d70296cd02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "63ca7915_710c85b2",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/docker/exec.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-04T22:10:53Z",
+      "side": 1,
+      "message": "Better just name these stdout and stderr as they\u0027re no longer buffers, and the naming matches cmd.Stdout cmd.Stderr etc.",
+      "range": {
+        "startLine": 24,
+        "startChar": 37,
+        "endLine": 24,
+        "endChar": 46
+      },
+      "revId": "ca60cd0e3d166b833c82c0307b94f7d70296cd02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "16de4178_0dbddbf4",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/docker/exec.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-04T22:10:53Z",
+      "side": 1,
+      "message": "Simply:\n\n  \"running docker %s\", strings.Join(...",
+      "range": {
+        "startLine": 28,
+        "startChar": 20,
+        "endLine": 28,
+        "endChar": 46
+      },
+      "revId": "ca60cd0e3d166b833c82c0307b94f7d70296cd02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "97e607b2_1907656b",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/docker/exec.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-04T22:10:53Z",
+      "side": 1,
+      "message": "I\u0027d make createVolume a private method, and accept hostDir as an argument to Run()\n\nJustification: \n\n- CreateVolume() must be called before calling Run().\n- CreateVolume() has the side-effect of setting Docker.volumeName that is used by Run()\n\nThus, making createVolume() private makes it harder to incorrectly use the Docker API.",
+      "range": {
+        "startLine": 38,
+        "startChar": 17,
+        "endLine": 38,
+        "endChar": 29
+      },
+      "revId": "ca60cd0e3d166b833c82c0307b94f7d70296cd02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "33d8bdcc_f4012fc2",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/docker/exec.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-04T22:10:53Z",
+      "side": 1,
+      "message": "When adding error context, the convention is to\n\n- use smallcase\n- just say what you were doing.\n- no newline / period at the end.\n\nSo, here:\n\n  fmt.Errorf(\"create volume: %s\", err)\n\nThis makes for consistend and nice to read chained contexts.",
+      "range": {
+        "startLine": 41,
+        "startChar": 21,
+        "endLine": 41,
+        "endChar": 48
+      },
+      "revId": "ca60cd0e3d166b833c82c0307b94f7d70296cd02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "28aa2c0b_26a3ebe3",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/docker/exec.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-04T22:10:53Z",
+      "side": 1,
+      "message": "Not necessarily in this CL: I\u0027ve found errors.Annotate() extremely helpful. Since prototype-rts is definitely in the infra/go repo, I\u0027d encourage using the rich libraries available.\n\nIn particular, with errors.Annotate(), you can get a nice stacktrace on errors which is far better than just the chain-constructed error strings without and frame information.",
+      "range": {
+        "startLine": 41,
+        "startChar": 9,
+        "endLine": 41,
+        "endChar": 19
+      },
+      "revId": "ca60cd0e3d166b833c82c0307b94f7d70296cd02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "080e62cf_1d61257d",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/docker/exec.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-04T22:10:53Z",
+      "side": 1,
+      "message": "You\u0027re dropping the incoming `err` without ever logging it.\n\nI\u0027d recommend:\n\n- Always debug-log stdout and stderr (even when you\u0027re capturing stdout and processing it for the result).\n- Return the non-nil err with context (see my earlier comment about error contexts).",
+      "range": {
+        "startLine": 41,
+        "startChar": 56,
+        "endLine": 41,
+        "endChar": 74
+      },
+      "revId": "ca60cd0e3d166b833c82c0307b94f7d70296cd02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c8871f2e_d7480cdc",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/docker/exec.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-04T22:10:53Z",
+      "side": 1,
+      "message": "Consider naming these more explicitly as PullImage(), RunContainer() because these methods act on different entities (image vs container).",
+      "range": {
+        "startLine": 48,
+        "startChar": 17,
+        "endLine": 48,
+        "endChar": 21
+      },
+      "revId": "ca60cd0e3d166b833c82c0307b94f7d70296cd02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "06f614a7_50f0cc06",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/docker/exec.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-04T22:10:53Z",
+      "side": 1,
+      "message": "Consider dropping this field, and simply checking for `d.containerHash !\u003d \"\"` in IsContainerRunning()",
+      "range": {
+        "startLine": 65,
+        "startChar": 1,
+        "endLine": 65,
+        "endChar": 26
+      },
+      "revId": "ca60cd0e3d166b833c82c0307b94f7d70296cd02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0575bf81_1fb0ad23",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/docker/exec.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-04T22:10:53Z",
+      "side": 1,
+      "message": "Consider bailing early if d.IsContainerRunning() is false.\n\nMake it hard er to misuse the API / Don\u0027t try to execute a command on the container with hash \"\" / better error message back to the user than whatever `docker` would return.",
+      "range": {
+        "startLine": 72,
+        "startChar": 26,
+        "endLine": 72,
+        "endChar": 41
+      },
+      "revId": "ca60cd0e3d166b833c82c0307b94f7d70296cd02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e2412747_bca88e3d",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/docker/exec.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-04T22:10:53Z",
+      "side": 1,
+      "message": "OK, if this is temporary, but Exec() is special. Both stdout/stderr is likely to receive an unknown amount of data. Likely the caller of Exec() should provide io.Writer for both and do whatever it wants with the two streams.",
+      "range": {
+        "startLine": 74,
+        "startChar": 28,
+        "endLine": 74,
+        "endChar": 37
+      },
+      "revId": "ca60cd0e3d166b833c82c0307b94f7d70296cd02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5fe3cacf_c7f75440",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/rtd/invoke.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-04T22:10:53Z",
+      "side": 1,
+      "message": "Consider\n\n  return errors.Annotate(err, \"start RTD container\").Err()\n\nThose stack traces are really nifty.",
+      "range": {
+        "startLine": 34,
+        "startChar": 9,
+        "endLine": 34,
+        "endChar": 12
+      },
+      "revId": "ca60cd0e3d166b833c82c0307b94f7d70296cd02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
