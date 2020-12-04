@@ -33,6 +33,24 @@
       "message": "Would such exception be raised on 500 or 429? If so, we should rely on Cloud Task retry. If not, carry on :)",
       "revId": "95c217d85e5fb0adabe02a2d3208050e56a095d3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d3302fc4_16562c8b",
+        "filename": "appengine/rietveld_staticgen/main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2020-12-04T00:21:52Z",
+      "side": 1,
+      "message": "No, we forward it to cloud tasks:\n\nhttps://chromium.googlesource.com/infra/infra/+/HEAD/appengine/rietveld_staticgen/lib/pages.py#58",
+      "parentUuid": "587c9ff8_24789d16",
+      "revId": "95c217d85e5fb0adabe02a2d3208050e56a095d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
