@@ -51,6 +51,41 @@
       "message": "I think it\u0027s worth trying this out, but consider suggestion for improvement.",
       "revId": "c48a283d547ba2b21cbce8a24a11c26999193b7b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e04d84c1_ca495487",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2020-12-05T22:13:45Z",
+      "side": 1,
+      "message": "I see how using protos to define the analyzers, so that we don\u0027t have to use this string mapping, although I\u0027m not convinced it\u0027s worth it.\n\nReasons:\n - In general, I think that most projects that use analyzers in the future will have their own dedicated recipe to run analyzers; using a proto input like this will be the exception rather than the usual case.\n - One disadvantage of specifying analyzers by string name is that it\u0027s possible to accidentally make a typo; but in this case I think this should be caught fairly easily by verifying that a build runs as expected.",
+      "parentUuid": "faa68a94_06c38b62",
+      "revId": "c48a283d547ba2b21cbce8a24a11c26999193b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "464b79ce_78c67b96",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2020-12-05T22:13:45Z",
+      "side": 1,
+      "message": "LED example run specifying just Spellchecker:\nhttps://ci.chromium.org/swarming/task/504cc30b44e5c810?server\u003dchromium-swarm.appspot.com",
+      "revId": "c48a283d547ba2b21cbce8a24a11c26999193b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
