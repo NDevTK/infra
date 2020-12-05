@@ -16,6 +16,41 @@
       "message": "Now changed the recipe to take a inputs proto message.\n\nIn order to specify analyzers in such a message, I think we have to specify them by listing names, which means I\u0027d like to add a mapping from names to analyzers. (Uploaded a separate CL to do that). WDYT?",
       "revId": "c48a283d547ba2b21cbce8a24a11c26999193b7b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "faa68a94_06c38b62",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2020-12-05T02:11:00Z",
+      "side": 1,
+      "message": "SGTM, though TBH my ideal solution would be:\n * proto enum declared in tricium recipe module\n * legacy analyzers referencing the proto enum values as name in tricium recipe module\n * and downstream recipes like this one provide list(proto enums), and can obviously accept typed list of enums as its own proto input.\nThe thing to check before going this route is whether recipe engine proto interop supports unmarshaling of *string* enum values. It\u0027s be horrible if downstream recipe input has to be [1,7,13]; we want [\"ANALYZER_SPELL_CHECK\", \"ANALYZER_FOO\", \"ANALYZER_BAR\"].\n\nYiwei, do you have thoughts?",
+      "parentUuid": "97a08063_6d22c6d9",
+      "revId": "c48a283d547ba2b21cbce8a24a11c26999193b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "842e320f_1d67de75",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2020-12-05T02:11:00Z",
+      "side": 1,
+      "message": "I think it\u0027s worth trying this out, but consider suggestion for improvement.",
+      "revId": "c48a283d547ba2b21cbce8a24a11c26999193b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
