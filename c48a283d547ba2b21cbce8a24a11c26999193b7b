@@ -86,6 +86,24 @@
       "message": "LED example run specifying just Spellchecker:\nhttps://ci.chromium.org/swarming/task/504cc30b44e5c810?server\u003dchromium-swarm.appspot.com",
       "revId": "c48a283d547ba2b21cbce8a24a11c26999193b7b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f36e4a0d_a94154ee",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2020-12-06T16:43:09Z",
+      "side": 1,
+      "message": "Convincing!",
+      "parentUuid": "e04d84c1_ca495487",
+      "revId": "c48a283d547ba2b21cbce8a24a11c26999193b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
