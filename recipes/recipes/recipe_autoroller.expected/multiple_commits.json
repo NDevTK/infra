@@ -151,15 +151,12 @@
   {
     "cmd": [
       "git",
-      "checkout",
-      "-t",
-      "-b",
-      "roll",
-      "origin/master"
+      "new-branch",
+      "roll"
     ],
     "cwd": "[CACHE]/builder/recipe_autoroller/build",
     "infra_step": true,
-    "name": "build.git checkout (2)",
+    "name": "build.git new-branch",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
