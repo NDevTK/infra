@@ -158,7 +158,7 @@
       "-t",
       "-b",
       "roll",
-      "origin/master"
+      "origin/HEAD"
     ],
     "cwd": "[CACHE]/builder/recipe_autoroller/build",
     "infra_step": true,
