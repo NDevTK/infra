@@ -104,6 +104,24 @@
       "parentUuid": "e04d84c1_ca495487",
       "revId": "c48a283d547ba2b21cbce8a24a11c26999193b7b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "810b7809_c5150fbe",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2020-12-07T18:14:38Z",
+      "side": 1,
+      "message": "Both enum and string solution SGTM. The proto enum approach does sound cleaner to me. I haven\u0027t seen an example before that proto is imported across repo, but I think it is feasible if import path is configured correctly. \n\nString approach doesn\u0027t sound bad to me because anyway it is a string in the builder properties. If user makes mistake there, one can only tell during the runtime which is almost the same as enum approach I believe.\n\nOne suggestion is that maybe we can validate the input analyzer names at the very beginning of the recipe and fail fast if any of them is invalid?",
+      "parentUuid": "f36e4a0d_a94154ee",
+      "revId": "c48a283d547ba2b21cbce8a24a11c26999193b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
