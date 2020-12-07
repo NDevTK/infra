@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cafee21b_31eafcae",
+        "filename": "recipes/recipes/recipe_autoroller.expected/empty.json",
+        "patchSetId": 6
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2020-12-07T22:07:08Z",
+      "side": 1,
+      "message": "I think this would also need `with api.depot_tools.on_path`:\n\nhttps://source.chromium.org/chromium/chromium/tools/depot_tools/+/master:recipes/recipe_modules/depot_tools/api.py;l\u003d55",
+      "revId": "df0aa72f7640126ac3e1851012c00232e0ad850d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
