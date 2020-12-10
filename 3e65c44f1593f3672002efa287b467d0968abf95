@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d4239728_1f9fd2de",
+        "filename": "go/src/infra/appengine/cros/lab_inventory/app/frontend/inventory.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 876,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-12-10T09:02:31Z",
+      "side": 0,
+      "message": "remove the Validate() func?",
+      "range": {
+        "startLine": 876,
+        "startChar": 14,
+        "endLine": 876,
+        "endChar": 24
+      },
+      "revId": "3e65c44f1593f3672002efa287b467d0968abf95",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
