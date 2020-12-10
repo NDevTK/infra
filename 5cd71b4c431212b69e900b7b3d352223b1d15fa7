@@ -22,6 +22,30 @@
       },
       "revId": "5cd71b4c431212b69e900b7b3d352223b1d15fa7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3aaa1d4d_f060d9eb",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/cmd/invoke-rtd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2020-12-10T15:22:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2ebc6743_90ace585",
+      "range": {
+        "startLine": 57,
+        "startChar": 43,
+        "endLine": 57,
+        "endChar": 72
+      },
+      "revId": "5cd71b4c431212b69e900b7b3d352223b1d15fa7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
