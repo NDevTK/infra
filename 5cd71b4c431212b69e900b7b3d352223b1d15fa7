@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2ebc6743_90ace585",
+        "filename": "go/src/infra/cros/cmd/prototype-rts/internal/cmd/invoke-rtd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-12-10T04:37:42Z",
+      "side": 1,
+      "message": "Perhaps: \"Invoking RTD...\"",
+      "range": {
+        "startLine": 57,
+        "startChar": 43,
+        "endLine": 57,
+        "endChar": 72
+      },
+      "revId": "5cd71b4c431212b69e900b7b3d352223b1d15fa7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
