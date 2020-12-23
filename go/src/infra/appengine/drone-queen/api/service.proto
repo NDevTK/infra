@@ -86,10 +86,25 @@ message ReleaseDutsRequest {
 }
 message ReleaseDutsResponse {}
 
+message DutObject {
+  // name is the name of the dut
+  string name = 1;
+  // hive information of the DUT to match a drone.
+  // Satlab duts hive is "satlab-<ID>"
+  // gTransit duts hive is "gtransit"
+  // main lab duts hive is empty
+  string hive = 2;
+}
+
 message DeclareDutsRequest {
   // duts is all of the DUTs to be made available to drones.  DUTs
   // omitted from this list will be drained and deleted.
   repeated string duts = 1;
+
+  // dut_objects is a list of duts made available to drones. It contains all
+  // the information for a dut. Duts omitted from this list will be
+  // drained and deleted.
+  repeated DutObject dut_objects = 2;
 }
 message DeclareDutsResponse {}
 
