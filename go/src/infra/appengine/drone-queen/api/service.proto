@@ -47,6 +47,8 @@ message ReportDroneRequest {
     // dut_capacity is a simple load indicator that indicates how many
     // total DUTs the drone can support.
     uint32 dut_capacity = 1;
+    // hive information of the drone
+    string hive = 2;
   }
 }
 message ReportDroneResponse {

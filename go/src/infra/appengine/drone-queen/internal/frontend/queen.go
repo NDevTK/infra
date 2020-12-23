@@ -93,7 +93,7 @@ func (q *DroneQueenImpl) ReportDrone(ctx context.Context, req *api.ReportDroneRe
 	var duts []*entities.DUT
 	// TODO(anhdle): Remove the satlab logic during full implementation.
 	f = func(ctx context.Context) error {
-		duts, err = queries.AssignNewDUTs(ctx, id, req.GetLoadIndicators(), getDUTHive(req.GetDroneDescription()))
+		duts, err = queries.AssignNewDUTs(ctx, id, req.GetLoadIndicators())
 		return err
 	}
 	if err = datastore.RunInTransaction(ctx, f, nil); err != nil {
