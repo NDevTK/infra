@@ -15,7 +15,6 @@
 package frontend
 
 import (
-	"strings"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
@@ -33,14 +32,6 @@ import (
 // DroneQueenImpl implements service interfaces.
 type DroneQueenImpl struct {
 	nowFunc func() time.Time
-}
-
-// TODO (anhdle): Remove during full Satlab implementation.
-func getDUTHive(d string) string {
-	if strings.HasPrefix(d, "satlab") {
-		return "satlab"
-	}
-	return ""
 }
 
 // ReportDrone implements service interfaces.
@@ -161,49 +152,51 @@ func (q *DroneQueenImpl) DeclareDuts(ctx context.Context, req *api.DeclareDutsRe
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
 	f := func(ctx context.Context) error {
+		// group key for DUT entity
+		dutGroupKey := entities.DUTGroupKey(ctx)
 		// Get existing DUTs.
-		q := datastore.NewQuery(entities.DUTKind).Ancestor(entities.DUTGroupKey(ctx))
-		var duts []entities.DUT
-		if err := datastore.GetAll(ctx, q, &duts); err != nil {
+		q := datastore.NewQuery(entities.DUTKind).Ancestor(dutGroupKey)
+		var existingDuts []entities.DUT
+		if err := datastore.GetAll(ctx, q, &existingDuts); err != nil {
 			return errors.Annotate(err, "get existing DUTs").Err()
 		}
-		existing := make(map[entities.DUTID]*entities.DUT)
-		for i := range duts {
-			existing[duts[i].ID] = &duts[i]
+		existingMap := make(map[entities.DUTID]*entities.DUT)
+		for i := range existingDuts {
+			existingMap[existingDuts[i].ID] = &existingDuts[i]
 		}
 		// Track newly declared DUTs and undrain re-declared DUTs.
-		var modifiedDUTs []*entities.DUT
-		var newDUTs []entities.DUTID
+		var newDUTs []*entities.DUT
 		declared := make(map[entities.DUTID]bool)
-		reqDUTs := filterInvalidDUTs(req.GetDuts())
-		for _, dut := range reqDUTs {
-			dutID := entities.DUTID(dut)
-			if dut, ok := existing[dutID]; ok {
+		for _, dutObject := range req.GetDutObjects() {
+			if dutObject.GetName() == "" {
+				continue
+			}
+			dutID := entities.DUTID(dutObject.GetName())
+			if dut, ok := existingMap[dutID]; ok {
+				// already existing dut
 				dut.Draining = false
-				modifiedDUTs = append(modifiedDUTs, dut)
+				newDUTs = append(newDUTs, dut)
 			} else {
-				newDUTs = append(newDUTs, dutID)
+				// new dut
+				newDUTs = append(newDUTs,
+					&entities.DUT{
+						ID:    dutID,
+						Group: dutGroupKey,
+						Hive:  dutObject.GetHive(),
+					})
 			}
 			declared[dutID] = true
 		}
 		// Drain existing DUTs that were not declared.
-		for i := range duts {
-			if !declared[duts[i].ID] {
-				duts[i].Draining = true
-				modifiedDUTs = append(modifiedDUTs, &duts[i])
+		for i := range existingDuts {
+			if !declared[existingDuts[i].ID] {
+				existingDuts[i].Draining = true
+				newDUTs = append(newDUTs, &existingDuts[i])
 			}
 		}
-		// Update modified DUTs.
-		if err := datastore.Put(ctx, modifiedDUTs); err != nil {
-			return errors.Annotate(err, "modify DUTs").Err()
-		}
-		// Add newly declared DUTs.
-		k := entities.DUTGroupKey(ctx)
-		for _, dut := range newDUTs {
-			// TODO (anhdle): Remove during full Satlab implementation.
-			if err := datastore.Put(ctx, &entities.DUT{ID: dut, Group: k, Hive: getDUTHive(string(dut))}); err != nil {
-				return errors.Annotate(err, "add DUT %s", dut).Err()
-			}
+		// Update modified DUTs and add newly declared DUTs
+		if err := datastore.Put(ctx, newDUTs); err != nil {
+			return errors.Annotate(err, "add DUTs").Err()
 		}
 		return nil
 	}
@@ -211,17 +204,6 @@ func (q *DroneQueenImpl) DeclareDuts(ctx context.Context, req *api.DeclareDutsRe
 		return nil, err
 	}
 	return &api.DeclareDutsResponse{}, nil
-}
-
-func filterInvalidDUTs(s []string) []string {
-	valid := make([]string, 0, len(s))
-	for _, s := range s {
-		if s == "" {
-			continue
-		}
-		valid = append(valid, s)
-	}
-	return valid
 }
 
 // ListDrones implements service interfaces.
