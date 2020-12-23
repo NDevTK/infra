@@ -341,7 +341,7 @@ func TestAssignNewDUTs(t *testing.T) {
 			var got []*entities.DUT
 			f := func(ctx context.Context) error {
 				var err error
-				got, err = AssignNewDUTs(ctx, "earthes", c.li, "")
+				got, err = AssignNewDUTs(ctx, "earthes", c.li)
 				return err
 			}
 			if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
