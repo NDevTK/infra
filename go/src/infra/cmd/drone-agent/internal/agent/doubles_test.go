@@ -162,9 +162,7 @@ func (c *stubClient) withLock(f func()) {
 func (c *stubClient) ReportDrone(ctx context.Context, req *api.ReportDroneRequest, _ ...grpc.CallOption) (*api.ReportDroneResponse, error) {
 	c.m.Lock()
 	defer c.m.Unlock()
-	// Make a copy to prevent concurrent access.
-	res := *c.res
-	return &res, c.err
+	return c.res, c.err
 }
 
 func (c *stubClient) ReleaseDuts(ctx context.Context, req *api.ReleaseDutsRequest, _ ...grpc.CallOption) (*api.ReleaseDutsResponse, error) {
