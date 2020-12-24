@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/bigquery"
@@ -324,9 +325,15 @@ func pushToDroneQueenCronHandler(c *router.Context) error {
 	}
 
 	duts := make([]string, len(droneQueenRecord.DUTs))
-	for i := range duts {
+	dutObjects := make([]*dronequeenapi.DutObject, len(droneQueenRecord.DUTs))
+	for i := range dutObjects {
 		duts[i] = droneQueenRecord.DUTs[i].Hostname
+		dutObjects[i] = &dronequeenapi.DutObject{
+			Name: droneQueenRecord.DUTs[i].Hostname,
+			Hive: getHiveForDut(droneQueenRecord.DUTs[i].Hostname),
+		}
 	}
+
 	ts, err := auth.GetTokenSource(ctx, auth.AsSelf)
 	if err != nil {
 		return err
@@ -337,11 +344,25 @@ func pushToDroneQueenCronHandler(c *router.Context) error {
 		Host: queenHostname,
 	})
 	logging.Debugf(ctx, "DUTs to declare: %#v", duts)
-	_, err = client.DeclareDuts(ctx, &dronequeenapi.DeclareDutsRequest{Duts: duts})
+	_, err = client.DeclareDuts(ctx, &dronequeenapi.DeclareDutsRequest{Duts: duts, DutObjects: dutObjects})
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func getHiveForDut(d string) string {
+	/* TODO(eshwarn): Change this logic */
+	// Stalab Duts
+	if strings.HasPrefix(d, "satlab") {
+		return "satlab"
+	}
+	// gTransit Duts
+	if strings.HasPrefix(d, "gTransit") {
+		return "gtransit"
+	}
+	// main lab Duts
+	return ""
 }
 
 func reportInventoryCronHandler(c *router.Context) error {
