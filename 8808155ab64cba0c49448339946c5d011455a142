@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0a57db6b_7b4c1cba",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-12-24T05:23:59Z",
+      "side": 1,
+      "message": "I want to discuss the logic for getHiveforDUT for satlab/gtransit duts.\nSending for review for further comments and discussion.",
+      "revId": "8808155ab64cba0c49448339946c5d011455a142",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
