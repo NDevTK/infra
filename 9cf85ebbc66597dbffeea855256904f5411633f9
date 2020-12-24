@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4d958b03_06da3f0e",
+        "filename": "go/src/infra/cmd/drone-agent/internal/agent/doubles_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2020-12-24T02:58:49Z",
+      "side": 1,
+      "message": "This does can eliminate the copylocks warning. However, the purpose of making a copy is \"prevent concurrent access\". Your change cannot ensure that.\n\nI guess what we can do is manually copy it, e.g.\n\n  res :\u003d api.ReportDroneResponse{\n    Status:         c.res.GetStatus(), \n    ....\n  }\n  return \u0026res, c.err",
+      "revId": "9cf85ebbc66597dbffeea855256904f5411633f9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
