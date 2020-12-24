@@ -106,15 +106,14 @@ func getUnassignedDUTs(ctx context.Context, n int32, hive string) ([]*entities.D
 // to the drone. hive is the zone/hive the DUT/Drone belongs to.
 //
 // This function needs to be run within a datastore transaction.
-func AssignNewDUTs(ctx context.Context, d entities.DroneID, li *api.ReportDroneRequest_LoadIndicators, hive string) ([]*entities.DUT, error) {
+func AssignNewDUTs(ctx context.Context, d entities.DroneID, li *api.ReportDroneRequest_LoadIndicators) ([]*entities.DUT, error) {
 	currentDUTs, err := getDroneDUTs(ctx, d)
 	if err != nil {
 		return nil, errors.Annotate(err, "assign new DUTs to %v", d).Err()
 	}
 	dutsNeeded := uint32ToInt(li.GetDutCapacity()) - len(currentDUTs)
 
-	// TODO (anhdle): Update this during full Satlab implementation.
-	newDUTs, err := getUnassignedDUTs(ctx, int32(dutsNeeded), hive)
+	newDUTs, err := getUnassignedDUTs(ctx, int32(dutsNeeded), li.GetHive())
 	if err != nil {
 		return nil, errors.Annotate(err, "assign new DUTs to %v", d).Err()
 	}
