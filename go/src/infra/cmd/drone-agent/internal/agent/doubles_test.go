@@ -163,7 +163,13 @@ func (c *stubClient) ReportDrone(ctx context.Context, req *api.ReportDroneReques
 	c.m.Lock()
 	defer c.m.Unlock()
 	// Make a copy to prevent concurrent access.
-	res := *c.res
+	res := api.ReportDroneResponse{
+		Status:         c.res.GetStatus(),
+		DroneUuid:      c.res.GetDroneUuid(),
+		ExpirationTime: c.res.GetExpirationTime(),
+		AssignedDuts:   c.res.GetAssignedDuts(),
+		DrainingDuts:   c.res.GetDrainingDuts(),
+	}
 	return &res, c.err
 }
 
