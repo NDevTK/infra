@@ -57,7 +57,6 @@ func TestParseConfigBundle(t *testing.T) {
 					So(dc.GetFormFactor(), ShouldEqual, device.Config_FORM_FACTOR_CLAMSHELL)
 					So(dc.GetHardwareFeatures(), ShouldResemble, []device.Config_HardwareFeature{
 						device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY,
-						device.Config_HARDWARE_FEATURE_WEBCAM,
 						device.Config_HARDWARE_FEATURE_STYLUS,
 						device.Config_HARDWARE_FEATURE_TOUCHPAD,
 						device.Config_HARDWARE_FEATURE_TOUCHSCREEN,
@@ -86,7 +85,6 @@ func TestParseConfigBundle(t *testing.T) {
 					So(dc.GetHardwareFeatures(), ShouldResemble, []device.Config_HardwareFeature{
 						device.Config_HARDWARE_FEATURE_BLUETOOTH,
 						device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY,
-						device.Config_HARDWARE_FEATURE_WEBCAM,
 						device.Config_HARDWARE_FEATURE_STYLUS,
 						device.Config_HARDWARE_FEATURE_TOUCHPAD,
 						device.Config_HARDWARE_FEATURE_TOUCHSCREEN,
@@ -100,7 +98,6 @@ func TestParseConfigBundle(t *testing.T) {
 					So(dc.GetHardwareFeatures(), ShouldResemble, []device.Config_HardwareFeature{
 						device.Config_HARDWARE_FEATURE_BLUETOOTH,
 						device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY,
-						device.Config_HARDWARE_FEATURE_WEBCAM,
 						device.Config_HARDWARE_FEATURE_STYLUS,
 						device.Config_HARDWARE_FEATURE_TOUCHPAD,
 						device.Config_HARDWARE_FEATURE_TOUCHSCREEN,
@@ -113,7 +110,6 @@ func TestParseConfigBundle(t *testing.T) {
 					So(dc.GetFormFactor(), ShouldEqual, device.Config_FORM_FACTOR_CLAMSHELL)
 					So(dc.GetHardwareFeatures(), ShouldResemble, []device.Config_HardwareFeature{
 						device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY,
-						device.Config_HARDWARE_FEATURE_WEBCAM,
 						device.Config_HARDWARE_FEATURE_TOUCHPAD,
 						device.Config_HARDWARE_FEATURE_DETACHABLE_KEYBOARD,
 					})

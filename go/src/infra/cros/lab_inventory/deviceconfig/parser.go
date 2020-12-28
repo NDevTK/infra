@@ -109,11 +109,16 @@ func parseConfigBundle(configBundle *payload.ConfigBundle) []*device.Config {
 				// TODO: GpuFamily, gpu_family in Component.Soc hasn't been set
 				// Graphics: removed from boxster for now
 				HardwareFeatures: parseHardwareFeatures(configBundle.GetComponents(), c.GetHardwareFeatures()),
-				// TODO: Power, a new power topology hasn't been set
+				// TODO(xixuan): Power, a new power topology hasn't been set
+				// label-power is used in swarming now: https://screenshot.googleplex.com/8EAUwGeoVeBtez7
+				// TODO(xixuan): storage may be not accurate
+				// label-storage is not used for scheduling tests for at least 3 months: https://screenshot.googleplex.com/B8spRMj22aUWkbb
 				Storage: parseStorage(c.GetHardwareFeatures()),
-				// TODO: VideoAccelerationSupports, a new video acceleration topology hasn't been set
+				// TODO(xixuan): VideoAccelerationSupports, a new video acceleration topology hasn't been set
+				// label-video_acceleration is not used for scheduling tests for at least 3 months: https://screenshot.googleplex.com/86h2scqNsStwoiW
 				Soc: parseSoc(configBundle.GetComponents()),
 				Cpu: parseArchitecture(configBundle.GetComponents()),
+				Ec:  parseEcType(c.GetHardwareFeatures()),
 			}
 		}
 	}
@@ -167,23 +172,39 @@ func parseSoc(components []*api.Component) device.Config_SOC {
 
 func parseHardwareFeatures(components []*api.Component, hf *api.HardwareFeatures) []device.Config_HardwareFeature {
 	res := make([]device.Config_HardwareFeature, 0)
-	if hf.GetBluetooth() != nil {
+	// Use bluetooth component & hardware feature to check
+	if hf.GetBluetooth() != nil && hf.GetBluetooth().GetComponent() != nil {
 		res = append(res, device.Config_HARDWARE_FEATURE_BLUETOOTH)
+	} else {
+		for _, c := range components {
+			if c.GetBluetooth() != nil {
+				res = append(res, device.Config_HARDWARE_FEATURE_BLUETOOTH)
+				// May have multiple bluetooth, skip the following checks if bluetooth is already set.
+				break
+			}
+		}
 	}
+
 	// TODO: HARDWARE_FEATURE_FLASHROM, not used
 	// TODO: HARDWARE_FEATURE_HOTWORDING, field in topology.Audio hasn't been set
-	// HARDWARE_FEATURE_INTERNAL_DISPLAY: Only chromeboxes have this unset
+	// HARDWARE_FEATURE_INTERNAL_DISPLAY: Only chromeboxes have this UNSET
 	ff := hf.GetFormFactor().GetFormFactor()
 	if ff != api.HardwareFeatures_FormFactor_CHROMEBOX && ff != api.HardwareFeatures_FormFactor_FORM_FACTOR_UNKNOWN {
 		res = append(res, device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY)
 	}
 	// TODO: HARDWARE_FEATURE_LUCID_SLEEP, which key in powerConfig?
 	// HARDWARE_FEATURE_WEBCAM: hw_topo.create_camera
-	if hf.GetCamera() != nil {
+	// Ensure camera is not an empty object, e.g. "camera": {}
+	if hf.GetCamera() != nil && hf.GetCamera().GetDevices() != nil {
 		res = append(res, device.Config_HARDWARE_FEATURE_WEBCAM)
 	}
+	// Ensure stylus is not an empty object, e.g. "stylus": {}
 	if hf.GetStylus() != nil {
-		res = append(res, device.Config_HARDWARE_FEATURE_STYLUS)
+		switch hf.GetStylus().GetStylus() {
+		case api.HardwareFeatures_Stylus_STYLUS_UNKNOWN, api.HardwareFeatures_Stylus_NONE:
+		default:
+			res = append(res, device.Config_HARDWARE_FEATURE_STYLUS)
+		}
 	}
 	// HARDWARE_FEATURE_TOUCHPAD: a component
 	for _, c := range components {
@@ -243,4 +264,14 @@ func parseArchitecture(components []*api.Component) device.Config_Architecture {
 		}
 	}
 	return device.Config_ARCHITECTURE_UNDEFINED
+}
+
+func parseEcType(hf *api.HardwareFeatures) device.Config_EC {
+	switch hf.GetEmbeddedController().GetEcType() {
+	case api.HardwareFeatures_EmbeddedController_EC_CHROME:
+		return device.Config_EC_CHROME
+	case api.HardwareFeatures_EmbeddedController_EC_WILCO:
+		return device.Config_EC_WILCO
+	}
+	return device.Config_EC_UNSPECIFIED
 }

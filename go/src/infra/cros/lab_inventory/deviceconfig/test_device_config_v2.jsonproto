@@ -155,7 +155,15 @@
                     }
                   }
                 },
-                "camera": {},
+                "camera": {
+                  "devices": [
+                    {
+                      "facing": "FACING_FRONT",
+                      "interface": "INTERFACE_USB",
+                      "orientation": "ORIENTATION_0"
+                    }
+                  ]
+                },
                 "fingerprint": {
                   "board": "fake-fingerprint-board",
                   "location": 2
@@ -886,7 +894,15 @@
                     }
                   }
                 },
-                "camera": {},
+                "camera": {
+                  "devices": [
+                    {
+                      "facing": "FACING_FRONT",
+                      "interface": "INTERFACE_USB",
+                      "orientation": "ORIENTATION_0"
+                    }
+                  ]
+                },
                 "fingerprint": {
                   "board": "fake-fingerprint-board",
                   "location": 2
