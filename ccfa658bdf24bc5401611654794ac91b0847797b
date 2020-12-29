@@ -16,6 +16,24 @@
       "message": "This is necessary. \n\nhttps://github.com/golang/go/wiki/CommonMistakes#using-goroutines-on-loop-iterator-variables",
       "revId": "ccfa658bdf24bc5401611654794ac91b0847797b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "196eddd8_ca222dec",
+        "filename": "go/src/infra/appengine/drone-queen/internal/queries/queries_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 333,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2020-12-29T17:40:04Z",
+      "side": 0,
+      "message": "Ack",
+      "parentUuid": "454e5dd1_3ba993f8",
+      "revId": "ccfa658bdf24bc5401611654794ac91b0847797b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
