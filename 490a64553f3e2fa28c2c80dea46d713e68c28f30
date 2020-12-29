@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "311c1cff_d1b4186b",
+        "filename": "go/src/infra/appengine/drone-queen/api/service.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-12-29T21:37:01Z",
+      "side": 1,
+      "message": "Why Object and not just Dut?",
+      "range": {
+        "startLine": 90,
+        "startChar": 8,
+        "endLine": 90,
+        "endChar": 17
+      },
+      "revId": "490a64553f3e2fa28c2c80dea46d713e68c28f30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c33337f3_f1f9be5e",
+        "filename": "go/src/infra/appengine/drone-queen/api/service.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-12-29T21:37:01Z",
+      "side": 1,
+      "message": "Missing period, be consistent.",
+      "range": {
+        "startLine": 91,
+        "startChar": 18,
+        "endLine": 91,
+        "endChar": 20
+      },
+      "revId": "490a64553f3e2fa28c2c80dea46d713e68c28f30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4f8b1e53_9ab8e206",
+        "filename": "go/src/infra/appengine/drone-queen/api/service.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-12-29T21:37:01Z",
+      "side": 1,
+      "message": "Two spaces after period for consistency.",
+      "range": {
+        "startLine": 93,
+        "startChar": 26,
+        "endLine": 93,
+        "endChar": 27
+      },
+      "revId": "490a64553f3e2fa28c2c80dea46d713e68c28f30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "569e2474_3de77d25",
+        "filename": "go/src/infra/appengine/drone-queen/api/service.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-12-29T21:37:01Z",
+      "side": 1,
+      "message": "s/A/The/",
+      "range": {
+        "startLine": 94,
+        "startChar": 5,
+        "endLine": 94,
+        "endChar": 6
+      },
+      "revId": "490a64553f3e2fa28c2c80dea46d713e68c28f30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e4e787c0_4f29cd37",
+        "filename": "go/src/infra/appengine/drone-queen/api/service.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-12-29T21:37:01Z",
+      "side": 1,
+      "message": "You should implement support for this as well as mark the old duts field as deprecated in the same CL.  You should document the behavior for the old duts field (e.g., it should behave like adding duts with hive\u003d\"\").  The exposed API shouldn\u0027t exist in a half-unimplemented state.",
+      "revId": "490a64553f3e2fa28c2c80dea46d713e68c28f30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
