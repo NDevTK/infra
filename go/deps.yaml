@@ -100,7 +100,7 @@ import:
   - jwt
 - package: google.golang.org/api
   version: master
-  repo: https://code.googlesource.com/google-api-go-client.git
+  repo: https://chromium.googlesource.com/external/github.com/google/google-api-go-client.git
   subpackages:
   - bigquery/v2
   - cloudkms/v1
@@ -581,3 +581,9 @@ import:
 - package: go.etcd.io/bbolt
   version: master
   repo: https://chromium.googlesource.com/external/github.com/etcd-io/bbolt.git
+- package: github.com/stoewer/go-strcase
+  version: master
+  repo: https://chromium.googlesource.com/external/github.com/stoewer/go-strcase.git
+- package: github.com/mostynb/zstdpool-syncpool
+  version: master
+  repo: https://chromium.googlesource.com/external/github.com/mostynb/zstdpool-syncpool.git
