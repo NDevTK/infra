@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "63d56c41_0197be6d",
+        "filename": "go/src/infra/appengine/drone-queen/api/service.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-12-29T21:46:40Z",
+      "side": 1,
+      "message": "For the field name, suggestions:\n\navailable_duts\ndut_messages\n\nobject is an overloaded term.",
+      "parentUuid": "311c1cff_d1b4186b",
+      "range": {
+        "startLine": 90,
+        "startChar": 8,
+        "endLine": 90,
+        "endChar": 17
+      },
+      "revId": "490a64553f3e2fa28c2c80dea46d713e68c28f30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c33337f3_f1f9be5e",
         "filename": "go/src/infra/appengine/drone-queen/api/service.proto",
         "patchSetId": 4
