@@ -19,6 +19,7 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
+	"infra/cros/commonlib"
 	"infra/libs/sshpool"
 )
 
@@ -111,6 +112,6 @@ func getSSHClientConfig() *ssh.ClientConfig {
 		User:            "root",
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		Timeout:         5 * time.Second,
-		Auth:            []ssh.AuthMethod{ssh.PublicKeys(sshSigner)},
+		Auth:            []ssh.AuthMethod{ssh.PublicKeys(commonlib.SSHSigner)},
 	}
 }

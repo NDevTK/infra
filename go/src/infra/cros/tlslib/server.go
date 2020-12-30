@@ -30,6 +30,8 @@ import (
 	"google.golang.org/grpc/status"
 
 	"infra/libs/sshpool"
+
+	"infra/cros/commonlib"
 )
 
 // A Server is an implementation of a common TLS server.
@@ -60,7 +62,7 @@ func NewServer(c *grpc.ClientConn, options ...Option) (*Server, error) {
 			Timeout:         5 * time.Second,
 			// Use the well known testing RSA key as the default SSH auth
 			// method.
-			Auth: []ssh.AuthMethod{ssh.PublicKeys(sshSigner)},
+			Auth: []ssh.AuthMethod{ssh.PublicKeys(commonlib.SSHSigner)},
 		},
 	}
 	for _, option := range options {

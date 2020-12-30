@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package main
+package commonlib
 
 import (
 	"golang.org/x/crypto/ssh"
@@ -41,11 +41,13 @@ HfN/2MoO07vQrjgsFylvrw9A79xItABaqKndlmqlwMZWc9Ne
 -----END RSA PRIVATE KEY-----
 `
 
-var sshSigner ssh.Signer
+// SSHSigner contains the PEM encoded wellknown ssh key. This signer can
+// be used to SSH into ChromeOS DUTs.
+var SSHSigner ssh.Signer
 
 func init() {
 	var err error
-	sshSigner, err = ssh.ParsePrivateKey([]byte(sshKeyContent))
+	SSHSigner, err = ssh.ParsePrivateKey([]byte(sshKeyContent))
 	if err != nil {
 		panic(err.Error())
 	}
