@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "17da453e_9e62814a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2020-12-30T01:42:38Z",
+      "side": 1,
+      "message": "LGTM but let\u0027s wait John\u0027s answer on gTransit ",
+      "revId": "ce6371a2b8059a0b9b807f431cff7f8d8e43499a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "74e19c28_d09c1ace",
+        "filename": "go/src/infra/appengine/cros/lab_inventory/app/cron/cron.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 361,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2020-12-30T01:42:38Z",
+      "side": 1,
+      "message": "It\u0027s still not very clear what the naming convention for gTransit will be. So let\u0027s support Satlab first.\n\nCan you remove the if statement for gTransit for now? We can add it back when we have more info.",
+      "revId": "ce6371a2b8059a0b9b807f431cff7f8d8e43499a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
