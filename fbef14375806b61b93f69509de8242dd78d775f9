@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "40837594_60acf89b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2020-12-30T21:28:38Z",
+      "side": 1,
+      "message": "rebased \u0026 clean the trailing space in testing jsonproto",
+      "revId": "fbef14375806b61b93f69509de8242dd78d775f9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
