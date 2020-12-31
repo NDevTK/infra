@@ -7,8 +7,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"net"
+	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
 	"time"
 
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
@@ -33,10 +37,22 @@ func (s server) Serve(l net.Listener) error {
 	server := grpc.NewServer()
 	tls.RegisterWiringServer(server, &s)
 	s.tPool = sshpool.New(getSSHClientConfig())
-	defer s.tPool.Close()
 	s.tMgr = newTunnelManager()
-	defer s.tMgr.Close()
+	go s.captureSignal()
 	return server.Serve(l)
+}
+
+// captureSignal helps capture OS signals like SIGINT, SIGTERM, etc and then
+// performs necessary actions for a graceful exit of the service.
+func (s server) captureSignal() {
+	sigChan := make(chan os.Signal)
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT)
+	sig := <-sigChan
+	log.Printf("Captured %v, stopping fleet-tlw service and cleaning up...", sig)
+	// Close all open resources and exit.
+	s.tMgr.Close()
+	s.tPool.Close()
+	os.Exit(1)
 }
 
 func (s server) OpenDutPort(ctx context.Context, req *tls.OpenDutPortRequest) (*tls.OpenDutPortResponse, error) {
