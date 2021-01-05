@@ -39,6 +39,30 @@
       },
       "revId": "a23815b3cb22e2153de1bfec6f322cab47b0efbe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b65b2d76_7393028b",
+        "filename": "appengine/monorail/api/test/resource_name_converters_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 630,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2021-01-05T20:08:12Z",
+      "side": 1,
+      "message": "a non-lowered path is tested in 668, but also want to test a lowered path as input e.g.\n\u0027foo\u0027 to make sure it can still get matched with a path that is really \u0027Foo\u0027",
+      "parentUuid": "78290ada_4c5bd185",
+      "range": {
+        "startLine": 630,
+        "startChar": 69,
+        "endLine": 630,
+        "endChar": 76
+      },
+      "revId": "a23815b3cb22e2153de1bfec6f322cab47b0efbe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
