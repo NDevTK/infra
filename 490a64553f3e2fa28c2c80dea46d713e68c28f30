@@ -48,6 +48,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8c31f9fd_e3df4862",
+        "filename": "go/src/infra/appengine/drone-queen/api/service.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-01-05T19:24:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "63d56c41_0197be6d",
+      "range": {
+        "startLine": 90,
+        "startChar": 8,
+        "endLine": 90,
+        "endChar": 17
+      },
+      "revId": "490a64553f3e2fa28c2c80dea46d713e68c28f30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c33337f3_f1f9be5e",
@@ -61,6 +85,30 @@
       "writtenOn": "2020-12-29T21:37:01Z",
       "side": 1,
       "message": "Missing period, be consistent.",
+      "range": {
+        "startLine": 91,
+        "startChar": 18,
+        "endLine": 91,
+        "endChar": 20
+      },
+      "revId": "490a64553f3e2fa28c2c80dea46d713e68c28f30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bcd6f092_a4ecb1b0",
+        "filename": "go/src/infra/appengine/drone-queen/api/service.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-01-05T19:24:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c33337f3_f1f9be5e",
       "range": {
         "startLine": 91,
         "startChar": 18,
@@ -94,6 +142,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ffebd756_32a41476",
+        "filename": "go/src/infra/appengine/drone-queen/api/service.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-01-05T19:24:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4f8b1e53_9ab8e206",
+      "range": {
+        "startLine": 93,
+        "startChar": 26,
+        "endLine": 93,
+        "endChar": 27
+      },
+      "revId": "490a64553f3e2fa28c2c80dea46d713e68c28f30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "569e2474_3de77d25",
@@ -117,6 +189,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "35c5526b_b52f0ad2",
+        "filename": "go/src/infra/appengine/drone-queen/api/service.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-01-05T19:24:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "569e2474_3de77d25",
+      "range": {
+        "startLine": 94,
+        "startChar": 5,
+        "endLine": 94,
+        "endChar": 6
+      },
+      "revId": "490a64553f3e2fa28c2c80dea46d713e68c28f30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e4e787c0_4f29cd37",
@@ -130,6 +226,24 @@
       "writtenOn": "2020-12-29T21:37:01Z",
       "side": 1,
       "message": "You should implement support for this as well as mark the old duts field as deprecated in the same CL.  You should document the behavior for the old duts field (e.g., it should behave like adding duts with hive\u003d\"\").  The exposed API shouldn\u0027t exist in a half-unimplemented state.",
+      "revId": "490a64553f3e2fa28c2c80dea46d713e68c28f30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ea5f5aa8_68583974",
+        "filename": "go/src/infra/appengine/drone-queen/api/service.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-01-05T19:24:35Z",
+      "side": 1,
+      "message": "Im doing the CLs in sequence to push InvV2 and Drone-queen to prod (one after the other) without breaking any functionality.\n\nAfter merging each CL for drone queen or InvV2. I will do a push for drone queen or InvV2 and proceed further.\n\nIm merging crosskylabadmin CL first and pushing the crossskylabadmin before all.",
+      "parentUuid": "e4e787c0_4f29cd37",
       "revId": "490a64553f3e2fa28c2c80dea46d713e68c28f30",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
