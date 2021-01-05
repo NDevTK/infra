@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/bigquery"
@@ -324,9 +325,15 @@ func pushToDroneQueenCronHandler(c *router.Context) error {
 	}
 
 	duts := make([]string, len(droneQueenRecord.DUTs))
-	for i := range duts {
+	availableDuts := make([]*dronequeenapi.AvailableDut, len(droneQueenRecord.DUTs))
+	for i := range availableDuts {
 		duts[i] = droneQueenRecord.DUTs[i].Hostname
+		availableDuts[i] = &dronequeenapi.AvailableDut{
+			Name: droneQueenRecord.DUTs[i].Hostname,
+			Hive: getHiveForDut(droneQueenRecord.DUTs[i].Hostname),
+		}
 	}
+
 	ts, err := auth.GetTokenSource(ctx, auth.AsSelf)
 	if err != nil {
 		return err
@@ -337,11 +344,21 @@ func pushToDroneQueenCronHandler(c *router.Context) error {
 		Host: queenHostname,
 	})
 	logging.Debugf(ctx, "DUTs to declare: %#v", duts)
-	_, err = client.DeclareDuts(ctx, &dronequeenapi.DeclareDutsRequest{Duts: duts})
+	_, err = client.DeclareDuts(ctx, &dronequeenapi.DeclareDutsRequest{Duts: duts, AvailableDuts: availableDuts})
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func getHiveForDut(d string) string {
+	/* TODO(eshwarn): Change this logic to get exact satlab name and gTransit DUTs*/
+	// satlab DUTs
+	if strings.HasPrefix(d, "satlab") {
+		return "satlab"
+	}
+	// main lab DUTs
+	return ""
 }
 
 func reportInventoryCronHandler(c *router.Context) error {
