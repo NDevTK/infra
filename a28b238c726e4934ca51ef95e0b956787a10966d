@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ab61f7bb_ab6f36f4",
+        "filename": "go/src/infra/appengine/drone-queen/api/service.proto",
+        "patchSetId": 7
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-05T20:03:21Z",
+      "side": 1,
+      "message": "Should be named Dut so the message can be used in other contexts.  The type name doesn\u0027t have to match the field name, it can be Dut available_duts in one context and Dut unavailable_duts in another context.",
+      "range": {
+        "startLine": 90,
+        "startChar": 8,
+        "endLine": 90,
+        "endChar": 20
+      },
+      "revId": "a28b238c726e4934ca51ef95e0b956787a10966d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

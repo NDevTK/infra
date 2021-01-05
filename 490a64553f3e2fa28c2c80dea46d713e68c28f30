@@ -246,6 +246,24 @@
       "parentUuid": "e4e787c0_4f29cd37",
       "revId": "490a64553f3e2fa28c2c80dea46d713e68c28f30",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "401ce2be_755ac55a",
+        "filename": "go/src/infra/appengine/drone-queen/api/service.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-05T20:03:21Z",
+      "side": 1,
+      "message": "If you add support for both duts and available_duts here, you can push drone queen first without having to go through the dance of disabling and enabling the cron job at the same time as pushing the API.",
+      "parentUuid": "ea5f5aa8_68583974",
+      "revId": "490a64553f3e2fa28c2c80dea46d713e68c28f30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
