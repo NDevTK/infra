@@ -37,8 +37,11 @@ func TestDroneQueenImpl_DeclareDuts(t *testing.T) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		var d DroneQueenImpl
-		duts := []string{"ion", "nelo"}
-		_, err := d.DeclareDuts(ctx, &api.DeclareDutsRequest{Duts: duts})
+		availableDuts := []*api.AvailableDut{
+			{Name: "ion"},
+			{Name: "nelo"},
+		}
+		_, err := d.DeclareDuts(ctx, &api.DeclareDutsRequest{AvailableDuts: availableDuts})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -54,8 +57,13 @@ func TestDroneQueenImpl_DeclareDuts(t *testing.T) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		var d DroneQueenImpl
-		duts := []string{"ion", "nelo", "", ""}
-		_, err := d.DeclareDuts(ctx, &api.DeclareDutsRequest{Duts: duts})
+		availableDuts := []*api.AvailableDut{
+			{Name: "ion"},
+			{Name: "nelo"},
+			{Name: ""},
+			{Name: ""},
+		}
+		_, err := d.DeclareDuts(ctx, &api.DeclareDutsRequest{AvailableDuts: availableDuts})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -71,13 +79,20 @@ func TestDroneQueenImpl_DeclareDuts(t *testing.T) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		var d DroneQueenImpl
-		duts := []string{"ion", "nelo"}
-		_, err := d.DeclareDuts(ctx, &api.DeclareDutsRequest{Duts: duts})
+		availableDuts := []*api.AvailableDut{
+			{Name: "ion"},
+			{Name: "nelo"},
+		}
+		_, err := d.DeclareDuts(ctx, &api.DeclareDutsRequest{AvailableDuts: availableDuts})
 		if err != nil {
 			t.Fatal(err)
 		}
-		duts = []string{"ion", "nelo", "casty"}
-		_, err = d.DeclareDuts(ctx, &api.DeclareDutsRequest{Duts: duts})
+		availableDuts = []*api.AvailableDut{
+			{Name: "ion"},
+			{Name: "nelo"},
+			{Name: "casty"},
+		}
+		_, err = d.DeclareDuts(ctx, &api.DeclareDutsRequest{AvailableDuts: availableDuts})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -94,13 +109,18 @@ func TestDroneQueenImpl_DeclareDuts(t *testing.T) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		var d DroneQueenImpl
-		duts := []string{"ion", "nelo"}
-		_, err := d.DeclareDuts(ctx, &api.DeclareDutsRequest{Duts: duts})
+		availableDuts := []*api.AvailableDut{
+			{Name: "ion"},
+			{Name: "nelo"},
+		}
+		_, err := d.DeclareDuts(ctx, &api.DeclareDutsRequest{AvailableDuts: availableDuts})
 		if err != nil {
 			t.Fatal(err)
 		}
-		duts = []string{"ion"}
-		_, err = d.DeclareDuts(ctx, &api.DeclareDutsRequest{Duts: duts})
+		availableDuts = []*api.AvailableDut{
+			{Name: "ion"},
+		}
+		_, err = d.DeclareDuts(ctx, &api.DeclareDutsRequest{AvailableDuts: availableDuts})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -116,13 +136,19 @@ func TestDroneQueenImpl_DeclareDuts(t *testing.T) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		var d DroneQueenImpl
-		duts := []string{"ion", "nelo"}
-		_, err := d.DeclareDuts(ctx, &api.DeclareDutsRequest{Duts: duts})
+		availableDuts := []*api.AvailableDut{
+			{Name: "ion"},
+			{Name: "nelo"},
+		}
+		_, err := d.DeclareDuts(ctx, &api.DeclareDutsRequest{AvailableDuts: availableDuts})
 		if err != nil {
 			t.Fatal(err)
 		}
-		duts = []string{"ion", "casty"}
-		_, err = d.DeclareDuts(ctx, &api.DeclareDutsRequest{Duts: duts})
+		availableDuts = []*api.AvailableDut{
+			{Name: "ion"},
+			{Name: "casty"},
+		}
+		_, err = d.DeclareDuts(ctx, &api.DeclareDutsRequest{AvailableDuts: availableDuts})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -325,10 +351,11 @@ func testHappyPath(t *testing.T) {
 		nowFunc: staticTime(now),
 	}
 	// Declare some DUTs.
-	duts := []string{"ion", "nelo"}
-	_, err := d.DeclareDuts(ctx, &api.DeclareDutsRequest{
-		Duts: duts,
-	})
+	availableDuts := []*api.AvailableDut{
+		{Name: "ion"},
+		{Name: "nelo"},
+	}
+	_, err := d.DeclareDuts(ctx, &api.DeclareDutsRequest{AvailableDuts: availableDuts})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -356,7 +383,7 @@ func testHappyPath(t *testing.T) {
 	if n := len(res.AssignedDuts); n != 1 {
 		t.Errorf("Got %v DUTs; expected 1", n)
 	}
-	assertSubsetStrings(t, duts, res.AssignedDuts)
+	assertSubsetStrings(t, []string{"ion", "nelo"}, res.AssignedDuts)
 	if len(res.DrainingDuts) != 0 {
 		t.Errorf("Got draining DUTs %v; want none", res.DrainingDuts)
 	}
