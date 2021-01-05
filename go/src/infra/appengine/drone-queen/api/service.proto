@@ -87,10 +87,23 @@ message ReleaseDutsRequest {
 }
 message ReleaseDutsResponse {}
 
+message AvailableDuts {
+  // name of the DUT.
+  string name = 1;
+  // hive value of the DUT.  This is used for DUT/drone affinity.
+  // The DUT is assigned to a drone with same hive value.
+  string hive = 2;
+}
+
 message DeclareDutsRequest {
   // duts is all of the DUTs to be made available to drones.  DUTs
   // omitted from this list will be drained and deleted.
   repeated string duts = 1;
+
+  // available_duts is a list of DUTs made available to drones.  It contains
+  // assignment information for a DUT.  DUTs omitted from this list will be
+  // drained and deleted.
+  repeated AvailableDuts available_duts = 2;
 }
 message DeclareDutsResponse {}
 
