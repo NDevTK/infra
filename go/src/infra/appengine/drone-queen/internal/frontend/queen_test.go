@@ -134,6 +134,54 @@ func TestDroneQueenImpl_DeclareDuts(t *testing.T) {
 		}
 		assertDatastoreDUTs(ctx, t, want)
 	})
+	t.Run("declare new DUTs with hive", func(t *testing.T) {
+		t.Parallel()
+		ctx := gaetesting.TestingContextWithAppID("go-test")
+		datastore.GetTestable(ctx).Consistent(true)
+		var d DroneQueenImpl
+		availableDuts := []*api.DeclareDutsRequest_Dut{
+			{Name: "ion", Hive: "hive-A"},
+			{Name: "nelo", Hive: "hive-B"},
+		}
+		_, err := d.DeclareDuts(ctx, &api.DeclareDutsRequest{AvailableDuts: availableDuts})
+		if err != nil {
+			t.Fatal(err)
+		}
+		k := entities.DUTGroupKey(ctx)
+		want := []*entities.DUT{
+			{ID: "ion", Hive: "hive-A", Group: k},
+			{ID: "nelo", Hive: "hive-B", Group: k},
+		}
+		assertDatastoreDUTs(ctx, t, want)
+	})
+	t.Run("declare DUTs with updated hive", func(t *testing.T) {
+		t.Parallel()
+		ctx := gaetesting.TestingContextWithAppID("go-test")
+		datastore.GetTestable(ctx).Consistent(true)
+		var d DroneQueenImpl
+		availableDuts := []*api.DeclareDutsRequest_Dut{
+			{Name: "ion", Hive: "hive-A"},
+			{Name: "nelo", Hive: "hive-B"},
+		}
+		_, err := d.DeclareDuts(ctx, &api.DeclareDutsRequest{AvailableDuts: availableDuts})
+		if err != nil {
+			t.Fatal(err)
+		}
+		availableDuts = []*api.DeclareDutsRequest_Dut{
+			{Name: "ion", Hive: "hive-C"},
+			{Name: "nelo", Hive: "hive-B"},
+		}
+		_, err = d.DeclareDuts(ctx, &api.DeclareDutsRequest{AvailableDuts: availableDuts})
+		if err != nil {
+			t.Fatal(err)
+		}
+		k := entities.DUTGroupKey(ctx)
+		want := []*entities.DUT{
+			{ID: "ion", Hive: "hive-C", Group: k},
+			{ID: "nelo", Hive: "hive-B", Group: k},
+		}
+		assertDatastoreDUTs(ctx, t, want)
+	})
 }
 
 func TestDroneQueenImpl_ReleaseDuts(t *testing.T) {
