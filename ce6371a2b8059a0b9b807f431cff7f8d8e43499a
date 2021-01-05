@@ -33,6 +33,24 @@
       "message": "It\u0027s still not very clear what the naming convention for gTransit will be. So let\u0027s support Satlab first.\n\nCan you remove the if statement for gTransit for now? We can add it back when we have more info.",
       "revId": "ce6371a2b8059a0b9b807f431cff7f8d8e43499a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cc522bfd_09d0906d",
+        "filename": "go/src/infra/appengine/cros/lab_inventory/app/cron/cron.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 361,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-01-05T18:39:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "74e19c28_d09c1ace",
+      "revId": "ce6371a2b8059a0b9b807f431cff7f8d8e43499a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
