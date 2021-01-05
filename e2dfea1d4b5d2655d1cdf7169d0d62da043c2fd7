@@ -33,6 +33,24 @@
       "message": "Seems once a DUT stored in the datastore, we have no way to update its hive. Shall we here set the DUT hive according to the request unconditionally?",
       "revId": "e2dfea1d4b5d2655d1cdf7169d0d62da043c2fd7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8f75df64_a1de4af5",
+        "filename": "go/src/infra/appengine/drone-queen/internal/frontend/queen.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-01-05T19:05:43Z",
+      "side": 1,
+      "message": "Ack. Make sense to update the hive for the DUT.",
+      "parentUuid": "bbbe80f1_4df3cca5",
+      "revId": "e2dfea1d4b5d2655d1cdf7169d0d62da043c2fd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
