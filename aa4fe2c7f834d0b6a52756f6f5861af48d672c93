@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e1296f2d_2b129302",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-05T20:14:00Z",
+      "side": 1,
+      "message": "Recommend merging this into https://chromium-review.googlesource.com/c/infra/infra/+/2601306/ and supporting both duts and available_duts",
+      "revId": "aa4fe2c7f834d0b6a52756f6f5861af48d672c93",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
