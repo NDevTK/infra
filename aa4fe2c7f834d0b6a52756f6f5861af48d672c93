@@ -16,6 +16,63 @@
       "message": "Recommend merging this into https://chromium-review.googlesource.com/c/infra/infra/+/2601306/ and supporting both duts and available_duts",
       "revId": "aa4fe2c7f834d0b6a52756f6f5861af48d672c93",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8712d0da_df8ac3a3",
+        "filename": "go/src/infra/appengine/drone-queen/internal/frontend/queen.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-05T20:31:14Z",
+      "side": 1,
+      "message": "There are many changes here that should be split out into separate CLs, as it is more difficult to review multiple changes at the same time, e.g., renaming variables, inlining filterInvalidDuts, merging Put() new/modified DUTs.  Please make separate CLs in the future.",
+      "range": {
+        "startLine": 158,
+        "startChar": 6,
+        "endLine": 158,
+        "endChar": 18
+      },
+      "revId": "aa4fe2c7f834d0b6a52756f6f5861af48d672c93",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "384b9dba_01c9601c",
+        "filename": "go/src/infra/appengine/drone-queen/internal/frontend/queen.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-05T20:31:14Z",
+      "side": 1,
+      "message": "comment: we can make this a lot faster by skipping the DUTs that don\u0027t need to be changed, e.g. already draining \u003d\u003d false and hive \u003d\u003d hive.  Most DUTs during most DeclareDUT calls should be no-op.  Just a suggestion for future CL.",
+      "revId": "aa4fe2c7f834d0b6a52756f6f5861af48d672c93",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e7c908a9_32fffdc7",
+        "filename": "go/src/infra/appengine/drone-queen/internal/frontend/queen_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-05T20:31:14Z",
+      "side": 1,
+      "message": "You should add test cases that sets hive for a new DUT and changes the hive for an existing DUT.",
+      "revId": "aa4fe2c7f834d0b6a52756f6f5861af48d672c93",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
