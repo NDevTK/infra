@@ -22,6 +22,30 @@
       },
       "revId": "a28b238c726e4934ca51ef95e0b956787a10966d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "228c8a38_d9b4d3f8",
+        "filename": "go/src/infra/appengine/drone-queen/api/service.proto",
+        "patchSetId": 7
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-01-06T00:12:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ab61f7bb_ab6f36f4",
+      "range": {
+        "startLine": 90,
+        "startChar": 8,
+        "endLine": 90,
+        "endChar": 20
+      },
+      "revId": "a28b238c726e4934ca51ef95e0b956787a10966d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
