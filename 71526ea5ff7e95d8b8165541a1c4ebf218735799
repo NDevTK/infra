@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "99f16019_4b6a81c7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1148599
+      },
+      "writtenOn": "2021-01-06T00:52:04Z",
+      "side": 1,
+      "message": "Could this be causing issues with the autoroller? The last successful roll into tools/build currently was on December 8th, which seems suspiciously close to this CL landing.\n\nhttps://crbug.com/1163350 tracks fixing the staleness, and investigating why it\u0027s stale.",
+      "revId": "71526ea5ff7e95d8b8165541a1c4ebf218735799",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
