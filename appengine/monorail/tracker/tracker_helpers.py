@@ -1454,13 +1454,46 @@ def _AssertNoConflictingDeltas(issue_delta_pairs, refs_dict, err_agg):
 
 
 def PrepareIssueChanges(
-    cnxn, issue_delta_pairs, services, comment_content=None):
+    cnxn,
+    issue_delta_pairs,
+    services,
+    attachment_uploads=attachment_uploads,
+    comment_content=None):
   # type: (MonorailConnection, Sequence[Tuple[Issue, IssueDelta]], Services,
-  #     Optional[str]) -> None
+  #     Optional[Sequence[work_env.AttachmentUpload]], Optional[str])
+  #     -> Mapping[int, int]
   """Clean the deltas and assert they are valid for each paired issue."""
   _EnforceNonMergeStatusDeltas(cnxn, issue_delta_pairs, services)
   _AssertIssueChangesValid(
       cnxn, issue_delta_pairs, services, comment_content=comment_content)
+
+  if attachment_uploads:
+    return _EnforceAttachmentQuotaLimits(
+        cnxn, issue_delta_pairs, services, attachment_uploads)
+  return {}
+
+
+def _EnforceAttachmentQuotaLimits(
+    cnxn, issue_delta_pairs, services, attachment_uploads):
+  # type: (MonorailConnection, Sequence[Tuple[Issue, IssueDelta]], Services
+  #     Optional[Sequence[work_env.AttachmentUpload]] -> Mapping[int, int]
+  issue_count_by_pid = collections.defaultdict(int)
+  for issue, _delta in issue_delta_pairs:
+    issue_count_by_pid[issue.project_id] += 1
+
+  projects_by_id = services.project.GetProjects(cnxn, issue_count_by_pid.keys())
+
+  new_bytes_by_pid = {}
+  with exceptions.ErrorAggregator(exceptions.OverAttachmentQuota) as err_agg:
+    for pid, count in issues_by_pid:
+      try:
+        new_bytes_used = ComputeNewQuotaBytesUsed(
+            projects_by_id[pid], attachment_uploads * count)
+        new_bytes_by_pid[pid] = new_bytes_used
+      except exceptions.OverAttachmentQuota:
+        err_agg.AddErrorMessage(
+            'Attachment quota exceeded for project {}', project.project_name)
+  return new_bytes_by_pid
 
 
 def _AssertIssueChangesValid(
