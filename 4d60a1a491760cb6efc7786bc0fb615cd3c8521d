@@ -22,6 +22,30 @@
       },
       "revId": "4d60a1a491760cb6efc7786bc0fb615cd3c8521d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f49e04a2_553b77f4",
+        "filename": "go/src/infra/appengine/cros/lab_inventory/app/cron/cron.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 359,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-01-06T21:00:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5f632f72_5b6f30e7",
+      "range": {
+        "startLine": 359,
+        "startChar": 0,
+        "endLine": 359,
+        "endChar": 17
+      },
+      "revId": "4d60a1a491760cb6efc7786bc0fb615cd3c8521d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
