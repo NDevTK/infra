@@ -16,6 +16,24 @@
       "message": "add 1163440 too?",
       "revId": "e45d8cdb9943bef4ea806314e1a33b5da1fce64c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ec46e596_b2c79321",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2021-01-06T09:13:20Z",
+      "side": 1,
+      "message": "Done. thanks",
+      "parentUuid": "7676603a_5eee2139",
+      "revId": "e45d8cdb9943bef4ea806314e1a33b5da1fce64c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
