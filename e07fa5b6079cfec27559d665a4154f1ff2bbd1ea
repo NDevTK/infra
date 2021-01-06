@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5fe2c3fa_c0a598b1",
+        "filename": "go/src/infra/appengine/drone-queen/internal/frontend/queen.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-01-06T22:00:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "beb6ec07_6d3a4ba3",
+      "revId": "e07fa5b6079cfec27559d665a4154f1ff2bbd1ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "774cc9c7_8b362312",
@@ -48,6 +66,30 @@
       "writtenOn": "2021-01-06T21:14:33Z",
       "side": 1,
       "message": "suggest renaming newDUTs to updatedDuts",
+      "range": {
+        "startLine": 225,
+        "startChar": 6,
+        "endLine": 225,
+        "endChar": 13
+      },
+      "revId": "e07fa5b6079cfec27559d665a4154f1ff2bbd1ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6d8ef0bc_4f32a78b",
+        "filename": "go/src/infra/appengine/drone-queen/internal/frontend/queen.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-01-06T22:00:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "774cc9c7_8b362312",
       "range": {
         "startLine": 225,
         "startChar": 6,
@@ -104,6 +146,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "82f039c0_48fc2841",
+        "filename": "go/src/infra/appengine/drone-queen/internal/frontend/queen.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-01-06T22:00:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fd469975_ef5ba1a8",
+      "range": {
+        "startLine": 236,
+        "startChar": 43,
+        "endLine": 236,
+        "endChar": 44
+      },
+      "revId": "e07fa5b6079cfec27559d665a4154f1ff2bbd1ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "40c60128_1ff69a46",
+        "filename": "go/src/infra/appengine/drone-queen/internal/frontend/queen.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-01-06T22:00:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "46d3550b_5973c09e",
+      "range": {
+        "startLine": 236,
+        "startChar": 31,
+        "endLine": 236,
+        "endChar": 34
+      },
+      "revId": "e07fa5b6079cfec27559d665a4154f1ff2bbd1ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7d604d0d_13deace6",
@@ -117,6 +207,30 @@
       "writtenOn": "2021-01-06T21:14:33Z",
       "side": 1,
       "message": "don\u0027t need the nil check since len(nil slice) \u003d\u003d 0",
+      "range": {
+        "startLine": 269,
+        "startChar": 5,
+        "endLine": 269,
+        "endChar": 33
+      },
+      "revId": "e07fa5b6079cfec27559d665a4154f1ff2bbd1ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "62d1a63e_e64555a1",
+        "filename": "go/src/infra/appengine/drone-queen/internal/frontend/queen.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-01-06T22:00:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7d604d0d_13deace6",
       "range": {
         "startLine": 269,
         "startChar": 5,
