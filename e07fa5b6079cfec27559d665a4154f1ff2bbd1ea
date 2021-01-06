@@ -1,0 +1,130 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1d11ab97_9751c36a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-06T21:14:33Z",
+      "side": 1,
+      "message": "Overall LGTM, have a few cleanup comments",
+      "revId": "e07fa5b6079cfec27559d665a4154f1ff2bbd1ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "beb6ec07_6d3a4ba3",
+        "filename": "go/src/infra/appengine/drone-queen/internal/frontend/queen.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-06T21:14:33Z",
+      "side": 1,
+      "message": "Add TODO(name/bug) for these kinds of comments",
+      "revId": "e07fa5b6079cfec27559d665a4154f1ff2bbd1ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "774cc9c7_8b362312",
+        "filename": "go/src/infra/appengine/drone-queen/internal/frontend/queen.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-06T21:14:33Z",
+      "side": 1,
+      "message": "suggest renaming newDUTs to updatedDuts",
+      "range": {
+        "startLine": 225,
+        "startChar": 6,
+        "endLine": 225,
+        "endChar": 13
+      },
+      "revId": "e07fa5b6079cfec27559d665a4154f1ff2bbd1ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "46d3550b_5973c09e",
+        "filename": "go/src/infra/appengine/drone-queen/internal/frontend/queen.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-06T21:14:33Z",
+      "side": 1,
+      "message": "s/its/it\u0027s/",
+      "range": {
+        "startLine": 236,
+        "startChar": 31,
+        "endLine": 236,
+        "endChar": 34
+      },
+      "revId": "e07fa5b6079cfec27559d665a4154f1ff2bbd1ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fd469975_ef5ba1a8",
+        "filename": "go/src/infra/appengine/drone-queen/internal/frontend/queen.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-06T21:14:33Z",
+      "side": 1,
+      "message": "space before (",
+      "range": {
+        "startLine": 236,
+        "startChar": 43,
+        "endLine": 236,
+        "endChar": 44
+      },
+      "revId": "e07fa5b6079cfec27559d665a4154f1ff2bbd1ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7d604d0d_13deace6",
+        "filename": "go/src/infra/appengine/drone-queen/internal/frontend/queen.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-06T21:14:33Z",
+      "side": 1,
+      "message": "don\u0027t need the nil check since len(nil slice) \u003d\u003d 0",
+      "range": {
+        "startLine": 269,
+        "startChar": 5,
+        "endLine": 269,
+        "endChar": 33
+      },
+      "revId": "e07fa5b6079cfec27559d665a4154f1ff2bbd1ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
