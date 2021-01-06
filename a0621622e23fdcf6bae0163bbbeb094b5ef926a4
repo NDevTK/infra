@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8157881e_f2fed7da",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/server.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-06T20:55:10Z",
+      "side": 1,
+      "message": "You should set up signal capturing at the main level.  You\u0027ll need to expose a Close() method to stop the server.",
+      "revId": "a0621622e23fdcf6bae0163bbbeb094b5ef926a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
