@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7a8a80d3_10f71362",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-06T23:35:35Z",
+      "side": 1,
+      "message": "LGTM % comment",
+      "revId": "ca8232156723e2fae0e00c5baa1eae62f60cbdc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d69f4cf9_116edf8b",
+        "filename": "go/src/infra/appengine/drone-queen/internal/frontend/queen.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-06T23:35:35Z",
+      "side": 1,
+      "message": "\u003d\u003d true is redundant",
+      "range": {
+        "startLine": 235,
+        "startChar": 19,
+        "endLine": 235,
+        "endChar": 27
+      },
+      "revId": "ca8232156723e2fae0e00c5baa1eae62f60cbdc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
