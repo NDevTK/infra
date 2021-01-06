@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5f632f72_5b6f30e7",
+        "filename": "go/src/infra/appengine/cros/lab_inventory/app/cron/cron.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 359,
+      "author": {
+        "id": 1346454
+      },
+      "writtenOn": "2021-01-06T18:54:49Z",
+      "side": 1,
+      "message": "Each satlab drone is a hive,satlab drone name is satlab-[hash]. The dut is satlab-[hash]-host1. For satlab, pls let the hive to be satlab-[hash]. The filtering on drone-queen logic should be easier to implement with this convention",
+      "range": {
+        "startLine": 359,
+        "startChar": 0,
+        "endLine": 359,
+        "endChar": 17
+      },
+      "revId": "4d60a1a491760cb6efc7786bc0fb615cd3c8521d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
