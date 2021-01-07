@@ -28,14 +28,24 @@ type server struct {
 	tPool *sshpool.Pool
 }
 
+func newServer() server {
+	s := server{
+		tPool: sshpool.New(getSSHClientConfig()),
+		tMgr:  newTunnelManager(),
+	}
+	return s
+}
+
 func (s server) Serve(l net.Listener) error {
 	server := grpc.NewServer()
 	tls.RegisterWiringServer(server, &s)
-	s.tPool = sshpool.New(getSSHClientConfig())
-	defer s.tPool.Close()
-	s.tMgr = newTunnelManager()
-	defer s.tMgr.Close()
 	return server.Serve(l)
+}
+
+// Close closes all open server resources.
+func (s server) Close() {
+	s.tMgr.Close()
+	s.tPool.Close()
 }
 
 func (s server) OpenDutPort(ctx context.Context, req *tls.OpenDutPortRequest) (*tls.OpenDutPortResponse, error) {
