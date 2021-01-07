@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2a16bb51_b9de809d",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-07T20:52:42Z",
+      "side": 1,
+      "message": "Setting up the signal handler can and should happen outside and before the goroutine, as a general rule minimizing the code running concurrently",
+      "revId": "382a3b30a12885569b4733b4ddffb36d8d3a4177",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "68e65b8a_c1100d75",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-07T20:52:42Z",
+      "side": 1,
+      "message": "Be careful with os.Exit especially in a goroutine, it unconditionally exits without waiting for anything.  If you stop the server, the s.Serve() will return and you can let main() return normally or os.Exit at the end of main().",
+      "revId": "382a3b30a12885569b4733b4ddffb36d8d3a4177",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3f6aac73_efe99c1b",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/server.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-07T20:52:42Z",
+      "side": 1,
+      "message": "You should stop the grpc server too.\n\nhttps://pkg.go.dev/google.golang.org/grpc#Server.GracefulStop",
+      "revId": "382a3b30a12885569b4733b4ddffb36d8d3a4177",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
