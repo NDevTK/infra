@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "647cd0c0_983a5209",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1365447
+      },
+      "writtenOn": "2021-01-07T22:20:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2a16bb51_b9de809d",
+      "revId": "382a3b30a12885569b4733b4ddffb36d8d3a4177",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "68e65b8a_c1100d75",
@@ -35,6 +53,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d711ec29_a1b0ee53",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1365447
+      },
+      "writtenOn": "2021-01-07T22:20:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "68e65b8a_c1100d75",
+      "revId": "382a3b30a12885569b4733b4ddffb36d8d3a4177",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3f6aac73_efe99c1b",
@@ -48,6 +84,24 @@
       "writtenOn": "2021-01-07T20:52:42Z",
       "side": 1,
       "message": "You should stop the grpc server too.\n\nhttps://pkg.go.dev/google.golang.org/grpc#Server.GracefulStop",
+      "revId": "382a3b30a12885569b4733b4ddffb36d8d3a4177",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "037dac18_d35aad90",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/server.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1365447
+      },
+      "writtenOn": "2021-01-07T22:20:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3f6aac73_efe99c1b",
       "revId": "382a3b30a12885569b4733b4ddffb36d8d3a4177",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
