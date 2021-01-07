@@ -67,6 +67,23 @@
       "message": "Need a +2 from Owner ",
       "revId": "3bedd543f1c877c78766d4bf1bfbe078229f60e3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d2d9e751_59031ab4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2021-01-07T22:48:38Z",
+      "side": 1,
+      "message": "Thanks Prathmesh!",
+      "revId": "3bedd543f1c877c78766d4bf1bfbe078229f60e3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
