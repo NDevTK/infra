@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0c1b90da_c76261cf",
+        "filename": "go/src/infra/appengine/rubber-stamper/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1414197
+      },
+      "writtenOn": "2021-01-07T23:24:32Z",
+      "side": 1,
+      "message": "nit: it\u0027s a list of just the filepaths that follow gitignore style ignore patterns, not both extensions and filepaths",
+      "range": {
+        "startLine": 35,
+        "startChar": 12,
+        "endLine": 35,
+        "endChar": 36
+      },
+      "revId": "03fe096af823e7e292c41826f92fc171db243eb8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
