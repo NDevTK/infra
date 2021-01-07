@@ -10,6 +10,9 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 var (
@@ -22,7 +25,14 @@ func main() {
 	if err != nil {
 		log.Fatalf("fleet-tlw: %s", err)
 	}
-	s := server{}
+	sigChan := make(chan os.Signal)
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT)
+	s := newServer()
+	go func() {
+		sig := <-sigChan
+		log.Printf("Captured %v, stopping fleet-tlw service and cleaning up...", sig)
+		s.Close()
+	}()
 	if err := s.Serve(l); err != nil {
 		log.Fatalf("fleet-tlw: %s", err)
 	}

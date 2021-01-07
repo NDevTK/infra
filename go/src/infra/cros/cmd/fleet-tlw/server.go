@@ -24,18 +24,30 @@ import (
 
 type server struct {
 	tls.UnimplementedWiringServer
-	tMgr  *tunnelManager
-	tPool *sshpool.Pool
+	grpcServ *grpc.Server
+	tMgr     *tunnelManager
+	tPool    *sshpool.Pool
+}
+
+func newServer() server {
+	s := server{
+		grpcServ: grpc.NewServer(),
+		tPool:    sshpool.New(getSSHClientConfig()),
+		tMgr:     newTunnelManager(),
+	}
+	return s
 }
 
 func (s server) Serve(l net.Listener) error {
-	server := grpc.NewServer()
-	tls.RegisterWiringServer(server, &s)
-	s.tPool = sshpool.New(getSSHClientConfig())
-	defer s.tPool.Close()
-	s.tMgr = newTunnelManager()
-	defer s.tMgr.Close()
-	return server.Serve(l)
+	tls.RegisterWiringServer(s.grpcServ, &s)
+	return s.grpcServ.Serve(l)
+}
+
+// Close closes all open server resources.
+func (s server) Close() {
+	s.tMgr.Close()
+	s.tPool.Close()
+	s.grpcServ.GracefulStop()
 }
 
 func (s server) OpenDutPort(ctx context.Context, req *tls.OpenDutPortRequest) (*tls.OpenDutPortResponse, error) {
