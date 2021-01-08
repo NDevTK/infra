@@ -306,19 +306,25 @@ shivas update dut -f dut.json -ignore-ufs
 Trigger a deploy task on dut from reading dut.json. Ignore updating UFS.
 
 shivas update dut -name chromeos6-rack3-row2-host1 -servo chromeos6-rack3-row2-labstation1:0 -servo-serial C1024356789
-Update servo connected to the DUT.
+Update servo connected to the DUT. (Cannot ignore deploy '-ignore-deploy' when updating servo.)
+
+shivas update dut -name chromeos6-rack3-row2-host1 -rpm chromeos6-row11_12-rack24-rpm1 -outlet .A22
+Update rpm connected to the DUT. (Cannot ignore deploy '-ignore-deploy' when updating rpm.)
 
 shivas update dut -name chromeos6-rack3-row2-host1 -servo - -ignore-deploy
-Delete servo connected to the DUT.
+Delete servo connected to the DUT. (Cannot ignore deploy '-ignore-deploy' when deleting servo.)
 
 shivas update dut -name chromeos6-rack3-row2-host1 -rpm -
-Delete rpm connected to the DUT.
+Delete rpm connected to the DUT. (Cannot ignore deploy '-ignore-deploy' when deleting servo.)
 
 shivas update dut -name chromeos6-rack3-row2-host1 -tags kevin,no-test -ignore-deploy
-Add tags to an existing DUT and skip running deploy task.
+Append tags to an existing DUT and skip running deploy task.
+
+shivas update dut -name chromeos6-rack3-row2-host1 -tags - -ignore-deploy
+Delete tags to an existing DUT and skip running deploy task.
 
 shivas update dut -f switch.json
-Update a DUT by reading a JSON file input.
+Update a DUT by reading a JSON file input. (JSON input is assigned as is. Cannot skip deploy task if servo/rpm is updated/deleted.)
 `
 	// UpdateSwitchLongDesc long description for UpdateSwitchCmd
 	UpdateSwitchLongDesc string = `Update a switch by name.
