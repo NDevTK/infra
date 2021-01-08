@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b0ec834b_bf570dc8",
+        "filename": "go/src/infra/appengine/rubber-stamper/internal/reviewer/clean_revert_cl.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1409819
+      },
+      "writtenOn": "2021-01-08T22:10:57Z",
+      "side": 1,
+      "message": "Oh I\u0027ve made a mistake in the comment. So it should be, when the function returns an error, the reviewer will not care about the message string since there\u0027s an error. I\u0027ve altered the comment of the function to make it clearer. I\u0027ve also added some tests to cover the error cases.\n\nIs this a good way to define this function? Should I change it to have maybe clearer return types?",
+      "parentUuid": "6e14afd2_04504592",
+      "range": {
+        "startLine": 69,
+        "startChar": 0,
+        "endLine": 69,
+        "endChar": 16
+      },
+      "revId": "be146fcb9558f611316fddb63ee4719481f7364c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c2091736_8412cead",
         "filename": "go/src/infra/appengine/rubber-stamper/internal/reviewer/clean_revert_cl.go",
         "patchSetId": 1
@@ -37,6 +61,30 @@
       "writtenOn": "2021-01-08T17:56:40Z",
       "side": 1,
       "message": "s/valid/configured to make it clear that this is configurable",
+      "range": {
+        "startLine": 72,
+        "startChar": 58,
+        "endLine": 72,
+        "endChar": 64
+      },
+      "revId": "be146fcb9558f611316fddb63ee4719481f7364c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3e6b451e_45209e92",
+        "filename": "go/src/infra/appengine/rubber-stamper/internal/reviewer/clean_revert_cl.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1409819
+      },
+      "writtenOn": "2021-01-08T22:10:57Z",
+      "side": 1,
+      "message": "Fixed",
+      "parentUuid": "c2091736_8412cead",
       "range": {
         "startLine": 72,
         "startChar": 58,
