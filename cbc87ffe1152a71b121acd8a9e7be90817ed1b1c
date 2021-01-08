@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8079d578_b5973cfd",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-08T20:37:15Z",
+      "side": 1,
+      "message": "needs to have a buffer of 1, read https://pkg.go.dev/os/signal#Notify",
+      "range": {
+        "startLine": 28,
+        "startChar": 29,
+        "endLine": 28,
+        "endChar": 32
+      },
+      "revId": "cbc87ffe1152a71b121acd8a9e7be90817ed1b1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "062babce_21b72c10",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-08T20:37:15Z",
+      "side": 1,
+      "message": "Use https://pkg.go.dev/golang.org/x/sys/unix\n\nhttps://pkg.go.dev/syscall is deprecated",
+      "range": {
+        "startLine": 29,
+        "startChar": 38,
+        "endLine": 29,
+        "endChar": 45
+      },
+      "revId": "cbc87ffe1152a71b121acd8a9e7be90817ed1b1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f3549df6_e21a3a9c",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/server.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-08T20:37:15Z",
+      "side": 1,
+      "message": "suggest moving the register to newServer()",
+      "revId": "cbc87ffe1152a71b121acd8a9e7be90817ed1b1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
