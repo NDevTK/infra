@@ -303,16 +303,22 @@ shivas update dut -f dut.json -ignore-ufs
 Trigger a deploy task on dut from reading dut.json. Ignore updating UFS.
 
 shivas update dut -name chromeos6-rack3-row2-host1 -servo chromeos6-rack3-row2-labstation1:0 -servo-serial C1024356789
-Update servo connected to the DUT.
+Update servo connected to the DUT. (Cannot ignore deploy '-ignore-deploy' when updating servo.)
+
+shivas update dut -name chromeos6-rack3-row2-host1 -rpm chromeos6-row11_12-rack24-rpm1 -outlet .A22
+Update rpm connected to the DUT. (Cannot ignore deploy '-ignore-deploy' when updating rpm.)
 
 shivas update dut -name chromeos6-rack3-row2-host1 -servo -
 Delete servo connected to the DUT.
 
 shivas update dut -name chromeos6-rack3-row2-host1 -rpm -
-Delete rpm connected to the DUT.
+Delete rpm connected to the DUT. (Cannot ignore deploy '-ignore-deploy' when deleting servo.)
 
 shivas update dut -name chromeos6-rack3-row2-host1 -tags kevin,no-test
-Add tags to an existing DUT and skip running deploy task.
+Add tags to an existing DUT.
+
+shivas update dut -name chromeos6-rack3-row2-host1 -tags -
+Delete tags to an existing DUT.
 
 shivas update dut -f switch.json
 Update a DUT by reading a JSON file input.
