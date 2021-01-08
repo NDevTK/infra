@@ -48,6 +48,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b5a0e98b_4d319ae2",
+        "filename": "go/src/infra/appengine/rubber-stamper/internal/reviewer/clean_revert_cl.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2021-01-08T22:17:45Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "b0ec834b_bf570dc8",
+      "range": {
+        "startLine": 69,
+        "startChar": 0,
+        "endLine": 69,
+        "endChar": 16
+      },
+      "revId": "be146fcb9558f611316fddb63ee4719481f7364c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c2091736_8412cead",
