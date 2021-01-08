@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c2091736_8412cead",
+        "filename": "go/src/infra/appengine/rubber-stamper/internal/reviewer/clean_revert_cl.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1414197
+      },
+      "writtenOn": "2021-01-08T17:56:40Z",
+      "side": 1,
+      "message": "s/valid/configured to make it clear that this is configurable",
+      "range": {
+        "startLine": 72,
+        "startChar": 58,
+        "endLine": 72,
+        "endChar": 64
+      },
+      "revId": "be146fcb9558f611316fddb63ee4719481f7364c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
