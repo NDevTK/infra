@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a0d1e95f_ed4e8d59",
+        "filename": "appengine/findit/libs/test_results/resultdb_test_results.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-01-11T20:52:20Z",
+      "side": 1,
+      "message": "In resultdb, skipped results should be expected and have SKIP status, and notrun results should be unexpected and have SKIP status.",
+      "range": {
+        "startLine": 106,
+        "startChar": 8,
+        "endLine": 106,
+        "endChar": 70
+      },
+      "revId": "8150a07584529ee7ed71795ff54263ad5061bfc2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
