@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d088af5d_f319f119",
+        "filename": "go/src/infra/cmd/shivas/cmdhelp/description.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 305,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-01-11T19:09:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "52985aea_fa2a5cdc",
+      "range": {
+        "startLine": 305,
+        "startChar": 51,
+        "endLine": 305,
+        "endChar": 62
+      },
+      "revId": "11421dab82d8175ac5fd692389434dfb275c57c8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8276089e_3d19155e",
@@ -54,6 +78,30 @@
       "writtenOn": "2021-01-11T18:09:49Z",
       "side": 1,
       "message": "rpm-outlet",
+      "range": {
+        "startLine": 311,
+        "startChar": 87,
+        "endLine": 311,
+        "endChar": 95
+      },
+      "revId": "11421dab82d8175ac5fd692389434dfb275c57c8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6c6cece0_9bd0ba6c",
+        "filename": "go/src/infra/cmd/shivas/cmdhelp/description.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 311,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-01-11T19:09:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8276089e_3d19155e",
       "range": {
         "startLine": 311,
         "startChar": 87,
