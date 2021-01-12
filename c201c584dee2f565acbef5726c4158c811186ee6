@@ -22,6 +22,30 @@
       },
       "revId": "c201c584dee2f565acbef5726c4158c811186ee6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "84af9f77_11ee39bf",
+        "filename": "appengine/findit/libs/test_results/resultdb_test_results.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2021-01-12T04:52:02Z",
+      "side": 1,
+      "message": "I think in Python we do not have built-in switch-case statement. In https://docs.python.org/3/tutorial/controlflow.html, it said that \"An if … elif … elif … sequence is a substitute for the switch or case statements found in other languages\"",
+      "parentUuid": "bbbc6da5_421e95f4",
+      "range": {
+        "startLine": 186,
+        "startChar": 4,
+        "endLine": 202,
+        "endChar": 48
+      },
+      "revId": "c201c584dee2f565acbef5726c4158c811186ee6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
