@@ -71,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8e0db264_6471179f",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1365447
+      },
+      "writtenOn": "2021-01-12T19:30:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "062babce_21b72c10",
+      "range": {
+        "startLine": 29,
+        "startChar": 38,
+        "endLine": 29,
+        "endChar": 45
+      },
+      "revId": "cbc87ffe1152a71b121acd8a9e7be90817ed1b1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f3549df6_e21a3a9c",
