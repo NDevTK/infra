@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bbbc6da5_421e95f4",
+        "filename": "appengine/findit/libs/test_results/resultdb_test_results.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-01-12T04:42:11Z",
+      "side": 1,
+      "message": "Nit: Should switch case be better here?",
+      "range": {
+        "startLine": 186,
+        "startChar": 4,
+        "endLine": 202,
+        "endChar": 48
+      },
+      "revId": "c201c584dee2f565acbef5726c4158c811186ee6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
