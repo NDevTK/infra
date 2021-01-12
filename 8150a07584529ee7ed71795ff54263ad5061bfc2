@@ -22,6 +22,30 @@
       },
       "revId": "8150a07584529ee7ed71795ff54263ad5061bfc2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "63714575_85ee0cef",
+        "filename": "appengine/findit/libs/test_results/resultdb_test_results.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2021-01-12T03:25:33Z",
+      "side": 1,
+      "message": "I updated the code to handle this case.",
+      "parentUuid": "a0d1e95f_ed4e8d59",
+      "range": {
+        "startLine": 106,
+        "startChar": 8,
+        "endLine": 106,
+        "endChar": 70
+      },
+      "revId": "8150a07584529ee7ed71795ff54263ad5061bfc2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
