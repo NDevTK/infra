@@ -10,6 +10,10 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
+	"os/signal"
+
+	"golang.org/x/sys/unix"
 )
 
 var (
@@ -22,7 +26,14 @@ func main() {
 	if err != nil {
 		log.Fatalf("fleet-tlw: %s", err)
 	}
-	s := server{}
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt, unix.SIGINT, unix.SIGHUP, unix.SIGTERM, unix.SIGQUIT)
+	s := newServer()
+	go func() {
+		sig := <-sigChan
+		log.Printf("Captured %v, stopping fleet-tlw service and cleaning up...", sig)
+		s.Close()
+	}()
 	if err := s.Serve(l); err != nil {
 		log.Fatalf("fleet-tlw: %s", err)
 	}
