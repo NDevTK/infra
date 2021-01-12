@@ -570,7 +570,7 @@ class FetchSourceFile(BaseHandler):
 
 
 class ProcessCodeCoverageData(BaseHandler):
-  PERMISSION_LEVEL = Permission.APP_SELF
+  PERMISSION_LEVEL = Permission.ADMIN
 
   def _ProcessFullRepositoryData(self, commit, data, full_gs_metadata_dir,
                                  builder, build_id, mimic_builder_name):
