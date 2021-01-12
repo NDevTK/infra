@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0d69c7b1_ea668a2a",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1365447
+      },
+      "writtenOn": "2021-01-12T19:29:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8079d578_b5973cfd",
+      "range": {
+        "startLine": 28,
+        "startChar": 29,
+        "endLine": 28,
+        "endChar": 32
+      },
+      "revId": "cbc87ffe1152a71b121acd8a9e7be90817ed1b1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "062babce_21b72c10",
@@ -60,6 +84,24 @@
       "writtenOn": "2021-01-08T20:37:15Z",
       "side": 1,
       "message": "suggest moving the register to newServer()",
+      "revId": "cbc87ffe1152a71b121acd8a9e7be90817ed1b1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f875a659_01e6e813",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/server.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1365447
+      },
+      "writtenOn": "2021-01-12T19:29:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f3549df6_e21a3a9c",
       "revId": "cbc87ffe1152a71b121acd8a9e7be90817ed1b1c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
