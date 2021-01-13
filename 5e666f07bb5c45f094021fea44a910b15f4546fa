@@ -39,6 +39,30 @@
       },
       "revId": "5e666f07bb5c45f094021fea44a910b15f4546fa",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "17682f80_b268231b",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/internal/fleetsignal/fleetsignal_windows.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1365447
+      },
+      "writtenOn": "2021-01-13T21:02:27Z",
+      "side": 1,
+      "message": "Yes, this new PS is because of the CQ error.\n\nI have added build constraints similar to the drone-agent code: https://source.corp.google.com/chromium_infra/go/src/infra/cmd/drone-agent/. That seems to be the best way to go?",
+      "parentUuid": "0bee3127_33aeb44b",
+      "range": {
+        "startLine": 5,
+        "startChar": 10,
+        "endLine": 5,
+        "endChar": 17
+      },
+      "revId": "5e666f07bb5c45f094021fea44a910b15f4546fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
