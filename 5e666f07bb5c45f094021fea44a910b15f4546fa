@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b6059c55_1ca94f7d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1365447
+      },
+      "writtenOn": "2021-01-13T20:51:50Z",
+      "side": 1,
+      "message": "Updated CL to handle SIGTERMs better. PTAL!",
+      "revId": "5e666f07bb5c45f094021fea44a910b15f4546fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
