@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"log"
 	"net"
+
+	"infra/cros/cmd/fleet-tlw/internal/fleetsignal"
 )
 
 var (
@@ -22,7 +24,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("fleet-tlw: %s", err)
 	}
-	s := server{}
+	s := newServer()
+	go func() {
+		fleetsignal.NotifySIGTERM()
+		s.Close()
+	}()
 	if err := s.Serve(l); err != nil {
 		log.Fatalf("fleet-tlw: %s", err)
 	}
