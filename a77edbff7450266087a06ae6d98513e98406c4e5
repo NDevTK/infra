@@ -22,6 +22,30 @@
       },
       "revId": "a77edbff7450266087a06ae6d98513e98406c4e5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "11ce63ee_e661e464",
+        "filename": "go/src/infra/cmd/shivas/cmdhelp/description.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 305,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-01-13T06:41:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8d177f29_ddf9fa51",
+      "range": {
+        "startLine": 305,
+        "startChar": 52,
+        "endLine": 305,
+        "endChar": 62
+      },
+      "revId": "a77edbff7450266087a06ae6d98513e98406c4e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
