@@ -3,6 +3,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "dbc2d908_f7c7aaed",
+        "filename": "go/src/infra/cmd/shivas/ufs/subcmds/dut/update_dut.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-01-13T07:55:34Z",
+      "side": 1,
+      "message": "nit: I see the messages is duplicated and maybe it is better to make logic to remove this duplication?",
+      "range": {
+        "startLine": 212,
+        "startChar": 45,
+        "endLine": 212,
+        "endChar": 140
+      },
+      "revId": "1ea2e19dd6973039776445c3564a475ea1c42577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "dc0c79d1_99e8dc1b",
         "filename": "go/src/infra/cmd/shivas/ufs/subcmds/dut/update_dut.go",
         "patchSetId": 24
