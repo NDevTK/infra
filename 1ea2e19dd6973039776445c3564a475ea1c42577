@@ -45,6 +45,30 @@
       },
       "revId": "1ea2e19dd6973039776445c3564a475ea1c42577",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8e740063_838b6327",
+        "filename": "go/src/infra/cmd/shivas/ufs/subcmds/dut/update_dut.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 438,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-01-13T07:56:27Z",
+      "side": 1,
+      "message": "I saw the same logic in other CLs probably it is good to simplify them in the same way to improve readability?",
+      "parentUuid": "dc0c79d1_99e8dc1b",
+      "range": {
+        "startLine": 436,
+        "startChar": 0,
+        "endLine": 438,
+        "endChar": 2
+      },
+      "revId": "1ea2e19dd6973039776445c3564a475ea1c42577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
