@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "52ac33ed_5925bc2e",
+        "filename": "go/src/infra/cmd/shivas/ufs/subcmds/dut/update_dut.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-01-13T19:42:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dbc2d908_f7c7aaed",
+      "range": {
+        "startLine": 212,
+        "startChar": 45,
+        "endLine": 212,
+        "endChar": 140
+      },
+      "revId": "1ea2e19dd6973039776445c3564a475ea1c42577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dc0c79d1_99e8dc1b",
@@ -61,6 +85,30 @@
       "side": 1,
       "message": "I saw the same logic in other CLs probably it is good to simplify them in the same way to improve readability?",
       "parentUuid": "dc0c79d1_99e8dc1b",
+      "range": {
+        "startLine": 436,
+        "startChar": 0,
+        "endLine": 438,
+        "endChar": 2
+      },
+      "revId": "1ea2e19dd6973039776445c3564a475ea1c42577",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0a76fdaa_7b679deb",
+        "filename": "go/src/infra/cmd/shivas/ufs/subcmds/dut/update_dut.go",
+        "patchSetId": 24
+      },
+      "lineNbr": 438,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-01-13T19:42:41Z",
+      "side": 1,
+      "message": "I updated the logic in crrev.com/c/2617563. I\u0027ll not be moving that here. Will just submit this and as the next CL has the change. It will be overwritten.",
+      "parentUuid": "8e740063_838b6327",
       "range": {
         "startLine": 436,
         "startChar": 0,
