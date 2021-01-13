@@ -33,7 +33,17 @@ const (
 	servoSetupPath  = "dut.servo.setup"
 
 	// LSE related UpdateMask paths.
-	machinesPath = "machines"
+	machinesPath    = "machines"
+	descriptionPath = "description"
+	tagsPath        = "tags"
+	ticketPath      = "deploymentTicket"
+
+	// RPM related UpdateMask paths.
+	rpmHostPath   = "dut.rpm.host"
+	rpmOutletPath = "dut.rpm.outlet"
+
+	// DUT related UpdateMask paths.
+	poolsPath = "dut.pools"
 )
 
 var defaultRedeployTaskActions = []string{"run-pre-deploy-verification"}
@@ -45,6 +55,7 @@ var UpdateDUTCmd = &subcommands.Command{
 	LongDesc:  cmdhelp.UpdateDUTLongDesc,
 	CommandRun: func() subcommands.CommandRun {
 		c := &updateDUT{
+			pools:         []string{},
 			deployTags:    shivasTags,
 			deployActions: defaultRedeployTaskActions,
 		}
@@ -60,6 +71,13 @@ var UpdateDUTCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.servo, "servo", "", "servo hostname and port as hostname:port. Clearing this field will delete the servo in DUT. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.servoSerial, "servo-serial", "", "serial number for the servo.")
 		c.Flags.StringVar(&c.servoSetupType, "servo-setup", "", "servo setup type. Allowed values are "+cmdhelp.ServoSetupTypeAllowedValuesString()+".")
+		c.Flags.Var(utils.CSVString(&c.pools), "pools", "comma seperated pools assigned to the DUT.")
+		c.Flags.StringVar(&c.rpm, "rpm", "", "rpm assigned to the DUT. Clearing this field will delete rpm. "+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.rpmOutlet, "rpm-outlet", "", "rpm outlet used for the DUT.")
+		c.Flags.StringVar(&c.deploymentTicket, "ticket", "", "the deployment ticket for this machine. "+cmdhelp.ClearFieldHelpText)
+		c.Flags.Var(utils.CSVString(&c.tags), "tags", "comma separated tags. You can only append new tags or delete all of them. "+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.description, "desc", "", "description for the machine. "+cmdhelp.ClearFieldHelpText)
+
 		c.Flags.Int64Var(&c.deployTaskTimeout, "deploy-timeout", swarming.DeployTaskExecutionTimeout, "execution timeout for deploy task in seconds.")
 		c.Flags.BoolVar(&c.deployOnly, "deploy-only", false, "skip updating UFS. Starts a redeploy task.")
 		c.Flags.Var(utils.CSVString(&c.deployTags), "deploy-tags", "comma seperated tags for deployment task.")
@@ -77,13 +95,21 @@ type updateDUT struct {
 	envFlags    site.EnvFlags
 	commonFlags site.CommonFlags
 
-	newSpecsFile   string
-	hostname       string
-	machine        string
-	servo          string
-	servoSerial    string
-	servoSetupType string
+	// DUT specification inputs.
+	newSpecsFile     string
+	hostname         string
+	machine          string
+	servo            string
+	servoSerial      string
+	servoSetupType   string
+	pools            []string
+	rpm              string
+	rpmOutlet        string
+	deploymentTicket string
+	tags             []string
+	description      string
 
+	// Deploy task inputs.
 	deployOnly            bool
 	deployTaskTimeout     int64
 	deployActions         []string
@@ -181,36 +207,71 @@ func (c updateDUT) validateArgs() error {
 		}
 	}
 	if !c.deployOnly && c.newSpecsFile != "" {
+		// Helper function to return the formatted error.
+		f := func(input string) error {
+			return cmdlib.NewQuietUsageError(c.Flags, fmt.Sprintf("Wrong usage!!\nThe MCSV/JSON mode is specified. '-%s' cannot be specified at the same time.", input))
+		}
 		// Cannot accept cmdline inputs for DUT when csv/json mode is specified.
 		if c.hostname != "" {
-			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe MCSV/JSON mode is specified. '-name' cannot be specified at the same time.")
+			return f("name")
 		}
 		if c.machine != "" {
-			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe MCSV/JSON mode is specified. '-asset' cannot be specified at the same time.")
+			return f("asset")
 		}
 		if c.servo != "" {
-			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe MCSV/JSON mode is specified. '-servo' cannot be specified at the same time.")
+			return f("servo")
 		}
 		if c.servoSerial != "" {
-			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe MCSV/JSON mode is specified. '-servo-serial' cannot be specified at the same time.")
+			return f("servo-serial")
 		}
 		if c.servoSetupType != "" {
-			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe MCSV/JSON mode is specified. '-servo-setup' cannot be specified at the same time.")
+			return f("servo-setup")
+		}
+		if c.rpm != "" {
+			return f("rpm")
+		}
+		if c.rpmOutlet != "" {
+			return f("rpm-outlet")
+		}
+		if len(c.pools) != 0 {
+			return f("pools")
 		}
 	}
 	if c.deployOnly {
+		// Helper function to return the formatted error.
+		f := func(input string) error {
+			return cmdlib.NewQuietUsageError(c.Flags, fmt.Sprintf("Wrong usage!!\nSkipping write to UFS. '-%s' cannot be specified at the same time.", input))
+		}
 		// Cannot accept cmdline inputs for updating DUT if we are skipping the update.
 		if c.machine != "" {
-			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nSkipping write to UFS. '-asset' cannot be specified at the same time.")
+			return f("asset")
 		}
 		if c.servo != "" {
-			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nSkipping write to UFS. '-servo' cannot be specified at the same time.")
+			return f("servo")
 		}
 		if c.servoSerial != "" {
-			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nSkipping write to UFS. '-servo-serial' cannot be specified at the same time.")
+			return f("servo-serial")
 		}
 		if c.servoSetupType != "" {
-			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nSkipping write to UFS. '-servo-setup' cannot be specified at the same time.")
+			return f("servo-setup")
+		}
+		if c.rpm != "" {
+			return f("rpm")
+		}
+		if c.rpmOutlet != "" {
+			return f("rpm-outlet")
+		}
+		if c.description != "" {
+			return f("description")
+		}
+		if c.deploymentTicket != "" {
+			return f("ticket")
+		}
+		if len(c.tags) > 0 {
+			return f("tags")
+		}
+		if len(c.pools) > 0 {
+			return f("pools")
 		}
 	}
 	return nil
@@ -228,6 +289,10 @@ func (c *updateDUT) isDeployTaskRequired(req *ufsAPI.UpdateMachineLSERequest) bo
 	}
 	// If machine is being updated. Then we cannot skip the deploy task.
 	if containsAnyStrings(req.UpdateMask.Paths, machinesPath) {
+		return true
+	}
+	// If rpm is being updated. Then we cannot skip the deploy task.
+	if containsAnyStrings(req.UpdateMask.Paths, rpmHostPath, rpmOutletPath) {
 		return true
 	}
 	return false
@@ -288,14 +353,17 @@ func (c *updateDUT) parseArgs() (*ufsAPI.UpdateMachineLSERequest, error) {
 
 // initializeLSEAndMask reads inputs from cmd line inputs and generates LSE and corresponding mask.
 func (c *updateDUT) initializeLSEAndMask() (*ufspb.MachineLSE, *field_mask.FieldMask, error) {
-	var name, servo, servoSerial, servoSetup string
-	var machines []string
+	var name, servo, servoSerial, servoSetup, rpmHost, rpmOutlet string
+	var machines, pools []string
 	// command line parameters
 	name = c.hostname
 	servo = c.servo
 	servoSerial = c.servoSerial
 	servoSetup = c.servoSetupType
+	rpmHost = c.rpm
+	rpmOutlet = c.rpmOutlet
 	machines = []string{c.machine}
+	pools = c.pools
 
 	// Generate lse and mask
 	lse := &ufspb.MachineLSE{
@@ -324,6 +392,11 @@ func (c *updateDUT) initializeLSEAndMask() (*ufspb.MachineLSE, *field_mask.Field
 		mask.Paths = append(mask.Paths, machinesPath)
 	}
 
+	if len(pools) > 0 && pools[0] != "" {
+		mask.Paths = append(mask.Paths, poolsPath)
+		lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Pools = pools
+	}
+
 	// Create and assign servo and corresponding masks.
 	newServo, paths, err := generateServoWithMask(servo, servoSetup, servoSerial)
 	if err != nil {
@@ -331,6 +404,41 @@ func (c *updateDUT) initializeLSEAndMask() (*ufspb.MachineLSE, *field_mask.Field
 	}
 	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().Servo = newServo
 	mask.Paths = append(mask.Paths, paths...)
+
+	// Create and assign rpm and corresponding masks.
+	rpm, paths := generateRPMWithMask(rpmHost, rpmOutlet)
+	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().Rpm = rpm
+	mask.Paths = append(mask.Paths, paths...)
+
+	// Check if description field is being updated/cleared.
+	if c.description != "" {
+		mask.Paths = append(mask.Paths, descriptionPath)
+		if c.description != utils.ClearFieldValue {
+			lse.Description = c.description
+		} else {
+			lse.Description = ""
+		}
+	}
+
+	// Check if deployment ticket is being updated/cleared.
+	if c.deploymentTicket != "" {
+		mask.Paths = append(mask.Paths, ticketPath)
+		if c.deploymentTicket != utils.ClearFieldValue {
+			lse.DeploymentTicket = c.deploymentTicket
+		} else {
+			lse.DeploymentTicket = ""
+		}
+	}
+
+	// Check if tags are being appended/deleted. Tags can either be appended or cleared.
+	if len(c.tags) > 0 {
+		mask.Paths = append(mask.Paths, tagsPath)
+		lse.Tags = c.tags
+		// Check if utils.ClearFieldValue is included in any of the tags.
+		if containsAnyStrings(c.tags, utils.ClearFieldValue) {
+			lse.Tags = nil
+		}
+	}
 
 	// Check if nothing is being updated. Updating with an empty mask overwrites everything.
 	if !c.deployOnly && (len(mask.Paths) == 0 || mask.Paths[0] == "") {
@@ -375,6 +483,28 @@ func generateServoWithMask(servo, servoSetup, servoSerial string) (*lab.Servo, [
 		newServo.ServoHostname = servoHost
 	}
 	return newServo, paths, nil
+}
+
+// generateRPMWithMask generates a rpm object from the given inputs and corresponding mask.
+func generateRPMWithMask(rpmHost, rpmOutlet string) (*lab.RPM, []string) {
+	// Check if rpm is being deleted.
+	if rpmHost == utils.ClearFieldValue {
+		// Generate mask and empty rpm.
+		return nil, []string{rpmHostPath}
+	}
+
+	rpm := &lab.RPM{}
+	paths := []string{}
+	// Check and update rpm.
+	if rpmHost != "" {
+		rpm.PowerunitName = rpmHost
+		paths = append(paths, rpmHostPath)
+	}
+	if rpmOutlet != "" {
+		rpm.PowerunitOutlet = rpmOutlet
+		paths = append(paths, rpmOutletPath)
+	}
+	return rpm, paths
 }
 
 // updateDeployActions updates the deploySkipActions based on boolean skip options.
