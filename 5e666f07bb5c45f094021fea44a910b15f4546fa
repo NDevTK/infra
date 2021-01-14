@@ -20,6 +20,63 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "a0da1380_121c29f5",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/internal/fleetsignal/fleetsignal.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-14T00:16:42Z",
+      "side": 1,
+      "message": "recommend name such as setUpSignalHandlers",
+      "range": {
+        "startLine": 18,
+        "startChar": 5,
+        "endLine": 18,
+        "endChar": 18
+      },
+      "revId": "5e666f07bb5c45f094021fea44a910b15f4546fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "295ddea7_4918ae09",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/internal/fleetsignal/fleetsignal.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-14T00:16:42Z",
+      "side": 1,
+      "message": "Better to return the channel.  Putting the receive/block here is odd.",
+      "revId": "5e666f07bb5c45f094021fea44a910b15f4546fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dd3d0cc4_537e1a92",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/internal/fleetsignal/fleetsignal_windows.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-14T00:16:42Z",
+      "side": 1,
+      "message": "Doesn\u0027t need another package, you can put the files into the same folder as main",
+      "revId": "5e666f07bb5c45f094021fea44a910b15f4546fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "0bee3127_33aeb44b",
         "filename": "go/src/infra/cros/cmd/fleet-tlw/internal/fleetsignal/fleetsignal_windows.go",
         "patchSetId": 6
