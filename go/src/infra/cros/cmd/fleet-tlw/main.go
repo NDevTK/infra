@@ -10,6 +10,9 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
+
+	"infra/cros/cmd/fleet-tlw/internal/fleetsignal"
 )
 
 var (
@@ -22,7 +25,14 @@ func main() {
 	if err != nil {
 		log.Fatalf("fleet-tlw: %s", err)
 	}
-	s := server{}
+	sigChan := make(chan os.Signal, 1)
+	s := newServer()
+	go func() {
+		fleetsignal.SetUpSignalHandler(sigChan)
+		sig := <-sigChan
+		log.Printf("Captured %v, stopping fleet-tlw service and cleaning up...", sig)
+		s.Close()
+	}()
 	if err := s.Serve(l); err != nil {
 		log.Fatalf("fleet-tlw: %s", err)
 	}
