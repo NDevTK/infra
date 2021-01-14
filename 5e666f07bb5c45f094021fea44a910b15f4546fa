@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "15c52ba9_f5f76c01",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/internal/fleetsignal/fleetsignal.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1365447
+      },
+      "writtenOn": "2021-01-14T03:31:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a0da1380_121c29f5",
+      "range": {
+        "startLine": 18,
+        "startChar": 5,
+        "endLine": 18,
+        "endChar": 18
+      },
+      "revId": "5e666f07bb5c45f094021fea44a910b15f4546fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "295ddea7_4918ae09",
@@ -58,6 +82,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c52959f9_64e130f9",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/internal/fleetsignal/fleetsignal.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1365447
+      },
+      "writtenOn": "2021-01-14T03:31:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "295ddea7_4918ae09",
+      "revId": "5e666f07bb5c45f094021fea44a910b15f4546fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dd3d0cc4_537e1a92",
@@ -71,6 +113,24 @@
       "writtenOn": "2021-01-14T00:16:42Z",
       "side": 1,
       "message": "Doesn\u0027t need another package, you can put the files into the same folder as main",
+      "revId": "5e666f07bb5c45f094021fea44a910b15f4546fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "270b58af_30123f21",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/internal/fleetsignal/fleetsignal_windows.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1365447
+      },
+      "writtenOn": "2021-01-14T03:31:53Z",
+      "side": 1,
+      "message": "Adding the files in main changes how we can start the fleet-tlw service: it can be only started from within the fleet-tlw directory. Is this ok?",
+      "parentUuid": "dd3d0cc4_537e1a92",
       "revId": "5e666f07bb5c45f094021fea44a910b15f4546fa",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
