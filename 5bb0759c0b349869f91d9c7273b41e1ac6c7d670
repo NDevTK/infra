@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "07c59ac9_b5c33dbe",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 25
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-01-14T19:47:42Z",
+      "side": 1,
+      "message": "expecting update CL based on gvc conversation with Anu ",
+      "revId": "5bb0759c0b349869f91d9c7273b41e1ac6c7d670",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
