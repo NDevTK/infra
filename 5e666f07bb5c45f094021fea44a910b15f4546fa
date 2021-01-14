@@ -137,6 +137,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "8b77b680_f7b2c50b",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/internal/fleetsignal/fleetsignal_windows.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-01-14T19:08:20Z",
+      "side": 1,
+      "message": "yes",
+      "parentUuid": "270b58af_30123f21",
+      "revId": "5e666f07bb5c45f094021fea44a910b15f4546fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "0bee3127_33aeb44b",
         "filename": "go/src/infra/cros/cmd/fleet-tlw/internal/fleetsignal/fleetsignal_windows.go",
         "patchSetId": 6
