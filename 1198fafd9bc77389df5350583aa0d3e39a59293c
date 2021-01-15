@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7a54abef_c92fd0a5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2021-01-15T23:17:14Z",
+      "side": 1,
+      "message": "This became ... larger ... than I anticipated.\n\nBut I think pulling out individual fakes like this makes for more manageable tests. The fakes should be fakes -- actually implement the behaviour consistent with the service being faked.\n\nmocks shift all this complexity into the test code, making the tests very hard to read.",
+      "revId": "1198fafd9bc77389df5350583aa0d3e39a59293c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
