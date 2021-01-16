@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0b0794de_5ec3e973",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2021-01-16T03:09:45Z",
+      "side": 1,
+      "message": "Protecting the stub from a future me abusing it.",
+      "revId": "5b74ae30320234bddfd06c4feb15917d2233b271",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
