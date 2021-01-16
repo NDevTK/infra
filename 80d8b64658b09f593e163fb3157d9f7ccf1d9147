@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0a12f0ae_5b678472",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 27
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-01-16T01:14:44Z",
+      "side": 1,
+      "message": "Change log:\n1. Generate deploy task actions based on what is updated.\n2. For JSON update. Compare the existing DUT before updating to determine if deploy task is required.\n3. Set state based on if the deploy task was triggered. This decouples UFS from having to decide if the deploy task was run.\n4. Add ProtoEqual function to do basic proto comparison \n5. Changed deploy-only option to force-deploy. Now you can\u0027t skip update to UFS but force a deploy task on DUT.\n6. Updated related deploy variables to reflect the change in 5",
+      "revId": "80d8b64658b09f593e163fb3157d9f7ccf1d9147",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
