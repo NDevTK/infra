@@ -73,6 +73,7 @@ def create_invocations_async(builds_and_configs):
               realm=build.realm,
               bigquery_exports=cfg.resultdb.bq_exports,
               producer_resource='//%s/builds/%s' % (bb_host, build.key.id()),
+              history_options=cfg.resultdb.history_options,
           ),
       )
 
