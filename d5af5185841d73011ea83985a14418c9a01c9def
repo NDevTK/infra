@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6a4b0610_e3d28739",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1003190
+      },
+      "writtenOn": "2021-01-19T22:32:36Z",
+      "side": 1,
+      "message": "Hi! Sorry, I\u0027ll be out for a month; I think Andrii (or someone else somewhat familiar with Tricium) could review? :-) Thanks",
+      "revId": "d5af5185841d73011ea83985a14418c9a01c9def",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
