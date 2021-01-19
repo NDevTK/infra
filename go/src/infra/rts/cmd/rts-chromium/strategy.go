@@ -6,12 +6,41 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"regexp"
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/rts"
 	"infra/rts/presubmit/eval"
 )
+
+// bannedTestFileWords is the list of words in test file names that indicate
+// that the test file is likely to be unsafe to exclude. For example, it
+// contains the main() function, or is dependency of another test file.
+var bannedTestFileWords = []string{
+	"base",
+	"common",
+	"helper",
+	"launcher",
+	"main",
+	"run",
+	"runner",
+	"third_party",
+	"util",
+
+	// These are concrete test file names that have main() function.
+	"gles2_cmd_decoder_unittest",
+	"api_bindings_system_unittest",
+	"media_router_integration_browsertest",
+	"extension_settings_browsertest",
+	"mojo_core_unittest",
+}
+
+// neverSkipTestFileRegexp is used in test file names query, using BigQuery.
+// Note: BigQuery doesn't support [\b_] or (\b|_).
+var neverSkipTestFileRegexp = regexp.MustCompile(fmt.Sprintf(`(?i)[_\W^](%s)[_\W$]`, strings.Join(bannedTestFileWords, "|")))
 
 // selectTests calls skipFile for test files that should be skipped.
 func (r *selectRun) selectTests(skipFile func(name string) error) (err error) {
@@ -41,7 +70,17 @@ func (r *createModelRun) selectTests(ctx context.Context, in eval.Input, out *ev
 		}
 	}
 
-	return r.fg.EvalStrategy(ctx, in, out)
+	if err := r.fg.EvalStrategy(ctx, in, out); err != nil {
+		return err
+	}
+
+	// No matter what filegraph said, never skip certain tests.
+	for i, tv := range in.TestVariants {
+		if neverSkipTestFileRegexp.MatchString(tv.FileName) {
+			out.TestVariantAffectedness[i] = rts.Affectedness{Distance: 0}
+		}
+	}
+	return nil
 }
 
 // requiresAllTests returns true if changedFile requires running all tests.
