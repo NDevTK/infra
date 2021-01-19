@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4f9a7083_4af9cbcd",
+        "filename": "appengine/cr-buildbucket/resultdb.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-01-19T22:51:40Z",
+      "side": 1,
+      "message": "this copies the value without validation. \non invalid data, this will cause internal failures in buildbucket.\n\nplease add validation somewhere in https://chromium.googlesource.com/infra/infra/+/refs/changes/02/2638402/1/appengine/cr-buildbucket/swarmingcfg.py#230",
+      "revId": "c7f9ebc24d4e9aedf32fab251e149a8f283321ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
