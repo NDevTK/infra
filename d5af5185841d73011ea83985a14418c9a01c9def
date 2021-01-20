@@ -16,6 +16,69 @@
       "message": "Hi! Sorry, I\u0027ll be out for a month; I think Andrii (or someone else somewhat familiar with Tricium) could review? :-) Thanks",
       "revId": "d5af5185841d73011ea83985a14418c9a01c9def",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3e1cabaf_ab5069d7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2021-01-20T15:56:46Z",
+      "side": 1,
+      "message": "lgtm % nits\n\n\nmaruel@, do you remember if this is auto-released OR if there is a pin that must be bumped somewhere?",
+      "revId": "d5af5185841d73011ea83985a14418c9a01c9def",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a5aecabd_631d99ae",
+        "filename": "go/src/infra/tricium/functions/objective-c-style/objective_c_style.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2021-01-20T15:56:46Z",
+      "side": 1,
+      "message": "nit: just\n  startLine, endLine, functionEndChar int",
+      "range": {
+        "startLine": 191,
+        "startChar": 56,
+        "endLine": 191,
+        "endChar": 103
+      },
+      "revId": "d5af5185841d73011ea83985a14418c9a01c9def",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a5d5550f_17a8209b",
+        "filename": "go/src/infra/tricium/functions/objective-c-style/objective_c_style.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2021-01-20T15:56:46Z",
+      "side": 1,
+      "message": "del, there is no formatting involved",
+      "range": {
+        "startLine": 193,
+        "startChar": 13,
+        "endLine": 193,
+        "endChar": 25
+      },
+      "revId": "d5af5185841d73011ea83985a14418c9a01c9def",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
