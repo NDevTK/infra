@@ -89,6 +89,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5674c022_38f1fddd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2021-01-20T18:19:04Z",
+      "side": 1,
+      "message": "Great! Then you can bump the \"live\" tag whenever you are ready.\nhttps://chrome-infra-packages.appspot.com/p/infra/tricium/function/objective-c-style/+/",
+      "parentUuid": "e95e4bfe_6d8ccc21",
+      "revId": "d5af5185841d73011ea83985a14418c9a01c9def",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a5aecabd_631d99ae",
