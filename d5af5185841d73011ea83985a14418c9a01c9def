@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bbe1d8c9_27dc1a4e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000487
+      },
+      "writtenOn": "2021-01-20T16:45:54Z",
+      "side": 1,
+      "message": "The cipd package has to be deployed manually, see https://source.chromium.org/chromium/infra/infra/+/master:go/src/infra/tricium/functions/objective-c-style/README.md",
+      "parentUuid": "3e1cabaf_ab5069d7",
+      "revId": "d5af5185841d73011ea83985a14418c9a01c9def",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a5aecabd_631d99ae",
