@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "32eb57b0_62dd17dd",
+        "filename": "go/src/infra/cmd/shivas/ufs/subcmds/dut/update_dut.go",
+        "patchSetId": 29
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-01-20T03:32:37Z",
+      "side": 1,
+      "message": "why do we schedule deploy if we cannot update UFS? we can continue if we do not need to update but if we need we should not run deployment when we fail update.",
+      "range": {
+        "startLine": 187,
+        "startChar": 2,
+        "endLine": 191,
+        "endChar": 106
+      },
+      "revId": "a37625e8cdc812d86041d6f71bdc0f90ecc3a418",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
