@@ -52,6 +52,24 @@
       "parentUuid": "808776d6_37e7fe07",
       "revId": "c7f9ebc24d4e9aedf32fab251e149a8f283321ad",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5ddb5fed_14987557",
+        "filename": "appengine/cr-buildbucket/resultdb.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2021-01-20T20:26:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a1a34a23_a6920b53",
+      "revId": "c7f9ebc24d4e9aedf32fab251e149a8f283321ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
