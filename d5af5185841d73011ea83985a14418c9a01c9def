@@ -53,6 +53,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e95e4bfe_6d8ccc21",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1123009
+      },
+      "writtenOn": "2021-01-20T18:11:22Z",
+      "side": 1,
+      "message": "I was able to upload the package by running update.sh after Quinten gave me upload permissions. I can upload the package after landing this CL if we can\u0027t give Ali upload permissions without Quinten.",
+      "parentUuid": "bbe1d8c9_27dc1a4e",
+      "revId": "d5af5185841d73011ea83985a14418c9a01c9def",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a5aecabd_631d99ae",
