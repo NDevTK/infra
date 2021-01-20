@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "86dce377_93176ca1",
+        "filename": "appengine/cr-buildbucket/swarmingcfg.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2021-01-20T20:55:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0b79648e_df5e1dd3",
+      "revId": "db4f6920a6bbcc6e27e0dcd94b225422c0c6218d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6b25bb9e_f1b90ef1",
@@ -41,6 +59,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c38cd278_e7d1e069",
+        "filename": "appengine/cr-buildbucket/swarmingcfg.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2021-01-20T20:55:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6b25bb9e_f1b90ef1",
+      "range": {
+        "startLine": 74,
+        "startChar": 7,
+        "endLine": 78,
+        "endChar": 51
+      },
+      "revId": "db4f6920a6bbcc6e27e0dcd94b225422c0c6218d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "37248b4b_31d73525",
@@ -54,6 +96,24 @@
       "writtenOn": "2021-01-20T20:47:52Z",
       "side": 1,
       "message": "consistency:\n\n  with ctx.prefix(\u0027resultdb: \u0027):\n    _validate_resultdb(builder.resultdb, ctx)",
+      "revId": "db4f6920a6bbcc6e27e0dcd94b225422c0c6218d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "388b5b12_30c0c235",
+        "filename": "appengine/cr-buildbucket/swarmingcfg.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2021-01-20T20:55:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "37248b4b_31d73525",
       "revId": "db4f6920a6bbcc6e27e0dcd94b225422c0c6218d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
