@@ -34,6 +34,24 @@
       "parentUuid": "4f9a7083_4af9cbcd",
       "revId": "c7f9ebc24d4e9aedf32fab251e149a8f283321ad",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a1a34a23_a6920b53",
+        "filename": "appengine/cr-buildbucket/resultdb.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-01-20T01:59:50Z",
+      "side": 1,
+      "message": "HistoryOptions.commit must be unset.\n\nalso consider a scenario that later down the road someone adds a new field in HistoryOptions, and specifies an incorrect value in cr-buildbucket.cfg \u003d\u003e this code starts crashing \u003d\u003e consider creating a new HistoryOptions message here and copy only the fields that you intend to forward.",
+      "parentUuid": "808776d6_37e7fe07",
+      "revId": "c7f9ebc24d4e9aedf32fab251e149a8f283321ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
