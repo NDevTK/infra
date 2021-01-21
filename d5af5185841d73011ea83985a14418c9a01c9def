@@ -125,6 +125,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5f97dea4_c93f62ff",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2021-01-21T16:44:20Z",
+      "side": 1,
+      "message": "Ali, I\u0027ve added your @google.com to the tricium-contributors.\nhttps://chrome-infra-auth.appspot.com/auth/groups/tricium-contributors\n\nOnce this lands, please follow README linked to above. Thanks for contribution!",
+      "parentUuid": "71818e88_e8e5dbc5",
+      "revId": "d5af5185841d73011ea83985a14418c9a01c9def",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a5aecabd_631d99ae",
