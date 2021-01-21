@@ -163,6 +163,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "f1c4831c_70eced1f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002110
+      },
+      "writtenOn": "2021-01-21T21:13:01Z",
+      "side": 1,
+      "message": "This seems to be causing tricium-simple to fail (e.g., https://logs.chromium.org/logs/chromium/buildbucket/cr-buildbucket.appspot.com/8857461822925085792/+/steps/RECIPE_CRASH__Uncaught_exception_/0/stdout?format\u003draw), so I\u0027ve rolled back to the previous tag while I look into this.",
+      "parentUuid": "a12e9492_a3322ab2",
+      "revId": "d5af5185841d73011ea83985a14418c9a01c9def",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a5aecabd_631d99ae",
         "filename": "go/src/infra/tricium/functions/objective-c-style/objective_c_style.go",
         "patchSetId": 2
