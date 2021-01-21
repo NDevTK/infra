@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ea734d7c_11cabdce",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/cache.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-01-21T02:25:38Z",
+      "side": 1,
+      "message": "Why we keep this empty file?",
+      "revId": "1effdc97f03b85cc6828101d1e9c6f4750e0e392",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
