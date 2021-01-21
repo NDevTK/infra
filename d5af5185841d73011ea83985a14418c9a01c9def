@@ -179,6 +179,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "48eae823_86a51042",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2021-01-21T21:52:37Z",
+      "side": 1,
+      "message": "I\u0027ve looked inside your newly created package https://chrome-infra-packages.appspot.com/p/infra/tricium/function/objective-c-style/+/KaMiPTaRFClIiAJmQnY22msr6J7lwrPlxd6sccjSeDoC\n\nIt appears you\u0027ve uploaded a darwin exec (from your macbook?). THe nearby Makefile has `build-for-deployment` target, but it requires you to bootstrap our go environment with cross compile support. So, I just did it myself:\n\nL5A9b3NjgiAXDTt2ZONOQqA73X2WMnb49KZKjiKHY98C https://chrome-infra-packages.appspot.com/p/infra/tricium/function/objective-c-style/+/L5A9b3NjgiAXDTt2ZONOQqA73X2WMnb49KZKjiKHY98C",
+      "parentUuid": "f1c4831c_70eced1f",
+      "revId": "d5af5185841d73011ea83985a14418c9a01c9def",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a5aecabd_631d99ae",
