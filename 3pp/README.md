@@ -9,10 +9,13 @@ definitions.
 
 # Building stuff locally
 
+Update(2021/1/26): run_locally is unlikely to work. Prefer to use run_remotely.
 See [./run_locally.sh]. You can pass `help` as the first argument for the
 lowdown.
 
 # CIPD Sources
+
+Update(2021/1/26): CIPD is not suggested. If possible, prefer to use url or git.
 
 Some third-party packages distribute their releases via source tarballs or zips.
 Sometimes this is done via http or ftp. For reliability and reproducability
