@@ -47,6 +47,12 @@ function _filterPatchSetContents(body) {
   });
 }
 
+// Hide the document. It will be shown again once we have finished removing
+// unarchived content.
+window.addEventListener('DOMContentLoaded', () => {
+  document.body.style.display = 'none';
+})
+
 window.onload = function() {
   // Replace header (containing username and links to settings and help pages)
   // with project logo.
@@ -112,6 +118,9 @@ window.onload = function() {
   }
 
   _filterPatchSetContents(document.body);
+
+  // Show the page once we have finished removing unarchived content.
+  document.body.style.display = '';
 }
 
 // Generic helpers
