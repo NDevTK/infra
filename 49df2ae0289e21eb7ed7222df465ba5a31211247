@@ -167,6 +167,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "8b88a165_e1d37714",
+        "filename": "3pp/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1326772
+      },
+      "writtenOn": "2021-01-27T23:59:20Z",
+      "side": 1,
+      "message": "I filed a bug about this. When it\u0027s fixed we can remove the line again.\nI didn\u0027t know go/docker. Maybe we can add some comments in the run_locally.sh. What should we say for non-googlers?",
+      "parentUuid": "573bc8df_6b847ece",
+      "revId": "49df2ae0289e21eb7ed7222df465ba5a31211247",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c4ac2671_de90c82e",
         "filename": "3pp/README.md",
         "patchSetId": 1
