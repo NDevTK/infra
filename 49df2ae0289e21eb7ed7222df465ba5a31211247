@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9ffdcfb2_37a36d53",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1326772
+      },
+      "writtenOn": "2021-01-27T23:55:25Z",
+      "side": 1,
+      "message": "crbug.com/1171499",
+      "parentUuid": "2d357e6c_49b46a3c",
+      "range": {
+        "startLine": 10,
+        "startChar": 2,
+        "endLine": 10,
+        "endChar": 27
+      },
+      "revId": "49df2ae0289e21eb7ed7222df465ba5a31211247",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "779d3390_c8ed0833",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-01-26T22:58:02Z",
       "side": 1,
       "message": "Note that actually it is not the issue with the script, but more like the way support_3pp handles CIPD packages.",
+      "range": {
+        "startLine": 12,
+        "startChar": 22,
+        "endLine": 12,
+        "endChar": 37
+      },
+      "revId": "49df2ae0289e21eb7ed7222df465ba5a31211247",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "49647368_ded552ba",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1326772
+      },
+      "writtenOn": "2021-01-27T23:55:25Z",
+      "side": 1,
+      "message": "Changed the wording here.",
+      "parentUuid": "779d3390_c8ed0833",
       "range": {
         "startLine": 12,
         "startChar": 22,
@@ -166,6 +214,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "43770215_a8909091",
+        "filename": "3pp/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1326772
+      },
+      "writtenOn": "2021-01-27T23:55:25Z",
+      "side": 1,
+      "message": "README is generally what people first to look at. The paragraph down below saying \"we prefer to mirror the tarballs ourselves and fetch them from CIPD\". I feel at least we should change the words here.",
+      "parentUuid": "7aed87a2_1916a34c",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 80
+      },
+      "revId": "49df2ae0289e21eb7ed7222df465ba5a31211247",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "41a11855_0941bebf",
         "filename": "3pp/run_remotely.sh",
         "patchSetId": 1
@@ -177,6 +249,30 @@
       "writtenOn": "2021-01-26T22:58:02Z",
       "side": 1,
       "message": "nit: s/user/\u003cyour_ldap\u003e",
+      "range": {
+        "startLine": 46,
+        "startChar": 49,
+        "endLine": 46,
+        "endChar": 53
+      },
+      "revId": "49df2ae0289e21eb7ed7222df465ba5a31211247",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "93c9c13c_1f4733f7",
+        "filename": "3pp/run_remotely.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1326772
+      },
+      "writtenOn": "2021-01-27T23:55:25Z",
+      "side": 1,
+      "message": "This is public repo and ldap seems too internal. Changed to \u003cemail\u003e.",
+      "parentUuid": "41a11855_0941bebf",
       "range": {
         "startLine": 46,
         "startChar": 49,
@@ -200,6 +296,30 @@
       "writtenOn": "2021-01-26T22:58:02Z",
       "side": 1,
       "message": "nit: Add \"otherwise the recipe will download source from here rather than the updated source\"",
+      "range": {
+        "startLine": 61,
+        "startChar": 63,
+        "endLine": 61,
+        "endChar": 64
+      },
+      "revId": "49df2ae0289e21eb7ed7222df465ba5a31211247",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "489acb15_ef6620ce",
+        "filename": "3pp/run_remotely.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1326772
+      },
+      "writtenOn": "2021-01-27T23:55:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6ab80346_7f2f36ed",
       "range": {
         "startLine": 61,
         "startChar": 63,
@@ -235,6 +355,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "bdd02329_f77f3f34",
+        "filename": "3pp/run_remotely.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1326772
+      },
+      "writtenOn": "2021-01-27T23:55:25Z",
+      "side": 1,
+      "message": "Like above, this is public repo and ldap seems too internal.",
+      "parentUuid": "cd745dbe_1e20a6dc",
+      "range": {
+        "startLine": 62,
+        "startChar": 20,
+        "endLine": 62,
+        "endChar": 25
+      },
+      "revId": "49df2ae0289e21eb7ed7222df465ba5a31211247",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "f44ab42d_8bea8afd",
         "filename": "3pp/run_remotely.sh",
         "patchSetId": 1
@@ -246,6 +390,30 @@
       "writtenOn": "2021-01-26T22:58:02Z",
       "side": 1,
       "message": "nit: Add \"otherwise the recipe will not upload the updated package to CIPD\"",
+      "range": {
+        "startLine": 63,
+        "startChar": 49,
+        "endLine": 63,
+        "endChar": 50
+      },
+      "revId": "49df2ae0289e21eb7ed7222df465ba5a31211247",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1da12e2f_87a41710",
+        "filename": "3pp/run_remotely.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1326772
+      },
+      "writtenOn": "2021-01-27T23:55:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f44ab42d_8bea8afd",
       "range": {
         "startLine": 63,
         "startChar": 49,
@@ -269,6 +437,30 @@
       "writtenOn": "2021-01-26T22:58:02Z",
       "side": 1,
       "message": "nit: how about just \"http://go/luci-cipd#deletepackage\"?",
+      "range": {
+        "startLine": 66,
+        "startChar": 4,
+        "endLine": 66,
+        "endChar": 123
+      },
+      "revId": "49df2ae0289e21eb7ed7222df465ba5a31211247",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8b745756_59697b4c",
+        "filename": "3pp/run_remotely.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1326772
+      },
+      "writtenOn": "2021-01-27T23:55:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "49442f19_f7f5fcb7",
       "range": {
         "startLine": 66,
         "startChar": 4,
