@@ -49,6 +49,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "84376efa_4ffa2529",
+        "filename": "3pp/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2021-01-27T22:48:03Z",
+      "side": 1,
+      "message": "run_locally worked fine for me the last time I used it, which was within the last few weeks. Can you provide more detail about how you were invoking it, your OS/platform, etc?",
+      "revId": "49df2ae0289e21eb7ed7222df465ba5a31211247",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c4ac2671_de90c82e",
         "filename": "3pp/README.md",
         "patchSetId": 1
@@ -60,6 +77,30 @@
       "writtenOn": "2021-01-26T22:58:02Z",
       "side": 1,
       "message": "bryner@, is there any link to support this statement? I learnt this by reading the commit message in crrev.com/c/2521301 but it might be a good place.",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 80
+      },
+      "revId": "49df2ae0289e21eb7ed7222df465ba5a31211247",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7aed87a2_1916a34c",
+        "filename": "3pp/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2021-01-27T22:48:03Z",
+      "side": 1,
+      "message": "I can\u0027t find anything, but we should probably document this in spec.proto.",
+      "parentUuid": "c4ac2671_de90c82e",
       "range": {
         "startLine": 18,
         "startChar": 0,
