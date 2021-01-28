@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "63eb598a_db9507bb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2021-01-28T00:01:38Z",
+      "side": 1,
+      "message": "LGTM, but it doesn\u0027t change anything. These `subpackages` fields do not appear to have any effect or maybe we are using them wrong.",
+      "revId": "abbf391306222936b41a40ad275f989c379f1abc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
