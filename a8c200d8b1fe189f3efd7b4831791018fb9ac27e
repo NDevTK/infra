@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "73b1d8bc_8a44b2e0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1414197
+      },
+      "writtenOn": "2021-01-29T01:13:15Z",
+      "side": 1,
+      "message": "lgtm with nits",
+      "revId": "a8c200d8b1fe189f3efd7b4831791018fb9ac27e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "14fc536f_1a23e54f",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/rules/tbr_rules.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1414197
+      },
+      "writtenOn": "2021-01-29T01:13:15Z",
+      "side": 1,
+      "message": "del, \"Just\"",
+      "range": {
+        "startLine": 29,
+        "startChar": 176,
+        "endLine": 29,
+        "endChar": 235
+      },
+      "revId": "a8c200d8b1fe189f3efd7b4831791018fb9ac27e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2c8be3f9_16456623",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/rules/tbr_rules.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1414197
+      },
+      "writtenOn": "2021-01-29T01:13:15Z",
+      "side": 1,
+      "message": "bot (email here)",
+      "range": {
+        "startLine": 29,
+        "startChar": 109,
+        "endLine": 29,
+        "endChar": 112
+      },
+      "revId": "a8c200d8b1fe189f3efd7b4831791018fb9ac27e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d4e5def6_1cd25e28",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/rules/tbr_rules.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1414197
+      },
+      "writtenOn": "2021-01-29T01:13:15Z",
+      "side": 1,
+      "message": "clean cherry picks and reverts",
+      "range": {
+        "startLine": 29,
+        "startChar": 69,
+        "endLine": 29,
+        "endChar": 96
+      },
+      "revId": "a8c200d8b1fe189f3efd7b4831791018fb9ac27e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3c84078c_a5e161be",
+        "filename": "go/src/infra/appengine/cr-audit-commits/app/rules/tbr_rules.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1414197
+      },
+      "writtenOn": "2021-01-29T01:13:15Z",
+      "side": 1,
+      "message": "and created via the Gerrit UI (we\u0027re relying on fields only set if done via the UI)",
+      "range": {
+        "startLine": 29,
+        "startChar": 91,
+        "endLine": 29,
+        "endChar": 96
+      },
+      "revId": "a8c200d8b1fe189f3efd7b4831791018fb9ac27e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
