@@ -185,6 +185,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ed05603a_ad02e7e0",
+        "filename": "3pp/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2021-01-29T03:39:42Z",
+      "side": 1,
+      "message": "I\u0027m not sure; I think a lot of Linux distributions include Docker (possibly optional).\n\nWe also are hoping to set up trybots as an alternative to all of this.",
+      "parentUuid": "8b88a165_e1d37714",
+      "revId": "49df2ae0289e21eb7ed7222df465ba5a31211247",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c4ac2671_de90c82e",
         "filename": "3pp/README.md",
         "patchSetId": 1
@@ -244,6 +262,30 @@
       "side": 1,
       "message": "README is generally what people first to look at. The paragraph down below saying \"we prefer to mirror the tarballs ourselves and fetch them from CIPD\". I feel at least we should change the words here.",
       "parentUuid": "7aed87a2_1916a34c",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 80
+      },
+      "revId": "49df2ae0289e21eb7ed7222df465ba5a31211247",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c6bc5b99_dd0ae2c3",
+        "filename": "3pp/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2021-01-29T03:39:42Z",
+      "side": 1,
+      "message": "Yeah, probably there should be a \"how to add a new package\" section here that includes discussion of the different sources and what is preferred. What you have is fine for now.",
+      "parentUuid": "43770215_a8909091",
       "range": {
         "startLine": 18,
         "startChar": 0,

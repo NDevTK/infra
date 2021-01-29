@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2b3d928b_41c1099c",
+        "filename": "3pp/README.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2021-01-29T03:39:42Z",
+      "side": 1,
+      "message": "Let\u0027s just say that run_locally on Linux requires that Docker is installed.",
+      "revId": "9a4a47cf33b9e74bd5c585e7323c6c9e5691fff6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
