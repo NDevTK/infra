@@ -20,7 +20,7 @@ import (
 	"infra/cmdsupport/cmdlib"
 	swarming "infra/libs/swarming"
 	ufspb "infra/unifiedfleet/api/v1/models"
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
@@ -176,7 +176,7 @@ func (c updateDUT) validateArgs() error {
 		}
 		// Check if servo type is valid.
 		// Note: This check is run irrespective of servo input because it is possible to perform an update on only this field.
-		if _, ok := lab.ServoSetupType_value[appendServoSetupPrefix(c.servoSetupType)]; c.servoSetupType != "" && !ok {
+		if _, ok := chromeosLab.ServoSetupType_value[appendServoSetupPrefix(c.servoSetupType)]; c.servoSetupType != "" && !ok {
 			return cmdlib.NewQuietUsageError(c.Flags, "Invalid value for servo setup type. Valid values are "+cmdhelp.ServoSetupTypeAllowedValuesString())
 		}
 	}
@@ -304,8 +304,8 @@ func (c *updateDUT) initializeLSEAndMask() (*ufspb.MachineLSE, *field_mask.Field
 				ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
 					DeviceLse: &ufspb.ChromeOSDeviceLSE{
 						Device: &ufspb.ChromeOSDeviceLSE_Dut{
-							Dut: &lab.DeviceUnderTest{
-								Peripherals: &lab.Peripherals{},
+							Dut: &chromeosLab.DeviceUnderTest{
+								Peripherals: &chromeosLab.Peripherals{},
 							},
 						},
 					},
@@ -340,7 +340,7 @@ func (c *updateDUT) initializeLSEAndMask() (*ufspb.MachineLSE, *field_mask.Field
 }
 
 // generateServoWithMask generates a servo object from the given inputs and corresponding mask.
-func generateServoWithMask(servo, servoSetup, servoSerial string) (*lab.Servo, []string, error) {
+func generateServoWithMask(servo, servoSetup, servoSerial string) (*chromeosLab.Servo, []string, error) {
 	// Attempt to parse servo hostname and port.
 	servoHost, servoPort, err := parseServoHostnamePort(servo)
 	if err != nil {
@@ -351,7 +351,7 @@ func generateServoWithMask(servo, servoSetup, servoSerial string) (*lab.Servo, [
 		return nil, []string{servoHostPath}, nil
 	}
 
-	newServo := &lab.Servo{}
+	newServo := &chromeosLab.Servo{}
 	paths := []string{}
 	// Check and update servo port.
 	if servoPort != int32(0) {
@@ -361,7 +361,7 @@ func generateServoWithMask(servo, servoSetup, servoSerial string) (*lab.Servo, [
 
 	if servoSetup != "" {
 		paths = append(paths, servoSetupPath)
-		sst := lab.ServoSetupType(lab.ServoSetupType_value[appendServoSetupPrefix(servoSetup)])
+		sst := chromeosLab.ServoSetupType(chromeosLab.ServoSetupType_value[appendServoSetupPrefix(servoSetup)])
 		newServo.ServoSetup = sst
 	}
 

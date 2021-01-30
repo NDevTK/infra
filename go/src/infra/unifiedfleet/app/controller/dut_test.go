@@ -9,7 +9,7 @@ import (
 
 	"google.golang.org/genproto/protobuf/field_mask"
 	ufspb "infra/unifiedfleet/api/v1/models"
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	"infra/unifiedfleet/app/external"
 	"infra/unifiedfleet/app/model/history"
 	"infra/unifiedfleet/app/model/registration"
@@ -25,15 +25,15 @@ func mockDUT(hostname, machine, servoHost, servoSerial, rpm, rpmOutlet string, s
 				ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
 					DeviceLse: &ufspb.ChromeOSDeviceLSE{
 						Device: &ufspb.ChromeOSDeviceLSE_Dut{
-							Dut: &lab.DeviceUnderTest{
+							Dut: &chromeosLab.DeviceUnderTest{
 								Hostname: hostname,
-								Peripherals: &lab.Peripherals{
-									Servo: &lab.Servo{
+								Peripherals: &chromeosLab.Peripherals{
+									Servo: &chromeosLab.Servo{
 										ServoHostname: servoHost,
 										ServoPort:     servoPort,
 										ServoSerial:   servoSerial,
 									},
-									Rpm: &lab.RPM{
+									Rpm: &chromeosLab.RPM{
 										PowerunitName:   rpm,
 										PowerunitOutlet: rpmOutlet,
 									},
@@ -61,7 +61,7 @@ func mockLabstation(hostname, machine string) *ufspb.MachineLSE {
 				ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
 					DeviceLse: &ufspb.ChromeOSDeviceLSE{
 						Device: &ufspb.ChromeOSDeviceLSE_Labstation{
-							Labstation: &lab.Labstation{
+							Labstation: &chromeosLab.Labstation{
 								Hostname: hostname,
 							},
 						},
