@@ -36,6 +36,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a0751a1c_69c46a36",
+        "filename": "go/src/infra/unifiedfleet/app/util/cros_to_ufs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-02-01T19:54:13Z",
+      "side": 1,
+      "message": "Actually this comment is for the next CL - https://chromium-review.googlesource.com/c/infra/infra/+/2660407/1\n\nInvV2 has RPM and UFS has OSRPM in Labconfig. This will miss copying it.",
+      "parentUuid": "435f9333_f5744a95",
+      "revId": "88ead7fc46d1db7e1d50e634618fd624f2d647f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a8cc8257_ffbe7730",
