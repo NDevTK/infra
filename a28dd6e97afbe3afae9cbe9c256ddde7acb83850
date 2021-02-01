@@ -34,6 +34,24 @@
       "parentUuid": "13a7d5db_fb4082fa",
       "revId": "a28dd6e97afbe3afae9cbe9c256ddde7acb83850",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5385b642_6c9db50c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2021-02-01T20:14:11Z",
+      "side": 1,
+      "message": "yep it\u0027s verified in https://source.corp.google.com/chromium_infra/go/src/infra/unifiedfleet/app/util/cros_to_ufs_test.go;l\u003d26?q\u003dcros_to_ufs_test\u0026sq\u003dpackage:%5Echromium_infra$.\n\nI also manually verify the rpm info locally and it passes:\n\nSo(newDUT.GetPeripherals().GetRpm(), ShouldNotBeNil)\nSo(newDUT.GetPeripherals().GetRpm().GetPowerunitName(), ShouldEqual, mockLabConfig.GetConfig().GetDut().GetPeripherals().GetRpm().GetPowerunitName())\nSo(newDUT.GetPeripherals().GetRpm().GetPowerunitOutlet(), ShouldEqual, mockLabConfig.GetConfig().GetDut().GetPeripherals().GetRpm().GetPowerunitOutlet())\n\nSo(newL.GetRpm(), ShouldNotBeNil)\nSo(newL.GetRpm().GetPowerunitName(), ShouldEqual, mockLabConfig.GetConfig().GetLabstation().GetRpm().GetPowerunitName())\nSo(newL.GetRpm().GetPowerunitOutlet(), ShouldEqual, mockLabConfig.GetConfig().GetLabstation().GetRpm().GetPowerunitOutlet())\n\nUnmarshalText converts back the bytes to message, there\u0027s no types in bytes, so in the conversion, as long as there\u0027s a type matching the same inner structure, the corresponding bytes can be converted.",
+      "parentUuid": "68d46ebf_d9108f58",
+      "revId": "a28dd6e97afbe3afae9cbe9c256ddde7acb83850",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
