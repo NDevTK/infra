@@ -16,6 +16,24 @@
       "message": "InvV2 has RPM and UFS has OSRPM in Labconfig. This will miss copying it in cros_to_ufs.go",
       "revId": "a28dd6e97afbe3afae9cbe9c256ddde7acb83850",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "68d46ebf_d9108f58",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2021-02-01T20:01:13Z",
+      "side": 1,
+      "message": "I thought it\u0027s verified by cros_to_ufs_test.go that rpm is copied. double checking",
+      "parentUuid": "13a7d5db_fb4082fa",
+      "revId": "a28dd6e97afbe3afae9cbe9c256ddde7acb83850",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
