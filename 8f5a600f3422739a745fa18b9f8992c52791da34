@@ -33,6 +33,24 @@
       "message": "So, the bug is that sometimes desired !\u003d r.ExistingProvisionableLabels[chromeOSBuildKey] even if r.ExistingProvisionableLabels[chromeOSBuildKey] exists?",
       "revId": "8f5a600f3422739a745fa18b9f8992c52791da34",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d40d13f3_7e3a59bc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2021-02-03T16:56:39Z",
+      "side": 1,
+      "message": "Yeah. Pretty much all the time except when there is no provisionable label, e.g. for a DUT just returned from AdminRepair.",
+      "parentUuid": "44a78151_a8ba6617",
+      "revId": "8f5a600f3422739a745fa18b9f8992c52791da34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
