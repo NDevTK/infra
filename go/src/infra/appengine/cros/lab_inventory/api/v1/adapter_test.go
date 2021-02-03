@@ -12,6 +12,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/chromiumos/infra/proto/go/lab"
 	"go.chromium.org/chromiumos/infra/proto/go/manufacturing"
+	. "go.chromium.org/luci/common/testing/assertions"
 
 	"infra/libs/skylab/inventory"
 )
@@ -567,8 +568,6 @@ common {
 `
 
 func TestAdaptToV1DutSpec(t *testing.T) {
-	t.Parallel()
-
 	Convey("Verify V2 => V1", t, func() {
 		var d1 inventory.DeviceUnderTest
 		err := proto.UnmarshalText(dutTextProto, &d1)
@@ -707,8 +706,6 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 }
 
 func TestImportFromV1DutSpecs(t *testing.T) {
-	t.Parallel()
-
 	Convey("Verify V1 => V2", t, func() {
 		var d1 inventory.DeviceUnderTest
 		err := proto.UnmarshalText(dutTextProto, &d1)
@@ -731,7 +728,7 @@ func TestImportFromV1DutSpecs(t *testing.T) {
 		})
 		// Verify devices
 		So(len(devices), ShouldEqual, 1)
-		So(devices[0], ShouldResemble, &devInV2)
+		So(devices[0], ShouldResembleProto, &devInV2)
 
 		// Verify labstations
 		So(len(labstations), ShouldEqual, 2)
