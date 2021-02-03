@@ -16,6 +16,23 @@
       "message": "A big oops.\n\nI\u0027ve rolled back the test_runner release from this afternoon that had this bug.\nNo end-user reports, I just happened to stumble on this. But this is as serious a bug as it gets.",
       "revId": "8f5a600f3422739a745fa18b9f8992c52791da34",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "44a78151_a8ba6617",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1438503
+      },
+      "writtenOn": "2021-02-03T16:08:24Z",
+      "side": 1,
+      "message": "So, the bug is that sometimes desired !\u003d r.ExistingProvisionableLabels[chromeOSBuildKey] even if r.ExistingProvisionableLabels[chromeOSBuildKey] exists?",
+      "revId": "8f5a600f3422739a745fa18b9f8992c52791da34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
