@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "85dfd732_55e09696",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2021-02-03T07:00:37Z",
+      "side": 1,
+      "message": "A big oops.\n\nI\u0027ve rolled back the test_runner release from this afternoon that had this bug.\nNo end-user reports, I just happened to stumble on this. But this is as serious a bug as it gets.",
+      "revId": "8f5a600f3422739a745fa18b9f8992c52791da34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
