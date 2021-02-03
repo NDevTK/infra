@@ -16,6 +16,24 @@
       "message": "Suggested wording:\n\nIf possible, prefer to use git, url, or script methods. If none of these are workable for a package, cipd source may be used.",
       "revId": "1a71a9f2e81b5cb0ad93b46769ef1700a3762c92",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "06f3f442_af97f699",
+        "filename": "3pp/README.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1326772
+      },
+      "writtenOn": "2021-02-03T05:51:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f95670ec_36aec627",
+      "revId": "1a71a9f2e81b5cb0ad93b46769ef1700a3762c92",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
