@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a8212fc7_a03365ef",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2021-02-04T00:06:17Z",
+      "side": 1,
+      "message": "Example where we ran `autoserv -reset`: https://luci-milo.appspot.com/raw/build/logs.chromium.org/chromeos/led/pprabhu_google.com/b51fff4d3bdf68289e3ab09777f8e2a1afdeba03041439047ed37868328eb054/+/build.proto?server\u003dchromeos-swarming.appspot.com\n\nExample where we ran `autoserv -provision`: https://luci-milo.appspot.com/raw/build/logs.chromium.org/chromeos/led/pprabhu_google.com/5222e7a26772b0539a88e00c2378af85a6a348400257c2ca9584e2e761eed0c7/+/build.proto?server\u003dchromeos-swarming.appspot.com\n\nIn particular, the latter confirms that crbug.com/1174128 has been fixed.\n\nI\u0027ll confirm these once again in staging tomorrow morning, before releasing to prod.",
+      "revId": "758fa669b92c47378aad63fb1432e51c79ac3385",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
