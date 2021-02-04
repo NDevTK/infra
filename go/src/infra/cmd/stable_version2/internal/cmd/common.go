@@ -34,6 +34,7 @@ const GitilesHost = "chrome-internal.googlesource.com"
 // Project is the path to the repo root within Gitiles.
 const Project = "chromeos/infra/config"
 
+// TODO(gregorynisbet): switch this name to "main" once the project fixes its label.
 // Branch is the name of the branch that we're modifying.
 const Branch = "master"
 
