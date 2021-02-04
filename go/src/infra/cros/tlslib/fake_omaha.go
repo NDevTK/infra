@@ -42,8 +42,8 @@ func (s *Server) CreateFakeOmaha(ctx context.Context, req *tls.CreateFakeOmahaRe
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "CreateFakeOmaha: failed to get cache payload URL: %s", err)
 	}
-	n, err := nebraska.Start(gsPathPrefix, payloads, payloadsURL)
-	if err != nil {
+	n := nebraska.NewServer(nebraska.NewEnvironment())
+	if err := n.Start(gsPathPrefix, payloads, payloadsURL); err != nil {
 		return nil, status.Errorf(codes.Internal, "CreateFakeOmaha: failed to start fake Omaha: %s", err)
 	}
 	u, err := s.exposePort(ctx, dutName, n.Port, fo.GetExposedViaProxy())
