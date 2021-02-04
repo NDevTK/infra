@@ -1,0 +1,146 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1a7e6889_8221b49d",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-02-04T22:05:24Z",
+      "side": 1,
+      "message": "General comment which I alluded to on the tests.  The boundary you created here for testing is too low level and doesn\u0027t have good semantics.  Instead of abstracting \"how to run a process\", the abstractions should have semantic meaning like \"how to start the nebraska script\" or \"how to get metadata\".  Then when you\u0027re testing, you test Server with a fake \"how to get metadata\" and the actual \"how to get metadata\" implementation separately (and also test them together as an integration test if possible).",
+      "revId": "c4a633bd6c5249de72a4def50aba19257b25fc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "08d35daf_181426d4",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-02-04T22:05:24Z",
+      "side": 1,
+      "message": "Why is this a separate function?  This could be in NewServer.",
+      "revId": "c4a633bd6c5249de72a4def50aba19257b25fc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e4e7ab23_1ade09ce",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-02-04T22:05:24Z",
+      "side": 1,
+      "message": "You should have a waitgroup to wait for this goroutine to exit.",
+      "revId": "c4a633bd6c5249de72a4def50aba19257b25fc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "af6d4e28_9e642a21",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-02-04T22:05:24Z",
+      "side": 1,
+      "message": "You should try SIGTERM before killing",
+      "revId": "c4a633bd6c5249de72a4def50aba19257b25fc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "663cbbf5_a491f235",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-02-04T22:05:24Z",
+      "side": 1,
+      "message": "Why join them with |?  In English commas are usually used to join things.",
+      "range": {
+        "startLine": 125,
+        "startChar": 39,
+        "endLine": 125,
+        "endChar": 40
+      },
+      "revId": "c4a633bd6c5249de72a4def50aba19257b25fc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ac766d3c_5e042ea7",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-02-04T22:05:24Z",
+      "side": 1,
+      "message": "The \"waiting for a file\" should be a standalone helper function with tests",
+      "revId": "c4a633bd6c5249de72a4def50aba19257b25fc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fe2b8ddf_b5ff097f",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-02-04T22:05:24Z",
+      "side": 1,
+      "message": "Should have unit tests for this",
+      "revId": "c4a633bd6c5249de72a4def50aba19257b25fc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a05a83f6_3a749597",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-02-04T22:05:24Z",
+      "side": 1,
+      "message": "These tests are too low level.  They rely too heavily on mocking internal details and are almost change detectors.  You should only be testing the public API.  For Server, that means calling NewServer() and then testing the Omaha RPCs on the service running at Port.",
+      "revId": "c4a633bd6c5249de72a4def50aba19257b25fc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
