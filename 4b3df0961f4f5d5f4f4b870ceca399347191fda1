@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fdecfc34_3f133edf",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2021-02-04T00:08:38Z",
+      "side": 1,
+      "message": "I\u0027m having to make various test fixes because the protos are now built with a newer protoc-gen-go, and that new version seems to be less forgiving about using the wrong forms of test object comparison",
+      "revId": "4b3df0961f4f5d5f4f4b870ceca399347191fda1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
