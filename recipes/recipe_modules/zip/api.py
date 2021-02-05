@@ -92,7 +92,6 @@ class ZipPackage(object):
       path: absolute path to a file, should be in |root| subdirectory.
       archive_name: name of the file in the archive, if non-None
     """
-    assert self._root.is_parent_of(path), path
     self._entries.append({
         'type': 'file',
         'path': str(path),
@@ -106,7 +105,6 @@ class ZipPackage(object):
       path: absolute path to a directory, should be in |root| subdirectory.
     """
     # TODO(vadimsh): Implement 'exclude' filter.
-    assert self._root.is_parent_of(path) or path == self._root, path
     self._entries.append({
         'type': 'dir',
         'path': str(path),

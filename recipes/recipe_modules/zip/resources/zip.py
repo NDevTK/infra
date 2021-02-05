@@ -33,14 +33,12 @@ def zip_with_subprocess(root, output, entries):
     if tp == 'file':
       # File must exist and be inside |root|.
       assert os.path.isfile(path), path
-      assert path.startswith(root), path
       items_to_zip.append(path[len(root):])
     elif entry['type'] == 'dir':
       # Append trailing '/'.
       path = path.rstrip(os.path.sep) + os.path.sep
       # Directory must exist and be inside |root| or be |root| itself.
       assert os.path.isdir(path), path
-      assert path.startswith(root), path
       items_to_zip.append(path[len(root):] or '.')
     else:
       raise AssertionError('Invalid entry type: %s' % (tp,))
