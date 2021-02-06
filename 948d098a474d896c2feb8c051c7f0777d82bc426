@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8b64d4dc_51b6c223",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1368332
+      },
+      "writtenOn": "2021-02-06T01:16:56Z",
+      "side": 1,
+      "message": "+mmoss@ - wdyt think of removing this? in support of crrev/c/2680262. ",
+      "revId": "948d098a474d896c2feb8c051c7f0777d82bc426",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
