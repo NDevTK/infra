@@ -16,6 +16,23 @@
       "message": "+mmoss@ - wdyt think of removing this? in support of crrev/c/2680262. ",
       "revId": "948d098a474d896c2feb8c051c7f0777d82bc426",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dd2a916d_3163283d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1368332
+      },
+      "writtenOn": "2021-02-06T01:39:25Z",
+      "side": 1,
+      "message": "Tried looking at history, looks like this was originally introduced 2014 https://source.chromium.org/chromium/chromium/tools/build/+/646a0e38c88e0bb04a607afa3ca8a09c062981bc:scripts/slave/recipe_modules/zip/resources/zip.py;bpv\u003d1;bpt\u003d0 and there\u0027s no explanation behind why all files must be under the same root. ",
+      "revId": "948d098a474d896c2feb8c051c7f0777d82bc426",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
