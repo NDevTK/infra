@@ -25,7 +25,10 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"strings"
+	"time"
 
+	"go.chromium.org/luci/common/proto/google"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/metadata"
@@ -124,13 +127,27 @@ func (s *pinpointServer) ScheduleJob(ctx context.Context, r *pinpoint.ScheduleJo
 	// Return with a minimal Job response.
 	// TODO(dberris): Write this data out to Spanner when we're ready to replace the legacy API.
 	return &pinpoint.Job{
-		Name:      fmt.Sprintf("legacy-%s", newResponse.JobID),
+		Name:      fmt.Sprintf("jobs/legacy-%s", newResponse.JobID),
 		CreatedBy: userEmail,
 		JobSpec:   r.Job,
 	}, nil
 }
 
 var jobNameRe = regexp.MustCompile(`^jobs/legacy-(?P<id>[a-f0-9]+)$`)
+
+// MicroTime is an alias to time.Time which allows us to parse microsecond-precision time.
+type MicroTime time.Time
+
+// UnmarshalJSON supports parsing nanosecond timestamps.
+func (t *MicroTime) UnmarshalJSON(b []byte) error {
+	s := strings.Trim(string(b), "\"")
+	p, err := time.Parse("2006-01-02T15:04:05.999999", s)
+	if err != nil {
+		return err
+	}
+	*t = MicroTime(p)
+	return nil
+}
 
 func (s *pinpointServer) GetJob(ctx context.Context, r *pinpoint.GetJobRequest) (*pinpoint.Job, error) {
 	// This API does not require that the user be signed in, so we'll not need to check the credentials.
@@ -175,22 +192,113 @@ func (s *pinpointServer) GetJob(ctx context.Context, r *pinpoint.GetJobRequest) 
 	}
 
 	var l struct {
-		ID string `json:"job_id"`
+		Arguments           map[string]string       `json:"arguments"`
+		BugID               int64                   `json:"bug_id"`
+		ComparisonMode      string                  `json:"comparison_mode,omitempty"`
+		ComparisonMagnitude float64                 `json:"comparison_magnitude,omitempty"`
+		Cfg                 string                  `json:"configuration,omitempty"`
+		Created             MicroTime               `json:"created,omitempty"`
+		Exception           *map[string]interface{} `json:"exception,omitempty"`
+		JobID               string                  `json:"job_id,omitempty"`
+		Metric              string                  `json:"metric,omitempty"`
+		Name                string                  `json:"name,omitempty"`
+		Project             *string                 `json:"project,omitempty"`
+		StepLabels          []string                `json:"quests,omitempty"`
+		ResultsURL          string                  `json:"results_url,omitempty"`
+		StartedTime         MicroTime               `json:"started_time,omitempty"`
+		State               []struct {
+			Attempts []struct {
+				Executions []struct {
+					Completed bool `json:"completed"`
+					Details   []struct {
+						Value string `json:"value,omitempty"`
+						Key   string `json:"key,omitempty"`
+						URL   string `json:"url,omitempty"`
+					} `json:"details"`
+				} `json:"executions"`
+			} `json:"attempts"`
+			Change struct {
+				Commits []struct {
+					Author         string    `json:"author,omitempty"`
+					ChangeID       string    `json:"change_id,omitempty"`
+					CommitPosition int64     `json:"commit_position,omitempty"`
+					Created        MicroTime `json:"created,omitempty"`
+					GitHash        string    `json:"git_hash,omitempty"`
+					Message        string    `json:"message,omitempty"`
+					Repo           string    `json:"repository,omitempty"`
+					ReviewURL      string    `json:"review_url,omitempty"`
+					Subject        string    `json:"subject,omitempty"`
+					URL            string    `json:"url,omitempty"`
+				} `json:"commits"`
+			} `json:"change"`
+			Comparisons struct {
+				Prev string `json:"prev,omitempty"`
+				Next string `json:"next,omitempty"`
+			} `json:"comparisons"`
+		} `json:"state,omitempty"`
+		Status  string    `json:"status,omitempty"`
+		Updated MicroTime `json:"updated,omitempty"`
+		User    string    `json:"user,omitempty"`
 	}
 	if err := json.NewDecoder(res.Body).Decode(&l); err != nil {
+		grpclog.Errorf("failed parsing json: %q", err)
 		return nil, status.Errorf(
 			codes.Internal,
 			"received ill-formed response from legacy service",
 		)
 	}
 
-	// Now attempt to parse the retrieved data.
-	j := &pinpoint.Job{
-		Name: l.ID,
+	var transformState = func() pinpoint.Job_State {
+		switch l.Status {
+		case "Running":
+			return pinpoint.Job_RUNNING
+		case "Queued":
+			return pinpoint.Job_PENDING
+		case "Cancelled":
+			return pinpoint.Job_CANCELLED
+		case "Failed":
+			return pinpoint.Job_FAILED
+		case "Completed":
+			return pinpoint.Job_SUCCEEDED
+		}
+		return pinpoint.Job_STATE_UNSPECIFIED
 	}
 
-	// FIXME(dberris): Map the JSON response to the proto structure.
-	return j, nil
+	var transformMode = func() pinpoint.JobSpec_ComparisonMode {
+		switch l.ComparisonMode {
+		case "functional":
+			return pinpoint.JobSpec_FUNCTIONAL
+		case "try":
+		case "performance":
+			return pinpoint.JobSpec_PERFORMANCE
+		}
+		return pinpoint.JobSpec_COMPARISON_MODE_UNSPECIFIED
+	}
+
+	// Now attempt to translate the parsed JSON structure into a protobuf.
+	// FIXME(dberris): Interpret the results better, differentiating experiments from bisections, etc.
+	return &pinpoint.Job{
+		Name:           fmt.Sprintf("jobs/legacy-%s", l.JobID),
+		State:          transformState(),
+		CreatedBy:      l.User,
+		CreateTime:     google.NewTimestamp(time.Time(l.Created)),
+		LastUpdateTime: google.NewTimestamp(time.Time(l.Updated)),
+		JobSpec: &pinpoint.JobSpec{
+			ComparisonMode:      transformMode(),
+			ComparisonMagnitude: l.ComparisonMagnitude,
+			Config:              l.Cfg,
+			Target:              l.Arguments["target"],
+			MonorailIssue: func() *pinpoint.MonorailIssue {
+				if l.Project == nil || l.BugID == 0 {
+					return nil
+				}
+				return &pinpoint.MonorailIssue{
+					Project: *l.Project,
+					IssueId: l.BugID,
+				}
+			}(),
+		},
+	}, nil
 }
 
 func (s *pinpointServer) ListJobs(ctx context.Context, r *pinpoint.ListJobsRequest) (*pinpoint.ListJobsResponse, error) {
