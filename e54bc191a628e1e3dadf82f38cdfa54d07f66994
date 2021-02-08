@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dafae378_79980515",
+        "filename": "go/src/infra/appengine/rubber-stamper/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1414197
+      },
+      "writtenOn": "2021-02-08T23:02:12Z",
+      "side": 1,
+      "message": "Do we need to add a caveat of \"if it has permissions to set CQ+2\"?",
+      "revId": "e54bc191a628e1e3dadf82f38cdfa54d07f66994",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
