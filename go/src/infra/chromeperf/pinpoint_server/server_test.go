@@ -155,7 +155,7 @@ func TestGetJob(t *testing.T) {
 
 			Convey("Then we find details in the response proto", func() {
 				So(err, ShouldBeNil)
-				So(j.Name, ShouldEqual, "11423cdd520000")
+				So(j.Name, ShouldEqual, "jobs/legacy-11423cdd520000")
 			})
 		})
 
