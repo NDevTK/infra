@@ -1,0 +1,124 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cb8d5786_de8b8eb5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-02-08T22:41:12Z",
+      "side": 1,
+      "message": "LGTM % comments",
+      "revId": "9959f2e5c14b4618df7b1859752a1d76ecd00efd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4a0fec68_e9351613",
+        "filename": "go/src/infra/chromeperf/pinpoint_server/server.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-02-08T22:41:12Z",
+      "side": 1,
+      "message": "prefer to use the new stuff instead: \nhttps://pkg.go.dev/google.golang.org/protobuf/types/known/timestamppb#New",
+      "revId": "9959f2e5c14b4618df7b1859752a1d76ecd00efd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5524317f_bdca5b4f",
+        "filename": "go/src/infra/chromeperf/pinpoint_server/server.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-02-08T22:41:12Z",
+      "side": 1,
+      "message": "backticks: `\"`",
+      "range": {
+        "startLine": 143,
+        "startChar": 30,
+        "endLine": 143,
+        "endChar": 34
+      },
+      "revId": "9959f2e5c14b4618df7b1859752a1d76ecd00efd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "246c44d2_b109d25e",
+        "filename": "go/src/infra/chromeperf/pinpoint_server/server.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-02-08T22:41:12Z",
+      "side": 1,
+      "message": "transformState :\u003d\n\nsame below",
+      "range": {
+        "startLine": 251,
+        "startChar": 1,
+        "endLine": 251,
+        "endChar": 21
+      },
+      "revId": "9959f2e5c14b4618df7b1859752a1d76ecd00efd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dc3bd969_39a77cb4",
+        "filename": "go/src/infra/chromeperf/pinpoint_server/server.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 272,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-02-08T22:41:12Z",
+      "side": 1,
+      "message": "I think you meant \n\n  case \"try\", \"performance\"\n\nthis currently returns unspecified for try",
+      "range": {
+        "startLine": 271,
+        "startChar": 2,
+        "endLine": 272,
+        "endChar": 21
+      },
+      "revId": "9959f2e5c14b4618df7b1859752a1d76ecd00efd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0d4174ac_d312bdff",
+        "filename": "go/src/infra/chromeperf/pinpoint_server/server.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 276,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-02-08T22:41:12Z",
+      "side": 1,
+      "message": "nit: I think these two funcs could be separated. Most of the code doesn\u0027t benefit from capturing:\ntransformState() could as well be transformState(state)",
+      "revId": "9959f2e5c14b4618df7b1859752a1d76ecd00efd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
