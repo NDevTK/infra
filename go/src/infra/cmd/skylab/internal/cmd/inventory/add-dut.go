@@ -297,10 +297,11 @@ func (c *addDutRun) triggerDeploy(ctx context.Context, ic fleet.InventoryClient,
 	resp, err := ic.DeployDut(ctx, &fleet.DeployDutRequest{
 		NewSpecs: serialized,
 		Actions: &fleet.DutDeploymentActions{
-			StageImageToUsb:          c.stageImageToUsb(),
-			InstallFirmware:          !c.skipInstallFirmware,
-			InstallTestImage:         !c.skipInstallOS,
-			RunPreDeployVerification: true,
+			StageImageToUsb:           c.stageImageToUsb(),
+			InstallFirmware:           !c.skipInstallFirmware,
+			InstallTestImage:          !c.skipInstallOS,
+			RunPreDeployVerification:  true,
+			RunPostDeployVerification: true,
 		},
 		Options: &fleet.DutDeploymentOptions{
 			AssignServoPortIfMissing: !c.skipServoPortAssignment,
