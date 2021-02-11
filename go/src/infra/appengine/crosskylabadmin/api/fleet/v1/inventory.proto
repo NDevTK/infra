@@ -298,6 +298,9 @@ message DutDeploymentActions {
 
   // Run pre-deploy verification.
   bool run_pre_deploy_verification = 6;
+
+  // Run post-deploy verification.
+  bool run_post_deploy_verification = 7;
 }
 
 message DutDeploymentOptions {
