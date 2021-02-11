@@ -188,7 +188,7 @@ func (r *createModelRun) writeEvalResults(ctx context.Context, fileName string) 
 	res, err := r.ev.Run(ctx, r.evalStrategy(&git.EdgeReader{
 		// Normalize distances, but also use the scale [0, 100] for readability.
 		ChangeLogDistanceFactor:     100 / float64(changeLogRes.RejectionClosestDistanceStats.MaxNonInf),
-		FileStructureDistanceFactor: 100 / float64(fsRes.RejectionClosestDistanceStats.MaxNonInf),
+		FileStructureDistanceFactor: 100 / float64(fsRes.RejectionClosestDistanceStats.MaxNonInf*2),
 	}))
 	if err != nil {
 		return err
