@@ -294,7 +294,13 @@ class Build(ndb.Model):
 
     is_started = self.proto.status == common_pb2.STARTED
     is_ended = self.is_ended
+
+    if self.lease_key == 0:
+      self.lease_key = None
+      self.leasee = None
+
     is_leased = self.lease_key is not None
+
     assert not (is_ended and is_leased)
     assert (self.lease_expiration_date is not None) == is_leased
     assert (self.leasee is not None) == is_leased
@@ -372,7 +378,7 @@ class Build(ndb.Model):
   def regenerate_lease_key(self):
     """Changes lease key to a different random int."""
     while True:
-      new_key = random.randint(0, 1 << 31)
+      new_key = random.randint(1, 1 << 31)
       if new_key != self.lease_key:  # pragma: no branch
         self.lease_key = new_key
         break
