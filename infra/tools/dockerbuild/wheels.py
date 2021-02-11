@@ -234,6 +234,14 @@ SPECS.update({
             pyversions=['py2'],
         ),
         SourceOrPrebuilt(
+            'gevent',
+            '21.1.2',
+            packaged=[
+                'windows-x86', 'windows-x64', 'windows-x86-py3',
+                'windows-x64-py3'
+            ],
+        ),
+        SourceOrPrebuilt(
             'google-crc32c',
             '1.1.2',
             packaged=[],
