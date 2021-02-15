@@ -58,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1dddb390_ba2fad33",
+        "filename": "go/src/infra/chromeperf/pinpoint_server/server.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1327821
+      },
+      "writtenOn": "2021-02-15T04:28:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5524317f_bdca5b4f",
+      "range": {
+        "startLine": 143,
+        "startChar": 30,
+        "endLine": 143,
+        "endChar": 34
+      },
+      "revId": "9959f2e5c14b4618df7b1859752a1d76ecd00efd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "246c44d2_b109d25e",
@@ -71,6 +95,30 @@
       "writtenOn": "2021-02-08T22:41:12Z",
       "side": 1,
       "message": "transformState :\u003d\n\nsame below",
+      "range": {
+        "startLine": 251,
+        "startChar": 1,
+        "endLine": 251,
+        "endChar": 21
+      },
+      "revId": "9959f2e5c14b4618df7b1859752a1d76ecd00efd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b9f88149_6f1193e5",
+        "filename": "go/src/infra/chromeperf/pinpoint_server/server.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 1327821
+      },
+      "writtenOn": "2021-02-15T04:28:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "246c44d2_b109d25e",
       "range": {
         "startLine": 251,
         "startChar": 1,
@@ -104,6 +152,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b3caf3a9_51113afc",
+        "filename": "go/src/infra/chromeperf/pinpoint_server/server.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 272,
+      "author": {
+        "id": 1327821
+      },
+      "writtenOn": "2021-02-15T04:28:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dc3bd969_39a77cb4",
+      "range": {
+        "startLine": 271,
+        "startChar": 2,
+        "endLine": 272,
+        "endChar": 21
+      },
+      "revId": "9959f2e5c14b4618df7b1859752a1d76ecd00efd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0d4174ac_d312bdff",
@@ -117,6 +189,24 @@
       "writtenOn": "2021-02-08T22:41:12Z",
       "side": 1,
       "message": "nit: I think these two funcs could be separated. Most of the code doesn\u0027t benefit from capturing:\ntransformState() could as well be transformState(state)",
+      "revId": "9959f2e5c14b4618df7b1859752a1d76ecd00efd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ce60c74d_3aee7a6e",
+        "filename": "go/src/infra/chromeperf/pinpoint_server/server.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 276,
+      "author": {
+        "id": 1327821
+      },
+      "writtenOn": "2021-02-15T04:28:25Z",
+      "side": 1,
+      "message": "Because these are taking strings, the capturing allows us to tie the output to the structure of the JSON. This way we control which field is being inspected, instead of taking a free-form string.",
+      "parentUuid": "0d4174ac_d312bdff",
       "revId": "9959f2e5c14b4618df7b1859752a1d76ecd00efd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
