@@ -16,6 +16,41 @@
       "message": "did something happen to this CL? it grew 5x since I reviewed it, and grew in scope?",
       "revId": "fb778bdd04c81e91b0ba35b7f29231443152cdde",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "44116bc6_0ee8c751",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1327821
+      },
+      "writtenOn": "2021-02-16T22:53:40Z",
+      "side": 1,
+      "message": "+chowski@ who will be working with us to implement more of the functionality here.",
+      "revId": "fb778bdd04c81e91b0ba35b7f29231443152cdde",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6f75c6f2_e3a8bfca",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1327821
+      },
+      "writtenOn": "2021-02-16T22:53:40Z",
+      "side": 1,
+      "message": "Ah, yes -- I realised the tests weren\u0027t exactly being executed since it was in package `main`, so I moved the service implementation bits over to `pinpoint/server` (sibling to `cli`).\n\nWhat changed is we\u0027re fleshing out the response JSON -\u003e proto more (in particular, we\u0027re parsing the URL associated with a Gerrit CL) but we\u0027re doing the minimal required so we can use it in the CLI.\n\nWe (chowski@) will keep iterating on this in-tree to improve coverage, factor out common implementation details, etc.",
+      "parentUuid": "6ac0a483_df3c79f1",
+      "revId": "fb778bdd04c81e91b0ba35b7f29231443152cdde",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
