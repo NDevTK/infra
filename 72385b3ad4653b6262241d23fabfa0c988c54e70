@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5496dfa8_9b75b97a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2021-02-18T22:28:32Z",
+      "side": 1,
+      "message": "this CL depends on https://crrev.com/c/2704948, so I\u0027ll have to wait until that one is submitted and autorolled into infra/infra",
+      "revId": "72385b3ad4653b6262241d23fabfa0c988c54e70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
