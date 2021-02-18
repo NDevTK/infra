@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b03135e0_2774a3ff",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1409819
+      },
+      "writtenOn": "2021-02-18T05:33:54Z",
+      "side": 1,
+      "message": "I feel that we could replace this StackDriver alerting method with ts-mon alerts after we\u0027ve achieved the medium level monitoring, since ts-mon alerts can do the same thing?",
+      "revId": "70f8f3bf0f1d712001df65f1d0d84df57aa61388",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
