@@ -22,6 +22,30 @@
       },
       "revId": "8dbd4b55f24ec51a607c4d62138549340eec6671",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f79d9761_0015afd9",
+        "filename": "go/src/infra/cmd/shivas/utils/location.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-02-18T19:30:57Z",
+      "side": 0,
+      "message": "Im using this func in add dut. I pass the MachineLSE name to get the location details.\nIts ok not to get the rack info in that case.\n\nMoved this check out and put it in add-asset and update-asset.",
+      "parentUuid": "47bf1052_eb62a4f3",
+      "range": {
+        "startLine": 116,
+        "startChar": 4,
+        "endLine": 116,
+        "endChar": 18
+      },
+      "revId": "8dbd4b55f24ec51a607c4d62138549340eec6671",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
