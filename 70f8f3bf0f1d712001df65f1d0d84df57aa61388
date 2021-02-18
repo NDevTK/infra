@@ -16,6 +16,63 @@
       "message": "I feel that we could replace this StackDriver alerting method with ts-mon alerts after we\u0027ve achieved the medium level monitoring, since ts-mon alerts can do the same thing?",
       "revId": "70f8f3bf0f1d712001df65f1d0d84df57aa61388",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c9a94244_0f82f269",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1414197
+      },
+      "writtenOn": "2021-02-18T17:34:14Z",
+      "side": 1,
+      "message": "LGTM with nits",
+      "revId": "70f8f3bf0f1d712001df65f1d0d84df57aa61388",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "784c1abc_e2196fa6",
+        "filename": "go/src/infra/appengine/rubber-stamper/internal/util/util.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1414197
+      },
+      "writtenOn": "2021-02-18T17:34:14Z",
+      "side": 1,
+      "message": "Here and below: nit: no annotation or context for the error?",
+      "range": {
+        "startLine": 39,
+        "startChar": 14,
+        "endLine": 39,
+        "endChar": 17
+      },
+      "revId": "70f8f3bf0f1d712001df65f1d0d84df57aa61388",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e3dec57f_0ee9a850",
+        "filename": "go/src/infra/appengine/rubber-stamper/internal/util/util.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1414197
+      },
+      "writtenOn": "2021-02-18T17:34:14Z",
+      "side": 1,
+      "message": "Nit: Add to comment that this will return nil if it is not set, and you handle the \"nil\" case when you retrieve the client as an error",
+      "revId": "70f8f3bf0f1d712001df65f1d0d84df57aa61388",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
