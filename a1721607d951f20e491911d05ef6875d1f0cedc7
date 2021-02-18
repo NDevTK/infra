@@ -16,6 +16,46 @@
       "message": "I got some presubmit warnings (https://paste.googleplex.com/6157134329806848), but I don\u0027t think they were my fault because I didn\u0027t mess with imports. Is my local workspace set up incorrectly, or is this a normal thing?",
       "revId": "a1721607d951f20e491911d05ef6875d1f0cedc7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a6f12576_9fdc799c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1327821
+      },
+      "writtenOn": "2021-02-18T22:24:04Z",
+      "side": 1,
+      "message": "LGTM",
+      "revId": "a1721607d951f20e491911d05ef6875d1f0cedc7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a8153403_2c46c73e",
+        "filename": "go/src/infra/chromeperf/pinpoint/server/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 457,
+      "author": {
+        "id": 1327821
+      },
+      "writtenOn": "2021-02-18T22:24:04Z",
+      "side": 1,
+      "message": "Thanks, though there\u0027s an option in gRPC to return an \u0027Unimplemented\u0027 code instead (if you\u0027d like to use that). Something like:\n\n```\nreturn nil, status.Error(codes.Unimplemented, \"TODO\")\n```",
+      "range": {
+        "startLine": 457,
+        "startChar": 13,
+        "endLine": 457,
+        "endChar": 31
+      },
+      "revId": "a1721607d951f20e491911d05ef6875d1f0cedc7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
