@@ -16,6 +16,52 @@
       "message": "Not sure who else to send these CLs to, feel free to add/redirect!",
       "revId": "6d8285ea6628fcf6c639c98278dde4e515f25bd8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e08bdc7e_2a3906a9",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/baserun.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-02-18T19:14:59Z",
+      "side": 1,
+      "message": "maybe group these two fields with pinpointClientFactory, otherwise it feels like this sync.Once is about initializing the error",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 27
+      },
+      "revId": "6d8285ea6628fcf6c639c98278dde4e515f25bd8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f98bf95d_3a59d082",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/experiment_telemetry.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-02-18T19:14:59Z",
+      "side": 1,
+      "message": "ooh, this problem is in a few places here. perhaps for another CL",
+      "range": {
+        "startLine": 109,
+        "startChar": 72,
+        "endLine": 109,
+        "endChar": 74
+      },
+      "revId": "6d8285ea6628fcf6c639c98278dde4e515f25bd8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
