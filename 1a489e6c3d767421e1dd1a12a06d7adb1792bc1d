@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c664744c_d70a8fcc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1327821
+      },
+      "writtenOn": "2021-02-18T22:33:49Z",
+      "side": 1,
+      "message": "LGTM % +1 to Nodir\u0027s suggestion in using a helper",
+      "revId": "1a489e6c3d767421e1dd1a12a06d7adb1792bc1d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b2caf301_f6a21d25",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/job_commands.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1327821
+      },
+      "writtenOn": "2021-02-18T22:33:49Z",
+      "side": 1,
+      "message": "I\u0027m not well versed with Go style, but is it preferred to create local variables for things that could be inlined instead?",
+      "range": {
+        "startLine": 53,
+        "startChar": 1,
+        "endLine": 54,
+        "endChar": 17
+      },
+      "revId": "1a489e6c3d767421e1dd1a12a06d7adb1792bc1d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
