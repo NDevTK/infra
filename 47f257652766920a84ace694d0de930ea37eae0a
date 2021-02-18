@@ -16,6 +16,75 @@
       "message": "Not sure who else to send these CLs to, feel free to add/redirect!",
       "revId": "47f257652766920a84ace694d0de930ea37eae0a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0be94371_604cf2ec",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/job_commands.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-02-18T19:18:01Z",
+      "side": 1,
+      "message": "should this be in L31?\n\ni was looking for this doc there.",
+      "range": {
+        "startLine": 24,
+        "startChar": 30,
+        "endLine": 25,
+        "endChar": 17
+      },
+      "revId": "47f257652766920a84ace694d0de930ea37eae0a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b7a46798_692da991",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/job_commands.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-02-18T19:18:01Z",
+      "side": 1,
+      "message": "i suspect this code will be repeated a lot. Usually we have use this helper:\nhttps://source.chromium.org/chromium/infra/infra/+/master:go/src/infra/tools/dirmd/cli/baserun.go;l\u003d33?q\u003ddone%20lang:go%20f:base",
+      "range": {
+        "startLine": 42,
+        "startChar": 2,
+        "endLine": 43,
+        "endChar": 10
+      },
+      "revId": "47f257652766920a84ace694d0de930ea37eae0a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9cc223e2_20bab1e3",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/job_commands.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-02-18T19:18:01Z",
+      "side": 1,
+      "message": "slightly nicer: https://pkg.go.dev/google.golang.org/protobuf/encoding/prototext#Marshal\n\nit is indented",
+      "range": {
+        "startLine": 53,
+        "startChar": 13,
+        "endLine": 53,
+        "endChar": 17
+      },
+      "revId": "47f257652766920a84ace694d0de930ea37eae0a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
