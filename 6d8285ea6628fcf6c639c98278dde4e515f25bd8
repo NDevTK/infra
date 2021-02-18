@@ -43,6 +43,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "65c99c7c_acfcbe09",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/baserun.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1151324
+      },
+      "writtenOn": "2021-02-18T21:48:44Z",
+      "side": 1,
+      "message": "+1 good catch, I meant to do the \"hat\" strategy (go/gotip/episodes/11) and should have definitely moved the other field too. I also dropped a comment to ensure a clear intent.",
+      "parentUuid": "e08bdc7e_2a3906a9",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 27
+      },
+      "revId": "6d8285ea6628fcf6c639c98278dde4e515f25bd8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "f98bf95d_3a59d082",
         "filename": "go/src/infra/chromeperf/pinpoint/cli/experiment_telemetry.go",
         "patchSetId": 2
@@ -54,6 +78,30 @@
       "writtenOn": "2021-02-18T19:14:59Z",
       "side": 1,
       "message": "ooh, this problem is in a few places here. perhaps for another CL",
+      "range": {
+        "startLine": 109,
+        "startChar": 72,
+        "endLine": 109,
+        "endChar": 74
+      },
+      "revId": "6d8285ea6628fcf6c639c98278dde4e515f25bd8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "074a50dd_c6a16cd7",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/experiment_telemetry.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1151324
+      },
+      "writtenOn": "2021-02-18T21:48:44Z",
+      "side": 1,
+      "message": "Oh yeah I noticed that too :) luckily the codebase isn\u0027t very large yet.",
+      "parentUuid": "f98bf95d_3a59d082",
       "range": {
         "startLine": 109,
         "startChar": 72,
