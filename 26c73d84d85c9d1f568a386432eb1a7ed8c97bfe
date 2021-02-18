@@ -16,6 +16,23 @@
       "message": "Thanks for the quick review, Nodir!",
       "revId": "26c73d84d85c9d1f568a386432eb1a7ed8c97bfe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f7fee242_f51aad63",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1327821
+      },
+      "writtenOn": "2021-02-18T22:33:22Z",
+      "side": 1,
+      "message": "LGTM\n\nThanks! This is much nicer. 😊",
+      "revId": "26c73d84d85c9d1f568a386432eb1a7ed8c97bfe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
