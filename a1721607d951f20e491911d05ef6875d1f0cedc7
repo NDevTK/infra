@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6ebff9f6_e092307e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1151324
+      },
+      "writtenOn": "2021-02-18T18:44:40Z",
+      "side": 1,
+      "message": "I got some presubmit warnings (https://paste.googleplex.com/6157134329806848), but I don\u0027t think they were my fault because I didn\u0027t mess with imports. Is my local workspace set up incorrectly, or is this a normal thing?",
+      "revId": "a1721607d951f20e491911d05ef6875d1f0cedc7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
