@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "47bf1052_eb62a4f3",
+        "filename": "go/src/infra/cmd/shivas/utils/location.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2021-02-18T07:31:31Z",
+      "side": 0,
+      "message": "why this check is removed?",
+      "range": {
+        "startLine": 116,
+        "startChar": 4,
+        "endLine": 116,
+        "endChar": 18
+      },
+      "revId": "8dbd4b55f24ec51a607c4d62138549340eec6671",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
