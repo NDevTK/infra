@@ -567,6 +567,8 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
         method='POST',
         services=self.services)
     result = task.HandleRequest(mr)
+
+    self.assertIsNotNone(result['tasks'][0].get('references'))
     self.assertTrue('Status: need_info' in result['tasks'][0]['body'])
     self.assertItemsEqual(
         ['user@example.com', 'TL@example.com', 'approvalTL@example.com'],
