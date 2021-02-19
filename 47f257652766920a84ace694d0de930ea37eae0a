@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "08eef2ab_2fe22663",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/job_commands.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1151324
+      },
+      "writtenOn": "2021-02-19T23:41:05Z",
+      "side": 1,
+      "message": "Makes sense to me! I\u0027m not used to having to document a command in a way that has distinct short, long, and individual-flag docs, so this advice is very welcome.",
+      "parentUuid": "0be94371_604cf2ec",
+      "range": {
+        "startLine": 24,
+        "startChar": 30,
+        "endLine": 25,
+        "endChar": 17
+      },
+      "revId": "47f257652766920a84ace694d0de930ea37eae0a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b7a46798_692da991",
@@ -64,6 +88,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "17834df6_134f46df",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/job_commands.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1151324
+      },
+      "writtenOn": "2021-02-19T23:41:05Z",
+      "side": 1,
+      "message": "Done.\n\nI have some plans which would remove the need to use any sort of helper at all (it\u0027s a bit awkward to have the helper, and you have to remember to use it). I would prefer to instead write a wrapper type for these subcommands to paper over some of the (IMO) unfortunate aspects of the subcommands API, such as returning \u0027int\u0027 instead of error, requiring people call GetContext, etc. So I added a TODO to the helper to track these efforts, and in the meantime I agree the helper is better than not having it.",
+      "parentUuid": "b7a46798_692da991",
+      "range": {
+        "startLine": 42,
+        "startChar": 2,
+        "endLine": 43,
+        "endChar": 10
+      },
+      "revId": "47f257652766920a84ace694d0de930ea37eae0a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9cc223e2_20bab1e3",
@@ -77,6 +125,30 @@
       "writtenOn": "2021-02-18T19:18:01Z",
       "side": 1,
       "message": "slightly nicer: https://pkg.go.dev/google.golang.org/protobuf/encoding/prototext#Marshal\n\nit is indented",
+      "range": {
+        "startLine": 53,
+        "startChar": 13,
+        "endLine": 53,
+        "endChar": 17
+      },
+      "revId": "47f257652766920a84ace694d0de930ea37eae0a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8eddd352_cbbe809b",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/job_commands.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1151324
+      },
+      "writtenOn": "2021-02-19T23:41:05Z",
+      "side": 1,
+      "message": "Done, thanks for the suggestion! I actually remembered about that helper today while writing up the next CL I\u0027m working on, so I might as well just use it here too and not leave a TODO.",
+      "parentUuid": "9cc223e2_20bab1e3",
       "range": {
         "startLine": 53,
         "startChar": 13,

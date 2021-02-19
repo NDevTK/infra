@@ -39,6 +39,30 @@
       },
       "revId": "1a489e6c3d767421e1dd1a12a06d7adb1792bc1d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1870cec8_18a46f80",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/job_commands.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1151324
+      },
+      "writtenOn": "2021-02-19T23:41:05Z",
+      "side": 1,
+      "message": "The solution to the \"long line\" problem in Go is to lean on local variables: you don\u0027t need complicated indentation/line-length rules if you don\u0027t have long lines in the first place ;)\n\nIt\u0027s in part a judgement call, though, based on how complex the line is. I almost inlined the Format call into the Println call, and if it were simpler (e.g. if I didn\u0027t need the MarshalOptions thing) I likely would have just inlined it.\n\nSo feel free if I\u0027m ever writing some code that you think should be broken out differently, I\u0027m happy to compromise when relevant.",
+      "parentUuid": "b2caf301_f6a21d25",
+      "range": {
+        "startLine": 53,
+        "startChar": 1,
+        "endLine": 54,
+        "endChar": 17
+      },
+      "revId": "1a489e6c3d767421e1dd1a12a06d7adb1792bc1d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
