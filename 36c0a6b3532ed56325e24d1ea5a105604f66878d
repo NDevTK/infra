@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "95f21d48_fb5eb136",
+        "filename": "go/src/infra/appengine/rubber-stamper/internal/util/util.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1414197
+      },
+      "writtenOn": "2021-02-20T01:14:04Z",
+      "side": 1,
+      "message": "Should we have some sort of logging.WithError() if the client doesn\u0027t exist in context?",
+      "range": {
+        "startLine": 55,
+        "startChar": 0,
+        "endLine": 55,
+        "endChar": 4
+      },
+      "revId": "36c0a6b3532ed56325e24d1ea5a105604f66878d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3066d984_6e19e09f",
+        "filename": "go/src/infra/appengine/rubber-stamper/tasks/tasks.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1414197
+      },
+      "writtenOn": "2021-02-20T01:14:04Z",
+      "side": 1,
+      "message": "How is execution count defined? should it be \u003e2 or \u003e\u003d3 to match the error message?",
+      "range": {
+        "startLine": 30,
+        "startChar": 42,
+        "endLine": 30,
+        "endChar": 44
+      },
+      "revId": "36c0a6b3532ed56325e24d1ea5a105604f66878d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
