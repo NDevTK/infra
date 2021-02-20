@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c59f13fe_8cb5ab7f",
+        "filename": "go/src/infra/appengine/rubber-stamper/internal/util/util.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1409819
+      },
+      "writtenOn": "2021-02-20T01:38:57Z",
+      "side": 1,
+      "message": "I see. Add a log here.",
+      "parentUuid": "95f21d48_fb5eb136",
+      "range": {
+        "startLine": 55,
+        "startChar": 0,
+        "endLine": 55,
+        "endChar": 4
+      },
+      "revId": "36c0a6b3532ed56325e24d1ea5a105604f66878d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3066d984_6e19e09f",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-02-20T01:14:04Z",
       "side": 1,
       "message": "How is execution count defined? should it be \u003e2 or \u003e\u003d3 to match the error message?",
+      "range": {
+        "startLine": 30,
+        "startChar": 42,
+        "endLine": 30,
+        "endChar": 44
+      },
+      "revId": "36c0a6b3532ed56325e24d1ea5a105604f66878d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "85a5ffc0_7e81a2d2",
+        "filename": "go/src/infra/appengine/rubber-stamper/tasks/tasks.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1409819
+      },
+      "writtenOn": "2021-02-20T01:38:57Z",
+      "side": 1,
+      "message": "Oh I replace the error msg with \"at least 3 times\" now. The execution count is number of executions before this retry. So when this retry fails, and the execution count is 2, it means the task fails for 3 times.",
+      "parentUuid": "3066d984_6e19e09f",
       "range": {
         "startLine": 30,
         "startChar": 42,
