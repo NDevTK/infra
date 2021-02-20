@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a2310832_46e4417f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2021-02-20T00:11:28Z",
+      "side": 1,
+      "message": "99% sure this fixes threading for approval emails. \n- Not possible to fully test unless I deploy to prod and migrate 100% traffic and i don\u0027t want to do that.\n- testing on monorail-dev + monorail-staging not a guarantee because they all send emails to monorail-staging-emails which seems to do threading differently than the threading in your inbox.\n- But you can subscribe to threads in g/monorail-staging-emails which ~should be identical to case #3 described in the bug. I did that and it seems to be working.",
+      "revId": "2ac860b36b35b04f3f53ca5f09af1a36b4af168a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
