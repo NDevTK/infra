@@ -92,7 +92,11 @@ func (r *baseCommandRun) pinpointClient(ctx context.Context) (pinpoint.PinpointC
 	if r.initClientFactoryErr != nil {
 		return nil, r.initClientFactoryErr
 	}
-	return r.pinpointClientFactory.Client(ctx)
+	c, err := r.pinpointClientFactory.Client(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create a Pinpoint client: %w", err)
+	}
+	return c, nil
 }
 
 // done is a convenience method for dealing with errors on subcommand exit.
