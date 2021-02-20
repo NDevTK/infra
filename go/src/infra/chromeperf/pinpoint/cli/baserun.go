@@ -92,5 +92,20 @@ func (r *baseCommandRun) pinpointClient(ctx context.Context) (pinpoint.PinpointC
 	if r.initClientFactoryErr != nil {
 		return nil, r.initClientFactoryErr
 	}
-	return r.pinpointClientFactory.Client(ctx)
+	c, err := r.pinpointClientFactory.Client(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create a Pinpoint client: %w", err)
+	}
+	return c, nil
+}
+
+// done is a convenience method for dealing with errors on subcommand exit.
+// TODO(chowski): introduce a wrapper type for subcommands rather than
+// requiring people to remember to call this helper.
+func (r *baseCommandRun) done(a subcommands.Application, err error) int {
+	if err == nil {
+		return 0
+	}
+	fmt.Fprintf(a.GetErr(), "ERROR: %s\n", err)
+	return 1
 }
