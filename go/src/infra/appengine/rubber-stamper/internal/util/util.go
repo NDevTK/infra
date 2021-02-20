@@ -49,9 +49,14 @@ func SetupErrorReporting(ctx context.Context) (context.Context, error) {
 	return context.WithValue(ctx, &errorReportingClientCtxKey, errorClient), nil
 }
 
-// GetErrorReportingClient gets the ErrorReporting client from the context.
-// Returns nil when there's no ErrorReporting client.
-func GetErrorReportingClient(ctx context.Context) *errorreporting.Client {
+// SendErrorReport sends an error to ErrorReporting.
+// Swallow the error when there's no ErrorReporting client because we don't
+// want it to stop the app from running.
+func SendErrorReport(ctx context.Context, err error) {
 	client, _ := ctx.Value(&errorReportingClientCtxKey).(*errorreporting.Client)
-	return client
+	if client != nil {
+		client.Report(errorreporting.Entry{
+			Error: err,
+		})
+	}
 }
