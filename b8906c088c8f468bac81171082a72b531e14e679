@@ -1,0 +1,107 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "91835fa1_0392cfb9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-02-20T00:30:23Z",
+      "side": 1,
+      "message": "+1",
+      "range": {
+        "startLine": 14,
+        "startChar": 50,
+        "endLine": 15,
+        "endChar": 70
+      },
+      "revId": "b8906c088c8f468bac81171082a72b531e14e679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e522d382_4b5ffd50",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-02-20T00:30:23Z",
+      "side": 1,
+      "message": "nit: commit messages are usually impersonal, because it will turn into the change history (forever). A comment message is more appropriate for this. Consider changing the commit message to describe the code change.",
+      "revId": "b8906c088c8f468bac81171082a72b531e14e679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "693851e7_fe655d91",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/baserun.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-02-20T00:30:23Z",
+      "side": 1,
+      "message": "we should probably switch to %w, but infra uses https://pkg.go.dev/go.chromium.org/luci/common/errors#Annotate\nhttps://source.chromium.org/search?q\u003derrors.Annotate%20lang:go\u0026sq\u003d",
+      "revId": "b8906c088c8f468bac81171082a72b531e14e679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "33d366d1_278be4ed",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/job_commands.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-02-20T00:30:23Z",
+      "side": 1,
+      "message": "remove\n\nsame below",
+      "range": {
+        "startLine": 65,
+        "startChar": 23,
+        "endLine": 65,
+        "endChar": 24
+      },
+      "revId": "b8906c088c8f468bac81171082a72b531e14e679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dc826489_f1cc470a",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/job_commands.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-02-20T00:30:23Z",
+      "side": 1,
+      "message": "errors.Annotate\n\nsame below",
+      "range": {
+        "startLine": 95,
+        "startChar": 20,
+        "endLine": 95,
+        "endChar": 30
+      },
+      "revId": "b8906c088c8f468bac81171082a72b531e14e679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
