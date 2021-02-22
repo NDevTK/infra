@@ -16,6 +16,23 @@
       "message": "The latest patchset also updates the ListJobs command with two pieces of advice from this review (single-dash for flags in help text, and using errors.Annotate), I figure splitting it off was unnecessary but feel free to request that!",
       "revId": "43ba8e4156c77445a6cc6b05f51c04769171a3e4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "53ee4722_84f583f8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1151324
+      },
+      "writtenOn": "2021-02-22T23:31:11Z",
+      "side": 1,
+      "message": "I will fix the gofmt in a bit... my bad for missing it on upload.",
+      "revId": "43ba8e4156c77445a6cc6b05f51c04769171a3e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
