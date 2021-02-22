@@ -15,6 +15,7 @@ import webapp2
 
 from features import notify
 from features import notify_reasons
+from framework import emailfmt
 from framework import urls
 from proto import tracker_pb2
 from services import service_manager
@@ -567,6 +568,9 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
         method='POST',
         services=self.services)
     result = task.HandleRequest(mr)
+
+    self.assertIsNotNone(result['tasks'][0].get('references'))
+    self.assertEqual(result['tasks'][0]['reply_to'], emailfmt.NoReplyAddress())
     self.assertTrue('Status: need_info' in result['tasks'][0]['body'])
     self.assertItemsEqual(
         ['user@example.com', 'TL@example.com', 'approvalTL@example.com'],
