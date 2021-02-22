@@ -39,6 +39,30 @@
       },
       "revId": "2ac860b36b35b04f3f53ca5f09af1a36b4af168a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4f2b5ec1_721a179c",
+        "filename": "appengine/monorail/features/notify.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 853,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2021-02-22T17:19:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4b969d74_6634009e",
+      "range": {
+        "startLine": 853,
+        "startChar": 6,
+        "endLine": 853,
+        "endChar": 42
+      },
+      "revId": "2ac860b36b35b04f3f53ca5f09af1a36b4af168a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
