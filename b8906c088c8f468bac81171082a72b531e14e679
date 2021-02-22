@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "67feffd7_72fcfa37",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1151324
+      },
+      "writtenOn": "2021-02-22T22:09:55Z",
+      "side": 1,
+      "message": "Done.\n\nI also noticed that this magic format is hard-coded in a few places (http://source/search?q\u003djobs%2Flegacy%20f:chromeperf\u0026sq\u003d), so I wrote a helper function and dropped a TODO for me to go back and use the helper in more places. Let me know if you\u0027d like me to handle this situation differently.",
+      "parentUuid": "91835fa1_0392cfb9",
+      "range": {
+        "startLine": 14,
+        "startChar": 50,
+        "endLine": 15,
+        "endChar": 70
+      },
+      "revId": "b8906c088c8f468bac81171082a72b531e14e679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e522d382_4b5ffd50",
@@ -37,6 +61,24 @@
       "writtenOn": "2021-02-20T00:30:23Z",
       "side": 1,
       "message": "nit: commit messages are usually impersonal, because it will turn into the change history (forever). A comment message is more appropriate for this. Consider changing the commit message to describe the code change.",
+      "revId": "b8906c088c8f468bac81171082a72b531e14e679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1af70a52_3e3f8164",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1151324
+      },
+      "writtenOn": "2021-02-22T22:09:55Z",
+      "side": 1,
+      "message": "Thanks for the advice, I guess I\u0027ve never been on a team where people cared about that :)",
+      "parentUuid": "e522d382_4b5ffd50",
       "revId": "b8906c088c8f468bac81171082a72b531e14e679",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -58,6 +100,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b6b1b7ec_7d87506c",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/baserun.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1151324
+      },
+      "writtenOn": "2021-02-22T22:09:55Z",
+      "side": 1,
+      "message": "Done.\n\nMaybe I\u0027ll try to convince people to move toward %w during my exchange ;)   but for now, I agree it\u0027s better to stay consistent. I will try to fight my muscle memory, thanks in advance for the patience!",
+      "parentUuid": "693851e7_fe655d91",
+      "revId": "b8906c088c8f468bac81171082a72b531e14e679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "33d366d1_278be4ed",
@@ -71,6 +131,30 @@
       "writtenOn": "2021-02-20T00:30:23Z",
       "side": 1,
       "message": "remove\n\nsame below",
+      "range": {
+        "startLine": 65,
+        "startChar": 23,
+        "endLine": 65,
+        "endChar": 24
+      },
+      "revId": "b8906c088c8f468bac81171082a72b531e14e679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0084b960_31e4be9c",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/job_commands.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1151324
+      },
+      "writtenOn": "2021-02-22T22:09:55Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "33d366d1_278be4ed",
       "range": {
         "startLine": 65,
         "startChar": 23,
@@ -104,6 +188,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9a228d39_6301271f",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/job_commands.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1151324
+      },
+      "writtenOn": "2021-02-22T22:09:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dc826489_f1cc470a",
+      "range": {
+        "startLine": 95,
+        "startChar": 20,
+        "endLine": 95,
+        "endChar": 30
+      },
+      "revId": "b8906c088c8f468bac81171082a72b531e14e679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "09769127_43856a2f",
@@ -127,6 +235,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "738f1a0b_10f6b07c",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/job_commands.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1151324
+      },
+      "writtenOn": "2021-02-22T22:09:55Z",
+      "side": 1,
+      "message": "Well... it didn\u0027t when I tested it last week :) error was:\n\n    rpc error: code \u003d Unauthenticated desc \u003d {\"message\":\"Jwt is expired\",\"code\":401}\n\n\nIf you don\u0027t mind I\u0027ll leave the TODO here and test it out some more. It\u0027s always possible I made some mistake somewhere, but I don\u0027t know where that would have happened given the way this code looks.",
+      "parentUuid": "09769127_43856a2f",
+      "range": {
+        "startLine": 146,
+        "startChar": 1,
+        "endLine": 146,
+        "endChar": 61
+      },
+      "revId": "b8906c088c8f468bac81171082a72b531e14e679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ddf82941_e16ad05d",
@@ -140,6 +272,30 @@
       "writtenOn": "2021-02-22T08:35:43Z",
       "side": 1,
       "message": "Where is `wj.done` defined?",
+      "range": {
+        "startLine": 170,
+        "startChar": 10,
+        "endLine": 170,
+        "endChar": 17
+      },
+      "revId": "b8906c088c8f468bac81171082a72b531e14e679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1f3482c4_e89dca2e",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/job_commands.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1151324
+      },
+      "writtenOn": "2021-02-22T22:09:55Z",
+      "side": 1,
+      "message": "I added it in the prior CL to the baseCommandRun: http://cs/chromium_infra/go/src/infra/chromeperf/pinpoint/cli/baserun.go?l\u003d98-107\u0026rcl\u003dae0ba55a57781161f87f1d0b38e540d38112f238\n\nFWIW sometimes I am also confused by methods which are forwarded due to embedding; I think we could also have a package-level \u0027func cmdDone\u0027 that we use instead of a method, but in any case I hope to get that wrapper I was talking about finished soon to reduce the need for this at all.",
+      "parentUuid": "ddf82941_e16ad05d",
       "range": {
         "startLine": 170,
         "startChar": 10,
