@@ -16,6 +16,29 @@
       "message": "99% sure this fixes threading for approval emails. \n- Not possible to fully test unless I deploy to prod and migrate 100% traffic and i don\u0027t want to do that.\n- testing on monorail-dev + monorail-staging not a guarantee because they all send emails to monorail-staging-emails which seems to do threading differently than the threading in your inbox.\n- But you can subscribe to threads in g/monorail-staging-emails which ~should be identical to case #3 described in the bug. I did that and it seems to be working.",
       "revId": "2ac860b36b35b04f3f53ca5f09af1a36b4af168a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4b969d74_6634009e",
+        "filename": "appengine/monorail/features/notify.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 853,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2021-02-22T16:35:08Z",
+      "side": 1,
+      "message": "Should we add a test to ensure that the reply to address is empty?",
+      "range": {
+        "startLine": 853,
+        "startChar": 6,
+        "endLine": 853,
+        "endChar": 42
+      },
+      "revId": "2ac860b36b35b04f3f53ca5f09af1a36b4af168a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
