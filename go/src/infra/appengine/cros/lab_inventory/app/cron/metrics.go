@@ -10,9 +10,16 @@ import (
 )
 
 var (
-	dumpInventorySnapshotTick = metric.NewCounter(
-		"chromeos/inventory/dump_lab_config_snapshot",
-		"dumpInventorySnapshot attempt",
+	dumpInventoryDeviceSnapshotTick = metric.NewCounter(
+		"chromeos/inventory/dump_ufs_lab_config_snapshot",
+		"dumpInventoryDeviceSnapshot attempt",
+		nil,
+		field.Bool("success"), // If the attempt succeed
+	)
+
+	dumpInventoryDutStateSnapshotTick = metric.NewCounter(
+		"chromeos/inventory/dump_ufs_state_config_snapshot",
+		"dumpInventoryDutStateSnapshot attempt",
 		nil,
 		field.Bool("success"), // If the attempt succeed
 	)
