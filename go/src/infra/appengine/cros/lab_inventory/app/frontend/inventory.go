@@ -25,6 +25,7 @@ import (
 
 	api "infra/appengine/cros/lab_inventory/api/v1"
 	"infra/appengine/cros/lab_inventory/app/config"
+	"infra/appengine/cros/lab_inventory/app/external/ufs"
 	"infra/cros/lab_inventory/changehistory"
 	"infra/cros/lab_inventory/datastore"
 	"infra/cros/lab_inventory/deviceconfig"
@@ -33,6 +34,7 @@ import (
 	"infra/cros/lab_inventory/manufacturingconfig"
 	invlibs "infra/cros/lab_inventory/protos"
 	"infra/cros/lab_inventory/utils"
+	ufsutil "infra/unifiedfleet/app/util"
 )
 
 // InventoryServerImpl implements service interfaces.
@@ -280,34 +282,8 @@ func getManufacturingConfigData(ctx context.Context, extendedData []*api.Extende
 
 // GetExtendedDeviceData gets the lab data joined with device config,
 // manufacturing config, etc.
-func GetExtendedDeviceData(ctx context.Context, devices []datastore.DeviceOpResult) ([]*api.ExtendedDeviceData, []*api.DeviceOpResult) {
-	logging.Debugf(ctx, "Get exteneded data for %d devcies", len(devices))
-	extendedData := make([]*api.ExtendedDeviceData, 0, len(devices))
-	failedDevices := make([]*api.DeviceOpResult, 0, len(devices))
-	for _, r := range devices {
-		var labData lab.ChromeOSDevice
-		logging.Debugf(ctx, "get ext data for %v", r.Entity.Hostname)
-		if err := r.Entity.GetCrosDeviceProto(&labData); err != nil {
-			logging.Errorf(ctx, "Wrong lab config data of device entity %s", r.Entity)
-			failedDevices = append(failedDevices, &api.DeviceOpResult{
-				Id:       string(r.Entity.ID),
-				Hostname: r.Entity.Hostname,
-				ErrorMsg: err.Error(),
-			})
-			continue
-		}
-		var dutState lab.DutState
-		if err := r.Entity.GetDutStateProto(&dutState); err != nil {
-			addFailedDevice(ctx, &failedDevices, &labData, err, "unmarshal dut state data")
-			continue
-		}
-
-		data := api.ExtendedDeviceData{
-			LabConfig: &labData,
-			DutState:  &dutState,
-		}
-		extendedData = append(extendedData, &data)
-	}
+func GetExtendedDeviceData(ctx context.Context, extendedData []*api.ExtendedDeviceData) ([]*api.ExtendedDeviceData, []*api.DeviceOpResult) {
+	failedDevices := make([]*api.DeviceOpResult, 0, len(extendedData))
 	// Get HWID data in a batch.
 	extendedData, moreFailedDevices := getHwidDataInBatch(ctx, extendedData)
 	failedDevices = append(failedDevices, moreFailedDevices...)
@@ -355,19 +331,35 @@ func (is *InventoryServerImpl) GetCrosDevices(ctx context.Context, req *api.GetC
 	}
 
 	hostnames, devIds := extractHostnamesAndDeviceIDs(ctx, req)
-	result := ([]datastore.DeviceOpResult)(datastore.GetDevicesByIds(ctx, devIds))
-	logging.Debugf(ctx, "Get %d devices by ID", len(result))
-	result = append(result, datastore.GetDevicesByHostnames(ctx, hostnames)...)
-	logging.Debugf(ctx, "Get %d more devices by hostname", len(result))
-	byModels, err := datastore.GetDevicesByModels(ctx, req.GetModels())
+	ufsClient, err := ufs.GetUFSClient(ctx)
 	if err != nil {
-		return nil, errors.Annotate(err, "get devices by models").Err()
+		return nil, err
 	}
-	result = append(result, byModels...)
-	logging.Debugf(ctx, "Get %d more devices by models", len(result))
+	osctx, err := ufsutil.SetupDatastoreNamespace(ctx, ufsutil.OSNamespace)
+	if err != nil {
+		return nil, err
+	}
+	var failedDevices []*api.DeviceOpResult
+	var devices []*lab.ChromeOSDevice
+	crosDevices, failed := ufs.GetUFSDevicesByIds(osctx, ufsClient, devIds)
+	logging.Debugf(ctx, "Get %d devices by ID(UFS)", len(devices))
+	devices = append(devices, crosDevices...)
+	failedDevices = append(failedDevices, failed...)
 
-	extendedData, moreFailedDevices := GetExtendedDeviceData(ctx, datastore.DeviceOpResults(result).Passed())
-	failedDevices := getFailedResults(ctx, result, false)
+	crosDevices, failed = ufs.GetUFSDevicesByHostnames(osctx, ufsClient, hostnames)
+	logging.Debugf(ctx, "Get %d more devices by hostname(UFS)", len(devices))
+	devices = append(devices, crosDevices...)
+	failedDevices = append(failedDevices, failed...)
+
+	crosDevices, failed = ufs.GetUFSDevicesByModels(osctx, ufsClient, req.GetModels())
+	logging.Debugf(ctx, "Get %d more devices by model(UFS)", len(devices))
+	devices = append(devices, crosDevices...)
+	failedDevices = append(failedDevices, failed...)
+
+	extendedData, moreFailedDevices := ufs.GetUFSDutStateForDevices(osctx, ufsClient, devices)
+	failedDevices = append(failedDevices, moreFailedDevices...)
+
+	extendedData, moreFailedDevices = GetExtendedDeviceData(ctx, extendedData)
 	failedDevices = append(failedDevices, moreFailedDevices...)
 
 	resp = &api.GetCrosDevicesResponse{
