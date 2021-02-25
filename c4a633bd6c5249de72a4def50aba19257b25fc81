@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "32b19b73_3ee374d5",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-02-25T22:26:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a7e6889_8221b49d",
+      "revId": "c4a633bd6c5249de72a4def50aba19257b25fc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "08d35daf_181426d4",
@@ -31,6 +49,24 @@
       "writtenOn": "2021-02-04T22:05:24Z",
       "side": 1,
       "message": "Why is this a separate function?  This could be in NewServer.",
+      "revId": "c4a633bd6c5249de72a4def50aba19257b25fc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "57043961_05c1c44a",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-02-25T22:26:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "08d35daf_181426d4",
       "revId": "c4a633bd6c5249de72a4def50aba19257b25fc81",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -54,6 +90,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e66dde9d_55205532",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-02-25T22:26:17Z",
+      "side": 1,
+      "message": "I am not sure if a WG is necessary. Do you want to prevent goroutines leaking? This goroutine has exact lifecycle with started nebraska processes. If there\u0027s no nebraska process leaking, there wouldn\u0027t be goroutine leaking.\n\nThe terminating of started processes is handled by another API `DeleteFakeOmaha`. Add a WG here, in my opinion, cannot add extra value.",
+      "parentUuid": "e4e7ab23_1ade09ce",
+      "revId": "c4a633bd6c5249de72a4def50aba19257b25fc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "af6d4e28_9e642a21",
         "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
         "patchSetId": 1
@@ -65,6 +119,24 @@
       "writtenOn": "2021-02-04T22:05:24Z",
       "side": 1,
       "message": "You should try SIGTERM before killing",
+      "revId": "c4a633bd6c5249de72a4def50aba19257b25fc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a33cc8af_26a5c3c4",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-02-25T22:26:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "af6d4e28_9e642a21",
       "revId": "c4a633bd6c5249de72a4def50aba19257b25fc81",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -82,6 +154,30 @@
       "writtenOn": "2021-02-04T22:05:24Z",
       "side": 1,
       "message": "Why join them with |?  In English commas are usually used to join things.",
+      "range": {
+        "startLine": 125,
+        "startChar": 39,
+        "endLine": 125,
+        "endChar": 40
+      },
+      "revId": "c4a633bd6c5249de72a4def50aba19257b25fc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d5e30276_fedbe831",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-02-25T22:26:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "663cbbf5_a491f235",
       "range": {
         "startLine": 125,
         "startChar": 39,
@@ -139,6 +235,24 @@
       "writtenOn": "2021-02-04T22:05:24Z",
       "side": 1,
       "message": "These tests are too low level.  They rely too heavily on mocking internal details and are almost change detectors.  You should only be testing the public API.  For Server, that means calling NewServer() and then testing the Omaha RPCs on the service running at Port.",
+      "revId": "c4a633bd6c5249de72a4def50aba19257b25fc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e8454288_add693ba",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-02-25T22:26:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a05a83f6_3a749597",
       "revId": "c4a633bd6c5249de72a4def50aba19257b25fc81",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
