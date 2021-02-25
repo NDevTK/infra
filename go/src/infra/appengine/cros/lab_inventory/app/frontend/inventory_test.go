@@ -6,7 +6,6 @@ package frontend
 
 import (
 	"context"
-	"sort"
 	"testing"
 	"time"
 
@@ -28,12 +27,15 @@ import (
 
 	api "infra/appengine/cros/lab_inventory/api/v1"
 	"infra/appengine/cros/lab_inventory/app/config"
+	"infra/appengine/cros/lab_inventory/app/external"
+	"infra/appengine/cros/lab_inventory/app/frontend/fake"
 	"infra/cros/lab_inventory/datastore"
 	"infra/cros/lab_inventory/deviceconfig"
 	"infra/cros/lab_inventory/hwid"
 	invlibs "infra/cros/lab_inventory/protos"
 	fleet "infra/libs/fleet/protos"
 	ufs "infra/libs/fleet/protos/go"
+	ufspb "infra/unifiedfleet/api/v1/models"
 )
 
 type testFixture struct {
@@ -253,20 +255,20 @@ func TestGetCrosDevices(t *testing.T) {
 	dut1 := lab.ChromeOSDevice{
 		Id: &lab.ChromeOSDeviceID{},
 		Device: &lab.ChromeOSDevice_Dut{
-			Dut: &lab.DeviceUnderTest{Hostname: "dut1"},
+			Dut: &lab.DeviceUnderTest{Hostname: "test-dut"},
 		},
 	}
 	labstation1 := lab.ChromeOSDevice{
-		Id: &lab.ChromeOSDeviceID{Value: "ASSET_ID_123"},
+		Id: &lab.ChromeOSDeviceID{Value: "test-machine-labstation"},
 		Device: &lab.ChromeOSDevice_Labstation{
-			Labstation: &lab.Labstation{Hostname: "labstation1"},
+			Labstation: &lab.Labstation{Hostname: "test-labstation"},
 		},
 	}
 	devID1 := api.DeviceID{
-		Id: &api.DeviceID_ChromeosDeviceId{ChromeosDeviceId: "ASSET_ID_123"},
+		Id: &api.DeviceID_ChromeosDeviceId{ChromeosDeviceId: "test-machine-labstation"},
 	}
 	devID2 := api.DeviceID{
-		Id: &api.DeviceID_Hostname{Hostname: "dut1"},
+		Id: &api.DeviceID_Hostname{Hostname: "test-dut"},
 	}
 	devIDNonExisting := api.DeviceID{
 		Id: &api.DeviceID_Hostname{Hostname: "ghost"},
@@ -274,6 +276,7 @@ func TestGetCrosDevices(t *testing.T) {
 
 	Convey("Get Chrome OS devices", t, func() {
 		ctx := testingContext()
+		ctx = external.WithTestingContext(ctx)
 		tf, validate := newTestFixtureWithContext(ctx, t)
 		defer validate()
 
@@ -287,7 +290,7 @@ func TestGetCrosDevices(t *testing.T) {
 		}
 
 		getHwidDataFunc = func(ctx context.Context, hwidstr string, secret string) (*hwid.Data, error) {
-			return &hwid.Data{Sku: "sku", Variant: "variant"}, nil
+			return &hwid.Data{Sku: "test", Variant: "test"}, nil
 		}
 		getDeviceConfigFunc = func(ctx context.Context, ids []*device.ConfigId) ([]proto.Message, error) {
 			fakeCfgs := make([]proto.Message, len(ids))
@@ -312,44 +315,86 @@ func TestGetCrosDevices(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(rsp.FailedDevices, ShouldBeEmpty)
 			So(rsp.Data, ShouldHaveLength, 2)
+			for _, d := range rsp.Data {
+				var machine *ufspb.Machine
+				if d.GetLabConfig().GetDut() != nil {
+					nb, err := proto.Marshal(d.GetLabConfig().GetDut())
+					So(err, ShouldBeNil)
+					ob, err := proto.Marshal(fake.GetMockDUT().GetChromeosMachineLse().GetDeviceLse().GetDut())
+					So(err, ShouldBeNil)
+					So(nb, ShouldResemble, ob)
+
+					nb, err = proto.Marshal(d.GetDutState())
+					So(err, ShouldBeNil)
+					fakeDutState := fake.GetMockDutStateForDUT()
+					fakeDutState.Hostname = ""
+					ob, err = proto.Marshal(fakeDutState)
+					So(err, ShouldBeNil)
+					So(nb, ShouldResemble, ob)
+
+					machine = fake.GetMockMachineForDUT()
+				} else {
+					nb, err := proto.Marshal(d.GetLabConfig().GetLabstation())
+					So(err, ShouldBeNil)
+					ob, err := proto.Marshal(fake.GetMockLabstation().GetChromeosMachineLse().GetDeviceLse().GetLabstation())
+					So(err, ShouldBeNil)
+					So(nb, ShouldResemble, ob)
+
+					nb, err = proto.Marshal(d.GetDutState())
+					So(err, ShouldBeNil)
+					fakeDutState := fake.GetMockDutStateForLabstation()
+					fakeDutState.Hostname = ""
+					ob, err = proto.Marshal(fakeDutState)
+					So(err, ShouldBeNil)
+					So(nb, ShouldResemble, ob)
+
+					machine = fake.GetMockMachineForLabstation()
+				}
+				So(d.GetLabConfig().GetSerialNumber(), ShouldEqual, machine.GetSerialNumber())
+				So(d.GetLabConfig().GetId().GetValue(), ShouldEqual, machine.GetName())
+				So(d.GetLabConfig().GetDeviceConfigId().GetPlatformId().GetValue(), ShouldEqual, machine.GetChromeosMachine().GetBuildTarget())
+				So(d.GetLabConfig().GetDeviceConfigId().GetModelId().GetValue(), ShouldEqual, machine.GetChromeosMachine().GetModel())
+				So(d.GetLabConfig().GetDeviceConfigId().GetVariantId().GetValue(), ShouldEqual, machine.GetChromeosMachine().GetSku())
+				So(d.GetLabConfig().GetManufacturingId().GetValue(), ShouldEqual, machine.GetChromeosMachine().GetHwid())
+			}
 		})
 
 		Convey("Happy path with real device config", func() {
 			realDutID1 := api.DeviceID{
-				Id: &api.DeviceID_Hostname{Hostname: "real_dut1"},
+				Id: &api.DeviceID_Hostname{Hostname: "test-dut"},
 			}
 			realDutID2 := api.DeviceID{
-				Id: &api.DeviceID_Hostname{Hostname: "real_dut2"},
+				Id: &api.DeviceID_Hostname{Hostname: "test-labstation"},
 			}
 			realDut1 := lab.ChromeOSDevice{
 				Id: &lab.ChromeOSDeviceID{},
 				DeviceConfigId: &device.ConfigId{
 					PlatformId: &device.PlatformId{
-						Value: "falco_li",
+						Value: "testdutplatform",
 					},
 					ModelId: &device.ModelId{
-						Value: "falco_li",
+						Value: "testdutmodel",
 					},
 					VariantId: &device.VariantId{
-						Value: "123456",
+						Value: "testdutvariant",
 					},
 				},
 				Device: &lab.ChromeOSDevice_Dut{
-					Dut: &lab.DeviceUnderTest{Hostname: "real_dut1"},
+					Dut: &lab.DeviceUnderTest{Hostname: "test-dut"},
 				},
 			}
 			realDut2 := lab.ChromeOSDevice{
 				Id: &lab.ChromeOSDeviceID{},
 				DeviceConfigId: &device.ConfigId{
 					PlatformId: &device.PlatformId{
-						Value: "hana",
+						Value: "testlabstationplatform",
 					},
 					ModelId: &device.ModelId{
-						Value: "hana",
+						Value: "testlabstationmodel",
 					},
 				},
 				Device: &lab.ChromeOSDevice_Dut{
-					Dut: &lab.DeviceUnderTest{Hostname: "real_dut2"},
+					Dut: &lab.DeviceUnderTest{Hostname: "test-labstation"},
 				},
 			}
 			_, err := datastore.AddDevices(ctx, []*lab.ChromeOSDevice{&realDut1, &realDut2}, false)
@@ -360,10 +405,10 @@ func TestGetCrosDevices(t *testing.T) {
 
 			getDeviceConfigFunc = func(ctx context.Context, ids []*device.ConfigId) ([]proto.Message, error) {
 				m := map[string]*device.Config{
-					"slippy.falco.": {
+					"testdutplatform.testdutmodel.": {
 						GpuFamily: "real_gpu",
 					},
-					"oak.hana.": {
+					"testlabstationplatform.testlabstationmodel.": {
 						GpuFamily: "fake_gpu",
 					},
 				}
@@ -385,10 +430,14 @@ func TestGetCrosDevices(t *testing.T) {
 			So(rsp.Data, ShouldHaveLength, 2)
 			resultM := make(map[string]string, 0)
 			for _, d := range rsp.Data {
-				resultM[d.GetLabConfig().GetDut().GetHostname()] = d.GetDeviceConfig().GetGpuFamily()
+				if d.GetLabConfig().GetDut() != nil {
+					resultM[d.GetLabConfig().GetDut().GetHostname()] = d.GetDeviceConfig().GetGpuFamily()
+				} else {
+					resultM[d.GetLabConfig().GetLabstation().GetHostname()] = d.GetDeviceConfig().GetGpuFamily()
+				}
 			}
-			So(resultM["real_dut1"], ShouldEqual, "real_gpu")
-			So(resultM["real_dut2"], ShouldEqual, "fake_gpu")
+			So(resultM["test-dut"], ShouldEqual, "real_gpu")
+			So(resultM["test-labstation"], ShouldEqual, "fake_gpu")
 		})
 
 		Convey("Bad hwid server", func() {
@@ -437,7 +486,7 @@ func TestGetCrosDevices(t *testing.T) {
 			rsp, err := tf.Inventory.GetCrosDevices(tf.C, reqGet)
 			So(err, ShouldBeNil)
 			So(rsp.FailedDevices, ShouldHaveLength, 1)
-			So(rsp.FailedDevices[0].ErrorMsg, ShouldContainSubstring, "No such host")
+			So(rsp.FailedDevices[0].ErrorMsg, ShouldContainSubstring, "No MachineLSE found")
 			So(rsp.Data, ShouldHaveLength, 2)
 		})
 	})
@@ -547,37 +596,6 @@ func TestUpdateCrosDevicesSetup(t *testing.T) {
 			},
 		}
 	}
-	getLab2 := func() *lab.ChromeOSDevice {
-		return &lab.ChromeOSDevice{
-			Id: &lab.ChromeOSDeviceID{Value: "UUID:03"},
-			Device: &lab.ChromeOSDevice_Labstation{
-				Labstation: &lab.Labstation{Hostname: "labstation2"},
-			},
-		}
-	}
-	checkLabstationServos := func(tf testFixture, labID string, expectedSerials []string, expectedPorts []int) {
-		reqGet := &api.GetCrosDevicesRequest{
-			Ids: []*api.DeviceID{{
-				Id: &api.DeviceID_ChromeosDeviceId{ChromeosDeviceId: labID},
-			}},
-		}
-		rsp, err := tf.Inventory.GetCrosDevices(tf.C, reqGet)
-		So(err, ShouldBeNil)
-		So(rsp.Data, ShouldHaveLength, 1)
-		var servoSerials []string
-		var servoPorts []int
-		for _, servo := range rsp.Data[0].GetLabConfig().GetLabstation().GetServos() {
-			servoSerials = append(servoSerials, servo.GetServoSerial())
-			servoPorts = append(servoPorts, int(servo.GetServoPort()))
-		}
-		sort.Strings(servoSerials)
-		So(servoSerials, ShouldHaveLength, len(expectedSerials))
-		So(servoSerials, ShouldResemble, expectedSerials)
-
-		sort.Ints(servoPorts)
-		So(servoPorts, ShouldHaveLength, len(expectedPorts))
-		So(servoPorts, ShouldResemble, expectedPorts)
-	}
 	Convey("Update Chrome OS devices setup", t, func() {
 		ctx := testingContext()
 		tf, validate := newTestFixtureWithContext(ctx, t)
@@ -658,92 +676,6 @@ func TestUpdateCrosDevicesSetup(t *testing.T) {
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "the servo port: '1230' is already used in \"labstation1\"")
 			So(resp, ShouldBeNil)
-		})
-		Convey("Delete old servo from labstation when update the DUT when servo serial changed", func() {
-			dutServo := &lab.Servo{
-				ServoHostname: "labstation1",
-				ServoPort:     8887,
-				ServoSerial:   "SN0091",
-				ServoType:     "v3",
-			}
-			labServos := []*lab.Servo{
-				{
-					ServoHostname: "labstation1",
-					ServoPort:     1232,
-					ServoSerial:   "SN0092",
-					ServoType:     "v3",
-				},
-				{ //original servo on servo
-					ServoHostname: "labstation1",
-					ServoPort:     8887,
-					ServoSerial:   "SN0002",
-					ServoType:     "v4",
-				},
-			}
-			dut1 := getDut(dutServo)
-			labstation1 := getLab()
-			labstation1.GetLabstation().Servos = labServos
-
-			req := &api.UpdateCrosDevicesSetupRequest{Devices: []*lab.ChromeOSDevice{dut1, labstation1}}
-			resp, err := tf.Inventory.UpdateCrosDevicesSetup(tf.C, req)
-
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.UpdatedDevices, ShouldHaveLength, 2)
-
-			//labstation1 has contains only 2 servos - SN0091 and SN0092
-			// the servo with SN0002 has to be deleted or replaced by SN0091
-			checkLabstationServos(tf, "UUID:02", []string{"SN0091", "SN0092"}, []int{1232, 8887})
-		})
-
-		Convey("Delete old servo from old labstation when update the DUT when servo serial changed", func() {
-			dutServo := &lab.Servo{
-				ServoHostname: "labstation2",
-				ServoPort:     8889,
-				ServoSerial:   "SN0091",
-				ServoType:     "v3",
-			}
-			labServos1 := []*lab.Servo{
-				{ //original servo on servo
-					ServoHostname: "labstation1",
-					ServoPort:     8887,
-					ServoSerial:   "SN0002",
-					ServoType:     "v4",
-				},
-			}
-			labServos2 := []*lab.Servo{
-				{
-					ServoHostname: "labstation2",
-					ServoPort:     1232,
-					ServoSerial:   "SN0092",
-					ServoType:     "v3",
-				},
-				{ //original servo on servo for test purpose
-					ServoHostname: "labstation2",
-					ServoPort:     8887,
-					ServoSerial:   "SN0002",
-					ServoType:     "v4",
-				},
-			}
-			dut1 := getDut(dutServo)
-			labstation1 := getLab()
-			labstation1.GetLabstation().Servos = labServos1
-			labstation2 := getLab2()
-			labstation2.GetLabstation().Servos = labServos2
-
-			req := &api.UpdateCrosDevicesSetupRequest{Devices: []*lab.ChromeOSDevice{dut1, labstation1, labstation2}}
-			resp, err := tf.Inventory.UpdateCrosDevicesSetup(tf.C, req)
-
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.UpdatedDevices, ShouldHaveLength, 2)
-
-			//labstation1 has contains only 0 servos
-			// the servo with SN0002 has to be deleted because DUt was migrated to another labstation2
-			checkLabstationServos(tf, "UUID:02", nil, nil)
-
-			//labstation2 has contains 3 servos - SN0002, SN0091, SN0092
-			checkLabstationServos(tf, "UUID:03", []string{"SN0002", "SN0091", "SN0092"}, []int{1232, 8887, 8889})
 		})
 
 		Convey("Update non-existing devices", func() {
@@ -1139,68 +1071,6 @@ func TestDeleteAsset(t *testing.T) {
 			So(resp2.Passed, ShouldHaveLength, 1)
 			So(resp2.Failed[0].Id, ShouldEqual, asset2.GetId())
 			So(resp2.Passed[0].Id, ShouldEqual, asset1.GetId())
-		})
-	})
-}
-
-func TestUpdateLabstations(t *testing.T) {
-	t.Parallel()
-
-	Convey("Test updating labstations", t, func() {
-		ctx := testingContext()
-		tf, validate := newTestFixtureWithContext(ctx, t)
-		defer validate()
-		labstation1 := lab.ChromeOSDevice{
-			Id: &lab.ChromeOSDeviceID{},
-			Device: &lab.ChromeOSDevice_Labstation{
-				Labstation: &lab.Labstation{
-					Hostname: "labstation1",
-					Servos: []*lab.Servo{
-						{
-							ServoHostname: "labstation1",
-							ServoPort:     8887,
-							ServoSerial:   "SN0001",
-						},
-						{
-							ServoHostname: "labstation1",
-							ServoPort:     8888,
-							ServoSerial:   "SN0002",
-						},
-						{
-							ServoHostname: "labstation1",
-							ServoPort:     8889,
-							ServoSerial:   "SN0003",
-						},
-					},
-				},
-			},
-		}
-		req := &api.AddCrosDevicesRequest{
-			Devices: []*lab.ChromeOSDevice{&labstation1},
-		}
-		resp, err := tf.Inventory.AddCrosDevices(tf.C, req)
-		So(err, ShouldBeNil)
-		So(resp.GetPassedDevices(), ShouldHaveLength, 1)
-		Convey("Deleting servos", func() {
-			_, err := tf.Inventory.UpdateLabstations(tf.C, &api.UpdateLabstationsRequest{
-				Hostname:      "labstation1",
-				DeletedServos: []string{"SN0001", "SN0002"},
-			})
-			So(err, ShouldBeNil)
-			resp, err := tf.Inventory.GetCrosDevices(tf.C, &api.GetCrosDevicesRequest{
-				Ids: []*api.DeviceID{
-					{
-						Id: &api.DeviceID_Hostname{
-							Hostname: "labstation1",
-						},
-					},
-				},
-			})
-			So(err, ShouldBeNil)
-			ds := resp.GetData()
-			So(ds, ShouldHaveLength, 1)
-			So(ds[0].GetLabConfig().GetLabstation().GetServos(), ShouldHaveLength, 1)
-			So(ds[0].GetLabConfig().GetLabstation().GetServos()[0].GetServoSerial(), ShouldEqual, "SN0003")
 		})
 	})
 }
