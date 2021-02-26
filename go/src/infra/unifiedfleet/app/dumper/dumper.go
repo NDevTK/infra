@@ -53,9 +53,6 @@ func InitServer(srv *server.Server, opts Options) {
 	srv.RunInBackground("ufs.sync_devices.sync", func(ctx context.Context) {
 		cron.Run(ctx, 60*time.Minute, SyncAssetInfoFromHaRT)
 	})
-	srv.RunInBackground("ufs.sync_assets.sync", func(ctx context.Context) {
-		cron.Run(ctx, 60*time.Minute, SyncAssetsFromIV2)
-	})
 	srv.RunInBackground("ufs.push_to_drone_queen", func(ctx context.Context) {
 		cron.Run(ctx, 10*time.Minute, pushToDroneQueen)
 	})
@@ -147,7 +144,7 @@ func dumpCrosInventory(ctx context.Context) (err error) {
 	}
 	logging.Infof(ctx, "Finish exporting diff from Inventory V2 to UFS to Google Storage")
 
-	return importCrosInventory(ctx, crosInventoryHost)
+	return nil
 }
 
 func dumpCrosNetwork(ctx context.Context) (err error) {
