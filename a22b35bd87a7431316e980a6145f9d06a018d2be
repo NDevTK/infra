@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5dde2147_36be6904",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1313390
+      },
+      "writtenOn": "2021-02-26T00:45:22Z",
+      "side": 1,
+      "message": "maybe dumb qu",
+      "revId": "a22b35bd87a7431316e980a6145f9d06a018d2be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "82199895_95d2a2d6",
+        "filename": "go/src/infra/cros/tlslib/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1313390
+      },
+      "writtenOn": "2021-02-26T00:45:22Z",
+      "side": 1,
+      "message": "probably my lack of Go knowledge, but is this doing anything?",
+      "range": {
+        "startLine": 226,
+        "startChar": 2,
+        "endLine": 226,
+        "endChar": 15
+      },
+      "revId": "a22b35bd87a7431316e980a6145f9d06a018d2be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
