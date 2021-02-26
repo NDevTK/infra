@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4ea18802_8405ef4e",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1163331
+      },
+      "writtenOn": "2021-02-26T17:56:30Z",
+      "side": 1,
+      "message": "the default is zero, so passing this is optional.",
+      "range": {
+        "startLine": 77,
+        "startChar": 2,
+        "endLine": 77,
+        "endChar": 16
+      },
+      "revId": "da027aa900cbe77257b06311a524c441e8ae9db6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1c7b0e8f_743dca40",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1163331
+      },
+      "writtenOn": "2021-02-26T17:56:30Z",
+      "side": 1,
+      "message": "is it possible to package nebraska.py with the drone images?",
+      "range": {
+        "startLine": 227,
+        "startChar": 13,
+        "endLine": 227,
+        "endChar": 29
+      },
+      "revId": "da027aa900cbe77257b06311a524c441e8ae9db6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
