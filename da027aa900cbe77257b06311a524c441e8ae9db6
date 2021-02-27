@@ -813,6 +813,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ffcd9209_79505005",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-02-27T01:05:24Z",
+      "side": 1,
+      "message": "Ignore my previous comment, guocb is right",
+      "parentUuid": "ca63824d_7b9294a4",
+      "range": {
+        "startLine": 227,
+        "startChar": 13,
+        "endLine": 227,
+        "endChar": 29
+      },
+      "revId": "da027aa900cbe77257b06311a524c441e8ae9db6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c28c1d09_89c9429d",
         "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska_test.go",
         "patchSetId": 4
