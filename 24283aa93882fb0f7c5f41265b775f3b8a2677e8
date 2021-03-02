@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "70dd75c7_64e7a8b7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2021-03-02T22:03:10Z",
+      "side": 1,
+      "message": "LGTM, thanks for keeping our docs healthy!!",
+      "revId": "24283aa93882fb0f7c5f41265b775f3b8a2677e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "298a61f3_d22052d5",
+        "filename": "crdx/chopsui-npm/elements/chops-textarea/package-lock.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2021-03-02T22:03:10Z",
+      "side": 1,
+      "message": "Mostly asking for curiosity - why version 0.3.2 specifically?",
+      "range": {
+        "startLine": 3,
+        "startChar": 1,
+        "endLine": 3,
+        "endChar": 20
+      },
+      "revId": "24283aa93882fb0f7c5f41265b775f3b8a2677e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
