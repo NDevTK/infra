@@ -39,6 +39,30 @@
       },
       "revId": "24283aa93882fb0f7c5f41265b775f3b8a2677e8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9c7593ac_12afb1e3",
+        "filename": "crdx/chopsui-npm/elements/chops-textarea/package-lock.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2021-03-02T22:22:04Z",
+      "side": 1,
+      "message": "This appears to match the version uploaded 6 months ago. https://www.npmjs.com/package/@chopsui/chops-textarea",
+      "parentUuid": "298a61f3_d22052d5",
+      "range": {
+        "startLine": 3,
+        "startChar": 1,
+        "endLine": 3,
+        "endChar": 20
+      },
+      "revId": "24283aa93882fb0f7c5f41265b775f3b8a2677e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
