@@ -16,6 +16,24 @@
       "message": "Maybe also update https://chromium.googlesource.com/infra/infra/+/master/doc/users/vpython.md#requests-2_21_0-PyOpenSSL-19_0_0-cryptography-2_6_1 since it now advertises broken configuration?",
       "revId": "1869bd6e1f89a5bb6cde922b95b81329d41f22e7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ddb11800_5c003aa5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2021-03-02T21:45:17Z",
+      "side": 1,
+      "message": "done",
+      "parentUuid": "b9757820_9028dbd1",
+      "revId": "1869bd6e1f89a5bb6cde922b95b81329d41f22e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
