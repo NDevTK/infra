@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cd1e10e1_d750a9ff",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/per_label_task_counter.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2021-03-02T23:32:24Z",
+      "side": 1,
+      "message": "nit: please avoid the word \"concurrent\" here and below, since it invokes the thought of this program using this non-threadsafe map in concurrent threads.\n\nhow many tasks are currently running for unique label keyval combinations",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 29
+      },
+      "revId": "ea234195b562e395a6106b2811d761492d9d93f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "72d20c8f_21fbd8ad",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/per_label_task_counter.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2021-03-02T23:32:24Z",
+      "side": 1,
+      "message": "current tasks",
+      "range": {
+        "startLine": 26,
+        "startChar": 38,
+        "endLine": 26,
+        "endChar": 55
+      },
+      "revId": "ea234195b562e395a6106b2811d761492d9d93f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "94231c84_eea64da8",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/per_label_task_counter.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2021-03-02T23:32:24Z",
+      "side": 1,
+      "message": "could you please clarify somewhere that this is a one-time use thing? Once it\u0027s been used to count things, it\u0027s no longer useful, since it can\u0027t be decremented\n\nactually, it seems like it could be misused by calling count twice on it, leading to values with double the right number\n\nwould it make sense for the \"count\" func to reset the map before starting?",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 1
+      },
+      "revId": "ea234195b562e395a6106b2811d761492d9d93f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
