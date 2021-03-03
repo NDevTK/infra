@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cb4d6482_f960be00",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/per_label_task_counter.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1438503
+      },
+      "writtenOn": "2021-03-03T00:01:24Z",
+      "side": 1,
+      "message": "Good point--done.",
+      "parentUuid": "cd1e10e1_d750a9ff",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 29
+      },
+      "revId": "ea234195b562e395a6106b2811d761492d9d93f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "72d20c8f_21fbd8ad",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c7cf102c_2f71bae6",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/per_label_task_counter.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1438503
+      },
+      "writtenOn": "2021-03-03T00:01:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "72d20c8f_21fbd8ad",
+      "range": {
+        "startLine": 26,
+        "startChar": 38,
+        "endLine": 26,
+        "endChar": 55
+      },
+      "revId": "ea234195b562e395a6106b2811d761492d9d93f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "94231c84_eea64da8",
@@ -60,6 +108,30 @@
       "writtenOn": "2021-03-02T23:32:24Z",
       "side": 1,
       "message": "could you please clarify somewhere that this is a one-time use thing? Once it\u0027s been used to count things, it\u0027s no longer useful, since it can\u0027t be decremented\n\nactually, it seems like it could be misused by calling count twice on it, leading to values with double the right number\n\nwould it make sense for the \"count\" func to reset the map before starting?",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 1
+      },
+      "revId": "ea234195b562e395a6106b2811d761492d9d93f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3e5728d2_e7634d4e",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/per_label_task_counter.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1438503
+      },
+      "writtenOn": "2021-03-03T00:01:24Z",
+      "side": 1,
+      "message": "I think the whole concept of a \"scheduler run\" is one-time in nature, i.e. once the run is finished all the counters get reset. I\u0027ll add to this docstring that the perLabelTaskCounter is tied to a specific scheduler run.\n\nThe \"count\" func is meant to be called incrementally for each job that is already running when the scheduler run starts, and then later for each new job that gets assigned to a worker, so I don\u0027t think it makes sense to try and reset the map each time (or we would also have to re-do the count for every currently running task).\n\nThere\u0027s certainly potential for accidentally calling count twice, but it\u0027s used in exactly two places: the assignRequestToWorker func, and the initial loop through already-running jobs in the newRun func. So we\u0027re relying on the outer code to not call newRun() or assignRequestToWorker() more than we should, which would lead to major scheduling errors.",
+      "parentUuid": "94231c84_eea64da8",
       "range": {
         "startLine": 34,
         "startChar": 0,
