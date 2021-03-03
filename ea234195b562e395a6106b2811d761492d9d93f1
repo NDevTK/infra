@@ -140,6 +140,30 @@
       },
       "revId": "ea234195b562e395a6106b2811d761492d9d93f1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b9eaa506_200a1def",
+        "filename": "go/src/infra/qscheduler/qslib/scheduler/per_label_task_counter.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2021-03-03T00:36:40Z",
+      "side": 1,
+      "message": "Sounds like you\u0027ve put enough thought into it. Thanks for the details and for improving the documentation",
+      "parentUuid": "3e5728d2_e7634d4e",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 1
+      },
+      "revId": "ea234195b562e395a6106b2811d761492d9d93f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
