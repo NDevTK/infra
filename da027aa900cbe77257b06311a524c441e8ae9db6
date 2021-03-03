@@ -85,6 +85,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "030ee49d_a06dc291",
+        "filename": "go/src/infra/cros/tlslib/fake_omaha.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-03T21:03:08Z",
+      "side": 1,
+      "message": "I think \u003d\u003d \"\" is better because you can tell it\u0027s a string. len() \u003d\u003d 0 may be comparing an array or map.",
+      "parentUuid": "e3c969a8_15c62504",
+      "revId": "da027aa900cbe77257b06311a524c441e8ae9db6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d8cadd45_98966ad5",
         "filename": "go/src/infra/cros/tlslib/fake_omaha.go",
         "patchSetId": 4
@@ -1622,6 +1640,24 @@
       "side": 1,
       "message": "It\u0027s not ideal to real run nebraska in a unit test. \n1. We are not sure if it can cause any flakiness on a CI builder.\n2. The start up behavior of nebraska.py is subject to change in the fake environment (We don\u0027t provide valid metadata files to it. Even we do, the metadata file format may be changed by the AU team in the future, etc.)",
       "parentUuid": "c28c1d09_89c9429d",
+      "revId": "da027aa900cbe77257b06311a524c441e8ae9db6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "01ea6846_f651c30d",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-03T21:03:08Z",
+      "side": 1,
+      "message": "If you use StartNebraska(args []string) (nebraskaProcess, error) you don\u0027t need to run real nebraska in the unit test.  You don\u0027t need to run any process at all.  You can implement the fake StartNebraska by just touching the file in GO.",
+      "parentUuid": "b4c740ca_ec43bd21",
       "revId": "da027aa900cbe77257b06311a524c441e8ae9db6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },

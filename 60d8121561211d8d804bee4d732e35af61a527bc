@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "500c5ee9_f4dd0ac6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-03T21:03:08Z",
+      "side": 1,
+      "message": "Can\u0027t finish review now, leaving comments so far",
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
