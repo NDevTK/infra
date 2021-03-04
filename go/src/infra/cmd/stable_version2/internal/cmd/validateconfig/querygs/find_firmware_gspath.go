@@ -1,0 +1,60 @@
+// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package querygs
+
+import (
+	"fmt"
+	"sync"
+
+	"go.chromium.org/luci/common/gcloud/gs"
+)
+
+// maxLookbehind is the number of milestones to look behind in order to find a path to the
+// firmware bundle
+const maxLookbehind = 40
+
+const maxLookahead = 5
+
+type FindFirmwarePathResult struct {
+	Image    string
+	FullPath gs.Path
+}
+
+// Find the latest milestone associated with a given firmware image.
+func (r *Reader) FindFirmwarePath(board string, milestone int, tip int, branch int, branchBranch string) (*FindFirmwarePathResult, error) {
+	var candidates []gs.Path
+	var images []string
+	for i := -maxLookahead; (i < maxLookbehind) && (milestone-i > 0); i++ {
+		candidates = append(candidates, gs.Path(fmt.Sprintf("gs://chromeos-image-archive/%s-release/R%d-%d.%d.%s/firmware_from_source.tar.bz2", board, milestone-i, tip, branch, branchBranch)))
+		images = append(images, fmt.Sprintf("%s-release/R%d-%d.%d.%s", board, milestone-i, tip, branch, branchBranch))
+		candidates = append(candidates, gs.Path(fmt.Sprintf("gs://chromeos-image-archive/%s-firmware/R%d-%d.%d.%s/firmware_from_source.tar.bz2", board, milestone-i, tip, branch, branchBranch)))
+		images = append(images, fmt.Sprintf("%s-firmware/R%d-%d.%d.%s", board, milestone-i, tip, branch, branchBranch))
+	}
+
+	successfulCandidates := make([]gs.Path, len(candidates))
+	var waitGroup sync.WaitGroup
+	waitGroup.Add(len(successfulCandidates))
+	for i, candidate := range candidates {
+		go func(i int, candidate gs.Path) {
+			if err := r.RemoteFileExists(candidate); err != nil {
+				successfulCandidates[i] = candidate
+			}
+			waitGroup.Done()
+		}(i, candidate)
+	}
+	waitGroup.Wait()
+
+	for i, candidate := range successfulCandidates {
+		if candidate != "" {
+			return &FindFirmwarePathResult{images[i], candidate}, nil
+		}
+	}
+
+	firstCand := ""
+	if len(candidates) != 0 {
+		firstCand = string(candidates[0])
+	}
+	return nil, fmt.Errorf("no gspaths found starting with %q", firstCand)
+}
