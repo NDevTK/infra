@@ -33,6 +33,23 @@
       "message": "LGTM + Please CC otabek",
       "revId": "f1119e91c770e5b7be58f60a33276b5a8a6caafb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5f7ff92a_d20657a9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-03-05T21:26:04Z",
+      "side": 1,
+      "message": "I think we have option to update it by json. Can we hold to open it for CLI options?",
+      "revId": "f1119e91c770e5b7be58f60a33276b5a8a6caafb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
