@@ -56,6 +56,30 @@
       },
       "revId": "2008d1d369da7a7d879c541e2196beb50f3ae798",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "063ff697_2526a65b",
+        "filename": "go/src/infra/cros/dutstate/dutstate.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-03-05T21:54:57Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "344e914e_b493d6ca",
+      "range": {
+        "startLine": 111,
+        "startChar": 37,
+        "endLine": 111,
+        "endChar": 40
+      },
+      "revId": "2008d1d369da7a7d879c541e2196beb50f3ae798",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
