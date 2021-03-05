@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "351257a3_01ac1aa2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 14
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-03-05T23:35:03Z",
+      "side": 1,
+      "message": "% commensts",
+      "revId": "6e7cf0bf35505a4066854de31a8b4265b6207222",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e2d2b613_97da2711",
+        "filename": "go/src/infra/cmd/stable_version2/internal/cmd/validateconfig/querygs/find_firmware_gspath.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-03-05T23:35:03Z",
+      "side": 1,
+      "message": "please add description that we expect add them in this sequence because...",
+      "range": {
+        "startLine": 26,
+        "startChar": 5,
+        "endLine": 26,
+        "endChar": 22
+      },
+      "revId": "6e7cf0bf35505a4066854de31a8b4265b6207222",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e8995d4f_31291531",
+        "filename": "go/src/infra/cmd/stable_version2/internal/cmd/validateconfig/querygs/find_firmware_gspath.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-03-05T23:35:03Z",
+      "side": 1,
+      "message": "duplicate?",
+      "range": {
+        "startLine": 45,
+        "startChar": 2,
+        "endLine": 46,
+        "endChar": 103
+      },
+      "revId": "6e7cf0bf35505a4066854de31a8b4265b6207222",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
