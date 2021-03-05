@@ -29,10 +29,11 @@ import (
 
 const (
 	// LSE related UpdateMask paths.
-	machinesPath    = "machines"
-	descriptionPath = "description"
-	tagsPath        = "tags"
-	ticketPath      = "deploymentTicket"
+	machinesPath      = "machines"
+	descriptionPath   = "description"
+	tagsPath          = "tags"
+	ticketPath        = "deploymentTicket"
+	resourceStatePath = "resourceState"
 
 	// RPM related UpdateMask paths.
 	rpmHostPath   = "labstation.rpm.host"
@@ -68,6 +69,7 @@ var UpdateLabstationCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.deploymentTicket, "ticket", "", "the deployment ticket for this machine. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.Var(utils.CSVString(&c.tags), "tags", "comma separated tags. You can only append new tags or delete all of them. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.description, "desc", "", "description for the machine. "+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.state, "state", "", cmdhelp.StateHelp)
 
 		c.Flags.Int64Var(&c.deployTaskTimeout, "deploy-timeout", swarming.DeployTaskExecutionTimeout, "execution timeout for deploy task in seconds.")
 		c.Flags.BoolVar(&c.forceDeploy, "force-deploy", false, "forces a redeploy task.")
@@ -92,6 +94,7 @@ type updateLabstation struct {
 	deploymentTicket string
 	tags             []string
 	description      string
+	state            string
 
 	// Deploy task inputs.
 	forceDeploy       bool
@@ -220,10 +223,13 @@ func (c *updateLabstation) validateArgs() error {
 		if len(c.pools) != 0 {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe MCSV/JSON mode is specified. '-pools' cannot be specified at the same time.")
 		}
+		if c.state != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe MCSV/JSON mode is specified. '-state' cannot be specified at the same time.")
+		}
 	}
 	// If hostname is given and it's not forceDeploy. Check if no other input is given.
 	if c.hostname != "" && !c.forceDeploy {
-		if c.machine == "" && c.rpm == "" && c.rpmOutlet == "" && c.description == "" && c.deploymentTicket == "" && len(c.tags) == 0 && len(c.pools) == 0 {
+		if c.machine == "" && c.rpm == "" && c.rpmOutlet == "" && c.description == "" && c.deploymentTicket == "" && len(c.tags) == 0 && len(c.pools) == 0 && c.state == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nNothing to update")
 		}
 	}
@@ -417,6 +423,11 @@ func (c *updateLabstation) initializeLSEAndMask(recMap map[string]string) (*ufsp
 		if containsAnyStrings(c.tags, utils.ClearFieldValue) {
 			lse.Tags = nil
 		}
+	}
+
+	if c.state != "" {
+		mask.Paths = append(mask.Paths, resourceStatePath)
+		lse.ResourceState = ufsUtil.ToUFSState(c.state)
 	}
 
 	// Check if nothing is being updated. Updating with an empty mask overwrites everything.
