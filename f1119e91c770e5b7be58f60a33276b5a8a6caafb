@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0cbcd367_e75d20dd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-03-05T20:06:15Z",
+      "side": 1,
+      "message": "Should we give this option to the user to update state?\n\nIf they use json input, they can update state of the dut/labstaiton even without this CL.",
+      "revId": "f1119e91c770e5b7be58f60a33276b5a8a6caafb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
