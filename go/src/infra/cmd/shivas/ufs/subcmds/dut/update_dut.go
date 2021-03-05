@@ -40,10 +40,11 @@ const (
 	servoTopologyPath = "dut.servo.topology"
 
 	// LSE related UpdateMask paths.
-	machinesPath    = "machines"
-	descriptionPath = "description"
-	tagsPath        = "tags"
-	ticketPath      = "deploymentTicket"
+	machinesPath      = "machines"
+	descriptionPath   = "description"
+	tagsPath          = "tags"
+	ticketPath        = "deploymentTicket"
+	resourceStatePath = "resourceState"
 
 	// RPM related UpdateMask paths.
 	rpmHostPath   = "dut.rpm.host"
@@ -126,6 +127,7 @@ var UpdateDUTCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.deploymentTicket, "ticket", "", "the deployment ticket for this machine. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.Var(utils.CSVString(&c.tags), "tags", "comma separated tags. You can only append new tags or delete all of them. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.description, "desc", "", "description for the machine. "+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.state, "state", "", cmdhelp.StateHelp)
 
 		c.Flags.Int64Var(&c.deployTaskTimeout, "deploy-timeout", swarming.DeployTaskExecutionTimeout, "execution timeout for deploy task in seconds.")
 		c.Flags.BoolVar(&c.forceDeploy, "force-deploy", false, "forces a deploy task for all the updates.")
@@ -178,6 +180,7 @@ type updateDUT struct {
 	deploymentTicket string
 	tags             []string
 	description      string
+	state            string
 
 	// Deploy task inputs.
 	forceDeploy          bool
@@ -661,6 +664,11 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 		if ufsUtil.ContainsAnyStrings(c.tags, utils.ClearFieldValue) {
 			lse.Tags = nil
 		}
+	}
+
+	if c.state != "" {
+		mask.Paths = append(mask.Paths, resourceStatePath)
+		lse.ResourceState = ufsUtil.ToUFSState(c.state)
 	}
 
 	// ACS DUT fields
