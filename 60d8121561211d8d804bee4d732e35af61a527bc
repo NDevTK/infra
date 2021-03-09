@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b91a66d9_f869168c",
+        "filename": "go/src/infra/cros/tlslib/fake_omaha.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2880a399_1379a8a8",
+      "range": {
+        "startLine": 56,
+        "startChar": 22,
+        "endLine": 56,
+        "endChar": 60
+      },
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4d0bcbd3_905c4f45",
@@ -54,6 +78,24 @@
       "writtenOn": "2021-03-04T00:39:43Z",
       "side": 1,
       "message": "You leak n here.\n\nI think you should defer both the resMgr.Add and the n.Close if error\n\n n, err \u003d NewServer()\n if err !\u003d nil { ... }\n defer func() {\n   if err \u003d\u003d nil { // need a named return err\n    name :\u003d ...\n    err \u003d s.resMgr.Add(name, n)\n    if err !\u003d nil {\n      // don\u0027t need to handle this error since the next if handles it\n      err \u003d status.Errorf(...) \n    }\n   }\n   if err !\u003d nil {\n     n.Close() // log error\n   }\n }()\n\nThat makes the cleanup more foolproof",
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "50267458_d5a0ae7b",
+        "filename": "go/src/infra/cros/tlslib/fake_omaha.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Not quite understand why we need add resMgr.Add in this deferred function. We can still call it at the end of CreateFakeOmaha. Additionally, the suggested defer function cannot handle the case of closing exposing tunnel in the future.\n\nInstead, I prefer this way:\n\n  n, err \u003d NewServer()\n  if err!\u003dnil {...}\n  defer func () {\n    if err!\u003dnil{\n      n.Close() //log error\n    }\n  }()\n  t, err \u003d s.exposeNebraska()\n  if err!\u003d nil {\n    retrun ...\n  }\n  defer func() {\n    if err!\u003dnil{\n      t.Close() // log error\n    }\n  }\n  name :\u003d ...\n  if err \u003d s.resMgr.Add(...); err!\u003d nil{\n    return nil, status.Errorf(...)\n  }",
+      "parentUuid": "4d0bcbd3_905c4f45",
       "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -75,6 +117,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0285920d_d20937c6",
+        "filename": "go/src/infra/cros/tlslib/fake_omaha.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9d8fcd59_e97b1e46",
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4df3aa23_7a8e29b4",
@@ -88,6 +148,24 @@
       "writtenOn": "2021-03-04T00:39:43Z",
       "side": 1,
       "message": "suggestion, wiringAddr \u003d flag.String(..., \"address (host:port) to use for...\")\n\nsaves having to join them",
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bf1a12e6_0b0a8b92",
+        "filename": "go/src/infra/cros/tlslib/fake_omaha_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4df3aa23_7a8e29b4",
       "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -109,6 +187,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "06660f78_ba347b61",
+        "filename": "go/src/infra/cros/tlslib/fake_omaha_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7c05435e_c31361c8",
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "89b63b89_b898e64e",
@@ -122,6 +218,24 @@
       "writtenOn": "2021-03-04T00:39:43Z",
       "side": 1,
       "message": "indent for \"code block\"",
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9704cde3_8b3ef43d",
+        "filename": "go/src/infra/cros/tlslib/fake_omaha_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "89b63b89_b898e64e",
       "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -149,6 +263,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ae6487f2_0e985b00",
+        "filename": "go/src/infra/cros/tlslib/fake_omaha_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f7055358_b9acdec9",
+      "range": {
+        "startLine": 40,
+        "startChar": 6,
+        "endLine": 40,
+        "endChar": 8
+      },
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b796fb41_336f363c",
@@ -162,6 +300,24 @@
       "writtenOn": "2021-03-04T00:39:43Z",
       "side": 1,
       "message": "reword \"Skipping because no DUT specified\"",
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "53b92161_c591fb46",
+        "filename": "go/src/infra/cros/tlslib/fake_omaha_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b796fb41_336f363c",
       "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -189,6 +345,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "08c93c36_8c751b1b",
+        "filename": "go/src/infra/cros/tlslib/fake_omaha_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3e48ea08_04903fc1",
+      "range": {
+        "startLine": 48,
+        "startChar": 11,
+        "endLine": 48,
+        "endChar": 77
+      },
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "20efd4f4_1f31bf72",
@@ -202,6 +382,24 @@
       "writtenOn": "2021-03-04T00:39:43Z",
       "side": 1,
       "message": "Use Skipf\n\nRecommend making this an error rather than skipping, if the user supplied a DUT, likely they just forgot to start running TLW so better to fail",
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d8912095_1f692f5b",
+        "filename": "go/src/infra/cros/tlslib/fake_omaha_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "20efd4f4_1f31bf72",
       "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -231,6 +429,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "9835a2d7_0e6459eb",
+        "filename": "go/src/infra/cros/tlslib/fake_omaha_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "We need call `gsutil` two times, set up a tunnel to the DUT. In good network, it may take 2 seconds. But it may be longer in bad networks. \n\nThis is the timeout value, so I set it longer enough.",
+      "parentUuid": "9d31f720_447889ac",
+      "range": {
+        "startLine": 82,
+        "startChar": 45,
+        "endLine": 82,
+        "endChar": 50
+      },
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "4cc8818b_726055e5",
         "filename": "go/src/infra/cros/tlslib/fake_omaha_test.go",
         "patchSetId": 7
@@ -242,6 +464,24 @@
       "writtenOn": "2021-03-04T00:39:43Z",
       "side": 1,
       "message": "I think my last comment was bad.  If this is a test, testing that DeleteFakeOmaha works, it shouldn\u0027t be in a Cleanup.  Ideally, it should be in a subtest so the error is tied to specifically the test that failed.  The tls server should clean up the omaha in the event that the test aborts in the middle.",
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5a2e7b40_f0a3e863",
+        "filename": "go/src/infra/cros/tlslib/fake_omaha_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "This makes sense.",
+      "parentUuid": "4cc8818b_726055e5",
       "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -263,6 +503,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bc211fc7_11d35194",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8b4e354a_ac818df7",
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "555f9d89_c1f8a8c0",
@@ -276,6 +534,30 @@
       "writtenOn": "2021-03-04T00:39:43Z",
       "side": 1,
       "message": "clarify, \"new instance of Environment that talks to GS and runs a real nebraska process\"",
+      "range": {
+        "startLine": 32,
+        "startChar": 43,
+        "endLine": 32,
+        "endChar": 56
+      },
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2560f26c_89b771f9",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "555f9d89_c1f8a8c0",
       "range": {
         "startLine": 32,
         "startChar": 43,
@@ -309,6 +591,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bf0da1da_ed73e9b6",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aa2d6a70_663bf86f",
+      "range": {
+        "startLine": 50,
+        "startChar": 14,
+        "endLine": 50,
+        "endChar": 17
+      },
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3b5412bd_6721202c",
@@ -322,6 +628,30 @@
       "writtenOn": "2021-03-04T00:39:43Z",
       "side": 1,
       "message": "s/We/we/ lowercase",
+      "range": {
+        "startLine": 56,
+        "startChar": 13,
+        "endLine": 56,
+        "endChar": 15
+      },
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "690add38_f8c22ed7",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3b5412bd_6721202c",
       "range": {
         "startLine": 56,
         "startChar": 13,
@@ -355,6 +685,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8f1eb785_cdd301bc",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "No. It\u0027s used in the integration test in package `tlslib`.",
+      "parentUuid": "95fa59ac_6254d681",
+      "range": {
+        "startLine": 58,
+        "startChar": 6,
+        "endLine": 58,
+        "endChar": 20
+      },
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "38e012bb_a0a2c1c3",
@@ -372,6 +726,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "df271997_d308d807",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "38e012bb_a0a2c1c3",
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9c584592_d0262637",
@@ -385,6 +757,30 @@
       "writtenOn": "2021-03-04T00:39:43Z",
       "side": 1,
       "message": "regarding error annotations, general convention is that a function does\n\n func foo(arg string) error {\n  ...\n  return fmt.Errorf(\"foo %s: %s\", arg, err)\n }\n\nSo return fmt.Errorf(\"download metadata: %s\", err) would be expected to return:\n\n download metadata: download metadata gsPathPrefix payloads: some error\n\nwhich is redundant",
+      "range": {
+        "startLine": 66,
+        "startChar": 11,
+        "endLine": 66,
+        "endChar": 49
+      },
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0db00063_5e6b6b3e",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9c584592_d0262637",
       "range": {
         "startLine": 66,
         "startChar": 11,
@@ -418,6 +814,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "084ab98d_35564caa",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e334bc34_0a8592f4",
+      "range": {
+        "startLine": 116,
+        "startChar": 20,
+        "endLine": 116,
+        "endChar": 28
+      },
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "beac603d_005ef463",
@@ -431,6 +851,30 @@
       "writtenOn": "2021-03-04T00:39:43Z",
       "side": 1,
       "message": "better to make a single time.Timer to avoid making multiple copies that need to be garbage collected",
+      "range": {
+        "startLine": 154,
+        "startChar": 9,
+        "endLine": 154,
+        "endChar": 43
+      },
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "77e64021_62451351",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "beac603d_005ef463",
       "range": {
         "startLine": 154,
         "startChar": 9,
@@ -464,6 +908,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "94ab38e5_6d7d0c2c",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2eedf393_0a32e586",
+      "range": {
+        "startLine": 196,
+        "startChar": 13,
+        "endLine": 196,
+        "endChar": 15
+      },
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "65e90fda_e3941ca6",
@@ -477,6 +945,24 @@
       "writtenOn": "2021-03-04T00:39:43Z",
       "side": 1,
       "message": "This should be logged by the caller.  What if this function is reused to get the paths other than to download?",
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c10c2246_419df714",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "65e90fda_e3941ca6",
       "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -504,6 +990,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1285e997_1a61617e",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "removed error from the function return value.",
+      "parentUuid": "e43459dd_10928a36",
+      "range": {
+        "startLine": 211,
+        "startChar": 9,
+        "endLine": 211,
+        "endChar": 14
+      },
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b1061842_45ab8c49",
@@ -521,6 +1031,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4c7cd0ad_1a2d5bb7",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 214,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b1061842_45ab8c49",
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7349663f_1343ae66",
@@ -534,6 +1062,30 @@
       "writtenOn": "2021-03-04T00:39:43Z",
       "side": 1,
       "message": "Reword\n\nClose closes the resource.\nIt corresponds to any cleanup required by the standard AIP Delete method.\nIt is implementation dependent whether it is safe to call from multiple goroutines.\nThe implementation must be safe to call multiple times.",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 47
+      },
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "27f18124_8d4da4de",
+        "filename": "go/src/infra/cros/tlslib/internal/resource/manager.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7349663f_1343ae66",
       "range": {
         "startLine": 16,
         "startChar": 0,
@@ -567,6 +1119,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9b7e2cc8_b9bcc3a2",
+        "filename": "go/src/infra/cros/tlslib/internal/resource/manager.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0ba7ff69_94137753",
+      "range": {
+        "startLine": 23,
+        "startChar": 39,
+        "endLine": 23,
+        "endChar": 76
+      },
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5ff13325_1f8d790b",
@@ -584,6 +1160,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c9752bf5_30832f69",
+        "filename": "go/src/infra/cros/tlslib/internal/resource/manager.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5ff13325_1f8d790b",
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "49d9bbda_7541deb0",
@@ -597,6 +1191,24 @@
       "writtenOn": "2021-03-04T00:39:43Z",
       "side": 1,
       "message": "Include in comment how resources that are added while Close is running and afterward are treated.\n\nResources added and removed during the Close call may or may not be handled, and resources may be added and removed after calling close.  The caller should ensure no more requests can happen before Close is called.",
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f15662b5_f2bbee0a",
+        "filename": "go/src/infra/cros/tlslib/internal/resource/manager.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "49d9bbda_7541deb0",
       "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

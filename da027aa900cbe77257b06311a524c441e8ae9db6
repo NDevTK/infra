@@ -101,6 +101,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3ab48d2e_73729cb0",
+        "filename": "go/src/infra/cros/tlslib/fake_omaha.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Done to avoid arguing on trivial things.",
+      "parentUuid": "030ee49d_a06dc291",
+      "revId": "da027aa900cbe77257b06311a524c441e8ae9db6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d8cadd45_98966ad5",
@@ -1658,6 +1676,24 @@
       "side": 1,
       "message": "If you use StartNebraska(args []string) (nebraskaProcess, error) you don\u0027t need to run real nebraska in the unit test.  You don\u0027t need to run any process at all.  You can implement the fake StartNebraska by just touching the file in GO.",
       "parentUuid": "b4c740ca_ec43bd21",
+      "revId": "da027aa900cbe77257b06311a524c441e8ae9db6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e6ca0c63_3063be65",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-09T08:36:15Z",
+      "side": 1,
+      "message": "Sorry, misread your original comment.",
+      "parentUuid": "01ea6846_f651c30d",
       "revId": "da027aa900cbe77257b06311a524c441e8ae9db6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
