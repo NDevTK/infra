@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "279efc0b_0baf0424",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1478595
+      },
+      "writtenOn": "2021-03-10T18:34:56Z",
+      "side": 1,
+      "message": "LGTM!",
+      "revId": "bbd738552780c45279b3041e769455b331f4fe8a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "985291c5_241f45bf",
+        "filename": "go/src/infra/cmd/crosfleet/internal/buildbucket/buildbucket.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1478595
+      },
+      "writtenOn": "2021-03-10T18:34:56Z",
+      "side": 1,
+      "message": "Maybe I\u0027m reading this wrong, but if wantIDMatch is false, could you immediately return true? Just might be nice to simplify the switch block a bit. Not important.",
+      "range": {
+        "startLine": 247,
+        "startChar": 0,
+        "endLine": 247,
+        "endChar": 28
+      },
+      "revId": "bbd738552780c45279b3041e769455b331f4fe8a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
