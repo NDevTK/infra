@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cafe56ea_caa433c2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2021-03-10T21:34:54Z",
+      "side": 1,
+      "message": "Audit app complains about this CL not having been approved. I don\u0027t know if rubber-stamper is supposed to help with this",
+      "revId": "640bb7ab5e665d667b46e1aead0ca8e6731db600",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
