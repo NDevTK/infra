@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "eb6e39dd_654a93b0",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-03-11T18:18:48Z",
+      "side": 1,
+      "message": "Same bug mentioned twice.",
+      "revId": "1b10867b5110fe4c090087d0a38c83e5d49ae63f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "ee00c401_8143dea5",
