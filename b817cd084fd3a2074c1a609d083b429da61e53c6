@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "90178c57_adb24d91",
+        "filename": "go/src/infra/cros/tlslib/fake_omaha.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-11T08:53:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1919b24e_6748d008",
+      "range": {
+        "startLine": 25,
+        "startChar": 88,
+        "endLine": 25,
+        "endChar": 90
+      },
+      "revId": "b817cd084fd3a2074c1a609d083b429da61e53c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fbfeb538_5f1aa036",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-03-11T02:13:29Z",
       "side": 1,
       "message": "s/\u003d/:\u003d/",
+      "range": {
+        "startLine": 92,
+        "startChar": 7,
+        "endLine": 92,
+        "endChar": 9
+      },
+      "revId": "b817cd084fd3a2074c1a609d083b429da61e53c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "00b66456_a501c15b",
+        "filename": "go/src/infra/cros/tlslib/fake_omaha.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-11T08:53:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fbfeb538_5f1aa036",
       "range": {
         "startLine": 92,
         "startChar": 7,
@@ -70,6 +118,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "57192392_7bccaaec",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-11T08:53:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a397139c_e7956a8f",
+      "range": {
+        "startLine": 38,
+        "startChar": 4,
+        "endLine": 38,
+        "endChar": 17
+      },
+      "revId": "b817cd084fd3a2074c1a609d083b429da61e53c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "aa508c6f_bb195027",
@@ -83,6 +155,30 @@
       "writtenOn": "2021-03-11T02:13:29Z",
       "side": 1,
       "message": "Instead of passing in the server and peeking into private fields, better to pass in the command line args like before.  That reduces the coupling with the private details, it also lets you check the command line that is constructed.  For the \nfake, you can use very simple flag parsing to get the --runtime-root\n\n for i in args {\n  if args[i] \u003d\u003d --runtime-root { root \u003d args[i+1] }\n }",
+      "range": {
+        "startLine": 40,
+        "startChar": 15,
+        "endLine": 40,
+        "endChar": 22
+      },
+      "revId": "b817cd084fd3a2074c1a609d083b429da61e53c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6838ca63_068eee35",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-11T08:53:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aa508c6f_bb195027",
       "range": {
         "startLine": 40,
         "startChar": 15,
@@ -110,6 +206,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "97c149d6_4d5e1d54",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-11T08:53:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "af22024d_e13beed5",
+      "revId": "b817cd084fd3a2074c1a609d083b429da61e53c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b7a191a8_133ab36e",
@@ -123,6 +237,24 @@
       "writtenOn": "2021-03-11T02:13:29Z",
       "side": 1,
       "message": "note, we may want to add sigterm, sleep, sigkill (even though I dislike sigkill, unfortunately sometimes we just get leaks).",
+      "revId": "b817cd084fd3a2074c1a609d083b429da61e53c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2a0fcba5_cfd13c33",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-11T08:53:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b7a191a8_133ab36e",
       "revId": "b817cd084fd3a2074c1a609d083b429da61e53c6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -144,6 +276,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b6e2e6da_f536916f",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 253,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-11T08:53:43Z",
+      "side": 1,
+      "message": "It actually has been checked in upper level code (CreateFakeOmaha). But anyway, I will add a panic here.",
+      "parentUuid": "179d60df_9af3a2f9",
+      "revId": "b817cd084fd3a2074c1a609d083b429da61e53c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d1c40299_8814ce95",
@@ -161,6 +311,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "438e100b_e1d54ab9",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-11T08:53:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d1c40299_8814ce95",
+      "revId": "b817cd084fd3a2074c1a609d083b429da61e53c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "333d301c_1b3ea596",
@@ -174,6 +342,24 @@
       "writtenOn": "2021-03-11T02:13:29Z",
       "side": 1,
       "message": "Move these into the subtests, don\u0027t share them between tests.  Sharing them between parallel tests is actually a race bug as they\u0027re all touching the same got variable.",
+      "revId": "b817cd084fd3a2074c1a609d083b429da61e53c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b8a08fe5_86e72f8c",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-11T08:53:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "333d301c_1b3ea596",
       "revId": "b817cd084fd3a2074c1a609d083b429da61e53c6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -201,6 +387,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "17c5e557_590da260",
+        "filename": "go/src/infra/cros/tlslib/internal/resource/manager.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-11T08:53:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e84af7ad_15f19062",
+      "range": {
+        "startLine": 25,
+        "startChar": 55,
+        "endLine": 25,
+        "endChar": 61
+      },
+      "revId": "b817cd084fd3a2074c1a609d083b429da61e53c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c261686a_386ff5e3",
@@ -214,6 +424,24 @@
       "writtenOn": "2021-03-11T02:13:29Z",
       "side": 1,
       "message": "nit: you can add a test that Close method is called/not called, since that\u0027s one of the important behaviors.  But I don\u0027t think the tests here are too valuable since the impl is simple",
+      "revId": "b817cd084fd3a2074c1a609d083b429da61e53c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c61ccc73_9482d15d",
+        "filename": "go/src/infra/cros/tlslib/internal/resource/manager_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-11T08:53:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c261686a_386ff5e3",
       "revId": "b817cd084fd3a2074c1a609d083b429da61e53c6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
