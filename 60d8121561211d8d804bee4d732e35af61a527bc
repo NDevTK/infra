@@ -102,6 +102,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "def1f0ef_1bc191d8",
+        "filename": "go/src/infra/cros/tlslib/fake_omaha.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-11T02:13:29Z",
+      "side": 1,
+      "message": "That\u0027s fine, but you should make sure the resMgr.Add is the very last thing you do.  In the current patchset, you do a lot of things after the resMgr.Add, which increases the chance a new leak is added among those things in the future.",
+      "parentUuid": "50267458_d5a0ae7b",
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9d8fcd59_e97b1e46",
         "filename": "go/src/infra/cros/tlslib/fake_omaha.go",
         "patchSetId": 7
@@ -441,6 +459,30 @@
       "side": 1,
       "message": "We need call `gsutil` two times, set up a tunnel to the DUT. In good network, it may take 2 seconds. But it may be longer in bad networks. \n\nThis is the timeout value, so I set it longer enough.",
       "parentUuid": "9d31f720_447889ac",
+      "range": {
+        "startLine": 82,
+        "startChar": 45,
+        "endLine": 82,
+        "endChar": 50
+      },
+      "revId": "60d8121561211d8d804bee4d732e35af61a527bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "68ad9898_c8bcbf8b",
+        "filename": "go/src/infra/cros/tlslib/fake_omaha_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-11T02:13:29Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "9835a2d7_0e6459eb",
       "range": {
         "startLine": 82,
         "startChar": 45,
