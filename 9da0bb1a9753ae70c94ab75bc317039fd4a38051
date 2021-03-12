@@ -1,0 +1,193 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "48be563e_fa758fcc",
+        "filename": "go/src/infra/cros/tlslib/fake_omaha.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-12T02:13:17Z",
+      "side": 1,
+      "message": "We don\u0027t have a way to close the tunnel, which may or may not be a problem.  The idea is that there is one TLW instance per test.  All resources of the TLW get closed along with it, so tests (or TLS) leaking resources because they forgot to close it is Not A Problem.  We don\u0027t have a close ExposePortToDut for that reason.  If we think we need it we can always add it, but probably tests won\u0027t expose enough ports for that to be an issue.\n\nMaybe include some more context in the TODO comment, and make it not a TODO since it is WAI for now.",
+      "range": {
+        "startLine": 64,
+        "startChar": 16,
+        "endLine": 64,
+        "endChar": 54
+      },
+      "revId": "9da0bb1a9753ae70c94ab75bc317039fd4a38051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fd669464_27e86a9b",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-12T02:13:17Z",
+      "side": 1,
+      "message": "s/\u003d/:\u003d/",
+      "range": {
+        "startLine": 111,
+        "startChar": 7,
+        "endLine": 111,
+        "endChar": 10
+      },
+      "revId": "9da0bb1a9753ae70c94ab75bc317039fd4a38051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f6250410_89cd8851",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-12T02:13:17Z",
+      "side": 1,
+      "message": "You should pass in the parent context to inherit for the readFileOrTimeout.  If the caller wants to have NewServer take max 1 second for example, that will override the readFileOrTimeout.  You can then increase the hard cap on the timeout in checkPort since the caller can override it shorter.",
+      "range": {
+        "startLine": 111,
+        "startChar": 12,
+        "endLine": 111,
+        "endChar": 21
+      },
+      "revId": "9da0bb1a9753ae70c94ab75bc317039fd4a38051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3f1ffb67_c8b702dc",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-12T02:13:17Z",
+      "side": 1,
+      "message": "The problem here isn\u0027t the kill returning an error, that\u0027s usually because of permissions or the process is already dead.\n\nshould be\n\n if err :\u003d kill(pid, SIGTERM); err !\u003d nil {\n   return err\n }\n select {\n   case process dead:\n     return nil\n   case interval time passed:\n     if err :\u003d kill(pid, SIGKILL); err !+ nill {\n       return err\n     }\n }\n\nYou need to add some signal to the \"go cmd.Wait()\" so we can tell when the process exited",
+      "revId": "9da0bb1a9753ae70c94ab75bc317039fd4a38051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ecf76fa5_ad9a44b6",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-12T02:13:17Z",
+      "side": 1,
+      "message": "can be const",
+      "range": {
+        "startLine": 229,
+        "startChar": 2,
+        "endLine": 229,
+        "endChar": 10
+      },
+      "revId": "9da0bb1a9753ae70c94ab75bc317039fd4a38051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a3740e76_4f9b8cb0",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-12T02:13:17Z",
+      "side": 1,
+      "message": "better to check n.Port() as the public API",
+      "range": {
+        "startLine": 78,
+        "startChar": 5,
+        "endLine": 78,
+        "endChar": 9
+      },
+      "revId": "9da0bb1a9753ae70c94ab75bc317039fd4a38051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cfd9acf3_6c8f3208",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-12T02:13:17Z",
+      "side": 1,
+      "message": "Suggest not having this test or at least hiding it behind testing.Short.  Having sleeps in unit tests is very bad since it slows down running tests a lot and gets in the way of using unit tests for fast \"change code -\u003e run test\" cycles.",
+      "revId": "9da0bb1a9753ae70c94ab75bc317039fd4a38051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b30c2e11_b7369647",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-12T02:13:17Z",
+      "side": 1,
+      "message": "You should definitely set a timeout for this since we\u0027re waiting for a timeout.  See also my other comment on the checkPort() context timeout.",
+      "range": {
+        "startLine": 122,
+        "startChar": 21,
+        "endLine": 122,
+        "endChar": 39
+      },
+      "revId": "9da0bb1a9753ae70c94ab75bc317039fd4a38051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bfd2f212_c977bbf7",
+        "filename": "go/src/infra/cros/tlslib/internal/resource/manager_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-12T02:13:17Z",
+      "side": 1,
+      "message": "merge with if line",
+      "revId": "9da0bb1a9753ae70c94ab75bc317039fd4a38051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
