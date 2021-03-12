@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ae5a72e6_18279912",
+        "filename": "go/src/infra/cros/tlslib/fake_omaha.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-12T07:36:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "48be563e_fa758fcc",
+      "range": {
+        "startLine": 64,
+        "startChar": 16,
+        "endLine": 64,
+        "endChar": 54
+      },
+      "revId": "9da0bb1a9753ae70c94ab75bc317039fd4a38051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fd669464_27e86a9b",
@@ -70,6 +94,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2efd980a_edf46d79",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-12T07:36:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fd669464_27e86a9b",
+      "range": {
+        "startLine": 111,
+        "startChar": 7,
+        "endLine": 111,
+        "endChar": 10
+      },
+      "revId": "9da0bb1a9753ae70c94ab75bc317039fd4a38051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "355c2b0b_d77a9cf7",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-12T07:36:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f6250410_89cd8851",
+      "range": {
+        "startLine": 111,
+        "startChar": 12,
+        "endLine": 111,
+        "endChar": 21
+      },
+      "revId": "9da0bb1a9753ae70c94ab75bc317039fd4a38051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3f1ffb67_c8b702dc",
@@ -87,6 +159,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3ef244eb_961e0bf3",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-12T07:36:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3f1ffb67_c8b702dc",
+      "revId": "9da0bb1a9753ae70c94ab75bc317039fd4a38051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ecf76fa5_ad9a44b6",
@@ -100,6 +190,30 @@
       "writtenOn": "2021-03-12T02:13:17Z",
       "side": 1,
       "message": "can be const",
+      "range": {
+        "startLine": 229,
+        "startChar": 2,
+        "endLine": 229,
+        "endChar": 10
+      },
+      "revId": "9da0bb1a9753ae70c94ab75bc317039fd4a38051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "10ff9ef6_0bb56fc5",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-12T07:36:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ecf76fa5_ad9a44b6",
       "range": {
         "startLine": 229,
         "startChar": 2,
@@ -133,6 +247,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0a5e4f97_72f0d6c4",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-12T07:36:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a3740e76_4f9b8cb0",
+      "range": {
+        "startLine": 78,
+        "startChar": 5,
+        "endLine": 78,
+        "endChar": 9
+      },
+      "revId": "9da0bb1a9753ae70c94ab75bc317039fd4a38051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "cfd9acf3_6c8f3208",
@@ -146,6 +284,24 @@
       "writtenOn": "2021-03-12T02:13:17Z",
       "side": 1,
       "message": "Suggest not having this test or at least hiding it behind testing.Short.  Having sleeps in unit tests is very bad since it slows down running tests a lot and gets in the way of using unit tests for fast \"change code -\u003e run test\" cycles.",
+      "revId": "9da0bb1a9753ae70c94ab75bc317039fd4a38051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6ad7754b_b8c7d1c3",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-12T07:36:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cfd9acf3_6c8f3208",
       "revId": "9da0bb1a9753ae70c94ab75bc317039fd4a38051",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -173,6 +329,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e44947fe_c5f43409",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-12T07:36:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b30c2e11_b7369647",
+      "range": {
+        "startLine": 122,
+        "startChar": 21,
+        "endLine": 122,
+        "endChar": 39
+      },
+      "revId": "9da0bb1a9753ae70c94ab75bc317039fd4a38051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bfd2f212_c977bbf7",
@@ -186,6 +366,24 @@
       "writtenOn": "2021-03-12T02:13:17Z",
       "side": 1,
       "message": "merge with if line",
+      "revId": "9da0bb1a9753ae70c94ab75bc317039fd4a38051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d3c25f2f_ff78ea89",
+        "filename": "go/src/infra/cros/tlslib/internal/resource/manager_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-12T07:36:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bfd2f212_c977bbf7",
       "revId": "9da0bb1a9753ae70c94ab75bc317039fd4a38051",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
