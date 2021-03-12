@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "77a4862d_017b4b86",
+        "filename": "go/src/infra/cros/tlslib/fake_omaha.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-12T22:00:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "95e95df6_8ca188ae",
+      "range": {
+        "startLine": 65,
+        "startChar": 46,
+        "endLine": 65,
+        "endChar": 52
+      },
+      "revId": "da1697526b14899e294ade7917fb544c1c140554",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "920d5938_2a1d70db",
@@ -58,6 +82,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a143a17b_de70595d",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-12T22:00:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "920d5938_2a1d70db",
+      "revId": "da1697526b14899e294ade7917fb544c1c140554",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "077758c7_2eb67b50",
@@ -71,6 +113,30 @@
       "writtenOn": "2021-03-12T21:47:13Z",
       "side": 1,
       "message": "naming nit: instead of terminated, use exited to make it less easy to confuse with the sending SIGTERM step\n\nsend sigterm \u003d\u003d terminate\nsend sigkill \u003d\u003d kill\nprocess actually exited \u003d\u003d exit",
+      "range": {
+        "startLine": 238,
+        "startChar": 37,
+        "endLine": 238,
+        "endChar": 47
+      },
+      "revId": "da1697526b14899e294ade7917fb544c1c140554",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c20b1262_7f69ecd3",
+        "filename": "go/src/infra/cros/tlslib/internal/nebraska/nebraska.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 238,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-12T22:00:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "077758c7_2eb67b50",
       "range": {
         "startLine": 238,
         "startChar": 37,
