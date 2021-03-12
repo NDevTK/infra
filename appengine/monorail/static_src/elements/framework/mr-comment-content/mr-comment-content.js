@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 import {LitElement, html, css} from 'lit-element';
+import {unsafeHTML} from 'lit-html/directives/unsafe-html.js';
 import {ifDefined} from 'lit-html/directives/if-defined';
 import {autolink} from 'autolink.js';
 import {connectStore} from 'reducers/base.js';
 import * as issueV0 from 'reducers/issueV0.js';
 import * as projectV0 from 'reducers/projectV0.js';
 import {SHARED_STYLES} from 'shared/shared-styles.js';
+import {renderMarkdown, sanitizeMarkdown} from 'shared/md-helper.js';
 
 /**
  * `<mr-comment-content>`
@@ -68,9 +70,21 @@ export class MrCommentContent extends connectStore(LitElement) {
 
   /** @override */
   render() {
+    // const options = { mdLibrary: 'showdown', sanitize: false, xssLibrary: 'js-xss' };
+    // const options = { mdLibrary: 'marked', sanitize: false };
+    // const options = { mdLibrary: 'showdown', sanitize: false };
+
+    const showdownHTML = renderMarkdown(this.content, { mdLibrary: 'showdown', sanitize: true, xssLibrary: 'DOMPurify' });
+    const markedHTML = renderMarkdown(this.content, { mdLibrary: 'marked', sanitize: true, xssLibrary: 'DOMPurify' });
+    const markdownItHTML = renderMarkdown(this.content, { mdLibrary: 'markdown-it', sanitize: true, xssLibrary: 'DOMPurify' });
+
+    const intermediary = renderMarkdown(this.content, { mdLibrary: 'marked', sanitize: false });
+    const filteredHTML = sanitizeMarkdown(intermediary, { xssLibrary: 'js-xss' });
+
     const runs = autolink.markupAutolinks(
         this.content, this.commentReferences, this.projectName,
         this.revisionUrlFormat);
+
     const templates = runs.map((run) => {
       switch (run.tag) {
         case 'b':
@@ -89,7 +103,34 @@ export class MrCommentContent extends connectStore(LitElement) {
           return html`<span class="line">${run.content}</span>`;
       }
     });
-    return html`${templates}`;
+
+    // const shouldRenderMarkdown = someHelpers.shouldRenderMarkdown({ project: '', issueToggle: true })
+    // if (shouldRenderMarkdown) {
+    //   try {
+    //     return html`${mdRenderHelper(content)}`
+    // } else {
+    //   return html`${templates}`;
+    // }
+
+    // return html`<div>
+    //   <h1>Original content</h1>${templates}
+    //   <hr>
+    //   <h1>Unfiltered content</h1>${unsafeHTML(markdownHTML)}
+    //   <hr>
+    //   <h1>Markdown content</h1>${unsafeHTML(sanitizedHTML)}
+    //  </div>`
+
+    return html`<div>
+      <h1>Original content</h1>${templates}
+      <hr>
+      <h1>Showndown content</h1>${unsafeHTML(showdownHTML)}
+      <hr>
+      <h1>Marked content</h1>${unsafeHTML(markedHTML)}
+      <hr>
+      <h1>Markdown-It content</h1>${unsafeHTML(markdownItHTML)}
+      <hr>
+      <h1>Separated</h1>${unsafeHTML(filteredHTML)}
+     </div>`
   }
 
   /** @override */
