@@ -7,6 +7,10 @@ Please see [VPython and You] for a brief tutorial on how to use vpython.
 
 If there's a wheel you need which is missing, please [file a bug][bug].
 
+If you need to install these via pip, they're available in CIPD
+[here](https://chrome-infra-packages.appspot.com/p/infra/python/wheels).  Just
+install the CIPD package and then point `pip` at the `.whl` file you need.
+
 [bug]: https://bugs.chromium.org/p/chromium/issues/entry?template=+Vpython+Wheel+Request
 [VPython and You]: https://chromium.googlesource.com/infra/infra/+/master/doc/users/vpython_one_page.md
 
