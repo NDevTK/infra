@@ -28,6 +28,8 @@ import (
 	"net/url"
 	"regexp"
 
+	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"golang.org/x/oauth2/jwt"
@@ -301,9 +303,12 @@ func Main() {
 		}
 		client = conf.Client(oauth2.NoContext)
 	} else {
-		client, err = google.DefaultClient(oauth2.NoContext, scopesForLegacy...)
-		if err != nil {
-			log.Fatalf("Failed to get default credentials: %v", err)
+		ctx := context.Background()
+		authenticator := auth.NewAuthenticator(ctx, auth.InteractiveLogin, chromeinfra.DefaultAuthOptions())
+
+		var err error
+		if client, err = authenticator.Client(); err != nil {
+			log.Fatal("Couldn't authenticate with luci-auth: ", err)
 		}
 	}
 
