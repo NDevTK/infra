@@ -36,6 +36,11 @@ func mustAlwaysRunTest(testFile string) bool {
 	case strings.Contains(testFile, "/third_party/") && !strings.HasPrefix(testFile, "//third_party/blink/"):
 		return true
 
+	case testFile == "//third_party/blink/web_tests/wpt_internal/webgpu/cts.html":
+		// Most of cts.html commits are auto-generated.
+		// https://chromium.googlesource.com/chromium/src/+log/master/third_party/blink/web_tests/wpt_internal/webgpu/cts.html
+		// cts.html does not have meaningful edges in the file graph.
+
 	default:
 		return false
 	}
