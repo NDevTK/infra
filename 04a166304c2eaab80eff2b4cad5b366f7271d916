@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "28a076af_52fd2132",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1151324
+      },
+      "writtenOn": "2021-03-12T23:32:58Z",
+      "side": 1,
+      "message": "I figured that going with the luci-auth option was the best one, since I\u0027m assuming there\u0027s a good reason for the client ID list and a good reason why the luci client IDs are in that list but not the gcloud ones. Please let me know if there\u0027s something else you\u0027d like me do instead.",
+      "revId": "04a166304c2eaab80eff2b4cad5b366f7271d916",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
