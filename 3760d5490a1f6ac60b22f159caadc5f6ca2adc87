@@ -72,6 +72,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a0c71e07_778f2a68",
+        "filename": "recipes/recipes/luci_py.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1493587
+      },
+      "writtenOn": "2021-03-12T06:20:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4a68c58a_7c88a0fb",
+      "range": {
+        "startLine": 102,
+        "startChar": 62,
+        "endLine": 102,
+        "endChar": 73
+      },
+      "revId": "3760d5490a1f6ac60b22f159caadc5f6ca2adc87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d0103c75_1041250a",
@@ -85,6 +109,24 @@
       "writtenOn": "2021-03-12T05:12:59Z",
       "side": 1,
       "message": "I think you need to sync with latest commit.",
+      "revId": "3760d5490a1f6ac60b22f159caadc5f6ca2adc87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f4806ace_705c9a06",
+        "filename": "recipes/recipes/luci_py.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1493587
+      },
+      "writtenOn": "2021-03-12T06:20:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d0103c75_1041250a",
       "revId": "3760d5490a1f6ac60b22f159caadc5f6ca2adc87",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
