@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4d15892b_a50605a6",
+        "filename": "recipes/recipes/luci_py.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2021-03-12T05:12:59Z",
+      "side": 1,
+      "message": "could you remove this too?",
+      "range": {
+        "startLine": 102,
+        "startChar": 62,
+        "endLine": 102,
+        "endChar": 73
+      },
+      "revId": "3760d5490a1f6ac60b22f159caadc5f6ca2adc87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d0103c75_1041250a",
+        "filename": "recipes/recipes/luci_py.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2021-03-12T05:12:59Z",
+      "side": 1,
+      "message": "I think you need to sync with latest commit.",
+      "revId": "3760d5490a1f6ac60b22f159caadc5f6ca2adc87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
