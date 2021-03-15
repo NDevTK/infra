@@ -57,6 +57,23 @@
       "parentUuid": "28a076af_52fd2132",
       "revId": "04a166304c2eaab80eff2b4cad5b366f7271d916",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f75e6561_007a9abf",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1151324
+      },
+      "writtenOn": "2021-03-15T18:32:15Z",
+      "side": 1,
+      "message": "Thanks for the review and chat last night, reverting since this shouldn\u0027t really be a supported situation.",
+      "revId": "04a166304c2eaab80eff2b4cad5b366f7271d916",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
