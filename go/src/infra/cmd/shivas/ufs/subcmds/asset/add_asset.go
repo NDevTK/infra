@@ -185,9 +185,6 @@ func (c *addAsset) validateArgs() error {
 		}
 	}
 	if c.scan {
-		if c.location == "" && c.rack == "" {
-			return cmdlib.NewQuietUsageError(c.Flags, "Need location or rack to start scan")
-		}
 		if c.assetType == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Missing asset type")
 		} else if !ufsUtil.IsAssetType(c.assetType) {
@@ -303,14 +300,10 @@ func (c *addAsset) scanAndAddAsset(ctx context.Context, ic ufsAPI.FleetClient, w
 	// Attempt to get location
 	location, err := deriveLocation(ctx, ic, c.location, c.rack, c.zone, c.aisle, c.row, c.position)
 	if err != nil {
-		return err
+		if c.commonFlags.Verbose() {
+			fmt.Fprintf(w, "Cannot determine location from inputs. Need to scan the location.\n%v\n", err)
+		}
 	}
-	// Throw an error if we don't know what rack we are putting the assets in. UFS will not accept this input.
-	if location.GetRack() == "" {
-		return cmdlib.NewQuietUsageError(c.Flags, "Cannot determine the rack from inputs. Try using -rack to explicity assign rack")
-	}
-
-	// Asset type set for this session
 	assetType := ufsUtil.ToAssetType(c.assetType)
 
 	fmt.Fprintf(w, "Connect the barcode scanner to your device.\n")
@@ -367,13 +360,15 @@ func deriveLocation(ctx context.Context, ic ufsAPI.FleetClient, location, rack, 
 		return loc, nil
 	} else if rack != "" {
 		// If rack is input, check it's existence and get location from UFS.
-		rack, err := ic.GetRack(ctx, &ufsAPI.GetRackRequest{
+		rackProto, err := ic.GetRack(ctx, &ufsAPI.GetRackRequest{
 			Name: ufsUtil.AddPrefix(ufsUtil.RackCollection, rack),
 		})
 		if err != nil {
 			return nil, err
 		}
-		loc = rack.GetLocation()
+		loc = rackProto.GetLocation()
+		// Assign rack as the rack field in location of rack may not have the rack name assigned (tongue twister!!)
+		loc.Rack = rack
 		// Update position if given or clear the field.
 		loc.Position = position
 		return loc, nil
@@ -392,5 +387,9 @@ func deriveLocation(ctx context.Context, ic ufsAPI.FleetClient, location, rack, 
 
 // prompt prints the current rack for the scan. To be used by scanAndAddAsset
 func prompt(w io.Writer, rack string) {
-	fmt.Fprintf(w, "\nScan asset to be placed in %s: ", rack)
+	if rack != "" {
+		fmt.Fprintf(w, "\nScan asset to be placed in %s: ", rack)
+	} else {
+		fmt.Fprintf(w, "\nScan a location tag:")
+	}
 }
