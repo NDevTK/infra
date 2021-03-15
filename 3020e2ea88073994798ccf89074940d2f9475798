@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4efa36d0_458f93ed",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-03-15T23:33:12Z",
+      "side": 1,
+      "message": "This change does not include location input simplification and there are no plans to include it here. Truth is I tried cramming that change here, but it becomes too big to tag along for this CL. Rest assured that change is coming up soon :) ",
+      "revId": "3020e2ea88073994798ccf89074940d2f9475798",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
