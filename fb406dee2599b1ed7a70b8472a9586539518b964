@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a020b554_d674518a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-15T22:55:38Z",
+      "side": 1,
+      "message": "should be \u0027b:....\u0027, otherwise it will go to crbug.com/....",
+      "range": {
+        "startLine": 9,
+        "startChar": 5,
+        "endLine": 9,
+        "endChar": 14
+      },
+      "revId": "fb406dee2599b1ed7a70b8472a9586539518b964",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d4df476d_b132fe65",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-15T22:55:38Z",
+      "side": 1,
+      "message": "LGTM % a nit.",
+      "revId": "fb406dee2599b1ed7a70b8472a9586539518b964",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
