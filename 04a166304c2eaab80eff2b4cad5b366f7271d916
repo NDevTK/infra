@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "b7d8c0ca_dcf5637c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1327821
+      },
+      "writtenOn": "2021-03-15T01:10:51Z",
+      "side": 1,
+      "message": "We don\u0027t usually refer to internal links in CL descriptions.",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 63
+      },
+      "revId": "04a166304c2eaab80eff2b4cad5b366f7271d916",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "28a076af_52fd2132",
@@ -14,6 +37,24 @@
       "writtenOn": "2021-03-12T23:32:58Z",
       "side": 1,
       "message": "I figured that going with the luci-auth option was the best one, since I\u0027m assuming there\u0027s a good reason for the client ID list and a good reason why the luci client IDs are in that list but not the gcloud ones. Please let me know if there\u0027s something else you\u0027d like me do instead.",
+      "revId": "04a166304c2eaab80eff2b4cad5b366f7271d916",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e65b0b22_962fe3ab",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1327821
+      },
+      "writtenOn": "2021-03-15T01:10:51Z",
+      "side": 1,
+      "message": "This is the \"principle of least privilege\" at work -- when we deploy this in production, we want the service account from which we\u0027re making the requests to have the least privileges as possible. In this case the service doesn\u0027t actually require OAuth scopes outside of OpenID (e.g. the service itself doesn\u0027t need to retrieve user details from metadata APIs).\n\nLet\u0027s add the service accounts to the allowlist to make delegated requests instead.",
+      "parentUuid": "28a076af_52fd2132",
       "revId": "04a166304c2eaab80eff2b4cad5b366f7271d916",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
