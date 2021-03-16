@@ -32,14 +32,16 @@ type tlwServer struct {
 	tls.UnimplementedWiringServer
 	lroMgr    *lro.Manager
 	tMgr      *tunnelManager
-	tPool     *sshpool.Pool
+	dutPool   *sshpool.Pool
+	proxyPool *sshpool.Pool
 	cFrontend *cache.Frontend
 }
 
 func newTLWServer(e cache.Environment) *tlwServer {
 	s := &tlwServer{
 		lroMgr:    lro.New(),
-		tPool:     sshpool.New(getSSHClientConfig()),
+		dutPool:   sshpool.New(getSSHClientConfig()),
+		proxyPool: sshpool.New(getSSHClientConfigForProxy()),
 		tMgr:      newTunnelManager(),
 		cFrontend: cache.NewFrontend(e),
 	}
@@ -54,7 +56,8 @@ func (s *tlwServer) registerWith(g *grpc.Server) {
 // Close closes all open server resources.
 func (s *tlwServer) Close() {
 	s.tMgr.Close()
-	s.tPool.Close()
+	s.dutPool.Close()
+	s.proxyPool.Close()
 	s.lroMgr.Close()
 }
 
@@ -84,7 +87,14 @@ func (s *tlwServer) ExposePortToDut(ctx context.Context, req *tls.ExposePortToDu
 		return nil, status.Errorf(codes.Aborted, err.Error())
 	}
 	localService := net.JoinHostPort(callerIP, strconv.Itoa(int(localServicePort)))
-	remoteDeviceClient, err := s.tPool.Get(net.JoinHostPort(addr, "22"))
+	if req.GetRequireRemoteProxy() {
+		response, err := s.exposePortToProxy(addr, localService)
+		if err != nil {
+			return nil, status.Errorf(codes.Aborted, "Error setting up SSH tunnel to proxy: %s", err)
+		}
+		return response, nil
+	}
+	remoteDeviceClient, err := s.dutPool.Get(net.JoinHostPort(addr, "22"))
 	if err != nil {
 		return nil, status.Errorf(codes.Aborted, err.Error())
 	}
@@ -96,6 +106,35 @@ func (s *tlwServer) ExposePortToDut(ctx context.Context, req *tls.ExposePortToDu
 	response := &tls.ExposePortToDutResponse{
 		ExposedAddress: listenAddr.IP.String(),
 		ExposedPort:    int32(listenAddr.Port),
+	}
+	return response, nil
+}
+
+func (s *tlwServer) exposePortToProxy(dutAddr, localService string) (*tls.ExposePortToDutResponse, error) {
+	env, err := cache.NewSSHProxyServerEnv()
+	if err != nil {
+		return nil, err
+	}
+	fe := cache.NewFrontend(env)
+	proxyServerIP, err := fe.AssignBackend(dutAddr, "")
+	if err != nil {
+		return nil, err
+	}
+	remoteDeviceClient, err := s.proxyPool.Get(net.JoinHostPort(proxyServerIP, "2222"))
+	if err != nil {
+		return nil, err
+	}
+	t, err := s.tMgr.NewTunnel(localService, "127.0.0.1:0", remoteDeviceClient)
+	if err != nil {
+		return nil, err
+	}
+	exposedAddr, _, err := net.SplitHostPort(remoteDeviceClient.RemoteAddr().String())
+	if err != nil {
+		return nil, err
+	}
+	response := &tls.ExposePortToDutResponse{
+		ExposedAddress: exposedAddr,
+		ExposedPort:    int32(t.RemoteAddr().(*net.TCPAddr).Port),
 	}
 	return response, nil
 }
@@ -176,5 +215,14 @@ func getSSHClientConfig() *ssh.ClientConfig {
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		Timeout:         5 * time.Second,
 		Auth:            []ssh.AuthMethod{ssh.PublicKeys(sshSigner)},
+	}
+}
+
+func getSSHClientConfigForProxy() *ssh.ClientConfig {
+	return &ssh.ClientConfig{
+		User:            "chromeos-test",
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		Timeout:         5 * time.Second,
+		Auth:            []ssh.AuthMethod{ssh.PublicKeys(sshSignerForProxy)},
 	}
 }
