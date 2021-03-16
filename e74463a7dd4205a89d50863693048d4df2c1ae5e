@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dea2dccf_9f431d99",
+        "filename": "go/src/infra/unifiedfleet/app/dumper/dumper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-03-16T17:32:24Z",
+      "side": 0,
+      "message": "Stop this as well.",
+      "revId": "e74463a7dd4205a89d50863693048d4df2c1ae5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
