@@ -50,9 +50,9 @@ func InitServer(srv *server.Server, opts Options) {
 	srv.RunInBackground("ufs.sync_machines.sync", func(ctx context.Context) {
 		cron.Run(ctx, 60*time.Minute, SyncMachinesFromAssets)
 	})
-	srv.RunInBackground("ufs.sync_devices.sync", func(ctx context.Context) {
+	/*srv.RunInBackground("ufs.sync_devices.sync", func(ctx context.Context) {
 		cron.Run(ctx, 60*time.Minute, SyncAssetInfoFromHaRT)
-	})
+	})*/
 	srv.RunInBackground("ufs.sync_assets.sync", func(ctx context.Context) {
 		cron.Run(ctx, 60*time.Minute, SyncAssetsFromIV2)
 	})
