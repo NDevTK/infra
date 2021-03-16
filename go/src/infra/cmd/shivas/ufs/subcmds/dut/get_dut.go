@@ -189,8 +189,10 @@ func (c *getDut) formatFilters() []string {
 }
 
 func printDutFull(ctx context.Context, ic ufsAPI.FleetClient, msgs []proto.Message, tsv bool) error {
-	machineMap := make(map[string]*ufspb.Machine, 0)
+	lseTomachineMap := make(map[string]*ufspb.Machine, 0)
 	lses := make([]*ufspb.MachineLSE, len(msgs))
+	idTomachineMap := make(map[string]*ufspb.Machine, 0)
+	ids := make([]string, 0, 0)
 	for i, r := range msgs {
 		lses[i] = r.(*ufspb.MachineLSE)
 		lses[i].Name = ufsUtil.RemovePrefix(lses[i].Name)
@@ -198,16 +200,34 @@ func printDutFull(ctx context.Context, ic ufsAPI.FleetClient, msgs []proto.Messa
 			fmt.Println("Invalid host ", lses[i].Name)
 			continue
 		}
-		res, _ := ic.GetMachine(ctx, &ufsAPI.GetMachineRequest{
-			Name: ufsUtil.AddPrefix(ufsUtil.MachineCollection, lses[i].GetMachines()[0]),
-		})
-		machineMap[lses[i].Name] = res
+		ids = append(ids, lses[i].GetMachines()[0])
 	}
-	utils.PrintDutsFull(lses, machineMap)
+	machines := utils.ConcurrentGet(ctx, ic, ids, getMachine)
+	for _, m := range machines {
+		machine := m.(*ufspb.Machine)
+		idTomachineMap[ufsUtil.RemovePrefix(machine.GetName())] = machine
+	}
+	for i := range lses {
+		if len(lses[i].GetMachines()) == 0 {
+			continue
+		}
+		machine, ok := idTomachineMap[lses[i].GetMachines()[0]]
+		if !ok {
+			continue
+		}
+		lseTomachineMap[lses[i].Name] = machine
+	}
+	utils.PrintDutsFull(lses, lseTomachineMap)
 	return nil
 }
 
 func printDutNormal(msgs []proto.Message, tsv, keysOnly bool) error {
 	utils.PrintDutsShort(msgs, keysOnly)
 	return nil
+}
+
+func getMachine(ctx context.Context, ic ufsAPI.FleetClient, name string) (proto.Message, error) {
+	return ic.GetMachine(ctx, &ufsAPI.GetMachineRequest{
+		Name: ufsUtil.AddPrefix(ufsUtil.MachineCollection, name),
+	})
 }
