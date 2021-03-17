@@ -79,6 +79,24 @@
       "message": "You could reuse the caching frontend code for this particular case, but\n1. Please add a comment to explain why we use caching frontend here.\n2. Just use `s.cFrontend` instead of creating your own, so you don\u0027t need your ssh proxy env file.",
       "revId": "254dc18aa148e477b80b2e31146afb8da68f69b1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e15dd866_a0c125cf",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/tlw.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-17T14:48:21Z",
+      "side": 1,
+      "message": "I think we should refactor the code to have a new package of \u0027lab subnet\u0027 and both cache and this ExposePortToDut depending on it.\n\nThe \u0027lab subnet\u0027 accepts a ip (or subnet mask) and returns the servers in this subnets. The \u0027cache\u0027 and ExposePortToDut can define their own logic to select one from them.\n\nSince AU migration depends on this CL, I think we can do the refactoring in another CL.",
+      "parentUuid": "d00fe711_e0271f09",
+      "revId": "254dc18aa148e477b80b2e31146afb8da68f69b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
