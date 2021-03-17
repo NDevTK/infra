@@ -47,6 +47,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b65bb16f_0a9ff282",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-17T21:56:35Z",
+      "side": 1,
+      "message": "guocb basically covered the big points",
+      "revId": "254dc18aa148e477b80b2e31146afb8da68f69b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "df30aa70_00238e4e",
@@ -60,6 +77,24 @@
       "writtenOn": "2021-03-17T01:41:53Z",
       "side": 1,
       "message": "It\u0027s not easier to see the two branches of this API. Suggest\n  addr, port, err:\u003ds.expose(req.GetRequireRemoteProxy())\n  if err!\u003dnil{\n    return nil, status.Errorf(codes.Aborted, \"Error setting up SSH tunnel: %s\", err)\n  }\n  return \u0026tls.ExposePortToDutResponse{\n    ExposeAddress: addr,\n    ExposedPort: port,\n  }, nil\n\nthen\n  func (s ...) expose(requireRemoteProxy bool) (string, int, error) {\n    if requireRemoteProxy {\n      ...\n    } else {\n      ...\n    }\n  }",
+      "revId": "254dc18aa148e477b80b2e31146afb8da68f69b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4dec15e2_691999b8",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/tlw.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-17T21:56:35Z",
+      "side": 1,
+      "message": "+1",
+      "parentUuid": "df30aa70_00238e4e",
       "revId": "254dc18aa148e477b80b2e31146afb8da68f69b1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -95,6 +130,23 @@
       "side": 1,
       "message": "I think we should refactor the code to have a new package of \u0027lab subnet\u0027 and both cache and this ExposePortToDut depending on it.\n\nThe \u0027lab subnet\u0027 accepts a ip (or subnet mask) and returns the servers in this subnets. The \u0027cache\u0027 and ExposePortToDut can define their own logic to select one from them.\n\nSince AU migration depends on this CL, I think we can do the refactoring in another CL.",
       "parentUuid": "d00fe711_e0271f09",
+      "revId": "254dc18aa148e477b80b2e31146afb8da68f69b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "381208f7_9a1fa9c8",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/wellknown_ssh_key.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-17T21:56:35Z",
+      "side": 1,
+      "message": "This private key should be private, as the name implies (the DUT key is an exception).  While it\u0027s not high risk, you should generate a new one since this one has been exposed publicly now.",
       "revId": "254dc18aa148e477b80b2e31146afb8da68f69b1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
