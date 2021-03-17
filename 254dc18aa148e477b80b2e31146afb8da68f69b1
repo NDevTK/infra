@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2e726927_d7be75ae",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-17T01:41:53Z",
+      "side": 1,
+      "message": "It has been just merged, so please remove this line from the message.",
+      "range": {
+        "startLine": 9,
+        "startChar": 41,
+        "endLine": 9,
+        "endChar": 67
+      },
+      "revId": "254dc18aa148e477b80b2e31146afb8da68f69b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f2222256_b6837373",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-17T01:41:53Z",
+      "side": 1,
+      "message": "Though don\u0027t have to do in this CL, we\u0027d better create integration test cases instead of manual testings. Please take the FakeOmaha API implementation for a reference.",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 69
+      },
+      "revId": "254dc18aa148e477b80b2e31146afb8da68f69b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "df30aa70_00238e4e",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/tlw.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-17T01:41:53Z",
+      "side": 1,
+      "message": "It\u0027s not easier to see the two branches of this API. Suggest\n  addr, port, err:\u003ds.expose(req.GetRequireRemoteProxy())\n  if err!\u003dnil{\n    return nil, status.Errorf(codes.Aborted, \"Error setting up SSH tunnel: %s\", err)\n  }\n  return \u0026tls.ExposePortToDutResponse{\n    ExposeAddress: addr,\n    ExposedPort: port,\n  }, nil\n\nthen\n  func (s ...) expose(requireRemoteProxy bool) (string, int, error) {\n    if requireRemoteProxy {\n      ...\n    } else {\n      ...\n    }\n  }",
+      "revId": "254dc18aa148e477b80b2e31146afb8da68f69b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d00fe711_e0271f09",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/tlw.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-17T01:41:53Z",
+      "side": 1,
+      "message": "You could reuse the caching frontend code for this particular case, but\n1. Please add a comment to explain why we use caching frontend here.\n2. Just use `s.cFrontend` instead of creating your own, so you don\u0027t need your ssh proxy env file.",
+      "revId": "254dc18aa148e477b80b2e31146afb8da68f69b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
