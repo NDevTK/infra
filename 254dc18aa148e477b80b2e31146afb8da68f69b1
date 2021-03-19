@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "497315ec_bdfef0ec",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1365447
+      },
+      "writtenOn": "2021-03-19T19:46:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2e726927_d7be75ae",
+      "range": {
+        "startLine": 9,
+        "startChar": 41,
+        "endLine": 9,
+        "endChar": 67
+      },
+      "revId": "254dc18aa148e477b80b2e31146afb8da68f69b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f2222256_b6837373",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-03-17T01:41:53Z",
       "side": 1,
       "message": "Though don\u0027t have to do in this CL, we\u0027d better create integration test cases instead of manual testings. Please take the FakeOmaha API implementation for a reference.",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 69
+      },
+      "revId": "254dc18aa148e477b80b2e31146afb8da68f69b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4344e423_1f0da36f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1365447
+      },
+      "writtenOn": "2021-03-19T19:46:43Z",
+      "side": 1,
+      "message": "Working on this.",
+      "parentUuid": "f2222256_b6837373",
       "range": {
         "startLine": 12,
         "startChar": 0,
@@ -99,6 +147,42 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bab086fd_33a32f5c",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/tlw.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1365447
+      },
+      "writtenOn": "2021-03-19T19:46:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4dec15e2_691999b8",
+      "revId": "254dc18aa148e477b80b2e31146afb8da68f69b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b95adafe_8a909099",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/tlw.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1365447
+      },
+      "writtenOn": "2021-03-19T19:46:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4dec15e2_691999b8",
+      "revId": "254dc18aa148e477b80b2e31146afb8da68f69b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d00fe711_e0271f09",
@@ -134,6 +218,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "67d6d5ec_de0be690",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/tlw.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1365447
+      },
+      "writtenOn": "2021-03-19T19:46:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e15dd866_a0c125cf",
+      "revId": "254dc18aa148e477b80b2e31146afb8da68f69b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "381208f7_9a1fa9c8",
@@ -147,6 +249,24 @@
       "writtenOn": "2021-03-17T21:56:35Z",
       "side": 1,
       "message": "This private key should be private, as the name implies (the DUT key is an exception).  While it\u0027s not high risk, you should generate a new one since this one has been exposed publicly now.",
+      "revId": "254dc18aa148e477b80b2e31146afb8da68f69b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e86139ea_2532243e",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/wellknown_ssh_key.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1365447
+      },
+      "writtenOn": "2021-03-19T19:46:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "381208f7_9a1fa9c8",
       "revId": "254dc18aa148e477b80b2e31146afb8da68f69b1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
