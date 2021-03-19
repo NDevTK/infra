@@ -18,7 +18,10 @@ import (
 )
 
 var (
-	port = flag.Int("port", 0, "Port to listen to")
+	port            = flag.Int("port", 0, "Port to listen to")
+	ufsService      = flag.String("ufs-service", "ufs.api.cr.dev", "Host of the UFS service")
+	svcAcctJSONPath = flag.String("service-account-json", "", "Path to JSON file with service account credentials to use")
+	sshKeyForProxy  = flag.String("ssh-key-proxy", "", "Path to SSH key for SSH proxy servers (no auth for ExposePortToDut Proxy Mode if unset)")
 )
 
 func main() {
@@ -42,11 +45,11 @@ func innerMain() error {
 		return err
 	}
 
-	tlw := newTLWServer(ce)
+	tlw := newTLWServer(ce, *sshKeyForProxy)
 	tlw.registerWith(s)
 	defer tlw.Close()
 
-	ss := newSessionServer(ce)
+	ss := newSessionServer(ce, *sshKeyForProxy)
 	ss.registerWith(s)
 	defer ss.Close()
 

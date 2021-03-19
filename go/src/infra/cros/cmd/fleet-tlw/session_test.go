@@ -36,7 +36,7 @@ func TestSessionServer(t *testing.T) {
 	ctx, cf := context.WithTimeout(context.Background(), limit)
 	t.Cleanup(cf)
 
-	s := newSessionServer(fakeEnv{})
+	s := newSessionServer(fakeEnv{}, "/path/to/fake_rsa/key")
 	expire := tsAfter(time.Minute)
 
 	got, err := s.CreateSession(ctx, &access.CreateSessionRequest{
