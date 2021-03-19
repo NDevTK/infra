@@ -51,7 +51,8 @@ func (s session) toProto(name string) *access.Session {
 
 type sessionServer struct {
 	access.UnimplementedFleetServer
-	wg sync.WaitGroup
+	wg      sync.WaitGroup
+	keyFile string
 
 	// Unsafe to set concurrently, only set on init
 	env cache.Environment
@@ -65,8 +66,9 @@ type sessionServer struct {
 // newSessionServer creates a new sessionServer.
 // It should be closed after use.
 // The gRPC server should be stopped first to ensure there are no new requests.
-func newSessionServer(e cache.Environment) *sessionServer {
+func newSessionServer(e cache.Environment, sshKeyForProxy string) *sessionServer {
 	return &sessionServer{
+		keyFile:  sshKeyForProxy,
 		sessions: make(map[string]sessionContext),
 	}
 }
@@ -93,7 +95,7 @@ func (s *sessionServer) CreateSession(ctx context.Context, req *access.CreateSes
 		return nil, status.Errorf(codes.FailedPrecondition, err.Error())
 	}
 	gs := grpc.NewServer()
-	tlw := newTLWServer(s.env)
+	tlw := newTLWServer(s.env, s.keyFile)
 	tlw.registerWith(gs)
 	// This goroutine is stopped by the session cancellation that
 	// is set up below.
