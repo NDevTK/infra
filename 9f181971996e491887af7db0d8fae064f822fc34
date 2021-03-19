@@ -198,6 +198,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "58270d60_18f1f58b",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/tlw.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-19T21:27:41Z",
+      "side": 1,
+      "message": "I am ok, though I personally prefer only creating the response in the RPC function (i.e. ExposePortToDut).",
+      "parentUuid": "7796b34d_00121d6e",
+      "range": {
+        "startLine": 102,
+        "startChar": 83,
+        "endLine": 102,
+        "endChar": 96
+      },
+      "revId": "9f181971996e491887af7db0d8fae064f822fc34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a1c7e0a7_d710f764",
         "filename": "go/src/infra/cros/cmd/fleet-tlw/tlw.go",
         "patchSetId": 4
