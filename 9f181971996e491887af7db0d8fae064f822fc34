@@ -16,6 +16,161 @@
       "message": "As the rsa keys have changed, I have created CLs: http://crrev.com/i/3696467 and http://crrev.com/i/3696468 to update the public keys (wherever they are being used). The private key can be found on valentine.\n\nThis CL uses the api created by http://crrev.com/c/27344697 and hence will require a rebase once that CL is landed, but the bulk of changes here can (hopefully!) be reviewed independently.",
       "revId": "9f181971996e491887af7db0d8fae064f822fc34",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c03bf3a8_cf882d9a",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-19T21:12:22Z",
+      "side": 1,
+      "message": "Suggest proxy-ssh-key or ssh-proxy-key. ssh-key-proxy sounds like the proxy for the ssh key",
+      "range": {
+        "startLine": 22,
+        "startChar": 31,
+        "endLine": 22,
+        "endChar": 44
+      },
+      "revId": "9f181971996e491887af7db0d8fae064f822fc34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "14d1b86b_57bebd6d",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/session.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-19T21:12:22Z",
+      "side": 1,
+      "message": "sshKeyForProxy -\u003e proxySSHKey\nroom for dining -\u003e dining room",
+      "range": {
+        "startLine": 69,
+        "startChar": 43,
+        "endLine": 69,
+        "endChar": 57
+      },
+      "revId": "9f181971996e491887af7db0d8fae064f822fc34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3470e0da_4d80c499",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/session.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-19T21:12:22Z",
+      "side": 1,
+      "message": "use same name for field.  If it\u0027s not descriptive enough for the argument it\u0027s not descriptive enough for the field.",
+      "range": {
+        "startLine": 71,
+        "startChar": 2,
+        "endLine": 71,
+        "endChar": 9
+      },
+      "revId": "9f181971996e491887af7db0d8fae064f822fc34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7796b34d_00121d6e",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/tlw.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-19T21:12:22Z",
+      "side": 1,
+      "message": "nit: You can return ExposePortToDutResponse here",
+      "range": {
+        "startLine": 102,
+        "startChar": 83,
+        "endLine": 102,
+        "endChar": 96
+      },
+      "revId": "9f181971996e491887af7db0d8fae064f822fc34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a1c7e0a7_d710f764",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/tlw.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-19T21:12:22Z",
+      "side": 1,
+      "message": "This long if block impacts readability.  The logic of the two branch can be split into two methods\n\n if requireRemoteProxy {\n   s.exposeUsingProxy()\n } else {\n   s.exposeDirectly()\n }\n\nOnce you\u0027ve done that, you\u0027d want to inline the original expose() method since all it\u0027s doing is the one if statement with a boolean argument.",
+      "revId": "9f181971996e491887af7db0d8fae064f822fc34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fd92d40a_92d91df5",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/tlw.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-19T21:12:22Z",
+      "side": 1,
+      "message": "You should propagate this error up, or rather, parse the key in main on startup so any issues can be caught immediately at startup and don\u0027t affect the process in the middle.",
+      "range": {
+        "startLine": 237,
+        "startChar": 5,
+        "endLine": 237,
+        "endChar": 8
+      },
+      "revId": "9f181971996e491887af7db0d8fae064f822fc34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "599cd368_4cad083d",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/tlw.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-19T21:12:22Z",
+      "side": 1,
+      "message": "s/authMethodWithKey/authMethodFromKey/",
+      "range": {
+        "startLine": 246,
+        "startChar": 5,
+        "endLine": 246,
+        "endChar": 22
+      },
+      "revId": "9f181971996e491887af7db0d8fae064f822fc34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
