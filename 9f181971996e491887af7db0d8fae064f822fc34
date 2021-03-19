@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "9f3ec425_a28cd260",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-19T21:20:59Z",
+      "side": 1,
+      "message": "This CL bases on caching interfaces (cache.Frontend.AssignBackend), but it doesn\u0027t depends on the specified CL. \nFrom this CL, there\u0027s no need to care how caching implemented, either shadow_config.ini or UFS.",
+      "range": {
+        "startLine": 9,
+        "startChar": 44,
+        "endLine": 10,
+        "endChar": 27
+      },
+      "revId": "9f181971996e491887af7db0d8fae064f822fc34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "252c0024_3f8a304d",
@@ -36,6 +59,52 @@
         "startChar": 31,
         "endLine": 22,
         "endChar": 44
+      },
+      "revId": "9f181971996e491887af7db0d8fae064f822fc34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d4d3cf9c_d740ccce",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-19T21:20:59Z",
+      "side": 1,
+      "message": "Is \u0027ssh-proxy-key\u0027 better?",
+      "range": {
+        "startLine": 22,
+        "startChar": 31,
+        "endLine": 22,
+        "endChar": 44
+      },
+      "revId": "9f181971996e491887af7db0d8fae064f822fc34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ee472aa4_020b6bc4",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/session.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-19T21:20:59Z",
+      "side": 1,
+      "message": "Suggest \u0027tlwSSHProxyKey\u0027",
+      "range": {
+        "startLine": 55,
+        "startChar": 1,
+        "endLine": 55,
+        "endChar": 8
       },
       "revId": "9f181971996e491887af7db0d8fae064f822fc34",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
@@ -89,6 +158,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ad8f181d_8f7bb1d5",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/session.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-19T21:20:59Z",
+      "side": 1,
+      "message": "For this CL, I am fine to add an extra field to \"session\" server.\n\nBut I feel it\u0027s bad that every time we add a new filed to TLW, we also need to add the same thing to \"session\", especially that I expect we will add more and more fields to config TLW.\n\nLet\u0027s think about if there\u0027s a better way.",
+      "revId": "9f181971996e491887af7db0d8fae064f822fc34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "7796b34d_00121d6e",
         "filename": "go/src/infra/cros/cmd/fleet-tlw/tlw.go",
         "patchSetId": 4
@@ -123,6 +209,29 @@
       "writtenOn": "2021-03-19T21:12:22Z",
       "side": 1,
       "message": "This long if block impacts readability.  The logic of the two branch can be split into two methods\n\n if requireRemoteProxy {\n   s.exposeUsingProxy()\n } else {\n   s.exposeDirectly()\n }\n\nOnce you\u0027ve done that, you\u0027d want to inline the original expose() method since all it\u0027s doing is the one if statement with a boolean argument.",
+      "revId": "9f181971996e491887af7db0d8fae064f822fc34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ab553793_cb0f4fdf",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/tlw.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-03-19T21:20:59Z",
+      "side": 1,
+      "message": "I think it\u0027s same with \u0027proxyServerIP\u0027 right?",
+      "range": {
+        "startLine": 133,
+        "startChar": 2,
+        "endLine": 133,
+        "endChar": 13
+      },
       "revId": "9f181971996e491887af7db0d8fae064f822fc34",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
