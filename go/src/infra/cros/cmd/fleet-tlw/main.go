@@ -6,11 +6,13 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
 	"net"
 	"sync"
+	"time"
 
 	"infra/cros/cmd/fleet-tlw/internal/cache"
 
@@ -18,7 +20,10 @@ import (
 )
 
 var (
-	port = flag.Int("port", 0, "Port to listen to")
+	port            = flag.Int("port", 0, "Port to listen to")
+	ufsService      = flag.String("ufs-service", "ufs.api.cr.dev", "Host of the UFS service")
+	svcAcctJSONPath = flag.String("service-account-json", "", "Path to JSON file with service account credentials to use")
+	sshKeyForProxy  = flag.String("ssh-key-proxy", "", "Path to SSH key for SSH proxy servers (no auth for ExposePortToDut Proxy Mode if unset)")
 )
 
 func main() {
@@ -35,18 +40,22 @@ func innerMain() error {
 	}
 	s := grpc.NewServer()
 
-	// TODO (guocb) Fetch caching backends data from UFS after migration to
-	// caching cluster.
-	ce, err := cache.NewDevserverEnv(cache.AutotestConfig)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	uc, err := ufsapi.NewClient(ctx, ufsapi.ServiceName(*ufsService), ufsapi.ServiceAccountJSONPath(*svcAcctJSONPath), ufsapi.UserAgent("fleet-tlw/3.0.0"))
 	if err != nil {
 		return err
 	}
+	ce, err := cache.NewUFSEnv(uc)
+	if err != nil {
+		return err
+	}
+	cancel()
 
-	tlw := newTLWServer(ce)
+	tlw := newTLWServer(ce, *sshKeyForProxy)
 	tlw.registerWith(s)
 	defer tlw.Close()
 
-	ss := newSessionServer(ce)
+	ss := newSessionServer(ce, *sshKeyForProxy)
 	ss.registerWith(s)
 	defer ss.Close()
 
