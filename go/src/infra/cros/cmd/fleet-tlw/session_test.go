@@ -11,6 +11,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
+	"golang.org/x/crypto/ssh"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -36,7 +37,7 @@ func TestSessionServer(t *testing.T) {
 	ctx, cf := context.WithTimeout(context.Background(), limit)
 	t.Cleanup(cf)
 
-	s := newSessionServer(fakeEnv{})
+	s := newSessionServer(fakeEnv{}, &ssh.ClientConfig{})
 	expire := tsAfter(time.Minute)
 
 	got, err := s.CreateSession(ctx, &access.CreateSessionRequest{

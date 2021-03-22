@@ -8,17 +8,21 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net"
 	"sync"
+	"time"
+
+	"golang.org/x/crypto/ssh"
+	"google.golang.org/grpc"
 
 	"infra/cros/cmd/fleet-tlw/internal/cache"
-
-	"google.golang.org/grpc"
 )
 
 var (
-	port = flag.Int("port", 0, "Port to listen to")
+	port        = flag.Int("port", 0, "Port to listen to")
+	proxySSHKey = flag.String("proxy-ssh-key", "", "Path to SSH key for SSH proxy servers (no auth for ExposePortToDut Proxy Mode if unset)")
 )
 
 func main() {
@@ -42,11 +46,19 @@ func innerMain() error {
 		return err
 	}
 
-	tlw := newTLWServer(ce)
+	proxySSHConfig, err := getSSHClientConfigForProxy(*proxySSHKey)
+	if err != nil {
+		return err
+	}
+
+	tlw := newTLWServer(ce, proxySSHConfig)
 	tlw.registerWith(s)
 	defer tlw.Close()
 
-	ss := newSessionServer(ce)
+	// TODO(sanikak): Every time a new parameter is added to the tlw server,
+	// it needs to be added to the session server. This is not ideal. A better
+	// way to accomplish the same objective should be developed.
+	ss := newSessionServer(ce, proxySSHConfig)
 	ss.registerWith(s)
 	defer ss.Close()
 
@@ -61,4 +73,32 @@ func innerMain() error {
 		s.GracefulStop()
 	}()
 	return s.Serve(l)
+}
+
+func getSSHClientConfigForProxy(sshKeyFile string) (*ssh.ClientConfig, error) {
+	sshConfig := &ssh.ClientConfig{
+		User:            "chromeos-test",
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		Timeout:         5 * time.Second,
+	}
+	if sshKeyFile != "" {
+		m, err := authMethodFromKey(sshKeyFile)
+		if err != nil {
+			return nil, err
+		}
+		sshConfig.Auth = []ssh.AuthMethod{m}
+	}
+	return sshConfig, nil
+}
+
+func authMethodFromKey(keyfile string) (ssh.AuthMethod, error) {
+	key, err := ioutil.ReadFile(keyfile)
+	if err != nil {
+		return nil, err
+	}
+	signer, err := ssh.ParsePrivateKey(key)
+	if err != nil {
+		return nil, err
+	}
+	return ssh.PublicKeys(signer), nil
 }
