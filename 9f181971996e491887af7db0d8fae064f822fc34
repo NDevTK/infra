@@ -313,6 +313,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "982f702c_c868ce35",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/session.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-23T00:00:31Z",
+      "side": 1,
+      "message": "ack.  Likely, we\u0027ll want a \"TLW config\" that configures the TLWServer, and sessionServer has a copy to use for new TLW servers.",
+      "parentUuid": "1444a5cd_d55ac800",
+      "revId": "9f181971996e491887af7db0d8fae064f822fc34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "7796b34d_00121d6e",
         "filename": "go/src/infra/cros/cmd/fleet-tlw/tlw.go",
         "patchSetId": 4
@@ -372,6 +390,30 @@
       "side": 1,
       "message": "+1 for Congbin\u0027s comment.",
       "parentUuid": "58270d60_18f1f58b",
+      "range": {
+        "startLine": 102,
+        "startChar": 83,
+        "endLine": 102,
+        "endChar": 96
+      },
+      "revId": "9f181971996e491887af7db0d8fae064f822fc34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1733b494_70b5bd24",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/tlw.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-23T00:00:31Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "3f4a4e71_8ac8251a",
       "range": {
         "startLine": 102,
         "startChar": 83,

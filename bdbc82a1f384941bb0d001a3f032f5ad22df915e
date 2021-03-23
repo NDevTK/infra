@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "643700dc_762bdaf6",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/main.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-03-23T00:00:31Z",
+      "side": 1,
+      "message": "nit: you only need to parse the key/auth method here.  Making the ssh.ClientConfig can happen in TLWServer.  The SSH config for DUTs is constructed in TLWServer, so I think it\u0027s a bit more consistent.  It\u0027s really just bikeshedding though.",
+      "range": {
+        "startLine": 49,
+        "startChar": 24,
+        "endLine": 49,
+        "endChar": 64
+      },
+      "revId": "bdbc82a1f384941bb0d001a3f032f5ad22df915e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
