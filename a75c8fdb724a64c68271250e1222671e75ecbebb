@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "84e8e124_599c212e",
+        "filename": "go/src/infra/cros/tlslib/provision.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 303,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2021-03-23T17:38:24Z",
+      "side": 1,
+      "message": "Or should loop until the ssh client is broken?",
+      "range": {
+        "startLine": 302,
+        "startChar": 1,
+        "endLine": 303,
+        "endChar": 28
+      },
+      "revId": "a75c8fdb724a64c68271250e1222671e75ecbebb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
