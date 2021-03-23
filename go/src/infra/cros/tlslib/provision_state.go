@@ -110,7 +110,9 @@ func (p *provisionState) wipeStateful(ctx context.Context) error {
 	}
 
 	runLabMachineAutoReboot(p.c)
-	rebootDUT(p.c)
+	if err := rebootDUT(p.c); err != nil {
+		return fmt.Errorf("wipeStateful: failed to reboot DUT, %s", err)
+	}
 	return nil
 }
 
@@ -123,7 +125,9 @@ func (p *provisionState) provisionStateful(ctx context.Context) error {
 	}
 
 	runLabMachineAutoReboot(p.c)
-	rebootDUT(p.c)
+	if err := rebootDUT(p.c); err != nil {
+		return fmt.Errorf("provisionStateful: failed to reboot DUT, %s", err)
+	}
 	return nil
 }
 
