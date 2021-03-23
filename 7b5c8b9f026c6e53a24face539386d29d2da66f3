@@ -16,6 +16,24 @@
       "message": "This just returns immediately since the session hasn\u0027t started running a command?",
       "revId": "7b5c8b9f026c6e53a24face539386d29d2da66f3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "90709fe8_83ee486d",
+        "filename": "go/src/infra/cros/tlslib/provision.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 308,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2021-03-23T23:38:33Z",
+      "side": 1,
+      "message": "Using `Client` to check for shutdown or timeout now.",
+      "parentUuid": "b1467be3_c0a37afd",
+      "revId": "7b5c8b9f026c6e53a24face539386d29d2da66f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
