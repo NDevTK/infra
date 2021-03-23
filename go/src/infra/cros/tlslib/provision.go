@@ -299,6 +299,8 @@ func clearTPM(c *ssh.Client) error {
 func rebootDUT(c *ssh.Client) {
 	// Reboot, ignoring the SSH disconnection.
 	_ = runCmd(c, "reboot")
+	// Delay, so next commands don't run before an actual reboot.
+	time.Sleep(3 * time.Second)
 }
 
 func runLabMachineAutoReboot(c *ssh.Client) {
