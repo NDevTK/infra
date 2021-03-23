@@ -296,9 +296,17 @@ func clearTPM(c *ssh.Client) error {
 	return runCmd(c, "crossystem clear_tpm_owner_request=1")
 }
 
-func rebootDUT(c *ssh.Client) {
+func rebootDUT(c *ssh.Client) error {
+	s, err := c.NewSession()
+	if err != nil {
+		return fmt.Errorf("rebootDUT: failed to create session to wait on, %s", err)
+	}
+	defer s.Close()
 	// Reboot, ignoring the SSH disconnection.
 	_ = runCmd(c, "reboot")
+	// Wait so following commands don't run before an actual reboot.
+	_ = s.Wait()
+	return nil
 }
 
 func runLabMachineAutoReboot(c *ssh.Client) {
