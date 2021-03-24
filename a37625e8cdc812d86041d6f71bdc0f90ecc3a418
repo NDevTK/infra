@@ -22,6 +22,30 @@
       },
       "revId": "a37625e8cdc812d86041d6f71bdc0f90ecc3a418",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ebd7a25e_bb50e8af",
+        "filename": "go/src/infra/cmd/shivas/ufs/subcmds/dut/update_dut.go",
+        "patchSetId": 29
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-03-24T20:52:08Z",
+      "side": 1,
+      "message": "Workflow requirements. There is a need to force run deploy sometimes. It\u0027s currently important as not all features are stable yet. Will get back to this and remove it in future if not necessary.",
+      "parentUuid": "32eb57b0_62dd17dd",
+      "range": {
+        "startLine": 187,
+        "startChar": 2,
+        "endLine": 191,
+        "endChar": 106
+      },
+      "revId": "a37625e8cdc812d86041d6f71bdc0f90ecc3a418",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
