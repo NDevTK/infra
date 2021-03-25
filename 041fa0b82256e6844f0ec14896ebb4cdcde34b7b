@@ -16,6 +16,321 @@
       "message": "Attempt #2",
       "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "104c306e_3555b667",
+        "filename": "go/src/infra/appengine/statsui/api/service.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-03-25T06:27:45Z",
+      "side": 1,
+      "message": "must start with PERIOD_UNSPECIFIED \u003d 0\nhttps://google.aip.dev/126",
+      "range": {
+        "startLine": 17,
+        "startChar": 5,
+        "endLine": 17,
+        "endChar": 11
+      },
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b896b9eb_67ced172",
+        "filename": "go/src/infra/appengine/statsui/api/service.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-03-25T06:27:45Z",
+      "side": 1,
+      "message": "what are valid values? should this be an enum?",
+      "range": {
+        "startLine": 24,
+        "startChar": 2,
+        "endLine": 24,
+        "endChar": 8
+      },
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d2b4d660_51170dff",
+        "filename": "go/src/infra/appengine/statsui/api/service.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-03-25T06:27:45Z",
+      "side": 1,
+      "message": "nit: data_source",
+      "range": {
+        "startLine": 24,
+        "startChar": 9,
+        "endLine": 24,
+        "endChar": 19
+      },
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6068b448_5bea5ab5",
+        "filename": "go/src/infra/appengine/statsui/api/service.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-03-25T06:27:45Z",
+      "side": 1,
+      "message": "please either document the format, or (better) use a more structured format, for example standard date.proto [1] or timestamp.proto [2]\n\n[1]: https://github.com/googleapis/googleapis/blob/master/google/type/date.proto\n[2]: https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/timestamp.proto",
+      "range": {
+        "startLine": 28,
+        "startChar": 11,
+        "endLine": 28,
+        "endChar": 17
+      },
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "09e8797d_5b02a173",
+        "filename": "go/src/infra/appengine/statsui/api/service.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-03-25T06:27:45Z",
+      "side": 1,
+      "message": "is this a required parameter? unclear. \ne.g. one may interpret that if not specified, then all metrics are fetched",
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "759c3590_39d95606",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/client.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-03-25T06:27:45Z",
+      "side": 1,
+      "message": "not sure why these errors are exported. They aren\u0027t used anywhere. Also they are less useful than if they actually specified the invalid value. Consider\n\n  return nil, errors.Reason(\"data source %q not found\", dataSource).Err()\n\nin L40 instead",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 59
+      },
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6828c7e7_c6e93a9d",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/client.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-03-25T06:27:45Z",
+      "side": 1,
+      "message": "nit: unnecessary",
+      "range": {
+        "startLine": 38,
+        "startChar": 94,
+        "endLine": 38,
+        "endChar": 103
+      },
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "79d1f464_d1024161",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/client.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-03-25T06:27:45Z",
+      "side": 1,
+      "message": "note that iteration over a map has random order, so the slices have random order too. if you were to write a test, we\u0027d need to sort these slices",
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "19bf571e_bc2993fc",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-03-25T06:27:45Z",
+      "side": 1,
+      "message": "nit: blank line between 3p and 1p imports",
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1ccb72d1_6bf8d3a4",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-03-25T06:27:45Z",
+      "side": 1,
+      "message": "golint: all public symbols must have comments",
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e8d7a577_3701be49",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-03-25T06:27:45Z",
+      "side": 1,
+      "message": "maybe UnmarshalConfig? when reading the code of the callsite, I thought we load the config from some external storage.",
+      "range": {
+        "startLine": 20,
+        "startChar": 5,
+        "endLine": 20,
+        "endChar": 15
+      },
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cae85e3e_811c3f19",
+        "filename": "go/src/infra/appengine/statsui/internal/model/model.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-03-25T06:27:45Z",
+      "side": 1,
+      "message": "why do we need these types if we already have the protos? is it possible to reuse the proto-based types in the places where these types are used?",
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ee8ba7c2_1f7ee70e",
+        "filename": "go/src/infra/appengine/statsui/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-03-25T06:27:45Z",
+      "side": 1,
+      "message": "why not use the proto enum itself?",
+      "range": {
+        "startLine": 64,
+        "startChar": 0,
+        "endLine": 72,
+        "endChar": 2
+      },
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4fef34b5_12f8db12",
+        "filename": "go/src/infra/appengine/statsui/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-03-25T06:27:45Z",
+      "side": 1,
+      "message": "note that this will result in an INTERNAL error. Ideally it returns a status.Errorf(codes.InvalidArgument, ...) if the input is wrong (e.g. non-existent data source) https://pkg.go.dev/google.golang.org/grpc/status#Errorf\n\nin general, see https://pkg.go.dev/go.chromium.org/luci/grpc/appstatus and its usage to propagate a grpc status from anywhere in the code to here (without creating error variables)",
+      "range": {
+        "startLine": 75,
+        "startChar": 14,
+        "endLine": 75,
+        "endChar": 17
+      },
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dc8ac1a9_93116005",
+        "filename": "go/src/infra/appengine/statsui/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-03-25T06:27:45Z",
+      "side": 1,
+      "message": "seems like we do conversions: from BQ to the intermediate format, and then from intermediate format to protos (here). Why not convert bq data to the proto format right away?",
+      "range": {
+        "startLine": 77,
+        "startChar": 0,
+        "endLine": 100,
+        "endChar": 1
+      },
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
