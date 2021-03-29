@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "55de6fa3_9bdb154e",
+        "filename": "recipes/recipe_modules/support_3pp/cipd_spec.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2021-03-29T23:05:35Z",
+      "side": 1,
+      "message": "I wish we had error codes of some sort instead of string matching. But maybe that ship has sailed.",
+      "revId": "5993b1d214359c3cb4ba070279317266789ced7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
