@@ -58,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f9f09c70_fb0daec7",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/client.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2021-04-02T05:19:08Z",
+      "side": 1,
+      "message": "Done.  Not a huge fan of sorting grouping imports by hand though.  I\u0027d rather just have the IDE or goimports do it, but they\u0027re not very smart.",
+      "parentUuid": "253ce04c_f331869d",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 30
+      },
+      "revId": "3aef4b3d090aa96a03e90876f5bb38fb4f2f6a50",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5bc4082d_66584068",
@@ -71,6 +95,30 @@
       "writtenOn": "2021-04-02T04:45:04Z",
       "side": 1,
       "message": "why not strings.ToLower(period.ToString()) ?\n\nthen L42-50 aren\u0027t needed",
+      "range": {
+        "startLine": 52,
+        "startChar": 54,
+        "endLine": 52,
+        "endChar": 66
+      },
+      "revId": "3aef4b3d090aa96a03e90876f5bb38fb4f2f6a50",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3a3d7e1d_843251ef",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/client.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2021-04-02T05:19:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5bc4082d_66584068",
       "range": {
         "startLine": 52,
         "startChar": 54,
@@ -104,6 +152,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "86d32baa_5f365b2d",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/client.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2021-04-02T05:19:08Z",
+      "side": 1,
+      "message": "Good call.  Thanks!",
+      "parentUuid": "8fe83a8f_70aae176",
+      "range": {
+        "startLine": 126,
+        "startChar": 0,
+        "endLine": 131,
+        "endChar": 4
+      },
+      "revId": "3aef4b3d090aa96a03e90876f5bb38fb4f2f6a50",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2e638cf2_553999ff",
@@ -117,6 +189,24 @@
       "writtenOn": "2021-04-02T04:45:04Z",
       "side": 1,
       "message": "nit:  I think chops code more often has\n\n  section.Metrics[i] \u003d metric\n\nwhen we know the length exactly. It would also shorten L123 a bit",
+      "revId": "3aef4b3d090aa96a03e90876f5bb38fb4f2f6a50",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "debb65a7_04cc7af6",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/client.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2021-04-02T05:19:08Z",
+      "side": 1,
+      "message": "m is a map, so it\u0027s iterating over keys \u0026 values.  Seems like creating a counter variable to increment would be more verbose and unneeded.",
+      "parentUuid": "2e638cf2_553999ff",
       "revId": "3aef4b3d090aa96a03e90876f5bb38fb4f2f6a50",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
