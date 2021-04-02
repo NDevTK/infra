@@ -161,6 +161,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "d92c2e25_40ebed1c",
+        "filename": "go/src/infra/appengine/statsui/api/service.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-04-02T04:45:04Z",
+      "side": 1,
+      "message": "i think string is fine, but a reader of this proto still wouldn\u0027t know what are the valid values without reading the code. Maybe add \"See datasources.yaml for valid values\" or something like that?",
+      "parentUuid": "f4deeeed_7729030c",
+      "range": {
+        "startLine": 24,
+        "startChar": 2,
+        "endLine": 24,
+        "endChar": 8
+      },
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6068b448_5bea5ab5",
         "filename": "go/src/infra/appengine/statsui/api/service.proto",
         "patchSetId": 2

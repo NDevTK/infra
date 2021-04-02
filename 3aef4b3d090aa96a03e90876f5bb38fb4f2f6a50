@@ -16,6 +16,132 @@
       "message": "Updated",
       "revId": "3aef4b3d090aa96a03e90876f5bb38fb4f2f6a50",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ee8be013_91057b80",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-04-02T04:45:04Z",
+      "side": 1,
+      "message": "LGTM, although Period type seems unnecessary",
+      "revId": "3aef4b3d090aa96a03e90876f5bb38fb4f2f6a50",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "253ce04c_f331869d",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/client.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-04-02T04:45:04Z",
+      "side": 1,
+      "message": "nit: a practice I noticed many follow and I recommend is splitting imports into the following blocks, in that order:\n\n  stdlib\n  outside of chops\n  chops stuff\n  this application\n  dot imports (applies only in tests)\n\nso e.g.\n\n  import (\n    \"context\"\n    \"math/big\"\n    \"sort\"\n\n    \"cloud.google.com/go/bigquery\"\n    \"cloud.google.com/go/civil\"\n    \"google.golang.org/api/iterator\"\n    \"google.golang.org/grpc/codes\"\n\n    \"go.chromium.org/luci/grpc/appstatus\"\n    \n    \"infra/appengine/statsui/api\"\n  )\n\napplies to other files as well",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 30
+      },
+      "revId": "3aef4b3d090aa96a03e90876f5bb38fb4f2f6a50",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5bc4082d_66584068",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/client.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-04-02T04:45:04Z",
+      "side": 1,
+      "message": "why not strings.ToLower(period.ToString()) ?\n\nthen L42-50 aren\u0027t needed",
+      "range": {
+        "startLine": 52,
+        "startChar": 54,
+        "endLine": 52,
+        "endChar": 66
+      },
+      "revId": "3aef4b3d090aa96a03e90876f5bb38fb4f2f6a50",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8fe83a8f_70aae176",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/client.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-04-02T04:45:04Z",
+      "side": 1,
+      "message": "would it be simpler if instead of creating stuff and then throwing it away, we crated it only what\u0027s needed? That is\n1) remove L98-101\n2) remove L126-131\n3) in L107\n   if metric.Sections \u003d\u003d nil {\n     metric.Sections \u003d make(map[string]*api.DataSet),\n   }\n4) in L115\n   if metric.Data \u003d\u003d nil {\n     metric.Data \u003d \u0026api.DataSet{ Data: make(map[string]float32) }\n   }",
+      "range": {
+        "startLine": 126,
+        "startChar": 0,
+        "endLine": 131,
+        "endChar": 4
+      },
+      "revId": "3aef4b3d090aa96a03e90876f5bb38fb4f2f6a50",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2e638cf2_553999ff",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/client.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-04-02T04:45:04Z",
+      "side": 1,
+      "message": "nit:  I think chops code more often has\n\n  section.Metrics[i] \u003d metric\n\nwhen we know the length exactly. It would also shorten L123 a bit",
+      "revId": "3aef4b3d090aa96a03e90876f5bb38fb4f2f6a50",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6e60f075_e8c61dfd",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/config.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-04-02T04:45:04Z",
+      "side": 1,
+      "message": "still not sure why we need this type.\nPeriod_name, Period_value and (Period).String() can be used to convert from enum to string and back\nhttps://chromium-review.googlesource.com/c/infra/infra/+/2782401/3/go/src/infra/appengine/statsui/api/service.pb.go#42",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 1
+      },
+      "revId": "3aef4b3d090aa96a03e90876f5bb38fb4f2f6a50",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
