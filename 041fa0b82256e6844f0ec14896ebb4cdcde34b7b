@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0060b2e1_01084c22",
+        "filename": "go/src/infra/appengine/statsui/api/service.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2021-04-02T03:13:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "104c306e_3555b667",
+      "range": {
+        "startLine": 17,
+        "startChar": 5,
+        "endLine": 17,
+        "endChar": 11
+      },
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b896b9eb_67ced172",
@@ -89,6 +113,54 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "f4deeeed_7729030c",
+        "filename": "go/src/infra/appengine/statsui/api/service.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2021-04-02T03:13:42Z",
+      "side": 1,
+      "message": "It\u0027s configured in datasources.yaml.  Since it\u0027s more of a configuration property, I\u0027m inclined to keep it in a string.  WDYT?",
+      "parentUuid": "b896b9eb_67ced172",
+      "range": {
+        "startLine": 24,
+        "startChar": 2,
+        "endLine": 24,
+        "endChar": 8
+      },
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cbc4f17d_9a896a9b",
+        "filename": "go/src/infra/appengine/statsui/api/service.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2021-04-02T03:13:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d2b4d660_51170dff",
+      "range": {
+        "startLine": 24,
+        "startChar": 9,
+        "endLine": 24,
+        "endChar": 19
+      },
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6068b448_5bea5ab5",
         "filename": "go/src/infra/appengine/statsui/api/service.proto",
         "patchSetId": 2
@@ -100,6 +172,30 @@
       "writtenOn": "2021-03-25T06:27:45Z",
       "side": 1,
       "message": "please either document the format, or (better) use a more structured format, for example standard date.proto [1] or timestamp.proto [2]\n\n[1]: https://github.com/googleapis/googleapis/blob/master/google/type/date.proto\n[2]: https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/timestamp.proto",
+      "range": {
+        "startLine": 28,
+        "startChar": 11,
+        "endLine": 28,
+        "endChar": 17
+      },
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "65aa2a78_ccd4cc35",
+        "filename": "go/src/infra/appengine/statsui/api/service.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2021-04-02T03:13:42Z",
+      "side": 1,
+      "message": "Documented.",
+      "parentUuid": "6068b448_5bea5ab5",
       "range": {
         "startLine": 28,
         "startChar": 11,
@@ -127,6 +223,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e7562efe_84d24572",
+        "filename": "go/src/infra/appengine/statsui/api/service.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2021-04-02T03:13:42Z",
+      "side": 1,
+      "message": "Documented, unless there was some other way to handle this.",
+      "parentUuid": "09e8797d_5b02a173",
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "759c3590_39d95606",
@@ -140,6 +254,30 @@
       "writtenOn": "2021-03-25T06:27:45Z",
       "side": 1,
       "message": "not sure why these errors are exported. They aren\u0027t used anywhere. Also they are less useful than if they actually specified the invalid value. Consider\n\n  return nil, errors.Reason(\"data source %q not found\", dataSource).Err()\n\nin L40 instead",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 59
+      },
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9861742a_0f279c40",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/client.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2021-04-02T03:13:42Z",
+      "side": 1,
+      "message": "This was a remnant of some error handling logic I removed.  Fixed.",
+      "parentUuid": "759c3590_39d95606",
       "range": {
         "startLine": 23,
         "startChar": 0,
@@ -175,6 +313,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "f11b4486_11268c7e",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/client.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2021-04-02T03:13:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6828c7e7_c6e93a9d",
+      "range": {
+        "startLine": 38,
+        "startChar": 94,
+        "endLine": 38,
+        "endChar": 103
+      },
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "79d1f464_d1024161",
         "filename": "go/src/infra/appengine/statsui/internal/datasources/client.go",
         "patchSetId": 2
@@ -186,6 +348,24 @@
       "writtenOn": "2021-03-25T06:27:45Z",
       "side": 1,
       "message": "note that iteration over a map has random order, so the slices have random order too. if you were to write a test, we\u0027d need to sort these slices",
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d9fbca27_f3b52e1a",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/client.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2021-04-02T03:13:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "79d1f464_d1024161",
       "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -207,6 +387,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cdd82849_183b188b",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2021-04-02T03:13:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "19bf571e_bc2993fc",
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1ccb72d1_6bf8d3a4",
@@ -220,6 +418,24 @@
       "writtenOn": "2021-03-25T06:27:45Z",
       "side": 1,
       "message": "golint: all public symbols must have comments",
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "58a32a86_bd6fcda4",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2021-04-02T03:13:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1ccb72d1_6bf8d3a4",
       "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -247,6 +463,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d39c557b_8fa8fdf4",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2021-04-02T03:13:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e8d7a577_3701be49",
+      "range": {
+        "startLine": 20,
+        "startChar": 5,
+        "endLine": 20,
+        "endChar": 15
+      },
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "cae85e3e_811c3f19",
@@ -264,6 +504,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7c52d571_07ea9f60",
+        "filename": "go/src/infra/appengine/statsui/internal/model/model.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2021-04-02T03:13:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cae85e3e_811c3f19",
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ee8ba7c2_1f7ee70e",
@@ -277,6 +535,30 @@
       "writtenOn": "2021-03-25T06:27:45Z",
       "side": 1,
       "message": "why not use the proto enum itself?",
+      "range": {
+        "startLine": 64,
+        "startChar": 0,
+        "endLine": 72,
+        "endChar": 2
+      },
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6b6e8de8_12fa771a",
+        "filename": "go/src/infra/appengine/statsui/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2021-04-02T03:13:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ee8ba7c2_1f7ee70e",
       "range": {
         "startLine": 64,
         "startChar": 0,
@@ -310,6 +592,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "760ca48f_4942fc7a",
+        "filename": "go/src/infra/appengine/statsui/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2021-04-02T03:13:42Z",
+      "side": 1,
+      "message": "I think I did what\u0027s suggested?  Feels strange returning appstatus.Errorf(...) from the client though...",
+      "parentUuid": "4fef34b5_12f8db12",
+      "range": {
+        "startLine": 75,
+        "startChar": 14,
+        "endLine": 75,
+        "endChar": 17
+      },
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dc8ac1a9_93116005",
@@ -323,6 +629,30 @@
       "writtenOn": "2021-03-25T06:27:45Z",
       "side": 1,
       "message": "seems like we do conversions: from BQ to the intermediate format, and then from intermediate format to protos (here). Why not convert bq data to the proto format right away?",
+      "range": {
+        "startLine": 77,
+        "startChar": 0,
+        "endLine": 100,
+        "endChar": 1
+      },
+      "revId": "041fa0b82256e6844f0ec14896ebb4cdcde34b7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d73d72f5_d664f185",
+        "filename": "go/src/infra/appengine/statsui/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2021-04-02T03:13:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dc8ac1a9_93116005",
       "range": {
         "startLine": 77,
         "startChar": 0,
