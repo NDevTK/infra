@@ -82,6 +82,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "02fde314_16df470b",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/client.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-04-02T05:28:19Z",
+      "side": 1,
+      "message": "true that.\n\nnice thing about VSCode/goimports though is that it is smart enough to add an import into the right block. So it ends up being not a big deal.\n\nbut I agree in general, but never found the time to write a tool to do this.",
+      "parentUuid": "f9f09c70_fb0daec7",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 30
+      },
+      "revId": "3aef4b3d090aa96a03e90876f5bb38fb4f2f6a50",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5bc4082d_66584068",
@@ -211,6 +235,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0587794c_8fabd47d",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/client.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-04-02T05:28:19Z",
+      "side": 1,
+      "message": "ah, missed that",
+      "parentUuid": "debb65a7_04cc7af6",
+      "revId": "3aef4b3d090aa96a03e90876f5bb38fb4f2f6a50",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6e60f075_e8c61dfd",
@@ -224,6 +266,30 @@
       "writtenOn": "2021-04-02T04:45:04Z",
       "side": 1,
       "message": "still not sure why we need this type.\nPeriod_name, Period_value and (Period).String() can be used to convert from enum to string and back\nhttps://chromium-review.googlesource.com/c/infra/infra/+/2782401/3/go/src/infra/appengine/statsui/api/service.pb.go#42",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 1
+      },
+      "revId": "3aef4b3d090aa96a03e90876f5bb38fb4f2f6a50",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "15d79993_1b4bb404",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/config.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-04-02T05:28:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6e60f075_e8c61dfd",
       "range": {
         "startLine": 21,
         "startChar": 0,

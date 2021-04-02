@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "11faf2f9_af4d4004",
+        "filename": "go/src/infra/appengine/statsui/internal/datasources/client.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-04-02T05:28:19Z",
+      "side": 1,
+      "message": "nit: fmt package would do this for you. This is unnecessary",
+      "range": {
+        "startLine": 45,
+        "startChar": 106,
+        "endLine": 45,
+        "endChar": 115
+      },
+      "revId": "8e12006dd8a51a5db876932bb4043184396a8f47",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
