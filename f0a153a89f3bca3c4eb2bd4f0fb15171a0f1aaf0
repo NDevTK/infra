@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e912e91b_2c48534a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1365447
+      },
+      "writtenOn": "2021-04-06T22:31:36Z",
+      "side": 1,
+      "message": "LGTM. Defer to ayatane@ for +1.",
+      "revId": "f0a153a89f3bca3c4eb2bd4f0fb15171a0f1aaf0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
