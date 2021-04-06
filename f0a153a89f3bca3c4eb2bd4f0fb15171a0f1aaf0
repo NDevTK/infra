@@ -67,6 +67,24 @@
       "message": "Why is ok declared outside of the loop? Suggest declaring inside loop",
       "revId": "f0a153a89f3bca3c4eb2bd4f0fb15171a0f1aaf0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1f5995e7_be9c4502",
+        "filename": "go/src/infra/cros/cmd/caching-backend/conf-creator/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-04-06T23:08:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6d126f5f_773f6e08",
+      "revId": "f0a153a89f3bca3c4eb2bd4f0fb15171a0f1aaf0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
