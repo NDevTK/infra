@@ -72,13 +72,13 @@ func needToAcceptLicense(ctx context.Context, xcodeAppPath, acceptedLicensesFile
 
 	licenseID, licenseType, err := getXcodeLicenseInfo(licenseInfoFile)
 	if err != nil {
-		errors.Log(ctx, err)
+		logging.Warningf(ctx, "Need to accept license becase of error in getXcodeLicenseInfo: %s", err.Error())
 		return true
 	}
 
 	acceptedLicenseID, err := getXcodeAcceptedLicense(acceptedLicensesFile, licenseType)
 	if err != nil {
-		errors.Log(ctx, err)
+		logging.Warningf(ctx, "Need to accept license becase of error in getXcodeAcceptedLicense: %s", err.Error())
 		return true
 	}
 
