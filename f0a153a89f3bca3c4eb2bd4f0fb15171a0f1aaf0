@@ -16,6 +16,57 @@
       "message": "LGTM. Defer to ayatane@ for +1.",
       "revId": "f0a153a89f3bca3c4eb2bd4f0fb15171a0f1aaf0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a64acca2_1c5ead35",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-04-06T22:55:48Z",
+      "side": 1,
+      "message": "LGTM % comment",
+      "revId": "f0a153a89f3bca3c4eb2bd4f0fb15171a0f1aaf0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4687ce2f_84457d1b",
+        "filename": "go/src/infra/cros/cmd/caching-backend/conf-creator/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-04-06T22:55:48Z",
+      "side": 1,
+      "message": "reminder to make separate CL next time",
+      "revId": "f0a153a89f3bca3c4eb2bd4f0fb15171a0f1aaf0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6d126f5f_773f6e08",
+        "filename": "go/src/infra/cros/cmd/caching-backend/conf-creator/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-04-06T22:55:48Z",
+      "side": 1,
+      "message": "Why is ok declared outside of the loop? Suggest declaring inside loop",
+      "revId": "f0a153a89f3bca3c4eb2bd4f0fb15171a0f1aaf0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
