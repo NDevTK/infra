@@ -51,6 +51,42 @@
       "message": "Why is this needed?",
       "revId": "1b4447aeee2e76c6ae35abd9ecf3b8abf67b5b08",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "61322f32_b3efcc25",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-04-06T23:03:43Z",
+      "side": 1,
+      "message": "This is only useful when work on a \"non-standard\" k8s which bond0 was not created. While we ask lab team to create bond0 for us, we can use this feature to temporarily get unblocked and save a day.",
+      "parentUuid": "43de203e_c6380bce",
+      "revId": "1b4447aeee2e76c6ae35abd9ecf3b8abf67b5b08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "33e9c5e2_41637c17",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-04-06T23:03:43Z",
+      "side": 1,
+      "message": "Sorry for the confusing. I should clarify that this basically is only used when we can\u0027t wait lab team to create bond0 and want getting unblocked immediately.",
+      "parentUuid": "04a65c35_cbcbd3c4",
+      "revId": "1b4447aeee2e76c6ae35abd9ecf3b8abf67b5b08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
