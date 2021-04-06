@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {LitElement, html, css} from 'lit-element';
+import {unsafeHTML} from 'lit-html/directives/unsafe-html.js';
 
 import debounce from 'debounce';
 
@@ -38,6 +39,7 @@ import {ISSUE_EDIT_PERMISSION, ISSUE_EDIT_SUMMARY_PERMISSION,
 } from 'shared/consts/permissions.js';
 import {fieldDefsWithGroup, fieldDefsWithoutGroup, valuesForField,
   HARDCODED_FIELD_GROUPS} from 'shared/metadata-helpers.js';
+import {renderMarkdown, sanitizeMarkdown} from 'shared/md-helper.js';
 
 
 const DEBOUNCED_PRESUBMIT_TIME_OUT = 400;
@@ -171,6 +173,8 @@ export class MrEditMetadata extends connectStore(LitElement) {
 
   /** @override */
   render() {
+    const markedHTML = unsafeHTML(renderMarkdown(this.freshComment, { mdLibrary: 'marked', sanitize: true, xssLibrary: 'DOMPurify' }));
+
     return html`
       <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
             rel="stylesheet">
@@ -186,6 +190,10 @@ export class MrEditMetadata extends connectStore(LitElement) {
           @keyup=${this._processChanges}
           aria-label="Comment"
         ></textarea>
+        <div id="markdown-preview">
+          <h2>Preview of new comment in Markdown</h2><br>
+          ${markedHTML}
+        </div>
         <mr-upload
           ?hidden=${this.disableAttachments}
           @change=${this._processChanges}
@@ -654,6 +662,7 @@ export class MrEditMetadata extends connectStore(LitElement) {
     this.presubmitDebounceTimeOut = DEBOUNCED_PRESUBMIT_TIME_OUT;
     this.saving = false;
     this.isDirty = false;
+    this.freshComment = '';
   }
 
   /** @override */
@@ -751,6 +760,7 @@ export class MrEditMetadata extends connectStore(LitElement) {
     // Access boolean value from allStarredIssues
     const starredIssues = issueV0.starredIssues(state);
     this.isStarred = starredIssues.has(issueRefToString(this.issueRef));
+    this.freshComment = this.getCommentContent()
   }
 
   /** @override */
@@ -1049,6 +1059,8 @@ export class MrEditMetadata extends connectStore(LitElement) {
         commentContent: this.getCommentContent(),
       },
     }));
+
+    this.freshComment = this.getCommentContent();
   }
 
   // This function exists because <label for="inputId"> doesn't work for custom

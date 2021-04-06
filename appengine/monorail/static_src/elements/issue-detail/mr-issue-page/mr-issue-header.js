@@ -163,6 +163,10 @@ export class MrIssueHeader extends connectStore(LitElement) {
           <mr-code-font-toggle
             .userDisplayName=${this.userDisplayName}
           ></mr-code-font-toggle>
+          <chops-toggle
+            ?checked=${false}
+            title="Render as Markdown"
+           >Markdown</chops-toggle>
         </div>
         ${this._issueOptions.length ? html`
           <mr-dropdown

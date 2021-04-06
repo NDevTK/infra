@@ -437,4 +437,4 @@ function applyLinks(
 }
 
 
-export const autolink = {Components, getReferencedArtifacts, markupAutolinks};
+export const autolink = {Components, getReferencedArtifacts, markupAutolinks, autolinkChunk};
