@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4da5820b_73256656",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1365447
+      },
+      "writtenOn": "2021-04-06T22:34:11Z",
+      "side": 1,
+      "message": "How will this work in practice wrt applying the yaml file to any cluster?",
+      "revId": "1b4447aeee2e76c6ae35abd9ecf3b8abf67b5b08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
