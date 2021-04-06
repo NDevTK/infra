@@ -16,6 +16,24 @@
       "message": "How will this work in practice wrt applying the yaml file to any cluster?",
       "revId": "1b4447aeee2e76c6ae35abd9ecf3b8abf67b5b08",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "04a65c35_cbcbd3c4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1365447
+      },
+      "writtenOn": "2021-04-06T22:44:35Z",
+      "side": 1,
+      "message": "I think my wording is a bit unclear in the question. I understand that allowing the interface to be changeable from the command lets us change the used interface from the yaml file as against creating and deploying a new init container image.\n\nIIUC, the cluster admins will still have some restrictions like - all nodes in a cluster must have the same interface enabled on all nodes in a cluster.\n\nIn case of 2 clusters within the same lab (for eg, HTL has two clusters ATM), should all nodes in the two clusters have the same interface enabled? If not, then will we need 2 separate yaml files to accommodate the differences in interfaces?",
+      "parentUuid": "4da5820b_73256656",
+      "revId": "1b4447aeee2e76c6ae35abd9ecf3b8abf67b5b08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
