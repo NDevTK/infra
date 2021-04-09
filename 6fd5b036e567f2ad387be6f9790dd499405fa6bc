@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "490ad704_1881c1f6",
+        "filename": "appengine/predator/analysis/chrome_crash_data.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-04-09T00:23:08Z",
+      "side": 0,
+      "message": "Looks like there\u0027s some spetial handling and normalization for some of the fields in https://source.chromium.org/chromium/infra/infra/+/master:appengine/predator/analysis/crash_data.py;drc\u003d833b3a01d02823629e7b9b222c8dc0b6f4012b99\n\nAnd the some fields here don\u0027t match the fields in crash_data[\u0027crash_identifiers\u0027] (for example regression_range)",
+      "range": {
+        "startLine": 153,
+        "startChar": 11,
+        "endLine": 157,
+        "endChar": 36
+      },
+      "revId": "6fd5b036e567f2ad387be6f9790dd499405fa6bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
