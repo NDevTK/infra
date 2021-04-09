@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8e7d518a_f2cec82e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2021-04-09T18:41:30Z",
+      "side": 1,
+      "message": "PTAL, this tells Karma how to run TypeScript/React files.",
+      "revId": "17411e2e4ed60162a874e995d8fe27da0dc5f461",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
