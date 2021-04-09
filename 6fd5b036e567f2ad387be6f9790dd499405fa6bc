@@ -22,6 +22,30 @@
       },
       "revId": "6fd5b036e567f2ad387be6f9790dd499405fa6bc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6fe987e8_6d5e206a",
+        "filename": "appengine/predator/analysis/chrome_crash_data.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1172779
+      },
+      "writtenOn": "2021-04-09T00:32:22Z",
+      "side": 0,
+      "message": "My understanding is that the normalized values are for Predator\u0027s internal use. We want the original identifiers to be returned to associate the results with the original request.\n\nI think it\u0027s WAI that the fields are not always consistent. Predator does not interpret these identifiers and they are different for each client.",
+      "parentUuid": "490ad704_1881c1f6",
+      "range": {
+        "startLine": 153,
+        "startChar": 11,
+        "endLine": 157,
+        "endChar": 36
+      },
+      "revId": "6fd5b036e567f2ad387be6f9790dd499405fa6bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
