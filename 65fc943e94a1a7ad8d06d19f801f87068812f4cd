@@ -1,0 +1,30 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000009821041",
+      "url": "https://android-build.googleplex.com/builds/treetop/chromium-review/2757303?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "93e3b569_0cce3b4b",
+        "filename": "appengine/monorail/static_src/elements/framework/mr-comment-content/mr-comment-content.js",
+        "patchSetId": 3
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1493702
+      },
+      "writtenOn": "2021-04-12T21:15:23Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 111,
+        "startChar": 0,
+        "endLine": 111,
+        "endChar": 4
+      },
+      "revId": "65fc943e94a1a7ad8d06d19f801f87068812f4cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
