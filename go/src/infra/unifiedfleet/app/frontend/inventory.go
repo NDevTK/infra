@@ -201,7 +201,7 @@ func (fs *FleetServerImpl) RenameMachineLSE(ctx context.Context, req *ufsAPI.Ren
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
-	return nil, errors.Reason("Not implelmented yet").Err()
+	return nil, controller.RenameMachineLSE(ctx, req.Name, req.NewName)
 }
 
 func updateNetworkOpt(userVlan, ip string, nwOpt *ufsAPI.NetworkOption) *ufsAPI.NetworkOption {
