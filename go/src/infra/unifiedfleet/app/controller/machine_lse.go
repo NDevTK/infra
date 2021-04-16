@@ -1655,6 +1655,9 @@ func RenameMachineLSE(ctx context.Context, oldName, newName string) error {
 		if lse.GetChromeosMachineLse().GetDeviceLse().GetDut() != nil {
 			return renameDUT(ctx, oldName, newName, lse, machine)
 		}
+		if lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation() != nil {
+			return renameLabstation(ctx, oldName, newName, lse, machine)
+		}
 		return status.Errorf(codes.Unimplemented, fmt.Sprintf("Renaming %s is not supported yet", oldName))
 	}
 	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
