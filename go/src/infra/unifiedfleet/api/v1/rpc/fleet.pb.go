@@ -7834,7 +7834,7 @@ type RenameAssetRequest struct {
 
 	// The name of the Asset to rename
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// The new name of the Asset.
+	// The new Asset of the MachineLSE
 	NewName string `protobuf:"bytes,2,opt,name=new_name,json=newName,proto3" json:"new_name,omitempty"`
 }
 

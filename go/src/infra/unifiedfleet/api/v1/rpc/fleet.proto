@@ -1860,7 +1860,7 @@ message RenameAssetRequest {
     (google.api.resource_reference) = { type: "unified-fleet-system.appspot.com/Asset" }
   ];
 
-  // The new name of the Asset.
+  // The new Asset of the MachineLSE
   string new_name = 2 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = { type: "unified-fleet-system.appspot.com/Asset" }

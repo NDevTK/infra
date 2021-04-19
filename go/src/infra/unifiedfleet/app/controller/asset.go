@@ -203,9 +203,10 @@ func RenameAsset(ctx context.Context, oldName, newName string) error {
 		newHc := &HistoryClient{}
 		// Rename the asset to the new name given.
 		asset.Name = newName
-		if info := asset.GetInfo(); info != nil {
-			asset.Info.AssetTag = newName
+		if info := asset.GetInfo(); info == nil {
+			asset.Info = &ufspb.AssetInfo{}
 		}
+		asset.Info.AssetTag = newName
 		// Create a new machine if its a DUT/Labstation asset.
 		if asset.GetType() == ufspb.AssetType_DUT || asset.GetType() == ufspb.AssetType_LABSTATION {
 			// Add corresponding machine to the database.
