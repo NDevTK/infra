@@ -174,6 +174,58 @@ func DeleteAsset(ctx context.Context, name string) error {
 	return datastore.RunInTransaction(ctx, f, nil)
 }
 
+// RenameAsset renames a given asset (and corresponding machine if available) with new name.
+func RenameAsset(ctx context.Context, oldName, newName string) error {
+	f := func(ctx context.Context) error {
+		if err := validateRenameAsset(ctx, oldName, newName); err != nil {
+			return err
+		}
+		asset, err := registration.GetAsset(ctx, oldName)
+		if err != nil {
+			return errors.Annotate(err, "RenameAsset - unable to get asset %s", oldName).Err()
+		}
+		oldHc := &HistoryClient{}
+		// If the asset is DUT/Labstation delete the corresponding machine.
+		if asset.GetType() == ufspb.AssetType_DUT || asset.GetType() == ufspb.AssetType_LABSTATION {
+			// Delete the machine first.
+			if err := deleteMachineHelper(ctx, oldName); err != nil {
+				return errors.Annotate(err, "RenameAsset - unable to delete machine %s", oldName).Err()
+			}
+		}
+		// Delete the asset.
+		if err := registration.DeleteAsset(ctx, oldName); err != nil {
+			return errors.Annotate(err, "RenameAsset - unable to delete asset %s", oldName).Err()
+		}
+		oldHc.LogAssetChanges(asset, nil)
+		if err := oldHc.SaveChangeEvents(ctx); err != nil {
+			return errors.Annotate(err, "RenameAsset - Failed to log delete changes").Err()
+		}
+		newHc := &HistoryClient{}
+		// Rename the asset to the new name given.
+		asset.Name = newName
+		if info := asset.GetInfo(); info != nil {
+			asset.Info.AssetTag = newName
+		}
+		// Create a new machine if its a DUT/Labstation asset.
+		if asset.GetType() == ufspb.AssetType_DUT || asset.GetType() == ufspb.AssetType_LABSTATION {
+			// Add corresponding machine to the database.
+			if err := addMachineHelper(ctx, asset); err != nil {
+				return errors.Annotate(err, "RenameAsset - unable to create machine %s", newName).Err()
+			}
+		}
+		// Write the renamed asset to DB.
+		if _, err := registration.BatchUpdateAssets(ctx, []*ufspb.Asset{asset}); err != nil {
+			return err
+		}
+		newHc.LogAssetChanges(nil, asset)
+		if err := newHc.SaveChangeEvents(ctx); err != nil {
+			return errors.Annotate(err, "RenameAsset - unable to save changes to %s asset", newName).Err()
+		}
+		return nil
+	}
+	return datastore.RunInTransaction(ctx, f, nil)
+}
+
 // addMachineHelper adds a machine for the newly added asset.
 //
 // asset should be a DUT or Labstation.
@@ -392,6 +444,19 @@ func validateDeleteAsset(ctx context.Context, asset *ufspb.Asset) error {
 		return status.Errorf(codes.FailedPrecondition, fmt.Sprintf("Asset %s cannot be deleted because DUT %s is referring this Asset.", asset.GetName(), machinelses[0].GetName()))
 	}
 	// TODO(anushruth): Add validation for servo resources
+	return nil
+}
+
+// validateRenameAsset validates if the rename action is possible for the given request
+func validateRenameAsset(ctx context.Context, oldName, newName string) error {
+	// Ensure that the asset with newName doesn't exist
+	if err := resourceAlreadyExists(ctx, []*Resource{GetAssetResource(newName)}, nil); err != nil {
+		return status.Errorf(codes.FailedPrecondition, fmt.Sprintf("Failed to rename %s. %s already exists", oldName, newName))
+	}
+	// Ensure that the asset with oldName exists
+	if err := ResourceExist(ctx, []*Resource{GetAssetResource(oldName)}, nil); err != nil {
+		return status.Errorf(codes.FailedPrecondition, fmt.Sprintf("Failed to rename %s. It doesn't exist", oldName))
+	}
 	return nil
 }
 
