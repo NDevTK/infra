@@ -50,6 +50,23 @@
       "message": "realm permission check?",
       "revId": "088e9160218621f6dfc1851fac51b9d949a0179f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a386ba02_eda4e960",
+        "filename": "go/src/infra/unifiedfleet/app/frontend/registration.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 1193,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-04-20T18:21:03Z",
+      "side": 1,
+      "message": "util.RemovePrefix",
+      "revId": "088e9160218621f6dfc1851fac51b9d949a0179f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
