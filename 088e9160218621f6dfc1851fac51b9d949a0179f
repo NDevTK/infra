@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "11ffe94f_b953b1a2",
+        "filename": "go/src/infra/unifiedfleet/app/controller/asset.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-04-20T18:17:28Z",
+      "side": 1,
+      "message": "Combine log change events and log rename event.",
+      "revId": "088e9160218621f6dfc1851fac51b9d949a0179f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4cea89c3_c7bb8e6d",
+        "filename": "go/src/infra/unifiedfleet/app/controller/asset.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-04-20T18:17:28Z",
+      "side": 1,
+      "message": "Need to update MachineLSE\u0027s \"machines\" field.",
+      "revId": "088e9160218621f6dfc1851fac51b9d949a0179f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c3fc30ff_870b5bb8",
+        "filename": "go/src/infra/unifiedfleet/app/controller/asset.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 451,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-04-20T18:17:28Z",
+      "side": 1,
+      "message": "realm permission check?",
+      "revId": "088e9160218621f6dfc1851fac51b9d949a0179f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
