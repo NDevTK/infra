@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f45bcc87_a4d4af11",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 316,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2021-04-20T20:27:06Z",
+      "side": 1,
+      "message": "I see your point. I added the interface in a similar pattern to the interface for `links`.",
+      "parentUuid": "b0dfd207_88e40dae",
+      "revId": "c7f793fe23650574a5c65bcabf18b82799720566",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5e0026d0_9235d277",
@@ -31,6 +49,30 @@
       "writtenOn": "2021-04-20T19:40:22Z",
       "side": 1,
       "message": "nit: join?",
+      "range": {
+        "startLine": 342,
+        "startChar": 4,
+        "endLine": 343,
+        "endChar": 5
+      },
+      "revId": "c7f793fe23650574a5c65bcabf18b82799720566",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aebae0d5_50be6237",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 343,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2021-04-20T20:27:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5e0026d0_9235d277",
       "range": {
         "startLine": 342,
         "startChar": 4,

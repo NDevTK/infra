@@ -261,6 +261,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "83c4ec0f_4558862d",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2021-04-20T20:27:06Z",
+      "side": 1,
+      "message": "json.go also uses strings.Builder{}, but it\u0027s declared in a local scope of ToProtos().\n: https://source.chromium.org/chromium/infra/infra/+/master:go/src/infra/tools/result_adapter/json.go;l\u003d151\n\nI will send a separate CL to update both.",
+      "parentUuid": "b962facd_6e461275",
+      "range": {
+        "startLine": 342,
+        "startChar": 2,
+        "endLine": 342,
+        "endChar": 15
+      },
+      "revId": "ab5a3c319eed9d3a22de8dabe879f54c1a864209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e5cfffe3_891ea151",
