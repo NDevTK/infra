@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bc59f713_189b8ca2",
+        "filename": "go/src/infra/cmd/shivas/ufs/subcmds/asset/rename_asset.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-04-20T18:24:42Z",
+      "side": 1,
+      "message": "Set is as \"os\" by default.",
+      "revId": "f145743e8b4905b675bcea897261eaa06cfbe1ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "30833e5c_6f7f6b77",
+        "filename": "go/src/infra/cmd/shivas/ufs/subcmds/asset/rename_asset.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-04-20T18:24:42Z",
+      "side": 1,
+      "message": "print new asset.",
+      "revId": "f145743e8b4905b675bcea897261eaa06cfbe1ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "618e7a9e_b213d81a",
+        "filename": "go/src/infra/unifiedfleet/api/v1/rpc/fleet.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 1863,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-04-20T18:24:42Z",
+      "side": 1,
+      "message": "Move the change to this CL - https://chromium-review.googlesource.com/c/infra/infra/+/2837705/2",
+      "revId": "f145743e8b4905b675bcea897261eaa06cfbe1ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9c02e481_10af9555",
+        "filename": "go/src/infra/unifiedfleet/app/controller/asset.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-04-20T18:24:42Z",
+      "side": 1,
+      "message": "move change to this CL - https://chromium-review.googlesource.com/c/infra/infra/+/2837706",
+      "revId": "f145743e8b4905b675bcea897261eaa06cfbe1ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
