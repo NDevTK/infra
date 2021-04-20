@@ -335,20 +335,13 @@ func (r *GTestResults) convertTestResult(ctx context.Context, testID, name strin
 	if err != nil {
 		return nil, err
 	}
-	stackTrace := r.buf.String()
 
-	if tr.Expected && len(stackTrace) <= maxSummaryLength {
-		// Expected results usually have a short snippet, so just keep it in summaryHtml.
-		tr.SummaryHtml = stackTrace
-	} else if len(stackTrace) > 0 {
-		a := &sinkpb.Artifact{
-			Body:        &sinkpb.Artifact_Contents{Contents: []byte(stackTrace)},
-			ContentType: "text/plain",
-		}
-
-		// TODO(crbug.com/1099606): Remove this summaryHtml when artifact embedding is done.
+	if r.buf.Len() > 0 {
 		tr.SummaryHtml = `<p><text-artifact artifact-id="stack_trace" /></p>`
-		tr.Artifacts = map[string]*sinkpb.Artifact{"stack_trace": a}
+		tr.Artifacts = map[string]*sinkpb.Artifact{"stack_trace": {
+			Body:        &sinkpb.Artifact_Contents{Contents: []byte(r.buf.String())},
+			ContentType: "text/plain",
+		}}
 	}
 
 	// Store the test code location.
