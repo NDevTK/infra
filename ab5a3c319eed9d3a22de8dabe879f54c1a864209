@@ -71,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6644612f_aa898646",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 333,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2021-04-20T19:28:19Z",
+      "side": 1,
+      "message": "done",
+      "parentUuid": "f2d94f4c_c492362b",
+      "range": {
+        "startLine": 333,
+        "startChar": 4,
+        "endLine": 333,
+        "endChar": 40
+      },
+      "revId": "ab5a3c319eed9d3a22de8dabe879f54c1a864209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b6040ae6_a4f08714",
@@ -120,6 +144,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "2467531c_5719fbb7",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 341,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2021-04-20T19:28:19Z",
+      "side": 1,
+      "message": "IIUC, we want to limit the size of summary_html to avoid too large/long summary html in UI.\n\n1) In the existing code, r.buf has the full string with the contents of `snippet` and `links`.\n2) For `snippet`, it makes sense to count every single character, when checking maxSummaryLength. It\u0027s because it\u0027s rendered with \u003cpre\u003e and every character occupies a space in the UI.\n3) However, it doesn\u0027t make sense to count every character in `links` when checking maxSummaryLength. For example, \u003ca href\u003d\"https://abc\"\u003estderr\u003c/a\u003e is rendered as 6 characters in UI, not 34 characters.\n\nThis patch removes the check for maxSummaryLength. Meaning that, if the result.Links has a huge number of links, it can produce 1MB of summary_html. However, I think it\u0027s ok to remove the check because\na) IIUC, what we are is the number characters rendered in UI, not the actual length of the summary_html, as I said in (3) above.\nb) the existing maxSummaryLength is 4000. It should be large enough to cover the rendered characters of \u003ca\u003e links?",
+      "parentUuid": "e2714911_52d8ca45",
+      "range": {
+        "startLine": 341,
+        "startChar": 1,
+        "endLine": 341,
+        "endChar": 26
+      },
+      "revId": "ab5a3c319eed9d3a22de8dabe879f54c1a864209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "08696f47_f95519d8",
         "filename": "go/src/infra/tools/result_adapter/gtest.go",
         "patchSetId": 3
@@ -155,6 +203,30 @@
       "side": 1,
       "message": "I don\u0027t really remember... What\u0027s the benefit of using strings.Builder?",
       "parentUuid": "08696f47_f95519d8",
+      "range": {
+        "startLine": 342,
+        "startChar": 2,
+        "endLine": 342,
+        "endChar": 15
+      },
+      "revId": "ab5a3c319eed9d3a22de8dabe879f54c1a864209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "198e2446_3aea6b52",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2021-04-20T19:28:19Z",
+      "side": 1,
+      "message": "r.buf is an instance of strings.Builder{} already.\nI was questioning what\u0027s the original intent of declaring `buf` in struct GTestResults, and reusing it for each invocation of convertTestResult().\n\nAs I said, reusing the Builder{} object doesn\u0027t really save much memory, as this function has to call r.buf.Reset() each time, which sets the internal buffer with nil.",
+      "parentUuid": "cdeafbed_e0511090",
       "range": {
         "startLine": 342,
         "startChar": 2,
