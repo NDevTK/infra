@@ -18,9 +18,19 @@ import (
 	. "go.chromium.org/luci/common/testing/assertions"
 )
 
+const StackTraceInSummaryHtml = `<p><text-artifact artifact-id="stack_trace" /></p>`
+
 func TestGTestConversions(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
+
+	textArt := func(s string) *sinkpb.Artifact {
+		a := &sinkpb.Artifact{
+			Body:        &sinkpb.Artifact_Contents{Contents: []byte(s)},
+			ContentType: "text/plain",
+		}
+		return a
+	}
 
 	Convey(`From JSON works`, t, func() {
 		str := `{
@@ -189,7 +199,10 @@ func TestGTestConversions(t *testing.T) {
 					LosslessSnippet:     true,
 					OutputSnippetBase64: "WyBSVU4gICAgICBdIEZvb1Rlc3QuVGVzdERvQmFyCigxMCBtcyk=",
 				})
-				So(tr.SummaryHtml, ShouldEqual, "<div><pre>[ RUN      ] FooTest.TestDoBar\n(10 ms)</pre></div>")
+				So(tr.SummaryHtml, ShouldEqual, StackTraceInSummaryHtml)
+				So(tr.Artifacts["stack_trace"], ShouldResembleProto, textArt(
+					"<div><pre>[ RUN      ] FooTest.TestDoBar\n(10 ms)</pre></div>",
+				))
 			})
 
 			Convey("invalid does not cause a fatal error", func() {
@@ -265,8 +278,11 @@ func TestGTestConversions(t *testing.T) {
 					"logcat": json.RawMessage(`{"content": "https://luci-logdog.appspot.com/v/?s=logcat"}`),
 				},
 			})
-			So(tr.SummaryHtml, ShouldContainSubstring,
-				`<a href="https://luci-logdog.appspot.com/v/?s=logcat">logcat</a>`)
+
+			So(tr.SummaryHtml, ShouldEqual, StackTraceInSummaryHtml)
+			So(tr.Artifacts["stack_trace"], ShouldResembleProto, textArt(
+				`<ul><li><a href="https://luci-logdog.appspot.com/v/?s=logcat">logcat</a></li></ul>`,
+			))
 		})
 	})
 
