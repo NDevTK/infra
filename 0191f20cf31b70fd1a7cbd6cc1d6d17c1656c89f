@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "13c28b25_854853ad",
+        "filename": "go/src/infra/unifiedfleet/api/v1/rpc/fleet.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 326,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-04-20T18:12:12Z",
+      "side": 1,
+      "message": "return asset.",
+      "revId": "0191f20cf31b70fd1a7cbd6cc1d6d17c1656c89f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
