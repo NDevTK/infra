@@ -24,6 +24,53 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "027f10bc_424c75e8",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 316,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-04-20T18:58:32Z",
+      "side": 1,
+      "message": "Yeah it should be OK",
+      "parentUuid": "228b1dae_4d5ea827",
+      "range": {
+        "startLine": 316,
+        "startChar": 16,
+        "endLine": 316,
+        "endChar": 23
+      },
+      "revId": "ab5a3c319eed9d3a22de8dabe879f54c1a864209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f2d94f4c_c492362b",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 333,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-04-20T18:58:32Z",
+      "side": 1,
+      "message": "remove?",
+      "range": {
+        "startLine": 333,
+        "startChar": 4,
+        "endLine": 333,
+        "endChar": 40
+      },
+      "revId": "ab5a3c319eed9d3a22de8dabe879f54c1a864209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b6040ae6_a4f08714",
@@ -37,6 +84,30 @@
       "writtenOn": "2021-04-20T07:37:27Z",
       "side": 1,
       "message": "Technically, this is different to the existing condition, and will populate a list of the links to summary html how long the links are, but I think it\u0027s OK? They are \u003ca\u003e links and only the names are displayed on UI.\n\nThis should have counted the characters of rendered link names for the limit of summary html length, if we had to, not the total length of the raw summary_html. WDYT?",
+      "range": {
+        "startLine": 341,
+        "startChar": 1,
+        "endLine": 341,
+        "endChar": 26
+      },
+      "revId": "ab5a3c319eed9d3a22de8dabe879f54c1a864209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e2714911_52d8ca45",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 341,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-04-20T18:58:32Z",
+      "side": 1,
+      "message": "\u003e This should have counted the characters of rendered link names for the limit of summary html length, if we had to, not the total length of the raw summary_html. WDYT?\n\nI don\u0027t get it. When/where to count?",
+      "parentUuid": "b6040ae6_a4f08714",
       "range": {
         "startLine": 341,
         "startChar": 1,
@@ -65,6 +136,53 @@
         "startChar": 2,
         "endLine": 342,
         "endChar": 15
+      },
+      "revId": "ab5a3c319eed9d3a22de8dabe879f54c1a864209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cdeafbed_e0511090",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-04-20T18:58:32Z",
+      "side": 1,
+      "message": "I don\u0027t really remember... What\u0027s the benefit of using strings.Builder?",
+      "parentUuid": "08696f47_f95519d8",
+      "range": {
+        "startLine": 342,
+        "startChar": 2,
+        "endLine": 342,
+        "endChar": 15
+      },
+      "revId": "ab5a3c319eed9d3a22de8dabe879f54c1a864209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e5cfffe3_891ea151",
+        "filename": "go/src/infra/tools/result_adapter/util.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-04-20T18:58:32Z",
+      "side": 1,
+      "message": "We don\u0027t need this anymore, right?",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 24
       },
       "revId": "ab5a3c319eed9d3a22de8dabe879f54c1a864209",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
