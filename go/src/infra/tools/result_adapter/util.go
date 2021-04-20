@@ -37,7 +37,7 @@ const (
 var summaryTmpl = template.Must(template.New("summary").Parse(`
 {{ define "gtest" -}}
 {{- template "links" .links -}}
-{{- if .snippet }}<div><pre>{{.snippet}}</pre></div>{{ end -}}
+{{- if .snippet }}{{.snippet}}{{ end -}}
 {{- end}}
 
 {{ define "jtr" -}}
