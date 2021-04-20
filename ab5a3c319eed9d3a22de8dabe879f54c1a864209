@@ -239,6 +239,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b962facd_6e461275",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-04-20T19:40:22Z",
+      "side": 1,
+      "message": "it is a surprise to me that strings.Buffer.Reset throws away the internal buffer.\nbytes.Buffer doesn\u0027t do that\nhttps://go.googlesource.com/go/+/go1.16.3/src/bytes/buffer.go#97\n\nseems like we should use bytes.Buffer instead?\n\nthis would match the original intention",
+      "parentUuid": "198e2446_3aea6b52",
+      "range": {
+        "startLine": 342,
+        "startChar": 2,
+        "endLine": 342,
+        "endChar": 15
+      },
+      "revId": "ab5a3c319eed9d3a22de8dabe879f54c1a864209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e5cfffe3_891ea151",
         "filename": "go/src/infra/tools/result_adapter/util.go",
         "patchSetId": 3

@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b0dfd207_88e40dae",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 316,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-04-20T19:40:22Z",
+      "side": 1,
+      "message": "looks like a part of the template is in summaryTmpl and a part here. Why not in one place? i.e. pass boolean snippet\u003dtrue to the template. In the template, if it is true, then insert this code.\n\nNote that it is generally fragile: if summaryTmpl used html/template instead of text/template, then this wouldn\u0027t work because this HTML would be escaped.",
+      "revId": "c7f793fe23650574a5c65bcabf18b82799720566",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5e0026d0_9235d277",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 343,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-04-20T19:40:22Z",
+      "side": 1,
+      "message": "nit: join?",
+      "range": {
+        "startLine": 342,
+        "startChar": 4,
+        "endLine": 343,
+        "endChar": 5
+      },
+      "revId": "c7f793fe23650574a5c65bcabf18b82799720566",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
