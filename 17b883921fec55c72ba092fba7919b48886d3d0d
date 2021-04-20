@@ -69,6 +69,24 @@
       "parentUuid": "0d557b3c_5a90e867",
       "revId": "17b883921fec55c72ba092fba7919b48886d3d0d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "53f20d8c_c1edd8fc",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2021-04-20T07:27:54Z",
+      "side": 1,
+      "message": "oops, I\u0027m sorry. 😂\n\nI made a fix, and here is a new invocation with the patch. PTAL.\nhttps://luci-milo-dev.appspot.com/ui/inv/u-ddoman-2021-04-20-07-18-00-266fed86ba3e18fe/test-results",
+      "parentUuid": "c9cabe89_f4a89a87",
+      "revId": "17b883921fec55c72ba092fba7919b48886d3d0d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

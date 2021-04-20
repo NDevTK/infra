@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "08696f47_f95519d8",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2021-04-20T07:27:54Z",
+      "side": 1,
+      "message": "I\u0027d like to remove r.buf, but uses a local strings.Builder{}.\n\n```\nif len(...) {\n  var strings.Builder{}\n  ...\n}\n```\n\nr.buf.Reset() removes the internal buffer. Thus, I don\u0027t think reusing r.buf saves memory usages. What\u0027s the intent of r.buf?",
+      "range": {
+        "startLine": 342,
+        "startChar": 2,
+        "endLine": 342,
+        "endChar": 15
+      },
+      "revId": "ab5a3c319eed9d3a22de8dabe879f54c1a864209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
