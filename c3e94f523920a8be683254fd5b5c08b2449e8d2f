@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ca9634ec_9ff0e6b4",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 316,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-04-20T20:33:47Z",
+      "side": 1,
+      "message": "nice, even better",
+      "revId": "c3e94f523920a8be683254fd5b5c08b2449e8d2f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c2dfc469_d58f11cc",
+        "filename": "go/src/infra/tools/result_adapter/util.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-04-20T20:33:47Z",
+      "side": 1,
+      "message": "does the code fail without this? I\u0027d expect `range` to do nothing on nil",
+      "range": {
+        "startLine": 55,
+        "startChar": 0,
+        "endLine": 55,
+        "endChar": 12
+      },
+      "revId": "c3e94f523920a8be683254fd5b5c08b2449e8d2f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
