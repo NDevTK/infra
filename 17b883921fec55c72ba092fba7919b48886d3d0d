@@ -16,6 +16,23 @@
       "message": "PTAL. Tested at https://paste.googleplex.com/5242766629011456.\n\nThis CL will be landed after https://crrev.com/c/2829364 and the recorder CLs are fully deployed to prod envs.",
       "revId": "17b883921fec55c72ba092fba7919b48886d3d0d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ba1d4472_4af0952f",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-04-20T05:40:13Z",
+      "side": 1,
+      "message": "buf contains summary (HTML), not artifact contents.\n\nFWIU the snippet should go here (and perhaps the artifact should be called \"snippet\"), which is embedded in summary.\n\nI suggest\n- adding a new boolean param to the template. If true, then generate \u003ctext-artifact\u003e pointing to the snippet\n- pass true if snippet is not empty",
+      "revId": "17b883921fec55c72ba092fba7919b48886d3d0d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
