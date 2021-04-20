@@ -168,6 +168,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "2c1c03c6_31737d22",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 341,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-04-20T21:08:16Z",
+      "side": 1,
+      "message": "maxSummaryLength is the limit we added to control the size of summaryHtml when uploading a result to ResultDB, and it has nothing to do with UI.\n\nAnd after this change, as you mentioned here, theoretically it\u0027s still possible that the summary_html is too big because of links. But in reality I think we don\u0027t need to worry about it.",
+      "parentUuid": "2467531c_5719fbb7",
+      "range": {
+        "startLine": 341,
+        "startChar": 1,
+        "endLine": 341,
+        "endChar": 26
+      },
+      "revId": "ab5a3c319eed9d3a22de8dabe879f54c1a864209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "08696f47_f95519d8",
         "filename": "go/src/infra/tools/result_adapter/gtest.go",
         "patchSetId": 3
