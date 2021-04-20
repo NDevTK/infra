@@ -33,6 +33,24 @@
       "message": "buf contains summary (HTML), not artifact contents.\n\nFWIU the snippet should go here (and perhaps the artifact should be called \"snippet\"), which is embedded in summary.\n\nI suggest\n- adding a new boolean param to the template. If true, then generate \u003ctext-artifact\u003e pointing to the snippet\n- pass true if snippet is not empty",
       "revId": "17b883921fec55c72ba092fba7919b48886d3d0d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0d557b3c_5a90e867",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2021-04-20T05:46:51Z",
+      "side": 1,
+      "message": "\u003e\u003e buf contains summary (HTML), not artifact contents.\n\nHere is an artifact uploaded by this binary.\nhttps://staging.results.usercontent.cr.dev/invocations/u-ddoman-2021-04-20-05-07-00-8dce08172e5ecae3/tests/LocalCardMigrationBrowserTestForStatusChip.IconAndBubbleVisibilityAfterTabSwitching/results/825d9b6b-01457/artifacts/stack_trace?token\u003dAXsiX2kiOiIxNjE4ODk2MTQ0OTMxIiwiX3giOiIzNjAwMDAwIn3Oa0Vzmw2KczGMaYbREx7wIsAYhuVWqlhBayatL6vnSw\n\nI don\u0027t see HTML?",
+      "parentUuid": "ba1d4472_4af0952f",
+      "revId": "17b883921fec55c72ba092fba7919b48886d3d0d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
