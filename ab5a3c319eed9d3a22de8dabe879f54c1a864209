@@ -306,6 +306,30 @@
       },
       "revId": "ab5a3c319eed9d3a22de8dabe879f54c1a864209",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "198f5e25_68c3c25c",
+        "filename": "go/src/infra/tools/result_adapter/util.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2021-04-20T20:27:29Z",
+      "side": 1,
+      "message": "Removed",
+      "parentUuid": "e5cfffe3_891ea151",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 24
+      },
+      "revId": "ab5a3c319eed9d3a22de8dabe879f54c1a864209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
