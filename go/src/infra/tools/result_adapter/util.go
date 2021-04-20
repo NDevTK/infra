@@ -25,9 +25,6 @@ const (
 	// formatJTR is Chromium's JSON Test Results format.
 	formatJTR = "chromium_json_test_results"
 
-	// maxSummaryLength is the maximum length of summaryHtml.
-	maxSummaryLength = 4000
-
 	// Gitiles URL for chromium/src repo.
 	chromiumSrcRepo = "https://chromium.googlesource.com/chromium/src"
 )
@@ -37,7 +34,7 @@ const (
 var summaryTmpl = template.Must(template.New("summary").Parse(`
 {{ define "gtest" -}}
 {{- template "links" .links -}}
-{{- if .snippet }}<div><pre>{{.snippet}}</pre></div>{{ end -}}
+{{- if .snippet }}{{.snippet}}{{ end -}}
 {{- end}}
 
 {{ define "jtr" -}}
