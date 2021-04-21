@@ -606,44 +606,8 @@ func RenameMachine(ctx context.Context, oldMachineName, newMachineName string) (
 	var machine *ufspb.Machine
 	var err error
 	f := func(ctx context.Context) error {
-		// Get the old machine
-		machine, err = registration.GetMachine(ctx, oldMachineName)
-		if err != nil {
-			return err
-		}
-
-		// Validate
-		if err = validateRenameMachine(ctx, machine, newMachineName); err != nil {
-			return err
-		}
-
-		// Copy for logging
-		oldMachineCopy := proto.Clone(machine).(*ufspb.Machine)
-		hc := getMachineHistoryClient(oldMachineCopy)
-
-		if err := renameMachineHelper(ctx, oldMachineName, newMachineName, hc); err != nil {
-			return err
-		}
-
-		// Delete old machine
-		err = registration.DeleteMachine(ctx, oldMachineName)
-		if err != nil {
-			return err
-		}
-
-		// Create new machine
-		machine.Name = newMachineName
-		if machine.GetChromeBrowserMachine() != nil {
-			machine.GetChromeBrowserMachine().DisplayName = newMachineName
-		}
-		_, err = registration.BatchUpdateMachines(ctx, []*ufspb.Machine{machine})
-		if err != nil {
-			return err
-		}
-
-		// Log history change events
-		hc.LogMachineChanges(oldMachineCopy, machine)
-		return hc.SaveChangeEvents(ctx)
+		machine, err = renameMachineInner(ctx, oldMachineName, newMachineName)
+		return err
 	}
 
 	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
@@ -654,6 +618,49 @@ func RenameMachine(ctx context.Context, oldMachineName, newMachineName string) (
 		setMachine(ctx, machine)
 	}
 	return machine, nil
+}
+
+// renameMachineInner renames the machine to the given name. Use inside a transaction
+func renameMachineInner(ctx context.Context, oldMachineName, newMachineName string) (machine *ufspb.Machine, err error) {
+	// Get the old machine
+	machine, err = registration.GetMachine(ctx, oldMachineName)
+	if err != nil {
+		return
+	}
+
+	// Validate
+	if err = validateRenameMachine(ctx, machine, newMachineName); err != nil {
+		return
+	}
+
+	// Copy for logging
+	oldMachineCopy := proto.Clone(machine).(*ufspb.Machine)
+	hc := getMachineHistoryClient(oldMachineCopy)
+
+	if err = renameMachineHelper(ctx, oldMachineName, newMachineName, hc); err != nil {
+		return
+	}
+
+	// Delete old machine
+	err = registration.DeleteMachine(ctx, oldMachineName)
+	if err != nil {
+		return
+	}
+
+	// Create new machine
+	machine.Name = newMachineName
+	if machine.GetChromeBrowserMachine() != nil {
+		machine.GetChromeBrowserMachine().DisplayName = newMachineName
+	}
+	_, err = registration.BatchUpdateMachines(ctx, []*ufspb.Machine{machine})
+	if err != nil {
+		return
+	}
+
+	// Log history change events
+	hc.LogMachineChanges(oldMachineCopy, machine)
+	err = hc.SaveChangeEvents(ctx)
+	return
 }
 
 func renameMachineHelper(ctx context.Context, oldMachineName, newMachineName string, hc *HistoryClient) error {

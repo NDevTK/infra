@@ -174,6 +174,48 @@ func DeleteAsset(ctx context.Context, name string) error {
 	return datastore.RunInTransaction(ctx, f, nil)
 }
 
+// RenameAsset renames a given asset (and corresponding machine if available) with new name.
+func RenameAsset(ctx context.Context, oldName, newName string) (res *ufspb.Asset, err error) {
+	f := func(ctx context.Context) error {
+		if err := validateRenameAsset(ctx, oldName, newName); err != nil {
+			return err
+		}
+		asset, err := registration.GetAsset(ctx, oldName)
+		if err != nil {
+			return errors.Annotate(err, "RenameAsset - unable to get asset %s", oldName).Err()
+		}
+		oldAsset := proto.Clone(asset).(*ufspb.Asset)
+		hc := &HistoryClient{}
+		// Delete the asset.
+		if err := registration.DeleteAsset(ctx, oldName); err != nil {
+			return errors.Annotate(err, "RenameAsset - unable to delete asset %s", oldName).Err()
+		}
+		// Rename the asset to the new name given.
+		asset.Name = newName
+		if info := asset.GetInfo(); info != nil {
+			asset.Info.AssetTag = newName
+		}
+		// Write the renamed asset to DB.
+		if _, err := registration.BatchUpdateAssets(ctx, []*ufspb.Asset{asset}); err != nil {
+			return err
+		}
+		// Rename the machine if it's a DUT or a Labstation.
+		if asset.GetType() == ufspb.AssetType_DUT || asset.GetType() == ufspb.AssetType_LABSTATION {
+			if _, err := renameMachineInner(ctx, oldName, newName); err != nil {
+				return errors.Annotate(err, "RenameAsset [%s -> %s] - unable to rename machine", oldName, newName).Err()
+			}
+		}
+		hc.LogAssetChanges(oldAsset, asset)
+		if err := hc.SaveChangeEvents(ctx); err != nil {
+			return errors.Annotate(err, "RenameAsset - unable to save changes to asset").Err()
+		}
+		// Return the asset back to the caller
+		res = asset
+		return nil
+	}
+	return res, datastore.RunInTransaction(ctx, f, nil)
+}
+
 // addMachineHelper adds a machine for the newly added asset.
 //
 // asset should be a DUT or Labstation.
@@ -392,6 +434,18 @@ func validateDeleteAsset(ctx context.Context, asset *ufspb.Asset) error {
 		return status.Errorf(codes.FailedPrecondition, fmt.Sprintf("Asset %s cannot be deleted because DUT %s is referring this Asset.", asset.GetName(), machinelses[0].GetName()))
 	}
 	// TODO(anushruth): Add validation for servo resources
+	return nil
+}
+
+func validateRenameAsset(ctx context.Context, oldName, newName string) error {
+	// Ensure that the asset with newName doesn't exist
+	if err := resourceAlreadyExists(ctx, []*Resource{GetAssetResource(newName)}, nil); err != nil {
+		return status.Errorf(codes.FailedPrecondition, fmt.Sprintf("Failed to rename %s. %s already exists", oldName, newName))
+	}
+	// Ensure that the asset with oldName exists
+	if err := ResourceExist(ctx, []*Resource{GetAssetResource(oldName)}, nil); err != nil {
+		return status.Errorf(codes.FailedPrecondition, fmt.Sprintf("Failed to rename %s. It doesn't exist", oldName))
+	}
 	return nil
 }
 
