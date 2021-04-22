@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "38303300_cbdb037d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001250
+      },
+      "writtenOn": "2021-04-22T20:06:32Z",
+      "side": 1,
+      "message": "lgtm % fix",
+      "revId": "119eb4284a75c8c27b527fbc43803e3900794bce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ae53ac56_810ffeeb",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/config/config.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1001250
+      },
+      "writtenOn": "2021-04-22T20:06:32Z",
+      "side": 1,
+      "message": "Spaces instead of tab?",
+      "revId": "119eb4284a75c8c27b527fbc43803e3900794bce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
