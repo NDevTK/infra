@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "58d4786a_f4e00f5e",
+        "filename": "go/src/infra/unifiedfleet/app/frontend/registration.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 1194,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-04-22T17:19:02Z",
+      "side": 1,
+      "message": "util.RemovePrefix(req.NewName)",
+      "revId": "4202b12856c5d0dfb4814f8fe66f1397283aa885",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
