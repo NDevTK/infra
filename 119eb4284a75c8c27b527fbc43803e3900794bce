@@ -33,6 +33,24 @@
       "message": "Spaces instead of tab?",
       "revId": "119eb4284a75c8c27b527fbc43803e3900794bce",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c5582be0_8037956d",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/config/config.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1128941
+      },
+      "writtenOn": "2021-04-22T20:12:47Z",
+      "side": 1,
+      "message": "Oops! Newly imaged machine. Done.",
+      "parentUuid": "ae53ac56_810ffeeb",
+      "revId": "119eb4284a75c8c27b527fbc43803e3900794bce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
