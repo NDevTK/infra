@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8744a984_1dfa89bd",
+        "filename": "docker/docker_devices/cros/start_swarm_bot.sh",
+        "patchSetId": 4
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2021-04-23T09:05:51Z",
+      "side": 1,
+      "message": "no need to keep this temporal variable?",
+      "revId": "b9ca589fefffdb9be142d7e3e4b5f3e70830718d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
