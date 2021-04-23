@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "51ace957_b6b7feb8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-04-23T19:32:05Z",
+      "side": 1,
+      "message": "CQ builds still get provisioned to multiple DUTs right?  also there are other files, e.g. autotest tests/packages that get downloaded",
+      "revId": "2ec4f982f1ada479a5657e76bc1b829da416e03f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
