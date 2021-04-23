@@ -5,8 +5,12 @@
 package cmds
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
@@ -77,20 +81,18 @@ func (c *printBotInfoRun) innerRun(a subcommands.Application, args []string, env
 		Host:    e.UnifiedFleetService,
 		Options: site.DefaultPRPCOptions,
 	})
-	req := &ufsAPI.GetChromeOSDeviceDataRequest{}
-	if c.byHostname {
-		req.Hostname = args[0]
-	} else {
-		req.ChromeosDeviceId = args[0]
-	}
-	data, err := ufsClient.GetChromeOSDeviceData(ctx, req)
-	if err != nil {
-		return err
-	}
-	dutStateInfo := dutstate.Read(ctx, ufsClient, data.GetLabConfig().GetName())
 	stderr := a.GetErr()
 	r := func(e error) { fmt.Fprintf(stderr, "sanitize dimensions: %s\n", err) }
-	bi := botInfoForDUT(data.GetDutV1(), dutStateInfo, r)
+	bi, err := botInfoForSU(ctx, ufsClient, args[0], r)
+	if err != nil {
+		if status.Code(err) != codes.NotFound {
+			return err
+		}
+		bi, err = botInfoForDUT(ctx, ufsClient, args[0], c.byHostname, r)
+		if err != nil {
+			return err
+		}
+	}
 	enc, err := json.Marshal(bi)
 	if err != nil {
 		return err
@@ -106,11 +108,66 @@ type botInfo struct {
 
 type botState map[string][]string
 
-func botInfoForDUT(d *inventory.DeviceUnderTest, ds dutstate.Info, r swarming.ReportFunc) botInfo {
-	return botInfo{
-		Dimensions: botDimensionsForDUT(d, ds, r),
-		State:      botStateForDUT(d),
+func botInfoForSU(ctx context.Context, c ufsAPI.FleetClient, id string, r swarming.ReportFunc) (botInfo, error) {
+	req := &ufsAPI.GetSchedulingUnitRequest{
+		Name: ufsUtil.AddPrefix(ufsUtil.SchedulingUnitCollection, id),
 	}
+	su, err := c.GetSchedulingUnit(ctx, req)
+	if err != nil {
+		return botInfo{}, err
+	}
+	var dutsBotInfo []botInfo
+	duts := su.GetMachineLSEs()
+	for _, hostname := range duts {
+		dbi, err := botInfoForDUT(ctx, c, hostname, true, r)
+		if err != nil {
+			return botInfo{}, err
+		}
+		dutsBotInfo = append(dutsBotInfo, dbi)
+	}
+	dims := map[string][]string{
+		"dut_name":        {ufsUtil.RemovePrefix(su.GetName())},
+		"dut_id":          {su.GetName()},
+		"label-pool":      su.GetPools(),
+		"label-dut_count": {fmt.Sprintf("%d", len(duts))},
+		"label-multiduts": {"True"},
+		"dut_state":       SchedulingUnitDutState(dutsBotInfo),
+	}
+	if len(duts) > 0 {
+		dims["managed_duts"] = duts
+	}
+	suLabels := []string{"label-board", "label-model"}
+	for _, v := range suLabels {
+		label := JoinSingleValueLabel(v, dutsBotInfo)
+		if len(label) > 0 {
+			dims[v] = label
+		}
+	}
+	botInfo := botInfo{
+		Dimensions: dims,
+		State:      make(botState),
+	}
+	return botInfo, nil
+}
+
+func botInfoForDUT(ctx context.Context, c ufsAPI.FleetClient, id string, byHostname bool, r swarming.ReportFunc) (botInfo, error) {
+	req := &ufsAPI.GetChromeOSDeviceDataRequest{}
+	if byHostname {
+		req.Hostname = id
+	} else {
+		req.ChromeosDeviceId = id
+	}
+	data, err := c.GetChromeOSDeviceData(ctx, req)
+	if err != nil {
+		return botInfo{}, err
+	}
+	dutStateInfo := dutstate.Read(ctx, c, data.GetLabConfig().GetName())
+	dut := data.GetDutV1()
+	botInfo := botInfo{
+		Dimensions: botDimensionsForDUT(dut, dutStateInfo, r),
+		State:      botStateForDUT(dut),
+	}
+	return botInfo, nil
 }
 
 func botStateForDUT(d *inventory.DeviceUnderTest) botState {
@@ -152,4 +209,49 @@ func formatLocation(loc *inventory.Location) string {
 		loc.GetRack(),
 		loc.GetHost(),
 	)
+}
+
+func JoinSingleValueLabel(label string, botInfo []botInfo) []string {
+	res := make([]string, 0)
+	d := make(map[string]int)
+	for _, bi := range botInfo {
+		if l, ok := bi.Dimensions[label]; ok {
+			d[l[0]] += 1
+			// If we found a same label appears multiple times, we give
+			// them a numeric prefix(e.g. coral, coral2, coral3).
+			suffix := ""
+			if d[l[0]] > 1 {
+				suffix = fmt.Sprintf("%d", d[l[0]])
+			}
+			res = append(res, l[0]+suffix)
+		}
+	}
+	return res
+}
+
+func SchedulingUnitDutState(botInfo []botInfo) []string {
+	dutStateMap := map[string]int{
+		"ready":               1,
+		"needs_repair":        2,
+		"repair_failed":       3,
+		"needs_manual_repair": 4,
+		"needs_replacement":   4,
+		"needs_deploy":        4,
+	}
+	record := 0
+	for _, bi := range botInfo {
+		if s, ok := bi.Dimensions["dut_state"]; ok {
+			if dutStateMap[s[0]] > record {
+				record = dutStateMap[s[0]]
+			}
+		}
+	}
+	suStateMap := map[int]string{
+		0: "unknown",
+		1: "ready",
+		2: "needs_repair",
+		3: "repair_failed",
+		4: "needs_manual_attention",
+	}
+	return []string{suStateMap[record]}
 }
