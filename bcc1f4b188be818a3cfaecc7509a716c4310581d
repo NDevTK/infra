@@ -16,6 +16,23 @@
       "message": "(Note, the infra repo will be blocked until this lands...)",
       "revId": "bcc1f4b188be818a3cfaecc7509a716c4310581d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "82d7a168_6ea18fc1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2021-04-24T02:28:36Z",
+      "side": 1,
+      "message": "(I mean luci-go -\u003e infra)",
+      "revId": "bcc1f4b188be818a3cfaecc7509a716c4310581d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
