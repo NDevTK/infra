@@ -16,6 +16,24 @@
       "message": "CQ builds still get provisioned to multiple DUTs right?  also there are other files, e.g. autotest tests/packages that get downloaded",
       "revId": "2ec4f982f1ada479a5657e76bc1b829da416e03f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "51a5bd1b_b24d1375",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2021-04-27T01:50:41Z",
+      "side": 1,
+      "message": "Originally I\u0027d like use this CL to mitigate the caching issue due to disk i/o (to unblock CQ). But since I think I find out the solution for the i/o issue (by a dedicated disk), we can cache CQ builds for more reasonable time.",
+      "parentUuid": "51ace957_b6b7feb8",
+      "revId": "2ec4f982f1ada479a5657e76bc1b829da416e03f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
