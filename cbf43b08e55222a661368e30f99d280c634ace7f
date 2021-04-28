@@ -20,6 +20,91 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "721a5d01_df4dac11",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/bot/internal-print-bot-info.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-04-28T23:58:44Z",
+      "side": 1,
+      "message": "why not return nil instead of botInfo{} ?",
+      "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dd0ae476_fd15a239",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/bot/internal-print-bot-info.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-04-28T23:58:44Z",
+      "side": 1,
+      "message": "return nil, err ?",
+      "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ed1c6477_e780ccf8",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/bot/internal-print-bot-info.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-04-28T23:58:44Z",
+      "side": 1,
+      "message": "State is empty?",
+      "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c0f6a623_7d18d88c",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/bot/internal-print-bot-info.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-04-28T23:58:44Z",
+      "side": 1,
+      "message": "return nil, err?",
+      "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "35f58012_d85ce6fb",
+        "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-04-28T23:58:44Z",
+      "side": 1,
+      "message": "RemovePrefix?",
+      "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c13ecb35_8abf445e",
         "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility_test.go",
         "patchSetId": 3

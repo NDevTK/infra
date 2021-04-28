@@ -3,6 +3,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e56edcb9_4173e089",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/bot/internal-print-bot-info.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-04-28T23:58:44Z",
+      "side": 1,
+      "message": "remove extra line",
+      "revId": "b7d72f04d924ade164bb17efc2045dec05665e7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9a05bc45_6019b782",
         "filename": "go/src/infra/cmd/shivas/ufs/cmds/bot/internal-print-bot-info.go",
         "patchSetId": 2
