@@ -5,8 +5,12 @@
 package cmds
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
@@ -15,6 +19,7 @@ import (
 
 	"infra/cmd/shivas/site"
 	"infra/cmd/shivas/utils"
+	suUtil "infra/cmd/shivas/utils/schedulingunit"
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/dutstate"
 	"infra/libs/skylab/inventory"
@@ -77,20 +82,18 @@ func (c *printBotInfoRun) innerRun(a subcommands.Application, args []string, env
 		Host:    e.UnifiedFleetService,
 		Options: site.DefaultPRPCOptions,
 	})
-	req := &ufsAPI.GetChromeOSDeviceDataRequest{}
-	if c.byHostname {
-		req.Hostname = args[0]
-	} else {
-		req.ChromeosDeviceId = args[0]
-	}
-	data, err := ufsClient.GetChromeOSDeviceData(ctx, req)
-	if err != nil {
-		return err
-	}
-	dutStateInfo := dutstate.Read(ctx, ufsClient, data.GetLabConfig().GetName())
 	stderr := a.GetErr()
 	r := func(e error) { fmt.Fprintf(stderr, "sanitize dimensions: %s\n", err) }
-	bi := botInfoForDUT(data.GetDutV1(), dutStateInfo, r)
+	bi, err := botInfoForSU(ctx, ufsClient, args[0], r)
+	if err != nil {
+		if status.Code(err) != codes.NotFound {
+			return err
+		}
+		bi, err = botInfoForDUT(ctx, ufsClient, args[0], c.byHostname, r)
+		if err != nil {
+			return err
+		}
+	}
 	enc, err := json.Marshal(bi)
 	if err != nil {
 		return err
@@ -106,11 +109,49 @@ type botInfo struct {
 
 type botState map[string][]string
 
-func botInfoForDUT(d *inventory.DeviceUnderTest, ds dutstate.Info, r swarming.ReportFunc) botInfo {
-	return botInfo{
-		Dimensions: botDimensionsForDUT(d, ds, r),
-		State:      botStateForDUT(d),
+func botInfoForSU(ctx context.Context, c ufsAPI.FleetClient, id string, r swarming.ReportFunc) (botInfo, error) {
+	req := &ufsAPI.GetSchedulingUnitRequest{
+		Name: ufsUtil.AddPrefix(ufsUtil.SchedulingUnitCollection, id),
 	}
+	su, err := c.GetSchedulingUnit(ctx, req)
+	if err != nil {
+		return botInfo{}, err
+	}
+	duts := su.GetMachineLSEs()
+	dutsDims := make([]swarming.Dimensions, 0)
+	for _, hostname := range duts {
+		dbi, err := botInfoForDUT(ctx, c, hostname, true, r)
+		if err != nil {
+			return botInfo{}, err
+		}
+		dutsDims = append(dutsDims, dbi.Dimensions)
+	}
+	dims := suUtil.SchedulingUnitDimensions(su, dutsDims)
+	botInfo := botInfo{
+		Dimensions: dims,
+		State:      make(botState),
+	}
+	return botInfo, nil
+}
+
+func botInfoForDUT(ctx context.Context, c ufsAPI.FleetClient, id string, byHostname bool, r swarming.ReportFunc) (botInfo, error) {
+	req := &ufsAPI.GetChromeOSDeviceDataRequest{}
+	if byHostname {
+		req.Hostname = id
+	} else {
+		req.ChromeosDeviceId = id
+	}
+	data, err := c.GetChromeOSDeviceData(ctx, req)
+	if err != nil {
+		return botInfo{}, err
+	}
+	dutStateInfo := dutstate.Read(ctx, c, data.GetLabConfig().GetName())
+	dut := data.GetDutV1()
+	botInfo := botInfo{
+		Dimensions: botDimensionsForDUT(dut, dutStateInfo, r),
+		State:      botStateForDUT(dut),
+	}
+	return botInfo, nil
 }
 
 func botStateForDUT(d *inventory.DeviceUnderTest) botState {
