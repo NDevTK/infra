@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "67a7f6db_f68e6c87",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/bot/internal-print-bot-info.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-28T05:04:07Z",
+      "side": 1,
+      "message": "It seems adding an additional call of GetSchedulingUnit when target is an SU, as 1 for check, and another one to get bot info?",
+      "parentUuid": "9a05bc45_6019b782",
+      "range": {
+        "startLine": 87,
+        "startChar": 0,
+        "endLine": 91,
+        "endChar": 3
+      },
+      "revId": "b7d72f04d924ade164bb17efc2045dec05665e7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "69bb7ec5_4d95fe5a",
         "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility.go",
         "patchSetId": 2
@@ -37,6 +61,24 @@
       "writtenOn": "2021-04-28T00:56:40Z",
       "side": 1,
       "message": "this file needs unittest",
+      "revId": "b7d72f04d924ade164bb17efc2045dec05665e7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e7ac0373_eca0ce9a",
+        "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-28T05:04:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "69bb7ec5_4d95fe5a",
       "revId": "b7d72f04d924ade164bb17efc2045dec05665e7c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -54,6 +96,30 @@
       "writtenOn": "2021-04-28T00:56:40Z",
       "side": 1,
       "message": "should be common var",
+      "range": {
+        "startLine": 16,
+        "startChar": 1,
+        "endLine": 16,
+        "endChar": 12
+      },
+      "revId": "b7d72f04d924ade164bb17efc2045dec05665e7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d3ca743d_3eb036da",
+        "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-28T05:04:07Z",
+      "side": 1,
+      "message": "Assuming you means to put it as a package scope var, done.",
+      "parentUuid": "9c733798_977497c7",
       "range": {
         "startLine": 16,
         "startChar": 1,
@@ -89,6 +155,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "5689e368_340a3b3f",
+        "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-28T05:04:07Z",
+      "side": 1,
+      "message": "That would require convert the states slice(string) to a slice of weights(int) first and then calling helper, which seems making it more complicated?",
+      "parentUuid": "b79bbfd4_a6b131bd",
+      "range": {
+        "startLine": 24,
+        "startChar": 1,
+        "endLine": 29,
+        "endChar": 2
+      },
+      "revId": "b7d72f04d924ade164bb17efc2045dec05665e7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "1be1e58d_85076524",
         "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility.go",
         "patchSetId": 2
@@ -100,6 +190,30 @@
       "writtenOn": "2021-04-28T00:56:40Z",
       "side": 1,
       "message": "should be common var",
+      "range": {
+        "startLine": 30,
+        "startChar": 1,
+        "endLine": 30,
+        "endChar": 11
+      },
+      "revId": "b7d72f04d924ade164bb17efc2045dec05665e7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8450bf32_725f70eb",
+        "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-28T05:04:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1be1e58d_85076524",
       "range": {
         "startLine": 30,
         "startChar": 1,
@@ -133,6 +247,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9d0795ff_578f8252",
+        "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-28T05:04:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2e734d8e_58b29890",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 41,
+        "endChar": 25
+      },
+      "revId": "b7d72f04d924ade164bb17efc2045dec05665e7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "934720ca_cde34ca9",
@@ -146,6 +284,30 @@
       "writtenOn": "2021-04-28T00:56:40Z",
       "side": 1,
       "message": "ditto",
+      "range": {
+        "startLine": 55,
+        "startChar": 1,
+        "endLine": 55,
+        "endChar": 25
+      },
+      "revId": "b7d72f04d924ade164bb17efc2045dec05665e7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5eecb7a4_92fa58d7",
+        "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-28T05:04:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "934720ca_cde34ca9",
       "range": {
         "startLine": 55,
         "startChar": 1,
