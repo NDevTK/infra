@@ -50,6 +50,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "3d664271_a096b6c2",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/bot/internal-print-bot-info.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2021-04-28T07:53:45Z",
+      "side": 1,
+      "message": "you could reuse what you get from GetSU(...) in botInfoForSU",
+      "parentUuid": "67a7f6db_f68e6c87",
+      "range": {
+        "startLine": 87,
+        "startChar": 0,
+        "endLine": 91,
+        "endChar": 3
+      },
+      "revId": "b7d72f04d924ade164bb17efc2045dec05665e7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "69bb7ec5_4d95fe5a",
         "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility.go",
         "patchSetId": 2
@@ -167,6 +191,30 @@
       "side": 1,
       "message": "That would require convert the states slice(string) to a slice of weights(int) first and then calling helper, which seems making it more complicated?",
       "parentUuid": "b79bbfd4_a6b131bd",
+      "range": {
+        "startLine": 24,
+        "startChar": 1,
+        "endLine": 29,
+        "endChar": 2
+      },
+      "revId": "b7d72f04d924ade164bb17efc2045dec05665e7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d82f6aaf_cd56404a",
+        "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2021-04-28T07:53:45Z",
+      "side": 1,
+      "message": "yeah, need an additional slice.",
+      "parentUuid": "5689e368_340a3b3f",
       "range": {
         "startLine": 24,
         "startChar": 1,

@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cf7f9167_4ee7eead",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2021-04-28T07:53:45Z",
+      "side": 1,
+      "message": "LGTM % nits",
+      "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c13ecb35_8abf445e",
+        "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2021-04-28T07:53:45Z",
+      "side": 1,
+      "message": "Join?",
+      "range": {
+        "startLine": 54,
+        "startChar": 9,
+        "endLine": 54,
+        "endChar": 13
+      },
+      "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2d5cd12a_6fe865e0",
+        "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2021-04-28T07:53:45Z",
+      "side": 1,
+      "message": "expectedResult",
+      "range": {
+        "startLine": 118,
+        "startChar": 2,
+        "endLine": 118,
+        "endChar": 14
+      },
+      "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "93ef7677_3b07c93d",
+        "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2021-04-28T07:53:45Z",
+      "side": 1,
+      "message": "expectedResult",
+      "range": {
+        "startLine": 137,
+        "startChar": 2,
+        "endLine": 137,
+        "endChar": 14
+      },
+      "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
