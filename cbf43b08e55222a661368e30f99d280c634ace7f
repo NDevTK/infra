@@ -141,6 +141,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c0a6adb8_085db4d2",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/bot/internal-print-bot-info.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-29T05:01:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e2a1962e_d6f6f06b",
+      "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c0f6a623_7d18d88c",
@@ -225,6 +243,24 @@
       "side": 1,
       "message": "Remove the prefix here. Other clients can add it back if they want to call UFS.",
       "parentUuid": "8c4b25fb_81bef9c0",
+      "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1af5737b_5ba0ae14",
+        "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-29T05:01:17Z",
+      "side": 1,
+      "message": "Right, but if we remove the prefix here, SSW or testrunner won\u0027t able to find out if the target is SU unless attempt call GetSchedulingUnitRequest, right?\n\nSince we store dut_id in ENV in bot script, we can determine if a bot is hosting SU by \"strings.HasPrefix(dut_id, ufsUtil.SchedulingUnitCollection)\". Or is there any reason we want dut_id dimension same as dut_name here?",
+      "parentUuid": "3a4892f1_53949586",
       "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
