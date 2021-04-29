@@ -16,6 +16,29 @@
       "message": "Tested with run_locally.sh.",
       "revId": "f71b170e081a39f73035e7cdb5c34a0f50dfb5d1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c0a2eb11_72483a7b",
+        "filename": "3pp/cpython38/patches/0006-Use-nested-ifs-to-work-around-__has_attribute-errors.patch",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1275796
+      },
+      "writtenOn": "2021-04-29T06:44:32Z",
+      "side": 1,
+      "message": "Is the problem caused by __has_attribute not being available, and the compiler choking regardless of the short-circuiting of \u0026\u0026?\n\nIf so, would it make more sense to split it up like:\n\n  #if defined(__APPLE__) \u0026\u0026 defined(__has_attribute)\n    #if __has_attribute(availability)\n      ...\n    #endif\n  #endif\n\n?",
+      "range": {
+        "startLine": 21,
+        "startChar": 1,
+        "endLine": 22,
+        "endChar": 64
+      },
+      "revId": "f71b170e081a39f73035e7cdb5c34a0f50dfb5d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
