@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c829118a_228207fa",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/bot/internal-print-bot-info.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-29T22:05:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "27295b26_68a4857e",
+      "range": {
+        "startLine": 120,
+        "startChar": 1,
+        "endLine": 120,
+        "endChar": 28
+      },
+      "revId": "7bf8cde11e85c3819b9648757a1d553d3c33cc4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "975d6ff8_9dd7188d",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-04-29T19:10:21Z",
       "side": 1,
       "message": "ditto",
+      "range": {
+        "startLine": 153,
+        "startChar": 1,
+        "endLine": 153,
+        "endChar": 15
+      },
+      "revId": "7bf8cde11e85c3819b9648757a1d553d3c33cc4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "72065a80_dfeef090",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/bot/internal-print-bot-info.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-29T22:05:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "975d6ff8_9dd7188d",
       "range": {
         "startLine": 153,
         "startChar": 1,
