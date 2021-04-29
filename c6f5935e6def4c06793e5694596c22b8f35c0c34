@@ -22,6 +22,30 @@
       },
       "revId": "c6f5935e6def4c06793e5694596c22b8f35c0c34",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6b36c221_51337ddc",
+        "filename": "3pp/cpython/install.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1275796
+      },
+      "writtenOn": "2021-04-29T06:46:08Z",
+      "side": 1,
+      "message": "Oh, whoops. I did test with run_locally but I forgot to commit the changes first so run_locally didn\u0027t pick them up.\n\nI\u0027ve tested it now and confirmed the resulting binary has no dependency on libcrypt.so, and done some basic sanity checks with the `crypt` module.",
+      "parentUuid": "ced7fe1b_87418bbf",
+      "range": {
+        "startLine": 161,
+        "startChar": 11,
+        "endLine": 161,
+        "endChar": 12
+      },
+      "revId": "c6f5935e6def4c06793e5694596c22b8f35c0c34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
