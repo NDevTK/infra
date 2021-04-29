@@ -39,6 +39,30 @@
       },
       "revId": "f71b170e081a39f73035e7cdb5c34a0f50dfb5d1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "60da9521_0ca083b8",
+        "filename": "3pp/cpython38/patches/0006-Use-nested-ifs-to-work-around-__has_attribute-errors.patch",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2021-04-29T06:49:11Z",
+      "side": 1,
+      "message": "Yeah, that seems like what\u0027s happening.\n\nI don\u0027t have a strong preference on the nesting. I had figured the whole construct was only needed when __APPLE__ is defined, so that seemed like the more conservative approach to not mess with evaluating __has_attribute elsewhere.",
+      "parentUuid": "c0a2eb11_72483a7b",
+      "range": {
+        "startLine": 21,
+        "startChar": 1,
+        "endLine": 22,
+        "endChar": 64
+      },
+      "revId": "f71b170e081a39f73035e7cdb5c34a0f50dfb5d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
