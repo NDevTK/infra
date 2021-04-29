@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e9d77792_8fe13143",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/bot/internal-print-bot-info.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-04-29T02:38:25Z",
+      "side": 1,
+      "message": "var bi *botInfo\n\tif bi, err \u003d botInfoForDUT(ctx, ufsClient, args[0], c.byHostname, r); err !\u003d nil \u0026\u0026 status.Code(err) \u003d\u003d codes.NotFound {\n\t\t// If we cannot find DUT, then assume it\u0027s a scheduling unit.\n                var suErr error\n\t\tbi, suErr \u003d botInfoForSU(ctx, ufsClient, args[0], r); suErr !\u003d nil {\n                        return errors.Annotate(suErr, \"Failed to get DUT/SU %s\", err).Err()\n                }\n\t} else if err !\u003d nil {\n\t\treturn err\n\t}",
+      "revId": "65f930eb615d149ba51b2526a28e7464d68179cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
