@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "27295b26_68a4857e",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/bot/internal-print-bot-info.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2021-04-29T19:09:52Z",
+      "side": 1,
+      "message": "generally, no need to have variables which are only used once, e.g.\n\nfor _, hostname :\u003d range su.GetXXX() {\n}\n\nreturn \u0026botInfo{...: suUtil.SchedulingUnitDimensions(su, dutsDims)}, nil",
+      "range": {
+        "startLine": 120,
+        "startChar": 1,
+        "endLine": 120,
+        "endChar": 28
+      },
+      "revId": "7bf8cde11e85c3819b9648757a1d553d3c33cc4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
