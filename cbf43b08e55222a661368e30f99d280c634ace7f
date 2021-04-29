@@ -267,6 +267,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "35bd8ca1_b462469a",
+        "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1395809
+      },
+      "writtenOn": "2021-04-29T17:22:10Z",
+      "side": 1,
+      "message": "SSW or testRunner should also follow the same logic as here. Call for DUT, if not found, call for SU.",
+      "parentUuid": "1af5737b_5ba0ae14",
+      "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c13ecb35_8abf445e",
         "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility_test.go",
         "patchSetId": 3
