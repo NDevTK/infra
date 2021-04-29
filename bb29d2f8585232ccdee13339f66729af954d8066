@@ -16,6 +16,24 @@
       "message": "return err",
       "revId": "bb29d2f8585232ccdee13339f66729af954d8066",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "07d218a7_ff7697cc",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/bot/internal-print-bot-info.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-29T18:05:39Z",
+      "side": 1,
+      "message": "Good catch, thanks!",
+      "parentUuid": "79c59e80_dbf0762c",
+      "revId": "bb29d2f8585232ccdee13339f66729af954d8066",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
