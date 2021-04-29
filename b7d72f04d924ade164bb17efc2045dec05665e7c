@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3398a799_642c92d8",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/bot/internal-print-bot-info.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-29T01:57:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e56edcb9_4173e089",
+      "revId": "b7d72f04d924ade164bb17efc2045dec05665e7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9a05bc45_6019b782",
@@ -79,6 +97,30 @@
       "side": 1,
       "message": "you could reuse what you get from GetSU(...) in botInfoForSU",
       "parentUuid": "67a7f6db_f68e6c87",
+      "range": {
+        "startLine": 87,
+        "startChar": 0,
+        "endLine": 91,
+        "endChar": 3
+      },
+      "revId": "b7d72f04d924ade164bb17efc2045dec05665e7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ae2f6591_30ed9a3b",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/bot/internal-print-bot-info.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-29T01:57:14Z",
+      "side": 1,
+      "message": "Done. Re-arranged logic here to check/get botInfo for DUT first as we expect number of SUs will be much smaller than DUTs, so we can save a ufs call in most of scenario.",
+      "parentUuid": "3d664271_a096b6c2",
       "range": {
         "startLine": 87,
         "startChar": 0,

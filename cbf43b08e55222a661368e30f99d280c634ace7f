@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "19287056_5617d290",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/bot/internal-print-bot-info.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-29T01:57:14Z",
+      "side": 1,
+      "message": "Was trying to return nil it didn\u0027t compile given the return type is botInfo, turns out I need have return type as a pointer(*botInfo) instead of value to return nil.\n\nStill in picking up of golang ;)",
+      "parentUuid": "721a5d01_df4dac11",
+      "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dd0ae476_fd15a239",
@@ -48,6 +66,24 @@
       "writtenOn": "2021-04-28T23:58:44Z",
       "side": 1,
       "message": "return nil, err ?",
+      "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0ee0c839_e5bd33f8",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/bot/internal-print-bot-info.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-29T01:57:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dd0ae476_fd15a239",
       "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -71,6 +107,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "94a7bfcb_aa9efb1b",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/bot/internal-print-bot-info.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-29T01:57:14Z",
+      "side": 1,
+      "message": "Yes, SU doesn\u0027t have additional state(e.g. usb state, disk state) like a DUT.",
+      "parentUuid": "ed1c6477_e780ccf8",
+      "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c0f6a623_7d18d88c",
         "filename": "go/src/infra/cmd/shivas/ufs/cmds/bot/internal-print-bot-info.go",
         "patchSetId": 3
@@ -82,6 +136,24 @@
       "writtenOn": "2021-04-28T23:58:44Z",
       "side": 1,
       "message": "return nil, err?",
+      "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a1864df9_bfac7c32",
+        "filename": "go/src/infra/cmd/shivas/ufs/cmds/bot/internal-print-bot-info.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-29T01:57:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c0f6a623_7d18d88c",
       "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -105,6 +177,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "8c4b25fb_81bef9c0",
+        "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-29T01:57:14Z",
+      "side": 1,
+      "message": "It is intended, so we can use the prefix on SSW and CTP side to avoid unnecessary GetSchedulingUnitRequest call. let me know if you think it\u0027s not a right approach.",
+      "parentUuid": "35f58012_d85ce6fb",
+      "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c13ecb35_8abf445e",
         "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility_test.go",
         "patchSetId": 3
@@ -116,6 +206,30 @@
       "writtenOn": "2021-04-28T07:53:45Z",
       "side": 1,
       "message": "Join?",
+      "range": {
+        "startLine": 54,
+        "startChar": 9,
+        "endLine": 54,
+        "endChar": 13
+      },
+      "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1a79a1b1_0e332cc3",
+        "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-29T01:57:14Z",
+      "side": 1,
+      "message": "Oops, thanks.",
+      "parentUuid": "c13ecb35_8abf445e",
       "range": {
         "startLine": 54,
         "startChar": 9,
@@ -149,6 +263,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f156305e_a0c9fa3c",
+        "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-29T01:57:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2d5cd12a_6fe865e0",
+      "range": {
+        "startLine": 118,
+        "startChar": 2,
+        "endLine": 118,
+        "endChar": 14
+      },
+      "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "93ef7677_3b07c93d",
@@ -162,6 +300,30 @@
       "writtenOn": "2021-04-28T07:53:45Z",
       "side": 1,
       "message": "expectedResult",
+      "range": {
+        "startLine": 137,
+        "startChar": 2,
+        "endLine": 137,
+        "endChar": 14
+      },
+      "revId": "cbf43b08e55222a661368e30f99d280c634ace7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "36f2dc27_cf8e9f35",
+        "filename": "go/src/infra/cmd/shivas/utils/schedulingunit/su_utility_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-04-29T01:57:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "93ef7677_3b07c93d",
       "range": {
         "startLine": 137,
         "startChar": 2,
