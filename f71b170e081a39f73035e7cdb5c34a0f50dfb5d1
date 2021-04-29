@@ -87,6 +87,30 @@
       },
       "revId": "f71b170e081a39f73035e7cdb5c34a0f50dfb5d1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "de8d1c98_c10a6b3f",
+        "filename": "3pp/cpython38/patches/0006-Use-nested-ifs-to-work-around-__has_attribute-errors.patch",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2021-04-29T07:42:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e7b963a6_9e686c9e",
+      "range": {
+        "startLine": 21,
+        "startChar": 1,
+        "endLine": 22,
+        "endChar": 64
+      },
+      "revId": "f71b170e081a39f73035e7cdb5c34a0f50dfb5d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
