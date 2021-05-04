@@ -4,7 +4,10 @@ import (
 	"fmt"
 
 	"github.com/golang/protobuf/proto"
+	configpb "go.chromium.org/chromiumos/config/go/api"
 	buildpb "go.chromium.org/chromiumos/config/go/build/api"
+	"go.chromium.org/chromiumos/config/go/payload"
+
 	"go.chromium.org/chromiumos/config/go/test/plan"
 	"go.chromium.org/luci/common/data/stringset"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -215,6 +218,34 @@ func arcVersionOutputs(
 	return outputs
 }
 
+func fingerprintOutputs(
+	sourceTestPlan *plan.SourceTestPlan, flatConfigList *payload.FlatConfigList,
+) []*Output {
+	var buildTargets []string
+
+	for _, value := range flatConfigList.Values {
+		loc := value.GetHwDesignConfig().GetHardwareFeatures().GetFingerprint().GetLocation()
+		if loc == configpb.HardwareFeatures_Fingerprint_LOCATION_UNKNOWN ||
+			loc == configpb.HardwareFeatures_Fingerprint_NOT_PRESENT {
+			continue
+		}
+
+		buildTargets = append(
+			buildTargets,
+			value.GetSwConfig().GetSystemBuildTarget().GetPortageBuildTarget().GetOverlayName(),
+		)
+	}
+
+	return []*Output{
+		{
+			Name:            "fp-present",
+			BuildTargets:    buildTargets,
+			TestTags:        sourceTestPlan.TestTags,
+			TestTagExcludes: sourceTestPlan.TestTagExcludes,
+		},
+	}
+}
+
 // typeName is a convenience function for the FullName of m.
 func typeName(m proto.Message) protoreflect.FullName {
 	return proto.MessageReflect(m).Descriptor().FullName()
@@ -223,7 +254,9 @@ func typeName(m proto.Message) protoreflect.FullName {
 // generateOutputs computes a list of Outputs, based on sourceTestPlan and
 // buildSummaryList.
 func generateOutputs(
-	sourceTestPlan *plan.SourceTestPlan, buildSummaryList *buildpb.SystemImage_BuildSummaryList,
+	sourceTestPlan *plan.SourceTestPlan,
+	buildSummaryList *buildpb.SystemImage_BuildSummaryList,
+	flatConfigList *payload.FlatConfigList,
 ) ([]*Output, error) {
 	outputs := []*Output{}
 
@@ -251,6 +284,9 @@ func generateOutputs(
 
 			case typeName(&plan.SourceTestPlan_Requirements_SocFamilies{}):
 				outputs = expandOutputs(outputs, socFamilyOutputs(sourceTestPlan, buildSummaryList))
+
+			case typeName(&plan.SourceTestPlan_Requirements_Fingerprint{}):
+				outputs = expandOutputs(outputs, fingerprintOutputs(sourceTestPlan, flatConfigList))
 
 			default:
 				unimplementedReq = fd

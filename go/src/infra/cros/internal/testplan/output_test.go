@@ -5,7 +5,10 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	configpb "go.chromium.org/chromiumos/config/go/api"
+	softwarepb "go.chromium.org/chromiumos/config/go/api/software"
 	buildpb "go.chromium.org/chromiumos/config/go/build/api"
+	"go.chromium.org/chromiumos/config/go/payload"
 	"go.chromium.org/chromiumos/config/go/test/plan"
 )
 
@@ -30,6 +33,25 @@ func buildSummary(overlay, kernelVersion, chipsetOverlay, arcVersion string) *bu
 	}
 }
 
+func flatConfig(overlay string, fingerprintLoc configpb.HardwareFeatures_Fingerprint_Location) *payload.FlatConfig {
+	return &payload.FlatConfig{
+		SwConfig: &softwarepb.SoftwareConfig{
+			SystemBuildTarget: &buildpb.SystemImage_BuildTarget{
+				PortageBuildTarget: &buildpb.Portage_BuildTarget{
+					OverlayName: overlay,
+				},
+			},
+		},
+		HwDesignConfig: &configpb.Design_Config{
+			HardwareFeatures: &configpb.HardwareFeatures{
+				Fingerprint: &configpb.HardwareFeatures_Fingerprint{
+					Location: fingerprintLoc,
+				},
+			},
+		},
+	}
+}
+
 var buildSummaryList = &buildpb.SystemImage_BuildSummaryList{
 	Values: []*buildpb.SystemImage_BuildSummary{
 		buildSummary("project1", "4.14", "chipsetA", ""),
@@ -41,8 +63,16 @@ var buildSummaryList = &buildpb.SystemImage_BuildSummaryList{
 	},
 }
 
-func TestGenerateOutputs(t *testing.T) {
+var flatConfigList = &payload.FlatConfigList{
+	Values: []*payload.FlatConfig{
+		flatConfig("project1", configpb.HardwareFeatures_Fingerprint_KEYBOARD_BOTTOM_LEFT),
+		flatConfig("project2", configpb.HardwareFeatures_Fingerprint_NOT_PRESENT),
+		flatConfig("project3", configpb.HardwareFeatures_Fingerprint_LOCATION_UNKNOWN),
+		flatConfig("project4", configpb.HardwareFeatures_Fingerprint_LEFT_SIDE),
+	},
+}
 
+func TestGenerateOutputs(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    *plan.SourceTestPlan
@@ -89,6 +119,20 @@ func TestGenerateOutputs(t *testing.T) {
 				{
 					Name:         "soc-chipsetC",
 					BuildTargets: []string{"project4"},
+				},
+			},
+		},
+		{
+			name: "fingerprint",
+			input: &plan.SourceTestPlan{
+				Requirements: &plan.SourceTestPlan_Requirements{
+					Fingerprint: &plan.SourceTestPlan_Requirements_Fingerprint{},
+				},
+			},
+			expected: []*Output{
+				{
+					Name:         "fp-present",
+					BuildTargets: []string{"project1", "project4"},
 				},
 			},
 		},
@@ -154,7 +198,7 @@ func TestGenerateOutputs(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			outputs, err := generateOutputs(test.input, buildSummaryList)
+			outputs, err := generateOutputs(test.input, buildSummaryList, flatConfigList)
 
 			if err != nil {
 				t.Fatalf("generateOutputs failed: %s", err)
@@ -193,7 +237,7 @@ func TestGenerateOutputsErrors(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			if _, err := generateOutputs(test.input, buildSummaryList); err == nil {
+			if _, err := generateOutputs(test.input, buildSummaryList, flatConfigList); err == nil {
 				t.Errorf("Expected error from generateOutputs")
 			}
 		})

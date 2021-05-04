@@ -26,6 +26,7 @@ import (
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
 	buildpb "go.chromium.org/chromiumos/config/go/build/api"
+	"go.chromium.org/chromiumos/config/go/payload"
 )
 
 var logCfg = gologger.LoggerConfig{
@@ -152,6 +153,28 @@ func getBuildSummaryList(
 	return buildSummaryList, nil
 }
 
+func getFlatConfigList(
+	ctx context.Context, authedClient *http.Client,
+) (*payload.FlatConfigList, error) {
+	flatConfigListStr, err := igerrit.DownloadFileFromGitiles(
+		ctx, authedClient,
+		"chrome-internal.googlesource.com",
+		"chromeos/config-internal",
+		"HEAD",
+		"hw_design/generated/flattened.jsonproto",
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	flatConfigList := &payload.FlatConfigList{}
+	if err = jsonpb.Unmarshal(strings.NewReader(flatConfigListStr), flatConfigList); err != nil {
+		return nil, err
+	}
+
+	return flatConfigList, nil
+}
+
 // writeOutputs writes a newline-delimited json file containing outputs to outPath.
 func writeOutputs(outputs []*testplan.Output, outPath string) error {
 	outFile, err := os.Create(outPath)
@@ -211,7 +234,14 @@ func (r *generateRun) run(ctx context.Context) error {
 		return err
 	}
 
-	outputs, err := testplan.Generate(ctx, changeRevs, buildSummaryList)
+	logging.Infof(ctx, "fetching HW design data")
+
+	flatConfigList, err := getFlatConfigList(ctx, authedClient)
+	if err != nil {
+		return err
+	}
+
+	outputs, err := testplan.Generate(ctx, changeRevs, buildSummaryList, flatConfigList)
 	if err != nil {
 		return err
 	}
