@@ -22,6 +22,30 @@
       },
       "revId": "4c8208b845f29eec33e7c380546a72b0d5d85139",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ead144c4_1ad70b62",
+        "filename": "go/src/infra/cros/cmd/test_plan/test_plan.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1325055
+      },
+      "writtenOn": "2021-05-05T18:25:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "09e305e1_ee342752",
+      "range": {
+        "startLine": 166,
+        "startChar": 38,
+        "endLine": 166,
+        "endChar": 52
+      },
+      "revId": "4c8208b845f29eec33e7c380546a72b0d5d85139",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
