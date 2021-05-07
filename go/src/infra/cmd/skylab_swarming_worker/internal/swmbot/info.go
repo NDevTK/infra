@@ -19,13 +19,14 @@ import (
 type Info struct {
 	AdminService     string
 	AutotestPath     string
-	DUTID            string
+	BotDUTID         string
 	InventoryService string
 	UFSService       string
 	LuciferBinDir    string
 	ParserPath       string
 	SwarmingService  string
 	LabpackDir       string
+	SchedulingUnit   string
 	Task             Task
 }
 
@@ -49,13 +50,14 @@ func GetInfo() *Info {
 	return &Info{
 		AdminService:     os.Getenv("ADMIN_SERVICE"),
 		AutotestPath:     os.Getenv("AUTOTEST_DIR"),
-		DUTID:            os.Getenv("SKYLAB_DUT_ID"),
+		BotDUTID:         os.Getenv("SKYLAB_DUT_ID"),
 		InventoryService: os.Getenv("INVENTORY_SERVICE"),
 		UFSService:       os.Getenv("UFS_SERVICE"),
 		LuciferBinDir:    os.Getenv("LUCIFER_TOOLS_DIR"),
 		ParserPath:       os.Getenv("PARSER_PATH"),
 		SwarmingService:  os.Getenv("SWARMING_SERVICE"),
 		LabpackDir:       os.Getenv("LABPACK_DIR"),
+		SchedulingUnit:   os.Getenv("FLEET_SCHEDULING_UNIT"),
 		Task: Task{
 			RunID: os.Getenv("SWARMING_TASK_ID"),
 		},

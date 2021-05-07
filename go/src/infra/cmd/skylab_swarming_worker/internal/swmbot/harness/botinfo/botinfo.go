@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 
 	"go.chromium.org/luci/common/errors"
@@ -28,6 +29,7 @@ type Store struct {
 	// and dutName is fetched via an API call later on. So we store dutName
 	// here to avoid carrying an uninitialized field around in swmbot.Info.
 	dutName string
+	dutID   string
 }
 
 // Close writes the BotInfo back to disk.  This method does nothing on
@@ -45,7 +47,7 @@ func (s *Store) Close(ctx context.Context) error {
 	}
 	// Write DUT state into two files: one by DUT name, one by DUT ID.
 	// TODO(crbug.com/994404): Stop saving the DUT ID-based state file.
-	if err := ioutil.WriteFile(botinfoFilePath(s.bot, s.bot.DUTID), data, 0666); err != nil {
+	if err := ioutil.WriteFile(botinfoFilePath(s.bot, s.dutID), data, 0666); err != nil {
 		return errors.Annotate(err, "close botinfo").Err()
 	}
 	if err := ioutil.WriteFile(botinfoFilePath(s.bot, s.dutName), data, 0666); err != nil {
@@ -63,12 +65,18 @@ func (s *Store) Close(ctx context.Context) error {
 	return nil
 }
 
-// Open loads the BotInfo for the Bot.  The BotInfo should be closed
+// Open loads the BotInfo for the DUT. The BotInfo should be closed
 // afterward to write it back.
-func Open(ctx context.Context, b *swmbot.Info, dutName string) (*Store, error) {
-	s := Store{bot: b, dutName: dutName}
+func Open(ctx context.Context, b *swmbot.Info, dutName string, dutID string) (*Store, error) {
+	s := Store{bot: b, dutName: dutName, dutID: dutID}
+	botInfoPath := botinfoFilePath(b, dutName)
+	if b.SchedulingUnit == "True" {
+		if err := s.ensureInfoFileExist(botInfoPath); err != nil {
+			return nil, errors.Annotate(err, "open botinfo").Err()
+		}
+	}
 	// Read provisioning info from state file.
-	data, err := ioutil.ReadFile(botinfoFilePath(b, dutName))
+	data, err := ioutil.ReadFile(botInfoPath)
 	if err != nil {
 		return nil, errors.Annotate(err, "open botinfo").Err()
 	}
@@ -94,4 +102,21 @@ func botinfoFilePath(b *swmbot.Info, fileID string) string {
 // botinfoDir returns the path to the cache directory for the given bot.
 func botinfoDirPath(b *swmbot.Info) string {
 	return filepath.Join(b.AutotestPath, "swarming_state")
+}
+
+// For DUTs inside a scheduling unit, they don't have their botinfo file as they
+// don't have their own swarming bot, so we'll need to ensure the file exists by
+// create one with empty LocalState values for it first run on a given drone.
+func (s *Store) ensureInfoFileExist(path string) error {
+	if _, err := os.Stat(path); err == nil {
+		return nil
+	}
+	data, err := swmbot.Marshal(&s.LocalState)
+	if err != nil {
+		return errors.Annotate(err, "ensure botinfo").Err()
+	}
+	if err := ioutil.WriteFile(path, data, 0666); err != nil {
+		return errors.Annotate(err, "ensure botinfo").Err()
+	}
+	return nil
 }
