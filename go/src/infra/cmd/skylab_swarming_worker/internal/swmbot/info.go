@@ -19,13 +19,14 @@ import (
 type Info struct {
 	AdminService     string
 	AutotestPath     string
-	DUTID            string
+	BotDUTID         string
 	InventoryService string
 	UFSService       string
 	LuciferBinDir    string
 	ParserPath       string
 	SwarmingService  string
 	LabpackDir       string
+	IsSchedulingUnit bool
 	Task             Task
 }
 
@@ -39,17 +40,18 @@ type Info struct {
 //   AUTOTEST_DIR: Path to the autotest checkout on server.
 //   LUCIFER_TOOLS_DIR: Path to the lucifer installation.
 //   PARSER_PATH: Path to the autotest_status_parser installation.
-//   SKYLAB_DUT_ID: skylab_inventory id of the DUT that belongs to this bot.
+//   SKYLAB_DUT_ID: Swarming dut_id dimension that belongs to this bot.
 //   SWARMING_SERVICE: Swarming service host, e.g. https://foo.appspot.com.
+//   FLEET_SCHEDULING_UNIT: Indicates if the bot is hosting a Scheduling Unit.
 //
 // Per-task variables:
 //
 //   SWARMING_TASK_ID: task id of the swarming task being serviced.
 func GetInfo() *Info {
-	return &Info{
+	info := &Info{
 		AdminService:     os.Getenv("ADMIN_SERVICE"),
 		AutotestPath:     os.Getenv("AUTOTEST_DIR"),
-		DUTID:            os.Getenv("SKYLAB_DUT_ID"),
+		BotDUTID:         os.Getenv("SKYLAB_DUT_ID"),
 		InventoryService: os.Getenv("INVENTORY_SERVICE"),
 		UFSService:       os.Getenv("UFS_SERVICE"),
 		LuciferBinDir:    os.Getenv("LUCIFER_TOOLS_DIR"),
@@ -60,6 +62,10 @@ func GetInfo() *Info {
 			RunID: os.Getenv("SWARMING_TASK_ID"),
 		},
 	}
+	if os.Getenv("FLEET_SCHEDULING_UNIT") == "True" {
+		info.IsSchedulingUnit = true
+	}
+	return info
 }
 
 // Task describes the bot's current task.

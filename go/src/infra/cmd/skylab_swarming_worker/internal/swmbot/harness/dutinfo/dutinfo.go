@@ -31,6 +31,17 @@ type Store struct {
 	updateFunc     UpdateFunc
 }
 
+type RequestHook struct {
+	// For regular DUT, we have access its DUTID from swarming bot's
+	// ENV, for DUTs in a scheduling_unit we can retrieve their
+	// hostnames from the scheduling unit UFS info. So the RequestHook
+	// have both field, and then we can use provided field to get DUT's
+	// data from UFS.
+	DUTID    string
+	HostName string
+	BotInfo  *swmbot.Info
+}
+
 // Close updates the DUT's inventory info.  This method does nothing on
 // subsequent calls.  This method is safe to call on a nil pointer.
 func (s *Store) Close(ctx context.Context) error {
@@ -66,8 +77,8 @@ type UpdateFunc func(ctx context.Context, dutID string, old *inventory.DeviceUnd
 // This function returns a Store that should be closed to update the inventory
 // with any changes to the info, using a supplied UpdateFunc. If UpdateFunc is
 // nil, the inventory is not updated.
-func Load(ctx context.Context, b *swmbot.Info, f UpdateFunc) (*Store, error) {
-	return load(ctx, b, f, getDutInfoFromUFS)
+func Load(ctx context.Context, rh *RequestHook, f UpdateFunc) (*Store, error) {
+	return load(ctx, rh, f, getDutInfoFromUFS)
 }
 
 type getDutInfoFuncUFS func(context.Context, ufsAPI.FleetClient, *ufsAPI.GetChromeOSDeviceDataRequest) (*ufspb.ChromeOSDeviceData, error)
@@ -98,13 +109,20 @@ func getStableVersion(ctx context.Context, client fleet.InventoryClient, hostnam
 	return s, nil
 }
 
-func loadFromUFS(ctx context.Context, b *swmbot.Info, gf getDutInfoFuncUFS) (*inventory.DeviceUnderTest, error) {
-	client, err := swmbot.UFSClient(ctx, b)
+func loadFromUFS(ctx context.Context, rh *RequestHook, gf getDutInfoFuncUFS) (*inventory.DeviceUnderTest, error) {
+	client, err := swmbot.UFSClient(ctx, rh.BotInfo)
 	if err != nil {
 		return nil, errors.Annotate(err, "load from UFS: initialize UFS client").Err()
 	}
-	req := ufsAPI.GetChromeOSDeviceDataRequest{
-		ChromeosDeviceId: b.DUTID,
+	var req ufsAPI.GetChromeOSDeviceDataRequest
+	if rh.DUTID != "" {
+		req = ufsAPI.GetChromeOSDeviceDataRequest{
+			ChromeosDeviceId: rh.DUTID,
+		}
+	} else {
+		req = ufsAPI.GetChromeOSDeviceDataRequest{
+			Hostname: rh.HostName,
+		}
 	}
 	resp, err := gf(ctx, client, &req)
 	if err != nil {
@@ -113,18 +131,18 @@ func loadFromUFS(ctx context.Context, b *swmbot.Info, gf getDutInfoFuncUFS) (*in
 	return resp.GetDutV1(), nil
 }
 
-func load(ctx context.Context, b *swmbot.Info, uf UpdateFunc, gfUFS getDutInfoFuncUFS) (*Store, error) {
+func load(ctx context.Context, rh *RequestHook, uf UpdateFunc, gfUFS getDutInfoFuncUFS) (*Store, error) {
 	ctx, err := swmbot.WithSystemAccount(ctx)
 	if err != nil {
 		return nil, errors.Annotate(err, "load DUT host info").Err()
 	}
 	log.Printf("Loading DUT info from UFS")
-	dut, err := loadFromUFS(ctx, b, gfUFS)
+	dut, err := loadFromUFS(ctx, rh, gfUFS)
 	if err != nil {
 		log.Printf("(not fatal) fail to load DUT from inventory V2: %s", err)
 	}
 
-	c, err := swmbot.InventoryClient(ctx, b)
+	c, err := swmbot.InventoryClient(ctx, rh.BotInfo)
 	if err != nil {
 		return nil, errors.Annotate(err, "load DUT host info").Err()
 	}
