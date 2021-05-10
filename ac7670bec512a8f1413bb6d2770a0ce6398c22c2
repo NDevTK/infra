@@ -1,0 +1,146 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "da33537b_343342a8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-10T01:50:29Z",
+      "side": 1,
+      "message": "Can we split it to:\n1) refactor of harness.go (extract logic to new files)\n2) introduce DUTHarness structure\n3) introduce SchedulingUnit\n4) introduce logic for multi-units\n\nSorry the code have too many changes and they overlap. \n\nAdded comments/questions. ",
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cd3b070a_31520b14",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/botinfo/botinfo.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-10T01:50:29Z",
+      "side": 1,
+      "message": "I think we can drop it based on crbug.com/994404, then we do not need introduce dutID here?",
+      "range": {
+        "startLine": 48,
+        "startChar": 1,
+        "endLine": 52,
+        "endChar": 2
+      },
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d4b6d5b7_6b62e8a6",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutinfo/dutinfo.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-10T01:50:29Z",
+      "side": 1,
+      "message": "What is the cases when we load data based on DUTID (i think that is asset-tag)?",
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5ee7a1ea_2bb881b7",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/schedulingunit/schedulingunit.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-10T01:50:29Z",
+      "side": 1,
+      "message": "please add documentation",
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5106e7da_d67778f0",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/schedulingunit/schedulingunit.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-10T01:50:29Z",
+      "side": 1,
+      "message": "What do we expect for cases when name is not name and just DUT-name?",
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "df7bf9cb_ddd9ee0c",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/info.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-10T01:50:29Z",
+      "side": 1,
+      "message": "does SKYLAB_DUT_ID change the meaning now?",
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "50574e2a_77265f00",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/info.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-10T01:50:29Z",
+      "side": 1,
+      "message": "please add description for FLEET_SCHEDULING_UNIT",
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "48d0f596_2200c076",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/info.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-10T01:50:29Z",
+      "side": 1,
+      "message": "A few questions:\n1) how we set it?\n2) If I understand it right then the value can be `True` or `False` - if yes then maybe we need set name UseSchedulingUnit and add logic to convert it once to the bool instead check it everywhere?",
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
