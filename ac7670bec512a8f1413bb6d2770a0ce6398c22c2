@@ -85,6 +85,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "d5df598d_62a0d7f9",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/botinfo/botinfo.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-10T18:22:31Z",
+      "side": 1,
+      "message": "I wanted go say, if we do before this CL then we do not need introduce dutID",
+      "parentUuid": "b4d8703e_e5d9d8a2",
+      "range": {
+        "startLine": 48,
+        "startChar": 1,
+        "endLine": 52,
+        "endChar": 2
+      },
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d4b6d5b7_6b62e8a6",
         "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutinfo/dutinfo.go",
         "patchSetId": 2
@@ -114,6 +138,24 @@
       "side": 1,
       "message": "All non multi-DUTs use case will load DUT data from UFS based on DUTID, this is also how existing workflow works.",
       "parentUuid": "d4b6d5b7_6b62e8a6",
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "68b1118b_65dc366c",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutinfo/dutinfo.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-10T18:22:31Z",
+      "side": 1,
+      "message": "I thought that for all cases we will have RequestHook and the logic will be common. Can we do that?",
+      "parentUuid": "c85737fd_593f669e",
       "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -184,6 +226,24 @@
       "side": 1,
       "message": "Both dut_id and dut_name dimension in swarming are referred from name field of SchedulingUnit.",
       "parentUuid": "5106e7da_d67778f0",
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b90ce6b6_8168f5ec",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/schedulingunit/schedulingunit.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-10T18:22:31Z",
+      "side": 1,
+      "message": "Sorry, i was not clear.\n\nIf setup is not multi-duts then this call will rerun error like not. found or we expect that response will contain name of single device in the setup?",
+      "parentUuid": "07465a29_b1ef30d4",
       "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -289,6 +349,24 @@
       "side": 1,
       "message": "(1) We\u0027ll set it in bot script(skylab.py) based on \"label-multiduts\" dimension.\n\n(2) Currently the value can be True of \"\"(empty string) as regular DUT doesn\u0027t have \"label-multiduts\" dimension. Added a logic to convert Info.IsSchedulingUnit to bool.",
       "parentUuid": "48d0f596_2200c076",
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cc183446_3d22b86e",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/info.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-10T18:22:31Z",
+      "side": 1,
+      "message": "Acl. \n\n2) My first expectation was that we will get name of the unit and it will be always for multi-duts and not as single dut still scheduling-unit with 1 DUT.",
+      "parentUuid": "7fcd5262_911d3d00",
       "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
