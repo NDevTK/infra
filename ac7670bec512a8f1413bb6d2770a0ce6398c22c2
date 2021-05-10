@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "032c4e0c_85477822",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-10T03:59:32Z",
+      "side": 1,
+      "message": "Given we\u0027re changing the main logic instead of just adding a new feature, it\u0027s hard to split the CL and still make each CLs in a non-broken state.\n\nI can try to extract scheduling unit part, but that probably won\u0027t affect size of the CL much.\n\nAnother benefit is easier to revert if something breaks, given that we\u0027re changing the main logic here.",
+      "parentUuid": "da33537b_343342a8",
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "cd3b070a_31520b14",
@@ -31,6 +49,30 @@
       "writtenOn": "2021-05-10T01:50:29Z",
       "side": 1,
       "message": "I think we can drop it based on crbug.com/994404, then we do not need introduce dutID here?",
+      "range": {
+        "startLine": 48,
+        "startChar": 1,
+        "endLine": 52,
+        "endChar": 2
+      },
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b4d8703e_e5d9d8a2",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/botinfo/botinfo.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-10T03:59:32Z",
+      "side": 1,
+      "message": "Will do that in a separate CL.",
+      "parentUuid": "cd3b070a_31520b14",
       "range": {
         "startLine": 48,
         "startChar": 1,
@@ -60,6 +102,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c85737fd_593f669e",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutinfo/dutinfo.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-10T03:59:32Z",
+      "side": 1,
+      "message": "All non multi-DUTs use case will load DUT data from UFS based on DUTID, this is also how existing workflow works.",
+      "parentUuid": "d4b6d5b7_6b62e8a6",
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "5ee7a1ea_2bb881b7",
         "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/schedulingunit/schedulingunit.go",
         "patchSetId": 2
@@ -71,6 +131,24 @@
       "writtenOn": "2021-05-10T01:50:29Z",
       "side": 1,
       "message": "please add documentation",
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "17479555_5731ff74",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/schedulingunit/schedulingunit.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-10T03:59:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5ee7a1ea_2bb881b7",
       "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -94,6 +172,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "07465a29_b1ef30d4",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/schedulingunit/schedulingunit.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-10T03:59:32Z",
+      "side": 1,
+      "message": "Both dut_id and dut_name dimension in swarming are referred from name field of SchedulingUnit.",
+      "parentUuid": "5106e7da_d67778f0",
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "df7bf9cb_ddd9ee0c",
         "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/info.go",
         "patchSetId": 2
@@ -105,6 +201,24 @@
       "writtenOn": "2021-05-10T01:50:29Z",
       "side": 1,
       "message": "does SKYLAB_DUT_ID change the meaning now?",
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a816b47c_b3fc1332",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/info.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-10T03:59:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "df7bf9cb_ddd9ee0c",
       "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -126,6 +240,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8ffe7d41_9cba719d",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/info.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-10T03:59:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "50574e2a_77265f00",
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "48d0f596_2200c076",
@@ -139,6 +271,24 @@
       "writtenOn": "2021-05-10T01:50:29Z",
       "side": 1,
       "message": "A few questions:\n1) how we set it?\n2) If I understand it right then the value can be `True` or `False` - if yes then maybe we need set name UseSchedulingUnit and add logic to convert it once to the bool instead check it everywhere?",
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7fcd5262_911d3d00",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/info.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-10T03:59:32Z",
+      "side": 1,
+      "message": "(1) We\u0027ll set it in bot script(skylab.py) based on \"label-multiduts\" dimension.\n\n(2) Currently the value can be True of \"\"(empty string) as regular DUT doesn\u0027t have \"label-multiduts\" dimension. Added a logic to convert Info.IsSchedulingUnit to bool.",
+      "parentUuid": "48d0f596_2200c076",
       "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
