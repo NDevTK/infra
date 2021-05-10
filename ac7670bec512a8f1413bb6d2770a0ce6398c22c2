@@ -109,6 +109,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ccf92652_150b3772",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/botinfo/botinfo.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-10T20:31:36Z",
+      "side": 1,
+      "message": "I see, but given both changes(\"support SU in ssw\" and \"stop write to id based file\") may cause a situation need revert, we may want to make them into two CLs.",
+      "parentUuid": "d5df598d_62a0d7f9",
+      "range": {
+        "startLine": 48,
+        "startChar": 1,
+        "endLine": 52,
+        "endChar": 2
+      },
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d4b6d5b7_6b62e8a6",
         "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutinfo/dutinfo.go",
         "patchSetId": 2
@@ -156,6 +180,24 @@
       "side": 1,
       "message": "I thought that for all cases we will have RequestHook and the logic will be common. Can we do that?",
       "parentUuid": "c85737fd_593f669e",
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1cd30ee7_10016292",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutinfo/dutinfo.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-10T20:31:36Z",
+      "side": 1,
+      "message": "Ah yea, wasn\u0027t realized I can feed both ChromeosDeviceId and Hostname in one request, thanks!",
+      "parentUuid": "68b1118b_65dc366c",
       "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -244,6 +286,24 @@
       "side": 1,
       "message": "Sorry, i was not clear.\n\nIf setup is not multi-duts then this call will rerun error like not. found or we expect that response will contain name of single device in the setup?",
       "parentUuid": "07465a29_b1ef30d4",
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9e6c7092_b57e2d28",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/schedulingunit/schedulingunit.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-10T20:31:36Z",
+      "side": 1,
+      "message": "Non multi-DUTs setup won\u0027t reach this call, in harness.go the logic is only call GetSchedulingUnitFromUFS if IsSchedulingUnit is true in Info.",
+      "parentUuid": "b90ce6b6_8168f5ec",
       "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -367,6 +427,24 @@
       "side": 1,
       "message": "Acl. \n\n2) My first expectation was that we will get name of the unit and it will be always for multi-duts and not as single dut still scheduling-unit with 1 DUT.",
       "parentUuid": "7fcd5262_911d3d00",
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c82b8785_f94ca8b7",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/info.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-10T20:31:36Z",
+      "side": 1,
+      "message": "Right, the single DUT bot will still remains same as before, it will not behind a scheduling unit. So basically we\u0027ll have `SKYLAB_DUT_ID` in ENV for all bots and `FLEET_SCHEDULING_UNIT` in ENV for scheduling unit, where `SKYLAB_DUT_ID` is the dut_id dimension from swarming, and dut_id dimension can be:\n    1. ID field for DeviceUnderTest, so we can use it to get DUT data from UFS in single DUT bot case.\n    2. name field for SchedulingUnit, so we can use it to get SU data from UFS in multi-DUTs bot case.",
+      "parentUuid": "cc183446_3d22b86e",
       "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
