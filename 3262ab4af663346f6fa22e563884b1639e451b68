@@ -154,6 +154,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1ca8ca84_730fe274",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-11T23:33:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c4107ddb_b912b79d",
+      "range": {
+        "startLine": 137,
+        "startChar": 1,
+        "endLine": 189,
+        "endChar": 1
+      },
+      "revId": "3262ab4af663346f6fa22e563884b1639e451b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8f545db1_7b234976",
@@ -344,6 +368,24 @@
       "side": 1,
       "message": "but it can simplify handling in DUTHarness with logic in methods?",
       "parentUuid": "c4436db2_dbeba917",
+      "revId": "3262ab4af663346f6fa22e563884b1639e451b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6a5f1911_71805c83",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-11T23:33:40Z",
+      "side": 1,
+      "message": "Didn\u0027t quick get this point, could you give an example?",
+      "parentUuid": "4832b5b1_82ee29c2",
       "revId": "3262ab4af663346f6fa22e563884b1639e451b68",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
