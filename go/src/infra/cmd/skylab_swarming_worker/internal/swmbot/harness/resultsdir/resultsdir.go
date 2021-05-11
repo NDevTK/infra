@@ -17,34 +17,41 @@ import (
 	"go.chromium.org/luci/common/errors"
 )
 
-// Closer is used to seal the results directory.
-type Closer struct {
-	path string
+type Dir struct {
+	Path string
 }
 
-// Close seals the results directory.  This is safe to call multiple
-// times.  This is safe to call on a nil pointer.
-func (c *Closer) Close(ctx context.Context) error {
-	if c == nil {
-		return nil
-	}
-	if c.path == "" {
-		return nil
-	}
-	if err := sealResultsDir(c.path); err != nil {
-		return err
-	}
-	c.path = ""
-	return nil
-}
-
-// Open creates the results directory and returns a closer for sealing
-// the results directory.
-func Open(path string) (*Closer, error) {
+// Open creates the results directory and returns a Dir.
+func Open(path string) (*Dir, error) {
 	if err := os.MkdirAll(path, 0755); err != nil {
 		return nil, errors.Annotate(err, "open results dir %s", path).Err()
 	}
-	return &Closer{path: path}, nil
+	return &Dir{Path: path}, nil
+}
+
+// Close seals the results directory.  This is safe to call multiple
+// times. This is safe to call on a nil pointer.
+func (d *Dir) Close(ctx context.Context) error {
+	if d == nil {
+		return nil
+	}
+	if d.Path == "" {
+		return nil
+	}
+	if err := sealResultsDir(d.Path); err != nil {
+		return err
+	}
+	d.Path = ""
+	return nil
+}
+
+// OpenSubDir creates a sub directory root on Dir's Path.
+func (d *Dir) OpenSubDir(path string) (string, error) {
+	subDir := filepath.Join(d.Path, path)
+	if err := os.MkdirAll(subDir, 0755); err != nil {
+		return "", errors.Annotate(err, "open sub dir %s", subDir).Err()
+	}
+	return subDir, nil
 }
 
 const gsOffloaderMarker = ".ready_for_offload"
