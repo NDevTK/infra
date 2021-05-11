@@ -16,6 +16,24 @@
       "message": "I still thing the CL is too big :)",
       "revId": "3f667263dbe2b09b6771282b8b19e739ea15f31f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "81a71bdf_c05c699f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-11T02:01:23Z",
+      "side": 1,
+      "message": "Split the CL into two part: \"Split DUT harness from bot harness logic\" and \"Support scheduling unit in SSW\"",
+      "parentUuid": "697b7dbd_c7c82513",
+      "revId": "3f667263dbe2b09b6771282b8b19e739ea15f31f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
