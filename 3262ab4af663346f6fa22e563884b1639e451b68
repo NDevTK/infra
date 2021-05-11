@@ -1,0 +1,199 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5e76958e_1349586f",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-11T02:51:06Z",
+      "side": 1,
+      "message": "looks like withthis field the logic is more complicated. why just not return instead save it?",
+      "range": {
+        "startLine": 50,
+        "startChar": 1,
+        "endLine": 50,
+        "endChar": 20
+      },
+      "revId": "3262ab4af663346f6fa22e563884b1639e451b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e8903e65_3244ebdf",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-11T02:51:06Z",
+      "side": 1,
+      "message": "missed return?",
+      "revId": "3262ab4af663346f6fa22e563884b1639e451b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0272aa35_c1ae4742",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-11T02:51:06Z",
+      "side": 1,
+      "message": "Why did we moved it? I do not see any reason to move it",
+      "range": {
+        "startLine": 137,
+        "startChar": 1,
+        "endLine": 189,
+        "endChar": 1
+      },
+      "revId": "3262ab4af663346f6fa22e563884b1639e451b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8f545db1_7b234976",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-11T02:51:06Z",
+      "side": 1,
+      "message": "Can we call something like UnitResultDir or GroupResultDir to clean what for it and  distinguish from DutResultDir?",
+      "range": {
+        "startLine": 35,
+        "startChar": 1,
+        "endLine": 35,
+        "endChar": 11
+      },
+      "revId": "3262ab4af663346f6fa22e563884b1639e451b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fbeb22a0_2ac18335",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-11T02:51:06Z",
+      "side": 1,
+      "message": "the same question why we need it here?",
+      "range": {
+        "startLine": 39,
+        "startChar": 1,
+        "endLine": 39,
+        "endChar": 10
+      },
+      "revId": "3262ab4af663346f6fa22e563884b1639e451b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8784b316_15c34d02",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-11T02:51:06Z",
+      "side": 1,
+      "message": "`init result directory`?",
+      "range": {
+        "startLine": 80,
+        "startChar": 38,
+        "endLine": 80,
+        "endChar": 50
+      },
+      "revId": "3262ab4af663346f6fa22e563884b1639e451b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "092afde8_086a85e5",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-11T02:51:06Z",
+      "side": 1,
+      "message": "AS we return anything here then we probably can stop process if any of step failed? I think that is continue of question why we need save error on DUTHarness level?",
+      "revId": "3262ab4af663346f6fa22e563884b1639e451b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "67468ff1_29c65683",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-11T02:51:06Z",
+      "side": 1,
+      "message": "why not return it? as it confused on line 79 ;) i am ok if addressed on separate CL.",
+      "range": {
+        "startLine": 124,
+        "startChar": 2,
+        "endLine": 125,
+        "endChar": 8
+      },
+      "revId": "3262ab4af663346f6fa22e563884b1639e451b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cb039748_16582e22",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-11T02:51:06Z",
+      "side": 1,
+      "message": "I think we can drop it as not used?",
+      "range": {
+        "startLine": 133,
+        "startChar": 0,
+        "endLine": 197,
+        "endChar": 1
+      },
+      "revId": "3262ab4af663346f6fa22e563884b1639e451b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
