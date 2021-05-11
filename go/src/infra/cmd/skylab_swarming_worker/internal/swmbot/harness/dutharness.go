@@ -61,7 +61,6 @@ func (dh *DUTHarness) Close(ctx context.Context) error {
 func makeDUTHarness(b *swmbot.Info) *DUTHarness {
 	return &DUTHarness{
 		BotInfo: b,
-		DUTID:   b.DUTID,
 		labelUpdater: labelUpdater{
 			botInfo: b,
 		},
@@ -76,7 +75,7 @@ func (dh *DUTHarness) loadLocalState(ctx context.Context) {
 		dh.err = fmt.Errorf("DUT Name cannot be blank")
 		return
 	}
-	bi, err := botinfo.Open(ctx, dh.BotInfo, dh.DUTName)
+	bi, err := botinfo.Open(ctx, dh.BotInfo, dh.DUTName, dh.DUTID)
 	if err != nil {
 		dh.err = err
 		return
@@ -90,11 +89,15 @@ func (dh *DUTHarness) loadDUTInfo(ctx context.Context) (*inventory.DeviceUnderTe
 		return nil, nil
 	}
 	var s *dutinfo.Store
-	s, dh.err = dutinfo.Load(ctx, dh.BotInfo, dh.labelUpdater.update)
+	s, dh.err = dutinfo.Load(ctx, dh.BotInfo, dh.DUTID, dh.DUTName, dh.labelUpdater.update)
 	if dh.err != nil {
 		return nil, nil
 	}
+	// Overwrite DUTName and DUTID for harness based on UFS data, as in the
+	// single DUT tasks we don't have DUTName at begin, and in the
+	// scheduling_unit(multi-DUTs) tasks we don't have DUTID at begin.
 	dh.DUTName = s.DUT.GetCommon().GetHostname()
+	dh.DUTID = s.DUT.GetCommon().GetId()
 	dh.closers = append(dh.closers, s)
 	return s.DUT, s.StableVersions
 }
@@ -125,7 +128,7 @@ func (dh *DUTHarness) makeDUTResultsDir(d *resultsdir.Dir) {
 		dh.err = err
 		return
 	}
-	log.Printf("Created results sub-directory %s", path)
+	log.Printf("Created DUT level results sub-dir %s", path)
 	dh.ResultsDir = path
 }
 

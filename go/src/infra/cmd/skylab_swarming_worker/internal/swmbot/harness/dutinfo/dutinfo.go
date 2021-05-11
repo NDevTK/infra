@@ -66,8 +66,8 @@ type UpdateFunc func(ctx context.Context, dutID string, old *inventory.DeviceUnd
 // This function returns a Store that should be closed to update the inventory
 // with any changes to the info, using a supplied UpdateFunc. If UpdateFunc is
 // nil, the inventory is not updated.
-func Load(ctx context.Context, b *swmbot.Info, f UpdateFunc) (*Store, error) {
-	return load(ctx, b, f, getDutInfoFromUFS)
+func Load(ctx context.Context, b *swmbot.Info, dutID string, dutName string, f UpdateFunc) (*Store, error) {
+	return load(ctx, b, dutID, dutName, f, getDutInfoFromUFS)
 }
 
 type getDutInfoFuncUFS func(context.Context, ufsAPI.FleetClient, *ufsAPI.GetChromeOSDeviceDataRequest) (*ufspb.ChromeOSDeviceData, error)
@@ -98,13 +98,14 @@ func getStableVersion(ctx context.Context, client fleet.InventoryClient, hostnam
 	return s, nil
 }
 
-func loadFromUFS(ctx context.Context, b *swmbot.Info, gf getDutInfoFuncUFS) (*inventory.DeviceUnderTest, error) {
+func loadFromUFS(ctx context.Context, b *swmbot.Info, dutID string, dutName string, gf getDutInfoFuncUFS) (*inventory.DeviceUnderTest, error) {
 	client, err := swmbot.UFSClient(ctx, b)
 	if err != nil {
 		return nil, errors.Annotate(err, "load from UFS: initialize UFS client").Err()
 	}
 	req := ufsAPI.GetChromeOSDeviceDataRequest{
-		ChromeosDeviceId: b.DUTID,
+		ChromeosDeviceId: dutID,
+		Hostname:         dutName,
 	}
 	resp, err := gf(ctx, client, &req)
 	if err != nil {
@@ -113,13 +114,13 @@ func loadFromUFS(ctx context.Context, b *swmbot.Info, gf getDutInfoFuncUFS) (*in
 	return resp.GetDutV1(), nil
 }
 
-func load(ctx context.Context, b *swmbot.Info, uf UpdateFunc, gfUFS getDutInfoFuncUFS) (*Store, error) {
+func load(ctx context.Context, b *swmbot.Info, dutID string, dutName string, uf UpdateFunc, gfUFS getDutInfoFuncUFS) (*Store, error) {
 	ctx, err := swmbot.WithSystemAccount(ctx)
 	if err != nil {
 		return nil, errors.Annotate(err, "load DUT host info").Err()
 	}
 	log.Printf("Loading DUT info from UFS")
-	dut, err := loadFromUFS(ctx, b, gfUFS)
+	dut, err := loadFromUFS(ctx, b, dutID, dutName, gfUFS)
 	if err != nil {
 		log.Printf("(not fatal) fail to load DUT from inventory V2: %s", err)
 	}

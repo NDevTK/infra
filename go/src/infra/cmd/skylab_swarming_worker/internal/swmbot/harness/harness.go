@@ -15,6 +15,9 @@ import (
 
 	"infra/cmd/skylab_swarming_worker/internal/swmbot"
 	"infra/cmd/skylab_swarming_worker/internal/swmbot/harness/resultsdir"
+	ufspb "infra/unifiedfleet/api/v1/models"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 // closer interface to wrap Close method with providing context.
@@ -68,7 +71,9 @@ func Open(ctx context.Context, b *swmbot.Info, o ...Option) (i *Info, err error)
 	if err := i.makeTaskResultsDir(); err != nil {
 		return nil, errors.Annotate(err, "create task result directory").Err()
 	}
-	i.loadDUTHarness(ctx)
+	if err := i.loadDUTHarnesses(ctx); err != nil {
+		return nil, errors.Annotate(err, "load DUTHarness").Err()
+	}
 	for _, dh := range i.DUTs {
 		for _, o := range o {
 			// There could be options that configure only Info,
@@ -107,8 +112,38 @@ func (i *Info) makeTaskResultsDir() error {
 	return nil
 }
 
-func (i *Info) loadDUTHarness(ctx context.Context) {
-	d := makeDUTHarness(i.Info)
-	d.DUTID = i.Info.DUTID
-	i.DUTs = append(i.DUTs, d)
+func (i *Info) loadDUTHarnesses(ctx context.Context) error {
+	if !i.Info.IsSchedulingUnit {
+		d := makeDUTHarness(i.Info)
+		// For single DUT bot, the BotDUTID is the device's id field in UFS.
+		d.DUTID = i.Info.BotDUTID
+		i.DUTs = append(i.DUTs, d)
+		return nil
+	}
+	su, err := getSchedulingUnitFromUFS(ctx, i.Info, i.Info.BotDUTID)
+	if err != nil {
+		return errors.Annotate(err, "Failed to get Scheduling unit from UFS").Err()
+	}
+	for _, hostname := range su.GetMachineLSEs() {
+		d := makeDUTHarness(i.Info)
+		// If the bot is hosting a scheduling unit, we only knows hostname of each
+		// DUTs instead of their id.
+		d.DUTName = hostname
+		i.DUTs = append(i.DUTs, d)
+	}
+	return nil
+}
+
+// Get a SchedulingUnit from UFS, unlike a DeviceUnderTest, a SchedulingUnit doesn't
+// have ID field, so both dut_id and dut_name swarming dimensions are referred from
+// name field of SchedulingUnit.
+func getSchedulingUnitFromUFS(ctx context.Context, b *swmbot.Info, name string) (*ufspb.SchedulingUnit, error) {
+	client, err := swmbot.UFSClient(ctx, b)
+	if err != nil {
+		return nil, errors.Annotate(err, "Get SchedulingUnit from UFS: initialize UFS client").Err()
+	}
+	req := &ufsAPI.GetSchedulingUnitRequest{
+		Name: ufsUtil.AddPrefix(ufsUtil.SchedulingUnitCollection, name),
+	}
+	return client.GetSchedulingUnit(swmbot.SetupContext(ctx, ufsUtil.OSNamespace), req)
 }
