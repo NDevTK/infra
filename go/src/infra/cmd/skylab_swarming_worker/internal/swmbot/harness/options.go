@@ -4,15 +4,35 @@
 
 package harness
 
-// Option is passed to Open to configure the harness.
-type Option func(*Info)
+// Option is passed to Open to configure the DUT harness.
+// There can be two level of options, one directly applies to
+// Info while another one will applies to each DUTHarness.
+type Option interface {
+	option() // just so other packages can't make their own Option
+}
 
-// UpdateInventory returns an Option that enables inventory updates.
-// A task name to be associated with the inventory update should be
-// provided.
+type dutHarnessOption interface {
+	Option
+	configureDutHarness(*DUTHarness)
+}
+
+// Assert that updateInventoryOpt matches dutHarnessOption
+var _ dutHarnessOption = updateInventoryOpt{}
+
+type updateInventoryOpt struct {
+	name string
+}
+
+func (updateInventoryOpt) option() {}
+
+func (o updateInventoryOpt) configureDutHarness(dh *DUTHarness) {
+	dh.labelUpdater.taskName = o.name
+	dh.labelUpdater.updateLabels = true
+}
+
+// UpdateInventory returns an updateInventoryOpt that enables
+// inventory updates. A task name to be associated with the
+// inventory update should be provided.
 func UpdateInventory(name string) Option {
-	return func(i *Info) {
-		i.labelUpdater.taskName = name
-		i.labelUpdater.updateLabels = true
-	}
+	return updateInventoryOpt{name: name}
 }
