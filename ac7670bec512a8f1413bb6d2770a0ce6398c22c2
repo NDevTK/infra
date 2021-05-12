@@ -131,6 +131,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7741539a_f700df22",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/botinfo/botinfo.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-12T01:24:06Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ccf92652_150b3772",
+      "range": {
+        "startLine": 48,
+        "startChar": 1,
+        "endLine": 52,
+        "endChar": 2
+      },
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d4b6d5b7_6b62e8a6",
@@ -304,6 +328,24 @@
       "side": 1,
       "message": "Non multi-DUTs setup won\u0027t reach this call, in harness.go the logic is only call GetSchedulingUnitFromUFS if IsSchedulingUnit is true in Info.",
       "parentUuid": "b90ce6b6_8168f5ec",
+      "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6396159c_f132e207",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/schedulingunit/schedulingunit.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-05-12T01:24:06Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "9e6c7092_b57e2d28",
       "revId": "ac7670bec512a8f1413bb6d2770a0ce6398c22c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
