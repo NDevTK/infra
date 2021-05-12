@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bbf6911d_bb85e0bd",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/options.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-12T21:55:07Z",
+      "side": 1,
+      "message": "I can see how this makes the change easy, but the abstraction boundary is wrong.  Option is passed to a function that creates Info, not DutHarness, so it should be described as configuring Info externally.\n\nThere are a couple of ways to do it, this is my suggestion which is more complicated but future-proof for people reading or changing this.\n\n type Option interface {\n  option() // just so other packages can\u0027t make their own Option\n }\n\n type dutHarnessOption interface {\n  Option\n  configureDutHarness(*DUTHarness)\n }\n\n // Assert that updateInventoryOpt matches dutHarnessOption\n var _ dutHarnessOption \u003d updateInventoryOpt{}\n\n type updateInventoryOpt struct {\n  name string\n }\n\n func (updateInventoryOpt) option() {}\n\n func (o updateInventoryOpt) configureDutHarness(dh *DUTHarness) {\n\t\tdh.labelUpdater.TaskName \u003d o.name\n\t\tdh.labelUpdater.UpdateLabels \u003d true\n }\n\n func UpdateInventory(name string) Option {\n   return updateInventoryOpt{name: name}\n }\n\n func Open(...) {\n        ...\n\tfor _, dh :\u003d range i.DUTs {\n\t\tfor _, o :\u003d range o {\n                        // There could be options that configure only Info,\n                        // so only use the options that specifically for DUT harness.\n                        if o, ok :\u003d o.dutHarnessOption; ok {\n\t\t        \to.configureDutHarness(dh)\n                        }\n\t\t}\n        ...\n }",
+      "revId": "34b05686e2c217baeb09c2893616c5f5f4eab1d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9cffc07e_3b670f8b",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/main.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-12T21:55:07Z",
+      "side": 1,
+      "message": "Move errs definition closer down to where it\u0027s first used.",
+      "revId": "34b05686e2c217baeb09c2893616c5f5f4eab1d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
