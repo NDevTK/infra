@@ -432,6 +432,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9ac533a9_dce0009f",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-12T04:15:42Z",
+      "side": 1,
+      "message": "I see your point here, but I found the original change https://crrev.com/c/1453759 was intended to move error handling outside of harness. Given the focus of CL is to split harness so we can accommodate multi-DUTs, I\u0027ll just leave this logic as it is.",
+      "parentUuid": "582675bb_bbd753e7",
+      "revId": "3262ab4af663346f6fa22e563884b1639e451b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "67468ff1_29c65683",
