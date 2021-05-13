@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5010c76a_9414558f",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/options.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-13T02:52:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bbf6911d_bb85e0bd",
+      "revId": "34b05686e2c217baeb09c2893616c5f5f4eab1d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9cffc07e_3b670f8b",
@@ -31,6 +49,24 @@
       "writtenOn": "2021-05-12T21:55:07Z",
       "side": 1,
       "message": "Move errs definition closer down to where it\u0027s first used.",
+      "revId": "34b05686e2c217baeb09c2893616c5f5f4eab1d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dbfb3275_c52e61da",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/main.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-13T02:52:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9cffc07e_3b670f8b",
       "revId": "34b05686e2c217baeb09c2893616c5f5f4eab1d4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

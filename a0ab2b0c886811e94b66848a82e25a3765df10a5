@@ -16,6 +16,24 @@
       "message": "Can you do the labelUpdater move in a separate CL?",
       "revId": "a0ab2b0c886811e94b66848a82e25a3765df10a5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "42cbb88d_f030cf1e",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-13T02:52:24Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "d3bf91af_a9fe6f27",
+      "revId": "a0ab2b0c886811e94b66848a82e25a3765df10a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
