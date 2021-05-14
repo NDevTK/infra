@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "96601a78_d66792f6",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-14T05:26:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d44ab202_9e90f4c2",
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a7113144_cbd07335",
@@ -31,6 +49,24 @@
       "writtenOn": "2021-05-14T00:35:27Z",
       "side": 1,
       "message": "I think I made this comment on another CL too, but is DUTID Scheduling Unit ID now?  We should try to rename things to the proper name so we don\u0027t end up with legacy names that mean different things everywhere since that is technical debt that makes it hard for people to keep maintaining and understanding the code.\n\nIt\u0027s especially confusing here since there\u0027s DUTID and DUTName.",
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "86c5443b_3f6521cd",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-14T05:26:59Z",
+      "side": 1,
+      "message": "No, the DUTID here is the ID of the DUT, and DUTName is the hostname of the DUT. Basically DUTHarness is only doing things on a DUT level, and doesn\u0027t know anything about a SchedulingUnit.\n\nThe reason we still use DUTID field from swmbot.Info as DUTID of DUTHarness in makeDUTHarness, is because this CL only targeted to split DUTHarness from harness, and haven\u0027t add Scheduling support in yet. The change has been made in the following CL \"SSW: Support scheduling unit in SSW\"",
+      "parentUuid": "a7113144_cbd07335",
       "revId": "16ff0413619bc58693212481031a9959e33faaf2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -54,6 +90,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1382ec4d_252c8788",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-14T05:26:59Z",
+      "side": 1,
+      "message": "The intention is to make it more clear which Dir it is when we people read luciferWorkflow in main.(e.g. we logdog.fifo is on TaskResultDir while we passes DUTResultDir to lucifer cli.)",
+      "parentUuid": "1bffddac_4965e13b",
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "35433434_4e924602",
         "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
         "patchSetId": 11
@@ -65,6 +119,30 @@
       "writtenOn": "2021-05-14T00:35:27Z",
       "side": 1,
       "message": "Recommend changing this to \n\n func makeDUTHarness(b *harness.Info, o... dutHarnessOption)\n\nAnd moving all of the DUTHarness setup from harness.go to here.\n\nIt\u0027s usually not a good idea to have a \"constructor\" function that returns a partially created object, and depend on the caller to know how to finish creating it.",
+      "range": {
+        "startLine": 62,
+        "startChar": 23,
+        "endLine": 62,
+        "endChar": 29
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fe5fc653_5a1d4849",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-14T05:26:59Z",
+      "side": 1,
+      "message": "Sure, will do in a separate CL.",
+      "parentUuid": "35433434_4e924602",
       "range": {
         "startLine": 62,
         "startChar": 23,
@@ -100,6 +178,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "2e17d24f_736ddec5",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-14T05:26:59Z",
+      "side": 1,
+      "message": "Yea, for this CL the context is we\u0027re still living in the world that only has single DUTs, so the DUTID field from botInfo is good enough for us to get dutinfo. In the following CL \"SSW: Support scheduling unit in SSW\" I made such change to get dutinfo by name for SU.",
+      "parentUuid": "5c27e5f5_94b643ba",
+      "range": {
+        "startLine": 94,
+        "startChar": 35,
+        "endLine": 94,
+        "endChar": 45
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "0301f777_f864908c",
         "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
         "patchSetId": 11
@@ -111,6 +213,30 @@
       "writtenOn": "2021-05-14T00:35:27Z",
       "side": 1,
       "message": "you should use the harness.Info.ResultsDir and not the swmbot.Info.ResultsDir for this.",
+      "range": {
+        "startLine": 124,
+        "startChar": 1,
+        "endLine": 124,
+        "endChar": 39
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5c805094_6281763e",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-14T05:26:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0301f777_f864908c",
       "range": {
         "startLine": 124,
         "startChar": 1,
@@ -144,6 +270,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "26a549aa_adcf9148",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-14T05:26:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6447ea26_904cec7b",
+      "range": {
+        "startLine": 125,
+        "startChar": 12,
+        "endLine": 125,
+        "endChar": 26
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f950b324_da8797a4",
@@ -157,6 +307,24 @@
       "writtenOn": "2021-05-14T00:35:27Z",
       "side": 1,
       "message": "Merge with if line",
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c66d6f75_c09bb4cf",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-14T05:26:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f950b324_da8797a4",
       "revId": "16ff0413619bc58693212481031a9959e33faaf2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -184,6 +352,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c0b78854_98037358",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-14T05:26:59Z",
+      "side": 1,
+      "message": "Applied in the following CL.",
+      "parentUuid": "a73ec005_e6d889f1",
+      "range": {
+        "startLine": 72,
+        "startChar": 3,
+        "endLine": 72,
+        "endChar": 17
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9ca73ca0_16dba81d",
@@ -197,6 +389,30 @@
       "writtenOn": "2021-05-14T00:35:27Z",
       "side": 1,
       "message": "s//options that are specifically/",
+      "range": {
+        "startLine": 76,
+        "startChar": 22,
+        "endLine": 76,
+        "endChar": 47
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6bd30f2e_3a2a756e",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-14T05:26:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9ca73ca0_16dba81d",
       "range": {
         "startLine": 76,
         "startChar": 22,
@@ -232,6 +448,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "0e12b769_03b443ab",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-14T05:26:59Z",
+      "side": 1,
+      "message": "Sure, will do in a separate CL to avoid some rebase merge conflict handling.",
+      "parentUuid": "f53df1ce_d22657cf",
+      "range": {
+        "startLine": 81,
+        "startChar": 9,
+        "endLine": 81,
+        "endChar": 60
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e1537de3_403ca105",
         "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
         "patchSetId": 11
@@ -243,6 +483,30 @@
       "writtenOn": "2021-05-14T00:35:27Z",
       "side": 1,
       "message": "s//into autotest friendly format/\n\nRTD isn\u0027t planned to use hostinfo file",
+      "range": {
+        "startLine": 85,
+        "startChar": 24,
+        "endLine": 85,
+        "endChar": 63
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "33f3433c_52ccbf55",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-14T05:26:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e1537de3_403ca105",
       "range": {
         "startLine": 85,
         "startChar": 24,
@@ -270,6 +534,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3e611cec_812935f2",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-14T05:26:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "57bb9dc1_47ad9942",
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a4ae3375_68135aec",
@@ -283,6 +565,30 @@
       "writtenOn": "2021-05-14T00:35:27Z",
       "side": 1,
       "message": "s/DUT harness/harness/\n\n(or swarming task harness, swarming worker harness)",
+      "range": {
+        "startLine": 7,
+        "startChar": 45,
+        "endLine": 7,
+        "endChar": 56
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0db7f857_c5abe033",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/options.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-14T05:26:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a4ae3375_68135aec",
       "range": {
         "startLine": 7,
         "startChar": 45,
@@ -316,6 +622,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ca7cb5c4_83cba20a",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/options.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-14T05:26:59Z",
+      "side": 1,
+      "message": "Done, thanks:)",
+      "parentUuid": "62242234_d5f4276d",
+      "range": {
+        "startLine": 11,
+        "startChar": 13,
+        "endLine": 11,
+        "endChar": 63
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a9c12724_2f964ee4",
@@ -333,6 +663,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "541ad922_42a08e35",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/main.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-14T05:26:59Z",
+      "side": 1,
+      "message": "Ack, added on my notes to follow up.",
+      "parentUuid": "a9c12724_2f964ee4",
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c494eeb4_f50547ed",
@@ -346,6 +694,24 @@
       "writtenOn": "2021-05-14T00:35:27Z",
       "side": 1,
       "message": "double checking, but if one DUT fails repair all the DUTs in the scheduling unit get marked repair failed?",
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a6ef573f_d4108b1f",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/main.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-14T05:26:59Z",
+      "side": 1,
+      "message": "No, each DUT\u0027s state is handled separately.\n\nThe setStateForDUTs function here is for some special task types, which force to set DUT(s) to a certain states(see const from line 54) for internal use purpose only.",
+      "parentUuid": "c494eeb4_f50547ed",
       "revId": "16ff0413619bc58693212481031a9959e33faaf2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
