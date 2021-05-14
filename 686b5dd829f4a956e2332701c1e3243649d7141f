@@ -16,6 +16,97 @@
       "message": "Thanks for patient and thoroughly review 😊",
       "revId": "686b5dd829f4a956e2332701c1e3243649d7141f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ede31ffa_e3df0bab",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T20:13:45Z",
+      "side": 1,
+      "message": "LGTM % comments",
+      "revId": "686b5dd829f4a956e2332701c1e3243649d7141f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "17248f37_8e3f7b78",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/resultsdir/resultsdir.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T20:13:45Z",
+      "side": 1,
+      "message": "Needs comment\n\nDir represents the results directory.\nDir should be closed after all results have been written to seal the directory for upload.",
+      "revId": "686b5dd829f4a956e2332701c1e3243649d7141f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "51758303_7ea629a2",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/resultsdir/resultsdir.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T20:13:45Z",
+      "side": 1,
+      "message": "Should still mention calling Close\n\nDir should be closed after all results have been written to seal the directory for upload.",
+      "revId": "686b5dd829f4a956e2332701c1e3243649d7141f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "df184907_c5e0b9b7",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/resultsdir/resultsdir.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T20:13:45Z",
+      "side": 1,
+      "message": "reword\n\nOpenSubDir creates a sub directory under the results directory.\nThe path is relative to the results directory.",
+      "range": {
+        "startLine": 48,
+        "startChar": 3,
+        "endLine": 48,
+        "endChar": 57
+      },
+      "revId": "686b5dd829f4a956e2332701c1e3243649d7141f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5f379221_9d1e39c5",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/resultsdir/resultsdir.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T20:13:45Z",
+      "side": 1,
+      "message": "For safety, good to check that path isn\u0027t absolute.",
+      "revId": "686b5dd829f4a956e2332701c1e3243649d7141f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

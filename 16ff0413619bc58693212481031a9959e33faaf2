@@ -71,6 +71,42 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4e13b918_d1262d44",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T20:13:45Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "86c5443b_3f6521cd",
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "db68bbe1_8a3c0305",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T20:13:45Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "86c5443b_3f6521cd",
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1bffddac_4965e13b",
@@ -102,6 +138,24 @@
       "side": 1,
       "message": "The intention is to make it more clear which Dir it is when we people read luciferWorkflow in main.(e.g. we logdog.fifo is on TaskResultDir while we passes DUTResultDir to lucifer cli.)",
       "parentUuid": "1bffddac_4965e13b",
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3b16e6e5_e1a54409",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T20:13:45Z",
+      "side": 1,
+      "message": "This is a field on the type named DUTHarness though.  Since Go is statically typed, we assume people know what type variables are.\n\n var dh *DUTHarness\n dh.ResultsDir // should be obvious this is the ResultsDir for the DUT\n var i *Info\n i.TaskResultsDir // easy to distinguish from the above since both the type and field name is different\n\nLeave up to you.",
+      "parentUuid": "1382ec4d_252c8788",
       "revId": "16ff0413619bc58693212481031a9959e33faaf2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -153,6 +207,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9cfd72a7_a23f6776",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T20:13:45Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "fe5fc653_5a1d4849",
+      "range": {
+        "startLine": 62,
+        "startChar": 23,
+        "endLine": 62,
+        "endChar": 29
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5c27e5f5_94b643ba",
@@ -190,6 +268,30 @@
       "side": 1,
       "message": "Yea, for this CL the context is we\u0027re still living in the world that only has single DUTs, so the DUTID field from botInfo is good enough for us to get dutinfo. In the following CL \"SSW: Support scheduling unit in SSW\" I made such change to get dutinfo by name for SU.",
       "parentUuid": "5c27e5f5_94b643ba",
+      "range": {
+        "startLine": 94,
+        "startChar": 35,
+        "endLine": 94,
+        "endChar": 45
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b9a3b232_24a58dba",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T20:13:45Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "2e17d24f_736ddec5",
       "range": {
         "startLine": 94,
         "startChar": 35,
@@ -712,6 +814,24 @@
       "side": 1,
       "message": "No, each DUT\u0027s state is handled separately.\n\nThe setStateForDUTs function here is for some special task types, which force to set DUT(s) to a certain states(see const from line 54) for internal use purpose only.",
       "parentUuid": "c494eeb4_f50547ed",
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "993c5dbb_91a5420a",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/main.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T20:13:45Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "a6ef573f_d4108b1f",
       "revId": "16ff0413619bc58693212481031a9959e33faaf2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
