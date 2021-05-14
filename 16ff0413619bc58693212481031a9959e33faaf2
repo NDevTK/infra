@@ -1,0 +1,353 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d44ab202_9e90f4c2",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T00:35:27Z",
+      "side": 1,
+      "message": "Methods should be after the type definition, not before",
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a7113144_cbd07335",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T00:35:27Z",
+      "side": 1,
+      "message": "I think I made this comment on another CL too, but is DUTID Scheduling Unit ID now?  We should try to rename things to the proper name so we don\u0027t end up with legacy names that mean different things everywhere since that is technical debt that makes it hard for people to keep maintaining and understanding the code.\n\nIt\u0027s especially confusing here since there\u0027s DUTID and DUTName.",
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1bffddac_4965e13b",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T00:35:27Z",
+      "side": 1,
+      "message": "Don\u0027t need DUT in DUTResultsDir, kind of redundant.",
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "35433434_4e924602",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T00:35:27Z",
+      "side": 1,
+      "message": "Recommend changing this to \n\n func makeDUTHarness(b *harness.Info, o... dutHarnessOption)\n\nAnd moving all of the DUTHarness setup from harness.go to here.\n\nIt\u0027s usually not a good idea to have a \"constructor\" function that returns a partially created object, and depend on the caller to know how to finish creating it.",
+      "range": {
+        "startLine": 62,
+        "startChar": 23,
+        "endLine": 62,
+        "endChar": 29
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5c27e5f5_94b643ba",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T00:35:27Z",
+      "side": 1,
+      "message": "maybe doesn\u0027t make sense to change now (leave a comment?), but you will need the DUT name to know which dutinfo to load for the bot for multidut?  You can\u0027t get the DUT name from load dutinfo like you\u0027re doing in this patch set.",
+      "range": {
+        "startLine": 94,
+        "startChar": 35,
+        "endLine": 94,
+        "endChar": 45
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0301f777_f864908c",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T00:35:27Z",
+      "side": 1,
+      "message": "you should use the harness.Info.ResultsDir and not the swmbot.Info.ResultsDir for this.",
+      "range": {
+        "startLine": 124,
+        "startChar": 1,
+        "endLine": 124,
+        "endChar": 39
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6447ea26_904cec7b",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T00:35:27Z",
+      "side": 1,
+      "message": "You should create another function for this and not use resultsdir.Open() since resultsdir.Open() has the abstraction of sealing the results.  It\u0027s not a good practice to ignore the closing because you\u0027re doing something unintended.\n\nEasy way is to just add resultsdir.OpenSubdir() function, but we can make the abstraction a bit better by renaming resultsdir.Closer to resultsdir.Dir and adding a method MakeSubdir.\n\nin resultsdir:\n\n type Dir struct {\n  Path string\n }\n\n func (*Dir) Close(ctx context.Context) error {...}\n\n func (*Dir) OpenSubDir(...) {}\n\nin harness.Info:\n\n var rd *resultsdir.Dir\n rd, err :\u003d resultsdir.Open(path)\n ...\n i.closers \u003d append(i.closers, rd)\n i.TaskResultsDir \u003d rd\n\n\nhere:\n\n func (dh *DUTHarness) makeDUTResultsDir(d *resultsdir.Dir) {\n  ...\n  path :\u003d ...\n  err :\u003d d.OpenSubDir(path)\n  ...\n }",
+      "range": {
+        "startLine": 125,
+        "startChar": 12,
+        "endLine": 125,
+        "endChar": 26
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f950b324_da8797a4",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T00:35:27Z",
+      "side": 1,
+      "message": "Merge with if line",
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a73ec005_e6d889f1",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T00:35:27Z",
+      "side": 1,
+      "message": "Suggest rename to loadDUTHarnesses plural since we\u0027re setting it up so it can load multiple DUTHarness soon.",
+      "range": {
+        "startLine": 72,
+        "startChar": 3,
+        "endLine": 72,
+        "endChar": 17
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9ca73ca0_16dba81d",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T00:35:27Z",
+      "side": 1,
+      "message": "s//options that are specifically/",
+      "range": {
+        "startLine": 76,
+        "startChar": 22,
+        "endLine": 76,
+        "endChar": 47
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f53df1ce_d22657cf",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T00:35:27Z",
+      "side": 1,
+      "message": "Recommend moving these comments to each of the methods like doc comments.",
+      "range": {
+        "startLine": 81,
+        "startChar": 9,
+        "endLine": 81,
+        "endChar": 60
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e1537de3_403ca105",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T00:35:27Z",
+      "side": 1,
+      "message": "s//into autotest friendly format/\n\nRTD isn\u0027t planned to use hostinfo file",
+      "range": {
+        "startLine": 85,
+        "startChar": 24,
+        "endLine": 85,
+        "endChar": 63
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "57bb9dc1_47ad9942",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/harness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T00:35:27Z",
+      "side": 1,
+      "message": "Move this function after makeTaskResultsDir since that\u0027s the order the functions are called in Open() and that\u0027s the order someone is going to read through the code.",
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a4ae3375_68135aec",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/options.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T00:35:27Z",
+      "side": 1,
+      "message": "s/DUT harness/harness/\n\n(or swarming task harness, swarming worker harness)",
+      "range": {
+        "startLine": 7,
+        "startChar": 45,
+        "endLine": 7,
+        "endChar": 56
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "62242234_d5f4276d",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/options.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T00:35:27Z",
+      "side": 1,
+      "message": "sorry, comment were just for explanation.  You can remove this comment since this is a fairly common pattern in Go.\n\nor reword to be more formal\n\n// ensure other packages can\u0027t implement this interface",
+      "range": {
+        "startLine": 11,
+        "startChar": 13,
+        "endLine": 11,
+        "endChar": 63
+      },
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a9c12724_2f964ee4",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/main.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T00:35:27Z",
+      "side": 1,
+      "message": "Not this CL, but we should be consistent about which errors package we use in a single package.  So we should switch completely to either luci errors or pkg/errors, depending on which on is used more already.",
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c494eeb4_f50547ed",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/main.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-05-14T00:35:27Z",
+      "side": 1,
+      "message": "double checking, but if one DUT fails repair all the DUTs in the scheduling unit get marked repair failed?",
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
