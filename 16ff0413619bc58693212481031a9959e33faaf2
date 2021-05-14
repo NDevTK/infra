@@ -160,6 +160,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "39b87864_33e0a5d7",
+        "filename": "go/src/infra/cmd/skylab_swarming_worker/internal/swmbot/harness/dutharness.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-05-14T22:50:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3b16e6e5_e1a54409",
+      "revId": "16ff0413619bc58693212481031a9959e33faaf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "35433434_4e924602",
