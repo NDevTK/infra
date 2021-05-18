@@ -33,6 +33,40 @@
       "message": "sorry, i\u0027m overloaded. I\u0027ll try to look at this at night / tomorrow.",
       "revId": "c3a537ee899412952eca0ebed488f4c4ad71f86f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7e55539a_1b5a18cc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393469
+      },
+      "writtenOn": "2021-05-18T23:20:27Z",
+      "side": 1,
+      "message": "lgtm",
+      "revId": "c3a537ee899412952eca0ebed488f4c4ad71f86f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "428c7d81_312633c5",
+        "filename": "go/src/infra/tools/dirmd/inheritance_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1393469
+      },
+      "writtenOn": "2021-05-18T23:20:27Z",
+      "side": 1,
+      "message": "add property that will be overridden in \"a\", e.g. Wpt",
+      "revId": "c3a537ee899412952eca0ebed488f4c4ad71f86f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
