@@ -67,6 +67,24 @@
       "message": "add property that will be overridden in \"a\", e.g. Wpt",
       "revId": "c3a537ee899412952eca0ebed488f4c4ad71f86f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "403defd7_b97c8946",
+        "filename": "go/src/infra/tools/dirmd/inheritance_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-05-19T00:29:31Z",
+      "side": 1,
+      "message": "Done, although not sure it is related to mixins.",
+      "parentUuid": "428c7d81_312633c5",
+      "revId": "c3a537ee899412952eca0ebed488f4c4ad71f86f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
