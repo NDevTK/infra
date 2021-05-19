@@ -34,6 +34,24 @@
       "parentUuid": "d48c3cb9_3b836b54",
       "revId": "d87534c5fd15fd6efda59973b588d65c8b940c24",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d227301f_b8c9eb67",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2021-05-19T05:50:16Z",
+      "side": 1,
+      "message": "Hah, whoops. I was briefly worried about PYTHONPATH in the environment also needing dx.workrel() applied to it, before I remembered that this is already handled for environment variables in https://source.chromium.org/chromium/infra/infra/+/main:infra/tools/dockerbuild/dockcross.py;l\u003d340;drc\u003dbc2ad6f8db87dc5cb013169abedd891db14bc468",
+      "parentUuid": "977eea10_c833c277",
+      "revId": "d87534c5fd15fd6efda59973b588d65c8b940c24",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
