@@ -1,0 +1,78 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8dcf71d1_77e255f5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2021-05-20T21:20:09Z",
+      "side": 1,
+      "message": "sorry for delay, I\u0027ve just re-discovered it in my Gerrit page among many other CLs 😞",
+      "revId": "736a11c5ce31242b92418d73c97e12580dd2cec0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fbb3433e_2d9d1087",
+        "filename": "go/src/infra/tools/dirmd/inheritance.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2021-05-20T21:20:09Z",
+      "side": 1,
+      "message": "neat (I know this isn\u0027t new in this CL)",
+      "range": {
+        "startLine": 70,
+        "startChar": 2,
+        "endLine": 77,
+        "endChar": 0
+      },
+      "revId": "736a11c5ce31242b92418d73c97e12580dd2cec0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "164be79a_377d1b00",
+        "filename": "go/src/infra/tools/dirmd/inheritance_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2021-05-20T21:20:09Z",
+      "side": 1,
+      "message": "i might be asking too much, but I think a solid regression test should have 3 levels of depth with mixins s.t. accidental erasure of mixing in the middle of the path is detected, perhaps an input like:\n\n. \u003d\u003e {}\na \u003d\u003e {mixin1, mixin2}\nb \u003d\u003e {mixin1, mixin3}",
+      "revId": "736a11c5ce31242b92418d73c97e12580dd2cec0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "62525a58_bf74a484",
+        "filename": "go/src/infra/tools/dirmd/proto/dir_metadata.pb.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2021-05-20T21:20:09Z",
+      "side": 1,
+      "message": "i guess forgotten generate in prior CL https://chromium.googlesource.com/infra/infra/+/736a11c5ce31242b92418d73c97e12580dd2cec0/go/src/infra/tools/dirmd/proto/dir_metadata.proto#47",
+      "revId": "736a11c5ce31242b92418d73c97e12580dd2cec0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
