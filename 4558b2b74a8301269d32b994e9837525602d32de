@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cb4e12be_7bb9c960",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1396774
+      },
+      "writtenOn": "2021-05-21T21:50:11Z",
+      "side": 1,
+      "message": "Jason: can you advise on how to get a review on the mirrored github repo once it\u0027s set up?\n\n",
+      "revId": "4558b2b74a8301269d32b994e9837525602d32de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
