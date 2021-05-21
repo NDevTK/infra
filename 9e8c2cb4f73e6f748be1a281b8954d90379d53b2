@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "95b95c77_3d94af06",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2021-05-21T18:52:39Z",
+      "side": 1,
+      "message": "Does nodir+spam@ still want the spam? ;)",
+      "revId": "9e8c2cb4f73e6f748be1a281b8954d90379d53b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
