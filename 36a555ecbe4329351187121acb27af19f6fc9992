@@ -39,6 +39,30 @@
       },
       "revId": "36a555ecbe4329351187121acb27af19f6fc9992",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3f3899ed_6da4d5e2",
+        "filename": "recipes/recipes/gerrit_plugins.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1167909
+      },
+      "writtenOn": "2021-05-21T22:47:16Z",
+      "side": 1,
+      "message": "Or, crazy idea, start exploring git submodules?",
+      "parentUuid": "3e799ff9_491989b9",
+      "range": {
+        "startLine": 32,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 71
+      },
+      "revId": "36a555ecbe4329351187121acb27af19f6fc9992",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
