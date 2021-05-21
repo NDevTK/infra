@@ -58,6 +58,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "4f74a322_16007b2d",
+        "filename": "go/src/infra/tools/dirmd/inheritance_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-05-21T04:14:30Z",
+      "side": 1,
+      "message": "I am not sure I understood you completely, but I did my best adding the third layer. PTAL.",
+      "parentUuid": "164be79a_377d1b00",
+      "revId": "736a11c5ce31242b92418d73c97e12580dd2cec0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "62525a58_bf74a484",
@@ -71,6 +89,24 @@
       "writtenOn": "2021-05-20T21:20:09Z",
       "side": 1,
       "message": "i guess forgotten generate in prior CL https://chromium.googlesource.com/infra/infra/+/736a11c5ce31242b92418d73c97e12580dd2cec0/go/src/infra/tools/dirmd/proto/dir_metadata.proto#47",
+      "revId": "736a11c5ce31242b92418d73c97e12580dd2cec0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b075d34e_3de6f5d6",
+        "filename": "go/src/infra/tools/dirmd/proto/dir_metadata.pb.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1114299
+      },
+      "writtenOn": "2021-05-21T04:14:30Z",
+      "side": 1,
+      "message": "ah, right",
+      "parentUuid": "62525a58_bf74a484",
       "revId": "736a11c5ce31242b92418d73c97e12580dd2cec0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
