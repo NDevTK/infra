@@ -63,6 +63,30 @@
       },
       "revId": "36a555ecbe4329351187121acb27af19f6fc9992",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fe42d238_ade18bf5",
+        "filename": "recipes/recipes/gerrit_plugins.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2021-05-21T23:13:55Z",
+      "side": 1,
+      "message": "submodules: https://crrev.com/c/2910902\n\nwill update this change once that is submitted",
+      "parentUuid": "3f3899ed_6da4d5e2",
+      "range": {
+        "startLine": 32,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 71
+      },
+      "revId": "36a555ecbe4329351187121acb27af19f6fc9992",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
