@@ -13,6 +13,7 @@ DEPS = [
     'recipe_engine/context',
     'depot_tools/bot_update',
     'depot_tools/gclient',
+    'depot_tools/git',
     'depot_tools/gsutil',
 ]
 
@@ -24,7 +25,15 @@ def RunSteps(api):
   assert project_name.startswith('infra/gerrit-plugins/'), (
       'unknown project: "%s"' % project_name)
   api.gclient.set_config('gerrit_plugins')
-  api.bot_update.ensure_checkout(patch_root=project_name)
+
+  # Plugin tests expect polymer-bridges to exist two directories up.
+  # TODO(gavinmak): Remove once tests are converted to typescript.
+  with api.context(cwd=api.path['start_dir']):
+    api.git('clone', 'https://gerrit.googlesource.com/polymer-bridges')
+  test_dir = api.path['start_dir'].join('test')
+  api.step('mkdir test', ['mkdir', test_dir])
+  with api.context(cwd=test_dir):
+    api.bot_update.ensure_checkout(patch_root=project_name)
 
   # Get node from CIPD.
   packages_dir = api.path['start_dir'].join('packages')
@@ -53,7 +62,7 @@ def RunSteps(api):
       'PATH': api.path.pathsep.join([str(node_path), '%(PATH)s'])
   }
 
-  with api.context(env=env, cwd=api.path['start_dir'].join('gerrit_plugins')):
+  with api.context(env=env, cwd=test_dir.join('gerrit_plugins')):
     # TODO(gavinmak) Support typescript plugins and tests.
     api.step('npm install', ['npm', 'install'])
     api.step('run wct tests', ['npx', 'wct', '--expanded'])

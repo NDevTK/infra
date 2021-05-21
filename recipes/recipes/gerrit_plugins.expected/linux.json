@@ -1,6 +1,22 @@
 [
   {
     "cmd": [
+      "git",
+      "clone",
+      "https://gerrit.googlesource.com/polymer-bridges"
+    ],
+    "infra_step": true,
+    "name": "git clone"
+  },
+  {
+    "cmd": [
+      "mkdir",
+      "[START_DIR]/test"
+    ],
+    "name": "mkdir test"
+  },
+  {
+    "cmd": [
       "vpython",
       "-u",
       "RECIPE_REPO[depot_tools]/gerrit_client.py",
@@ -18,6 +34,7 @@
       "-o",
       "DOWNLOAD_COMMANDS"
     ],
+    "cwd": "[START_DIR]/test",
     "env": {
       "PATH": "<PATH>:RECIPE_REPO[depot_tools]"
     },
@@ -64,6 +81,7 @@
       "--revision",
       "gerrit_plugins@HEAD"
     ],
+    "cwd": "[START_DIR]/test",
     "env": {
       "DEPOT_TOOLS_REPORT_BUILD": "infra/gerrit-plugins/tricium/try/builder/8945511751514863184",
       "GIT_HTTP_LOW_SPEED_LIMIT": "102400",
@@ -206,7 +224,7 @@
       "npm",
       "install"
     ],
-    "cwd": "[START_DIR]/gerrit_plugins",
+    "cwd": "[START_DIR]/test/gerrit_plugins",
     "env": {
       "LAUNCHPAD_CHROME": "[CLEANUP]/gs_dir_tmp_1/zip/chrome-linux/chrome",
       "PATH": "[START_DIR]/packages/bin:<PATH>"
@@ -219,7 +237,7 @@
       "wct",
       "--expanded"
     ],
-    "cwd": "[START_DIR]/gerrit_plugins",
+    "cwd": "[START_DIR]/test/gerrit_plugins",
     "env": {
       "LAUNCHPAD_CHROME": "[CLEANUP]/gs_dir_tmp_1/zip/chrome-linux/chrome",
       "PATH": "[START_DIR]/packages/bin:<PATH>"
