@@ -78,6 +78,24 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "adbbaeb5_1d658cdb",
+        "filename": "go/src/infra/tools/dirmd/inheritance_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2021-05-21T07:30:34Z",
+      "side": 1,
+      "message": "👍",
+      "parentUuid": "4f74a322_16007b2d",
+      "revId": "736a11c5ce31242b92418d73c97e12580dd2cec0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "62525a58_bf74a484",
         "filename": "go/src/infra/tools/dirmd/proto/dir_metadata.pb.go",
         "patchSetId": 2
