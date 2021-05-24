@@ -33,6 +33,24 @@
       "message": "I don\u0027t know anything about this package, so just one question -- I notice some protoc-related targets mentioned in install.sh. Does this package actually rely on https://source.chromium.org/chromium/infra/infra/+/main:3pp/protoc-gen-go/3pp.pb / should it be listed as a dep?\n",
       "revId": "e06e7edb7862bd8acc64387412705e9b00d02ede",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a89dd3dc_2eca4af8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1396774
+      },
+      "writtenOn": "2021-05-24T14:13:28Z",
+      "side": 1,
+      "message": "Nope those are standalone targets, all protoc plugins start with protoc-gen- as commands, so buf-breaking is the breaking change detector and buf-lint is the linter.  Independent though.",
+      "parentUuid": "abdc1609_6debc08e",
+      "revId": "e06e7edb7862bd8acc64387412705e9b00d02ede",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
