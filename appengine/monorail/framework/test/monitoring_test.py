@@ -15,14 +15,15 @@ class MonitoringTest(unittest.TestCase):
   def testIncrementAPIRequestsCount(self):
     # Non-service account email gets hidden.
     monitoring.IncrementAPIRequestsCount(
-        'v3', 'monorail-prod', client_email='client-email@chicken.com')
+        'v3', 'monorail-prod', 'foo.bar.Baz', client_email='client-email@chicken.com')
     self.assertEqual(
         1,
         monitoring.API_REQUESTS_COUNT.get(
             fields={
                 'client_id': 'monorail-prod',
                 'client_email': 'user@email.com',
-                'version': 'v3'
+                'version': 'v3',
+                'method': 'foo.bar.Baz',
             }))
 
     # None email address gets replaced by 'anonymous'.

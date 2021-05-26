@@ -121,8 +121,6 @@ class MonorailServicer(object):
           cnxn, metadata, self.services)
       logging.info('request proto is:\n%r\n', request)
       logging.info('requester is %r', requester_auth.email)
-      monitoring.IncrementAPIRequestsCount(
-          'v3', client_id, client_email=requester_auth.email)
 
       # TODO(crbug.com/monorail/8161)We pass in a None client_id for rate
       # limiting because CheckStart and CheckEnd will track and limit requests
@@ -150,7 +148,7 @@ class MonorailServicer(object):
         end_time = end_time or time.time()
         self.rate_limiter.CheckEnd(
             None, requester_auth.email, end_time, start_time)
-      self.RecordMonitoringStats(start_time, request, response, prpc_context)
+      self.RecordMonitoringStats(start_time, client_id, requester_auth.email, request, response, prpc_context)
 
     return response
 
@@ -410,13 +408,16 @@ class MonorailServicer(object):
     return True  # It if was one of the cases above, don't reraise.
 
   def RecordMonitoringStats(
-      self, start_time, request, response, prpc_context, now=None):
+      self, start_time, client_id, requester_email, request, response, prpc_context, now=None):
     """Record monitoring info about this request."""
     now = now or time.time()
     elapsed_ms = int((now - start_time) * 1000)
     method_name = request.__class__.__name__
     if method_name.endswith('Request'):
       method_name = method_name[:-len('Request')]
+
+    monitoring.IncrementAPIRequestsCount(
+        'v3', client_id, method_name, client_email=requester_email)
 
     fields = monitoring.GetCommonFields(
         # pRPC uses its own statuses, but we report HTTP status codes.

@@ -19,13 +19,15 @@ def GetCommonFields(status, name, is_robot=False):
 
 API_REQUESTS_COUNT = ts_mon.CounterMetric(
     'monorail/api_requests',
-    'Number of requests to Monorail APIs',
-    [ts_mon.StringField('client_id'),
-     ts_mon.StringField('client_email'),
-     ts_mon.StringField('version')])
+    'Number of requests to Monorail APIs', [
+        ts_mon.StringField('client_id'),
+        ts_mon.StringField('client_email'),
+        ts_mon.StringField('version'),
+        ts_mon.StringField('method'),
+     ])
 
-def IncrementAPIRequestsCount(version, client_id, client_email=None):
-  # type: (str, str, Optional[str]) -> None
+def IncrementAPIRequestsCount(version, client_id, method, client_email=None):
+  # type: (str, str, str, Optional[str]) -> None
   """Increment the request count in ts_mon."""
   if not client_email:
     client_email = 'anonymous'
@@ -36,7 +38,8 @@ def IncrementAPIRequestsCount(version, client_id, client_email=None):
   fields = {
       'client_id': client_id,
       'client_email': client_email,
-      'version': version
+      'version': version,
+      'method': method,
   }
   API_REQUESTS_COUNT.increment_by(1, fields)
 

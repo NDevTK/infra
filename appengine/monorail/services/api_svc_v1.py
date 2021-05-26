@@ -107,8 +107,6 @@ def monorail_api_method(
             auth_client_ids, auth_emails)
         mar = self.mar_factory(request, cnxn)
         self.ratelimiter.CheckStart(c_id, c_email, start_time)
-        monitoring.IncrementAPIRequestsCount(
-            'endpoints', c_id, client_email=c_email)
         ret = func(self, mar, *args, **kwargs)
       except exceptions.NoSuchUserException as e:
         approximate_http_status = 404
@@ -152,7 +150,7 @@ def monorail_api_method(
         if c_id and c_email:
           self.ratelimiter.CheckEnd(c_id, c_email, now, start_time)
         _RecordMonitoringStats(
-            start_time, request, ret, (method_name or func.__name__),
+            start_time, c_id, c_email, request, ret, (method_name or func.__name__),
             (method_path or func.__name__), approximate_http_status, now)
 
       return ret
@@ -163,6 +161,8 @@ def monorail_api_method(
 
 def _RecordMonitoringStats(
     start_time,
+    client_id,
+    requester_email,
     request,
     response,
     method_name,
@@ -175,6 +175,9 @@ def _RecordMonitoringStats(
   # possible field values.
   method_identifier = (
       ENDPOINTS_API_NAME + '.endpoints.' + method_name + '/' + method_path)
+
+  monitoring.IncrementAPIRequestsCount(
+      'endpoints', client_id, method_name, client_email=requester_email)
 
   # Endpoints APIs don't return the full set of http status values.
   fields = monitoring.GetCommonFields(
