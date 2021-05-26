@@ -862,7 +862,12 @@ SPECS.update({
         Universal('attrs', '20.3.0'),
         Universal('backports.functools_lru_cache', '1.5'),
         Universal('backports.shutil_get_terminal_size', '1.0.0'),
-        Universal('beautifulsoup4', '4.9.0'),
+        # Why not just have one 'beautifulsoup4' with pyversions=['py2', 'py3']?
+        # This is because while it supports both, it does so via separate wheels
+        # rather than one py2_py3 wheel, and we don't support this. So we work
+        # around it by having separate wheels here.
+        Universal('beautifulsoup4', '4.9.0', pyversions=['py2']),
+        Universal('beautifulsoup4', '4.9.0', pyversions=['py3']),
         Universal('blessings', '1.7'),
         Universal('boto', '2.48.0'),
         Universal('cachetools', '2.0.1'),

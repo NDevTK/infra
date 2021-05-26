@@ -828,13 +828,27 @@ wheel: <
 * *windows-x86*
 * *windows-x86-py3*
 
-## **beautifulsoup4**
+## **beautifulsoup4-py2**
 
 ### 4.9.0
 
 ```protobuf
 wheel: <
-  name: "infra/python/wheels/beautifulsoup4-py2_py3"
+  name: "infra/python/wheels/beautifulsoup4-py2"
+  version: "version:4.9.0"
+>
+```
+
+
+* *universal*
+
+## **beautifulsoup4-py3**
+
+### 4.9.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/beautifulsoup4-py3"
   version: "version:4.9.0"
 >
 ```
@@ -1040,6 +1054,35 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/cffi/${vpython_platform}"
   version: "version:1.14.5"
+>
+```
+
+
+* *linux-arm64*
+* *linux-arm64-py3*
+* *linux-armv6*
+* *linux-mips*
+* *linux-mips64*
+* *linux-mipsel*
+* *mac-arm64*
+* *mac-arm64-cp38*
+* *mac-x64*
+* *mac-x64-cp38*
+* *manylinux-x64*
+* *manylinux-x64-py3*
+* *manylinux-x64-py3.9*
+* *manylinux-x64-ucs2*
+* *windows-x64*
+* *windows-x64-py3*
+* *windows-x86*
+* *windows-x86-py3*
+
+### 1.14.5.chromium.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/cffi/${vpython_platform}"
+  version: "version:1.14.5.chromium.1"
 >
 ```
 
