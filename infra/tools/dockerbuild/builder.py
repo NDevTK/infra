@@ -5,6 +5,7 @@
 import glob
 import os
 import platform
+import re
 import shutil
 import subprocess
 
@@ -205,10 +206,26 @@ def StageWheelForPackage(system, wheel_dir, wheel):
   # Find the wheel in "wheel_dir". We scan expecting exactly one wheel.
   wheels = glob.glob(os.path.join(wheel_dir, '*.whl'))
   assert len(wheels) == 1, 'Unexpected wheels: %s' % (wheels,)
-  dst = os.path.join(system.wheel_dir, wheel.filename)
-
   source_path = wheels[0]
   util.LOGGER.debug('Identified source wheel: %s', source_path)
+
+  # In some cases, there are universal wheels with separate wheels for
+  # Python 2 and Python 3, rather than one which supports both at once. This
+  # seems to be fairly rare, so for now we'll just issue an error if that
+  # happens, and split such wheels into two 'Universal's.
+  wheel_name = os.path.basename(source_path)
+  supported_versions = set(re.findall(r'py\d', wheel_name))
+  required_versions = set(wheel.spec.pyversions or ['py2', 'py3'])
+  if required_versions > supported_versions:
+    raise Exception(
+        'Wheel %s requires [%s], but downloaded wheel only supports [%s]' % (
+            wheel.spec.name,
+            ', '.join(sorted(required_versions)),
+            ', '.join(sorted(supported_versions)),
+        ))
+
+  dst = os.path.join(system.wheel_dir, wheel.filename)
+
   shutil.copy(source_path, dst)
 
 
