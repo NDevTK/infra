@@ -74,7 +74,6 @@ func DownloadFileFromGitiles(ctx context.Context, authedClient *http.Client, hos
 		Committish: ref,
 		Format:     gitilespb.DownloadFileRequest_TEXT,
 	}
-	log.Printf("downloading file %v", req)
 	contents, err := gc.DownloadFile(ctx, req)
 	if err != nil {
 		return "", err
@@ -218,7 +217,6 @@ func Branches(ctx context.Context, authedClient *http.Client, host, project stri
 		Project:  project,
 		RefsPath: "refs/heads",
 	}
-	log.Printf("fetching branches %v", req)
 	refs, err := gc.Refs(ctx, req)
 	if err != nil {
 		return nil, err
