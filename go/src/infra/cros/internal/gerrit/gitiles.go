@@ -71,7 +71,6 @@ func DownloadFileFromGitiles(ctx context.Context, authedClient *http.Client, hos
 		Committish: ref,
 		Format:     gitilespb.DownloadFileRequest_TEXT,
 	}
-	log.Printf("downloading file %v", req)
 	contents, err := gc.DownloadFile(ctx, req)
 	if err != nil {
 		return "", err
