@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "266e10a2_fa27e908",
+        "filename": "infra/tools/dockerbuild/builder.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2021-06-01T00:11:08Z",
+      "side": 1,
+      "message": "I\u0027m not sure this is quite the right comparison.\n\nThis is a superset test, i.e. it evaluates true if every element in supported_versions is in required_versions _and_ required_versions also contains additional elements.\n\nSo let\u0027s say required_versions \u003d [\u0027py2\u0027] and supported_versions \u003d [\u0027py3\u0027], the exception won\u0027t be raised.\n\nI\u0027d think this should be:\n\nif not required_versions.issubset(supported_versions)\n\n-- or equivalently, if not (required_versions \u003c\u003d supported_versions), though I find that harder to read.\n\nReference: https://docs.python.org/2/library/stdtypes.html#set",
+      "revId": "8ea420a1d63904a6ba5a66f0297fc23ee5f3034b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
