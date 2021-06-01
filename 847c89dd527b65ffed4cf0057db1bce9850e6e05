@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "af46a86e_594c8036",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2021-06-01T16:57:34Z",
+      "side": 1,
+      "message": "Drive-by review after seeing this change mentioned in Buganizer chat - Should we make sure to record usage of the v0 pRPC API as well? IIRC, jojwang@ once mentioned that there were two clients who were given access to that API. ",
+      "revId": "847c89dd527b65ffed4cf0057db1bce9850e6e05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ffaf22ad_0b6558c7",
+        "filename": "appengine/monorail/api/v3/monorail_servicer.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 411,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2021-06-01T16:57:34Z",
+      "side": 1,
+      "message": "If there\u0027s some way we could make this monitoring only happen on the \"api\" service in Monorail, then we can make sure that we\u0027re not recording calls to the API from the SPA. \n\nRecording the Monorail frontend will give us a lot of extra noise, including recording lots of usage to endpoints not used by downstream clients.",
+      "revId": "847c89dd527b65ffed4cf0057db1bce9850e6e05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
