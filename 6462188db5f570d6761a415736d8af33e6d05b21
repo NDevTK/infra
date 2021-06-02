@@ -70,6 +70,30 @@
       },
       "revId": "6462188db5f570d6761a415736d8af33e6d05b21",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3c2db021_a94cf03b",
+        "filename": "go/src/infra/cros/cmd/manifest_doctor/per_project_buildspec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2021-06-02T20:29:02Z",
+      "side": 1,
+      "message": "I see. This tool still works as intended if the program repo is missing a local manifest (it just skips the program repo). I had changed the args of this tool to match those of setup_project.sh (which requires both a program and project arg).\n\nI suppose we could just take project name (either in its original form, the full project name e.g. chromeos/project/guybrush/guybrush, OR just `guybrush` and infer the program), but I think the symmetry with setup_project.sh is kind of nice.",
+      "parentUuid": "1034cef8_a77fe5e9",
+      "range": {
+        "startLine": 56,
+        "startChar": 0,
+        "endLine": 59,
+        "endChar": 71
+      },
+      "revId": "6462188db5f570d6761a415736d8af33e6d05b21",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
