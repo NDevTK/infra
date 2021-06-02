@@ -22,6 +22,30 @@
       },
       "revId": "6462188db5f570d6761a415736d8af33e6d05b21",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "17a01f5e_2feeab07",
+        "filename": "go/src/infra/cros/cmd/manifest_doctor/per_project_buildspec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2021-06-02T05:08:22Z",
+      "side": 1,
+      "message": "After reading setup_project.sh, my understanding was that both a program and project buildspec were needed for the script to work properly (just based on which files the script tries to copy).\n\nIf there\u0027s a use case where this isn\u0027t true, then I agree that we should support either/or.",
+      "parentUuid": "494e363b_6d6701c7",
+      "range": {
+        "startLine": 56,
+        "startChar": 0,
+        "endLine": 59,
+        "endChar": 71
+      },
+      "revId": "6462188db5f570d6761a415736d8af33e6d05b21",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
