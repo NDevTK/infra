@@ -46,6 +46,30 @@
       },
       "revId": "6462188db5f570d6761a415736d8af33e6d05b21",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1034cef8_a77fe5e9",
+        "filename": "go/src/infra/cros/cmd/manifest_doctor/per_project_buildspec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1325055
+      },
+      "writtenOn": "2021-06-02T15:34:06Z",
+      "side": 1,
+      "message": "setup_project is for setting up local manifests by partners, not necessarily related to buildspecs. E.g. they usually run it to get the ToT local_manifest.xml. Project is required (b/c at least the project repo will be in the local_manifest.xml in the project), program and chipset are optional: http://cs/chromeos_public/src/config/setup_project.sh?l\u003d133\u0026rcl\u003de1fa0d7f56eb3dd6e9378e4326de086ada46b7d3.\n\nThis is b/c all projects are expected to have local manifests, only some programs have local_manifests (https://source.corp.google.com/search?q\u003df:local_manifest.xml%20f:program\u0026sq\u003dpackage:(chromeos_public%7Cchromeos_internal)). So I think per-program buildspecs could only be created for some programs.",
+      "parentUuid": "17a01f5e_2feeab07",
+      "range": {
+        "startLine": 56,
+        "startChar": 0,
+        "endLine": 59,
+        "endChar": 71
+      },
+      "revId": "6462188db5f570d6761a415736d8af33e6d05b21",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
