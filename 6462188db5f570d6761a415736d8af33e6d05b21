@@ -94,6 +94,30 @@
       },
       "revId": "6462188db5f570d6761a415736d8af33e6d05b21",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e37af52f_1b0b0175",
+        "filename": "go/src/infra/cros/cmd/manifest_doctor/per_project_buildspec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2021-06-02T20:30:02Z",
+      "side": 1,
+      "message": "Somewhat just a note to myself, but also should look into whether chipset repos are included in the global/program/project buildspecs or if we need to add support for pinning chipset local manifests as well.",
+      "parentUuid": "3c2db021_a94cf03b",
+      "range": {
+        "startLine": 56,
+        "startChar": 0,
+        "endLine": 59,
+        "endChar": 71
+      },
+      "revId": "6462188db5f570d6761a415736d8af33e6d05b21",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
