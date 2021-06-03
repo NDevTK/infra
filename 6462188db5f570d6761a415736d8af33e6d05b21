@@ -118,6 +118,30 @@
       },
       "revId": "6462188db5f570d6761a415736d8af33e6d05b21",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1c4e2eb6_7b1d022a",
+        "filename": "go/src/infra/cros/cmd/manifest_doctor/per_project_buildspec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1325055
+      },
+      "writtenOn": "2021-06-03T16:28:45Z",
+      "side": 1,
+      "message": "I could see a use like: SIEs want to create a new per-project buildspec whenever a new project is added to a program; in this case, they don\u0027t need to keep recreating a program buildspec.\n\nI wonder if just making this more general to take a list of paths to local_manifests to pin to a specific buildspec would make sense, so it would work for program, project, chipset, etc. local_manifests. It could infer the GS bucket to upload to, based on where the local manifest is and print a suggested upload command.\n\nI think we should see how people use this tool, and then tweak the flags if it makes sense.",
+      "parentUuid": "e37af52f_1b0b0175",
+      "range": {
+        "startLine": 56,
+        "startChar": 0,
+        "endLine": 59,
+        "endChar": 71
+      },
+      "revId": "6462188db5f570d6761a415736d8af33e6d05b21",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
