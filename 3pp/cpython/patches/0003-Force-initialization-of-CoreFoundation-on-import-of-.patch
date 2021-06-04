@@ -1,0 +1,30 @@
+From 7d7cc184faec65a2ce232e3be9950a08522ad63e Mon Sep 17 00:00:00 2001
+From: Brian Ryner <bryner@google.com>
+Date: Fri, 4 Jun 2021 15:00:15 +1000
+Subject: [PATCH 3/3] Force initialization of CoreFoundation on import of
+ multiprocessing.
+
+This works around a crash or abort that happens if this initialization
+happens later from the forked subprocess.
+---
+ Lib/multiprocessing/__init__.py | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/Lib/multiprocessing/__init__.py b/Lib/multiprocessing/__init__.py
+index 2e91e8eb6e..00194c0f82 100644
+--- a/Lib/multiprocessing/__init__.py
++++ b/Lib/multiprocessing/__init__.py
+@@ -275,3 +275,10 @@ if sys.platform == 'win32':
+         set_executable(executable)
+ 
+     __all__ += ['set_executable']
++
++# Hack to avoid crashes due to fork() racing with CoreFoundation
++# initialization. Force the initialization to happen on the main thread
++# at import time. See crbug.com/1215121
++if sys.platform == 'darwin':
++    import urllib
++    urllib.getproxies()
+-- 
+2.32.0.rc1.229.g3e70b5a671-goog
+
