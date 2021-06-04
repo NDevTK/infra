@@ -142,6 +142,30 @@
       },
       "revId": "6462188db5f570d6761a415736d8af33e6d05b21",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a8d8f309_7fe94f88",
+        "filename": "go/src/infra/cros/cmd/manifest_doctor/per_project_buildspec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2021-06-04T17:43:22Z",
+      "side": 1,
+      "message": "Getting user feedback seems like a good path forward. I made the arg string more thorough (explaining that if the program doesn\u0027t have a local manifest, it won\u0027t try to create a program-specific buildspec).",
+      "parentUuid": "1c4e2eb6_7b1d022a",
+      "range": {
+        "startLine": 56,
+        "startChar": 0,
+        "endLine": 59,
+        "endChar": 71
+      },
+      "revId": "6462188db5f570d6761a415736d8af33e6d05b21",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
