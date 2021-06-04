@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8005f3d3_c0c15476",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2021-06-04T05:59:01Z",
+      "side": 1,
+      "message": "Created https://chrome-infra-packages.appspot.com/p/experimental/bryner_at_google.com/tools/cpython/mac-amd64/+/mL87Hmla1QYVBhm3SCSdoZCv-fdORLr7DQtASYxbgI8C with this patch applied, for testing.\n",
+      "revId": "6bbb47bb4a9fa28d6d80d51740669d7c49bd2cfd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
