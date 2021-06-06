@@ -13,7 +13,7 @@ import (
 	mv "infra/cros/internal/chromeosversion"
 	"infra/cros/internal/gerrit"
 	"infra/cros/internal/git"
-	"infra/cros/internal/manifestutil"
+	"infra/cros/internal/repo"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth"
@@ -156,7 +156,7 @@ func (c *createBranch) Run(a subcommands.Application, args []string,
 
 	if c.file != "" {
 		// Branch from file.
-		file, err := manifestutil.LoadManifestFromFileWithIncludes(c.file)
+		file, err := repo.LoadManifestFromFileWithIncludes(c.file)
 		if err != nil {
 			branch.LogErr(errors.Annotate(err, "Error: Failed to load manifest from file ").Err().Error())
 			return 1
@@ -182,13 +182,12 @@ func (c *createBranch) Run(a subcommands.Application, args []string,
 			branch.LogErr("%s\n", err.Error())
 			return 1
 		}
-		manifest, err := manifestutil.LoadManifestFromFile(wm.Name())
+		branch.WorkingManifest, err = repo.LoadManifestFromFile(wm.Name())
 		if err != nil {
 			err = errors.Annotate(err, "failed to load manifests").Err()
 			branch.LogErr("%s\n", err.Error())
 			return 1
 		}
-		branch.WorkingManifest = *manifest
 		branch.WorkingManifest.ResolveImplicitLinks()
 		branch.LogOut("Fetched working manifest.\n")
 	}
