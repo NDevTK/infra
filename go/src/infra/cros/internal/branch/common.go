@@ -15,7 +15,6 @@ import (
 	"strings"
 
 	"infra/cros/internal/git"
-	"infra/cros/internal/manifestutil"
 	"infra/cros/internal/repo"
 
 	"go.chromium.org/luci/common/errors"
@@ -158,7 +157,7 @@ func InitWorkingManifest(manifestURL, br string) error {
 	manifestPath := filepath.Join(ManifestCheckout, "default.xml")
 
 	// Read in manifest from file (and resolve includes).
-	manifest, err := manifestutil.LoadManifestFromFileWithIncludes(manifestPath)
+	manifest, err := repo.LoadManifestFromFileWithIncludes(manifestPath)
 	if err != nil {
 		return errors.Annotate(err, "failed to load manifests").Err()
 	}
