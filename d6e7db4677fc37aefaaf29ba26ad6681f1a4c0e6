@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "943adef2_2682a015",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2021-06-07T22:54:17Z",
+      "side": 1,
+      "message": "This datastore operation is used by the RPC controller call to store ConfigBundles into the UFS datastore.",
+      "revId": "d6e7db4677fc37aefaaf29ba26ad6681f1a4c0e6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
