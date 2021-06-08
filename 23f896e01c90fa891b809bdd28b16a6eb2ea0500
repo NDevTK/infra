@@ -105,6 +105,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "85edcfa3_10644dd9",
+        "filename": "go/src/infra/chromium/bootstrapper/bootstrap/bootstrap_proto.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2021-06-08T23:13:35Z",
+      "side": 1,
+      "message": "yeah, you\u0027ve basically re-implemnted https://pkg.go.dev/go.chromium.org/luci/config/validation#Context + its error.\nExample usage **with tests** https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/cq/appengine/config/config.go;l\u003d29;drc\u003d5402aac7da38168a30744cca26816ba56c55aed2",
+      "parentUuid": "0e94c32a_42816c02",
+      "revId": "23f896e01c90fa891b809bdd28b16a6eb2ea0500",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "3d8054bc_2547efe1",
         "filename": "go/src/infra/chromium/bootstrapper/bootstrap/gen.go",
         "patchSetId": 1
