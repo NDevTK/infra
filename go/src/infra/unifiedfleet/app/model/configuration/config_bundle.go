@@ -8,14 +8,18 @@ import (
 	"context"
 	"fmt"
 	"runtime/debug"
+	"strings"
 	"time"
 
 	ufsds "infra/unifiedfleet/app/model/datastore"
 
 	"github.com/golang/protobuf/proto"
+	"go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/config/go/payload"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // ConfigBundleKind is the datastore entity kind ConfigBundle.
@@ -85,6 +89,41 @@ func newConfigBundleEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEn
 // UpdateConfigBundle updates ConfigBundle in datastore.
 func UpdateConfigBundle(ctx context.Context, cb *payload.ConfigBundle) (*payload.ConfigBundle, error) {
 	pm, err := ufsds.PutSingle(ctx, cb, newConfigBundleEntity)
+	if err != nil {
+		return nil, err
+	}
+	return pm.(*payload.ConfigBundle), nil
+}
+
+// GetConfigBundle returns ConfigBundle for the given id
+// (${programId}-${designId}) from datastore.
+func GetConfigBundle(ctx context.Context, id string) (*payload.ConfigBundle, error) {
+	defer func() {
+		if r := recover(); r != nil {
+			logging.Errorf(ctx, "Failed to get ConfigBundleEntity: %s", r)
+			debug.PrintStack()
+		}
+	}()
+
+	ids := strings.Split(id, "-")
+	if len(ids) != 2 {
+		logging.Errorf(ctx, "Faulty id value; please make sure the format is ${programId}-${designId}")
+		return nil, status.Errorf(codes.InvalidArgument, ufsds.InvalidArgument)
+	}
+
+	cb := &payload.ConfigBundle{
+		DesignList: []*api.Design{
+			{
+				Id: &api.DesignId{
+					Value: ids[1],
+				},
+				ProgramId: &api.ProgramId{
+					Value: ids[0],
+				},
+			},
+		},
+	}
+	pm, err := ufsds.Get(ctx, cb, newConfigBundleEntity)
 	if err != nil {
 		return nil, err
 	}
