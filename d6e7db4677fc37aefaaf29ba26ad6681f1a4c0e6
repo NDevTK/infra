@@ -20,6 +20,52 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c385616e_9e55c678",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/config_bundle.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1396774
+      },
+      "writtenOn": "2021-06-08T14:05:52Z",
+      "side": 1,
+      "message": "nit: typo?",
+      "range": {
+        "startLine": 23,
+        "startChar": 49,
+        "endLine": 23,
+        "endChar": 64
+      },
+      "revId": "d6e7db4677fc37aefaaf29ba26ad6681f1a4c0e6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a5ce9ce9_fafcb2cf",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/config_bundle.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1396774
+      },
+      "writtenOn": "2021-06-08T14:05:52Z",
+      "side": 1,
+      "message": "might as well just do p :\u003d \u0026payload.ConfigBundle{} then you don\u0027t have to dereference below.",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 27
+      },
+      "revId": "d6e7db4677fc37aefaaf29ba26ad6681f1a4c0e6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "31c541a0_8efbcc02",
         "filename": "go/src/infra/unifiedfleet/app/model/configuration/config_bundle.go",
         "patchSetId": 9
@@ -31,6 +77,47 @@
       "writtenOn": "2021-06-07T22:54:54Z",
       "side": 1,
       "message": "@smcallis Does it make sense to construct the ID this way? Will this be unique?",
+      "revId": "d6e7db4677fc37aefaaf29ba26ad6681f1a4c0e6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0e17600f_37f159a3",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/config_bundle.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1396774
+      },
+      "writtenOn": "2021-06-08T14:05:52Z",
+      "side": 1,
+      "message": "To refer to the ConfigBundle payload itself yeah this probably good, equivalent to program and project",
+      "parentUuid": "31c541a0_8efbcc02",
+      "revId": "d6e7db4677fc37aefaaf29ba26ad6681f1a4c0e6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d6e8b686_7d43d48e",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/config_bundle.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1396774
+      },
+      "writtenOn": "2021-06-08T14:05:52Z",
+      "side": 1,
+      "message": "I generally like to avoid panics in library code since there\u0027s nothing you can do once you\u0027re hitting one, versus just checking and bubbling the error upwards.  Can always panic at the top level.",
+      "range": {
+        "startLine": 58,
+        "startChar": 0,
+        "endLine": 58,
+        "endChar": 32
+      },
       "revId": "d6e7db4677fc37aefaaf29ba26ad6681f1a4c0e6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
