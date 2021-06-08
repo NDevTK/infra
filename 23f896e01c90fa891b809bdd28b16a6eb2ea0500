@@ -16,6 +16,91 @@
       "message": "Robbie, you had suggested yiwzhang, but they aren\u0027t an owner, feel free to hand this off to someone else.",
       "revId": "23f896e01c90fa891b809bdd28b16a6eb2ea0500",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "076324b5_5664cf97",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2021-06-08T22:35:52Z",
+      "side": 1,
+      "message": "lgtm",
+      "revId": "23f896e01c90fa891b809bdd28b16a6eb2ea0500",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2a9fbe8d_94cdb249",
+        "filename": "go/src/infra/chromium/bootstrapper/OWNERS",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2021-06-08T22:35:52Z",
+      "side": 1,
+      "message": "any other folks that should go here?",
+      "revId": "23f896e01c90fa891b809bdd28b16a6eb2ea0500",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "85c5bf84_f6b9017f",
+        "filename": "go/src/infra/chromium/bootstrapper/bootstrap/bootstrap_proto.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2021-06-08T22:35:52Z",
+      "side": 1,
+      "message": "https://pkg.go.dev/go.chromium.org/luci/common/errors#MultiError?",
+      "revId": "23f896e01c90fa891b809bdd28b16a6eb2ea0500",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0e94c32a_42816c02",
+        "filename": "go/src/infra/chromium/bootstrapper/bootstrap/bootstrap_proto.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2021-06-08T22:35:52Z",
+      "side": 1,
+      "message": "I feel like I\u0027ve seen this pattern a billion times... tandrii do you know if we have a library for doing this? I feel like buildbucket is going to end up doing exactly the same thing for its own config validation...",
+      "revId": "23f896e01c90fa891b809bdd28b16a6eb2ea0500",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3d8054bc_2547efe1",
+        "filename": "go/src/infra/chromium/bootstrapper/bootstrap/gen.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2021-06-08T22:35:52Z",
+      "side": 1,
+      "message": "nit: space above this and copyright",
+      "revId": "23f896e01c90fa891b809bdd28b16a6eb2ea0500",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
