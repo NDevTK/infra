@@ -120,6 +120,30 @@
       },
       "revId": "d6e7db4677fc37aefaaf29ba26ad6681f1a4c0e6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a8f8dc9d_fe40d0e1",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/config_bundle.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-06-08T19:02:25Z",
+      "side": 1,
+      "message": "+1\nIt would be a good idea to recover() and throw an error here. As this function is passed to another, if a panic happens it will be much harder to debug.",
+      "parentUuid": "d6e8b686_7d43d48e",
+      "range": {
+        "startLine": 58,
+        "startChar": 0,
+        "endLine": 58,
+        "endChar": 32
+      },
+      "revId": "d6e7db4677fc37aefaaf29ba26ad6681f1a4c0e6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
