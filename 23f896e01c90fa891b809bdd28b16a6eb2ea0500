@@ -69,6 +69,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "15b58b0c_93cc4e5c",
+        "filename": "go/src/infra/chromium/bootstrapper/OWNERS",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1289180
+      },
+      "writtenOn": "2021-06-09T21:55:26Z",
+      "side": 1,
+      "message": "Added martiniss.",
+      "parentUuid": "2a9fbe8d_94cdb249",
+      "revId": "23f896e01c90fa891b809bdd28b16a6eb2ea0500",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "85c5bf84_f6b9017f",
@@ -82,6 +100,24 @@
       "writtenOn": "2021-06-08T22:35:52Z",
       "side": 1,
       "message": "https://pkg.go.dev/go.chromium.org/luci/common/errors#MultiError?",
+      "revId": "23f896e01c90fa891b809bdd28b16a6eb2ea0500",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9b868970_29d03283",
+        "filename": "go/src/infra/chromium/bootstrapper/bootstrap/bootstrap_proto.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1289180
+      },
+      "writtenOn": "2021-06-09T21:55:26Z",
+      "side": 1,
+      "message": "I saw that but didn\u0027t like that its Error implementation only reports the first error.",
+      "parentUuid": "85c5bf84_f6b9017f",
       "revId": "23f896e01c90fa891b809bdd28b16a6eb2ea0500",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -134,6 +170,24 @@
       "writtenOn": "2021-06-08T22:35:52Z",
       "side": 1,
       "message": "nit: space above this and copyright",
+      "revId": "23f896e01c90fa891b809bdd28b16a6eb2ea0500",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d6625648_4eef7f12",
+        "filename": "go/src/infra/chromium/bootstrapper/bootstrap/gen.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1289180
+      },
+      "writtenOn": "2021-06-09T21:55:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3d8054bc_2547efe1",
       "revId": "23f896e01c90fa891b809bdd28b16a6eb2ea0500",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
