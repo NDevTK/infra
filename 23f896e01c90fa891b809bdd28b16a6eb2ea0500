@@ -122,6 +122,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fb700e6e_36f0a35a",
+        "filename": "go/src/infra/chromium/bootstrapper/bootstrap/bootstrap_proto.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1289180
+      },
+      "writtenOn": "2021-06-10T01:11:24Z",
+      "side": 1,
+      "message": "I\u0027d really like to see all of the individual errors. I could convert/wrap a MultiError using errors.WalkLeaves, but that doesn\u0027t really reduce the amount of code, so unless there\u0027s some logging facility or something where all of the individual errors are reported in a manner that would be easy to find when debugging, I think I should just stick with this for the time being.",
+      "parentUuid": "9b868970_29d03283",
+      "revId": "23f896e01c90fa891b809bdd28b16a6eb2ea0500",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0e94c32a_42816c02",
@@ -153,6 +171,24 @@
       "side": 1,
       "message": "yeah, you\u0027ve basically re-implemnted https://pkg.go.dev/go.chromium.org/luci/config/validation#Context + its error.\nExample usage **with tests** https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/cq/appengine/config/config.go;l\u003d29;drc\u003d5402aac7da38168a30744cca26816ba56c55aed2",
       "parentUuid": "0e94c32a_42816c02",
+      "revId": "23f896e01c90fa891b809bdd28b16a6eb2ea0500",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "56feb28b_ce463742",
+        "filename": "go/src/infra/chromium/bootstrapper/bootstrap/bootstrap_proto.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1289180
+      },
+      "writtenOn": "2021-06-10T01:11:24Z",
+      "side": 1,
+      "message": "I took a look at the validation package, but it\u0027s geared towards validating files whereas these protos are going to be part of the input properties, so the resulting error messages are kind of awkward. validation.Context assumes a file. If I don\u0027t set the file, then each error has \u0027in \u003cunspecified file\u003e\u0027. If I set the file to something like \"input properties\", then each error has \u0027in \"input properties\"\u0027 and it\u0027s kind of weird for that to be quoted. In either case, the prefix is redundant and will be repeated for all of the validation errors since all of the validation will come from a single top-level proto.",
+      "parentUuid": "85edcfa3_10644dd9",
       "revId": "23f896e01c90fa891b809bdd28b16a6eb2ea0500",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
