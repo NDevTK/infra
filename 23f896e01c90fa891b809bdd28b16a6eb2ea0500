@@ -193,6 +193,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7ff85ed4_cc7e395d",
+        "filename": "go/src/infra/chromium/bootstrapper/bootstrap/bootstrap_proto.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1289180
+      },
+      "writtenOn": "2021-06-10T20:45:21Z",
+      "side": 1,
+      "message": "I\u0027m going to submit this as-is now, but I\u0027m definitely open to reconsolidating this stuff.",
+      "parentUuid": "56feb28b_ce463742",
+      "revId": "23f896e01c90fa891b809bdd28b16a6eb2ea0500",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3d8054bc_2547efe1",
