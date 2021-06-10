@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0282d7ad_2b2de7e4",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/config_bundle.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2021-06-10T21:18:49Z",
+      "side": 1,
+      "message": "I named the return params instead. It throws error if I try to return there. func() has no return values. Following other examples in codebase as well.",
+      "parentUuid": "d281a758_3471b88b",
+      "revId": "0ac3861d3969db5c82dd7019fbd9e5f3543e3dca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1b367143_9f961f0b",
@@ -48,6 +66,24 @@
       "writtenOn": "2021-06-08T21:43:45Z",
       "side": 1,
       "message": "Any particular reason we are avoiding goconvey here?",
+      "revId": "0ac3861d3969db5c82dd7019fbd9e5f3543e3dca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a21e9382_7369271a",
+        "filename": "go/src/infra/unifiedfleet/app/model/configuration/config_bundle_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2021-06-10T21:18:49Z",
+      "side": 1,
+      "message": "No particular reason. I followed the usage in the TLW APIs.",
+      "parentUuid": "1b367143_9f961f0b",
       "revId": "0ac3861d3969db5c82dd7019fbd9e5f3543e3dca",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
