@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d06d2f78_59869fa0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2021-06-10T19:58:08Z",
+      "side": 1,
+      "message": "(yeah my comments were more like \"hm, this looks like it\u0027s re-doing stuff I wouldn\u0027t expect it to re-do; I wonder if this could be consolidated.\" than \"consolidate naow!!!\"",
+      "revId": "0fa1fd0adfb7fb9c7779920c00b9522d52784049",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
