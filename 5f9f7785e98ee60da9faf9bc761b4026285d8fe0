@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "684c116b_a448409f",
+        "filename": "go/src/infra/unifiedfleet/api/v1/rpc/validation.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1345,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2021-06-11T20:29:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "abf4246c_b05ba4bd",
+      "range": {
+        "startLine": 1343,
+        "startChar": 0,
+        "endLine": 1345,
+        "endChar": 2
+      },
+      "revId": "5f9f7785e98ee60da9faf9bc761b4026285d8fe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f2887b64_2512a7d1",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-06-11T13:41:53Z",
       "side": 1,
       "message": "nit: I think we\u0027re trying to move to TODO(\u003cbug link\u003e) so we can track stuff better.",
+      "range": {
+        "startLine": 646,
+        "startChar": 1,
+        "endLine": 646,
+        "endChar": 21
+      },
+      "revId": "5f9f7785e98ee60da9faf9bc761b4026285d8fe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "347dc7b2_0a7514e5",
+        "filename": "go/src/infra/unifiedfleet/app/frontend/configuration.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 646,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2021-06-11T20:29:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f2887b64_2512a7d1",
       "range": {
         "startLine": 646,
         "startChar": 1,
