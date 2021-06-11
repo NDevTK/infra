@@ -16,6 +16,227 @@
       "message": "The main CL is too big. so i will split it as when Each review take more times to verify all changes.\n\nPlan to split to:\n1) create tool for mallet\n2) add ping/ssh/inventory for local TWL\n3) basic implementation recovery to run basic ping/ssh (cache, plan, config, action, exec)\n4) add logic to choose plans\n5) add servod to local TLW \n6) add actions to work with servod\n7) add recovery actions and logic to support them\n8) create logic to support run custom actions\n\ndesign or the project in http://go/fleet-paris-design",
       "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2948d2fa_85acc436",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/local_recovery.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-06-11T19:41:19Z",
+      "side": 1,
+      "message": "Please do not capitalize ShortDesc.",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6eac602c_66e75a9e",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/local_recovery.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-06-11T19:41:19Z",
+      "side": 1,
+      "message": "Please document this type.",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ba59ccd2_7372d847",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/local_recovery.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-06-11T19:41:19Z",
+      "side": 1,
+      "message": "Please document this function.",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7a8d4c9e_6fb10d34",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/local_recovery.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-06-11T19:41:19Z",
+      "side": 1,
+      "message": "Please document this function",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eeadd8f2_6e3ebe62",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/local_recovery.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-06-11T19:41:19Z",
+      "side": 1,
+      "message": "Please annotate this error.",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0211dbf4_f643d3b5",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/local_recovery.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-06-11T19:41:19Z",
+      "side": 1,
+      "message": "The fact that this gives us a CrOSSkylabAdmin client is an implementation detail. Should we rename this variable?",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "45466697_b569a4e5",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/local_recovery.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-06-11T19:41:19Z",
+      "side": 1,
+      "message": "This annotation has the same message as the one on line 92.",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e0dac0bf_9c62507d",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/local_recovery.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-06-11T19:41:19Z",
+      "side": 1,
+      "message": "Please document this function.",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ed192cb1_faaaaac2",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/tlwclient.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-06-11T19:41:19Z",
+      "side": 1,
+      "message": "Consider renaming to StableVersionGetter. If you do, please include the comment that CrOSSkylabAdmin is the thing that currently implements this RPC in prod.",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "09ec767e_56ac6a76",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/tlwclient.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-06-11T19:41:19Z",
+      "side": 1,
+      "message": "Please document this type.",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0a05d6a0_4bdb0514",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/tlwclient.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-06-11T19:41:19Z",
+      "side": 1,
+      "message": "General comment: should we use something with more structure than a string for commands? Passing shell strings around makes me uncomfortable.",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fda04877_20500035",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/tlwclient.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-06-11T19:41:19Z",
+      "side": 1,
+      "message": "Why is this comment here?",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a53186fc_ef7f87e0",
+        "filename": "go/src/infra/cros/recovery/tlw/interface.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-06-11T19:41:19Z",
+      "side": 1,
+      "message": "Please add some more detail to this comment. Are the methods just \"get\" and \"set\" or are \"get\" and \"set\" fragments of \"full\" ServodMethods?",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
