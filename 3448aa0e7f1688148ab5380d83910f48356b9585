@@ -1,0 +1,78 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bdac420f_b4fedc26",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-06-11T00:33:07Z",
+      "side": 1,
+      "message": "Pretty straightforward LGTM.  Will you move later to normal gae path?",
+      "revId": "3448aa0e7f1688148ab5380d83910f48356b9585",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cb0d7974_9d8e0daa",
+        "filename": "go/src/infra/cros/karte/GNUmakefile",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-06-11T00:33:07Z",
+      "side": 1,
+      "message": "I\u0027d like to avoid scattering multiple copies across the tree.  Can we stick to one set of locations?",
+      "range": {
+        "startLine": 16,
+        "startChar": 53,
+        "endLine": 16,
+        "endChar": 62
+      },
+      "revId": "3448aa0e7f1688148ab5380d83910f48356b9585",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e0e15136_7b359e6a",
+        "filename": "go/src/infra/cros/karte/cmd/karteserver/.gcloudignore",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-06-11T00:33:07Z",
+      "side": 1,
+      "message": "Missing newline at end",
+      "revId": "3448aa0e7f1688148ab5380d83910f48356b9585",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b18f6aa3_15103c30",
+        "filename": "go/src/infra/cros/karte/cmd/karteserver/app.yaml",
+        "patchSetId": 3
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-06-11T00:33:07Z",
+      "side": 1,
+      "message": "Missing newline at end",
+      "revId": "3448aa0e7f1688148ab5380d83910f48356b9585",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
