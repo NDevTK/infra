@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "998d730f_5c0aa3d7",
+        "filename": "go/src/infra/unifiedfleet/app/controller/config_bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1396774
+      },
+      "writtenOn": "2021-06-11T13:54:20Z",
+      "side": 1,
+      "message": "nit: bug link",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 22
+      },
+      "revId": "341dfc07d2f6ccc3635470966e93862d282e213d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
