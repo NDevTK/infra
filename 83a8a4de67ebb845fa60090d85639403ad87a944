@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f3577656_13a740e0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2021-06-11T19:14:21Z",
+      "side": 1,
+      "message": "Please delete https://chromium.googlesource.com/infra/infra/+/refs/heads/main/build/images/deterministic/karte/karte.yaml if you don\u0027t need it anymore. It made docker-image-builder red: https://ci.chromium.org/ui/p/infra-internal/builders/prod/infra-docker-images-continuous/13617/overview",
+      "revId": "83a8a4de67ebb845fa60090d85639403ad87a944",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
