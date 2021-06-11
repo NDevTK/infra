@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "16e899e8_969cdee4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-06-11T18:47:43Z",
+      "side": 1,
+      "message": "The main CL is too big. so i will split it as when Each review take more times to verify all changes.\n\nPlan to split to:\n1) create tool for mallet\n2) add ping/ssh/inventory for local TWL\n3) basic implementation recovery to run basic ping/ssh (cache, plan, config, action, exec)\n4) add logic to choose plans\n5) add servod to local TLW \n6) add actions to work with servod\n7) add recovery actions and logic to support them\n8) create logic to support run custom actions\n\ndesign or the project in http://go/fleet-paris-design",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
