@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "13959fcf_91d3c20e",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/local_recovery.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-06-12T04:39:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2948d2fa_85acc436",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6eac602c_66e75a9e",
@@ -48,6 +66,24 @@
       "writtenOn": "2021-06-11T19:41:19Z",
       "side": 1,
       "message": "Please document this type.",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f01da92f_d4820857",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/local_recovery.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-06-12T04:39:05Z",
+      "side": 1,
+      "message": "solved offline",
+      "parentUuid": "6eac602c_66e75a9e",
       "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -69,6 +105,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "393b9705_63e75136",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/local_recovery.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-06-12T04:39:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba59ccd2_7372d847",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7a8d4c9e_6fb10d34",
@@ -82,6 +136,24 @@
       "writtenOn": "2021-06-11T19:41:19Z",
       "side": 1,
       "message": "Please document this function",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b3643101_18c75044",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/local_recovery.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-06-12T04:39:05Z",
+      "side": 1,
+      "message": "solved offline",
+      "parentUuid": "7a8d4c9e_6fb10d34",
       "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -103,6 +175,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c5d03fd4_78796b7b",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/local_recovery.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-06-12T04:39:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "eeadd8f2_6e3ebe62",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0211dbf4_f643d3b5",
@@ -116,6 +206,24 @@
       "writtenOn": "2021-06-11T19:41:19Z",
       "side": 1,
       "message": "The fact that this gives us a CrOSSkylabAdmin client is an implementation detail. Should we rename this variable?",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b0044f28_113692a7",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/local_recovery.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-06-12T04:39:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0211dbf4_f643d3b5",
       "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -137,6 +245,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "295b546a_0678a927",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/local_recovery.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-06-12T04:39:05Z",
+      "side": 1,
+      "message": "Yes, the annotation just wrap where it executed. the message what thr process tried will be generated before.",
+      "parentUuid": "45466697_b569a4e5",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e0dac0bf_9c62507d",
@@ -150,6 +276,24 @@
       "writtenOn": "2021-06-11T19:41:19Z",
       "side": 1,
       "message": "Please document this function.",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6df8987c_ee36fd8d",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/local_recovery.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-06-12T04:39:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e0dac0bf_9c62507d",
       "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -171,6 +315,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c74dd9fe_cb9b8ae6",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/tlwclient.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-06-12T04:39:05Z",
+      "side": 1,
+      "message": "I prefer left it as CSA as we cannot reuse this interface for another clients and it tells which service is targeting.",
+      "parentUuid": "ed192cb1_faaaaac2",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "09ec767e_56ac6a76",
@@ -184,6 +346,24 @@
       "writtenOn": "2021-06-11T19:41:19Z",
       "side": 1,
       "message": "Please document this type.",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b04664a2_3beaa54c",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/tlwclient.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-06-12T04:39:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "09ec767e_56ac6a76",
       "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -205,6 +385,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2da7dd08_df11acfd",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/tlwclient.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-06-12T04:39:05Z",
+      "side": 1,
+      "message": "That is just API to make simple communication between layers.",
+      "parentUuid": "0a05d6a0_4bdb0514",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fda04877_20500035",
@@ -222,6 +420,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "28ad68be_eac080c9",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/tlwclient.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-06-12T04:39:05Z",
+      "side": 1,
+      "message": "Copy-paste eval :)\n\nremoved.",
+      "parentUuid": "fda04877_20500035",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a53186fc_ef7f87e0",
@@ -235,6 +451,24 @@
       "writtenOn": "2021-06-11T19:41:19Z",
       "side": 1,
       "message": "Please add some more detail to this comment. Are the methods just \"get\" and \"set\" or are \"get\" and \"set\" fragments of \"full\" ServodMethods?",
+      "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a8ccc191_8ee29d37",
+        "filename": "go/src/infra/cros/recovery/tlw/interface.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-06-12T04:39:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a53186fc_ef7f87e0",
       "revId": "6bcfaaf42152b297e7245e1f34fe6419caf10bd9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
