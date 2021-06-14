@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "21db92ab_ebce9b35",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/local_recovery.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-06-14T17:51:53Z",
+      "side": 1,
+      "message": "Please make the annotation more informative.",
+      "revId": "b40431b8b64c1a332c266ce47596ec7f9717faa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a9a6ff23_0b678e01",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/local_recovery.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-06-14T17:51:53Z",
+      "side": 1,
+      "message": "Please make the annotation more informative.",
+      "revId": "b40431b8b64c1a332c266ce47596ec7f9717faa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "982fc1a2_9ac216b0",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/local_recovery.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-06-14T17:51:53Z",
+      "side": 1,
+      "message": "Please move this to line 95.",
+      "revId": "b40431b8b64c1a332c266ce47596ec7f9717faa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "311ecd0b_c9496cd0",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/local_recovery.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-06-14T17:51:53Z",
+      "side": 1,
+      "message": "Please write this to stderr not stdout.",
+      "revId": "b40431b8b64c1a332c266ce47596ec7f9717faa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "01c91eba_89017463",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-06-14T17:51:53Z",
+      "side": 1,
+      "message": "Consider making this a method on Input.",
+      "revId": "b40431b8b64c1a332c266ce47596ec7f9717faa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
