@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "efc4fb11_2f0ee07f",
+        "filename": "go/.vpython3",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2021-06-16T02:40:45Z",
+      "side": 1,
+      "message": "Could you add URL to schema of this file too?",
+      "revId": "41cd242f505f77c752b51d53db0da3f70e9ad8b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
