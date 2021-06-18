@@ -16,6 +16,24 @@
       "message": "this pool doesn\u0027t exist on swarming host chromium-swarm.appspot.com in L35.\nThat line need to change to the chrome-swarming.appspot.com",
       "revId": "f03555436c021b1ea497aff68cd1baeb4baa6c62",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c3e6cfd4_3c784bf5",
+        "filename": "infra/config/generated/cr-buildbucket.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1511222
+      },
+      "writtenOn": "2021-06-18T19:03:24Z",
+      "side": 1,
+      "message": "Thanks @Nodir. I changed the swarming host to reflect \"chrome-swarming.appspot.com\".",
+      "parentUuid": "94f8bbf4_9611cbe2",
+      "revId": "f03555436c021b1ea497aff68cd1baeb4baa6c62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
