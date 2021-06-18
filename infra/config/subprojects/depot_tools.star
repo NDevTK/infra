@@ -86,10 +86,11 @@ luci.builder(
     name = "depot_tools zip uploader",
     bucket = "ci",
     executable = infra.recipe("depot_tools_builder"),
+    swarming_host = "chrome-swarming.appspot.com",
     dimensions = {
         "os": "Ubuntu-18.04",
         "cpu": "x86-64",
-        "pool": "luci.flex.ci",
+        "pool": "luci.infra_internal.prod",
     },
     service_account = "infra-ci-depot-tools-uploader@chops-service-accounts.iam.gserviceaccount.com",
     build_numbers = True,
