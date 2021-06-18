@@ -16,6 +16,23 @@
       "message": "LGTM, but ideally Vadim takes a look too.",
       "revId": "ed45798767f3a8a7f14652487823bfc308599d7c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7bca90f0_9715a9c2",
+        "filename": "infra/config/subprojects/depot_tools.star",
+        "patchSetId": 2
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2021-06-18T19:18:28Z",
+      "side": 1,
+      "message": "not only this, but this definition should move to infra-internal; I don\u0027t believe the infra project has access to the internal pools (it should not)",
+      "revId": "ed45798767f3a8a7f14652487823bfc308599d7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
