@@ -89,7 +89,7 @@ luci.builder(
     dimensions = {
         "os": "Ubuntu-18.04",
         "cpu": "x86-64",
-        "pool": "luci.flex.ci",
+        "pool": "luci.infra_internal.prod",
     },
     service_account = "infra-ci-depot-tools-uploader@chops-service-accounts.iam.gserviceaccount.com",
     build_numbers = True,
