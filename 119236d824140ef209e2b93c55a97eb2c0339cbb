@@ -33,6 +33,24 @@
       "message": "Please log at info level if the hostname is localhost.",
       "revId": "119236d824140ef209e2b93c55a97eb2c0339cbb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7c4b3737_dc0f281f",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/readonly.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 424,
+      "author": {
+        "id": 1346454
+      },
+      "writtenOn": "2021-06-21T17:19:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "98f2de71_134e667c",
+      "revId": "119236d824140ef209e2b93c55a97eb2c0339cbb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
