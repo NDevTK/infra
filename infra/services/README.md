@@ -2,3 +2,6 @@
   repositories into independent repos so they can be consumed by
   downstream projects.
 * lkgr_finder: computes last known good revision, based on test results.
+* slave
+* master
+* blacklist
