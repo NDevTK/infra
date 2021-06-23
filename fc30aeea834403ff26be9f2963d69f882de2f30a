@@ -1,0 +1,108 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012125929",
+      "url": "https://android-build.googleplex.com/builds/treetop/chromium-review/2983403?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "9b9b7798_02050e0e",
+        "filename": "infra/inclusion.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1493702
+      },
+      "writtenOn": "2021-06-23T19:54:39Z",
+      "side": 1,
+      "message": "Prefer to use inclusive terms like \u0027deny list\u0027 or \u0027allow list\u0027; see https://developers.google.com/style/word-list#blacklist for more details. In the case of a false positive add BYPASS_INCLUSIVE_LANGUAGE_REASON\u003dmy_reason_here to your commit message to disable this check.",
+      "range": {
+        "startLine": 1,
+        "startChar": 60,
+        "endLine": 1,
+        "endChar": 69
+      },
+      "revId": "fc30aeea834403ff26be9f2963d69f882de2f30a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012125929",
+      "url": "https://android-build.googleplex.com/builds/treetop/chromium-review/2983403?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "08a3be8d_6c9e0f22",
+        "filename": "infra/inclusion.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1493702
+      },
+      "writtenOn": "2021-06-23T19:54:39Z",
+      "side": 1,
+      "message": "Prefer to use inclusive terms like \u0027primary/secondary\u0027 or \u0027manager/worker\u0027; see https://source.android.com/setup/contribute/respectful-code for more details. In the case of a false positive add BYPASS_INCLUSIVE_LANGUAGE_REASON\u003dmy_reason_here to your commit message to disable this check.",
+      "range": {
+        "startLine": 1,
+        "startChar": 53,
+        "endLine": 1,
+        "endChar": 58
+      },
+      "revId": "fc30aeea834403ff26be9f2963d69f882de2f30a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012125929",
+      "url": "https://android-build.googleplex.com/builds/treetop/chromium-review/2983403?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "c93dcf1a_86266a4c",
+        "filename": "infra/services/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1493702
+      },
+      "writtenOn": "2021-06-23T19:54:39Z",
+      "side": 1,
+      "message": "Prefer to use inclusive terms like \u0027primary/secondary\u0027 or \u0027manager/worker\u0027; see https://source.android.com/setup/contribute/respectful-code for more details. In the case of a false positive add BYPASS_INCLUSIVE_LANGUAGE_REASON\u003dmy_reason_here to your commit message to disable this check.",
+      "range": {
+        "startLine": 5,
+        "startChar": 2,
+        "endLine": 5,
+        "endChar": 7
+      },
+      "revId": "fc30aeea834403ff26be9f2963d69f882de2f30a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012125929",
+      "url": "https://android-build.googleplex.com/builds/treetop/chromium-review/2983403?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "3cf12157_8c778c72",
+        "filename": "infra/services/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1493702
+      },
+      "writtenOn": "2021-06-23T19:54:39Z",
+      "side": 1,
+      "message": "Prefer to use inclusive terms like \u0027deny list\u0027 or \u0027allow list\u0027; see https://developers.google.com/style/word-list#blacklist for more details. In the case of a false positive add BYPASS_INCLUSIVE_LANGUAGE_REASON\u003dmy_reason_here to your commit message to disable this check.",
+      "range": {
+        "startLine": 7,
+        "startChar": 2,
+        "endLine": 7,
+        "endChar": 11
+      },
+      "revId": "fc30aeea834403ff26be9f2963d69f882de2f30a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
