@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ca494d6e_1a0171e8",
+        "filename": "appengine/findit/handlers/completed_build_pubsub_ingestor.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1178685
+      },
+      "writtenOn": "2021-06-24T00:40:15Z",
+      "side": 1,
+      "message": "nit: maybe we dedupe this?",
+      "range": {
+        "startLine": 172,
+        "startChar": 2,
+        "endLine": 179,
+        "endChar": 80
+      },
+      "revId": "8dece8faad0afe1e11bd458785220213eee29038",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
