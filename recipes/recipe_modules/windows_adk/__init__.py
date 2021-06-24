@@ -7,6 +7,9 @@ DEPS = [
     'recipe_engine/context',
     'recipe_engine/step',
     'recipe_engine/path',
+    'recipe_engine/file',
+    'recipe_engine/time',
+    'recipe_engine/python',
 ]
 
 from recipe_engine.recipe_api import Property
