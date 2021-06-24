@@ -7,11 +7,14 @@ from recipe_engine.post_process import StepCommandRE
 DEPS = [
     'windows_adk',
     'recipe_engine/properties',
+    'recipe_engine/file',
+    'recipe_engine/path',
 ]
 
 
 def RunSteps(api):
   api.windows_adk.ensure()
+  api.windows_adk.cleanup()
 
 
 def GenTests(api):
