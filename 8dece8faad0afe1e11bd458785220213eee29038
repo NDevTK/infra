@@ -46,6 +46,30 @@
       },
       "revId": "8dece8faad0afe1e11bd458785220213eee29038",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "de0b4c0a_cfe31689",
+        "filename": "appengine/findit/handlers/completed_build_pubsub_ingestor.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1178685
+      },
+      "writtenOn": "2021-06-24T01:19:52Z",
+      "side": 1,
+      "message": "this is repeated in L267~L273.\nMaybe have can have a function that takes input/output properties and outputs master_name.",
+      "parentUuid": "cf7ecf79_fc560049",
+      "range": {
+        "startLine": 172,
+        "startChar": 2,
+        "endLine": 179,
+        "endChar": 80
+      },
+      "revId": "8dece8faad0afe1e11bd458785220213eee29038",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
