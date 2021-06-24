@@ -33,6 +33,24 @@
       "message": "Isn\u0027t output properties suppose to have the ability to override input properties?\nDoes it make sense to use output properties and fallback to input properties in this case?\n",
       "revId": "e37937ae71275a855a0aa55bd2655a8d5daa1a98",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b2ea7c10_699bd006",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-06-24T00:27:34Z",
+      "side": 1,
+      "message": "not sure about the override part. But yeah it would be safer.",
+      "parentUuid": "d0f664ab_5e723d61",
+      "revId": "e37937ae71275a855a0aa55bd2655a8d5daa1a98",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
