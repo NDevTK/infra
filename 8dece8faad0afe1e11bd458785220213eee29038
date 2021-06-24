@@ -22,6 +22,30 @@
       },
       "revId": "8dece8faad0afe1e11bd458785220213eee29038",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cf7ecf79_fc560049",
+        "filename": "appengine/findit/handlers/completed_build_pubsub_ingestor.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-06-24T01:18:00Z",
+      "side": 1,
+      "message": "what kind of dedupe in your mind?",
+      "parentUuid": "ca494d6e_1a0171e8",
+      "range": {
+        "startLine": 172,
+        "startChar": 2,
+        "endLine": 179,
+        "endChar": 80
+      },
+      "revId": "8dece8faad0afe1e11bd458785220213eee29038",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
