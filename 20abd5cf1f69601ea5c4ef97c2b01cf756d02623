@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "70cc4b1f_89d563c0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-06-25T02:37:10Z",
+      "side": 1,
+      "message": "This change fixes the issues with ADK installation. This allows for first command `copy-pe x86` to pass. Will investigate and upload fixes for rest of the commands in a follow up CL",
+      "revId": "20abd5cf1f69601ea5c4ef97c2b01cf756d02623",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
