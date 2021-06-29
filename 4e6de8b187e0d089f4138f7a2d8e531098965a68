@@ -50,6 +50,24 @@
       "message": "stamp for Tricium.",
       "revId": "4e6de8b187e0d089f4138f7a2d8e531098965a68",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "24e4826c_f41858fd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2021-06-29T23:19:57Z",
+      "side": 1,
+      "message": "done",
+      "parentUuid": "18a832b0_eaca84bf",
+      "revId": "4e6de8b187e0d089f4138f7a2d8e531098965a68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
