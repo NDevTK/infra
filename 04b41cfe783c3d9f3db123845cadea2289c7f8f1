@@ -16,6 +16,23 @@
       "message": "I\u0027m not 100% certain this works, even with this CL it used memcache to fetch TagIndex entities until I manually flushed it.",
       "revId": "04b41cfe783c3d9f3db123845cadea2289c7f8f1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c3e41ced_41f1a443",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2021-06-30T09:35:36Z",
+      "side": 1,
+      "message": "this CL lgtm\nbut can you do the same thing Scott or you did for the Build entities? Because that seems to have worked since UpdateBuild, right?",
+      "revId": "04b41cfe783c3d9f3db123845cadea2289c7f8f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
