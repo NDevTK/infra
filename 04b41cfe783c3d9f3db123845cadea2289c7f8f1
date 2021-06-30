@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9e6bb03e_b8c6c827",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2021-06-30T09:09:12Z",
+      "side": 1,
+      "message": "I\u0027m not 100% certain this works, even with this CL it used memcache to fetch TagIndex entities until I manually flushed it.",
+      "revId": "04b41cfe783c3d9f3db123845cadea2289c7f8f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
