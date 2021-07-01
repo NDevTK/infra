@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "70751d26_95b1a825",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1148599
+      },
+      "writtenOn": "2021-07-01T19:31:21Z",
+      "side": 1,
+      "message": "I\u0027m generally fine with this, but is this true everywhere now? As in, has everything moved to \u0027main\u0027?",
+      "revId": "5b1564fcf829c8a49cbd990d0f152f1b8d55c4e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
