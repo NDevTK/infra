@@ -33,6 +33,24 @@
       "message": "this CL lgtm\nbut can you do the same thing Scott or you did for the Build entities? Because that seems to have worked since UpdateBuild, right?",
       "revId": "04b41cfe783c3d9f3db123845cadea2289c7f8f1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c5d982dc_80de0647",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2021-07-01T12:38:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c3e41ced_41f1a443",
+      "revId": "04b41cfe783c3d9f3db123845cadea2289c7f8f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
