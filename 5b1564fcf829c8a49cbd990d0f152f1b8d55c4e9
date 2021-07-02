@@ -16,6 +16,24 @@
       "message": "I\u0027m generally fine with this, but is this true everywhere now? As in, has everything moved to \u0027main\u0027?",
       "revId": "5b1564fcf829c8a49cbd990d0f152f1b8d55c4e9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e8523269_2e8bb67a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393469
+      },
+      "writtenOn": "2021-07-02T14:12:10Z",
+      "side": 1,
+      "message": "Actually, some don\u0027t have master (skia), so autoroller doesn\u0027t work for them. It is true everywhere that main branch exists and it\u0027s default branch.",
+      "parentUuid": "70751d26_95b1a825",
+      "revId": "5b1564fcf829c8a49cbd990d0f152f1b8d55c4e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
