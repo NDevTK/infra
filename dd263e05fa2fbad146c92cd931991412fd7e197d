@@ -16,6 +16,24 @@
       "message": "Deployed to https://42135-f282754-andrewjc-mr-fix-search-dot-monorail-staging.appspot.com/p/chromium/issues/list and discovered a related issue, will ping CL again with a new patch",
       "revId": "dd263e05fa2fbad146c92cd931991412fd7e197d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8d111392_3c6a6665",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2021-07-07T19:17:40Z",
+      "side": 1,
+      "message": "PTAL\n\nhttps://42135-f282754-andrewjc-mr-fix-search-dot-monorail-staging.appspot.com/p/chromium/issues/list?q\u003dreporter%3Akweng no longer throws a 500",
+      "parentUuid": "471352df_b20ff792",
+      "revId": "dd263e05fa2fbad146c92cd931991412fd7e197d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
