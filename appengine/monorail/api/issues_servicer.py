@@ -161,7 +161,7 @@ class IssuesServicer(monorail_servicer.MonorailServicer):
 
     converted_results = []
     with work_env.WorkEnv(mc, self.services) as we:
-      for issue in pipeline.visible_results:
+      for issue in (pipeline.visible_results or []):
         related_refs = we.GetRelatedIssueRefs([issue])
         converted_results.append(
             converters.ConvertIssue(issue, pipeline.users_by_id, related_refs,
