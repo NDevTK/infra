@@ -30,12 +30,14 @@ import (
 	"infra/chromeperf/pinpoint/cli/identify"
 	"infra/chromeperf/pinpoint/proto"
 
+	"go.chromium.org/luci/client/cas"
 	"go.chromium.org/luci/client/downloader"
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/isolated"
 	"go.chromium.org/luci/common/isolatedclient"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"gopkg.in/yaml.v2"
 )
 
@@ -70,6 +72,10 @@ func (dam *downloadArtifactsMixin) doDownloadArtifacts(ctx context.Context, w io
 	}
 }
 
+type casInstance string
+type casHash string
+type casSize string
+
 type artifactFile struct {
 	Path   string `yaml:"path"`
 	Source string `yaml:"source"`
@@ -92,6 +98,13 @@ type telemetryExperimentArtifactsManifest struct {
 	Config     string       `yaml:"config"`
 	Base       changeConfig `yaml:"base"`
 	Experiment changeConfig `yaml:"experiment"`
+}
+
+func isCas(urls abExperimentURLs) bool {
+	for _, url := range urls {
+		return strings.Contains(url, "cas-viewer")
+	}
+	return false
 }
 
 func (dam *downloadArtifactsMixin) downloadExperimentArtifacts(ctx context.Context, w io.Writer, httpClient *http.Client, workDir string, job *proto.Job) error {
@@ -121,9 +134,15 @@ func (dam *downloadArtifactsMixin) downloadExperimentArtifacts(ctx context.Conte
 		return errors.Annotate(err, "failed creating temporary directory").Err()
 	}
 	defer os.RemoveAll(tmp)
-	isolatedclients := newIsolatedClientsCache(httpClient)
-	if err := downloadIsolatedURLs(ctx, isolatedclients, tmp, urls); err != nil {
-		return err
+	if isCas(urls) {
+		if err := downloadCasURLs(ctx, tmp, urls); err != nil {
+			return err
+		}
+	} else {
+		isolatedclients := newIsolatedClientsCache(httpClient)
+		if err := downloadIsolatedURLs(ctx, isolatedclients, tmp, urls); err != nil {
+			return err
+		}
 	}
 
 	// At this point we'll emit the manifest file into the temporary directory,
@@ -142,6 +161,56 @@ func (dam *downloadArtifactsMixin) downloadExperimentArtifacts(ctx context.Conte
 	}
 	fmt.Fprintf(w, "Downloaded all artifacts to: %q\n", dst)
 	return nil
+}
+
+func extractCasParamsFromURL(url string) (casInstance, casHash, casSize) {
+	url = strings.Replace(url, "https://cas-viewer.appspot.com/", "", 1)
+	casInst := strings.Split(url, "/blobs/")[0]
+	digest := strings.Split(url, "/blobs/")[1]
+	digest = strings.Replace(digest, "/tree", "", 1)
+	digestHash := strings.Split(digest, "/")[0]
+	digestBytes := strings.Split(digest, "/")[1]
+	return casInstance(casInst), casHash(digestHash), casSize(digestBytes)
+}
+
+func downloadCasURLs(ctx context.Context, base string, urls map[string]string) errors.MultiError {
+	g := sync.WaitGroup{}
+	errs := make(chan error)
+
+	// authenticator = auth.NewAuthenticator(ctx, auth.InteractiveLogin, chromeinfra.DefaultAuthOptions())
+
+	downloader := func(path, u string, errs chan error, g *sync.WaitGroup) {
+		casInst, _, _ := extractCasParamsFromURL(u)
+
+		c, err := cas.NewClient(ctx, string(casInst), chromeinfra.DefaultAuthOptions(), true)
+		if err != nil {
+			print("failed")
+			print(err)
+		}
+		defer c.Close()
+	}
+
+	for path, u := range urls {
+		g.Add(1)
+		go downloader(path, u, errs, &g)
+	}
+
+	// Wait for all the downloader goroutines to finish, then close the errors channel.
+	go func() {
+		g.Wait()
+		close(errs)
+	}()
+
+	// Handle all the errors from the channel until it's closed.
+	res := errors.MultiError{}
+	for err := range errs {
+		res = append(res, err)
+	}
+
+	if len(res) == 0 {
+		return nil
+	}
+	return res
 }
 
 func downloadIsolatedURLs(ctx context.Context, clients *isolatedClientsCache, base string, urls map[string]string) errors.MultiError {
