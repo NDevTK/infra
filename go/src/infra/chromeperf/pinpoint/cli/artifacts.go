@@ -18,18 +18,26 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"infra/chromeperf/pinpoint"
+	"infra/chromeperf/pinpoint/cli/identify"
+	"infra/chromeperf/pinpoint/proto"
 	"io"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 
-	"infra/chromeperf/pinpoint"
-	"infra/chromeperf/pinpoint/cli/identify"
-	"infra/chromeperf/pinpoint/proto"
+	"go.chromium.org/luci/hardcoded/chromeinfra"
 
+	"github.com/bazelbuild/remote-apis-sdks/go/pkg/filemetadata"
+
+	"github.com/bazelbuild/remote-apis-sdks/go/pkg/digest"
+
+	"github.com/bazelbuild/remote-apis-sdks/go/pkg/client"
+	"go.chromium.org/luci/client/cas"
 	"go.chromium.org/luci/client/downloader"
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
@@ -70,6 +78,10 @@ func (dam *downloadArtifactsMixin) doDownloadArtifacts(ctx context.Context, w io
 	}
 }
 
+type casInstance string
+type casHash string
+type casSize int64
+
 type artifactFile struct {
 	Path   string `yaml:"path"`
 	Source string `yaml:"source"`
@@ -92,6 +104,13 @@ type telemetryExperimentArtifactsManifest struct {
 	Config     string       `yaml:"config"`
 	Base       changeConfig `yaml:"base"`
 	Experiment changeConfig `yaml:"experiment"`
+}
+
+func isCas(urls abExperimentURLs) bool {
+	for _, url := range urls {
+		return strings.Contains(url, "cas-viewer")
+	}
+	return false
 }
 
 func (dam *downloadArtifactsMixin) downloadExperimentArtifacts(ctx context.Context, w io.Writer, httpClient *http.Client, workDir string, job *proto.Job) error {
@@ -121,9 +140,15 @@ func (dam *downloadArtifactsMixin) downloadExperimentArtifacts(ctx context.Conte
 		return errors.Annotate(err, "failed creating temporary directory").Err()
 	}
 	defer os.RemoveAll(tmp)
-	isolatedclients := newIsolatedClientsCache(httpClient)
-	if err := downloadIsolatedURLs(ctx, isolatedclients, tmp, urls); err != nil {
-		return err
+	if isCas(urls) {
+		if err := downloadCasURLs(ctx, tmp, urls); err != nil {
+			return err
+		}
+	} else {
+		isolatedclients := newIsolatedClientsCache(httpClient)
+		if err := downloadIsolatedURLs(ctx, isolatedclients, tmp, urls); err != nil {
+			return err
+		}
 	}
 
 	// At this point we'll emit the manifest file into the temporary directory,
@@ -142,6 +167,79 @@ func (dam *downloadArtifactsMixin) downloadExperimentArtifacts(ctx context.Conte
 	}
 	fmt.Fprintf(w, "Downloaded all artifacts to: %q\n", dst)
 	return nil
+}
+
+func extractCasParamsFromURL(url string) (casInstance, casHash, casSize) {
+	url = strings.Replace(url, "https://cas-viewer.appspot.com/", "", 1)
+	casInst := strings.Split(url, "/blobs/")[0]
+	digest := strings.Split(url, "/blobs/")[1]
+	digest = strings.Replace(digest, "/tree", "", 1)
+	digestHash := strings.Split(digest, "/")[0]
+	digestBytes, _ := strconv.Atoi(strings.Split(digest, "/")[1])
+	return casInstance(casInst), casHash(digestHash), casSize(digestBytes)
+}
+
+var casClients map[casInstance]*client.Client = make(map[casInstance]*client.Client)
+var casMu sync.Mutex
+
+func getCasClient(ctx context.Context, instance casInstance) (*client.Client, error) {
+	casMu.Lock()
+	defer casMu.Unlock()
+	if clt, ok := casClients[instance]; ok {
+		return clt, nil
+	}
+	authOpts := chromeinfra.DefaultAuthOptions()
+	casClient, err := cas.NewClient(ctx, string(instance), authOpts, true)
+	if err != nil {
+		return nil, err
+	}
+	return casClient, nil
+}
+
+func downloadCasURLs(ctx context.Context, base string, urls map[string]string) errors.MultiError {
+	g := sync.WaitGroup{}
+	errs := make(chan error)
+
+	downloader := func(path, u string, errs chan error, g *sync.WaitGroup) {
+		defer g.Done()
+		instance, hash, bytes := extractCasParamsFromURL(u)
+
+		casClient, err := getCasClient(ctx, instance)
+		if err != nil {
+			errs <- err
+			return
+		}
+
+		d := digest.Digest{
+			Hash: string(hash),
+			Size: int64(bytes),
+		}
+
+		dst := filepath.Join(base, path)
+		if err := os.MkdirAll(dst, 0700); err != nil {
+			errs <- errors.Annotate(err, "failed creating directory: %s", dst).Err()
+			return
+		}
+		if _, _, err := casClient.DownloadDirectory(ctx, d, dst, filemetadata.NewNoopCache()); err != nil {
+			errs <- err
+		}
+	}
+
+	for path, u := range urls {
+		g.Add(1)
+		go downloader(path, u, errs, &g)
+	}
+
+	go func() {
+		g.Wait()
+		close(errs)
+	}()
+	res := errors.MultiError{}
+	for err := range errs {
+		res = append(res, err)
+	}
+
+	return res
 }
 
 func downloadIsolatedURLs(ctx context.Context, clients *isolatedClientsCache, base string, urls map[string]string) errors.MultiError {
