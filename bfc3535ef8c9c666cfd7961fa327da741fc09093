@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cbc2c742_b0826637",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2021-07-15T19:21:21Z",
+      "side": 1,
+      "message": "nit: group these together with the last block below, and sort",
+      "revId": "bfc3535ef8c9c666cfd7961fa327da741fc09093",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f973ee28_eaf15c96",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2021-07-15T19:21:21Z",
+      "side": 1,
+      "message": "https://pkg.go.dev/net/url#Parse would probably be a more robust way to extract this information from the url string. Does it not work here for some reason?",
+      "revId": "bfc3535ef8c9c666cfd7961fa327da741fc09093",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7a2f7f58_dbeb5ddd",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2021-07-15T19:21:21Z",
+      "side": 1,
+      "message": "missing a `casClients[instance] \u003d client` statement somewhere?\n\nBacking up a bit: Are there going to be lots of these clients per cli invocation, and are they noticeably expensive to construct?  If they\u0027re actually worth caching, you might want to use a proper cache (with evictions etc) instead of a map that just grows and grows.  Otherwise, wdyt about simplifying this code and just creating a new client every time?",
+      "revId": "bfc3535ef8c9c666cfd7961fa327da741fc09093",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
