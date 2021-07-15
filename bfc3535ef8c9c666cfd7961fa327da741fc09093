@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c4c74da0_a9d328cb",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1451876
+      },
+      "writtenOn": "2021-07-15T19:56:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cbc2c742_b0826637",
+      "revId": "bfc3535ef8c9c666cfd7961fa327da741fc09093",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f973ee28_eaf15c96",
@@ -37,6 +55,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "4921b479_f83c485f",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1451876
+      },
+      "writtenOn": "2021-07-15T19:56:26Z",
+      "side": 1,
+      "message": "The problem here is everything is encoded in the path (there\u0027s no query params). For example:\nhttps://cas-viewer.appspot.com/projects/chrome-swarming/instances/default_instance/blobs/327d759be13ebe68392ab8deec4fba29243b96eea2cdc10a2a3b7eac44088123/176/tree\n- projects/chrome-swarming/instances/default_instance is the instance\n- 327d759be13ebe68392ab8deec4fba29243b96eea2cdc10a2a3b7eac44088123 is the hash\n- 176 is the size",
+      "parentUuid": "f973ee28_eaf15c96",
+      "revId": "bfc3535ef8c9c666cfd7961fa327da741fc09093",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "7a2f7f58_dbeb5ddd",
         "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
         "patchSetId": 7
@@ -48,6 +84,24 @@
       "writtenOn": "2021-07-15T19:21:21Z",
       "side": 1,
       "message": "missing a `casClients[instance] \u003d client` statement somewhere?\n\nBacking up a bit: Are there going to be lots of these clients per cli invocation, and are they noticeably expensive to construct?  If they\u0027re actually worth caching, you might want to use a proper cache (with evictions etc) instead of a map that just grows and grows.  Otherwise, wdyt about simplifying this code and just creating a new client every time?",
+      "revId": "bfc3535ef8c9c666cfd7961fa327da741fc09093",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e60445cb_3104f664",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1451876
+      },
+      "writtenOn": "2021-07-15T19:56:26Z",
+      "side": 1,
+      "message": "Ahh, oops. But, this proves creating a new client every time works just fine.",
+      "parentUuid": "7a2f7f58_dbeb5ddd",
       "revId": "bfc3535ef8c9c666cfd7961fa327da741fc09093",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
