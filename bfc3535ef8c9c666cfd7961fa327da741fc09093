@@ -73,6 +73,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "019e72bf_ea18c684",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1121710
+      },
+      "writtenOn": "2021-07-15T20:51:59Z",
+      "side": 1,
+      "message": "u, err :\u003d url.Parse(url)\n// do stuff with u.Path instead of strings.Replace(url, \"...\")\nthat will at least handle host name changes without breaking, and let you log badly formed input.",
+      "parentUuid": "4921b479_f83c485f",
+      "revId": "bfc3535ef8c9c666cfd7961fa327da741fc09093",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "7a2f7f58_dbeb5ddd",
         "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
         "patchSetId": 7
