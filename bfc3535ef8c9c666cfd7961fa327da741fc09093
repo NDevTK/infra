@@ -89,6 +89,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7056e845_2236716f",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1451876
+      },
+      "writtenOn": "2021-07-15T21:06:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "019e72bf_ea18c684",
+      "revId": "bfc3535ef8c9c666cfd7961fa327da741fc09093",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7a2f7f58_dbeb5ddd",
