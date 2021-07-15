@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ae138a4a_c9863c90",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2021-07-15T22:00:14Z",
+      "side": 1,
+      "message": "Do you run `gclient sync` on ToT in your local machine?",
+      "revId": "5f039fb8b6e0e1edc934028cb458390989b8a2c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
