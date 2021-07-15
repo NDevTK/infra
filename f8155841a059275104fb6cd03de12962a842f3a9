@@ -16,6 +16,24 @@
       "message": "You need to configure auth flags like\nhttps://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/client/cmd/cas/main.go;l\u003d79-96;drc\u003da25b949218d2ad2bd740ea854c11f2bcd518e8d6",
       "revId": "f8155841a059275104fb6cd03de12962a842f3a9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c2b5f5a6_a9545375",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1451876
+      },
+      "writtenOn": "2021-07-15T15:58:37Z",
+      "side": 1,
+      "message": "That worked, thanks!",
+      "parentUuid": "5e5a1dd1_c789a916",
+      "revId": "f8155841a059275104fb6cd03de12962a842f3a9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
