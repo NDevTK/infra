@@ -54,6 +54,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "9c970975_3b0e2b35",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2021-07-15T22:13:33Z",
+      "side": 1,
+      "message": "could you leave TODO to remove this with\nhttps://bugs.chromium.org/p/chromium/issues/detail?id\u003d1143122\n?",
+      "revId": "5f039fb8b6e0e1edc934028cb458390989b8a2c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6babae1f_a3d8948e",
         "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
         "patchSetId": 10
