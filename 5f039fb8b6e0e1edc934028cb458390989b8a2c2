@@ -16,6 +16,143 @@
       "message": "Do you run `gclient sync` on ToT in your local machine?",
       "revId": "5f039fb8b6e0e1edc934028cb458390989b8a2c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e2eb05cc_ddd92741",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2021-07-15T22:10:23Z",
+      "side": 1,
+      "message": "do not have this in std import block?",
+      "revId": "5f039fb8b6e0e1edc934028cb458390989b8a2c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4af4d225_76bdeed6",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2021-07-15T22:10:23Z",
+      "side": 1,
+      "message": "I feel having different types for these is too much for now.",
+      "revId": "5f039fb8b6e0e1edc934028cb458390989b8a2c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6babae1f_a3d8948e",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2021-07-15T22:10:23Z",
+      "side": 1,
+      "message": "check error?",
+      "range": {
+        "startLine": 180,
+        "startChar": 14,
+        "endLine": 180,
+        "endChar": 16
+      },
+      "revId": "5f039fb8b6e0e1edc934028cb458390989b8a2c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "816d1413_7a03daa9",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2021-07-15T22:10:23Z",
+      "side": 1,
+      "message": "I don\u0027t think you need to use MultiError here.",
+      "range": {
+        "startLine": 184,
+        "startChar": 79,
+        "endLine": 184,
+        "endChar": 96
+      },
+      "revId": "5f039fb8b6e0e1edc934028cb458390989b8a2c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "acd3f1cf_bf24708a",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2021-07-15T22:10:23Z",
+      "side": 1,
+      "message": "better to use errgroup.WaitGroup instead?",
+      "revId": "5f039fb8b6e0e1edc934028cb458390989b8a2c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6cf98496_f81ef84c",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2021-07-15T22:10:23Z",
+      "side": 1,
+      "message": "I don\u0027t think you need to pass these with argument?",
+      "range": {
+        "startLine": 188,
+        "startChar": 36,
+        "endLine": 188,
+        "endChar": 70
+      },
+      "revId": "5f039fb8b6e0e1edc934028cb458390989b8a2c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "89dfb843_0e7a77f9",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2021-07-15T22:10:23Z",
+      "side": 1,
+      "message": "better to declare this once before this function?",
+      "revId": "5f039fb8b6e0e1edc934028cb458390989b8a2c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
