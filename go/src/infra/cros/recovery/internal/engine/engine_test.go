@@ -169,6 +169,22 @@ func TestRun(t *testing.T) {
 	}
 }
 
+func TestRunPlanDoNotRunActionAsResultInCache(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	r := recoveryEngine{
+		plan: &planpb.Plan{
+			CriticalActions: []string{"a"},
+		},
+	}
+	r.initCache()
+	r.cacheActionResult("a", nil)
+	err := r.runPlan(ctx)
+	if err != nil {
+		t.Errorf("Expected plan pass as single action cached with result=nil. Received error: %s", err)
+	}
+}
+
 var recoveryTestCases = []struct {
 	name         string
 	got          map[string]*planpb.Action
@@ -230,6 +246,7 @@ func TestRunRecovery(t *testing.T) {
 					Actions: c.got,
 				},
 			}
+			r.initCache()
 			err := r.runRecoveries(ctx, "a")
 			if c.expStartOver {
 				if !startOverTag.In(err) {
@@ -320,6 +337,7 @@ func TestActionExec(t *testing.T) {
 					Actions: c.got,
 				},
 			}
+			r.initCache()
 			err := r.runActionExec(ctx, "a", c.canUseRecovery)
 			if c.expError && c.expStartOver {
 				if !startOverTag.In(err) {
@@ -332,6 +350,94 @@ func TestActionExec(t *testing.T) {
 			} else {
 				if err != nil {
 					t.Errorf("Case %q expected to receive nil. Received error: %s", c.name, err)
+				}
+			}
+		})
+	}
+}
+
+var actionResultsCacheTestCases = []struct {
+	name       string
+	got        map[string]*planpb.Action
+	expInCashe bool
+	expError   bool
+}{
+	{
+		"set pass to the cache",
+		map[string]*planpb.Action{
+			"a": {
+				ExecName: exec_pass,
+			},
+		},
+		true,
+		false,
+	},
+	{
+		"set fail to the cache",
+		map[string]*planpb.Action{
+			"a": {
+				ExecName: exec_fail,
+			},
+		},
+		true,
+		true,
+	},
+	{
+		"do not set if recovery finished with success",
+		map[string]*planpb.Action{
+			"a": {
+				ExecName:        exec_fail,
+				RecoveryActions: []string{"r"},
+			},
+			"r": {
+				ExecName: exec_pass,
+			},
+		},
+		false,
+		false,
+	},
+	{
+		"set fail when all recoveries failed",
+		map[string]*planpb.Action{
+			"a": {
+				ExecName:        exec_fail,
+				RecoveryActions: []string{"r"},
+			},
+			"r": {
+				ExecName: exec_fail,
+			},
+		},
+		true,
+		true,
+	},
+}
+
+func TestActionExecCache(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	for _, c := range actionResultsCacheTestCases {
+		c := c
+		t.Run(c.name, func(t *testing.T) {
+			r := recoveryEngine{
+				plan: &planpb.Plan{
+					Actions: c.got,
+				},
+			}
+			r.initCache()
+			r.runActionExec(ctx, "a", true)
+			err, ok := r.actionResultFromCache("a")
+			if c.expInCashe {
+				if !ok {
+					t.Errorf("Case %q: action result in not in the cache", c.name)
+				}
+				if c.expError && err == nil {
+					t.Errorf("Case %q: expected has error as action result but got nil", c.name)
+				} else if !c.expError && err != nil {
+					t.Errorf("Case %q: expected do not have error as action result but got it: %s", c.name, err)
+				}
+			} else {
+				if ok {
+					t.Errorf("Case %q: does not expected result in the cache", c.name)
 				}
 			}
 		})

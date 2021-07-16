@@ -22,6 +22,8 @@ type recoveryEngine struct {
 	planName string
 	plan     *planpb.Plan
 	args     *execs.RunArgs
+	// Caches
+	actionResultsCache map[string]error
 }
 
 // Error tag to track error with request to start critical actions over.
@@ -34,19 +36,23 @@ func Run(ctx context.Context, planName string, plan *planpb.Plan, args *execs.Ru
 		plan:     plan,
 		args:     args,
 	}
+	r.initCache()
 	defer r.close()
+	log.Debug(ctx, "Received plan %s\n%s", r.planName, r.describe())
 	return r.runPlan(ctx)
 }
 
 // close free up used resources.
 func (r *recoveryEngine) close() {
+	if r.actionResultsCache != nil {
+		r.actionResultsCache = nil
+	}
 	// TODO(otabek@): Close the caches.
 }
 
 // runPlan executes recovery plan with critical-actions.
 func (r *recoveryEngine) runPlan(ctx context.Context) error {
 	log.Info(ctx, "Plan %q: started", r.planName)
-	log.Debug(ctx, "\n%s", r.describe())
 	for {
 		if err := r.runActions(ctx, r.plan.GetCriticalActions(), true); err != nil {
 			if startOverTag.In(err) {
@@ -235,15 +241,21 @@ func (r *recoveryEngine) describeActionExec(actionName string) string {
 	return er
 }
 
+// initCache initializes cache on engine.
+// The function extracted to supported testing.
+func (r *recoveryEngine) initCache() {
+	r.actionResultsCache = make(map[string]error, len(r.plan.GetActions()))
+}
+
 // actionResultFromCache reads action's result from cache.
 func (r *recoveryEngine) actionResultFromCache(actionName string) (ar error, ok bool) {
-	// TODO(otabek@): Read from action results cache
-	return nil, false
+	err, ok := r.actionResultsCache[actionName]
+	return err, ok
 }
 
 // cacheActionResult sets action's result to the cache.
 func (r *recoveryEngine) cacheActionResult(actionName string, err error) {
-	// TODO(otabek@): Set result to the action result cache based on run-control.
+	r.actionResultsCache[actionName] = err
 }
 
 // resetCacheAfterSuccessfulRecoveryAction resets cache for actions
