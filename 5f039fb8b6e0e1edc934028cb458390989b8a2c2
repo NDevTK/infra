@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8ede1708_476c0954",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1451876
+      },
+      "writtenOn": "2021-07-16T18:22:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e2eb05cc_ddd92741",
+      "revId": "5f039fb8b6e0e1edc934028cb458390989b8a2c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4af4d225_76bdeed6",
@@ -48,6 +66,24 @@
       "writtenOn": "2021-07-15T22:10:23Z",
       "side": 1,
       "message": "I feel having different types for these is too much for now.",
+      "revId": "5f039fb8b6e0e1edc934028cb458390989b8a2c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "65bed575_16322523",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1451876
+      },
+      "writtenOn": "2021-07-16T18:22:32Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "4af4d225_76bdeed6",
       "revId": "5f039fb8b6e0e1edc934028cb458390989b8a2c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -69,6 +105,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "59bb8f92_be673b64",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1451876
+      },
+      "writtenOn": "2021-07-16T18:22:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9c970975_3b0e2b35",
+      "revId": "5f039fb8b6e0e1edc934028cb458390989b8a2c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6babae1f_a3d8948e",
@@ -82,6 +136,30 @@
       "writtenOn": "2021-07-15T22:10:23Z",
       "side": 1,
       "message": "check error?",
+      "range": {
+        "startLine": 180,
+        "startChar": 14,
+        "endLine": 180,
+        "endChar": 16
+      },
+      "revId": "5f039fb8b6e0e1edc934028cb458390989b8a2c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d54e6a89_5bd03541",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1451876
+      },
+      "writtenOn": "2021-07-16T18:22:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6babae1f_a3d8948e",
       "range": {
         "startLine": 180,
         "startChar": 14,
@@ -115,6 +193,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4e436a1e_678b4d7c",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1451876
+      },
+      "writtenOn": "2021-07-16T18:22:32Z",
+      "side": 1,
+      "message": "I\u0027m going along with previously-established behavior.",
+      "parentUuid": "816d1413_7a03daa9",
+      "range": {
+        "startLine": 184,
+        "startChar": 79,
+        "endLine": 184,
+        "endChar": 96
+      },
+      "revId": "5f039fb8b6e0e1edc934028cb458390989b8a2c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "acd3f1cf_bf24708a",
@@ -128,6 +230,24 @@
       "writtenOn": "2021-07-15T22:10:23Z",
       "side": 1,
       "message": "better to use errgroup.WaitGroup instead?",
+      "revId": "5f039fb8b6e0e1edc934028cb458390989b8a2c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "34dc19ab_eb99a2bd",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1451876
+      },
+      "writtenOn": "2021-07-16T18:22:32Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "acd3f1cf_bf24708a",
       "revId": "5f039fb8b6e0e1edc934028cb458390989b8a2c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -155,6 +275,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "da80c916_af0de104",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1451876
+      },
+      "writtenOn": "2021-07-16T18:22:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6cf98496_f81ef84c",
+      "range": {
+        "startLine": 188,
+        "startChar": 36,
+        "endLine": 188,
+        "endChar": 70
+      },
+      "revId": "5f039fb8b6e0e1edc934028cb458390989b8a2c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "89dfb843_0e7a77f9",
@@ -168,6 +312,24 @@
       "writtenOn": "2021-07-15T22:10:23Z",
       "side": 1,
       "message": "better to declare this once before this function?",
+      "revId": "5f039fb8b6e0e1edc934028cb458390989b8a2c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "30cbfd61_0eb8f2b9",
+        "filename": "go/src/infra/chromeperf/pinpoint/cli/artifacts.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1451876
+      },
+      "writtenOn": "2021-07-16T18:22:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "89dfb843_0e7a77f9",
       "revId": "5f039fb8b6e0e1edc934028cb458390989b8a2c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
