@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7684820b_a0177f00",
+        "filename": "go/src/infra/cros/recovery/internal/engine/engine.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 287,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-07-16T23:04:53Z",
+      "side": 1,
+      "message": "Does it matter if r.recoveryUsageCache[k] is nil or non-nil?",
+      "revId": "8bb2d72a387d81128f09e2a43b4408f38389b19e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
