@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4bc14424_a34de828",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2021-07-16T15:33:28Z",
+      "side": 1,
+      "message": "Andrii, adding you because others are OOO and you reviewed the original in https://chromium-review.googlesource.com/c/infra/infra/+/1930324",
+      "revId": "dc51b86bf342f284b5a1d080e050c633763cd73a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
