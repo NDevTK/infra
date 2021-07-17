@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "91797f96_8af0a581",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-07-17T07:40:49Z",
+      "side": 1,
+      "message": "SGTM % nit",
+      "revId": "197b57a08ead03a8532ed734baf52e0e078366c8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a9fdeebc_515ccbf1",
+        "filename": "go/src/infra/cros/recovery/internal/engine/engine.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-07-17T07:40:49Z",
+      "side": 1,
+      "message": "nit: Add a comment here.\n\\\\ If the recovery cache scope is per plan and it has been used in previous actions, we can get it from action result cache.",
+      "revId": "197b57a08ead03a8532ed734baf52e0e078366c8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
