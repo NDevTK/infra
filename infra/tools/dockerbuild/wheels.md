@@ -3836,6 +3836,18 @@ wheel: <
 
 * *universal*
 
+### 0.8.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/parameterized-py2_py3"
+  version: "version:0.8.1"
+>
+```
+
+
+* *universal*
+
 ## **paramiko**
 
 ### 1.16.3
