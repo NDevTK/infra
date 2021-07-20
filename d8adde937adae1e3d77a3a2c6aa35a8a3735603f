@@ -16,6 +16,24 @@
       "message": "Wrong bug referenced on the CL? Or is it something I am not aware of 😄",
       "revId": "d8adde937adae1e3d77a3a2c6aa35a8a3735603f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2ea41bad_6b8e5032",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2021-07-20T15:04:12Z",
+      "side": 1,
+      "message": "This was blocking building one of the dependencies for bug 1227833 .",
+      "parentUuid": "457093d1_eb20de99",
+      "revId": "d8adde937adae1e3d77a3a2c6aa35a8a3735603f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
