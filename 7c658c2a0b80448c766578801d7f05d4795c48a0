@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c09d6e7f_5f300c3a",
+        "filename": "recipes/recipe_modules/infra_checkout/api.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2021-07-21T21:39:10Z",
+      "side": 1,
+      "message": "is this a path? boolean?",
+      "revId": "7c658c2a0b80448c766578801d7f05d4795c48a0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
