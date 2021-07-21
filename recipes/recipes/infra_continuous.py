@@ -209,7 +209,8 @@ def build_main(api, checkout, buildername, project_name, repo_url, rev):
 
   # Some third_party go packages on OSX rely on cgo and thus a configured
   # clang toolchain.
-  with api.osx_sdk('mac'), checkout.go_env():
+  infra_go = checkout.infra_module_path(project_name == 'infra_internal')
+  with api.context(cwd=infra_go), api.osx_sdk('mac'), checkout.go_env():
     # Call 'deps.py bundle' to package dependencies specified in deps.lock into
     # a CIPD package. This is not strictly necessary, but it significantly
     # reduces time it takes to run 'env.py'. Note that 'deps.py' requires
@@ -218,7 +219,8 @@ def build_main(api, checkout, buildername, project_name, repo_url, rev):
     # back to fetching dependencies from git directly. When the bundle is
     # up-to-date, 'deps.py bundle' finishes right away not doing anything.
     if (buildername == GO_DEPS_BUNDLING_BUILDER and
-        not api.runtime.is_experimental):
+        not api.runtime.is_experimental and
+        not checkout.go_modules):
       api.python(
           'bundle go deps',
           api.path['checkout'].join('go', 'deps.py'),

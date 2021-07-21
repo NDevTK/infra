@@ -23,6 +23,9 @@ def RunSteps(api):
       go_modules=api.properties.get('go_modules'))
   co.gclient_runhooks()
   _ = co.bot_update_step  # coverage...
+  _ = co.go_modules
+  _ = co.infra_module_path(False)
+  _ = co.infra_module_path(True)
   with co.go_env():
     api.step('go test', ['go', 'test', 'infra/...'])
   with co.go_env():  # for coverage

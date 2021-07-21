@@ -120,6 +120,7 @@
       "-json-output",
       "/path/to/tmp/json"
     ],
+    "cwd": "[CACHE]/infra_internal_gclient_with_go/infra_internal/go/src/infra_internal",
     "infra_step": true,
     "name": "ensure_installed",
     "~followup_annotations": [
@@ -147,6 +148,7 @@
       "-output-dir",
       "[CACHE]/osx_sdk/XCode.app"
     ],
+    "cwd": "[CACHE]/infra_internal_gclient_with_go/infra_internal/go/src/infra_internal",
     "infra_step": true,
     "name": "install xcode"
   },
@@ -157,6 +159,7 @@
       "--switch",
       "[CACHE]/osx_sdk/XCode.app"
     ],
+    "cwd": "[CACHE]/infra_internal_gclient_with_go/infra_internal/go/src/infra_internal",
     "infra_step": true,
     "name": "select XCode"
   },
@@ -276,6 +279,7 @@
       "xcode-select",
       "--reset"
     ],
+    "cwd": "[CACHE]/infra_internal_gclient_with_go/infra_internal/go/src/infra_internal",
     "infra_step": true,
     "name": "reset XCode"
   },

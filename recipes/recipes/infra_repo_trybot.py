@@ -91,7 +91,8 @@ def RunSteps(api, go_version_variant):
 
   # Some third_party go packages on OSX rely on cgo and thus a configured
   # clang toolchain.
-  with api.osx_sdk('mac'), co.go_env():
+  infra_go = co.infra_module_path(internal)
+  with api.context(cwd=infra_go), api.osx_sdk('mac'), co.go_env():
     api.python('go tests', co.path.join(patch_root, 'go', 'test.py'), venv=True)
 
     # Do slow *.cipd packaging tests only when touching build/* or DEPS. This

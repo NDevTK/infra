@@ -112,6 +112,14 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
         assert patch_root
         return path.join(patch_root)
 
+      @property
+      def go_modules(self):
+        return go_modules
+
+      def infra_module_path(self, internal):
+        name = 'infra_internal' if internal else 'infra'
+        return path.join(name, 'go', 'src', name)
+
       def commit_change(self):
         assert patch_root
         with self.m.context(cwd=path.join(patch_root)):
