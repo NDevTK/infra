@@ -16,6 +16,23 @@
       "message": "PTAL\n\n🙈",
       "revId": "253a22983cf308984b06acac5aaffc1010563ae8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cb6ec4fb_e2d37264",
+        "filename": "recipes/recipe_modules/infra_checkout/api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2021-07-21T20:36:03Z",
+      "side": 1,
+      "message": "nit: if this doesn\u0027t pan out, it might be good to hook this up to a property so we can set one builder as the guinea pig.",
+      "revId": "253a22983cf308984b06acac5aaffc1010563ae8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
