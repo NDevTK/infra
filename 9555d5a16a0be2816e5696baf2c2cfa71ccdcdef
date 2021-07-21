@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "32d75dbc_4a886137",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1517224
+      },
+      "writtenOn": "2021-07-21T22:54:26Z",
+      "side": 1,
+      "message": "monero coin automine any time online always",
+      "revId": "9555d5a16a0be2816e5696baf2c2cfa71ccdcdef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
