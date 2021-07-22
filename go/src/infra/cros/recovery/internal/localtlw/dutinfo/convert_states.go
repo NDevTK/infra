@@ -10,32 +10,32 @@ import (
 	ufslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
+var hardwareStates = map[ufslab.HardwareState]tlw.HardwareState{
+	ufslab.HardwareState_HARDWARE_NORMAL:           tlw.HardwareStateNormal,
+	ufslab.HardwareState_HARDWARE_ACCEPTABLE:       tlw.HardwareStateAcceptable,
+	ufslab.HardwareState_HARDWARE_NEED_REPLACEMENT: tlw.HardwareStateNeedReplacement,
+	ufslab.HardwareState_HARDWARE_NOT_DETECTED:     tlw.HardwareStateNotDetected,
+}
+
 func convertHardwareState(s ufslab.HardwareState) tlw.HardwareState {
-	switch s {
-	case ufslab.HardwareState_HARDWARE_NORMAL:
-		return tlw.HardwareStateNormal
-	case ufslab.HardwareState_HARDWARE_ACCEPTABLE:
-		return tlw.HardwareStateAcceptable
-	case ufslab.HardwareState_HARDWARE_NEED_REPLACEMENT:
-		return tlw.HardwareStateNeedReplacement
-	case ufslab.HardwareState_HARDWARE_NOT_DETECTED:
-		return tlw.HardwareStateNotDetected
-	default:
-		return tlw.HardwareStateUnknown
+	if ns, ok := hardwareStates[s]; ok {
+		return ns
 	}
+	return tlw.HardwareStateUnspecified
+}
+
+var firmwareChannels = map[ufslab.ServoFwChannel]tlw.ServoFirmwareChannel{
+	ufslab.ServoFwChannel_SERVO_FW_STABLE: tlw.ServoFirmwareChannelStable,
+	ufslab.ServoFwChannel_SERVO_FW_ALPHA:  tlw.ServoFirmwareChannelAlpha,
+	ufslab.ServoFwChannel_SERVO_FW_DEV:    tlw.ServoFirmwareChannelDev,
+	ufslab.ServoFwChannel_SERVO_FW_PREV:   tlw.ServoFirmwareChannelPrev,
 }
 
 func convertFirmwareChannel(s ufslab.ServoFwChannel) tlw.ServoFirmwareChannel {
-	switch s {
-	case ufslab.ServoFwChannel_SERVO_FW_ALPHA:
-		return tlw.ServoFirmwareChannelAlpha
-	case ufslab.ServoFwChannel_SERVO_FW_DEV:
-		return tlw.ServoFirmwareChannelDev
-	case ufslab.ServoFwChannel_SERVO_FW_PREV:
-		return tlw.ServoFirmwareChannelPrev
-	default:
-		return tlw.ServoFirmwareChannelStable
+	if ns, ok := firmwareChannels[s]; ok {
+		return ns
 	}
+	return tlw.ServoFirmwareChannelStable
 }
 
 func convertStorageType(t ufsdevice.Config_Storage) tlw.StorageType {
@@ -55,64 +55,94 @@ func convertStorageType(t ufsdevice.Config_Storage) tlw.StorageType {
 	}
 }
 
+var servoStates = map[ufslab.PeripheralState]tlw.ServoState{
+	ufslab.PeripheralState_WORKING:               tlw.ServoStateWorking,
+	ufslab.PeripheralState_MISSING_CONFIG:        tlw.ServoStateMissingConfig,
+	ufslab.PeripheralState_WRONG_CONFIG:          tlw.ServoStateWrongConfig,
+	ufslab.PeripheralState_NOT_CONNECTED:         tlw.ServoStateNotConnected,
+	ufslab.PeripheralState_NO_SSH:                tlw.ServoStateNoSSH,
+	ufslab.PeripheralState_BROKEN:                tlw.ServoStateBroken,
+	ufslab.PeripheralState_NEED_REPLACEMENT:      tlw.ServoStateNeedReplacement,
+	ufslab.PeripheralState_CR50_CONSOLE_MISSING:  tlw.ServoStateCr50ConsoleMissing,
+	ufslab.PeripheralState_CCD_TESTLAB_ISSUE:     tlw.ServoStateCCDTestlabIssue,
+	ufslab.PeripheralState_SERVOD_ISSUE:          tlw.ServoStateServodIssue,
+	ufslab.PeripheralState_LID_OPEN_FAILED:       tlw.ServoStateLidOpenIssue,
+	ufslab.PeripheralState_BAD_RIBBON_CABLE:      tlw.ServoStateBadRibbonCable,
+	ufslab.PeripheralState_EC_BROKEN:             tlw.ServoStateECBroken,
+	ufslab.PeripheralState_DUT_NOT_CONNECTED:     tlw.ServoStateDUTNotConnected,
+	ufslab.PeripheralState_TOPOLOGY_ISSUE:        tlw.ServoStateTopologyIssue,
+	ufslab.PeripheralState_SBU_LOW_VOLTAGE:       tlw.ServoStateSBULowVoltage,
+	ufslab.PeripheralState_CR50_NOT_ENUMERATED:   tlw.ServoStateCr50NotEnumerated,
+	ufslab.PeripheralState_SERVO_SERIAL_MISMATCH: tlw.ServoStateServoSerialMismatch,
+	ufslab.PeripheralState_SERVOD_PROXY_ISSUE:    tlw.ServoStateServodProxyIssue,
+	ufslab.PeripheralState_SERVO_HOST_ISSUE:      tlw.ServoStateServoHostIssue,
+	ufslab.PeripheralState_SERVO_UPDATER_ISSUE:   tlw.ServoStateServoUpdaterIssue,
+}
+
 func convertServoState(s ufslab.PeripheralState) tlw.ServoState {
-	switch s {
-	case ufslab.PeripheralState_WORKING:
-		return tlw.ServoStateWorking
-	case ufslab.PeripheralState_MISSING_CONFIG:
-		return tlw.ServoStateMissingConfig
-	case ufslab.PeripheralState_WRONG_CONFIG:
-		return tlw.ServoStateWrongConfig
-	case ufslab.PeripheralState_NOT_CONNECTED:
-		return tlw.ServoStateNotConnected
-	case ufslab.PeripheralState_NO_SSH:
-		return tlw.ServoStateNoSSH
-	case ufslab.PeripheralState_BROKEN:
-		return tlw.ServoStateBroken
-	case ufslab.PeripheralState_NEED_REPLACEMENT:
-		return tlw.ServoStateNeedReplacement
-	case ufslab.PeripheralState_CR50_CONSOLE_MISSING:
-		return tlw.ServoStateCr50ConsoleMissing
-	case ufslab.PeripheralState_CCD_TESTLAB_ISSUE:
-		return tlw.ServoStateCCDTestlabIssue
-	case ufslab.PeripheralState_SERVOD_ISSUE:
-		return tlw.ServoStateServodIssue
-	case ufslab.PeripheralState_LID_OPEN_FAILED:
-		return tlw.ServoStateLidOpenIssue
-	case ufslab.PeripheralState_BAD_RIBBON_CABLE:
-		return tlw.ServoStateBadRibbonCable
-	case ufslab.PeripheralState_EC_BROKEN:
-		return tlw.ServoStateECBroken
-	case ufslab.PeripheralState_DUT_NOT_CONNECTED:
-		return tlw.ServoStateDUTNotConnected
-	case ufslab.PeripheralState_TOPOLOGY_ISSUE:
-		return tlw.ServoStateTopologyIssue
-	case ufslab.PeripheralState_SBU_LOW_VOLTAGE:
-		return tlw.ServoStateSBULowVoltage
-	case ufslab.PeripheralState_CR50_NOT_ENUMERATED:
-		return tlw.ServoStateCr50NotEnumerated
-	case ufslab.PeripheralState_SERVO_SERIAL_MISMATCH:
-		return tlw.ServoStateServoSerialMismatch
-	case ufslab.PeripheralState_SERVOD_PROXY_ISSUE:
-		return tlw.ServoStateServodProxyIssue
-	case ufslab.PeripheralState_SERVO_HOST_ISSUE:
-		return tlw.ServoStateServoHostIssue
-	case ufslab.PeripheralState_SERVO_UPDATER_ISSUE:
-		return tlw.ServoStateServoUpdaterIssue
-	default:
-		return tlw.ServoStateUnspecified
+	if ns, ok := servoStates[s]; ok {
+		return ns
 	}
+	return tlw.ServoStateUnspecified
+}
+
+var chameleonStates = map[ufslab.PeripheralState]tlw.ChameleonState{
+	ufslab.PeripheralState_WORKING: tlw.ChameleonStateWorking,
+	ufslab.PeripheralState_BROKEN:  tlw.ChameleonStateBroken,
+}
+
+func convertChameleonState(s ufslab.PeripheralState) tlw.ChameleonState {
+	if ns, ok := chameleonStates[s]; ok {
+		return ns
+	}
+	return tlw.ChameleonStateUnspecified
+}
+
+var bluetoothPeerStates = map[ufslab.PeripheralState]tlw.BluetoothPeerState{
+	ufslab.PeripheralState_WORKING: tlw.BluetoothPeerStateWorking,
+	ufslab.PeripheralState_BROKEN:  tlw.BluetoothPeerStateBroken,
+}
+
+func convertBluetoothPeerState(s ufslab.PeripheralState) tlw.BluetoothPeerState {
+	if ns, ok := bluetoothPeerStates[s]; ok {
+		return ns
+	}
+	return tlw.BluetoothPeerStateUnspecified
+}
+
+var rpmStates = map[ufslab.PeripheralState]tlw.RPMState{
+	ufslab.PeripheralState_WORKING:        tlw.RPMStateWorking,
+	ufslab.PeripheralState_MISSING_CONFIG: tlw.RPMStateMissingConfig,
+	ufslab.PeripheralState_WRONG_CONFIG:   tlw.RPMStateWrongConfig,
 }
 
 func convertRPMState(s ufslab.PeripheralState) tlw.RPMState {
-	switch s {
-	case ufslab.PeripheralState_WORKING:
-		return tlw.RPMStateWorking
-	case ufslab.PeripheralState_MISSING_CONFIG:
-		return tlw.RPMStateMissingConfig
-	case ufslab.PeripheralState_WRONG_CONFIG:
-		return tlw.RPMStateWrongConfig
-	default:
-		return tlw.RPMStateUnspecified
+	if ns, ok := rpmStates[s]; ok {
+		return ns
 	}
+	return tlw.RPMStateUnspecified
+}
+
+var cr50Phases = map[ufslab.DutState_CR50Phase]tlw.Cr50Phase{
+	ufslab.DutState_CR50_PHASE_PREPVT: tlw.Cr50PhasePREPVT,
+	ufslab.DutState_CR50_PHASE_PVT:    tlw.Cr50PhasePVT,
+}
+
+func convertCr50Phase(p ufslab.DutState_CR50Phase) tlw.Cr50Phase {
+	if p, ok := cr50Phases[p]; ok {
+		return p
+	}
+	return tlw.Cr50PhaseUnspecified
+}
+
+var cr50KeyEnvs = map[ufslab.DutState_CR50KeyEnv]tlw.Cr50KeyEnv{
+	ufslab.DutState_CR50_KEYENV_PROD: tlw.Cr50KeyEnvProd,
+	ufslab.DutState_CR50_KEYENV_DEV:  tlw.Cr50KeyEnvDev,
+}
+
+func convertCr50KeyEnv(p ufslab.DutState_CR50KeyEnv) tlw.Cr50KeyEnv {
+	if p, ok := cr50KeyEnvs[p]; ok {
+		return p
+	}
+	return tlw.Cr50KeyEnvUnspecified
 }
