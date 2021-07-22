@@ -17,6 +17,7 @@ import (
 	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
 	ufslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsmake "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
 // ConvertDut converts USF data to local representation of Dut instance.
@@ -32,6 +33,20 @@ func ConvertDut(data *ufspb.ChromeOSDeviceData) (dut *tlw.Dut, err error) {
 		return adaptUfsLabstationToTLWDut(data)
 	}
 	return nil, errors.Reason("convert dut: unexpected case!").Err()
+}
+
+// CreateUpdateDutRequest creates request instance to update UFS.
+func CreateUpdateDutRequest(dutID string, dut *tlw.Dut) (req *ufsAPI.UpdateDutStateRequest, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = errors.Reason("update dut specs: %v\n%s", r, debug.Stack()).Err()
+		}
+	}()
+	return &ufsAPI.UpdateDutStateRequest{
+		DutState: getUFSDutComponentStateFromSpecs(dutID, dut),
+		DutMeta:  getUFSDutMetaFromSpecs(dutID, dut),
+		LabMeta:  getUFSLabMetaFromSpecs(dutID, dut),
+	}, nil
 }
 
 // GenerateServodParams generates servod command based on device info.
@@ -193,7 +208,7 @@ func createServoHost(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.ServoHost 
 			Type:            p.GetServo().GetServoType(),
 		},
 		SmartUsbhubPresent: p.GetSmartUsbhub(),
-		ServoTopology:      copyServoTopologyFromUFS(p.GetServo().GetServoTopology()),
+		ServoTopology:      convertServoTopologyFromUFS(p.GetServo().GetServoTopology()),
 	}
 }
 
@@ -204,7 +219,7 @@ func createChameleonHost(dutName string, ds *ufslab.DutState) *tlw.ChameleonHost
 	}
 }
 
-func copyServoTopologyItemFromUFS(i *ufslab.ServoTopologyItem) *tlw.ServoTopologyItem {
+func convertServoTopologyItemFromUFS(i *ufslab.ServoTopologyItem) *tlw.ServoTopologyItem {
 	if i == nil {
 		return nil
 	}
@@ -216,15 +231,42 @@ func copyServoTopologyItemFromUFS(i *ufslab.ServoTopologyItem) *tlw.ServoTopolog
 	}
 }
 
-func copyServoTopologyFromUFS(st *ufslab.ServoTopology) *tlw.ServoTopology {
+func convertServoTopologyFromUFS(st *ufslab.ServoTopology) *tlw.ServoTopology {
 	var t *tlw.ServoTopology
 	if st != nil {
 		var children []*tlw.ServoTopologyItem
 		for _, child := range st.GetChildren() {
-			children = append(children, copyServoTopologyItemFromUFS(child))
+			children = append(children, convertServoTopologyItemFromUFS(child))
 		}
 		t = &tlw.ServoTopology{
-			Main:     copyServoTopologyItemFromUFS(st.Main),
+			Main:     convertServoTopologyItemFromUFS(st.Main),
+			Children: children,
+		}
+	}
+	return t
+}
+
+func convertServoTopologyItemToUFS(i *tlw.ServoTopologyItem) *ufslab.ServoTopologyItem {
+	if i == nil {
+		return nil
+	}
+	return &ufslab.ServoTopologyItem{
+		Type:         i.Type,
+		SysfsProduct: i.SysfsProduct,
+		Serial:       i.Serial,
+		UsbHubPort:   i.UsbHubPort,
+	}
+}
+
+func convertServoTopologyToUFS(st *tlw.ServoTopology) *ufslab.ServoTopology {
+	var t *ufslab.ServoTopology
+	if st != nil {
+		var children []*ufslab.ServoTopologyItem
+		for _, child := range st.Children {
+			children = append(children, convertServoTopologyItemToUFS(child))
+		}
+		t = &ufslab.ServoTopology{
+			Main:     convertServoTopologyItemToUFS(st.Main),
 			Children: children,
 		}
 	}
@@ -249,4 +291,105 @@ func createDUTBluetooth(ds *ufslab.DutState) *tlw.DUTBluetooth {
 	return &tlw.DUTBluetooth{
 		State: convertHardwareState(ds.GetBluetoothState()),
 	}
+}
+
+func getUFSDutMetaFromSpecs(dutID string, dut *tlw.Dut) *ufspb.DutMeta {
+	dutMeta := &ufspb.DutMeta{
+		ChromeosDeviceId: dutID,
+		Hostname:         dut.Name,
+	}
+	if dut.SerialNumber != "" {
+		dutMeta.SerialNumber = dut.SerialNumber
+	}
+	if dut.Hwid != "" {
+		dutMeta.HwID = dut.Hwid
+	}
+	// blocked by b/184391605
+	// dutMeta.DeviceSku = specs.GetLabels().GetSku()
+	return dutMeta
+}
+
+func getUFSLabMetaFromSpecs(dutID string, dut *tlw.Dut) (labconfig *ufspb.LabMeta) {
+	labMeta := &ufspb.LabMeta{
+		ChromeosDeviceId: dutID,
+		Hostname:         dut.Name,
+	}
+	if sh := dut.ServoHost; sh != nil {
+		labMeta.ServoType = sh.Servo.Type
+		labMeta.SmartUsbhub = sh.SmartUsbhubPresent
+		labMeta.ServoTopology = convertServoTopologyToUFS(sh.ServoTopology)
+	}
+	return labMeta
+}
+
+func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutState {
+	state := &ufslab.DutState{
+		Id:       &ufslab.ChromeOSDeviceID{Value: dutID},
+		Hostname: dut.Name,
+	}
+	// Set all default state first and update later.
+	// This approach will update states even if any component was removed.
+	state.Servo = ufslab.PeripheralState_MISSING_CONFIG
+	state.ServoUsbState = ufslab.HardwareState_HARDWARE_UNKNOWN
+	state.RpmState = ufslab.PeripheralState_MISSING_CONFIG
+	state.StorageState = ufslab.HardwareState_HARDWARE_UNKNOWN
+	state.BatteryState = ufslab.HardwareState_HARDWARE_UNKNOWN
+	state.WifiState = ufslab.HardwareState_HARDWARE_UNKNOWN
+	state.BluetoothState = ufslab.HardwareState_HARDWARE_UNKNOWN
+
+	// Set right states.
+	if sh := dut.ServoHost; sh != nil {
+		for us, ls := range servoStates {
+			if ls == sh.Servo.State {
+				state.Servo = us
+			}
+		}
+		state.ServoUsbState = convertHardwareStateToUFS(sh.UsbkeyState)
+	}
+	if rpm := dut.RPMOutlet; rpm != nil {
+		for us, ls := range rpmStates {
+			if ls == rpm.State {
+				state.RpmState = us
+			}
+		}
+	}
+	for us, ls := range cr50Phases {
+		if ls == dut.Cr50Phase {
+			state.Cr50Phase = us
+		}
+	}
+	for us, ls := range cr50KeyEnvs {
+		if ls == dut.Cr50KeyEnv {
+			state.Cr50KeyEnv = us
+		}
+	}
+	if s := dut.Storage; s != nil {
+		state.StorageState = convertHardwareStateToUFS(s.State)
+	}
+	if b := dut.Battery; b != nil {
+		state.BatteryState = convertHardwareStateToUFS(b.State)
+	}
+	if w := dut.Wifi; w != nil {
+		state.WifiState = convertHardwareStateToUFS(w.State)
+	}
+	if b := dut.Bluetooth; b != nil {
+		state.BluetoothState = convertHardwareStateToUFS(b.State)
+	}
+	if ch := dut.ChameleonHost; ch != nil {
+		if ch.State == tlw.ChameleonStateWorking {
+			state.Chameleon = ufslab.PeripheralState_WORKING
+		}
+	}
+	state.WorkingBluetoothBtpeer = 0
+	for _, btph := range dut.BluetoothPeerHosts {
+		if btph.State == tlw.BluetoothPeerStateWorking {
+			state.WorkingBluetoothBtpeer += 1
+		}
+	}
+
+	// TODO(otabek@): get more data and convert.
+	// if p.GetAudioLoopbackDongle() {
+	// 	state.AudioLoopbackDongle = ufslab.PeripheralState_WORKING
+	// }
+	return state
 }
