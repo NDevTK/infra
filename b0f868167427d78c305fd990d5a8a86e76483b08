@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f2aed2c2_54900001",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/dutinfo/convert_states.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-22T23:50:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "59808ffc_655d5c0e",
+      "range": {
+        "startLine": 27,
+        "startChar": 5,
+        "endLine": 27,
+        "endChar": 12
+      },
+      "revId": "b0f868167427d78c305fd990d5a8a86e76483b08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "23ed145f_52f595c2",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-07-22T18:57:37Z",
       "side": 1,
       "message": "Please add a TODO where hardwareStates is defined to replace hardwareStates with a birectional map at some point.",
+      "range": {
+        "startLine": 28,
+        "startChar": 21,
+        "endLine": 28,
+        "endChar": 35
+      },
+      "revId": "b0f868167427d78c305fd990d5a8a86e76483b08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "27108dc6_be431abe",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/dutinfo/convert_states.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-22T23:50:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "23ed145f_52f595c2",
       "range": {
         "startLine": 28,
         "startChar": 21,
@@ -70,6 +118,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "919c5b64_19798737",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/dutinfo/dutinfo.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-22T23:50:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "72513e2f_0a10b4d2",
+      "range": {
+        "startLine": 38,
+        "startChar": 56,
+        "endLine": 38,
+        "endChar": 149
+      },
+      "revId": "b0f868167427d78c305fd990d5a8a86e76483b08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9fffc235_4d7f6925",
@@ -83,6 +155,30 @@
       "writtenOn": "2021-07-22T18:57:37Z",
       "side": 1,
       "message": "Should this function be named Convert... ?",
+      "range": {
+        "startLine": 247,
+        "startChar": 5,
+        "endLine": 247,
+        "endChar": 31
+      },
+      "revId": "b0f868167427d78c305fd990d5a8a86e76483b08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7c383f34_7135e9a2",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/dutinfo/dutinfo.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-22T23:50:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9fffc235_4d7f6925",
       "range": {
         "startLine": 247,
         "startChar": 5,
@@ -116,6 +212,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3165b8c9_b4353009",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/dutinfo/dutinfo.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-22T23:50:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "86bd5175_f339358b",
+      "range": {
+        "startLine": 259,
+        "startChar": 4,
+        "endLine": 259,
+        "endChar": 27
+      },
+      "revId": "b0f868167427d78c305fd990d5a8a86e76483b08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "606424d7_8ef8d4e7",
@@ -133,6 +253,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "92f262ea_34546966",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-22T23:50:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "606424d7_8ef8d4e7",
+      "revId": "b0f868167427d78c305fd990d5a8a86e76483b08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b360f9de_773cc181",
@@ -146,6 +284,24 @@
       "writtenOn": "2021-07-22T19:22:12Z",
       "side": 1,
       "message": "If there\u0027s an error here please record it.",
+      "revId": "b0f868167427d78c305fd990d5a8a86e76483b08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d4a6d463_87703af2",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-22T23:50:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b360f9de_773cc181",
       "revId": "b0f868167427d78c305fd990d5a8a86e76483b08",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
