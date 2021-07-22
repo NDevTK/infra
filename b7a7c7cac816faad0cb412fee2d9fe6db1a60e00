@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2ebd8e19_3db9b2e7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-22T03:08:06Z",
+      "side": 1,
+      "message": "+anushruth@ to check how we update the UFS and if we missed anything",
+      "revId": "b7a7c7cac816faad0cb412fee2d9fe6db1a60e00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
