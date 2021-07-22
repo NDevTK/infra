@@ -24,6 +24,15 @@ func convertHardwareState(s ufslab.HardwareState) tlw.HardwareState {
 	return tlw.HardwareStateUnspecified
 }
 
+func revertHardwareState(s tlw.HardwareState) ufslab.HardwareState {
+	for us, ls := range hardwareStates {
+		if ls == s {
+			return us
+		}
+	}
+	return ufslab.HardwareState_HARDWARE_UNKNOWN
+}
+
 var firmwareChannels = map[ufslab.ServoFwChannel]tlw.ServoFirmwareChannel{
 	ufslab.ServoFwChannel_SERVO_FW_STABLE: tlw.ServoFirmwareChannelStable,
 	ufslab.ServoFwChannel_SERVO_FW_ALPHA:  tlw.ServoFirmwareChannelAlpha,
