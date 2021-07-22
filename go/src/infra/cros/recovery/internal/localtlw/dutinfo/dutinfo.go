@@ -16,6 +16,7 @@ import (
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
 	ufslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsmake "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 )
 
 // ConvertDut converts USF data to local representation of Dut instance.
@@ -90,13 +91,13 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 	dc := data.GetDeviceConfig()
 	machine := data.GetMachine()
 	name := lc.GetName()
-	var battery *tlw.DutBattery
+	var battery *tlw.DUTBattery
 	supplyType := tlw.PowerSupplyTypeUnspecified
 	if dc != nil {
 		switch dc.GetPower() {
 		case ufsdevice.Config_POWER_SUPPLY_BATTERY:
 			supplyType = tlw.PowerSupplyTypeBattery
-			battery = &tlw.DutBattery{
+			battery = &tlw.DUTBattery{
 				State: convertHardwareState(ds.GetBatteryState()),
 			}
 		case ufsdevice.Config_POWER_SUPPLY_AC_ONLY:
@@ -116,9 +117,14 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		SetupType:       setup,
 		PowerSupplyType: supplyType,
 		Storage:         createDUTStorage(dc, ds),
+		Wifi:            createDUTWifi(data.GetManufacturingConfig(), ds),
+		Bluetooth:       createDUTBluetooth(ds),
 		Battery:         battery,
 		ServoHost:       createServoHost(p, ds),
+		ChameleonHost:   createChameleonHost(name, ds),
 		RPMOutlet:       createRPMOutlet(p.GetRpm(), ds),
+		Cr50Phase:       convertCr50Phase(ds.GetCr50Phase()),
+		Cr50KeyEnv:      convertCr50KeyEnv(ds.GetCr50KeyEnv()),
 	}
 	return d, nil
 }
@@ -140,6 +146,8 @@ func adaptUfsLabstationToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error
 		PowerSupplyType: tlw.PowerSupplyTypeACOnly,
 		Storage:         createDUTStorage(dc, ds),
 		RPMOutlet:       createRPMOutlet(l.GetRpm(), ds),
+		Cr50Phase:       convertCr50Phase(ds.GetCr50Phase()),
+		Cr50KeyEnv:      convertCr50KeyEnv(ds.GetCr50KeyEnv()),
 	}
 	return d, nil
 }
@@ -169,12 +177,62 @@ func createServoHost(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.ServoHost 
 			Type:            p.GetServo().GetServoType(),
 		},
 		SmartUsbhubPresent: p.GetSmartUsbhub(),
+		ServoTopology:      copyServoTopologyFromUFS(p.GetServo().GetServoTopology()),
 	}
 }
 
-func createDUTStorage(dc *ufsdevice.Config, ds *ufslab.DutState) *tlw.DutStorage {
-	return &tlw.DutStorage{
+func createChameleonHost(dutName string, ds *ufslab.DutState) *tlw.ChameleonHost {
+	return &tlw.ChameleonHost{
+		// Created based on how we generate the name on labpack
+		// https://source.corp.google.com/chromeos_public/src/third_party/labpack/files/client/cros/chameleon/chameleon.py;l=1108
+		Name:  fmt.Sprintf("%s-chameleon", dutName),
+		State: convertChameleonState(ds.GetChameleon()),
+	}
+}
+
+func copyServoTopologyItemFromUFS(i *ufslab.ServoTopologyItem) *tlw.ServoTopologyItem {
+	if i == nil {
+		return nil
+	}
+	return &tlw.ServoTopologyItem{
+		Type:         i.GetType(),
+		SysfsProduct: i.GetSysfsProduct(),
+		Serial:       i.GetSerial(),
+		UsbHubPort:   i.GetUsbHubPort(),
+	}
+}
+
+func copyServoTopologyFromUFS(st *ufslab.ServoTopology) *tlw.ServoTopology {
+	var t *tlw.ServoTopology
+	if st != nil {
+		var children []*tlw.ServoTopologyItem
+		for _, child := range st.GetChildren() {
+			children = append(children, copyServoTopologyItemFromUFS(child))
+		}
+		t = &tlw.ServoTopology{
+			Main:     copyServoTopologyItemFromUFS(st.Main),
+			Children: children,
+		}
+	}
+	return t
+}
+
+func createDUTStorage(dc *ufsdevice.Config, ds *ufslab.DutState) *tlw.DUTStorage {
+	return &tlw.DUTStorage{
 		Type:  convertStorageType(dc.GetStorage()),
 		State: convertHardwareState(ds.GetStorageState()),
+	}
+}
+
+func createDUTWifi(make *ufsmake.ManufacturingConfig, ds *ufslab.DutState) *tlw.DUTWifi {
+	return &tlw.DUTWifi{
+		State:    convertHardwareState(ds.GetWifiState()),
+		ChipName: make.GetWifiChip(),
+	}
+}
+
+func createDUTBluetooth(ds *ufslab.DutState) *tlw.DUTBluetooth {
+	return &tlw.DUTBluetooth{
+		State: convertHardwareState(ds.GetBluetoothState()),
 	}
 }
