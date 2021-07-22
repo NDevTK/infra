@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "404e09dc_10f6d72f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-22T17:56:50Z",
+      "side": 1,
+      "message": "good to merge with next CL and re-generate protos as you change comments",
+      "revId": "98c25290a102c0a3ccfdb6e3433aaf7153ee9474",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
