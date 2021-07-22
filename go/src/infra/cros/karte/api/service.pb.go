@@ -37,8 +37,6 @@ type CreateActionRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// An action, internally, contains a received_time timestamp that is
-	// managed by Karte. This field will be overwritten.
 	Action *Action `protobuf:"bytes,1,opt,name=action,proto3" json:"action,omitempty"`
 }
 
@@ -256,16 +254,15 @@ type ListObservationsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The maximum number of observations to return. The service may return fewer than
-	// this value.
-	// If unspecified, at most 50 observations will be returned.
+	// The maximum number of observations to return. The service may return fewer
+	// than this value. If unspecified, at most 50 observations will be returned.
 	// The maximum value is 1000; values above 1000 will be coerced to 1000.
 	PageSize int32 `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// A page token, received from a previous `ListObservations` call.
 	// Provide this to retrieve the subsequent page.
 	//
-	// When paginating, all other parameters provided to `ListObservations` must match
-	// the call that provided the page token.
+	// When paginating, all other parameters provided to `ListObservations` must
+	// match the call that provided the page token.
 	PageToken string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 }
 
