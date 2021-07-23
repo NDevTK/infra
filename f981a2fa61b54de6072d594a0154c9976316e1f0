@@ -1,0 +1,101 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9e93bbf3_f055a475",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/dutinfo/dutinfo.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 325,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-07-23T04:17:05Z",
+      "side": 1,
+      "message": "This function is large and somewhat complicated. Please document it.",
+      "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7e0f417e_53866500",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/dutinfo/dutinfo.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 331,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-07-23T04:17:05Z",
+      "side": 1,
+      "message": "For missing components, we are intentionally setting their state to unknown right?",
+      "range": {
+        "startLine": 331,
+        "startChar": 5,
+        "endLine": 331,
+        "endChar": 71
+      },
+      "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b6e410b7_ecca99ff",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/dutinfo/dutinfo.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 340,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-07-23T04:17:05Z",
+      "side": 1,
+      "message": "What makes a state right?",
+      "range": {
+        "startLine": 340,
+        "startChar": 4,
+        "endLine": 340,
+        "endChar": 21
+      },
+      "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4d919203_dfc84baf",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/dutinfo/dutinfo.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 391,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-07-23T04:17:05Z",
+      "side": 1,
+      "message": "Why is this code commented out?",
+      "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "68bf506a_25d71339",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-07-23T04:17:05Z",
+      "side": 1,
+      "message": "Consider renaming this function to logDUTInfo",
+      "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
