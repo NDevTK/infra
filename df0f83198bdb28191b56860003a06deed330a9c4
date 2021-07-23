@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9ba052eb_0df76b82",
+        "filename": "go/src/infra/cros/karte/api/action.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-07-23T20:29:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a97d5333_54a63f5b",
+      "range": {
+        "startLine": 58,
+        "startChar": 28,
+        "endLine": 58,
+        "endChar": 35
+      },
+      "revId": "df0f83198bdb28191b56860003a06deed330a9c4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a1071286_04a244b9",
