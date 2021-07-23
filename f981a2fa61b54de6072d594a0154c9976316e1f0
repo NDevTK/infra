@@ -224,6 +224,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3705dc2e_8fc2eb6e",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/dutinfo/dutinfo.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 391,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-23T19:35:58Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "e991a8da_8a1630a0",
+      "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4fc93e12_8eacabc0",
