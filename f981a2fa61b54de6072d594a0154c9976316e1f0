@@ -3,6 +3,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "aea12c1c_b1466b9b",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/dutinfo/dutinfo.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-07-23T05:39:12Z",
+      "side": 1,
+      "message": "Looks like convert functions spread out in convert_state.go and this file. Recommend put all convert function into convert_state.go(maybe rename to ufs_converter.go), and you can just simplify all convert/reverter name to something like \"convertServoTopologyItem\" and \"revertServoTopologyItem\" since we have the context the convert/revert is between twl/ufs.",
+      "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9e93bbf3_f055a475",
         "filename": "go/src/infra/cros/recovery/internal/localtlw/dutinfo/dutinfo.go",
         "patchSetId": 3
@@ -66,6 +83,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6f03f8f8_eb8a9b80",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/dutinfo/dutinfo.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 340,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-07-23T05:39:12Z",
+      "side": 1,
+      "message": "The comment is unclear, I guess you means \"Convert TLW state back to UFS state\" here.",
+      "parentUuid": "b6e410b7_ecca99ff",
+      "range": {
+        "startLine": 340,
+        "startChar": 4,
+        "endLine": 340,
+        "endChar": 21
+      },
+      "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "4d919203_dfc84baf",
         "filename": "go/src/infra/cros/recovery/internal/localtlw/dutinfo/dutinfo.go",
         "patchSetId": 3
@@ -83,6 +124,52 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "4fc93e12_8eacabc0",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-07-23T05:39:12Z",
+      "side": 1,
+      "message": "DUT info from inventory",
+      "range": {
+        "startLine": 63,
+        "startChar": 36,
+        "endLine": 63,
+        "endChar": 48
+      },
+      "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0aabc26c_70f6fd7b",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-07-23T05:39:12Z",
+      "side": 1,
+      "message": "updated DUT info",
+      "range": {
+        "startLine": 70,
+        "startChar": 36,
+        "endLine": 70,
+        "endChar": 47
+      },
+      "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "68bf506a_25d71339",
         "filename": "go/src/infra/cros/recovery/recovery.go",
         "patchSetId": 3
@@ -94,6 +181,24 @@
       "writtenOn": "2021-07-23T04:17:05Z",
       "side": 1,
       "message": "Consider renaming this function to logDUTInfo",
+      "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5dae5395_545249eb",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-07-23T05:39:12Z",
+      "side": 1,
+      "message": "+1",
+      "parentUuid": "68bf506a_25d71339",
       "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
