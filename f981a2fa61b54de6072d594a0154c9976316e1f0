@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3b77d5c8_37976721",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/dutinfo/dutinfo.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-23T17:27:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aea12c1c_b1466b9b",
+      "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9e93bbf3_f055a475",
@@ -35,6 +53,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fc00fd54_577e2969",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/dutinfo/dutinfo.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 325,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-23T17:27:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9e93bbf3_f055a475",
+      "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7e0f417e_53866500",
@@ -48,6 +84,30 @@
       "writtenOn": "2021-07-23T04:17:05Z",
       "side": 1,
       "message": "For missing components, we are intentionally setting their state to unknown right?",
+      "range": {
+        "startLine": 331,
+        "startChar": 5,
+        "endLine": 331,
+        "endChar": 71
+      },
+      "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "77992bac_5e8f1a19",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/dutinfo/dutinfo.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 331,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-23T17:27:47Z",
+      "side": 1,
+      "message": "right",
+      "parentUuid": "7e0f417e_53866500",
       "range": {
         "startLine": 331,
         "startChar": 5,
@@ -105,6 +165,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e0b2e869_8ea7fc1a",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/dutinfo/dutinfo.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 340,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-23T17:27:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6f03f8f8_eb8a9b80",
+      "range": {
+        "startLine": 340,
+        "startChar": 4,
+        "endLine": 340,
+        "endChar": 21
+      },
+      "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4d919203_dfc84baf",
@@ -118,6 +202,24 @@
       "writtenOn": "2021-07-23T04:17:05Z",
       "side": 1,
       "message": "Why is this code commented out?",
+      "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e991a8da_8a1630a0",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/dutinfo/dutinfo.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 391,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-23T17:27:47Z",
+      "side": 1,
+      "message": "i am looking to the what does this label means. For now look lik ethis is part of Chameleon so probably it will inside ChameleonHost still looking to collect proper info and set good structure for future re-use.\n\nWill fix by further CLs",
+      "parentUuid": "4d919203_dfc84baf",
       "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -145,6 +247,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a753fb67_8876c462",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-23T17:27:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4fc93e12_8eacabc0",
+      "range": {
+        "startLine": 63,
+        "startChar": 36,
+        "endLine": 63,
+        "endChar": 48
+      },
+      "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0aabc26c_70f6fd7b",
@@ -158,6 +284,30 @@
       "writtenOn": "2021-07-23T05:39:12Z",
       "side": 1,
       "message": "updated DUT info",
+      "range": {
+        "startLine": 70,
+        "startChar": 36,
+        "endLine": 70,
+        "endChar": 47
+      },
+      "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8a61d5e8_d1247800",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-23T17:27:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0aabc26c_70f6fd7b",
       "range": {
         "startLine": 70,
         "startChar": 36,
@@ -199,6 +349,24 @@
       "side": 1,
       "message": "+1",
       "parentUuid": "68bf506a_25d71339",
+      "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9dff369c_007e078e",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-23T17:27:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5dae5395_545249eb",
       "revId": "f981a2fa61b54de6072d594a0154c9976316e1f0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
