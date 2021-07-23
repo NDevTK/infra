@@ -16,6 +16,24 @@
       "message": "Thanks for apply fix move all convert func here. nit: can we also make their name consistent? Either all function with ToUFS and FromUFS, or just convertXXXX and revertXXXX where you can put a comment on top of the file explains convert is ufs -\u003e tlw while revert is tlw -\u003e ufs.",
       "revId": "0fa63307873f11bb6113d0bbb2eddb666674df9e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5ee94844_9d156ad1",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/dutinfo/ufs_converters.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-23T21:02:22Z",
+      "side": 1,
+      "message": "I like idea. Will apply this with later CLs",
+      "parentUuid": "b4aaf11f_fb2d7fe1",
+      "revId": "0fa63307873f11bb6113d0bbb2eddb666674df9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
