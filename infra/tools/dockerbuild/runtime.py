@@ -183,7 +183,7 @@ class System(object):
           stderr=subprocess.STDOUT, stdin=_devnull, retcodes=None):
     # Fold environment augmentations into the default system environment.
     cwd = cwd or os.getcwd()
-    util.LOGGER.debug('Running command: %s (env=%s; cwd=%s)', args, env, cwd)
+    util.LOGGER.info('Running command: %s (env=%s; cwd=%s)', args, env, cwd)
 
     kwargs = {
         'cwd': cwd,
