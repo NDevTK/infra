@@ -188,6 +188,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f672f5aa_f72f5789",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-28T20:35:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4dfd30b1_f2439a32",
+      "range": {
+        "startLine": 96,
+        "startChar": 46,
+        "endLine": 96,
+        "endChar": 53
+      },
+      "revId": "e704724be5529d710a5dc8e33750be0a2de42f72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "44771340_d57fd8cb",
@@ -211,6 +235,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "792a77e0_34672c04",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-28T20:35:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "44771340_d57fd8cb",
+      "range": {
+        "startLine": 120,
+        "startChar": 5,
+        "endLine": 120,
+        "endChar": 16
+      },
+      "revId": "e704724be5529d710a5dc8e33750be0a2de42f72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ef210f9d_257dfb32",
@@ -224,6 +272,30 @@
       "writtenOn": "2021-07-28T16:47:56Z",
       "side": 1,
       "message": "Consider documenting this function.",
+      "range": {
+        "startLine": 139,
+        "startChar": 5,
+        "endLine": 139,
+        "endChar": 17
+      },
+      "revId": "e704724be5529d710a5dc8e33750be0a2de42f72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bccbe636_a9bd1e08",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-28T20:35:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ef210f9d_257dfb32",
       "range": {
         "startLine": 139,
         "startChar": 5,
