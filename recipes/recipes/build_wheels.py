@@ -108,10 +108,10 @@ def RunSteps(api, platforms, dry_run, rebuild):
           if wheel not in old_wheels:
             spec = wheel['spec']
 
-            # Compute the tag in the same way as in dockerbuild's Spec.tag
+            # Compute the tag in the same way as in dockerbuild's Spec.tag,
+            # except that the patch version has already been incorporated
+            # into the version tag.
             tag = '%s-%s' % (spec['name'], spec['version'])
-            if spec['patch_version']:
-              tag += '.' + spec['patch_version']
             if spec['pyversions']:
               tag += '-' + '.'.join(sorted(spec['pyversions']))
             wheels.append(tag)
