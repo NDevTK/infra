@@ -8,6 +8,7 @@ package recovery
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 
 	"go.chromium.org/luci/common/errors"
@@ -36,56 +37,143 @@ func Run(ctx context.Context, args *RunArgs) error {
 		args.Logger = logger.NewLogger()
 	}
 	ctx = log.WithLogger(ctx, args.Logger)
+	if args.Stepper == nil {
+		args.Stepper = logger.NewStepper(args.Logger)
+	}
 	if !args.EnableRecovery {
 		log.Info(ctx, "Recovery actions is blocker by run arguments.")
 	}
 	log.Info(ctx, "Run recovery for %q", args.UnitName)
-	// Get resources involved.
-	resources, err := args.Access.ListResourcesForUnit(ctx, args.UnitName)
+	// Get involved resources.
+	resources, err := involvedResources(ctx, args)
 	if err != nil {
 		return errors.Annotate(err, "run recovery %q", args.UnitName).Err()
 	}
-	config, err := loader.LoadConfiguration(ctx, DefaultConfig())
+	// Load Configuration.
+	config, err := loadConfiguration(ctx, args)
 	if err != nil {
 		return errors.Annotate(err, "run recovery %q", args.UnitName).Err()
-	}
-	if len(config.GetPlans()) == 0 {
-		return errors.Reason("run recovery %q: no plans provided by configuration", args.UnitName).Err()
 	}
 	// Keep track of fail to run resources.
 	var errs []error
 	lastResourceIndex := len(resources) - 1
 	for ir, resource := range resources {
 		log.Info(ctx, "Resource %q: started", resource)
-		dut, err := args.Access.GetDut(ctx, resource)
+		dut, err := readResource(ctx, resource, args)
 		if err != nil {
-			return errors.Annotate(err, "run recovery %q", resource).Err()
+			return errors.Annotate(err, "run resource %q", resource).Err()
 		}
-		logDUTInfo(ctx, resource, dut, "DUT info from inventory")
-		args.Logger.GetIndenter().Increment()
-		if err := runDUTPlans(ctx, dut, config, args); err != nil {
+		if err := runResource(ctx, dut, resource, args, config); err != nil {
 			errs = append(errs, err)
-			log.Debug(ctx, "Resource %q: finished with error: %s.", resource, err)
-		} else {
-			log.Info(ctx, "Resource %q: finished successfully.", resource)
 		}
-		logDUTInfo(ctx, resource, dut, "updated DUT info")
-		if args.EnableUpdateInventory {
-			log.Info(ctx, "Resource %q: starting update DUT in inventory.", resource)
-			// Update DUT info in inventory in any case. When fail and when it passed
-			if err := args.Access.UpdateDut(ctx, dut); err != nil {
-				return errors.Annotate(err, "run recovery %q", resource).Err()
-			}
-		} else {
-			log.Info(ctx, "Resource %q: update inventory is disabled.", resource)
+		if err := updateInventory(ctx, dut, resource, args); err != nil {
+			return errors.Annotate(err, "run resource %q", resource).Err()
 		}
-		args.Logger.GetIndenter().Decrement()
 		if ir != lastResourceIndex {
 			log.Debug(ctx, "Continue to the next resource.")
 		}
 	}
 	if len(errs) > 0 {
 		return errors.Annotate(errors.MultiError(errs), "run recovery").Err()
+	}
+	return nil
+}
+
+// involvedResources received list of target resources.
+func involvedResources(ctx context.Context, args *RunArgs) (resources []string, err error) {
+	if args.Stepper != nil {
+		step := args.Stepper.StartStep(ctx, "Get involved resources")
+		defer step.Close(ctx, err)
+	}
+	if args.Logger != nil {
+		args.Logger.GetIndenter().Increment()
+		defer args.Logger.GetIndenter().Decrement()
+	}
+	resources, err = args.Access.ListResourcesForUnit(ctx, args.UnitName)
+	return resources, errors.Annotate(err, "involved resources").Err()
+}
+
+// loadConfiguration loads configurations and verify that configuration has at least one plan.
+func loadConfiguration(ctx context.Context, args *RunArgs) (config *planpb.Configuration, err error) {
+	if args.Stepper != nil {
+		step := args.Stepper.StartStep(ctx, "Load Configuration")
+		defer step.Close(ctx, err)
+	}
+	if args.Logger != nil {
+		args.Logger.GetIndenter().Increment()
+		defer args.Logger.GetIndenter().Decrement()
+	}
+	cr := args.ConfigReader
+	if cr == nil {
+		// Get default configuration if not provided.
+		cr = DefaultConfig()
+	}
+	if config, err = loader.LoadConfiguration(ctx, cr); err != nil {
+		return nil, errors.Annotate(err, "load configuration").Err()
+	}
+	if len(config.GetPlans()) == 0 {
+		return nil, errors.Reason("load configuration: no plans provided by configuration").Err()
+	}
+	return config, nil
+}
+
+func runResource(ctx context.Context, dut *tlw.Dut, resource string, args *RunArgs, config *planpb.Configuration) (err error) {
+	if args.Stepper != nil {
+		step := args.Stepper.StartStep(ctx, fmt.Sprintf("Run resource %q", resource))
+		defer step.Close(ctx, err)
+	}
+	if args.Logger != nil {
+		args.Logger.GetIndenter().Increment()
+		defer args.Logger.GetIndenter().Decrement()
+	}
+	log.Info(ctx, "Resource %q: starting...", resource)
+	err = runDUTPlans(ctx, dut, config, args)
+	if err != nil {
+		log.Debug(ctx, "Resource %q: finished with error: %s.", resource, err)
+	} else {
+		log.Info(ctx, "Resource %q: finished successfully.", resource)
+	}
+	return err
+}
+
+func readResource(ctx context.Context, resource string, args *RunArgs) (dut *tlw.Dut, err error) {
+	if args.Stepper != nil {
+		step := args.Stepper.StartStep(ctx, fmt.Sprintf("Read %s from inventory", resource))
+		defer step.Close(ctx, err)
+	}
+	if args.Logger != nil {
+		args.Logger.GetIndenter().Increment()
+		defer args.Logger.GetIndenter().Decrement()
+	}
+	dut, err = args.Access.GetDut(ctx, resource)
+	if err != nil {
+		return nil, errors.Annotate(err, "read resource %q", resource).Err()
+	}
+	logDUTInfo(ctx, resource, dut, "DUT info from inventory")
+	return dut, nil
+}
+
+// updateInventory updates updated DUT info back to inventory.
+//
+// Skip update is update is not specified.
+func updateInventory(ctx context.Context, dut *tlw.Dut, resource string, args *RunArgs) (err error) {
+	if args.Stepper != nil {
+		step := args.Stepper.StartStep(ctx, fmt.Sprintf("Update %s in inventory", resource))
+		defer step.Close(ctx, err)
+	}
+	if args.Logger != nil {
+		args.Logger.GetIndenter().Increment()
+		defer args.Logger.GetIndenter().Decrement()
+	}
+	logDUTInfo(ctx, resource, dut, "updated DUT info")
+	if args.EnableUpdateInventory {
+		log.Info(ctx, "Update inventory %q: starting...", resource)
+		// Update DUT info in inventory in any case. When fail and when it passed
+		if err := args.Access.UpdateDut(ctx, dut); err != nil {
+			return errors.Annotate(err, "update inventory").Err()
+		}
+	} else {
+		log.Info(ctx, "Update inventory %q: disabled.", resource)
 	}
 	return nil
 }
@@ -192,6 +280,8 @@ type RunArgs struct {
 	ConfigReader io.Reader
 	// Logger prints message to the logs.
 	Logger logger.Logger
+	// Stepper provide option to report steps info.
+	Stepper logger.Stepper
 	// TaskName used to drive the recovery process.
 	TaskName TaskName
 	// EnableRecovery tells if recovery actions are enabled.
