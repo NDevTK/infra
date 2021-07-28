@@ -3,6 +3,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1d8b0e9f_294c49d1",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-07-28T16:48:42Z",
+      "side": 1,
+      "message": "Please include a little bit more detail here about what the stepper does.",
+      "revId": "e704724be5529d710a5dc8e33750be0a2de42f72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "89aaa1f0_4418863e",
         "filename": "go/src/infra/cros/recovery/logger/stepper.go",
         "patchSetId": 1
