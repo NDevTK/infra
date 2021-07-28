@@ -1,0 +1,153 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8270ea4f_596bde52",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-28T18:07:19Z",
+      "side": 1,
+      "message": "not done yet",
+      "revId": "cf014de5458896848881fd6d313578e2b5fabb0b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "205743b4_30a9707b",
+        "filename": "go/src/infra/cros/karte/api/action.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-28T18:07:19Z",
+      "side": 1,
+      "message": "whay do we need it? cannot be just abservation or track by action kind?",
+      "range": {
+        "startLine": 76,
+        "startChar": 18,
+        "endLine": 76,
+        "endChar": 32
+      },
+      "revId": "cf014de5458896848881fd6d313578e2b5fabb0b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2671b4fc_cf92dac8",
+        "filename": "go/src/infra/cros/karte/api/searchquery.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-28T18:07:19Z",
+      "side": 1,
+      "message": "i think is better put both values here?",
+      "range": {
+        "startLine": 21,
+        "startChar": 2,
+        "endLine": 21,
+        "endChar": 31
+      },
+      "revId": "cf014de5458896848881fd6d313578e2b5fabb0b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ccfb251a_6711fc39",
+        "filename": "go/src/infra/cros/karte/api/searchquery.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-28T18:07:19Z",
+      "side": 1,
+      "message": "to upper question",
+      "range": {
+        "startLine": 44,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 28
+      },
+      "revId": "cf014de5458896848881fd6d313578e2b5fabb0b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "49d206d6_c9a5b540",
+        "filename": "go/src/infra/cros/karte/api/searchquery.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-28T18:07:19Z",
+      "side": 1,
+      "message": "maybe just status to dirrect compare or list of status?",
+      "range": {
+        "startLine": 47,
+        "startChar": 7,
+        "endLine": 47,
+        "endChar": 28
+      },
+      "revId": "cf014de5458896848881fd6d313578e2b5fabb0b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "efd289b9_44870efb",
+        "filename": "go/src/infra/cros/karte/api/searchquery.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-28T18:07:19Z",
+      "side": 1,
+      "message": "combine with others statuses",
+      "range": {
+        "startLine": 49,
+        "startChar": 2,
+        "endLine": 51,
+        "endChar": 19
+      },
+      "revId": "cf014de5458896848881fd6d313578e2b5fabb0b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "730eedaa_8a054ce1",
+        "filename": "go/src/infra/cros/karte/api/searchquery.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-28T18:07:19Z",
+      "side": 1,
+      "message": "please review https://google.aip.dev/145",
+      "revId": "cf014de5458896848881fd6d313578e2b5fabb0b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
