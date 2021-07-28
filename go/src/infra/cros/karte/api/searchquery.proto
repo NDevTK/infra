@@ -1,0 +1,101 @@
+// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromeos.karte;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "infra/cros/karte/api;kartepb";
+
+// An ActionSearchQuery contains all possible criteria that can
+// be used to search for actions.
+message ActionSearchQuery {
+  // The action filter is a collection of all search criteria that are not
+  // intrinsically ordered.
+  ActionCategoricalFilter categorical_filter = 1;
+  // The minimum stop time, if provided, is a lower bound on the stop time of
+  // actions.
+  google.protobuf.Timestamp minimum_stop_time = 2;
+  // The maximum stop time, if provided, is an upper bound on the stop time of
+  // actions.
+  google.protobuf.Timestamp maximum_stop_time = 3;
+}
+
+// An ObservationSearchQuery contains all possible criteria that can
+// be used to search for observations.
+message ObservationSearchQuery {
+  // The observation filter is a collection of all search criteria for
+  // observations that are not intrinsically ordered.
+  ObservationCategoricalFilter categorical_filter = 1;
+  // The value number filter contains maximum and minimum times for values, if
+  // any exist.
+  ValueNumberOrderableObservationFilter value_number_filter = 2;
+}
+
+// An ActionCategoricalFilter contains search criteria that are categorical,
+// i.e. they are not considered intrinsically ordered.
+message ActionCategoricalFilter {
+  // The unique name of the action.
+  string name = 1;
+  // The kind of the action. This is a course-grained classification.
+  string kind = 2;
+  // The ID of the associated swarming task.
+  string swarming_task_id = 3;
+  // The component that failed and is "blamed" by the event.
+  string fail_component = 4;
+  // Whether to include actions with an unspecified status.
+  bool is_status_unspecified = 5;
+  // Whether to include successful actions.
+  bool is_success = 6;
+  // Whether to include failed actions.
+  bool is_fail = 7;
+}
+
+// An ObservationCategoricalFilter contains search criteria that are
+// categorical, i.e. they are not considered intrinsically ordered.
+message ObservationCategoricalFilter {
+  // The unique name of the observation.
+  string name = 1;
+  // The name of the associated action.
+  string action_name = 2;
+  // The kind of action.
+  string action_kind = 3;
+  // The swarming task ID of the associated action.
+  string swarming_task_id = 4;
+  // The high-level component that failed.
+  string fail_component = 5;
+  // Whether to include actions with an unspecified status.
+  bool is_action_status_unspecified = 6;
+  // Whether to include successful actions.
+  bool is_action_success = 7;
+  // Whether to include failed actions.
+  bool is_action_fail = 8;
+  // This is the kind of measurement (e.g. "disk percentage")
+  string metric_kind = 9;
+  // This is a string measurement.
+  string value_string = 10;
+}
+
+message ValueNumberOrderableObservationFilter {
+  // The minimum stop time, if provided, is a lower bound on the stop time of
+  // actions.
+  google.protobuf.Timestamp minimum_stop_time = 1;
+  // The maximum stop time, if provided, is an upper bound on the stop time of
+  // actions.
+  google.protobuf.Timestamp maximum_stop_time = 2;
+  // The minimum value number, if provided, is a lower bound on the measurement
+  // value.
+  double minimum_value_number = 3;
+  // If minimum_value_is_zero is set to true, then an explicit minimum of zero
+  // is intended.
+  bool minimum_value_is_zero = 4;
+  // The maximum value number, if provided, is an upper bound bound on the
+  // measurement value.
+  double maximum_value_number = 5;
+  // If maximum_value_is_zero is set to true, then an explicit maximum of zero
+  // is intended.
+  bool maximum_value_is_zero = 6;
+}
