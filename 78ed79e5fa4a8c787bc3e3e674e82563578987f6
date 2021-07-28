@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "205ffafe_a85eca4e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-07-28T20:58:17Z",
+      "side": 1,
+      "message": "Discuss filter approach offline",
+      "revId": "78ed79e5fa4a8c787bc3e3e674e82563578987f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "35ff92e7_4cfbf1b1",
+        "filename": "go/src/infra/cros/karte/api/action.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-07-28T20:58:17Z",
+      "side": 1,
+      "message": "I think component is too specific, it\u0027s better to have a failure_type or something (failure_tag?).",
+      "revId": "78ed79e5fa4a8c787bc3e3e674e82563578987f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c3dddb95_e0ff9edd",
+        "filename": "go/src/infra/cros/karte/api/service.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-07-28T20:58:17Z",
+      "side": 1,
+      "message": "consistent capitalization",
+      "range": {
+        "startLine": 82,
+        "startChar": 5,
+        "endLine": 82,
+        "endChar": 7
+      },
+      "revId": "78ed79e5fa4a8c787bc3e3e674e82563578987f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
