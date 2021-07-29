@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6b6850ed_d2006cb9",
+        "filename": "go/src/infra/cros/recovery/logger/stepper.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-07-29T00:39:26Z",
+      "side": 1,
+      "message": "Stepper itself doesn\u0027t given enough useful information, recommend rename to something like StepHandler.",
+      "revId": "fb460ed9af069ee7b3afbbff726afca638dd17ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6e175839_3575e1e0",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-07-29T00:39:26Z",
+      "side": 1,
+      "message": "Do you mean retrieve a list of target resources?",
+      "revId": "fb460ed9af069ee7b3afbbff726afca638dd17ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "50a39c5a_d52abe2d",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-07-29T00:39:26Z",
+      "side": 1,
+      "message": "We don\u0027t run a resource here right? We run a plan against a resource, so runPlanOnResource, or just runPlan.",
+      "revId": "fb460ed9af069ee7b3afbbff726afca638dd17ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
