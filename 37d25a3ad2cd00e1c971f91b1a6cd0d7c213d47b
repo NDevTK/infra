@@ -16,6 +16,24 @@
       "message": "Can you add a test for this?",
       "revId": "37d25a3ad2cd00e1c971f91b1a6cd0d7c213d47b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e6c105b4_d12c406b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2021-07-29T02:10:38Z",
+      "side": 1,
+      "message": "👍",
+      "parentUuid": "b0b05662_108a3dc9",
+      "revId": "37d25a3ad2cd00e1c971f91b1a6cd0d7c213d47b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
