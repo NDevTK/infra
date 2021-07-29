@@ -54,6 +54,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "01f653f5_2cf606bc",
+        "filename": "go/src/infra/cros/recovery/logger/stepper.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-29T06:23:33Z",
+      "side": 1,
+      "message": "I see your point. Done.",
+      "parentUuid": "d2c5dc4d_2e88c927",
+      "revId": "fb460ed9af069ee7b3afbbff726afca638dd17ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6e175839_3575e1e0",
