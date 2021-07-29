@@ -9,7 +9,7 @@ import {assert} from 'chai';
 
 import SelectMenu from './SelectMenu.tsx';
 
-describe.only('SelectMenu', () => {
+describe('SelectMenu', () => {
   it('renders', async () => {
     const {container} = render(<SelectMenu />);
 
