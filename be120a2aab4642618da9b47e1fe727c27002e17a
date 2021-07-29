@@ -16,6 +16,24 @@
       "message": "Why do we need a simpleStepper?",
       "revId": "be120a2aab4642618da9b47e1fe727c27002e17a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4ab5f7a6_ea9dfd8e",
+        "filename": "go/src/infra/cros/recovery/logger/stepper.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-29T05:24:25Z",
+      "side": 1,
+      "message": "that is local implementation as default stepper.\n\nDo you mean we do need it and just keep null when it is not provided?",
+      "parentUuid": "1f1d64d5_4a1b0d47",
+      "revId": "be120a2aab4642618da9b47e1fe727c27002e17a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
