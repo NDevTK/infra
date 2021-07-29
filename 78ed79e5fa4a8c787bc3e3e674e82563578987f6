@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c2716da8_4523643b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-07-29T16:36:13Z",
+      "side": 1,
+      "message": "I am holding this CL in reserve in case there\u0027s a blocker for using the filter-based approach.",
+      "revId": "78ed79e5fa4a8c787bc3e3e674e82563578987f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "35ff92e7_4cfbf1b1",
