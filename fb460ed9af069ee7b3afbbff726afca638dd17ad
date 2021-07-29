@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "5a01094f_57f99f19",
+        "filename": "go/src/infra/cros/recovery/logger/stepper.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-29T03:15:05Z",
+      "side": 1,
+      "message": "I followed https://golang.org/doc/effective_go#interface-names",
+      "parentUuid": "6b6850ed_d2006cb9",
+      "revId": "fb460ed9af069ee7b3afbbff726afca638dd17ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6e175839_3575e1e0",
         "filename": "go/src/infra/cros/recovery/recovery.go",
         "patchSetId": 4
@@ -31,6 +49,24 @@
       "writtenOn": "2021-07-29T00:39:26Z",
       "side": 1,
       "message": "Do you mean retrieve a list of target resources?",
+      "revId": "fb460ed9af069ee7b3afbbff726afca638dd17ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c78ed339_6aacadc0",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-29T03:15:05Z",
+      "side": 1,
+      "message": "yes, thank for better word.",
+      "parentUuid": "6e175839_3575e1e0",
       "revId": "fb460ed9af069ee7b3afbbff726afca638dd17ad",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -48,6 +84,24 @@
       "writtenOn": "2021-07-29T00:39:26Z",
       "side": 1,
       "message": "We don\u0027t run a resource here right? We run a plan against a resource, so runPlanOnResource, or just runPlan.",
+      "revId": "fb460ed9af069ee7b3afbbff726afca638dd17ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "99478413_8a6ffc9e",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-07-29T03:15:05Z",
+      "side": 1,
+      "message": "right. i do DUT. Made changes to fix to the picture. thank you for point it.",
+      "parentUuid": "50a39c5a_d52abe2d",
       "revId": "fb460ed9af069ee7b3afbbff726afca638dd17ad",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
