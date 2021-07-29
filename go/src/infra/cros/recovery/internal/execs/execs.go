@@ -30,6 +30,8 @@ type RunArgs struct {
 	Access       tlw.Access
 	// Logger prints message to the logs.
 	Logger logger.Logger
+	// Stepper provide option to report steps info.
+	Stepper logger.Stepper
 	// EnableRecovery tells if recovery actions are enabled.
 	EnableRecovery bool
 }
