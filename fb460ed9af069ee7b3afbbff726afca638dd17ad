@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "d2c5dc4d_2e88c927",
+        "filename": "go/src/infra/cros/recovery/logger/stepper.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-07-29T05:40:13Z",
+      "side": 1,
+      "message": "Yea, in the links example: Reader, Writer, Formatter are more common so themselves containing enough information to describe the interface. The example also mentioned CloseNotifier which I think is similar to StepHandler here?\n\nThough I think this is a nit, so you can do the decision here.",
+      "parentUuid": "5a01094f_57f99f19",
+      "revId": "fb460ed9af069ee7b3afbbff726afca638dd17ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6e175839_3575e1e0",
         "filename": "go/src/infra/cros/recovery/recovery.go",
         "patchSetId": 4
