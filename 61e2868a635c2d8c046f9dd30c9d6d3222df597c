@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c7fb99d4_96cbf602",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/DetailsStep.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1510787
+      },
+      "writtenOn": "2021-07-30T18:29:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bd0750d3_60565336",
+      "range": {
+        "startLine": 6,
+        "startChar": 8,
+        "endLine": 6,
+        "endChar": 9
+      },
+      "revId": "61e2868a635c2d8c046f9dd30c9d6d3222df597c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a0e7b2ee_5b89c809",
@@ -54,6 +78,30 @@
       "writtenOn": "2021-07-29T22:30:41Z",
       "side": 1,
       "message": "Nit: Remove trailing whitespace. \n\nYou can configure VS Code to remove trailing spaces for you automatically. Here\u0027s a link on how to do it: \n\nhttps://stackoverflow.com/questions/30884131/remove-trailing-spaces-automatically-or-with-a-shortcut",
+      "range": {
+        "startLine": 11,
+        "startChar": 48,
+        "endLine": 11,
+        "endChar": 49
+      },
+      "revId": "61e2868a635c2d8c046f9dd30c9d6d3222df597c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "70559968_80911029",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/DetailsStep.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1510787
+      },
+      "writtenOn": "2021-07-30T18:29:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a0e7b2ee_5b89c809",
       "range": {
         "startLine": 11,
         "startChar": 48,
