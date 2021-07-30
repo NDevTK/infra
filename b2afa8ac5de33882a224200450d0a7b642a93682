@@ -33,6 +33,24 @@
       "message": "Maybe also assert that it didn\u0027t change any of the lease-related fields, since it puts even when the build is leased. And for test_completed_build.",
       "revId": "b2afa8ac5de33882a224200450d0a7b642a93682",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0eff2115_abceb8cf",
+        "filename": "appengine/cr-buildbucket/test/service_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 316,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2021-07-30T00:37:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "52ddbf4f_726d38a7",
+      "revId": "b2afa8ac5de33882a224200450d0a7b642a93682",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
