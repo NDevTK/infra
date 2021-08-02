@@ -1,0 +1,7 @@
+td.data {
+  color: #dadce0;
+}
+
+td.data:last-child {
+  padding-right: 46px;
+}
