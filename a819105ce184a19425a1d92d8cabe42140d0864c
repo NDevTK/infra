@@ -16,6 +16,24 @@
       "message": "FYI, it looks like some tests outside of your change failed following the changes in this CL - All of the failing tests are tests that use the enterInput function, which makes use of @testing-library/user-event: https://source.chromium.org/chromium/infra/infra/+/main:appengine/monorail/static_src/shared/test/helpers.js;l\u003d50 \n\nI believe the root cause is the dependency change to @testing-library/user-event from https://chromium-review.googlesource.com/c/infra/infra/+/3054399/7/appengine/monorail/package.json#18 \n\nIn the past, we were using @testing-library/user-event@^13.2.0, but this change lowered the version to @testing-library/user-event@^12.0.0-alpha.3\n\nI believe the accidental inclusion of a `describe.only()` masked this problem in the previous CL. \n\nTo fix this CL and allow it to make it through presubmit, we will want to bump our @testing-library/user-event version back to ^13.2.0.",
       "revId": "a819105ce184a19425a1d92d8cabe42140d0864c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "374296f3_a58b8457",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1510787
+      },
+      "writtenOn": "2021-08-02T18:12:02Z",
+      "side": 1,
+      "message": "Ah so this is a problem because my tests were failing on the new version. the click events wouldn\u0027t work with it. What should I do?",
+      "parentUuid": "04fc0af8_9e6e1b5d",
+      "revId": "a819105ce184a19425a1d92d8cabe42140d0864c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
