@@ -76,6 +76,19 @@ export interface MetricOption {
   // hasSubsections specifies whether the given metric is a single value or is
   // broken out by subSections.
   hasSubsections?: boolean;
+  // color specifies the color of the metric values
+  color?: MetricOptionColor;
+}
+
+export enum MetricOptionColorType {
+  DeltaAbsolute = 'delta_abs',
+  DeltaPercentage = 'delta_perc',
+}
+
+export interface MetricOptionColor {
+  type: MetricOptionColorType;
+  breakpoints: [number, string][];
+  emptyValue?: number;
 }
 
 // Specification of available periods for a dataSource.
@@ -89,10 +102,30 @@ export interface PeriodOption {
   isDefault?: boolean;
 }
 
+// Sets up a basic color gradient. Negative is red, positive is green.
+function colorGradient(
+  type: MetricOptionColorType,
+  threshold: number,
+  opts: {
+    reverse?: boolean;
+    emptyValue?: number;
+  } = {}
+): MetricOptionColor {
+  const color: MetricOptionColor = {
+    type: type,
+    breakpoints: [
+      [-threshold, opts.reverse ? '#ee675c' : '#5bb974'],
+      [threshold, opts.reverse ? '#5bb974' : '#ee675c'],
+    ],
+    emptyValue: opts.emptyValue,
+  };
+  return color;
+}
+
 // Fills in the availableMap object on DataSourcesState, and the metricMap
 // object on the DataSource.  This mutates DataSourceState, but returns it
 // as well so that the function can be chained.
-const populateMaps = (state: DataSourcesState): DataSourcesState => {
+function populateMaps(state: DataSourcesState): DataSourcesState {
   state.available.forEach((dataSource) => {
     state.availableMap[dataSource.name] = dataSource;
     for (const metric of dataSource.metrics) {
@@ -100,7 +133,7 @@ const populateMaps = (state: DataSourcesState): DataSourcesState => {
     }
   });
   return state;
-};
+}
 
 const initialState: DataSourcesState = populateMaps({
   current: '',
@@ -115,12 +148,14 @@ const initialState: DataSourcesState = populateMaps({
           name: 'P50',
           unit: Unit.Duration,
           description: `Time from create_time to end_time (Pending + Runtime)`,
+          color: colorGradient(MetricOptionColorType.DeltaAbsolute, 10 * 60),
         },
         {
           name: 'P90',
           isDefault: true,
           unit: Unit.Duration,
           description: `Time from create_time and end_time (Pending + Runtime)`,
+          color: colorGradient(MetricOptionColorType.DeltaAbsolute, 20 * 60),
         },
         {
           name: 'Count',
@@ -132,24 +167,28 @@ const initialState: DataSourcesState = populateMaps({
           unit: Unit.Duration,
           description: `Time from start_time to end_time (actual execution
           time)`,
+          color: colorGradient(MetricOptionColorType.DeltaAbsolute, 10 * 60),
         },
         {
           name: 'P90 Runtime',
           unit: Unit.Duration,
           description: `Time from start_time to end_time (actual execution
           time)`,
+          color: colorGradient(MetricOptionColorType.DeltaAbsolute, 20 * 60),
         },
         {
           name: 'P50 Pending',
           unit: Unit.Duration,
           description: `Time from create_time to start_time (builder wait
           time)`,
+          color: colorGradient(MetricOptionColorType.DeltaAbsolute, 5 * 60),
         },
         {
           name: 'P90 Pending',
           unit: Unit.Duration,
           description: `Time from create_time to start_time (builder wait
           time)`,
+          color: colorGradient(MetricOptionColorType.DeltaAbsolute, 10 * 60),
         },
         {
           name: 'P50 Phase Runtime',
@@ -158,6 +197,7 @@ const initialState: DataSourcesState = populateMaps({
           description: `Duration of the 4 main builder phases for the "with
           patch" section of the build.  Retries and some phases, such as isolate
           tests, are not included here.`,
+          color: colorGradient(MetricOptionColorType.DeltaPercentage, 0.2),
         },
         {
           name: 'P90 Phase Runtime',
@@ -167,6 +207,7 @@ const initialState: DataSourcesState = populateMaps({
           description: `Duration of the 4 main builder phases for the "with
           patch" section of the build.  Retries and some phases, such as isolate
           tests, are not included here.`,
+          color: colorGradient(MetricOptionColorType.DeltaPercentage, 0.2),
         },
         {
           name: 'P50 Slow Tests',
@@ -177,6 +218,9 @@ const initialState: DataSourcesState = populateMaps({
           10 minutes. The runtime is of the slowest shard, so if a test has 4
           shards that ran in 4m, 5m, 6m, and 7m, the duration for that test
           would be 7m.`,
+          color: colorGradient(MetricOptionColorType.DeltaAbsolute, 5 * 60, {
+            emptyValue: 0,
+          }),
         },
         {
           name: 'P90 Slow Tests',
@@ -187,6 +231,9 @@ const initialState: DataSourcesState = populateMaps({
           10 minutes. The runtime is of the slowest shard, so if a test has 4
           shards that ran in 4m, 5m, 6m, and 7m, the duration for that test
           would be 7m.`,
+          color: colorGradient(MetricOptionColorType.DeltaAbsolute, 10 * 60, {
+            emptyValue: 0,
+          }),
         },
         {
           name: 'Count Slow Tests',

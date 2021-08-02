@@ -8,11 +8,11 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import classnames from 'classnames';
 
-import { format } from '../../utils/formatUtils';
 import { selectCurrentSource } from '../dataSources/dataSourcesSlice';
 import { Section } from './MetricsTable';
 
 import styles from './MetricsTableSection.module.css';
+import MetricsTableDataCell from './MetricsTableDataCell';
 
 interface Props {
   odd: boolean;
@@ -99,19 +99,11 @@ const MetricsTableSection: React.FunctionComponent<Props> = ({
           )}
           <TableCell data-testid="mt-row-metric-name">{metric.name}</TableCell>
           {dates.map((date, i) => (
-            <TableCell
+            <MetricsTableDataCell
               key={i}
-              align="right"
-              className={styles.data}
-              data-testid="mt-row-data"
-            >
-              {date in metric.data
-                ? format(
-                    metric.data[date],
-                    dataSource.metricMap[metric.name].unit
-                  )
-                : '-'}
-            </TableCell>
+              data={metric.data[date]}
+              metric={dataSource.metricMap[metric.name]}
+            />
           ))}
         </TableRow>
       ))}
