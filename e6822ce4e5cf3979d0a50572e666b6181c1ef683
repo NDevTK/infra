@@ -1,0 +1,159 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4f5980fd_dee52411",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2021-08-02T20:48:00Z",
+      "side": 1,
+      "message": "LGTM with a few comments for various code quality thoughts~",
+      "revId": "e6822ce4e5cf3979d0a50572e666b6181c1ef683",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3004f1f5_7f09a9c4",
+        "filename": "go/src/infra/appengine/statsui/frontend/src/features/metrics/MetricsTableDataCell.module.css",
+        "patchSetId": 2
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2021-08-02T20:48:00Z",
+      "side": 1,
+      "message": "Optional consideration for the future: If you find yourself using a lot of the same CSS colors in your app, you can use CSS custom properties to create CSS \"variables\" that you can share around your app. \n\nMonorail uses CSS properties like so: https://source.chromium.org/chromium/infra/infra/+/main:appengine/monorail/static/css/chopsui-normal.css",
+      "range": {
+        "startLine": 2,
+        "startChar": 2,
+        "endLine": 2,
+        "endChar": 17
+      },
+      "revId": "e6822ce4e5cf3979d0a50572e666b6181c1ef683",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6ada8abe_3dfd4d10",
+        "filename": "go/src/infra/appengine/statsui/frontend/src/features/metrics/MetricsTableDataCell.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2021-08-02T20:48:00Z",
+      "side": 1,
+      "message": "`metric.color` is used 7 times in this function while `metric` or other properties on `metric` seem to be used 0 times.\n\nConsider taking in \"color\" as a param instead of metric, per the Law of Demeter, a principle that suggests it\u0027s better for functions to take in the most specific parameter they can get away with, so they don\u0027t deal with more information than they need. \n\nSee: https://en.wikipedia.org/wiki/Law_of_Demeter",
+      "range": {
+        "startLine": 24,
+        "startChar": 2,
+        "endLine": 24,
+        "endChar": 8
+      },
+      "revId": "e6822ce4e5cf3979d0a50572e666b6181c1ef683",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e804188c_cd7701a7",
+        "filename": "go/src/infra/appengine/statsui/frontend/src/features/metrics/MetricsTableDataCell.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2021-08-02T20:48:00Z",
+      "side": 1,
+      "message": "Nit: Can this be:\n\nconst currValue \u003d data?.value || metric.color.emptyValue;\n\nIf I\u0027m understanding correctly, it seems that the if check that things like `metric.color.emptyValue` are undefined might be unnecessary since currValue defaults to undefined anyways - if they\u0027re undefined and we set currValue to those values anyways, we don\u0027t lose anything.\n\nAdditionally, I think when variables require a lot of conditional clauses to determine their values, it can make code more difficult to read - I often find keeping such logic in one or two lines more readable because it\u0027s easier to reason see which cases affect a variable\u0027s value if they\u0027re close together.",
+      "range": {
+        "startLine": 32,
+        "startChar": 2,
+        "endLine": 36,
+        "endChar": 3
+      },
+      "revId": "e6822ce4e5cf3979d0a50572e666b6181c1ef683",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "121fca4c_5e2324b1",
+        "filename": "go/src/infra/appengine/statsui/frontend/src/features/metrics/MetricsTableDataCell.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2021-08-02T20:48:00Z",
+      "side": 1,
+      "message": "Nit: Same as above, can this be: \n\nconst prevValue \u003d data?.previous?.value || metric.color.emptyValue;",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 3
+      },
+      "revId": "e6822ce4e5cf3979d0a50572e666b6181c1ef683",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e9ecfc12_eac6e525",
+        "filename": "go/src/infra/appengine/statsui/frontend/src/features/metrics/MetricsTableDataCell.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2021-08-02T20:48:00Z",
+      "side": 1,
+      "message": "If I\u0027m understanding this code correctly, what it does is: \n\n- Find the very last breakpoint in the metric.color Array that either: 1) is between `delta` and `0` or 2) is between `0` and `delta`. (handling negative and positive cases)\n\nNot 100% sure if it\u0027s more readable, but I think equivalent code would be something like: \n\n```\nconst breakpoint \u003d metric.color.breakpoints.reverse().find((breakpoint) \u003d\u003e {\n  return breakpoint[0] \u003c 0 \u0026\u0026 delta \u003c\u003d breakpoint[0] || breakpoint[0] \u003e 0 \u0026\u0026 delta \u003e\u003d breakpoint[0];\n});\n\nif (breakpoint) {\n  color \u003d breakpoint [1];\n}\n```\n\nI sort of like it because the use of `find()` makes it a bit easier for me to figure out what kind of operation is being done and there\u0027s less repetitive `color \u003d breakpoint[1]` statements to trace through, but I think it\u0027s close enough that I don\u0027t really mind either way which we do.",
+      "range": {
+        "startLine": 50,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 5
+      },
+      "revId": "e6822ce4e5cf3979d0a50572e666b6181c1ef683",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b9635159_d77d5878",
+        "filename": "go/src/infra/appengine/statsui/frontend/src/features/metrics/MetricsTableDataCell.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2021-08-02T20:48:00Z",
+      "side": 1,
+      "message": "Optional nit: One thing I often like to do with props for React coponents, for readability since so much stuff can be passed through props is use Object destructuring for function params. \n\nLike so:\n\n```\nconst MetricsTableDataCell: React.FunctionComponent\u003cProps\u003e \u003d ({metric, data}: Props) \u003d\u003e {\n  ...\n}\n```\n\nThis style makes it immediately obvious that `metric` and `data` are the props that this component expects through its API. Plus, it means you don\u0027t have to type `props.` so often :)",
+      "range": {
+        "startLine": 67,
+        "startChar": 62,
+        "endLine": 67,
+        "endChar": 74
+      },
+      "revId": "e6822ce4e5cf3979d0a50572e666b6181c1ef683",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
