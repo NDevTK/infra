@@ -34,6 +34,24 @@
       "parentUuid": "04fc0af8_9e6e1b5d",
       "revId": "a819105ce184a19425a1d92d8cabe42140d0864c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "77d174c3_a060b981",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2021-08-02T19:56:24Z",
+      "side": 1,
+      "message": "What sort of test failure are you getting with the new version? The best thing to do would probably be to try to get your tests to work with the newer version because: \n\n* There\u0027s more code using that newer version than the older version. \n* We generally want to lean towards newer versions of things rather than older versions if we can.",
+      "parentUuid": "374296f3_a58b8457",
+      "revId": "a819105ce184a19425a1d92d8cabe42140d0864c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
