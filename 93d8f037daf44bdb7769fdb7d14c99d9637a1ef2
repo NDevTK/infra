@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1c7293d5_2058e5b5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-08-03T19:43:59Z",
+      "side": 1,
+      "message": "Otabek, this is the CL for CopyFileTo method of the Access interface. Can you kindly review this?",
+      "revId": "93d8f037daf44bdb7769fdb7d14c99d9637a1ef2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
