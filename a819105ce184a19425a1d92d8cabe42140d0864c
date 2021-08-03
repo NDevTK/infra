@@ -52,6 +52,24 @@
       "parentUuid": "374296f3_a58b8457",
       "revId": "a819105ce184a19425a1d92d8cabe42140d0864c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b109d5e4_8bd062c5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2021-08-03T02:20:57Z",
+      "side": 1,
+      "message": "FYI, I ended up sending in https://chromium-review.googlesource.com/c/infra/infra/+/3068231 because I encountered the same issue when trying to remove the \".only\" from SelectMenu.test.tsx.",
+      "parentUuid": "77d174c3_a060b981",
+      "revId": "a819105ce184a19425a1d92d8cabe42140d0864c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
