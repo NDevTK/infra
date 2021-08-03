@@ -16,6 +16,98 @@
       "message": "Otabek, this is the CL for CopyFileTo method of the Access interface. Can you kindly review this?",
       "revId": "93d8f037daf44bdb7769fdb7d14c99d9637a1ef2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9d9f802b_561077c0",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-03T21:03:43Z",
+      "side": 1,
+      "message": "Please create a tar archive using `archive/tar` (https://pkg.go.dev/archive/tar) rather than calling an external command.",
+      "range": {
+        "startLine": 139,
+        "startChar": 0,
+        "endLine": 139,
+        "endChar": 124
+      },
+      "revId": "93d8f037daf44bdb7769fdb7d14c99d9637a1ef2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2415a3f7_1cb28ba4",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-03T21:03:43Z",
+      "side": 1,
+      "message": "This change may be out of scope for this CL, but do we have a way of creating a command to run remotely where the API allows you to specify a `[]string` rather than building a shell command?",
+      "range": {
+        "startLine": 167,
+        "startChar": 1,
+        "endLine": 171,
+        "endChar": 31
+      },
+      "revId": "93d8f037daf44bdb7769fdb7d14c99d9637a1ef2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d6e437bb_25a3ee67",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-03T21:03:43Z",
+      "side": 1,
+      "message": "If this function is only use for copyfileto, please rename it to validateCopyFileTo",
+      "range": {
+        "startLine": 193,
+        "startChar": 4,
+        "endLine": 193,
+        "endChar": 23
+      },
+      "revId": "93d8f037daf44bdb7769fdb7d14c99d9637a1ef2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "052b3df4_1b9685f8",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 214,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-03T21:03:43Z",
+      "side": 1,
+      "message": "Please split this function into `ensureFileExists` and `ensureDirectoryExists`.",
+      "range": {
+        "startLine": 214,
+        "startChar": 0,
+        "endLine": 214,
+        "endChar": 76
+      },
+      "revId": "93d8f037daf44bdb7769fdb7d14c99d9637a1ef2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
