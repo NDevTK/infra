@@ -5,6 +5,7 @@
 package tasks
 
 // TODO(gregorynisbet): Validate existence of required flags.
+// TODO(gregorynisbet): Replace fmt.Fprintf with a different logging strategy.
 
 import (
 	"fmt"
@@ -14,6 +15,7 @@ import (
 
 	"infra/cros/cmd/satlab/internal/commands"
 	"infra/cros/cmd/satlab/internal/commands/dns"
+	"infra/cros/cmd/satlab/internal/common"
 	"infra/cros/cmd/satlab/internal/parse"
 	"infra/cros/cmd/satlab/internal/paths"
 
@@ -31,57 +33,86 @@ func AddDUT(serviceAccountJSON string, satlabPrefix string, p *parse.CommandPars
 	if !ok {
 		return errors.New("add dut: hostname (-name) is required")
 	}
+	host = common.MaybePrepend(satlabPrefix, host)
+
 	addr, ok := p.Flags["address"]
 	if !ok {
 		return errors.New("add dut: address (-address) is required")
 	}
 
+	// The name of a rack defaults to satlab-0XXXX-name-of-rack.
+	rack := p.Flags["rack"]
+	if rack == "" {
+		rack = common.MaybePrepend(satlabPrefix, "rack")
+	}
+	fmt.Fprintf(os.Stderr, "Add dut: using rack %q", rack)
+
+	// Zone defaults to satlab since this is a satlab tool.
+	// TODO(gregorynisbet): consider alternate approaches for users to specify the zone.
+	zone := p.Flags["zone"]
+	if zone == "" {
+		zone = "satlab"
+	}
+
 	// TODO(gregorynisbet): verify that the DNS host information is correct too.
 
 	// Add the rack if it doesn't exist.
-	if err := addRackIfApplicable(serviceAccountJSON, satlabPrefix, p); err != nil {
+	if err := addRackIfApplicable(serviceAccountJSON, satlabPrefix, p, rack); err != nil {
 		return errors.Annotate(err, "add dut").Err()
 	}
 
 	// Add the Asset if it doesn't exist.
-	if err := addAssetIfApplicable(serviceAccountJSON, satlabPrefix, p); err != nil {
+	if err := addAssetIfApplicable(serviceAccountJSON, satlabPrefix, p, rack, zone); err != nil {
 		return errors.Annotate(err, "add dut").Err()
 	}
 
 	// Add the DUT if it doesn't exist.
-	if err := addDUTIfApplicable(serviceAccountJSON, satlabPrefix, host, p); err != nil {
+	if err := addDUTIfApplicable(serviceAccountJSON, satlabPrefix, host, p, zone); err != nil {
 		return errors.Annotate(err, "add dut").Err()
 	}
 
-	if err := dns.UpdateRecord(host, addr); err != nil {
-		return errors.Annotate(err, "add dut").Err()
+	if _, ok := p.NullaryFlags[common.SkipDNS]; ok {
+		fmt.Fprintf(os.Stderr, "Add dut: skipping adding DNS entries\n")
+	} else {
+		if err := dns.UpdateRecord(host, addr); err != nil {
+			return errors.Annotate(err, "add dut").Err()
+		}
 	}
 	return nil
 }
 
 // AddAssetIfApplicable adds an asset to UFS if the asset does not already exist.
-func addAssetIfApplicable(serviceAccountJSON string, satlabPrefix string, p *parse.CommandParseResult) error {
-	for _, flag := range []string{"model", "board", "rack", "zone"} {
-		if p.Flags[flag] == "" {
-			return errors.New(fmt.Sprintf("add asset if applicable: required flag %q is not present", flag))
-		}
-	}
+func addAssetIfApplicable(serviceAccountJSON string, satlabPrefix string, p *parse.CommandParseResult, rack string, zone string) error {
 
 	args := (&commands.CommandWithFlags{
 		Commands:       []string{paths.ShivasPath, "get", "asset"},
 		PositionalArgs: []string{p.Flags["asset"]},
 		Flags: map[string][]string{
-			"json": nil,
+			"json":  nil,
+			"rack":  {rack},
+			"zone":  {zone},
+			"model": {p.Flags["model"]},
+			"board": {p.Flags["board"]},
 		},
 	}).ToCommand()
+	fmt.Fprintf(os.Stderr, "Add asset if applicable: run %s\n", args)
 	command := exec.Command(args[0], args[1:]...)
 	command.Stderr = os.Stderr
-	assetMsg, err := command.Output()
+	assetMsgBytes, err := command.Output()
+	assetMsg := commands.TrimOutput(assetMsgBytes)
 	if err != nil {
 		return errors.Annotate(err, "add asset if applicable").Err()
 	}
 
 	if len(assetMsg) == 0 {
+		// We're in a case where we need the asset. Check for the arguments needed to
+		// create an asset.
+		for _, flag := range []string{"model", "board", "asset"} {
+			if p.Flags[flag] == "" {
+				return errors.New(fmt.Sprintf("add asset if applicable: required flag %q is not present", flag))
+			}
+		}
+
 		// Add the asset.
 		fmt.Fprintf(os.Stderr, "Adding asset\n")
 		args := (&commands.CommandWithFlags{
@@ -89,10 +120,11 @@ func addAssetIfApplicable(serviceAccountJSON string, satlabPrefix string, p *par
 			Flags: map[string][]string{
 				"model": {p.Flags["model"]},
 				"board": {p.Flags["board"]},
-				"rack":  {p.Flags["rack"]},
-				"zone":  {p.Flags["zone"]},
+				"rack":  {rack},
+				"zone":  {zone},
 			},
 		}).ToCommand()
+		fmt.Fprintf(os.Stderr, "Add asset if applicable: run %s\n", args)
 		command := exec.Command(args[0], args[1:]...)
 		command.Stdout = os.Stdout
 		command.Stderr = os.Stderr
@@ -106,9 +138,8 @@ func addAssetIfApplicable(serviceAccountJSON string, satlabPrefix string, p *par
 }
 
 // AddRackIfApplicable adds a rack to UFS if the asset does not already exist.
-func addRackIfApplicable(serviceAccountJSON string, satlabPrefix string, p *parse.CommandParseResult) error {
-	// TODO(gregorynisbet): Generate a rack name.
-	for _, flag := range []string{"rack", "namespace"} {
+func addRackIfApplicable(serviceAccountJSON string, satlabPrefix string, p *parse.CommandParseResult, rack string) error {
+	for _, flag := range []string{"namespace"} {
 		if p.Flags[flag] == "" {
 			return errors.New(fmt.Sprintf("add asset if applicable: required flag %q is not present", flag))
 		}
@@ -116,14 +147,16 @@ func addRackIfApplicable(serviceAccountJSON string, satlabPrefix string, p *pars
 
 	args := (&commands.CommandWithFlags{
 		Commands:       []string{paths.ShivasPath, "get", "rack"},
-		PositionalArgs: []string{p.Flags["rack"]},
+		PositionalArgs: []string{rack},
 		Flags: map[string][]string{
 			"json": nil,
 		},
 	}).ToCommand()
+	fmt.Fprintf(os.Stderr, "Add rack if applicable: run %s\n", args)
 	command := exec.Command(args[0], args[1:]...)
 	command.Stderr = os.Stderr
-	rackMsg, err := command.Output()
+	rackMsgBytes, err := command.Output()
+	rackMsg := commands.TrimOutput(rackMsgBytes)
 	if err != nil {
 		return errors.Annotate(err, "add rack if applicable").Err()
 	}
@@ -134,9 +167,10 @@ func addRackIfApplicable(serviceAccountJSON string, satlabPrefix string, p *pars
 			Commands: []string{paths.ShivasPath, "add", "rack"},
 			Flags: map[string][]string{
 				"namespace": {p.Flags["namespace"]},
-				"name":      {fmt.Sprintf("%s-%s", satlabPrefix, p.Flags["rack"])},
+				"name":      {rack},
 			},
 		}).ToCommand()
+		fmt.Fprintf(os.Stderr, "Add rack if applicable: run %s\n", args)
 		command := exec.Command(args[0], args[1:]...)
 		command.Stdout = os.Stdout
 		command.Stderr = os.Stderr
@@ -150,18 +184,21 @@ func addRackIfApplicable(serviceAccountJSON string, satlabPrefix string, p *pars
 }
 
 // AddDUTIfApplicable adds a DUT to UFS if the asset does not already exist.
-func addDUTIfApplicable(serviceAccountJSON string, satlabPrefix string, host string, p *parse.CommandParseResult) error {
+func addDUTIfApplicable(serviceAccountJSON string, satlabPrefix string, host string, p *parse.CommandParseResult, zone string) error {
+
 	args := (&commands.CommandWithFlags{
 		Commands: []string{paths.ShivasPath, "get", "dut"},
 		Flags: map[string][]string{
 			"namespace": {p.Flags["namespace"]},
-			"zone":      {p.Flags["zone"]},
+			"zone":      {zone},
 		},
-		PositionalArgs: []string{fmt.Sprintf("%s-%s", satlabPrefix, p.PositionalArgs[0])},
+		PositionalArgs: []string{host},
 	}).ToCommand()
+	fmt.Fprintf(os.Stderr, "Add dut if applicable: run %s\n", args)
 	command := exec.Command(args[0], args[1:]...)
 	command.Stderr = os.Stderr
-	dutMsg, err := command.Output()
+	dutMsgBytes, err := command.Output()
+	dutMsg := commands.TrimOutput(dutMsgBytes)
 	if err != nil {
 		return errors.Annotate(err, "add dut if applicable: running %s", strings.Join(args, " ")).Err()
 	}
@@ -174,19 +211,27 @@ func addDUTIfApplicable(serviceAccountJSON string, satlabPrefix string, host str
 		for k := range p.NullaryFlags {
 			flags[k] = nil
 		}
-		flags["name"] = []string{
-			fmt.Sprintf("%s-%s", satlabPrefix, flags["name"]),
+		flags["name"] = []string{host}
+		// This flag must have the form labstation:port.
+		// Do not validate this flag here since we don't want to potentially drift
+		// out of sync with the format that shivas expects.
+		// TODO(gregorynisbet): Consider pre-populating it.
+		flags["servo"] = []string{
+			common.MaybePrepend(satlabPrefix, p.Flags["servo"]),
 		}
 
+		// TODO(gregorynisbet): Consider a different strategy for tracking flags
+		// that cannot be passed to shivas add dut.
 		args := (&commands.CommandWithFlags{
 			Commands: []string{paths.ShivasPath, "add", "dut"},
 			Flags:    flags,
-		}).ApplyFlagFilter(true, map[string]bool{
-			"model":   false,
-			"board":   false,
-			"rack":    false,
+		}).ApplyFlagFilter(true, common.WithInternalFlags(map[string]bool{
 			"address": false,
-		}).ToCommand()
+			"board":   false,
+			"model":   false,
+			"rack":    false,
+		})).ToCommand()
+		fmt.Fprintf(os.Stderr, "Add dut if applicable: run %s\n", args)
 		command := exec.Command(args[0], args[1:]...)
 		command.Stdout = os.Stdout
 		command.Stderr = os.Stderr
