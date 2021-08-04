@@ -15,9 +15,9 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/data/rand/mathrand"
 
+	"infra/cmd/shias/site"
 	"infra/cmd/shivas/meta"
 	queen_cmds "infra/cmd/shivas/queen/cmds"
-	"infra/cmd/shivas/site"
 	sw_cmds "infra/cmd/shivas/swarming/cmds"
 	bot_cmds "infra/cmd/shivas/ufs/cmds/bot"
 	"infra/cmd/shivas/ufs/cmds/operations"
@@ -26,7 +26,7 @@ import (
 
 func getApplication() *cli.Application {
 	return &cli.Application{
-		Name: "shivas",
+
 		Title: `Unified Fleet System Management
 
 Tool uses a default RPC retry strategy with five attempts and exponential backoff.
