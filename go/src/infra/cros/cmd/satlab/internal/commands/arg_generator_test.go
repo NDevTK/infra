@@ -52,7 +52,7 @@ func TestToCommand(t *testing.T) {
 					"b": {"c", "d", "e", "f"},
 				},
 			},
-			[]string{"a", "-b", "c", "d", "e", "f"},
+			[]string{"a", "-b", "c", "-b", "d", "-b", "e", "-b", "f"},
 		},
 		{
 			"command with positional arg",

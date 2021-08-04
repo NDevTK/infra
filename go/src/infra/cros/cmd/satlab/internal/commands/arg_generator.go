@@ -34,9 +34,15 @@ func (c *CommandWithFlags) ToCommand() []string {
 	}
 	sort.Strings(keys)
 	for _, k := range keys {
-		v := c.Flags[k]
-		out = append(out, fmt.Sprintf("-%s", k))
-		out = append(out, v...)
+		items := c.Flags[k]
+		if len(items) == 0 {
+			out = append(out, fmt.Sprintf("-%s", k))
+			continue
+		}
+		for _, item := range items {
+			out = append(out, fmt.Sprintf("-%s", k))
+			out = append(out, item)
+		}
 	}
 	for _, s := range c.PositionalArgs {
 		out = append(out, s)
