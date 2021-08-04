@@ -36,20 +36,30 @@ func GetDUT(serviceAccountJSONPath string, satlabPrefix string, p *parse.Command
 		return "", errors.New(`default "get dut" functionality not implemented`)
 	}
 
+	// No flags need to be annotated with the satlab prefix for get dut.
+	// However, the positional arguments need to have the satlab prefix
+	// prepended.
 	positionalArgs := []string{}
 	for _, item := range p.PositionalArgs {
 		positionalArgs = append(positionalArgs, fmt.Sprintf("%s-%s", satlabPrefix, item))
 	}
-
+	flags := make(map[string][]string)
+	for k := range p.NullaryFlags {
+		flags[k] = nil
+	}
+	for k, v := range p.Flags {
+		flags[k] = []string{v}
+	}
 	args := (&commands.CommandWithFlags{
 		Commands:       []string{paths.ShivasPath, "get", "dut"},
+		Flags:          flags,
 		PositionalArgs: positionalArgs,
+	}).ApplyFlagFilter(true, map[string]bool{
+		"satlab-id": false,
+		"skip-dns":  false,
 	}).ToCommand()
 	command := exec.Command(args[0], args[1:]...)
 	command.Stderr = os.Stderr
 	out, err := command.Output()
-	if err != nil {
-		return "", errors.Annotate(err, "get dut").Err()
-	}
-	return string(out), nil
+	return commands.TrimOutput(out), errors.Annotate(err, "get dut").Err()
 }
