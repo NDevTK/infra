@@ -7,13 +7,13 @@ package tasks
 // TODO(gregorynisbet): Validate existence of required flags.
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/cmd/satlab/internal/commands"
+	"infra/cros/cmd/satlab/internal/common"
 	"infra/cros/cmd/satlab/internal/parse"
 	"infra/cros/cmd/satlab/internal/paths"
 )
@@ -36,20 +36,30 @@ func GetDUT(serviceAccountJSONPath string, satlabPrefix string, p *parse.Command
 		return "", errors.New(`default "get dut" functionality not implemented`)
 	}
 
+	// No flags need to be annotated with the satlab prefix for get dut.
+	// However, the positional arguments need to have the satlab prefix
+	// prepended.
 	positionalArgs := []string{}
 	for _, item := range p.PositionalArgs {
-		positionalArgs = append(positionalArgs, fmt.Sprintf("%s-%s", satlabPrefix, item))
+		positionalArgs = append(positionalArgs, common.MaybePrepend(satlabPrefix, item))
 	}
-
+	flags := make(map[string][]string)
+	for k := range p.NullaryFlags {
+		flags[k] = nil
+	}
+	for k, v := range p.Flags {
+		flags[k] = []string{v}
+	}
 	args := (&commands.CommandWithFlags{
 		Commands:       []string{paths.ShivasPath, "get", "dut"},
+		Flags:          flags,
 		PositionalArgs: positionalArgs,
-	}).ToCommand()
+	}).ApplyFlagFilter(
+		true,
+		common.IgnoreInternalFlags,
+	).ToCommand()
 	command := exec.Command(args[0], args[1:]...)
 	command.Stderr = os.Stderr
 	out, err := command.Output()
-	if err != nil {
-		return "", errors.Annotate(err, "get dut").Err()
-	}
-	return string(out), nil
+	return commands.TrimOutput(out), errors.Annotate(err, "get dut").Err()
 }
