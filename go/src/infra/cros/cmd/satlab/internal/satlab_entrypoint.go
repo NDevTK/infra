@@ -6,6 +6,7 @@ package satlab
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
@@ -39,11 +40,13 @@ var commandArities = map[string]int{
 // TODO(gregorynisbet): Move this inside the parser.
 //
 var knownNullaryFlags = map[string]bool{
-	"json": true,
+	"json":    true,
+	"verbose": true,
 }
 
 // Entrypoint takes a list of command line arguments excluding argv[0] and delegates to the appropriate subcommand.
 func Entrypoint(args []string) error {
+	var err error
 	// TODO(gregorynisbet): Moving parsing into the respective subcommands,
 	// even if the implementation is shared.
 	parsed, err := parse.ParseCommand(
@@ -67,9 +70,13 @@ func Entrypoint(args []string) error {
 	}
 
 	// Get the name of the satlab DHB.
-	dockerHostBoxIdentifier, err := commands.GetDockerHostBoxIdentifier()
-	if err != nil {
-		return err
+	dockerHostBoxIdentifier := parsed.Flags["satlab-id"]
+	if dockerHostBoxIdentifier == "" {
+		dockerHostBoxIdentifier, err = commands.GetDockerHostBoxIdentifier()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "unable to determine satlab prefix, use -satlab-id to pass explicitly")
+			return err
+		}
 	}
 	satlabPrefix := fmt.Sprintf("satlab-%s", dockerHostBoxIdentifier)
 
@@ -101,7 +108,7 @@ func Entrypoint(args []string) error {
 		return err
 	case "delete":
 		// TODO(gregorynisbet): support more command than just "DUT".
-		if mainCmd != "dut" {
+		if subCmd != "dut" {
 			return errors.New(fmt.Sprintf("only delete dut supported not %q", subCmd))
 		}
 		return tasks.DeleteDUT(serviceAccountJSON, satlabPrefix, parsed)

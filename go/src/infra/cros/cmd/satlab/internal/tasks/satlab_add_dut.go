@@ -36,15 +36,27 @@ func AddDUT(serviceAccountJSON string, satlabPrefix string, p *parse.CommandPars
 		return errors.New("add dut: address (-address) is required")
 	}
 
+	// The name of a rack defaults to satlab-0XXXX-name-of-rack.
+	rack := p.Flags["rack"]
+	if rack == "" {
+		rack = fmt.Sprintf("%s-%s", satlabPrefix, "rack")
+	}
+
+	// Zone defaults to satlab since this is a satlab tool.
+	zone := p.Flags["zone"]
+	if zone == "" {
+		zone = "satlab"
+	}
+
 	// TODO(gregorynisbet): verify that the DNS host information is correct too.
 
 	// Add the rack if it doesn't exist.
-	if err := addRackIfApplicable(serviceAccountJSON, satlabPrefix, p); err != nil {
+	if err := addRackIfApplicable(serviceAccountJSON, satlabPrefix, p, rack); err != nil {
 		return errors.Annotate(err, "add dut").Err()
 	}
 
 	// Add the Asset if it doesn't exist.
-	if err := addAssetIfApplicable(serviceAccountJSON, satlabPrefix, p); err != nil {
+	if err := addAssetIfApplicable(serviceAccountJSON, satlabPrefix, p, rack, zone); err != nil {
 		return errors.Annotate(err, "add dut").Err()
 	}
 
@@ -60,8 +72,8 @@ func AddDUT(serviceAccountJSON string, satlabPrefix string, p *parse.CommandPars
 }
 
 // AddAssetIfApplicable adds an asset to UFS if the asset does not already exist.
-func addAssetIfApplicable(serviceAccountJSON string, satlabPrefix string, p *parse.CommandParseResult) error {
-	for _, flag := range []string{"model", "board", "rack", "zone"} {
+func addAssetIfApplicable(serviceAccountJSON string, satlabPrefix string, p *parse.CommandParseResult, rack string, zone string) error {
+	for _, flag := range []string{"model", "board", "asset"} {
 		if p.Flags[flag] == "" {
 			return errors.New(fmt.Sprintf("add asset if applicable: required flag %q is not present", flag))
 		}
@@ -71,7 +83,11 @@ func addAssetIfApplicable(serviceAccountJSON string, satlabPrefix string, p *par
 		Commands:       []string{paths.ShivasPath, "get", "asset"},
 		PositionalArgs: []string{p.Flags["asset"]},
 		Flags: map[string][]string{
-			"json": nil,
+			"json":  nil,
+			"rack":  {rack},
+			"zone":  {zone},
+			"model": {p.Flags["model"]},
+			"board": {p.Flags["board"]},
 		},
 	}).ToCommand()
 	command := exec.Command(args[0], args[1:]...)
@@ -89,8 +105,8 @@ func addAssetIfApplicable(serviceAccountJSON string, satlabPrefix string, p *par
 			Flags: map[string][]string{
 				"model": {p.Flags["model"]},
 				"board": {p.Flags["board"]},
-				"rack":  {p.Flags["rack"]},
-				"zone":  {p.Flags["zone"]},
+				"rack":  {rack},
+				"zone":  {zone},
 			},
 		}).ToCommand()
 		command := exec.Command(args[0], args[1:]...)
@@ -106,9 +122,8 @@ func addAssetIfApplicable(serviceAccountJSON string, satlabPrefix string, p *par
 }
 
 // AddRackIfApplicable adds a rack to UFS if the asset does not already exist.
-func addRackIfApplicable(serviceAccountJSON string, satlabPrefix string, p *parse.CommandParseResult) error {
-	// TODO(gregorynisbet): Generate a rack name.
-	for _, flag := range []string{"rack", "namespace"} {
+func addRackIfApplicable(serviceAccountJSON string, satlabPrefix string, p *parse.CommandParseResult, rack string) error {
+	for _, flag := range []string{"namespace"} {
 		if p.Flags[flag] == "" {
 			return errors.New(fmt.Sprintf("add asset if applicable: required flag %q is not present", flag))
 		}
@@ -116,7 +131,7 @@ func addRackIfApplicable(serviceAccountJSON string, satlabPrefix string, p *pars
 
 	args := (&commands.CommandWithFlags{
 		Commands:       []string{paths.ShivasPath, "get", "rack"},
-		PositionalArgs: []string{p.Flags["rack"]},
+		PositionalArgs: []string{rack},
 		Flags: map[string][]string{
 			"json": nil,
 		},
@@ -134,7 +149,7 @@ func addRackIfApplicable(serviceAccountJSON string, satlabPrefix string, p *pars
 			Commands: []string{paths.ShivasPath, "add", "rack"},
 			Flags: map[string][]string{
 				"namespace": {p.Flags["namespace"]},
-				"name":      {fmt.Sprintf("%s-%s", satlabPrefix, p.Flags["rack"])},
+				"name":      {rack},
 			},
 		}).ToCommand()
 		command := exec.Command(args[0], args[1:]...)
@@ -151,13 +166,14 @@ func addRackIfApplicable(serviceAccountJSON string, satlabPrefix string, p *pars
 
 // AddDUTIfApplicable adds a DUT to UFS if the asset does not already exist.
 func addDUTIfApplicable(serviceAccountJSON string, satlabPrefix string, host string, p *parse.CommandParseResult) error {
+
 	args := (&commands.CommandWithFlags{
 		Commands: []string{paths.ShivasPath, "get", "dut"},
 		Flags: map[string][]string{
 			"namespace": {p.Flags["namespace"]},
 			"zone":      {p.Flags["zone"]},
 		},
-		PositionalArgs: []string{fmt.Sprintf("%s-%s", satlabPrefix, p.PositionalArgs[0])},
+		PositionalArgs: []string{fmt.Sprintf("%s-%s", satlabPrefix, host)},
 	}).ToCommand()
 	command := exec.Command(args[0], args[1:]...)
 	command.Stderr = os.Stderr
@@ -175,17 +191,23 @@ func addDUTIfApplicable(serviceAccountJSON string, satlabPrefix string, host str
 			flags[k] = nil
 		}
 		flags["name"] = []string{
-			fmt.Sprintf("%s-%s", satlabPrefix, flags["name"]),
+			fmt.Sprintf("%s-%s", satlabPrefix, p.Flags["name"]),
+		}
+		flags["servo"] = []string{
+			fmt.Sprintf("%s-%s", satlabPrefix, p.Flags["servo"]),
 		}
 
+		// TODO(gregorynisbet): Consider a different strategy for tracking flags
+		// that cannot be passed to shivas add dut.
 		args := (&commands.CommandWithFlags{
 			Commands: []string{paths.ShivasPath, "add", "dut"},
 			Flags:    flags,
 		}).ApplyFlagFilter(true, map[string]bool{
-			"model":   false,
-			"board":   false,
-			"rack":    false,
-			"address": false,
+			"address":   false,
+			"board":     false,
+			"model":     false,
+			"rack":      false,
+			"satlab-id": false,
 		}).ToCommand()
 		command := exec.Command(args[0], args[1:]...)
 		command.Stdout = os.Stdout
