@@ -11,6 +11,9 @@ import (
 
 // ArgumentParseResult is the result of parsing arguments.
 // TODO(gregorynisbet): Merge this with CommandParseResult below.
+//
+// ArgumentParseResult always refers to the original arguments used for
+// the command line tool.
 type ArgumentParseResult struct {
 	PositionalArgs []string
 	NullaryFlags   map[string]bool
@@ -19,6 +22,9 @@ type ArgumentParseResult struct {
 
 // CommandParseResult is similar to the result of parsing arguments, but has subcommand
 // positional arguments split off from the rest.
+//
+// CommandParseResult always refers to the original arguments used for the
+// command line tool.
 type CommandParseResult struct {
 	Commands       []string
 	PositionalArgs []string
@@ -189,9 +195,18 @@ func ParseCommand(args []string, knownCommandArity map[string]int, knownNullaryF
 	}
 	switch arity {
 	case 1, 2:
+		var commands []string
+		var positionalArgs []string
+		for i := 0; i < len(p.PositionalArgs); i++ {
+			if i < arity {
+				commands = append(commands, p.PositionalArgs[i])
+			} else {
+				positionalArgs = append(positionalArgs, p.PositionalArgs[i])
+			}
+		}
 		return &CommandParseResult{
-			Commands:       p.PositionalArgs[:arity],
-			PositionalArgs: p.PositionalArgs[arity:],
+			Commands:       commands,
+			PositionalArgs: positionalArgs,
 			NullaryFlags:   p.NullaryFlags,
 			Flags:          p.Flags,
 		}, nil
