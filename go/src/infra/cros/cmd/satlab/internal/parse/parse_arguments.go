@@ -189,9 +189,18 @@ func ParseCommand(args []string, knownCommandArity map[string]int, knownNullaryF
 	}
 	switch arity {
 	case 1, 2:
+		commands := []string{}
+		positionalArgs := []string{}
+		for i := 0; i < len(p.PositionalArgs); i++ {
+			if i < arity {
+				commands = append(commands, p.PositionalArgs[i])
+			} else {
+				positionalArgs = append(positionalArgs, p.PositionalArgs[i])
+			}
+		}
 		return &CommandParseResult{
-			Commands:       p.PositionalArgs[:arity],
-			PositionalArgs: p.PositionalArgs[arity:],
+			Commands:       commands,
+			PositionalArgs: positionalArgs,
 			NullaryFlags:   p.NullaryFlags,
 			Flags:          p.Flags,
 		}, nil

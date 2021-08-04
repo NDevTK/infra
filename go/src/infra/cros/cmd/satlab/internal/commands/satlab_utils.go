@@ -6,6 +6,7 @@ package commands
 
 import (
 	"io/ioutil"
+	"strings"
 
 	"go.chromium.org/luci/common/errors"
 )
@@ -24,4 +25,9 @@ func MakeTempFile(content string) (string, error) {
 		return "", errors.Annotate(err, "makeTempFile").Err()
 	}
 	return name, nil
+}
+
+// TrimOutput trims trailing whitespace from command output.
+func TrimOutput(output []byte) string {
+	return strings.TrimRight(string(output), "\n\t")
 }
