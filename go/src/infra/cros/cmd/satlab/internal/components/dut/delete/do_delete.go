@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package tasks
-
-// TODO(gregorynisbet): Validate existence of required flags.
+package delete
 
 import (
 	"fmt"
@@ -12,24 +10,20 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/cmd/satlab/internal/commands"
-	"infra/cros/cmd/satlab/internal/parse"
 	"infra/cros/cmd/satlab/internal/paths"
 )
 
-// DeleteDUT deletes a DUT. It takes a possibly-empty path to the service account credentials,
-// the prefix for the satlab box in question, and the result of parsing the command line flags given to the
-// command initially.
-func DeleteDUT(serviceAccountJSON string, satlab string, p *parse.CommandParseResult) error {
-	if p == nil {
-		return errors.New("command parse cannot be nil")
-	}
-	// TODO(gregorynisbet): add prefix
+// Delete deletes a DUT associated with a satlab instance.
+func Delete(c *deleteDUT, a subcommands.Application, positionalArgs []string) error {
 	args := (&commands.CommandWithFlags{
-		Commands:       []string{paths.ShivasPath, "delete", "dut"},
-		PositionalArgs: p.PositionalArgs,
+		Commands:       []string{paths.ShivasCLI, "delete", "dut"},
+		PositionalArgs: positionalArgs,
+		// TODO(gregorynisbet): Consider replacing.
+		Flags: nil,
 	}).ToCommand()
 	command := exec.Command(args[0], args[1:]...)
 	command.Stdin = os.Stdin
