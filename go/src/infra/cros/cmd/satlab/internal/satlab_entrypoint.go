@@ -6,11 +6,13 @@ package satlab
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/cmd/satlab/internal/commands"
+	"infra/cros/cmd/satlab/internal/common"
 	"infra/cros/cmd/satlab/internal/parse"
 	"infra/cros/cmd/satlab/internal/tasks"
 )
@@ -39,11 +41,14 @@ var commandArities = map[string]int{
 // TODO(gregorynisbet): Move this inside the parser.
 //
 var knownNullaryFlags = map[string]bool{
-	"json": true,
+	"json":     true,
+	"verbose":  true,
+	"skip-dns": true,
 }
 
 // Entrypoint takes a list of command line arguments excluding argv[0] and delegates to the appropriate subcommand.
 func Entrypoint(args []string) error {
+	var err error
 	// TODO(gregorynisbet): Moving parsing into the respective subcommands,
 	// even if the implementation is shared.
 	parsed, err := parse.ParseCommand(
@@ -67,11 +72,15 @@ func Entrypoint(args []string) error {
 	}
 
 	// Get the name of the satlab DHB.
-	dockerHostBoxIdentifier, err := commands.GetDockerHostBoxIdentifier()
-	if err != nil {
-		return err
+	dockerHostBoxIdentifier := strings.ToLower(parsed.Flags[common.SatlabID])
+	if dockerHostBoxIdentifier == "" {
+		dockerHostBoxIdentifier, err = commands.GetDockerHostBoxIdentifier()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Unable to determine satlab prefix, use %s to pass explicitly\n", common.SatlabID)
+			return err
+		}
 	}
-	satlabPrefix := fmt.Sprintf("satlab-%s", dockerHostBoxIdentifier)
+	satlabPrefix := common.MaybePrepend("satlab-%s", dockerHostBoxIdentifier)
 
 	mainCmd := ""
 	if len(parsed.Commands) >= 1 {
@@ -101,7 +110,7 @@ func Entrypoint(args []string) error {
 		return err
 	case "delete":
 		// TODO(gregorynisbet): support more command than just "DUT".
-		if mainCmd != "dut" {
+		if subCmd != "dut" {
 			return errors.New(fmt.Sprintf("only delete dut supported not %q", subCmd))
 		}
 		return tasks.DeleteDUT(serviceAccountJSON, satlabPrefix, parsed)
