@@ -7,16 +7,37 @@
 package main
 
 import (
-	"fmt"
+	"context"
 	"os"
 
-	satlab "infra/cros/cmd/satlab/internal"
+	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/common/data/rand/mathrand"
+
+	"infra/cros/cmd/satlab/internal/subcmds"
 )
 
-// Main runs the satlab command and exits abnormally if ./satlab finished with an error.
-func main() {
-	if err := satlab.Entrypoint(os.Args[1:]); err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err.Error())
-		os.Exit(1)
+func getApplication() *cli.Application {
+	return &cli.Application{
+		Name:  "satlab",
+		Title: `Satlab DUT Management Tool`,
+		Context: func(ctx context.Context) context.Context {
+			return ctx
+		},
+		Commands: []*subcommands.Command{
+			subcommands.CmdHelp,
+			subcommands.Section("Meta"),
+			// TODO(gregorynisbet): Add commands for version and update.
+			subcommands.Section("Authentication"),
+			// TODO(gregorynisbet): Add commands for auth.
+			subcmds.AddCmd,
+			subcmds.DeleteCmd,
+			subcmds.GetCmd,
+		},
 	}
+}
+
+func main() {
+	mathrand.SeedRandomly()
+	os.Exit(subcommands.Run(getApplication(), nil))
 }
