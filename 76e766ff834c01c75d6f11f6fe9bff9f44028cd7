@@ -257,6 +257,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ec7b5b29_01e03db6",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/satlab_entrypoint.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:52:06Z",
+      "side": 1,
+      "message": "that is not of usafull flags, that is about that this of nullary flags shul not exist",
+      "parentUuid": "564270ff_5b0a56a4",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 1
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a8cda89a_5fc8224a",
         "filename": "go/src/infra/cros/cmd/satlab/internal/satlab_entrypoint.go",
         "patchSetId": 3
