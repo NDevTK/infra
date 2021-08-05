@@ -561,6 +561,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e7dc3c91_987092d0",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_add_dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-05T21:29:44Z",
+      "side": 1,
+      "message": "Done. I want to make sure that p.Flags and p.NullaryFlags always refer to the original arguments passed to the command line tool. IMHO that makes the code a little easier to follow.",
+      "parentUuid": "937a0555_fc429faf",
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "31cbddcd_c9506f4d",
