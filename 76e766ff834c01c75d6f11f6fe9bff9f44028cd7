@@ -110,6 +110,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6022d93c_c1280500",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/satlab_utils.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-05T18:48:03Z",
+      "side": 1,
+      "message": "The description is correct. It removes whitespace from the end of outputs of commands.",
+      "parentUuid": "3f68b808_5ab50fef",
+      "range": {
+        "startLine": 30,
+        "startChar": 29,
+        "endLine": 30,
+        "endChar": 40
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d67da802_7acb8ae9",
