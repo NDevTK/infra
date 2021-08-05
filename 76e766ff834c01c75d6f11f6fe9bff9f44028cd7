@@ -81,6 +81,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "83ae06a4_e70bb335",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/satlab_commands.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-05T19:48:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bf0120d1_cc0d7f5f",
+      "range": {
+        "startLine": 35,
+        "startChar": 25,
+        "endLine": 35,
+        "endChar": 28
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7cb315f6_159d782c",
@@ -94,6 +118,30 @@
       "writtenOn": "2021-08-05T18:40:51Z",
       "side": 1,
       "message": "nit: not for this CL, but you can use log to print all messages, which is simplier and you do not need add next line every time. + better formating",
+      "range": {
+        "startLine": 51,
+        "startChar": 1,
+        "endLine": 51,
+        "endChar": 12
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f321c3a4_7b99ed9f",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/satlab_commands.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-05T19:48:09Z",
+      "side": 1,
+      "message": "Done. added todo.",
+      "parentUuid": "7cb315f6_159d782c",
       "range": {
         "startLine": 51,
         "startChar": 1,
