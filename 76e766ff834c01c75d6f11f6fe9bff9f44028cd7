@@ -347,6 +347,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "7ef10175_3bd0abfe",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/satlab_entrypoint.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-05T21:26:14Z",
+      "side": 1,
+      "message": "I am open to alternatives to the nullaryFlags approach such as `-options json,verbose,skip-dns` or something similar.\n\nWhat do you think of `-options`?\n\nNullaryFlags is doing a little bit of heavy lifting at the moment. If we replace it with something, I want to make sure that its replacement is capable of doing the same job.",
+      "parentUuid": "ec7b5b29_01e03db6",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 1
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a8cda89a_5fc8224a",
         "filename": "go/src/infra/cros/cmd/satlab/internal/satlab_entrypoint.go",
         "patchSetId": 3
@@ -550,6 +574,24 @@
       "writtenOn": "2021-08-05T18:40:51Z",
       "side": 1,
       "message": "please print which zone will be used, do we expect that user will provide zone?\n\nPrasad told that it always satlab.\n\nbtw: whay not just set back to p.Flags then usage will be the same",
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "777b9bbd_12f0ec24",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_add_dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-05T21:26:14Z",
+      "side": 1,
+      "message": "p.Flags always refers to the original arguments that are passed to the command line tool. Adding documentation, adding TODO to consider alternate approaches to the zone.",
+      "parentUuid": "31cbddcd_c9506f4d",
       "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
