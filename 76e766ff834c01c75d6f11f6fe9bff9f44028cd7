@@ -1,0 +1,479 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0938ec2d_fce9e6d1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "not done yet",
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9ec8796f_c7dc5e91",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/satlab_commands.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "why constants calling GetHostIdentifierPath when that is script maybe rename to GetHostIdentifierCMD or Script?",
+      "range": {
+        "startLine": 35,
+        "startChar": 63,
+        "endLine": 35,
+        "endChar": 84
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bf0120d1_cc0d7f5f",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/satlab_commands.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "please use upper case for print messages",
+      "range": {
+        "startLine": 35,
+        "startChar": 25,
+        "endLine": 35,
+        "endChar": 28
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7cb315f6_159d782c",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/satlab_commands.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "nit: not for this CL, but you can use log to print all messages, which is simplier and you do not need add next line every time. + better formating",
+      "range": {
+        "startLine": 51,
+        "startChar": 1,
+        "endLine": 51,
+        "endChar": 12
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3f68b808_5ab50fef",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/satlab_utils.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "please fix description as it removing tail empty lines",
+      "range": {
+        "startLine": 30,
+        "startChar": 29,
+        "endLine": 30,
+        "endChar": 40
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d67da802_7acb8ae9",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/satlab_utils.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "make it private",
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9134c3e9_b87caf15",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/satlab_utils.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "please check the data and if empty just return empty string",
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fa28f710_9a41c1a4",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/parse/parse_arguments.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "just declare them \n```\nvar commands []string\nvar positionalArgs []string \n```\n\nanother way create CommandParseResult first and then add everything to the field dirrectly",
+      "range": {
+        "startLine": 192,
+        "startChar": 2,
+        "endLine": 193,
+        "endChar": 30
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0270115d_4abcc58d",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/satlab_entrypoint.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "why do we still need it? i think we simplify that all data will go as params, so you do not need expect arguments at the end",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 1
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a8cda89a_5fc8224a",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/satlab_entrypoint.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "just set name for return error",
+      "range": {
+        "startLine": 50,
+        "startChar": 1,
+        "endLine": 50,
+        "endChar": 14
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "71a58b91_83c560ee",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/satlab_entrypoint.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "please extract to constant and check if that is provided",
+      "range": {
+        "startLine": 74,
+        "startChar": 57,
+        "endLine": 74,
+        "endChar": 68
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8c8ca659_8d7dcb01",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/satlab_entrypoint.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "please add default to inform that command is not supported",
+      "range": {
+        "startLine": 116,
+        "startChar": 1,
+        "endLine": 116,
+        "endChar": 2
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e9ed7b96_ad83dca7",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_add_dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "maybe create method to check all required params?",
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9c3671ef_2f4efe34",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_add_dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "can we add board/model here too for simplicity?\n\nasset is optional so we chan check and set before start",
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "937a0555_fc429faf",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_add_dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "please print which rack will be used\n\nbtw: whay not just set back to p.Flags then usage will be the same",
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "31cbddcd_c9506f4d",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_add_dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "please print which zone will be used, do we expect that user will provide zone?\n\nPrasad told that it always satlab.\n\nbtw: whay not just set back to p.Flags then usage will be the same",
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bd2a4af5_b89b52ef",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_add_dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "if _, ok:\u003d p.NullaryFlags[\"skip-dns\"]; ok {\n...",
+      "range": {
+        "startLine": 68,
+        "startChar": 1,
+        "endLine": 68,
+        "endChar": 32
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2efc49c0_d8a0b9a9",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_add_dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "message has to start from upper case",
+      "range": {
+        "startLine": 69,
+        "startChar": 26,
+        "endLine": 69,
+        "endChar": 29
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f3b7d703_53cd3a4e",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_add_dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "optional of you need set it before",
+      "range": {
+        "startLine": 80,
+        "startChar": 49,
+        "endLine": 80,
+        "endChar": 56
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9609494a_3f2bdc51",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_add_dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "the same",
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "04d6148a_1aec917a",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_add_dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "please extract to beggining and set as rack info as it will be used for DUT and dhcp\n\n\nthis set tells that we do not need PositionalArgs in the parcer (defer for later)",
+      "range": {
+        "startLine": 186,
+        "startChar": 18,
+        "endLine": 186,
+        "endChar": 68
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ead269ab_a9592b0d",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_add_dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "same",
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0b2e2718_a0a3a57a",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_add_dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-05T18:40:51Z",
+      "side": 1,
+      "message": "i think that has to be labstation with port! and port has to set by user or found by by checks",
+      "range": {
+        "startLine": 208,
+        "startChar": 2,
+        "endLine": 210,
+        "endChar": 3
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
