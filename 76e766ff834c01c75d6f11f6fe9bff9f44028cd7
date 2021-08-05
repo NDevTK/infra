@@ -218,6 +218,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "9f0684df_c10245eb",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/satlab_utils.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-05T21:32:23Z",
+      "side": 1,
+      "message": "TrimOutput is used in many places. This function is important. Shivas always prints a trailing newline regardless of whether it is writing to a terminal or not. In order to check whether things exist, we need to remove the trailing newline before we check the length of the string.",
+      "parentUuid": "d67da802_7acb8ae9",
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9134c3e9_b87caf15",
         "filename": "go/src/infra/cros/cmd/satlab/internal/commands/satlab_utils.go",
         "patchSetId": 3
@@ -760,6 +778,24 @@
       "writtenOn": "2021-08-05T18:40:51Z",
       "side": 1,
       "message": "same",
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "046b78c0_37d435fe",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_add_dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-05T21:32:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ead269ab_a9592b0d",
       "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
