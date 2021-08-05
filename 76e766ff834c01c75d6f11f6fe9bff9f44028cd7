@@ -316,6 +316,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "969e3100_210a0260",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/parse/parse_arguments.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-05T21:53:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fa28f710_9a41c1a4",
+      "range": {
+        "startLine": 192,
+        "startChar": 2,
+        "endLine": 193,
+        "endChar": 30
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0270115d_4abcc58d",
@@ -697,6 +721,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "12057149_b2f38bf5",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_add_dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-05T21:53:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bd2a4af5_b89b52ef",
+      "range": {
+        "startLine": 68,
+        "startChar": 1,
+        "endLine": 68,
+        "endChar": 32
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2efc49c0_d8a0b9a9",
@@ -757,6 +805,30 @@
       "writtenOn": "2021-08-05T18:40:51Z",
       "side": 1,
       "message": "optional of you need set it before",
+      "range": {
+        "startLine": 80,
+        "startChar": 49,
+        "endLine": 80,
+        "endChar": 56
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9788160e_87e1575d",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_add_dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-05T21:53:28Z",
+      "side": 1,
+      "message": "Good point. I moved all of the argument checking until we\u0027re in the case where we have to create an asset.",
+      "parentUuid": "f3b7d703_53cd3a4e",
       "range": {
         "startLine": 80,
         "startChar": 49,
