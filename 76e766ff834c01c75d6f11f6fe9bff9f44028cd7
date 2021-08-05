@@ -233,6 +233,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4c3869b9_304757ba",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/satlab_utils.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-05T21:19:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9134c3e9_b87caf15",
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fa28f710_9a41c1a4",
@@ -434,6 +452,30 @@
       "writtenOn": "2021-08-05T18:40:51Z",
       "side": 1,
       "message": "please add default to inform that command is not supported",
+      "range": {
+        "startLine": 116,
+        "startChar": 1,
+        "endLine": 116,
+        "endChar": 2
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c6ed9927_a585b8de",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/satlab_entrypoint.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-05T21:19:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8c8ca659_8d7dcb01",
       "range": {
         "startLine": 116,
         "startChar": 1,
