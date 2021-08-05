@@ -637,6 +637,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2f9cfb35_384a41ca",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_add_dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-05T20:06:13Z",
+      "side": 1,
+      "message": "Added a TODO. If we validate stuff ourselves when the flags do not belong to the satlab tool, then they can potentially drift out of sync with what shivas allows.",
+      "parentUuid": "0b2e2718_a0a3a57a",
+      "range": {
+        "startLine": 208,
+        "startChar": 2,
+        "endLine": 210,
+        "endChar": 3
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dec03a8d_c60acbfa",
@@ -650,6 +674,30 @@
       "writtenOn": "2021-08-05T18:49:37Z",
       "side": 1,
       "message": "please check if name already has satlab prefix\npossible cases \n- satlab with incorrect id or the same id\n- if not prefix then add to try to delete\n\nmaybe run each delete separatly and print if any oe is failed",
+      "range": {
+        "startLine": 32,
+        "startChar": 2,
+        "endLine": 32,
+        "endChar": 83
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "de68adea_f0655761",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_delete_dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-05T20:06:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dec03a8d_c60acbfa",
       "range": {
         "startLine": 32,
         "startChar": 2,
@@ -720,6 +768,30 @@
       "writtenOn": "2021-08-05T18:49:37Z",
       "side": 1,
       "message": "nit: good to extract whole list of parama which we use and then explain which we can pass or not",
+      "range": {
+        "startLine": 58,
+        "startChar": 2,
+        "endLine": 59,
+        "endChar": 21
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "16e5929b_6f0c69cc",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_get_dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-05T20:06:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "281ff816_9a5d4a33",
       "range": {
         "startLine": 58,
         "startChar": 2,
