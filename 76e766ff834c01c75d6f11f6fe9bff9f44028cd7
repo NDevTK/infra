@@ -784,6 +784,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "072f59fb_5f227b4d",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_add_dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-05T21:48:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9609494a_3f2bdc51",
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "04d6148a_1aec917a",
