@@ -547,6 +547,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "fc7c3178_1e603eb3",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_add_dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-05T21:36:11Z",
+      "side": 1,
+      "message": "That is actually somewhat difficult. Which parameters are required depends on which things (asset/dut/rack/...) already exist.\n\nI think it make more sense to check for required parameters right before we use them, that way if the asset already exists, the user does not need to provide flags that are only needed by the asset subcommand.",
+      "parentUuid": "e9ed7b96_ad83dca7",
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9c3671ef_2f4efe34",
         "filename": "go/src/infra/cros/cmd/satlab/internal/tasks/satlab_add_dut.go",
         "patchSetId": 3
