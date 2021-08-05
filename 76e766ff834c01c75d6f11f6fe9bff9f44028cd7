@@ -350,6 +350,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "21e2bd53_515592ba",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/satlab_entrypoint.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-05T20:10:29Z",
+      "side": 1,
+      "message": "I think it is stylistically better not to use a named return value unless I am manipulating the defer value in a defer block.",
+      "parentUuid": "a8cda89a_5fc8224a",
+      "range": {
+        "startLine": 50,
+        "startChar": 1,
+        "endLine": 50,
+        "endChar": 14
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "71a58b91_83c560ee",
@@ -363,6 +387,30 @@
       "writtenOn": "2021-08-05T18:40:51Z",
       "side": 1,
       "message": "please extract to constant and check if that is provided",
+      "range": {
+        "startLine": 74,
+        "startChar": 57,
+        "endLine": 74,
+        "endChar": 68
+      },
+      "revId": "76e766ff834c01c75d6f11f6fe9bff9f44028cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b86c799c_e7fc52f6",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/satlab_entrypoint.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-05T20:10:29Z",
+      "side": 1,
+      "message": "Done. I am checking whether it is provided below. The value of dockerHostBoxIdentifier will be `\"\"` is it wasn\u0027t passed.",
+      "parentUuid": "71a58b91_83c560ee",
       "range": {
         "startLine": 74,
         "startChar": 57,
