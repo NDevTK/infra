@@ -16,6 +16,24 @@
       "message": "comments from in-person review:\n\nrestructure this so that the subcommands are organized under resources.\n\n```\n/dut/add/... not /add/dut/...\n```",
       "revId": "f2de6a47940b983035f7574fb431877190f974af",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "00c8925c_e6b0afbb",
+        "filename": "go/src/infra/cros/cmd/satlab/main.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-06T23:58:15Z",
+      "side": 1,
+      "message": "commands\n    add\n    remove\n    update\ncomponents\n    dut\n       add.go (only to add dut logic of satlab)\n       update.go\n       asset.go (check/update/add/remove)\n       add_shivas_flags.go\n       remove_shivas_flags.go\n    bla",
+      "parentUuid": "77b08a3d_a453e3de",
+      "revId": "f2de6a47940b983035f7574fb431877190f974af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

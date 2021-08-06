@@ -37,6 +37,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c1022ad5_6d1394dc",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/paths/paths.go",
+        "patchSetId": 23
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-06T23:58:15Z",
+      "side": 1,
+      "message": "path.ShivasCLI",
+      "range": {
+        "startLine": 9,
+        "startChar": 1,
+        "endLine": 9,
+        "endChar": 11
+      },
+      "revId": "d74409da79b50447d3e6101363c3a73d21e1a2d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "f10e3959_1e5cd5df",
         "filename": "go/src/infra/cros/cmd/satlab/internal/subcmds/add/do_add.go",
         "patchSetId": 23
