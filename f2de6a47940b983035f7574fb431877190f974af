@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "77b08a3d_a453e3de",
+        "filename": "go/src/infra/cros/cmd/satlab/main.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-06T23:41:52Z",
+      "side": 1,
+      "message": "comments from in-person review:\n\nrestructure this so that the subcommands are organized under resources.\n\n```\n/dut/add/... not /add/dut/...\n```",
+      "revId": "f2de6a47940b983035f7574fb431877190f974af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
