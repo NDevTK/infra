@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3504989f_f4e436d0",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/add_dut_cmd.go",
+        "patchSetId": 29
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T20:56:12Z",
+      "side": 1,
+      "message": "please docs for address, skipDNS",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 41,
+        "endChar": 8
+      },
+      "revId": "672202cfc17a6ee6656e8fc3033aedabbce87877",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
