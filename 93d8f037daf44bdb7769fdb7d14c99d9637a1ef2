@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c006e260_f950d034",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-08-09T03:05:40Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "3784449d_3a11b58c",
+      "range": {
+        "startLine": 36,
+        "startChar": 1,
+        "endLine": 36,
+        "endChar": 20
+      },
+      "revId": "93d8f037daf44bdb7769fdb7d14c99d9637a1ef2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9d9f802b_561077c0",
@@ -54,6 +78,30 @@
       "writtenOn": "2021-08-03T21:03:43Z",
       "side": 1,
       "message": "Please create a tar archive using `archive/tar` (https://pkg.go.dev/archive/tar) rather than calling an external command.",
+      "range": {
+        "startLine": 139,
+        "startChar": 0,
+        "endLine": 139,
+        "endChar": 124
+      },
+      "revId": "93d8f037daf44bdb7769fdb7d14c99d9637a1ef2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6bc40ae6_c0e32324",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-08-09T03:05:40Z",
+      "side": 1,
+      "message": "I investigated this, and realized that while archive/tar can be use on the local machine (since I have access to the local file system), this cannot be used on the remote side of SSH connection. This is because I cannot directly access the remote file system over SSH Session. \n\nSo we necessarily will need to depend on the tar utility on the remote side to read and write the data. \n\nNow, since we are anyway going to depend on the tar utility on the remote side of SSH, I am wondering if we will gain anything by converting the call to tar utility on local system to archive/tar. \n\nSo I seek you thoughts about this: should we convert the tar generation or extraction on local machine to archive/tar even if we are required to use the system\u0027s tar utility on remote side?",
+      "parentUuid": "9d9f802b_561077c0",
       "range": {
         "startLine": 139,
         "startChar": 0,
@@ -87,6 +135,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "26c5fdbe_302aaa5c",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-08-09T03:05:40Z",
+      "side": 1,
+      "message": "Tast too does the same thing as here: There they have created a wrapper which accepts a slice of strings, and joins them to create a single string, which is then passed to command, e.g.: \"cs/chromeos_public/src/platform/tast/src/chromiumos/tast/shutil/shutil.go?l\u003d41\u0026rcl\u003d856d8060ad2ffe9634492c0039bee3e800fe45ae\"\n\nIn our case I thought of keeping it simple by directly making the command string. The set of CLs I am working on, the only two uses of this command string would be at the time of upload and download. I am not sure whether creating a wrapper to convert a slice of strings to a single command string is helpful. However, please let me know if you strongly feel this is needed.",
+      "parentUuid": "2415a3f7_1cb28ba4",
+      "range": {
+        "startLine": 167,
+        "startChar": 1,
+        "endLine": 171,
+        "endChar": 31
+      },
+      "revId": "93d8f037daf44bdb7769fdb7d14c99d9637a1ef2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "97d6a225_d25379df",
@@ -110,6 +182,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6807b6aa_0712818c",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-08-09T03:05:40Z",
+      "side": 1,
+      "message": "I looked at the example linked, and it looks like the reading of the channel is happening within an infinite for loop, and hence care is needed about when to exit from it. \n\nIn our program here, we do not have a for-loop that we need to iterate through. The method will wait for the go-routines to end because of the waitgroup wg.Wait(). Then, if there is even a single error, we will return with an error. If no error occurs, we will return nil.\n\nPlease let me know if this does not seem accurate.",
+      "parentUuid": "97d6a225_d25379df",
+      "range": {
+        "startLine": 189,
+        "startChar": 2,
+        "endLine": 189,
+        "endChar": 12
+      },
+      "revId": "93d8f037daf44bdb7769fdb7d14c99d9637a1ef2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d6e437bb_25a3ee67",
@@ -123,6 +219,30 @@
       "writtenOn": "2021-08-03T21:03:43Z",
       "side": 1,
       "message": "If this function is only use for copyfileto, please rename it to validateCopyFileTo",
+      "range": {
+        "startLine": 193,
+        "startChar": 4,
+        "endLine": 193,
+        "endChar": 23
+      },
+      "revId": "93d8f037daf44bdb7769fdb7d14c99d9637a1ef2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "25f50c44_6a187daa",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-08-09T03:05:40Z",
+      "side": 1,
+      "message": "This function is common helper function to be used from all the four methods of the Access interface that my series of CLs will address: CopyFileto, CopyFileFrom, CopyDirectoryTo and CopyDirectoryFrom. \n\nSo this is not limited to only CopyFileto.",
+      "parentUuid": "d6e437bb_25a3ee67",
       "range": {
         "startLine": 193,
         "startChar": 4,
@@ -169,6 +289,48 @@
       "writtenOn": "2021-08-03T21:15:26Z",
       "side": 1,
       "message": "please create separate function to check present dir and files to avoid extra params  and comlix functions",
+      "revId": "93d8f037daf44bdb7769fdb7d14c99d9637a1ef2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "45b6e090_1f408102",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 214,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-08-09T03:05:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "34565c24_3e78cf1b",
+      "revId": "93d8f037daf44bdb7769fdb7d14c99d9637a1ef2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8e265ac7_1b479ff8",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 214,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-08-09T03:05:40Z",
+      "side": 1,
+      "message": "Done.\n\nOne difference though: The function that checks for file is named checkFileExists instead of ensureFileExists since this function will not create the file if it does not exist. This different from the behavior of ensureDirectoryExists, which will also create the directory if it does not already exist.",
+      "parentUuid": "052b3df4_1b9685f8",
+      "range": {
+        "startLine": 214,
+        "startChar": 0,
+        "endLine": 214,
+        "endChar": 76
+      },
       "revId": "93d8f037daf44bdb7769fdb7d14c99d9637a1ef2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
