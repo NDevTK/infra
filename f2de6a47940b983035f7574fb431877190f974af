@@ -34,6 +34,24 @@
       "parentUuid": "77b08a3d_a453e3de",
       "revId": "f2de6a47940b983035f7574fb431877190f974af",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "66390daf_5badb24a",
+        "filename": "go/src/infra/cros/cmd/satlab/main.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-09T17:39:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "00c8925c_e6b0afbb",
+      "revId": "f2de6a47940b983035f7574fb431877190f974af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
