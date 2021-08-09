@@ -16,6 +16,132 @@
       "message": "I have addressed all the comments, kindly have a look.",
       "revId": "ac9fd329fedf4711563c35ddd34d36a7797d1a4f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "da1c56dc_9e4c4d97",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T04:12:49Z",
+      "side": 1,
+      "message": "nit: please add deref to delete created tar file",
+      "revId": "ac9fd329fedf4711563c35ddd34d36a7797d1a4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "44e7e0fd_e9b0bc84",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T04:12:49Z",
+      "side": 1,
+      "message": "nit: please add detail what are you doing here",
+      "revId": "ac9fd329fedf4711563c35ddd34d36a7797d1a4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "88eee38d_ac1069e3",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T04:12:49Z",
+      "side": 1,
+      "message": "nit: maybe dirPath? as there could be dir name and other options. please set readable name",
+      "range": {
+        "startLine": 212,
+        "startChar": 42,
+        "endLine": 212,
+        "endChar": 43
+      },
+      "revId": "ac9fd329fedf4711563c35ddd34d36a7797d1a4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fbafd915_2fc9698f",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T04:12:49Z",
+      "side": 1,
+      "message": "nit: `Ensure directory %q exists: confirmed.`?",
+      "range": {
+        "startLine": 226,
+        "startChar": 18,
+        "endLine": 226,
+        "endChar": 71
+      },
+      "revId": "ac9fd329fedf4711563c35ddd34d36a7797d1a4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fdb1358c_982a8cbb",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T04:12:49Z",
+      "side": 1,
+      "message": "please use errors.Reason(\"\").Err()",
+      "range": {
+        "startLine": 229,
+        "startChar": 8,
+        "endLine": 229,
+        "endChar": 19
+      },
+      "revId": "ac9fd329fedf4711563c35ddd34d36a7797d1a4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b659aae4_4b0f71cf",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T04:12:49Z",
+      "side": 1,
+      "message": "maybe filePath? as there could be file name and other options. please set readable name",
+      "range": {
+        "startLine": 234,
+        "startChar": 42,
+        "endLine": 234,
+        "endChar": 43
+      },
+      "revId": "ac9fd329fedf4711563c35ddd34d36a7797d1a4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
