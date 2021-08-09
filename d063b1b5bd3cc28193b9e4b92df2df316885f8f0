@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b36c7ee0_204050da",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2021-08-09T18:34:02Z",
+      "side": 1,
+      "message": "Begrudgingly stamping this.  All of /dev/ is not needed for a loopback device.  This should be rewritten to not expose so much to the containers.",
+      "revId": "d063b1b5bd3cc28193b9e4b92df2df316885f8f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
