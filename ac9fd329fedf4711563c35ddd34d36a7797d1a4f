@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b7294f8f_b1d320cf",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-08-09T20:49:43Z",
+      "side": 1,
+      "message": "In our case, the tar archive is not written to a file on the file system. The tar is written to stdout, which is copied to the stdin of the ssh session in the first go routine, through this statement: \"if _, err :\u003d io.Copy(p2, p); err !\u003d nil {\".\n\nSo deletion of the local file is not a concern.",
+      "parentUuid": "da1c56dc_9e4c4d97",
+      "revId": "ac9fd329fedf4711563c35ddd34d36a7797d1a4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "44e7e0fd_e9b0bc84",
@@ -52,6 +70,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2f388f55_20476697",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-08-09T20:49:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "44e7e0fd_e9b0bc84",
+      "revId": "ac9fd329fedf4711563c35ddd34d36a7797d1a4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "88eee38d_ac1069e3",
@@ -65,6 +101,30 @@
       "writtenOn": "2021-08-09T04:12:49Z",
       "side": 1,
       "message": "nit: maybe dirPath? as there could be dir name and other options. please set readable name",
+      "range": {
+        "startLine": 212,
+        "startChar": 42,
+        "endLine": 212,
+        "endChar": 43
+      },
+      "revId": "ac9fd329fedf4711563c35ddd34d36a7797d1a4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4ccd4c97_5ae5f78b",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-08-09T20:49:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "88eee38d_ac1069e3",
       "range": {
         "startLine": 212,
         "startChar": 42,
@@ -98,6 +158,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "143a2d46_1987776d",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-08-09T20:49:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fbafd915_2fc9698f",
+      "range": {
+        "startLine": 226,
+        "startChar": 18,
+        "endLine": 226,
+        "endChar": 71
+      },
+      "revId": "ac9fd329fedf4711563c35ddd34d36a7797d1a4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fdb1358c_982a8cbb",
@@ -121,6 +205,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "69d293c9_08accf7a",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-08-09T20:49:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fdb1358c_982a8cbb",
+      "range": {
+        "startLine": 229,
+        "startChar": 8,
+        "endLine": 229,
+        "endChar": 19
+      },
+      "revId": "ac9fd329fedf4711563c35ddd34d36a7797d1a4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b659aae4_4b0f71cf",
@@ -134,6 +242,30 @@
       "writtenOn": "2021-08-09T04:12:49Z",
       "side": 1,
       "message": "maybe filePath? as there could be file name and other options. please set readable name",
+      "range": {
+        "startLine": 234,
+        "startChar": 42,
+        "endLine": 234,
+        "endChar": 43
+      },
+      "revId": "ac9fd329fedf4711563c35ddd34d36a7797d1a4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b4e61fe4_39b70c97",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-08-09T20:49:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b659aae4_4b0f71cf",
       "range": {
         "startLine": 234,
         "startChar": 42,

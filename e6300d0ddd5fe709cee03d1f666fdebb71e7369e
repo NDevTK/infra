@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0cd9f16d_b02230e5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-08-09T20:49:43Z",
+      "side": 1,
+      "message": "I have made the requested changes, and have added justification for a couple of comments that did not require a code change. Kindly have a look.",
+      "revId": "e6300d0ddd5fe709cee03d1f666fdebb71e7369e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

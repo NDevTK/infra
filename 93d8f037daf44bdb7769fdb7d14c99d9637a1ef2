@@ -230,6 +230,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "17c3aac3_8752f295",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/io/io.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-08-09T20:49:43Z",
+      "side": 1,
+      "message": "As discussed, this looks okay. However, I will be happy to go over this once again if this does not look convincing.\n\nI am marking this as resolved for now.",
+      "parentUuid": "9a49eee9_2c65681f",
+      "range": {
+        "startLine": 189,
+        "startChar": 2,
+        "endLine": 189,
+        "endChar": 12
+      },
+      "revId": "93d8f037daf44bdb7769fdb7d14c99d9637a1ef2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d6e437bb_25a3ee67",
