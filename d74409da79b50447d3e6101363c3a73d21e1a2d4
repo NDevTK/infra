@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5e7e582c_f6765424",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/adders/asset.go",
+        "patchSetId": 23
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-09T18:07:21Z",
+      "side": 1,
+      "message": "I kept it public, but made the package internal.",
+      "parentUuid": "fad516f3_6bbcb5e0",
+      "revId": "d74409da79b50447d3e6101363c3a73d21e1a2d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e7888419_59bae079",
@@ -31,6 +49,24 @@
       "writtenOn": "2021-08-06T23:49:42Z",
       "side": 1,
       "message": "please split to two methods like \n\ns :\u003d \u0026bla{}\nif !s.exist() {\n   s.create()\n   print(\"created\")\n}else{\n   print(\"not need to do\")\n}",
+      "revId": "d74409da79b50447d3e6101363c3a73d21e1a2d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8be5bc13_962d6e6f",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/adders/asset.go",
+        "patchSetId": 23
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-09T18:07:21Z",
+      "side": 1,
+      "message": "Done. Split to two methods as implementation detail.",
+      "parentUuid": "e7888419_59bae079",
       "revId": "d74409da79b50447d3e6101363c3a73d21e1a2d4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -58,6 +94,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dd99fb30_331125e6",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/paths/paths.go",
+        "patchSetId": 23
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-09T18:07:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c1022ad5_6d1394dc",
+      "range": {
+        "startLine": 9,
+        "startChar": 1,
+        "endLine": 9,
+        "endChar": 11
+      },
+      "revId": "d74409da79b50447d3e6101363c3a73d21e1a2d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f10e3959_1e5cd5df",
@@ -71,6 +131,24 @@
       "writtenOn": "2021-08-06T23:49:42Z",
       "side": 1,
       "message": "move it as innerRun of addDUT and move to add_dut.go",
+      "revId": "d74409da79b50447d3e6101363c3a73d21e1a2d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f3f56a09_f93bf425",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/subcmds/add/do_add.go",
+        "patchSetId": 23
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-09T18:07:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f10e3959_1e5cd5df",
       "revId": "d74409da79b50447d3e6101363c3a73d21e1a2d4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -92,6 +170,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5756298a_0d26c5d4",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/subcmds/add/shivas.go",
+        "patchSetId": 23
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-09T18:07:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "41f5c750_7d936b73",
+      "revId": "d74409da79b50447d3e6101363c3a73d21e1a2d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d117a77c_706cc51f",
@@ -105,6 +201,30 @@
       "writtenOn": "2021-08-06T23:49:42Z",
       "side": 1,
       "message": "satlab",
+      "range": {
+        "startLine": 22,
+        "startChar": 5,
+        "endLine": 22,
+        "endChar": 11
+      },
+      "revId": "d74409da79b50447d3e6101363c3a73d21e1a2d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "80681f44_622b9ea7",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/subcmds/get/do_get.go",
+        "patchSetId": 23
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-09T18:07:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d117a77c_706cc51f",
       "range": {
         "startLine": 22,
         "startChar": 5,
