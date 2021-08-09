@@ -250,6 +250,24 @@
       "message": "move the adders under the add command (they do not need to be a separate package).\n\nAdditionally, the name `Run` is too abstract, replace it with `Check` and `Update`.",
       "revId": "d74409da79b50447d3e6101363c3a73d21e1a2d4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e0ca3cac_0e85a7d9",
+        "filename": "go/src/infra/cros/cmd/satlab/main.go",
+        "patchSetId": 23
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-09T18:07:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "470d97b4_4b12a2e4",
+      "revId": "d74409da79b50447d3e6101363c3a73d21e1a2d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
