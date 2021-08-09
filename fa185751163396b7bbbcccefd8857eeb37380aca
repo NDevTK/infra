@@ -1,0 +1,422 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a3058a83_2b00e88e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 26
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T19:20:05Z",
+      "side": 1,
+      "message": "not done",
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8019b1b9_deef6a1a",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/satlab_utils.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T19:20:05Z",
+      "side": 1,
+      "message": "please do not keep them here, move close where you use them, is you use in many place then create package `io` or `temp`\n\nok if target in separate cl",
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f44d5aa3_dfcf7e26",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/satlab_utils.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T19:20:05Z",
+      "side": 1,
+      "message": "please move where you use it. do not make commands package as utils \n\nok if target in separate cl",
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2480c2f6_f5fdde23",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/common/common.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T19:20:05Z",
+      "side": 1,
+      "message": "make it package satlab of site",
+      "range": {
+        "startLine": 5,
+        "startChar": 8,
+        "endLine": 5,
+        "endChar": 14
+      },
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b90fbfa0_57f38384",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/get/get_dut_cmd.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T19:20:05Z",
+      "side": 1,
+      "message": "rename file to get_dut.go and remove folder get as extra.\n\ni think we will have all commands her like \n\nget_dut.go\nget_dut_shivas_flags.go\nadd_dut.go\nadd_dut_shivas_flags.go\ndetele_dut.go\ndelete_dut_shivas_flags.go",
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7b7a5f0a_32130909",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/get/get_dut_cmd.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T19:20:05Z",
+      "side": 1,
+      "message": "rename to GetDUTCmd here and reflect in other commands",
+      "range": {
+        "startLine": 22,
+        "startChar": 4,
+        "endLine": 22,
+        "endChar": 10
+      },
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0b135d0d_e587f636",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/get/get_dut_cmd.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T19:20:05Z",
+      "side": 1,
+      "message": "sorry makeDefaultShivasCommand is confusing here. please try \n```\nc :\u003d \u0026getDUT{}\nregisterShivasFlags(c)\nreturn c\n```\nhere and reflect in other places",
+      "range": {
+        "startLine": 26,
+        "startChar": 7,
+        "endLine": 26,
+        "endChar": 31
+      },
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7efa4010_a89a0529",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/get/get_dut_cmd.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T19:20:05Z",
+      "side": 1,
+      "message": "nit: please use log to print all data",
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "acf0fdf2_0b47c3d8",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/internal/adders/dut.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T19:20:05Z",
+      "side": 1,
+      "message": "please deleet it as it will be preset in satlab, we talk in the meeting",
+      "range": {
+        "startLine": 17,
+        "startChar": 1,
+        "endLine": 17,
+        "endChar": 10
+      },
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1db08327_87787ff9",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/internal/adders/dut.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T19:20:05Z",
+      "side": 1,
+      "message": "name of the DUt then you can just call it name?",
+      "range": {
+        "startLine": 19,
+        "startChar": 1,
+        "endLine": 19,
+        "endChar": 5
+      },
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5d5b650e_1ff272dd",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/internal/adders/dut.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T19:20:05Z",
+      "side": 1,
+      "message": "please annotate all errors, always",
+      "range": {
+        "startLine": 28,
+        "startChar": 2,
+        "endLine": 28,
+        "endChar": 12
+      },
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "90207226_0beea4d6",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/internal/adders/dut.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T19:20:05Z",
+      "side": 1,
+      "message": "dut?",
+      "range": {
+        "startLine": 33,
+        "startChar": 26,
+        "endLine": 33,
+        "endChar": 31
+      },
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "033b899e_da1e7666",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/internal/adders/dut.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T19:20:05Z",
+      "side": 1,
+      "message": "`check dut in shivas`?",
+      "range": {
+        "startLine": 54,
+        "startChar": 35,
+        "endLine": 54,
+        "endChar": 56
+      },
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bfff6c0e_76545a76",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/internal/adders/dut.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T19:20:05Z",
+      "side": 1,
+      "message": "`add dut`?",
+      "range": {
+        "startLine": 81,
+        "startChar": 25,
+        "endLine": 81,
+        "endChar": 46
+      },
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "521b72be_7e173389",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/internal/adders/dut.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T19:20:05Z",
+      "side": 1,
+      "message": "add dut\n\nplease reflect changes in other places",
+      "range": {
+        "startLine": 89,
+        "startChar": 4,
+        "endLine": 89,
+        "endChar": 25
+      },
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f8f4e0f0_4abf6cf7",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/internal/adders/rack.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T19:20:05Z",
+      "side": 1,
+      "message": "i think we talk that rack, asset and dut will be in package \"infra/cros/cmd/satlab/internal/components/dut\"\n\nif you still want to keep them in separate package then make \"infra/cros/cmd/satlab/internal/components/dut/shivas\"",
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3adbb24d_032953da",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/internal/adders/rack.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T19:20:05Z",
+      "side": 1,
+      "message": "Name? as inside the rack type",
+      "range": {
+        "startLine": 20,
+        "startChar": 1,
+        "endLine": 20,
+        "endChar": 5
+      },
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8693d29d_cd7db2c7",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/internal/adders/rack.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T19:20:05Z",
+      "side": 1,
+      "message": "please add doc for each public method",
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c3826c41_f54beeea",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/internal/adders/rack.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T19:20:05Z",
+      "side": 1,
+      "message": "rack?",
+      "range": {
+        "startLine": 33,
+        "startChar": 26,
+        "endLine": 33,
+        "endChar": 29
+      },
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9e8eab75_b6b22d9a",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/subcmds/get.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T19:20:05Z",
+      "side": 1,
+      "message": "i think just dut level is good, not need to create get level",
+      "range": {
+        "startLine": 11,
+        "startChar": 1,
+        "endLine": 11,
+        "endChar": 52
+      },
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
