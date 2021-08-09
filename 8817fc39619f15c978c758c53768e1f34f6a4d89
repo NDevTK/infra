@@ -1,0 +1,279 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7edb7f7b_35e6df49",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 31
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T22:16:10Z",
+      "side": 1,
+      "message": "feel free after address the comments",
+      "revId": "8817fc39619f15c978c758c53768e1f34f6a4d89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "62d8571a_daeae941",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/add_dut_cmd.go",
+        "patchSetId": 31
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T22:16:10Z",
+      "side": 1,
+      "message": "\u0026addDUT{}?",
+      "range": {
+        "startLine": 28,
+        "startChar": 7,
+        "endLine": 28,
+        "endChar": 34
+      },
+      "revId": "8817fc39619f15c978c758c53768e1f34f6a4d89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8b296b3d_e1859b21",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/add_dut_cmd.go",
+        "patchSetId": 31
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T22:16:10Z",
+      "side": 1,
+      "message": "follow cl: add validation that Namespace for shivas is present",
+      "revId": "8817fc39619f15c978c758c53768e1f34f6a4d89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "572b3603_6a43d281",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/add_dut_cmd.go",
+        "patchSetId": 31
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T22:16:10Z",
+      "side": 1,
+      "message": "please wrap to if",
+      "range": {
+        "startLine": 68,
+        "startChar": 2,
+        "endLine": 69,
+        "endChar": 46
+      },
+      "revId": "8817fc39619f15c978c758c53768e1f34f6a4d89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ae1d61e9_9b3d8a1f",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/add_dut_cmd.go",
+        "patchSetId": 31
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T22:16:10Z",
+      "side": 1,
+      "message": "extract to const",
+      "range": {
+        "startLine": 77,
+        "startChar": 41,
+        "endLine": 77,
+        "endChar": 49
+      },
+      "revId": "8817fc39619f15c978c758c53768e1f34f6a4d89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b28dc5e5_f452b889",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/add_dut_cmd.go",
+        "patchSetId": 31
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T22:16:10Z",
+      "side": 1,
+      "message": "please apply skipDNS flag",
+      "revId": "8817fc39619f15c978c758c53768e1f34f6a4d89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5b7097f3_b671534f",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/add_shivas_flags.go",
+        "patchSetId": 31
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T22:16:10Z",
+      "side": 1,
+      "message": "i think we cannot support it as we adjust names during deployments.",
+      "range": {
+        "startLine": 29,
+        "startChar": 1,
+        "endLine": 31,
+        "endChar": 2
+      },
+      "revId": "8817fc39619f15c978c758c53768e1f34f6a4d89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "94564377_91e0091f",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/add_shivas_flags.go",
+        "patchSetId": 31
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T22:16:10Z",
+      "side": 1,
+      "message": "remove as we do not need support it",
+      "range": {
+        "startLine": 68,
+        "startChar": 1,
+        "endLine": 70,
+        "endChar": 2
+      },
+      "revId": "8817fc39619f15c978c758c53768e1f34f6a4d89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b26e968b_3778ea09",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/add_shivas_flags.go",
+        "patchSetId": 31
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T22:16:10Z",
+      "side": 1,
+      "message": "remove, as deploy will set unknown by default",
+      "range": {
+        "startLine": 86,
+        "startChar": 1,
+        "endLine": 88,
+        "endChar": 2
+      },
+      "revId": "8817fc39619f15c978c758c53768e1f34f6a4d89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "462ff393_35ffa0e6",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/delete_dut.go",
+        "patchSetId": 31
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T22:16:10Z",
+      "side": 1,
+      "message": "please do not ignore error, \n\nplease annotate and return",
+      "range": {
+        "startLine": 51,
+        "startChar": 26,
+        "endLine": 51,
+        "endChar": 27
+      },
+      "revId": "8817fc39619f15c978c758c53768e1f34f6a4d89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "17a204c0_f445ab63",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/get_dut_cmd.go",
+        "patchSetId": 31
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T22:16:10Z",
+      "side": 1,
+      "message": "please do not ignore error",
+      "range": {
+        "startLine": 57,
+        "startChar": 26,
+        "endLine": 57,
+        "endChar": 28
+      },
+      "revId": "8817fc39619f15c978c758c53768e1f34f6a4d89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "07769a1d_3df1aca5",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/get_shivas_flags.go",
+        "patchSetId": 31
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T22:16:10Z",
+      "side": 1,
+      "message": "please add json option too",
+      "range": {
+        "startLine": 47,
+        "startChar": 1,
+        "endLine": 49,
+        "endChar": 2
+      },
+      "revId": "8817fc39619f15c978c758c53768e1f34f6a4d89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "415df741_ede38733",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/shivas.go",
+        "patchSetId": 31
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-09T22:16:10Z",
+      "side": 1,
+      "message": "rename to delete_shivas_flags.go\n\nor better to merge it to the delete_dut.go as there is nothing really",
+      "revId": "8817fc39619f15c978c758c53768e1f34f6a4d89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
