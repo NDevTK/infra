@@ -152,6 +152,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "910e75e5_f5544727",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/get/get_dut_cmd.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-09T19:53:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b90fbfa0_57f38384",
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7b7a5f0a_32130909",
@@ -787,6 +805,30 @@
       "writtenOn": "2021-08-09T19:20:05Z",
       "side": 1,
       "message": "i think just dut level is good, not need to create get level",
+      "range": {
+        "startLine": 11,
+        "startChar": 1,
+        "endLine": 11,
+        "endChar": 52
+      },
+      "revId": "fa185751163396b7bbbcccefd8857eeb37380aca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "82c9650e_5efe746b",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/subcmds/get.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-09T19:53:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9e8eab75_b6b22d9a",
       "range": {
         "startLine": 11,
         "startChar": 1,
