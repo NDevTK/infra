@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "20e19697_ef0c64fe",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2021-08-10T19:06:26Z",
+      "side": 1,
+      "message": "Awesome, LGTM with just some tiny nits left. :)",
+      "revId": "933cdac3958ca1f3d00e6be09b7fb2652be322f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

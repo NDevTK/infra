@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a82650ce_cc0dab30",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/DetailsStep.tsx",
+        "patchSetId": 4
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2021-08-10T19:06:26Z",
+      "side": 1,
+      "message": "Nit: Usually we want JS docs right before the function they\u0027re documenting. ie:\n\n```\n/**\n * The detail step is the second step on the dot\n * stepper. This react component provides the users with\n * specific questions about their bug to be filled out.\n */\nexport default function DetailsStep() {\n```",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 3
+      },
+      "revId": "8750ec4b3a6dd1a86724192d8416dac67921920b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e613c710_f3ee4606",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/DetailsStep.tsx",
+        "patchSetId": 4
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2021-08-10T19:06:26Z",
+      "side": 1,
+      "message": "Nit: Missing type annotation \n\n`export default function DetailsStep(): React.ReactElement {`",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 39,
+        "endChar": 37
+      },
+      "revId": "8750ec4b3a6dd1a86724192d8416dac67921920b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
