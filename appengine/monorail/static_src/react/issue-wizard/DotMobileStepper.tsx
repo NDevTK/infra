@@ -28,7 +28,6 @@ const useStyles = makeStyles({
  */
 export default function DotsMobileStepper(): React.ReactElement {
   const classes = useStyles();
-  const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
 
   const handleNext = () => {
