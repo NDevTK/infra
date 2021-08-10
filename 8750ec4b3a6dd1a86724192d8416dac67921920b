@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1ec78a6d_db04df60",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/DetailsStep.tsx",
+        "patchSetId": 4
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1510787
+      },
+      "writtenOn": "2021-08-10T19:10:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a82650ce_cc0dab30",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 3
+      },
+      "revId": "8750ec4b3a6dd1a86724192d8416dac67921920b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e613c710_f3ee4606",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-08-10T19:06:26Z",
       "side": 1,
       "message": "Nit: Missing type annotation \n\n`export default function DetailsStep(): React.ReactElement {`",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 39,
+        "endChar": 37
+      },
+      "revId": "8750ec4b3a6dd1a86724192d8416dac67921920b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "53cfcccd_9441132a",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/DetailsStep.tsx",
+        "patchSetId": 4
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1510787
+      },
+      "writtenOn": "2021-08-10T19:10:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e613c710_f3ee4606",
       "range": {
         "startLine": 39,
         "startChar": 0,
