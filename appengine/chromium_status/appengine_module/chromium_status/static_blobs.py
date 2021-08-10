@@ -8,8 +8,9 @@ import urllib
 
 from google.appengine.api import mail
 from google.appengine.api import memcache
-from google.appengine.ext import db
 from google.appengine.ext import webapp
+
+from google.cloud import ndb
 
 from appengine_module.chromium_status import base_page
 
@@ -18,13 +19,13 @@ VALID_RESOURCES = ['favicon.ico', 'logo.png']
 # pylint: disable=W0221
 
 
-class StaticBlobInlineFile(db.Model):
+class StaticBlobInlineFile(ndb.Model):
   """A reference to a static blob to serve."""
-  blob = db.BlobProperty(required=True)
-  filename = db.StringProperty(required=True)
-  original_filename = db.StringProperty(required=True)
-  size = db.IntegerProperty(required=True)
-  creation = db.DateTimeProperty(required=True, auto_now=True)
+  blob = ndb.BlobProperty(required=True)
+  filename = ndb.StringProperty(required=True)
+  original_filename = ndb.StringProperty(required=True)
+  size = ndb.IntegerProperty(required=True)
+  creation = ndb.DateTimeProperty(required=True, auto_now=True)
 
 
 class UploadHandler(webapp.RequestHandler):

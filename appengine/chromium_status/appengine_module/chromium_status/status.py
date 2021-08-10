@@ -10,7 +10,7 @@ import json
 import re
 
 from google.appengine.api import memcache
-from google.appengine.ext import db
+from google.cloud import ndb
 
 from appengine_module.chromium_status.base_page import BasePage
 from appengine_module.chromium_status import utils
@@ -206,14 +206,14 @@ class LinkableText(object):
     return self.raw_text
 
 
-class Status(db.Model):
+class Status(ndb.Model):
   """Description for the status table."""
   # The username who added this status.
-  username = db.StringProperty(required=True)
+  username = ndb.StringProperty(required=True)
   # The date when the status got added.
-  date = db.DateTimeProperty(auto_now_add=True)
+  date = ndb.DateTimeProperty(auto_now_add=True)
   # The message. It can contain html code.
-  message = db.StringProperty(required=True)
+  message = ndb.StringProperty(required=True)
 
   def __init__(self, *args, **kwargs):
     # Normalize newlines otherwise the DB store barfs.  We don't really want to

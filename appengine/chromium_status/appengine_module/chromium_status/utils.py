@@ -7,7 +7,7 @@
 import os
 
 from google.appengine.api import users
-from google.appengine.ext import db
+from google.cloud import ndb
 
 
 def is_dev_env():  # pragma: no cover

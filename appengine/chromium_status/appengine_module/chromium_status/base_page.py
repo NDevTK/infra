@@ -13,29 +13,32 @@ import re
 from google.appengine.api import memcache
 from google.appengine.api import oauth
 from google.appengine.api import users
-from google.appengine.ext import db
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
+
+from google.cloud import ndb
 
 from appengine_module.chromium_status import utils
 
 
-class Passwords(db.Model):
+ndb_client = ndb.Client()
+
+class Passwords(ndb.Model):
   """Super users. Useful for automated scripts."""
-  password_sha1 = db.StringProperty(required=True, multiline=False)
+  password_sha1 = ndb.StringProperty(required=True, multiline=False)
 
 
-class GlobalConfig(db.Model):
+class GlobalConfig(ndb.Model):
   """Instance-specific config like application name."""
-  app_name = db.StringProperty(required=True)
+  app_name = ndb.StringProperty(required=True)
   # Flag indicating that anonymous viewing is possible.
-  public_access = db.BooleanProperty()
+  public_access = ndb.BooleanProperty()
   # Flag indicating that this is a ChromiumOS status page
-  is_chromiumos = db.BooleanProperty(default=False)
+  is_chromiumos = ndb.BooleanProperty(default=False)
   # Preamble text to appear directly above status-editing field
-  preamble = db.StringProperty(required=False)
+  preamble = ndb.StringProperty(required=False)
   # Postamble text to appear directly beneath status-editing field
-  postamble = db.StringProperty(required=False)
+  postamble = ndb.StringProperty(required=False)
 
 
 class BasePage(webapp.RequestHandler):
@@ -79,25 +82,27 @@ class BasePage(webapp.RequestHandler):
       password = self.request.get('password')
       if password:
         sha1_pass = hashlib.sha1(password).hexdigest()
-        if Passwords.gql('WHERE password_sha1 = :1', sha1_pass).get():
-          # The password is valid, this is a super admin.
-          self._write_access = True
-          self._read_access = True
-          self._bot_login = True
-        else:
-          if utils.is_dev_env() and password == 'foobar':
-            # Dev server is unsecure.
-            self._read_access = True
+        with ndb_client.context():
+          if Passwords.query(Passwords.password_sha1 == sha1_pass).get():
+            # The password is valid, this is a super admin.
             self._write_access = True
+            self._read_access = True
             self._bot_login = True
           else:
-            logging.error('Password is invalid')
+            if utils.is_dev_env() and password == 'foobar':
+              # Dev server is unsecure.
+              self._read_access = True
+              self._write_access = True
+              self._bot_login = True
+            else:
+              logging.error('Password is invalid')
 
     self._user = users.get_current_user()
     if utils.is_dev_env():
       look_for_password()
       # Maybe the tests reloaded our public settings ...
-      self.PUBLIC_ACCESS = GlobalConfig.all().get().public_access
+      with ndb_client.context():
+        self.PUBLIC_ACCESS = GlobalConfig.query().get().public_access
     elif not self._user:
       try:
         self._user = oauth.get_current_user()
@@ -185,7 +190,8 @@ def bootstrap():  # pragma: no cover
   app_name = os.environ['APPLICATION_ID']
   if app_name.endswith('-status'):
     app_name = app_name[:-7]
-  config = GlobalConfig.all().get()
+  with ndb_client.context():
+    config = GlobalConfig.query().get()
   if config is None:
     # Insert a dummy GlobalConfig so it can be edited through the admin
     # console
@@ -209,6 +215,7 @@ def bootstrap():  # pragma: no cover
   BasePage.PREAMBLE = config.preamble
   BasePage.POSTAMBLE = config.postamble
 
-  if db.GqlQuery('SELECT __key__ FROM Passwords').get() is None:
-    # Insert a dummy Passwords so it can be edited through the admin console
-    Passwords(password_sha1='invalidhash').put()
+  with ndb_client.context():
+    if Passwords.query().get() is None:
+      # Insert a dummy Passwords so it can be edited through the admin console
+      Passwords(password_sha1='invalidhash').put()
