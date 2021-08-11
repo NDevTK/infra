@@ -114,6 +114,18 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 		c.zone = site.DefaultZone
 	}
 
+	// Update the DNS entry first. This step must run before we deploy the DUT.
+	// This step can occur in any order with respect to ensuring the existence of the rack or
+	// the asset.
+	if !c.skipDNS {
+		if err := dns.UpdateRecord(
+			c.qualifiedHostname,
+			c.address,
+		); err != nil {
+			return errors.Annotate(err, "add dut").Err()
+		}
+	}
+
 	if err := (&shivas.Rack{
 		Name:      c.qualifiedRack,
 		Namespace: c.envFlags.Namespace,
@@ -143,15 +155,6 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 		ShivasArgs: makeAddShivasFlags(c),
 	}).CheckAndUpdate(); err != nil {
 		return errors.Annotate(err, "add dut").Err()
-	}
-
-	if !c.skipDNS {
-		if err := dns.UpdateRecord(
-			c.qualifiedHostname,
-			c.address,
-		); err != nil {
-			return errors.Annotate(err, "add dut").Err()
-		}
 	}
 
 	return nil
