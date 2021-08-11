@@ -22,6 +22,30 @@
       },
       "revId": "37cdba64d1e08a1aa6d157fc7dfed836df42d021",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "daa898cb_f6207b5f",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/dns/dns.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-11T22:55:49Z",
+      "side": 1,
+      "message": "This function is not used outside this package, so I don\u0027t think there\u0027s a need to export it.\n\nI always capitalize all comments describing functions, so that way the comment is still correct if I change the visibility of a function later.",
+      "parentUuid": "f440c5df_19b55fba",
+      "range": {
+        "startLine": 87,
+        "startChar": 5,
+        "endLine": 87,
+        "endChar": 18
+      },
+      "revId": "37cdba64d1e08a1aa6d157fc7dfed836df42d021",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
