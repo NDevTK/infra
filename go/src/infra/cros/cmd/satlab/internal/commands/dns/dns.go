@@ -52,7 +52,7 @@ func writeBackup(content string) error {
 }
 
 // SetDNSFileContent set the content of the DNS file.
-func setDNSFileContent(content string) error {
+func SetDNSFileContent(content string) error {
 	name, err := commands.MakeTempFile(content)
 	if err != nil {
 		return errors.Annotate(err, "set dns file content").Err()
@@ -67,9 +67,9 @@ func setDNSFileContent(content string) error {
 	return errors.Annotate(err, fmt.Sprintf("set backup dns file content: running %s", strings.Join(args, " "))).Err()
 }
 
-// forceReloadDNSMasqProcess sends the hangup signal to the dnsmasq process inside the dns container
+// ForceReloadDNSMasqProcess sends the hangup signal to the dnsmasq process inside the dns container
 // and forces it to reload its config.
-func forceReloadDNSMasqProcess() error {
+func ForceReloadDNSMasqProcess() error {
 	args := []string{
 		paths.DockerPath,
 		"exec",
@@ -84,11 +84,7 @@ func forceReloadDNSMasqProcess() error {
 
 // EnsureRecords ensures that the given DNS records in question are up to date with respect to
 // a map mapping hostnames to addresses.
-func ensureRecords(newRecords map[string]string) error {
-	content, err := readContents()
-	if err != nil {
-		return errors.Annotate(err, "ensure dns records").Err()
-	}
+func ensureRecords(content string, newRecords map[string]string) error {
 	// Set the backup DNS file so that the user can see the previous state.
 	if err := writeBackup(content); err != nil {
 		return errors.Annotate(err, "ensure dns records").Err()
@@ -112,10 +108,10 @@ func ensureRecords(newRecords map[string]string) error {
 	if err != nil {
 		return errors.Annotate(err, "ensure dns records").Err()
 	}
-	if err := setDNSFileContent(strings.Join(newContent, "\n")); err != nil {
+	if err := SetDNSFileContent(strings.Join(newContent, "\n")); err != nil {
 		return errors.Annotate(err, "ensure dns records").Err()
 	}
-	if err := forceReloadDNSMasqProcess(); err != nil {
+	if err := ForceReloadDNSMasqProcess(); err != nil {
 		return errors.Annotate(err, "ensure dns records").Err()
 	}
 	return nil
@@ -167,7 +163,7 @@ func replaceLineContents(lines []string, classifier classifier, replacer replace
 		decision := classifier(line)
 		switch decision {
 		case commands.Unknown:
-			return nil, errors.New("unexpected decision")
+			return nil, errors.New("replace line contents: unexpected decision")
 		case commands.Keep:
 			out = append(out, line)
 		case commands.Modify:
@@ -175,7 +171,7 @@ func replaceLineContents(lines []string, classifier classifier, replacer replace
 		case commands.Reject:
 			continue
 		default:
-			return nil, errors.New("unrecongized decision")
+			return nil, errors.New("replace line contents: unrecognized decision")
 		}
 	}
 	return out, nil
@@ -183,14 +179,20 @@ func replaceLineContents(lines []string, classifier classifier, replacer replace
 
 // UpdateRecord ensures that the contents of the /etc/hosts file in the dns container are up to date
 // with a given host and address.
-func UpdateRecord(host string, addr string) error {
+// UpdateRecord returns the original contents before modification, to allow its caller to undo the modification.
+func UpdateRecord(host string, addr string) (string, error) {
 	if host == "" {
-		return errors.New("no hostname")
+		return "", errors.New("update record: no hostname")
 	}
 	if addr == "" {
-		return errors.New("no address")
+		return "", errors.New("update record: no address")
 	}
-	return ensureRecords(map[string]string{
-		host: addr,
-	})
+	content, err := readContents()
+	if err != nil {
+		return "", errors.Annotate(err, "update record").Err()
+	}
+	if err := ensureRecords(content, map[string]string{host: addr}); err != nil {
+		return "", errors.Annotate(err, "update record").Err()
+	}
+	return content, nil
 }
