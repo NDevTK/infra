@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b2f1e3ed_c70582f4",
+        "filename": "go/src/infra/unifiedfleet/api/v1/models/chromeos/lab/servo.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2021-08-11T20:35:38Z",
+      "side": 1,
+      "message": "docker_container_name?",
+      "range": {
+        "startLine": 26,
+        "startChar": 9,
+        "endLine": 26,
+        "endChar": 25
+      },
+      "revId": "550f899c76e5aad3f03f35620f4c8592acae461c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
