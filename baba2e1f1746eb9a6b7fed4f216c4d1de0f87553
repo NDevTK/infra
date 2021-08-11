@@ -22,6 +22,30 @@
       },
       "revId": "baba2e1f1746eb9a6b7fed4f216c4d1de0f87553",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d4fe935a_7e215535",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/add_dut_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-11T22:35:36Z",
+      "side": 1,
+      "message": "I updated it to restore the file contents exactly if we encounter an error.",
+      "parentUuid": "2ae2322b_a1e54142",
+      "range": {
+        "startLine": 121,
+        "startChar": 16,
+        "endLine": 121,
+        "endChar": 28
+      },
+      "revId": "baba2e1f1746eb9a6b7fed4f216c4d1de0f87553",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
