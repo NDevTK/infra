@@ -65,7 +65,7 @@ func TestCreateProjectBuildspec(t *testing.T) {
 	t.Parallel()
 	program := "galaxy"
 	project := "milkyway"
-	buildspec := "90/13811.0.0.xml"
+	buildspec := "full/buildspecs/90/13811.0.0.xml"
 	releaseBranch := "refs/heads/release-R90-13816.B"
 
 	// Mock Gitiles controller
@@ -111,7 +111,7 @@ func TestCreateProjectBuildspec(t *testing.T) {
 	// Mock external buildspec file request.
 	reqExternalBuildspec := &gitilespb.DownloadFileRequest{
 		Project:    "chromiumos/manifest-versions",
-		Path:       "buildspecs/" + buildspec,
+		Path:       buildspec,
 		Committish: "HEAD",
 	}
 	gitilesMock.EXPECT().DownloadFile(gomock.Any(), gerrit.DownloadFileRequestEq(reqExternalBuildspec)).Return(
@@ -124,7 +124,7 @@ func TestCreateProjectBuildspec(t *testing.T) {
 	// Mock buildspec file request.
 	reqBuildspecs := &gitilespb.DownloadFileRequest{
 		Project:    "chromeos/manifest-versions",
-		Path:       "buildspecs/" + buildspec,
+		Path:       buildspec,
 		Committish: "HEAD",
 	}
 	gitilesMock.EXPECT().DownloadFile(gomock.Any(), gerrit.DownloadFileRequestEq(reqBuildspecs)).Return(

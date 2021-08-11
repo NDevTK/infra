@@ -279,9 +279,12 @@ func (b *localManifestBrancher) BranchLocalManifests(ctx context.Context, dsClie
 	var branches []string
 	if len(b.specificBranches) != 0 {
 		branches = b.specificBranches
+		fmt.Printf("%v\n", branches)
 	} else {
 		var err error
 		branches, err = branch.BranchesFromMilestone(checkout, minMilestone)
+		fmt.Printf("%v\n", branches)
+		return fmt.Errorf("foo")
 		if err != nil {
 			return errors.Annotate(err, "BranchesFromMilestone failure").Err()
 		}
