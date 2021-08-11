@@ -16,6 +16,23 @@
       "message": "LGTM",
       "revId": "b553d6e4244d928acdcf9ac24b726ab0a7f438b0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b2379c6c_3bdc8c66",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-11T20:54:06Z",
+      "side": 1,
+      "message": "please note the changes will be available after next UFS push to the prod",
+      "revId": "b553d6e4244d928acdcf9ac24b726ab0a7f438b0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
