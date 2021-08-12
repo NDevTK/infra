@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ab37cd11_0baa7dc0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1360310
+      },
+      "writtenOn": "2021-08-12T21:52:34Z",
+      "side": 1,
+      "message": "lgtm % comment",
+      "revId": "9282ec90958a02c2d324feddbed606fa1354bf10",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "572cde7a_27c618a0",
+        "filename": "appengine/findit/services/code_coverage/code_coverage_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1360310
+      },
+      "writtenOn": "2021-08-12T21:52:34Z",
+      "side": 1,
+      "message": "Is there a reason to not cover this?",
+      "range": {
+        "startLine": 68,
+        "startChar": 49,
+        "endLine": 68,
+        "endChar": 69
+      },
+      "revId": "9282ec90958a02c2d324feddbed606fa1354bf10",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
