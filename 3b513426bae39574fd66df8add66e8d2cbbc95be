@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "95704e1d_5be961ea",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-12T01:15:40Z",
+      "side": 1,
+      "message": "not done yet",
+      "revId": "3b513426bae39574fd66df8add66e8d2cbbc95be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2032cc6e_142076eb",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/dns/dns.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-12T01:15:40Z",
+      "side": 1,
+      "message": "please add comment as name is not telling meaning",
+      "revId": "3b513426bae39574fd66df8add66e8d2cbbc95be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
