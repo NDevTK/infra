@@ -46,6 +46,30 @@
       },
       "revId": "550f899c76e5aad3f03f35620f4c8592acae461c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "98cf963f_b18d0dda",
+        "filename": "go/src/infra/unifiedfleet/api/v1/models/chromeos/lab/servo.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-08-12T03:58:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "743acd81_00afdba5",
+      "range": {
+        "startLine": 26,
+        "startChar": 9,
+        "endLine": 26,
+        "endChar": 25
+      },
+      "revId": "550f899c76e5aad3f03f35620f4c8592acae461c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
