@@ -50,6 +50,24 @@
       "message": "please add comment as name is not telling meaning",
       "revId": "3b513426bae39574fd66df8add66e8d2cbbc95be",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "13c2c1e2_9b2436b4",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/dns/dns.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-12T18:01:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2032cc6e_142076eb",
+      "revId": "3b513426bae39574fd66df8add66e8d2cbbc95be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
