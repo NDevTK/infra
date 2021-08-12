@@ -219,6 +219,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ce8691be_7d1f3bed",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/dns/dns.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-12T17:49:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "daa898cb_f6207b5f",
+      "range": {
+        "startLine": 87,
+        "startChar": 5,
+        "endLine": 87,
+        "endChar": 18
+      },
+      "revId": "37cdba64d1e08a1aa6d157fc7dfed836df42d021",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f1ee8abd_106256c3",
