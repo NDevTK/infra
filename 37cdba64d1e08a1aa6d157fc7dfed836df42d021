@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b6501996_bc984c7a",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/dns/dns.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-12T00:27:52Z",
+      "side": 1,
+      "message": "I need it when cleaning up.",
+      "parentUuid": "9231e850_d5a2f747",
+      "range": {
+        "startLine": 55,
+        "startChar": 5,
+        "endLine": 55,
+        "endChar": 21
+      },
+      "revId": "37cdba64d1e08a1aa6d157fc7dfed836df42d021",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a14cccc3_543a7137",
@@ -54,6 +78,30 @@
       "writtenOn": "2021-08-11T23:15:41Z",
       "side": 1,
       "message": "why it is public?",
+      "range": {
+        "startLine": 72,
+        "startChar": 5,
+        "endLine": 72,
+        "endChar": 30
+      },
+      "revId": "37cdba64d1e08a1aa6d157fc7dfed836df42d021",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f8187d43_23272047",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/dns/dns.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-12T00:27:52Z",
+      "side": 1,
+      "message": "I need it when cleaning up.",
+      "parentUuid": "a14cccc3_543a7137",
       "range": {
         "startLine": 72,
         "startChar": 5,
@@ -134,6 +182,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9e1134c1_c440c4bd",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/dns/dns.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-12T00:27:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f1ee8abd_106256c3",
+      "range": {
+        "startLine": 166,
+        "startChar": 26,
+        "endLine": 166,
+        "endChar": 47
+      },
+      "revId": "37cdba64d1e08a1aa6d157fc7dfed836df42d021",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b1826d0d_e98e53e1",
@@ -147,6 +219,30 @@
       "writtenOn": "2021-08-11T23:15:41Z",
       "side": 1,
       "message": "\"replace line: unrecognized decision\"",
+      "range": {
+        "startLine": 174,
+        "startChar": 26,
+        "endLine": 174,
+        "endChar": 49
+      },
+      "revId": "37cdba64d1e08a1aa6d157fc7dfed836df42d021",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "327ce742_b7f13d24",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/dns/dns.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-12T00:27:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b1826d0d_e98e53e1",
       "range": {
         "startLine": 174,
         "startChar": 26,
@@ -180,6 +276,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "23c7b6ea_a207c466",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/commands/dns/dns.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-12T00:27:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2c15a3ac_539191b4",
+      "range": {
+        "startLine": 185,
+        "startChar": 24,
+        "endLine": 185,
+        "endChar": 37
+      },
+      "revId": "37cdba64d1e08a1aa6d157fc7dfed836df42d021",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4cf7d191_5f8c70d3",
@@ -193,6 +313,30 @@
       "writtenOn": "2021-08-11T23:15:41Z",
       "side": 1,
       "message": "please follow error template",
+      "range": {
+        "startLine": 143,
+        "startChar": 47,
+        "endLine": 143,
+        "endChar": 65
+      },
+      "revId": "37cdba64d1e08a1aa6d157fc7dfed836df42d021",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "66181d92_089b692f",
+        "filename": "go/src/infra/cros/cmd/satlab/internal/components/dut/add_dut_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-12T00:27:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4cf7d191_5f8c70d3",
       "range": {
         "startLine": 143,
         "startChar": 47,
