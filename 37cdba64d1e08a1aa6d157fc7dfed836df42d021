@@ -36,6 +36,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "93d61113_99b26ba4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-08-12T17:46:52Z",
+      "side": 1,
+      "message": "Done. Tested on satlab, can confirm that it writes the hosts file.",
+      "parentUuid": "f5cc3b11_27f91561",
+      "revId": "37cdba64d1e08a1aa6d157fc7dfed836df42d021",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9231e850_d5a2f747",
