@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bfb1d2cc_147b5135",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/tracker_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-08-16T20:06:44Z",
+      "side": 1,
+      "message": "drop it as that is ok to keep sorting in tests.",
+      "range": {
+        "startLine": 114,
+        "startChar": 3,
+        "endLine": 115,
+        "endChar": 35
+      },
+      "revId": "72dcfc470037d3c24f7eacc345fdbb315656675f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
