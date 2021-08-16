@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3b22c2aa_c5a7bed2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1114919
+      },
+      "writtenOn": "2021-08-16T16:11:00Z",
+      "side": 1,
+      "message": "Revert didn\u0027t help, might as well re-land.",
+      "revId": "b49f5cfe55d8fe243433c533952df3f6b2696c7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
