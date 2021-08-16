@@ -111,6 +111,10 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 			for _, botID := range botIDs {
 				expectedPaths = append(expectedPaths, fmt.Sprintf("/internal/task/%s/%s", qPath, botID))
 			}
+			// TODO(gregorynisbet): Remove calls to sort.Strings. This change was added to reopen the tree.
+			// See b//196856173 for details.
+			sort.Strings(repairPaths)
+			sort.Strings(expectedPaths)
 			So(repairPaths, ShouldResemble, expectedPaths)
 		}
 		tf, validate := newTestFixture(t)
