@@ -1,6 +1,7 @@
 {
   "comments": [
     {
+      "unresolved": true,
       "key": {
         "uuid": "5c07fb79_6993e281",
         "filename": "go/src/infra/libs/cros/lab_inventory/hart/pubsub.go",
@@ -20,10 +21,10 @@
         "endChar": 59
       },
       "revId": "8f689e2221b890765020865cf4c15b0a5604063f",
-      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
-      "unresolved": true
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
       "key": {
         "uuid": "9e004ec8_02df259f",
         "filename": "go/src/infra/libs/cros/lab_inventory/hart/pubsub.go",
@@ -44,10 +45,10 @@
         "endChar": 59
       },
       "revId": "8f689e2221b890765020865cf4c15b0a5604063f",
-      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
-      "unresolved": true
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
       "key": {
         "uuid": "8aca3704_809922ba",
         "filename": "go/src/infra/libs/cros/lab_inventory/hart/pubsub.go",
@@ -68,8 +69,31 @@
         "endChar": 59
       },
       "revId": "8f689e2221b890765020865cf4c15b0a5604063f",
-      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
-      "unresolved": true
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d3fd6fa2_eca47884",
+        "filename": "go/src/infra/libs/cros/lab_inventory/hart/pubsub.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-08-16T18:44:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8aca3704_809922ba",
+      "range": {
+        "startLine": 36,
+        "startChar": 17,
+        "endLine": 36,
+        "endChar": 59
+      },
+      "revId": "8f689e2221b890765020865cf4c15b0a5604063f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
