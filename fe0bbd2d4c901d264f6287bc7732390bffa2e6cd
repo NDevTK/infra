@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "20e8b197_f777d170",
+        "filename": "go/src/infra/cros/cmd/manifest_doctor/per_project_buildspec.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 405,
+      "author": {
+        "id": 1396774
+      },
+      "writtenOn": "2021-08-18T18:59:32Z",
+      "side": 1,
+      "message": "This is just ttl*24*time.Hour",
+      "range": {
+        "startLine": 405,
+        "startChar": 25,
+        "endLine": 405,
+        "endChar": 71
+      },
+      "revId": "fe0bbd2d4c901d264f6287bc7732390bffa2e6cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
