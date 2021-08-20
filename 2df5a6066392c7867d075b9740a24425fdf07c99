@@ -36,6 +36,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a1880f21_48a60e53",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1275796
+      },
+      "writtenOn": "2021-08-20T01:05:08Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "996c9756_91727d70",
+      "revId": "2df5a6066392c7867d075b9740a24425fdf07c99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "441032d0_ff382b4b",
@@ -73,6 +91,30 @@
       "side": 1,
       "message": "It would be a bit tricky to roll out such a change, I think. Currently, tag_pattern uses %s which is internally substituted with (.*) when matching the tag. It might be possible to change the format of this to allow a full tag regexp but would require updating a lot of specs at the same time, which span the infra and chromium/src repos.",
       "parentUuid": "441032d0_ff382b4b",
+      "range": {
+        "startLine": 402,
+        "startChar": 9,
+        "endLine": 402,
+        "endChar": 22
+      },
+      "revId": "2df5a6066392c7867d075b9740a24425fdf07c99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cbcb7a0b_9a20151c",
+        "filename": "recipes/recipe_modules/support_3pp/spec.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 402,
+      "author": {
+        "id": 1275796
+      },
+      "writtenOn": "2021-08-20T01:05:08Z",
+      "side": 1,
+      "message": "Fair enough. Unfortunate though.",
+      "parentUuid": "6e3b30c9_3428a985",
       "range": {
         "startLine": 402,
         "startChar": 9,
