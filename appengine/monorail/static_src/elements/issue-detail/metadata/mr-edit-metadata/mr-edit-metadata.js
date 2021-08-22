@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {LitElement, html} from 'lit-element';
+import deepEqual from 'deep-equal';
 
 import 'elements/chops/chops-button/chops-button.js';
 import 'elements/framework/mr-upload/mr-upload.js';
@@ -675,12 +676,19 @@ export class MrEditMetadata extends connectStore(LitElement) {
 
   /** @override */
   updated(changedProperties) {
-    if (changedProperties.has('ownerName') || changedProperties.has('cc')
-        || changedProperties.has('components')
-        || changedProperties.has('labelNames')
-        || changedProperties.has('blockedOn')
-        || changedProperties.has('blocking')
-        || changedProperties.has('projectName')) {
+    // crbug.com/monorail/9990: <mr-edit-issue> does some unmemoized computation
+    // on labelNames, blockedOn, and blocking before passing them in as
+    // properties. So just checking for changedProperties is insufficient to
+    // determine if they actually changed, we need to do a deepEqual.
+    const self = this;
+    function changed(property) {
+      return changedProperties.has(property) &&
+        !deepEqual(changedProperties.get(property), self[property]);
+    }
+
+    if (changed('ownerName') || changed('cc') || changed('components') ||
+        changed('labelNames') || changed('blockedOn') ||
+        changed('blocking') || changed('projectName')) {
       this._initialValues.owner = this.ownerName;
       this._initialValues.cc = this._ccNames;
       this._initialValues.components = componentRefsToStrings(this.components);
