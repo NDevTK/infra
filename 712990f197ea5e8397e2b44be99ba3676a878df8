@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8b243a83_67ceb433",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/metadata/mr-edit-metadata/mr-edit-metadata.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 678,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2021-08-23T04:31:00Z",
+      "side": 1,
+      "message": "I did some reading on React\u0027s update cycle because I was curious and I *think* based on the existence of React.PureComponent doing shallow compares, it sounds like React might tend to do deep comparisons otherwise: https://reactjs.org/docs/react-api.html#reactpurecomponent",
+      "revId": "712990f197ea5e8397e2b44be99ba3676a878df8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c94704f3_5726fde1",
+        "filename": "appengine/monorail/static_src/elements/issue-detail/metadata/mr-edit-metadata/mr-edit-metadata.js",
+        "patchSetId": 1
+      },
+      "lineNbr": 686,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2021-08-23T04:31:00Z",
+      "side": 1,
+      "message": "Optional consideration: I think it\u0027d be more standard to define this using the hasChanged property provided by LitElement, which would also prevent rerenders from happening when these properties are updated with new objects that have the same value - though it might run deepEqual more times overall. \n\nSee: https://lit-element.polymer-project.org/guide/lifecycle#haschanged",
+      "revId": "712990f197ea5e8397e2b44be99ba3676a878df8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
