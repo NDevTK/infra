@@ -6,8 +6,11 @@ package logger
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
+
+	"go.chromium.org/luci/common/errors"
 )
 
 // ActionStatus is the status of an action.
@@ -163,4 +166,33 @@ type Metrics interface {
 	// Search lists all the actions matching a set of constraints, up to
 	// a limit on the number of returned actions.
 	Search(ctx context.Context, q *Query) (*QueryResult, error)
+}
+
+// metrics is a default Metric implementation that logs all events
+// to the logger.
+type metrics struct {
+	logger Logger
+}
+
+// NewMetrics creates a default metric sink.
+func NewMetrics(l Logger) Metrics {
+	return &metrics{
+		logger: l,
+	}
+}
+
+// Create marshals an action as JSON and logs it at the debug level.
+func (m *metrics) Create(ctx context.Context, action *Action) (*Action, error) {
+	a, err := json.MarshalIndent(action, "", "    ")
+	if err != nil {
+		// TODO(gregorynisbet): Check if action is nil.
+		return nil, errors.Annotate(err, "record action for asset %q", action.AssetTag).Err()
+	}
+	m.logger.Debug("%s\n", string(a))
+	return action, nil
+}
+
+// Search lists the actions matching a given criterion.
+func (m *metrics) Search(ctx context.Context, q *Query) (*QueryResult, error) {
+	return nil, errors.New("list actions matching: not yet implemented")
 }
