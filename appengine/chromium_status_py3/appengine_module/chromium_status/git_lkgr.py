@@ -6,21 +6,20 @@
 import json
 import logging
 
-from google.appengine.ext import db
+from google.cloud import ndb
 
 from appengine_module.chromium_status.base_page import BasePage
 from appengine_module.chromium_status import utils
 
-
-class Commit(db.Model):  # pylint: disable=W0232
+class Commit(ndb.Model):  # pylint: disable=W0232
   """Description of a commit, keyed by random integer IDs."""
   # Git hash of this commit. A property so it can be viewed in datastore.
-  git_hash = db.StringProperty()
+  git_hash = ndb.StringProperty()
   # Git commit position for this commit (required for sorting).
-  position_ref = db.StringProperty()
-  position_num = db.IntegerProperty()
+  position_ref = ndb.StringProperty()
+  position_num = ndb.IntegerProperty()
   # Time at which this commit was set as the LKGR.
-  date = db.DateTimeProperty(auto_now_add=True)
+  date = ndb.DateTimeProperty(auto_now_add=True)
 
 
 class Commits(BasePage):
@@ -30,8 +29,8 @@ class Commits(BasePage):
   def get(self):
     """Returns information about the history of LKGR."""
     limit = int(self.request.get('limit', 100))
-    commits = Commit.all().order('-position_num').order('position_ref').fetch(
-        limit)
+    commits = Commit.query().order(
+        '-position_num').order('position_ref').fetch(limit)
 
     if self.request.get('format') == 'json':
       self.response.headers['Content-Type'] = 'application/json'
@@ -69,7 +68,7 @@ class LastKnownGoodRevisionGIT(BasePage):
     """Look for the latest successful revision and return it."""
     self.response.headers['Cache-Control'] = 'no-cache, private, max-age=5'
     self.response.headers['Content-Type'] = 'text/plain'
-    commit = Commit.all().order('-position_num').order('position_ref').get()
+    commit = Commit.query().order('-position_num').order('position_ref').get()
     if commit:
       self.response.out.write(commit.git_hash)
     else:
