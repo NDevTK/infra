@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "24e37faa_69e5a326",
+        "filename": "go/src/infra/appengine/weetbix/README.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-08-25T22:36:56Z",
+      "side": 1,
+      "message": "nit: new line?",
+      "revId": "f04ed3ed93e766572f8626c4f4a8674620185d38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "beda8f33_eddf7e9c",
+        "filename": "go/src/infra/appengine/weetbix/frontend/app.yaml",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-08-25T22:36:56Z",
+      "side": 1,
+      "message": "nit: new line?",
+      "revId": "f04ed3ed93e766572f8626c4f4a8674620185d38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
