@@ -13,6 +13,7 @@ import (
 
 	kartepb "infra/cros/karte/api"
 	"infra/cros/karte/internal/site"
+	"infra/cros/recovery/logger"
 )
 
 // Option is a configuration option. For example `UserAgent(...)` would be
@@ -61,8 +62,20 @@ func EmptyConfig() *config {
 	return &config{}
 }
 
+// Client is the interface for a Karte client. It exposes the Karte RPCs directly and a higher-level
+// interface for recording metrics and observations.
+type Client interface {
+	kartepb.KarteClient
+	logger.Metrics
+}
+
+// kClient is the implementation of the Client interface.
+type kClient struct {
+	kartepb.KarteClient
+}
+
 // NewClient creates a new client for the Karte service.
-func NewClient(ctx context.Context, c *config, o ...Option) (kartepb.KarteClient, error) {
+func NewClient(ctx context.Context, c *config, o ...Option) (Client, error) {
 	if c == nil {
 		return nil, errors.New("karte client: cannot create new client from empty base config")
 	}
@@ -75,11 +88,11 @@ func NewClient(ctx context.Context, c *config, o ...Option) (kartepb.KarteClient
 	if err != nil {
 		return nil, errors.Annotate(err, "create karte client").Err()
 	}
-	return kartepb.NewKartePRPCClient(&prpc.Client{
+	return &kClient{kartepb.NewKartePRPCClient(&prpc.Client{
 		C:    hc,
 		Host: c.karteService,
 		Options: &prpc.Options{
 			UserAgent: c.userAgent,
 		},
-	}), nil
+	})}, nil
 }
