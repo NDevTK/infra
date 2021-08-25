@@ -21,7 +21,7 @@ func TestNewMetrics(t *testing.T) {
 	expected := []string{
 		(`` +
 			`{` + "\n" +
-			`    "Kind": "b",` + "\n" +
+			`    "ActionKind": "b",` + "\n" +
 			`    "SwarmingTaskID": "a",` + "\n" +
 			`    "AssetTag": "",` + "\n" +
 			`    "StartTime": "0001-01-01T00:00:00Z",` + "\n" +
@@ -45,11 +45,11 @@ func TestNewMetrics(t *testing.T) {
 		actual = append(actual, fmt.Sprintf(format, args...))
 	}))
 
-	l.Record(
+	l.Create(
 		ctx,
 		&Action{
 			SwarmingTaskID: "a",
-			Kind:           "b",
+			ActionKind:     "b",
 			Observations: []*Observation{
 				{
 					MetricKind: "c",

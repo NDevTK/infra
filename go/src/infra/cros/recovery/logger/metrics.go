@@ -188,8 +188,8 @@ func NewMetrics(l Logger) Metrics {
 	}
 }
 
-// RecordActions marshals an action as JSON and logs it at the debug level.
-func (m *metrics) Record(ctx context.Context, action *Action) (*Action, error) {
+// Create marshals an action as JSON and logs it at the debug level.
+func (m *metrics) Create(ctx context.Context, action *Action) (*Action, error) {
 	a, err := json.MarshalIndent(action, "", "    ")
 	if err != nil {
 		// TODO(gregorynisbet): Check if action is nil.
