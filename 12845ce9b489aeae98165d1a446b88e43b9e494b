@@ -1,0 +1,170 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8f365bde_ad9f9fe5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-08-30T01:26:45Z",
+      "side": 1,
+      "message": "Looks like great progress, thanks!",
+      "revId": "12845ce9b489aeae98165d1a446b88e43b9e494b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9c9d64c5_583553c0",
+        "filename": "appengine/chromium_status_py3/appengine_module/chromium_status/base_page.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-08-30T01:26:45Z",
+      "side": 1,
+      "message": "False?  Or if you are doing this for testing leave a TODO comment.",
+      "range": {
+        "startLine": 62,
+        "startChar": 24,
+        "endLine": 62,
+        "endChar": 28
+      },
+      "revId": "12845ce9b489aeae98165d1a446b88e43b9e494b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eb8df36d_85cf014e",
+        "filename": "appengine/chromium_status_py3/appengine_module/chromium_status/base_page.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-08-30T01:26:45Z",
+      "side": 1,
+      "message": "Is caching actually needed?  Do we have enough traffic to justify 1 second page caching?",
+      "range": {
+        "startLine": 171,
+        "startChar": 4,
+        "endLine": 171,
+        "endChar": 49
+      },
+      "revId": "12845ce9b489aeae98165d1a446b88e43b9e494b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "15135a19_45e8a228",
+        "filename": "appengine/chromium_status_py3/appengine_module/chromium_status/base_page.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-08-30T01:26:45Z",
+      "side": 1,
+      "message": "Do you need a TODO here, or are all of the copies of this app invoked with \"Chromium\"?\n\nActually reading the code further, is app_name even needed in the GloalConfig?",
+      "range": {
+        "startLine": 178,
+        "startChar": 2,
+        "endLine": 178,
+        "endChar": 23
+      },
+      "revId": "12845ce9b489aeae98165d1a446b88e43b9e494b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "76714ba4_984472ff",
+        "filename": "appengine/chromium_status_py3/appengine_module/chromium_status/git_lkgr.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-08-30T01:26:45Z",
+      "side": 1,
+      "message": "not related to the migration, but shouldn\u0027t we enforce a max on the limit?",
+      "revId": "12845ce9b489aeae98165d1a446b88e43b9e494b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "de645aa9_75ff12f1",
+        "filename": "appengine/chromium_status_py3/appengine_module/chromium_status/status.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 306,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-08-30T01:26:45Z",
+      "side": 1,
+      "message": "enforce max on limit?",
+      "revId": "12845ce9b489aeae98165d1a446b88e43b9e494b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "be516d04_687f3387",
+        "filename": "appengine/chromium_status_py3/appengine_module/chromium_status/status.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 456,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-08-30T01:26:45Z",
+      "side": 1,
+      "message": "nit: duplicated \u003d ?",
+      "range": {
+        "startLine": 456,
+        "startChar": 4,
+        "endLine": 456,
+        "endChar": 17
+      },
+      "revId": "12845ce9b489aeae98165d1a446b88e43b9e494b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b2476fbf_df6e0a8b",
+        "filename": "appengine/chromium_status_py3/appengine_module/chromium_status/utils.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-08-30T01:26:45Z",
+      "side": 1,
+      "message": "Update docs?",
+      "range": {
+        "startLine": 107,
+        "startChar": 40,
+        "endLine": 107,
+        "endChar": 53
+      },
+      "revId": "12845ce9b489aeae98165d1a446b88e43b9e494b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c47d2818_3f2e9b17",
+        "filename": "appengine/chromium_status_py3/appengine_module/chromium_status/status.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 313,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-08-30T01:26:45Z",
+      "side": 0,
+      "message": "out of interest, why remove the exception handler?\n\nI think I prefer it gone and just return error, was this your thinking too or was there another reason?",
+      "revId": "c0adeae4b6663564c3daa1fd1d706a2027a06612",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
