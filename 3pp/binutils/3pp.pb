@@ -1,20 +1,7 @@
-create {
-  platform_re: ".*-arm.*|.*-mips.*"
-  unsupported: true
-}
 
-create {
-  platform_re: "linux-.*|mac-.*",
-  source {
-    url {
-      download_url: "https://ftp.gnu.org/gnu/binutils/binutils-2.31.tar.gz"
-      version: "2.31"
-    }
-    unpack_archive: true
-  }
-  build {
-    tool: "tools/texinfo"
-  }
-}
-
-upload { pkg_prefix: "tools" }
+:
+.*-arm.*|.*-mips.*""R cpe:/a:bibutils_project:bibutils
+‡
+linux-.*|mac-.*"c"=
+5https://ftp.gnu.org/gnu/binutils/binutils-2.31.tar.gz2.310R cpe:/a:bibutils_project:bibutils*tools/texinfo
+tools
