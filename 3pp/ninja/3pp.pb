@@ -1,35 +1,16 @@
-create {
-  platform_re: ".*-386"
-  unsupported: true
-}
 
-create {
-  source { git {
-    repo: "https://chromium.googlesource.com/external/github.com/ninja-build/ninja"
-    tag_pattern: "v%s"
-  }}
-}
-
-create {
-  platform_re: "mac-.*|linux-amd64"
-  build {
-    tool: "tools/re2c"
-  }
-}
-
-create {
-  platform_re: "linux-arm.*|linux-mips.*"
-  build {
-    tool: "tools/ninja"  # Depend on the bootstrapped version when cross-compiling
-    tool: "tools/re2c"
-  }
-}
-
-create {
-  platform_re: "windows-.*|mac-.*|linux-amd64"
-  build {
-    install: "install_bootstrap.sh"
-  }
-}
-
-upload { pkg_prefix: "tools" }
+(
+.*-386"Rcpe:/a:ninka_project:ninka
+n"l
+N
+Ghttps://chromium.googlesource.com/external/github.com/ninja-build/ninjav%sRcpe:/a:ninka_project:ninka
+@
+mac-.*|linux-amd64"Rcpe:/a:ninka_project:ninka*
+tools/re2c
+S
+linux-arm.*|linux-mips.*"Rcpe:/a:ninka_project:ninka*tools/ninja
+tools/re2c
+U
+windows-.*|mac-.*|linux-amd64"Rcpe:/a:ninka_project:ninka*
+install_bootstrap.sh
+tools
