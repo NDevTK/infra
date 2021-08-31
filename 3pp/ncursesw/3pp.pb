@@ -7,8 +7,11 @@ create {
     }
     unpack_archive: true
     patch_dir: "patches"
+    cpe_base_address: "cpe:/a:ncurses_project:ncurses"
   }
-  build {}
+  build {
+  }
 }
-
-upload { pkg_prefix: "static_libs" }
+upload {
+  pkg_prefix: "static_libs"
+}
