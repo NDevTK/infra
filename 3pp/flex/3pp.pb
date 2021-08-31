@@ -7,12 +7,13 @@ create {
     }
     unpack_archive: true
     patch_version: "chromium.1"
+    cpe_base_address: "cpe:/a:flex_project:flex"
   }
-
   build {
     tool: "tools/gettext"
     tool: "tools/help2man"
   }
 }
-
-upload { pkg_prefix: "tools" }
+upload {
+  pkg_prefix: "tools"
+}
