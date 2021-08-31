@@ -6,8 +6,11 @@ create {
       version: "1.0.6"
     }
     unpack_archive: true
+    cpe_base_address: "cpe:/a:bzip:bzip2"
   }
-  build {}
+  build {
+  }
 }
-
-upload { pkg_prefix: "static_libs" }
+upload {
+  pkg_prefix: "static_libs"
+}
