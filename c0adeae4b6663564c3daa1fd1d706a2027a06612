@@ -16,6 +16,24 @@
       "message": "out of interest, why remove the exception handler?\n\nI think I prefer it gone and just return error, was this your thinking too or was there another reason?",
       "revId": "c0adeae4b6663564c3daa1fd1d706a2027a06612",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c6711d8_d5fc0bdb",
+        "filename": "appengine/chromium_status_py3/appengine_module/chromium_status/status.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 313,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2021-09-01T01:37:30Z",
+      "side": 0,
+      "message": "I think the exception handler for ValueError here is because in case there is no \"limit\" in the URL params, it will set limit to 1000.\n\nI converted it to int(request.args.get(\u0027limit\u0027, \u00271000\u0027)), which I think is equivalent.",
+      "parentUuid": "c47d2818_3f2e9b17",
+      "revId": "c0adeae4b6663564c3daa1fd1d706a2027a06612",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

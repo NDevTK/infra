@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a56c7d22_e3942094",
+        "filename": "appengine/chromium_status_py3/appengine_module/chromium_status/base_page.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2021-09-01T01:37:30Z",
+      "side": 1,
+      "message": "Set it back to False. I wanted to disable the initialization code, forgot to set this back.",
+      "parentUuid": "9c9d64c5_583553c0",
+      "range": {
+        "startLine": 62,
+        "startChar": 24,
+        "endLine": 62,
+        "endChar": 28
+      },
+      "revId": "12845ce9b489aeae98165d1a446b88e43b9e494b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "eb8df36d_85cf014e",
@@ -54,6 +78,30 @@
       "writtenOn": "2021-08-30T01:26:45Z",
       "side": 1,
       "message": "Is caching actually needed?  Do we have enough traffic to justify 1 second page caching?",
+      "range": {
+        "startLine": 171,
+        "startChar": 4,
+        "endLine": 171,
+        "endChar": 49
+      },
+      "revId": "12845ce9b489aeae98165d1a446b88e43b9e494b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b0ae8b90_6b85e77c",
+        "filename": "appengine/chromium_status_py3/appengine_module/chromium_status/base_page.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2021-09-01T01:37:30Z",
+      "side": 1,
+      "message": "I don\u0027t think we really need caching here. I put the comment just to check back later just in case we need it. Removed the comment for now.",
+      "parentUuid": "eb8df36d_85cf014e",
       "range": {
         "startLine": 171,
         "startChar": 4,
@@ -87,6 +135,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "20008430_87cd39fd",
+        "filename": "appengine/chromium_status_py3/appengine_module/chromium_status/base_page.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2021-09-01T01:37:30Z",
+      "side": 1,
+      "message": "I checked in the datastore, there is only one entry in GlobalConfig https://screenshot.googleplex.com/7mALXPPnizJCsrk with the name \"Chromium\", so I guess it is the only one.",
+      "parentUuid": "15135a19_45e8a228",
+      "range": {
+        "startLine": 178,
+        "startChar": 2,
+        "endLine": 178,
+        "endChar": 23
+      },
+      "revId": "12845ce9b489aeae98165d1a446b88e43b9e494b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "76714ba4_984472ff",
@@ -104,6 +176,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "375c5a49_978f9b61",
+        "filename": "appengine/chromium_status_py3/appengine_module/chromium_status/git_lkgr.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2021-09-01T01:37:30Z",
+      "side": 1,
+      "message": "I think it makes sense to enforce a max to the limit. Perhaps 1000 would be enough.",
+      "parentUuid": "76714ba4_984472ff",
+      "revId": "12845ce9b489aeae98165d1a446b88e43b9e494b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "de645aa9_75ff12f1",
@@ -117,6 +207,24 @@
       "writtenOn": "2021-08-30T01:26:45Z",
       "side": 1,
       "message": "enforce max on limit?",
+      "revId": "12845ce9b489aeae98165d1a446b88e43b9e494b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "89757daf_a4477f1d",
+        "filename": "appengine/chromium_status_py3/appengine_module/chromium_status/status.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 306,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2021-09-01T01:37:30Z",
+      "side": 1,
+      "message": "Setting max to 5000",
+      "parentUuid": "de645aa9_75ff12f1",
       "revId": "12845ce9b489aeae98165d1a446b88e43b9e494b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -144,6 +252,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d36e3bd3_98e7db45",
+        "filename": "appengine/chromium_status_py3/appengine_module/chromium_status/status.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 456,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2021-09-01T01:37:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "be516d04_687f3387",
+      "range": {
+        "startLine": 456,
+        "startChar": 4,
+        "endLine": 456,
+        "endChar": 17
+      },
+      "revId": "12845ce9b489aeae98165d1a446b88e43b9e494b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b2476fbf_df6e0a8b",
@@ -157,6 +289,30 @@
       "writtenOn": "2021-08-30T01:26:45Z",
       "side": 1,
       "message": "Update docs?",
+      "range": {
+        "startLine": 107,
+        "startChar": 40,
+        "endLine": 107,
+        "endChar": 53
+      },
+      "revId": "12845ce9b489aeae98165d1a446b88e43b9e494b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8b7ef3af_44a52f1d",
+        "filename": "appengine/chromium_status_py3/appengine_module/chromium_status/utils.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2021-09-01T01:37:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b2476fbf_df6e0a8b",
       "range": {
         "startLine": 107,
         "startChar": 40,
