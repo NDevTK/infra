@@ -16,6 +16,24 @@
       "message": "How to treat panics, imho, is a very important design choice.\n\nI think we should make panics fatal.\n\nThat way we can use panics to mark \"impossible\" situations and be alerted when the impossible has, in fact, occurred.\n\nWhat do you think?",
       "revId": "f6fab641344e2f83b3b6cb3592493f810df9a037",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d97cfbe4_33cef73b",
+        "filename": "go/src/infra/cros/cmd/labpack/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-09-01T17:04:11Z",
+      "side": 1,
+      "message": "Resolved via in-person conversation. Please add a comment to `internalRun` indicating that panics below this level will not cause the application to crash.",
+      "parentUuid": "c3639554_7962bd17",
+      "revId": "f6fab641344e2f83b3b6cb3592493f810df9a037",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
