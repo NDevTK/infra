@@ -1,0 +1,28 @@
+runtime: python39
+
+inbound_services:
+- warmup
+
+handlers:
+- url: /node_modules/dygraphs/dist/dygraph.min.js
+  static_files: node_modules/dygraphs/dist/dygraph.min.js
+  upload: node_modules/dygraphs/dist/dygraph.min.js
+
+- url: /(.*\.(html|js|txt|ttf))
+  static_files: static/\1
+  upload: static/(.*\.(html|js|txt|ttf))
+
+# main will look for a replacement in blobstore, if not, will redirect to
+# static/
+- url: /([^/]+\.(gif|png|jpg|ico))
+  script: auto  
+
+- url: /static/([^/]+\.(gif|png|jpg|ico))
+  static_files: static/\1
+  upload: static/([^/]+\.(gif|png|jpg|ico))
+
+- url: /stylesheets
+  static_dir: stylesheets
+
+- url: /.*
+  script: auto
