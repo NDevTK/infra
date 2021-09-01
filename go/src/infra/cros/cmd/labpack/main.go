@@ -51,8 +51,14 @@ func main() {
 
 // internalRun main entry point to execution received request.
 func internalRun(ctx context.Context, in *steps.LabpackInput, state *build.State) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = errors.Reason("panic: %s", r).Err()
+		}
+	}()
 	if err = printInputs(ctx, in); err != nil {
 		log.Printf("Internal run: failed to marshal proto. Error: %s", err)
+		return err
 	}
 	access, err := tlw.NewAccess(ctx, in)
 	if err != nil {
