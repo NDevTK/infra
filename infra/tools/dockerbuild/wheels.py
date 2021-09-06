@@ -1482,8 +1482,6 @@ SPECS.update({
                 'linux-mipsel',
                 'linux-mips',
                 'linux-mips64',
-                'mac-arm64',
-                'mac-arm64-cp38',
             ],
         ),
         MultiWheel(
@@ -1521,7 +1519,6 @@ SPECS.update({
                 'linux-mipsel',
                 'linux-mips',
                 'linux-mips64',
-                'mac-arm64',
             ],
         ),
         # List cultivated from "pyobjc-7.3"'s "setup.py" as a superset of
