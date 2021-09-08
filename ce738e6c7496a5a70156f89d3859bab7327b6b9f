@@ -33,6 +33,24 @@
       "message": "why that is internal?\n\nI think it will be used by client so it is better to keep it on public level",
       "revId": "ce738e6c7496a5a70156f89d3859bab7327b6b9f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "66148ca8_6e459f52",
+        "filename": "go/src/infra/cros/recovery/internal/karte/karte.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-09-08T18:00:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "00a7ea32_3741d4fa",
+      "revId": "ce738e6c7496a5a70156f89d3859bab7327b6b9f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
