@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2de2fb2d_0560db92",
+        "filename": "recipes/recipes/windows_image_builder/offline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-09-08T18:37:21Z",
+      "side": 1,
+      "message": "Couldn\u0027t add tests. Will remove this once config pinning is implemented as a part of a separate builder. For now, this will allow me to generate images and would like to get that working first",
+      "range": {
+        "startLine": 51,
+        "startChar": 36,
+        "endLine": 51,
+        "endChar": 53
+      },
+      "revId": "bbc30a70fc200fb7da6c42581574dd08fccf662b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
