@@ -3,6 +3,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "2a3c3bcd_e6a64264",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1355298
+      },
+      "writtenOn": "2021-09-09T17:23:55Z",
+      "side": 1,
+      "message": "We set error here but we don\u0027t check it before moving on to untaring.",
+      "revId": "8e3f1fc933be59948e4220f0e30727529f7d1074",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "00abfdda_f7031b5f",
         "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder_test.go",
         "patchSetId": 1
