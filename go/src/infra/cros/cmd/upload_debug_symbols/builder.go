@@ -8,6 +8,7 @@
 package main
 
 import (
+	"archive/tar"
 	"compress/gzip"
 	"context"
 	"fmt"
@@ -21,6 +22,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 )
 
 const (
@@ -30,6 +32,9 @@ const (
 	// Time in milliseconds to sleep before retrying the task.
 	sleepTimeMs = 100
 )
+
+// Regex used when finding symbol files.
+var fileRegex = regexp.MustCompile(`.*/(.*.so.sym)$`)
 
 // taskConfig will contain the information needed to complete the upload task.
 type taskConfig struct {
@@ -147,10 +152,56 @@ func unzipTgz(inputPath, outputPath string) error {
 
 // unpackTarball will take the local path of the fetched tarball and then unpack
 // it. It will then return a list of file paths pointing to the unpacked symbol
-// files.
+// files. Searches for .so.sym files.
 func unpackTarball(inputPath, outputDir string) ([]string, error) {
-	// TODO(b/197010274): remove skeleton code.
-	return []string{"./path"}, nil
+	retArray := []string{}
+
+	// Open locally stored .tar file.
+	srcReader, err := os.Open(inputPath)
+	if err != nil {
+		return nil, err
+	}
+	defer srcReader.Close()
+
+	tarReader := tar.NewReader(srcReader)
+
+	// Iterate through the tar file saving only the debug symbols.
+	for {
+		header, err := tarReader.Next()
+		// End of file reached, terminate the loop smoothly.
+		if err == io.EOF {
+			break
+		}
+		// An error occured fetching the next header.
+		if err != nil {
+			return nil, err
+		}
+		// The header indicates it's a file. Store and save the file if it is a symbol file.
+		if header.FileInfo().Mode().IsRegular() {
+			// Check if the file is a symbol file.
+			filename := fileRegex.FindString(header.Name)
+			if filename == "" {
+				continue
+			}
+
+			destFilePath := filepath.Join(outputDir, filename)
+			destFile, err := os.Create(destFilePath)
+			if err != nil {
+				return nil, err
+			}
+
+			// TODO(juahurta): verify this isn't a horribly slow waste of resources. i.e. bad time/space complexity.
+			retArray = append(retArray, destFilePath)
+
+			// Write contents of the symbol file to local storage.
+			_, err = io.Copy(destFile, tarReader)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	return retArray, err
 }
 
 // generateConfigs will take a list of strings with containing the paths to the
