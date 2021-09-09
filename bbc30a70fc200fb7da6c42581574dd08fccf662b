@@ -93,6 +93,30 @@
       },
       "revId": "bbc30a70fc200fb7da6c42581574dd08fccf662b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ea811531_b8bdaebe",
+        "filename": "recipes/recipes/windows_image_builder/offline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1306133
+      },
+      "writtenOn": "2021-09-09T17:32:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "edc67f6c_027363e9",
+      "range": {
+        "startLine": 51,
+        "startChar": 6,
+        "endLine": 51,
+        "endChar": 33
+      },
+      "revId": "bbc30a70fc200fb7da6c42581574dd08fccf662b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
