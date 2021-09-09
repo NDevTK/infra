@@ -9,9 +9,13 @@ require (
 	cloud.google.com/go/datastore v1.5.0
 	cloud.google.com/go/errorreporting v0.1.0
 	cloud.google.com/go/firestore v1.5.0
+	cloud.google.com/go/monitoring v0.2.0 // indirect
+	cloud.google.com/go/profiler v0.1.0 // indirect
 	cloud.google.com/go/pubsub v1.17.0
+	cloud.google.com/go/secretmanager v0.1.0 // indirect
 	cloud.google.com/go/spanner v1.25.0
 	cloud.google.com/go/storage v1.16.1
+	cloud.google.com/go/trace v0.1.0 // indirect
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/StackExchange/wmi v1.2.1
 	github.com/VividCortex/godaemon v1.0.0
