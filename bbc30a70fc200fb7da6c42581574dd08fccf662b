@@ -45,6 +45,54 @@
       },
       "revId": "bbc30a70fc200fb7da6c42581574dd08fccf662b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "edc67f6c_027363e9",
+        "filename": "recipes/recipes/windows_image_builder/offline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-09-09T17:30:26Z",
+      "side": 1,
+      "message": "It\u0027s path referring to a config file. Line 53 lists all the files and Line 56 generates the relative path that will be used.",
+      "parentUuid": "0bbbd8ac_bcac9d9b",
+      "range": {
+        "startLine": 51,
+        "startChar": 6,
+        "endLine": 51,
+        "endChar": 33
+      },
+      "revId": "bbc30a70fc200fb7da6c42581574dd08fccf662b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e659568a_2f624f6a",
+        "filename": "recipes/recipes/windows_image_builder/offline.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-09-09T17:30:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2de2fb2d_0560db92",
+      "range": {
+        "startLine": 51,
+        "startChar": 36,
+        "endLine": 51,
+        "endChar": 53
+      },
+      "revId": "bbc30a70fc200fb7da6c42581574dd08fccf662b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
