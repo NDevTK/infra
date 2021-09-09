@@ -1,0 +1,182 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9baae8f3_5afc2dc6",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2021-09-09T16:10:32Z",
+      "side": 1,
+      "message": "Why is the default localhost vs empty str, if you throw an error for \"localhost\" in validate()?",
+      "range": {
+        "startLine": 67,
+        "startChar": 44,
+        "endLine": 67,
+        "endChar": 53
+      },
+      "revId": "aafe6130adbfc4f232ef4b8f8055c8fcb98205d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ec775b65_3857346e",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2021-09-09T16:10:32Z",
+      "side": 1,
+      "message": "The text wrapping here looks kinda funky. One potential solution is text.Doc(), e.g. https://source.corp.google.com/chromium_infra/go/src/infra/chromeperf/pinpoint/cli/job_commands.go;rcl\u003d9abaad73cf26449854af604e68bd9d36ecff50f8;l\u003d212",
+      "revId": "aafe6130adbfc4f232ef4b8f8055c8fcb98205d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "09cdd282_d406d87f",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2021-09-09T16:10:32Z",
+      "side": 1,
+      "message": "Specify default behavior here and elsewhere (worker count, retry count, etc.) and also maybe state which flags are required?",
+      "range": {
+        "startLine": 72,
+        "startChar": 13,
+        "endLine": 72,
+        "endChar": 14
+      },
+      "revId": "aafe6130adbfc4f232ef4b8f8055c8fcb98205d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1657594e_db4b3fef",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2021-09-09T16:10:32Z",
+      "side": 1,
+      "message": "nit: in golang, all flags start with just one \u0027-\u0027. (\u0027--\u0027 works, but is not the default/way things are printed).",
+      "range": {
+        "startLine": 161,
+        "startChar": 40,
+        "endLine": 161,
+        "endChar": 41
+      },
+      "revId": "aafe6130adbfc4f232ef4b8f8055c8fcb98205d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "686a8661_73bed64a",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2021-09-09T16:10:32Z",
+      "side": 1,
+      "message": "nit: s/main/Run/g",
+      "range": {
+        "startLine": 173,
+        "startChar": 3,
+        "endLine": 173,
+        "endChar": 7
+      },
+      "revId": "aafe6130adbfc4f232ef4b8f8055c8fcb98205d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "55aeda70_4c56d6be",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2021-09-09T16:10:32Z",
+      "side": 1,
+      "message": "I see you don\u0027t use retcodes here for the setup steps as I do in manifest_doctor, is this intentional? I don\u0027t have a problem with this pattern, just curious.",
+      "range": {
+        "startLine": 179,
+        "startChar": 2,
+        "endLine": 179,
+        "endChar": 16
+      },
+      "revId": "aafe6130adbfc4f232ef4b8f8055c8fcb98205d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c788a9c5_5db5170c",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2021-09-09T16:10:32Z",
+      "side": 1,
+      "message": "Can we name this application something more specific, e.g. debug-symbols-uploader?",
+      "range": {
+        "startLine": 25,
+        "startChar": 10,
+        "endLine": 25,
+        "endChar": 16
+      },
+      "revId": "aafe6130adbfc4f232ef4b8f8055c8fcb98205d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9d129af1_db1d5158",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2021-09-09T16:10:32Z",
+      "side": 1,
+      "message": "I /think/ this should be `datastore`. I had to switch it for manifest_doctor because I was running into auth issues when running inside of a builder. crrev.com/c/3146131",
+      "range": {
+        "startLine": 78,
+        "startChar": 35,
+        "endLine": 78,
+        "endChar": 58
+      },
+      "revId": "aafe6130adbfc4f232ef4b8f8055c8fcb98205d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

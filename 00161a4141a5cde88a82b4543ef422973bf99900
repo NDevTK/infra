@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1e11fea2_6aa18b8f",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2021-09-09T16:10:32Z",
+      "side": 0,
+      "message": "Do you have plans to add full end-to-end tests of Run()? These were really helpful for me in manifest_doctor to catch sneaky breakages. As you have it structured right now you can\u0027t (because the client initialization is in the same function as the business logic), but if you have Run() just handle initialization and then pass the work off to an inner function, you can test that inner function easily by passing mocked/fake clients. See this Run() function: https://source.corp.google.com/chromium_infra/go/src/infra/cros/cmd/manifest_doctor/per_project_buildspec.go;l\u003d120",
+      "revId": "00161a4141a5cde88a82b4543ef422973bf99900",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
