@@ -8,6 +8,7 @@
 package main
 
 import (
+	"compress/gzip"
 	"context"
 	"fmt"
 	"github.com/maruel/subcommands"
@@ -15,6 +16,7 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	lgs "go.chromium.org/luci/common/gcloud/gs"
 	"infra/cros/internal/gs"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -120,8 +122,27 @@ func uploadWorker(chans channels) error {
 // it. It will then return a list of file paths pointing to the unpacked symbol
 // files.
 func unzipTgz(inputPath, outputPath string) error {
-	// TODO(b/197010274): remove skeleton code.
-	return nil
+	srcReader, err := os.Open(inputPath)
+	if err != nil {
+		return err
+	}
+	defer srcReader.Close()
+
+	destWriter, err := os.Create(outputPath)
+	if err != nil {
+		return err
+	}
+	defer destWriter.Close()
+
+	gzipReader, err := gzip.NewReader(srcReader)
+	if err != nil {
+		return err
+	}
+	defer gzipReader.Close()
+
+	_, err = io.Copy(destWriter, gzipReader)
+
+	return err
 }
 
 // unpackTarball will take the local path of the fetched tarball and then unpack
@@ -190,7 +211,6 @@ func (b *uploadDebugSymbols) Run(a subcommands.Application, args []string, env s
 
 	tgzPath := filepath.Join(workDir, "debug.tgz")
 	tarbalPath := filepath.Join(workDir, "debug.tar")
-	fmt.Print(tgzPath + "\n")
 	defer os.RemoveAll(workDir)
 
 	err = fetchTgz(client, b.gsPath, tgzPath)
