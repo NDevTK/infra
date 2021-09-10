@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "98a03e91_9cb8a127",
+        "filename": "go/src/infra/cros/cmd/test_orchestrator/luciexe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1418252
+      },
+      "writtenOn": "2021-09-10T22:21:44Z",
+      "side": 1,
+      "message": "nit: error messages should be lowercase as per golang specs.",
+      "revId": "ea9a541ab1800f0354b0e392bd1975ae241d24ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
