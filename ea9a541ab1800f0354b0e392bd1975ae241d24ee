@@ -1,6 +1,92 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f0b43b5e_b35b96ef",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1396774
+      },
+      "writtenOn": "2021-09-11T15:19:16Z",
+      "side": 1,
+      "message": "Way to throw this together ",
+      "revId": "ea9a541ab1800f0354b0e392bd1975ae241d24ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "147db820_988c942e",
+        "filename": "go/src/infra/cros/cmd/test_orchestrator/luciexe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1396774
+      },
+      "writtenOn": "2021-09-11T15:19:16Z",
+      "side": 1,
+      "message": "Random thought, rather than putting these under cmd/ should we maybe create a sibling luciexe/ directory or similar so we\u0027re being explicit about which binaries are luciexe compatible and which aren\u0027t?\n\nWe\u0027ll build/deploy these the same way we do cros_test_platform stuff now?",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 78
+      },
+      "revId": "ea9a541ab1800f0354b0e392bd1975ae241d24ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "82db0823_d140e278",
+        "filename": "go/src/infra/cros/cmd/test_orchestrator/luciexe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1396774
+      },
+      "writtenOn": "2021-09-11T15:19:16Z",
+      "side": 1,
+      "message": "Nice that a lot of the boilerplate is handled for us.",
+      "range": {
+        "startLine": 24,
+        "startChar": 1,
+        "endLine": 24,
+        "endChar": 11
+      },
+      "revId": "ea9a541ab1800f0354b0e392bd1975ae241d24ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "459c1394_d4c6234b",
+        "filename": "go/src/infra/cros/cmd/test_orchestrator/luciexe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1396774
+      },
+      "writtenOn": "2021-09-11T15:19:16Z",
+      "side": 1,
+      "message": "I\u0027m being paranoid but can we hoist this into some sort of util library?  Right now the logic of taking the DutAttribute id as the swarming label is simple enough but my spidey senses tell me that might change in the future, so it\u0027ll be easier to have that translation logic in one place.",
+      "range": {
+        "startLine": 50,
+        "startChar": 0,
+        "endLine": 50,
+        "endChar": 28
+      },
+      "revId": "ea9a541ab1800f0354b0e392bd1975ae241d24ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "98a03e91_9cb8a127",
@@ -14,6 +100,24 @@
       "writtenOn": "2021-09-10T22:21:44Z",
       "side": 1,
       "message": "nit: error messages should be lowercase as per golang specs.",
+      "revId": "ea9a541ab1800f0354b0e392bd1975ae241d24ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a1c369c2_f09fa1d5",
+        "filename": "go/src/infra/cros/cmd/test_orchestrator/luciexe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1396774
+      },
+      "writtenOn": "2021-09-11T15:19:16Z",
+      "side": 1,
+      "message": "I think there\u0027s an exception for starting with proper nouns though.",
+      "parentUuid": "98a03e91_9cb8a127",
       "revId": "ea9a541ab1800f0354b0e392bd1975ae241d24ee",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
