@@ -43,6 +43,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "ef312969_606e6946",
+        "filename": "go/src/infra/cros/cmd/test_orchestrator/luciexe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1325055
+      },
+      "writtenOn": "2021-09-13T16:38:01Z",
+      "side": 1,
+      "message": "Yeah, I put it under cmd/ since it is still a standard Go executable. Moved it in to luciexe/ b/c it\u0027s pretty hard to run this locally anyway (hence the help script). Added a README about luciexes.\n\nThese are build / deployed as CIPD packages, so should be similar to the other Go executables in this dir. One thing is that BB expects the executable to be named \"luciexe\": https://chromium.googlesource.com/infra/luci/luci-go/+/refs/heads/main/lucicfg/doc#luci.executable",
+      "parentUuid": "147db820_988c942e",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 78
+      },
+      "revId": "ea9a541ab1800f0354b0e392bd1975ae241d24ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "82db0823_d140e278",
         "filename": "go/src/infra/cros/cmd/test_orchestrator/luciexe.go",
         "patchSetId": 1
@@ -87,6 +111,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bfff4058_93ebacfd",
+        "filename": "go/src/infra/cros/cmd/test_orchestrator/luciexe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1325055
+      },
+      "writtenOn": "2021-09-13T16:38:01Z",
+      "side": 1,
+      "message": "Yeah, I had planned to move it into a separate package when it got more complicated, and was putting it off b/c I figured it would change a lot anyway. Just moved now.",
+      "parentUuid": "459c1394_d4c6234b",
+      "range": {
+        "startLine": 50,
+        "startChar": 0,
+        "endLine": 50,
+        "endChar": 28
+      },
+      "revId": "ea9a541ab1800f0354b0e392bd1975ae241d24ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "98a03e91_9cb8a127",
@@ -118,6 +166,24 @@
       "side": 1,
       "message": "I think there\u0027s an exception for starting with proper nouns though.",
       "parentUuid": "98a03e91_9cb8a127",
+      "revId": "ea9a541ab1800f0354b0e392bd1975ae241d24ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8ff80f14_083fb028",
+        "filename": "go/src/infra/cros/cmd/test_orchestrator/luciexe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1325055
+      },
+      "writtenOn": "2021-09-13T16:38:01Z",
+      "side": 1,
+      "message": "Yeah, there\u0027s an exception for proper nouns, I don\u0027t think the linter flagged this. Slightly reworded to avoid this.",
+      "parentUuid": "a1c369c2_f09fa1d5",
       "revId": "ea9a541ab1800f0354b0e392bd1975ae241d24ee",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
