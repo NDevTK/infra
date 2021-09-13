@@ -67,6 +67,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "7ca78d84_0d2e69f1",
+        "filename": "go/src/infra/cros/cmd/test_orchestrator/luciexe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1396774
+      },
+      "writtenOn": "2021-09-13T18:33:42Z",
+      "side": 1,
+      "message": "Yeah probably for the best.  I\u0027d _like_ to able to run these locally for dev purposes but that obviously needs some thought.  The luciexe requirement explains the one in test-platform at least (that flummoxed me for awhile).",
+      "parentUuid": "ef312969_606e6946",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 78
+      },
+      "revId": "ea9a541ab1800f0354b0e392bd1975ae241d24ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "82db0823_d140e278",
         "filename": "go/src/infra/cros/cmd/test_orchestrator/luciexe.go",
         "patchSetId": 1
