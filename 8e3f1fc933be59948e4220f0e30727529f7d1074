@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "10895f97_0c33ea76",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1456797
+      },
+      "writtenOn": "2021-09-13T15:49:27Z",
+      "side": 1,
+      "message": "Fixed that. My bad.",
+      "parentUuid": "2a3c3bcd_e6a64264",
+      "revId": "8e3f1fc933be59948e4220f0e30727529f7d1074",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "00abfdda_f7031b5f",
