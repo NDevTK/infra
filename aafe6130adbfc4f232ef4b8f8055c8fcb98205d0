@@ -24,6 +24,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "09883d5c_071ac437",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1456797
+      },
+      "writtenOn": "2021-09-13T15:49:08Z",
+      "side": 1,
+      "message": "No good reason really. Fixed to be an empty string.",
+      "parentUuid": "9baae8f3_5afc2dc6",
+      "range": {
+        "startLine": 67,
+        "startChar": 44,
+        "endLine": 67,
+        "endChar": 53
+      },
+      "revId": "aafe6130adbfc4f232ef4b8f8055c8fcb98205d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7639c0de_0d6a42fc",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1456797
+      },
+      "writtenOn": "2021-09-13T15:49:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9baae8f3_5afc2dc6",
+      "range": {
+        "startLine": 67,
+        "startChar": 44,
+        "endLine": 67,
+        "endChar": 53
+      },
+      "revId": "aafe6130adbfc4f232ef4b8f8055c8fcb98205d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ec775b65_3857346e",
@@ -43,6 +91,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6ea5a1a9_633eff27",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1456797
+      },
+      "writtenOn": "2021-09-13T15:49:08Z",
+      "side": 1,
+      "message": "That looks like it is for multi line strings. I just made the string this way because I wanted to keep the line length shorter.",
+      "parentUuid": "ec775b65_3857346e",
+      "revId": "aafe6130adbfc4f232ef4b8f8055c8fcb98205d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "09cdd282_d406d87f",
         "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder.go",
         "patchSetId": 1
@@ -54,6 +120,30 @@
       "writtenOn": "2021-09-09T16:10:32Z",
       "side": 1,
       "message": "Specify default behavior here and elsewhere (worker count, retry count, etc.) and also maybe state which flags are required?",
+      "range": {
+        "startLine": 72,
+        "startChar": 13,
+        "endLine": 72,
+        "endChar": 14
+      },
+      "revId": "aafe6130adbfc4f232ef4b8f8055c8fcb98205d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1b0484ba_cbc55843",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1456797
+      },
+      "writtenOn": "2021-09-13T15:49:08Z",
+      "side": 1,
+      "message": "Cooled it down by giving defaults of 200 for each. Added a tag to show which flags are required. Formatting may be bad though, I couldn\u0027t find much in terms of golang standards here.",
+      "parentUuid": "09cdd282_d406d87f",
       "range": {
         "startLine": 72,
         "startChar": 13,
@@ -87,6 +177,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a273b2c8_e1b847a6",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1456797
+      },
+      "writtenOn": "2021-09-13T15:49:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1657594e_db4b3fef",
+      "range": {
+        "startLine": 161,
+        "startChar": 40,
+        "endLine": 161,
+        "endChar": 41
+      },
+      "revId": "aafe6130adbfc4f232ef4b8f8055c8fcb98205d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "686a8661_73bed64a",
@@ -100,6 +214,30 @@
       "writtenOn": "2021-09-09T16:10:32Z",
       "side": 1,
       "message": "nit: s/main/Run/g",
+      "range": {
+        "startLine": 173,
+        "startChar": 3,
+        "endLine": 173,
+        "endChar": 7
+      },
+      "revId": "aafe6130adbfc4f232ef4b8f8055c8fcb98205d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5f4a151f_30a6c8f4",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1456797
+      },
+      "writtenOn": "2021-09-13T15:49:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "686a8661_73bed64a",
       "range": {
         "startLine": 173,
         "startChar": 3,
@@ -156,6 +294,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7e9e7efc_9c534215",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1456797
+      },
+      "writtenOn": "2021-09-13T15:49:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c788a9c5_5db5170c",
+      "range": {
+        "startLine": 25,
+        "startChar": 10,
+        "endLine": 25,
+        "endChar": 16
+      },
+      "revId": "aafe6130adbfc4f232ef4b8f8055c8fcb98205d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9d129af1_db1d5158",
@@ -169,6 +331,30 @@
       "writtenOn": "2021-09-09T16:10:32Z",
       "side": 1,
       "message": "I /think/ this should be `datastore`. I had to switch it for manifest_doctor because I was running into auth issues when running inside of a builder. crrev.com/c/3146131",
+      "range": {
+        "startLine": 78,
+        "startChar": 35,
+        "endLine": 78,
+        "endChar": 58
+      },
+      "revId": "aafe6130adbfc4f232ef4b8f8055c8fcb98205d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e6f3fa27_d3730d20",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1456797
+      },
+      "writtenOn": "2021-09-13T15:49:08Z",
+      "side": 1,
+      "message": "Tried it with datastore and i was getting auth issues. Looks like \"devstorage.full_control\" is required in this situation.",
+      "parentUuid": "9d129af1_db1d5158",
       "range": {
         "startLine": 78,
         "startChar": 35,
