@@ -25,6 +25,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cb6c6bee_2f048b28",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 1456797
+      },
+      "writtenOn": "2021-09-13T17:08:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1b0c8220_53df5e0f",
+      "range": {
+        "startLine": 251,
+        "startChar": 27,
+        "endLine": 251,
+        "endChar": 35
+      },
+      "revId": "3d713e07a9309728924c1bcf2836843c7dca2924",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3b5f81fa_6db32fb4",
@@ -39,6 +63,30 @@
       "side": 1,
       "message": "\u003e \"recieved\" is a possible misspelling of \"received\".\n\nPlease fix.",
       "parentUuid": "64175509_09aa3919",
+      "range": {
+        "startLine": 202,
+        "startChar": 19,
+        "endLine": 202,
+        "endChar": 27
+      },
+      "revId": "3d713e07a9309728924c1bcf2836843c7dca2924",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d57725ab_eda1a06b",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1456797
+      },
+      "writtenOn": "2021-09-13T17:08:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3b5f81fa_6db32fb4",
       "range": {
         "startLine": 202,
         "startChar": 19,
