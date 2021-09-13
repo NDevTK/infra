@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cac2672d_3de06ba2",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1355298
+      },
+      "writtenOn": "2021-09-13T22:14:31Z",
+      "side": 1,
+      "message": "munged up here.",
+      "revId": "3cf1c1ccb6718f28e2c2cf99f0620d24c6b40370",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
