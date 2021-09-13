@@ -1,0 +1,52 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1b0c8220_53df5e0f",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2021-09-13T17:06:17Z",
+      "side": 1,
+      "message": "\u003e \"buisness\" is a possible misspelling of \"business\".\n\nPlease fix.",
+      "parentUuid": "32df7db0_0afb4d6f",
+      "range": {
+        "startLine": 251,
+        "startChar": 27,
+        "endLine": 251,
+        "endChar": 35
+      },
+      "revId": "3d713e07a9309728924c1bcf2836843c7dca2924",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3b5f81fa_6db32fb4",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2021-09-13T17:06:17Z",
+      "side": 1,
+      "message": "\u003e \"recieved\" is a possible misspelling of \"received\".\n\nPlease fix.",
+      "parentUuid": "64175509_09aa3919",
+      "range": {
+        "startLine": 202,
+        "startChar": 19,
+        "endLine": 202,
+        "endChar": 27
+      },
+      "revId": "3d713e07a9309728924c1bcf2836843c7dca2924",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
