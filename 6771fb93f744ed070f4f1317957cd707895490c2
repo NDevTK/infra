@@ -34,6 +34,24 @@
       "parentUuid": "0e64a367_b043c735",
       "revId": "6771fb93f744ed070f4f1317957cd707895490c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c958a8e3_3da483c5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2021-09-14T19:50:47Z",
+      "side": 1,
+      "message": "AFAIK, no -- the solution recommended to me by the LUCI team was per-file build flags.",
+      "parentUuid": "6942c77d_96ddd55a",
+      "revId": "6771fb93f744ed070f4f1317957cd707895490c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
