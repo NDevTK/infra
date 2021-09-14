@@ -115,6 +115,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "c4edc404_5af24cbc",
+        "filename": "go/src/infra/cros/cmd/test_orchestrator/luciexe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1396774
+      },
+      "writtenOn": "2021-09-14T16:12:29Z",
+      "side": 1,
+      "message": "Yeah even if we have to  we could wrap that logic you have in the bash script up into another go binary, so it does the binary encode and then just executes the luciexe you give it... call it `lexec` or something.",
+      "parentUuid": "c309904a_afa2d77c",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 78
+      },
+      "revId": "ea9a541ab1800f0354b0e392bd1975ae241d24ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "82db0823_d140e278",
         "filename": "go/src/infra/cros/cmd/test_orchestrator/luciexe.go",
         "patchSetId": 1
