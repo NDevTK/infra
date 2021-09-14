@@ -91,6 +91,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "c309904a_afa2d77c",
+        "filename": "go/src/infra/cros/cmd/test_orchestrator/luciexe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1325055
+      },
+      "writtenOn": "2021-09-14T15:51:46Z",
+      "side": 1,
+      "message": "The docs imply the luciexes should run locally smoothly, at least with the build package. I don\u0027t think the current awkward setup with Logdog is intended, see crbug.com/1248636. Needing to binary encode a build proto to pass to stdin would still be a bit cumbersome, but I\u0027d imagine this could be made easier, e.g. integrating with led to run locally on a previous build.",
+      "parentUuid": "7ca78d84_0d2e69f1",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 78
+      },
+      "revId": "ea9a541ab1800f0354b0e392bd1975ae241d24ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "82db0823_d140e278",
         "filename": "go/src/infra/cros/cmd/test_orchestrator/luciexe.go",
         "patchSetId": 1
