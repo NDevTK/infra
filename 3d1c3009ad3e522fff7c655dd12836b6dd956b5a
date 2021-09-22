@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0954ac79_364127a6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1523108
+      },
+      "writtenOn": "2021-09-22T23:57:11Z",
+      "side": 1,
+      "message": "Had some git setbacks on https://chromium-review.googlesource.com/c/infra/infra/+/3174532 so continuing here with updated CL.",
+      "revId": "3d1c3009ad3e522fff7c655dd12836b6dd956b5a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
