@@ -255,6 +255,12 @@ SPECS.update({
             patch_version='chromium.2',  # Rebuild for https://crbug.com/1233745
         ),
         SourceOrPrebuilt(
+            'freetype-py',
+            '2.2.0',
+            packaged=(),
+            pyversions=['py3'],
+        ),
+        SourceOrPrebuilt(
             'gevent',
             '1.4.0',
             packaged=('manylinux-x64', 'windows-x86', 'windows-x64'),
@@ -688,6 +694,30 @@ SPECS.update({
                 'mac-x64-cp38', 'mac-arm64-cp38', 'linux-arm64-py3',
                 'windows-x86-py3', 'windows-x64-py3'
             ],
+            pyversions=['py3'],
+        ),
+        SourceOrPrebuilt(
+            'pynacl',
+            '1.4.0',
+            build_deps=BuildDependencies(
+                remote=[
+                    'setuptools >= 40.8.0',
+                    'wheel',
+                ],
+                local=[
+                    SourceOrPrebuilt(
+                        'cffi',
+                        '1.14.5',
+                        patch_version='chromium.4',
+                        packaged=[],
+                    ),
+                ],
+            ),
+            packaged=(
+                'windows-x86-py3',
+                'windows-x64-py3',
+            ),
+            skip_plat=['linux-arm64-py3'],
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
