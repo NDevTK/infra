@@ -144,11 +144,23 @@ func (hc *handlers) listBugClusters(ctx *router.Context) {
 	transctx, cancel := spanmodule.ReadOnlyTransaction(ctx.Context)
 	defer cancel()
 
-	bcs, err := bugclusters.ReadActive(transctx)
-	if err != nil {
-		logging.Errorf(ctx.Context, "Reading bugs: %s", err)
-		http.Error(ctx.Writer, "Internal server error.", http.StatusInternalServerError)
-		return
+	var bcs []*bugclusters.BugCluster
+	var err error
+	clusterID := ctx.Request.URL.Query().Get("cluster")
+	if clusterID != "" {
+		bcs, err = bugclusters.ReadBugsForCluster(transctx, clusterID)
+		if err != nil {
+			logging.Errorf(ctx.Context, "Reading bugs for cluster %s: %s", clusterID, err)
+			http.Error(ctx.Writer, "Internal server error.", http.StatusInternalServerError)
+			return
+		}
+	} else {
+		bcs, err = bugclusters.ReadActive(transctx)
+		if err != nil {
+			logging.Errorf(ctx.Context, "Reading bugs: %s", err)
+			http.Error(ctx.Writer, "Internal server error.", http.StatusInternalServerError)
+			return
+		}
 	}
 
 	respondWithJSON(ctx, bcs)

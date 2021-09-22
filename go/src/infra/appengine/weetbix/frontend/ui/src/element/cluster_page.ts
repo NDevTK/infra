@@ -15,6 +15,9 @@ export class ClusterPage extends LitElement {
     cluster: Cluster | undefined;
 
     @property()
+    bugs: BugCluster[] | undefined;
+
+    @property()
     clusterId: string;
 
     connectedCallback() {
@@ -26,6 +29,9 @@ export class ClusterPage extends LitElement {
         fetch(`/api/cluster/${encodeURIComponent(this.clusterId)}`)
             .then(r => r.json())
             .then(cluster => this.cluster = cluster);
+        fetch(`/api/bugcluster?cluster=${encodeURIComponent(this.clusterId)}`)
+            .then(r => r.json())
+            .then(bugs => this.bugs = bugs);
     }
 
     render() {
@@ -37,6 +43,10 @@ export class ClusterPage extends LitElement {
         return html`
         <div id="container">
             <h1>Cluster <span class="cluster-id">${c.clusterId}</span></h1>
+            <h2>Bugs</h2>
+            ${this.bugs === undefined ? html`<p>loading bugs...</p>` : 
+                this.bugs.length === 0 ? html`<p>There are no bugs filed for this cluster</p>` : 
+                this.bugs.map(b => html`<span class=${'bug ' + (b.isActive ? 'active' : 'inactive')}><a href=${'http://'+bugLink(b.bug)}>${formatBug(b.bug)}</a></span>`)}
             <h2>Example Failure</h2>
             <pre class="failure-reason">${c.exampleFailureReason || c.clusterId}</pre>
             <h2>Impact</h2>
@@ -112,6 +122,24 @@ export class ClusterPage extends LitElement {
             border-radius: 20px;
             padding: 2px 8px;
         }
+        .bug {
+            font-family: monospace;
+            font-size: 80%;
+            background-color: var(--light-active-color);
+            border: solid 1px var(--active-color);
+            border-radius: 20px;
+            padding: 2px 8px;
+        }
+        .bug a {
+            text-decoration: inherit;
+            color: inherit;
+        }
+        .bug.inactive {
+            background-color: var(--block-background-color);
+            border: solid 1px var(--greyed-out-text-color);
+            color: var(--greyed-out-text-color);
+            text-decoration: line-through;
+        }
         .failure-reason {
             border: solid 1px var(--divider-color);
             background-color: var(--block-background-color);
@@ -175,6 +203,13 @@ interface MergedSubClusters {
     values: number[];
 }
 
+interface BugCluster {
+    project: string;
+    bug: string;
+    associatedClusterId: string;
+    isActive: boolean;
+}
+
 // Merge multiple related subcluster lists into a single list with multiple values.
 // Missing values are filled with zeros.
 //
@@ -207,4 +242,30 @@ const mergeSubClusters = (subClusters: Array<SubCluster[]>): MergedSubClusters[]
         return 0;
     });
     return merged;
+}
+
+// bugLink changes a bug string from the server into a link for the UI.
+// Shortlinks are preferred.
+// eg. monorail/chromium/1234 => crbug.com/1234
+const bugLink = (bug: string): string => {
+    // currently we only support chromium => monorail-staging
+    // TODO: how do we choose between monorail staging and production?
+    const m = /monorail\/chromium\/(\d+)/.exec(bug);
+    if (m) {
+        return 'monorail-staging.appspot.com/p/chromium/issues/detail?id='+m[1];
+    }
+    return '#';
+}
+
+// formatBug changes a bug string from the server into text for the UI.
+// Shortlinks are preferred.
+// eg. monorail/chromium/1234 => crbug.com/1234
+const formatBug = (bug: string): string => {
+    // currently we only support chromium => monorail-staging
+    // TODO: how do we choose between monorail staging and production?
+    const m = /monorail\/chromium\/(\d+)/.exec(bug);
+    if (m) {
+        return 'monorail-staging/'+m[1];
+    }
+    return bug;
 }

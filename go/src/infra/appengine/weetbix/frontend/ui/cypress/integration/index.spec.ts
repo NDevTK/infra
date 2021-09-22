@@ -24,7 +24,12 @@ describe('Index Page', () => {
         cy.get('cluster-table').contains('Unexonerated');
     })
     it('loads a cluster page', () => {
+        // navigate to the cluster page for the highest impact cluster.
         cy.get('cluster-table').get('td').first().click();
-        cy.get('body').contains('Example Failure')
+        cy.get('body').contains('Example Failure');
+
+        // Note that this assumes the cluster we are looking at has a bug filed.
+        // This should be safe since we selected the highest impact cluster in the system.
+        cy.get('.bug');
     })
 })

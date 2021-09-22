@@ -43,7 +43,7 @@ export class BugClusterTable extends LitElement {
 
 // BugCluster is the bug cluster information sent by the server.
 interface BugCluster {
-    project: number;
-    bug: number;
-    associatedClusterId: number;
+    project: string;
+    bug: string;
+    associatedClusterId: string;
 }

@@ -45,6 +45,30 @@ func TestRead(t *testing.T) {
 			})
 		})
 	})
+	Convey(`ReadBugsForCluster`, t, func() {
+		Convey(`NoBugsInCluster`, func() {
+			setBugClusters(ctx, []*BugCluster{
+				newBugCluster(0),
+			})
+
+			clusters, err := ReadBugsForCluster(span.Single(ctx), "non-existing-cluster-id")
+			So(err, ShouldBeNil)
+			So(clusters, ShouldResemble, []*BugCluster{})
+		})
+		Convey(`MultipleBugsInCluster`, func() {
+			clustersToCreate := []*BugCluster{
+				newBugCluster(0),
+				newBugCluster(1),
+			}
+			clustersToCreate[1].IsActive = false
+			clustersToCreate[1].AssociatedClusterID = clustersToCreate[0].AssociatedClusterID
+			setBugClusters(ctx, clustersToCreate)
+
+			clusters, err := ReadBugsForCluster(span.Single(ctx), clustersToCreate[0].AssociatedClusterID)
+			So(err, ShouldBeNil)
+			So(clusters, ShouldResemble, clustersToCreate)
+		})
+	})
 	Convey(`Create`, t, func() {
 		testCreate := func(bc *BugCluster) error {
 			_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
