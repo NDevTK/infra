@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "27151bac_b1d8c1a6",
+        "filename": "infra/tools/dockerbuild/wheels.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 421,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2021-09-22T16:47:22Z",
+      "side": 1,
+      "message": "This could maybe use a comment explaining what\u0027s going on. i.e. what does the build system do with these version numbers?",
+      "revId": "077b997225e79b91120dc130590dd20fc62e96d6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "185df454_a64ad57d",
+        "filename": "infra/tools/dockerbuild/wheels.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 723,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2021-09-22T16:47:22Z",
+      "side": 1,
+      "message": "I wonder if we could factor out the cffi wheel definition somehow? I think we use it in a few places.",
+      "revId": "077b997225e79b91120dc130590dd20fc62e96d6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
