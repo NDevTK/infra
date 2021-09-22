@@ -57,6 +57,38 @@ func ReadActive(ctx context.Context) ([]*BugCluster, error) {
 	return bcs, nil
 }
 
+// ReadActive reads all active Weetbix bug clusters.
+func ReadBugsForCluster(ctx context.Context, clusterID string) ([]*BugCluster, error) {
+	stmt := spanner.NewStatement(`
+		SELECT Project, Bug, IsActive
+		FROM BugClusters
+		WHERE AssociatedClusterId = @clusterID
+		ORDER BY Project, Bug
+	`)
+	stmt.Params["clusterID"] = clusterID
+	it := span.Query(ctx, stmt)
+	bcs := []*BugCluster{}
+	err := it.Do(func(r *spanner.Row) error {
+		var project, bugName string
+		var active bool
+		if err := r.Columns(&project, &bugName, &active); err != nil {
+			return errors.Annotate(err, "read bug cluster row").Err()
+		}
+		bc := &BugCluster{
+			Project:             project,
+			Bug:                 bugName,
+			AssociatedClusterID: clusterID,
+			IsActive:            active,
+		}
+		bcs = append(bcs, bc)
+		return nil
+	})
+	if err != nil {
+		return nil, errors.Annotate(err, "query bugs for cluster").Err()
+	}
+	return bcs, nil
+}
+
 // Create inserts a new bug cluster with the specified details.
 func Create(ctx context.Context, bc *BugCluster) error {
 	switch {
