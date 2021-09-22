@@ -16,6 +16,92 @@
       "message": "Demo at https://43988-a69fa59-mwarton-weetbix-ui-bugs-dot-chops-weetbix-dev.appspot.com/cluster/j1wbBC8hjfnLgW8kZZMoynB5WDM6EtWkjoLNpsXQjr8%3D",
       "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b09f5ee1_538c7423",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-09-22T17:38:08Z",
+      "side": 1,
+      "message": "Not directly related to this CL, but it would be nice if the content in the Bug Clusters page are also linkable.",
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e095e876_441d8ae8",
+        "filename": "go/src/infra/appengine/weetbix/internal/bugclusters/span.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-09-22T17:38:08Z",
+      "side": 1,
+      "message": "Update?",
+      "range": {
+        "startLine": 60,
+        "startChar": 0,
+        "endLine": 60,
+        "endChar": 52
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c548010d_cf34d894",
+        "filename": "go/src/infra/appengine/weetbix/internal/bugclusters/span.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-09-22T17:38:08Z",
+      "side": 1,
+      "message": "I think this should be a frequently used query, right? Maybe add a secondary index on AssociatedClusterId?",
+      "range": {
+        "startLine": 65,
+        "startChar": 0,
+        "endLine": 65,
+        "endChar": 40
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fed0f3be_b4ad819d",
+        "filename": "go/src/infra/appengine/weetbix/internal/bugclusters/span.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-09-22T17:38:08Z",
+      "side": 1,
+      "message": "spanner.NullBool",
+      "range": {
+        "startLine": 73,
+        "startChar": 14,
+        "endLine": 73,
+        "endChar": 18
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
