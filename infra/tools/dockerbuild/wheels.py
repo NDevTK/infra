@@ -255,6 +255,12 @@ SPECS.update({
             patch_version='chromium.2',  # Rebuild for https://crbug.com/1233745
         ),
         SourceOrPrebuilt(
+            'freetype-py',
+            '2.2.0',
+            packaged=(),
+            pyversions=['py2', 'py3'],
+        ),
+        SourceOrPrebuilt(
             'gevent',
             '1.4.0',
             packaged=('manylinux-x64', 'windows-x86', 'windows-x64'),
@@ -684,10 +690,6 @@ SPECS.update({
             'pynacl',
             '1.2.1',
             packaged=(),
-            skip_plat=[
-                'mac-x64-cp38', 'mac-arm64-cp38', 'linux-arm64-py3',
-                'windows-x86-py3', 'windows-x64-py3'
-            ],
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
