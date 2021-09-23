@@ -37,6 +37,75 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c740e993_56ecc65d",
+        "filename": "go/src/infra/appengine/weetbix/frontend/ui/src/element/cluster_page.ts",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-09-23T00:32:31Z",
+      "side": 1,
+      "message": "not this CL, but as discussed below, I think it clusters should be queried namespaced by project.",
+      "range": {
+        "startLine": 29,
+        "startChar": 27,
+        "endLine": 29,
+        "endChar": 65
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9bdfd7f6_c1d4b18c",
+        "filename": "go/src/infra/appengine/weetbix/frontend/ui/src/element/cluster_page.ts",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-09-23T00:32:31Z",
+      "side": 1,
+      "message": "as above",
+      "range": {
+        "startLine": 32,
+        "startChar": 30,
+        "endLine": 32,
+        "endChar": 76
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9de3f6dc_b7c5fb0b",
+        "filename": "go/src/infra/appengine/weetbix/frontend/ui/src/element/cluster_page.ts",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-09-23T00:32:31Z",
+      "side": 1,
+      "message": "nit: random whitespace here and there",
+      "range": {
+        "startLine": 47,
+        "startChar": 70,
+        "endLine": 47,
+        "endChar": 71
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e095e876_441d8ae8",
         "filename": "go/src/infra/appengine/weetbix/internal/bugclusters/span.go",
         "patchSetId": 2
@@ -74,6 +143,29 @@
       "range": {
         "startLine": 65,
         "startChar": 0,
+        "endLine": 65,
+        "endChar": 40
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "adbed207_2e0b896d",
+        "filename": "go/src/infra/appengine/weetbix/internal/bugclusters/span.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-09-23T00:32:31Z",
+      "side": 1,
+      "message": "AssociatedClusterId is namespaced per project, so we should query on\nWHERE Project \u003d @project AND AssociatedClusterId \u003d @clusterID",
+      "range": {
+        "startLine": 65,
+        "startChar": 2,
         "endLine": 65,
         "endChar": 40
       },
