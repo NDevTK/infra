@@ -16,6 +16,24 @@
       "message": "started discussion offline",
       "revId": "e3cb4a9054cc037c25401aeb586d73445882609c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4ecc2c7e_0780bcd8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-09-23T02:10:59Z",
+      "side": 1,
+      "message": "I think we should wrap the error handling. It will make it easier to enforce consistency throughout the project. (I want to get rid of calls to fmt.Errorf, for example).",
+      "parentUuid": "13fd367d_a5a1d703",
+      "revId": "e3cb4a9054cc037c25401aeb586d73445882609c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
