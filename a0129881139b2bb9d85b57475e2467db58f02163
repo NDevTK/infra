@@ -37,6 +37,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "fe0c4b57_47909015",
+        "filename": "go/src/infra/appengine/weetbix/frontend/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1178685
+      },
+      "writtenOn": "2021-09-23T05:49:36Z",
+      "side": 1,
+      "message": "I feel it\u0027s quite surprising that presence of the cluster ID changes whether the \"active\" filter is applied.\nMaybe we should make the active filter explicit (at the API level).",
+      "range": {
+        "startLine": 151,
+        "startChar": 13,
+        "endLine": 151,
+        "endChar": 64
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c740e993_56ecc65d",
         "filename": "go/src/infra/appengine/weetbix/frontend/ui/src/element/cluster_page.ts",
         "patchSetId": 2
@@ -99,6 +122,52 @@
         "startChar": 70,
         "endLine": 47,
         "endChar": 71
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "44759e38_7ee5cce0",
+        "filename": "go/src/infra/appengine/weetbix/frontend/ui/src/element/cluster_page.ts",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1178685
+      },
+      "writtenOn": "2021-09-23T05:49:36Z",
+      "side": 1,
+      "message": "why not \"https\"?",
+      "range": {
+        "startLine": 49,
+        "startChar": 112,
+        "endLine": 49,
+        "endChar": 119
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "76ef2764_97065241",
+        "filename": "go/src/infra/appengine/weetbix/frontend/ui/src/element/cluster_page.ts",
+        "patchSetId": 2
+      },
+      "lineNbr": 257,
+      "author": {
+        "id": 1178685
+      },
+      "writtenOn": "2021-09-23T05:49:36Z",
+      "side": 1,
+      "message": "why do we return \u0027#\u0027 here?",
+      "range": {
+        "startLine": 257,
+        "startChar": 4,
+        "endLine": 257,
+        "endChar": 15
       },
       "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
