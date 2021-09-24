@@ -39,6 +39,10 @@ const (
 	provisionFailed = "/var/tmp/provision_failed"
 	// The percentage of the battery that is considered to be not enough.
 	minimumBatteryLevel = 80
+	// Expected value of tpm dev-signed firmare version.
+	expectedTpmFirmwareVersion = "0x00010001"
+	// Expected value of tpm dev-signed kernal version.
+	expectedTpmKernalVersion = "0x00010001"
 )
 
 // pingExec verifies the DUT is pingable.
@@ -310,6 +314,40 @@ func isBatteryChargableOrGoodLevelExec(ctx context.Context, args *execs.RunArgs,
 	return nil
 }
 
+// isTpmFirmwareVersionCorrectExec confirms firmware tpm info is correct.
+//
+// For dev-signed firmware, tpm_fwver reported from
+// crossystem should always be 0x10001. Firmware update on DUTs with
+// incorrect tmp_fwver may fail due to firmware rollback protection.
+func isTpmFirmwareVersionCorrectExec(ctx context.Context, args *execs.RunArgs, actionArgs []string) error {
+	r := args.Access.Run(ctx, args.ResourceName, "crossystem tpm_fwver")
+	if r.ExitCode != 0 {
+		return errors.Reason(`tpm firmware version correct: unable to get "tpm_fwver" from crossystem: failed with code: %d, %q`, r.ExitCode, r.Stderr).Err()
+	}
+	actualTpmFirmwareVersion := strings.TrimSpace(r.Stdout)
+	if actualTpmFirmwareVersion != expectedTpmFirmwareVersion {
+		return errors.Reason(`tpm firmware version correct: unexpected "tpm_fwver" value: %s, expected: %s. this error may cause firmware provision fail due to the rollback protection`, actualTpmFirmwareVersion, expectedTpmFirmwareVersion).Err()
+	}
+	return nil
+}
+
+// isTpmKernalVersionCorrectExec confirms kernal tpm info is correct.
+//
+// For dev-signed firmware, tpm_kernver reported from
+// crossystem should always be 0x10001. Firmware update on DUTs with
+// incorrect tpm_kernver may fail due to firmware rollback protection.
+func isTpmKernalVersionCorrectExec(ctx context.Context, args *execs.RunArgs, actionArgs []string) error {
+	r := args.Access.Run(ctx, args.ResourceName, "crossystem tpm_kernver")
+	if r.ExitCode != 0 {
+		return errors.Reason(`tpm kernal version correct: unable to get "tpm_kernver" from crossystem: failed with code: %d, %q`, r.ExitCode, r.Stderr).Err()
+	}
+	actualTpmKernalVersion := strings.TrimSpace(r.Stdout)
+	if actualTpmKernalVersion != expectedTpmKernalVersion {
+		return errors.Reason(`tpm kernal version correct: unexpected "tpm_kernver" value: %s, expected: %s. This error may cause firmware provision fail due to the rollback protection`, actualTpmKernalVersion, expectedTpmKernalVersion).Err()
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("cros_ping", pingExec)
 	execs.Register("cros_ssh", sshExec)
@@ -329,4 +367,6 @@ func init() {
 	execs.Register("cros_is_battery_level_greater_than_minimum", isBatteryLevelGreaterThanMinimumExec)
 	execs.Register("cros_is_battery_charging", isBatteryChargingExec)
 	execs.Register("cros_is_battery_chargable_or_good_level", isBatteryChargableOrGoodLevelExec)
+	execs.Register("cros_is_tpm_firmware_version_correct", isTpmFirmwareVersionCorrectExec)
+	execs.Register("cros_is_tpm_kernal_version_correct", isTpmKernalVersionCorrectExec)
 }
