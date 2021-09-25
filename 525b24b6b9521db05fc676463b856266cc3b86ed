@@ -1,0 +1,130 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f39a9b4c_98d48d65",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-25T01:30:17Z",
+      "side": 1,
+      "message": "please move them close to usage.",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 1
+      },
+      "revId": "525b24b6b9521db05fc676463b856266cc3b86ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dc13ecfd_44478b1b",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-25T01:30:17Z",
+      "side": 1,
+      "message": "devTPMKmkernelVersion? TPM is like DUT. please update another one as well. thank you.",
+      "range": {
+        "startLine": 45,
+        "startChar": 1,
+        "endLine": 45,
+        "endChar": 25
+      },
+      "revId": "525b24b6b9521db05fc676463b856266cc3b86ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "80a83245_7f5ac5f2",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 317,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-25T01:30:17Z",
+      "side": 1,
+      "message": "let move it to cros_tpm_execs.go",
+      "revId": "525b24b6b9521db05fc676463b856266cc3b86ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "42770b07_b07cce93",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 322,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-25T01:30:17Z",
+      "side": 1,
+      "message": "just idea `isOnDevTPMFirmwareVersionExec` and `cros_is_on_dev_tpm_fw_version`. if you like please update second function and comments.",
+      "range": {
+        "startLine": 322,
+        "startChar": 5,
+        "endLine": 322,
+        "endChar": 36
+      },
+      "revId": "525b24b6b9521db05fc676463b856266cc3b86ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e841fa5a_f52d2ec5",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 322,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-25T01:30:17Z",
+      "side": 1,
+      "message": "looking to both functions they are very similar need to call crossystem with control name and compare to expected value. do you think we can just create common function to do so and then each exec can specify control and value expected. it will be more clean and reusable. You thoughts.",
+      "revId": "525b24b6b9521db05fc676463b856266cc3b86ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2081d9ea_a2018ac5",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 323,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-25T01:30:17Z",
+      "side": 1,
+      "message": "i think we can extract it as constant next to value we expected",
+      "range": {
+        "startLine": 323,
+        "startChar": 46,
+        "endLine": 323,
+        "endChar": 68
+      },
+      "revId": "525b24b6b9521db05fc676463b856266cc3b86ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
