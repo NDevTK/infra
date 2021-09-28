@@ -37,6 +37,10 @@ const (
 	provisionFailed = "/var/tmp/provision_failed"
 	// The percentage of the battery that is considered to be not enough.
 	minimumBatteryLevel = 80
+	// Expected value of tpm dev-signed firmware version.
+	expectedTpmFirmwareVersion = "0x00010001"
+	// Expected value of tpm dev-signed kernel version.
+	expectedTpmkernelVersion = "0x00010001"
 )
 
 // pingExec verifies the DUT is pingable.
