@@ -49,6 +49,54 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "eaae25ff_1b004e4e",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-09-28T23:26:02Z",
+      "side": 1,
+      "message": "I think all the constants should be decleared in the top of the file, right?",
+      "parentUuid": "f39a9b4c_98d48d65",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 1
+      },
+      "revId": "525b24b6b9521db05fc676463b856266cc3b86ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "305937e8_34758e56",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-09-28T23:26:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dc13ecfd_44478b1b",
+      "range": {
+        "startLine": 45,
+        "startChar": 1,
+        "endLine": 45,
+        "endChar": 25
+      },
+      "revId": "525b24b6b9521db05fc676463b856266cc3b86ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "80a83245_7f5ac5f2",
         "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
         "patchSetId": 4
@@ -60,6 +108,24 @@
       "writtenOn": "2021-09-25T01:30:17Z",
       "side": 1,
       "message": "let move it to cros_tpm_execs.go",
+      "revId": "525b24b6b9521db05fc676463b856266cc3b86ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ec0cecac_2d97c644",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 317,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-09-28T23:26:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "80a83245_7f5ac5f2",
       "revId": "525b24b6b9521db05fc676463b856266cc3b86ed",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -104,6 +170,48 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7ee56991_661341d5",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 322,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-09-28T23:26:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "42770b07_b07cce93",
+      "range": {
+        "startLine": 322,
+        "startChar": 5,
+        "endLine": 322,
+        "endChar": 36
+      },
+      "revId": "525b24b6b9521db05fc676463b856266cc3b86ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9959c185_d3f611e7",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 322,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-09-28T23:26:02Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "e841fa5a_f52d2ec5",
+      "revId": "525b24b6b9521db05fc676463b856266cc3b86ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2081d9ea_a2018ac5",
@@ -117,6 +225,30 @@
       "writtenOn": "2021-09-25T01:30:17Z",
       "side": 1,
       "message": "i think we can extract it as constant next to value we expected",
+      "range": {
+        "startLine": 323,
+        "startChar": 46,
+        "endLine": 323,
+        "endChar": 68
+      },
+      "revId": "525b24b6b9521db05fc676463b856266cc3b86ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e62c7fae_fc905b5f",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 323,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-09-28T23:26:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2081d9ea_a2018ac5",
       "range": {
         "startLine": 323,
         "startChar": 46,
