@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fc82d155_3c4d509d",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/labstation_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-29T02:31:52Z",
+      "side": 1,
+      "message": "in-light me please what is diff between filter and glob in this case?",
+      "range": {
+        "startLine": 21,
+        "startChar": 4,
+        "endLine": 21,
+        "endChar": 8
+      },
+      "revId": "d1fb3fdc5dea73f1bf3c7b1b8175bb6aeac35452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
