@@ -97,6 +97,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "7dc047eb_3d571d67",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-29T01:50:32Z",
+      "side": 1,
+      "message": "no true. as we keep them if they common and keep them close to the usage if the method specific",
+      "parentUuid": "eaae25ff_1b004e4e",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 1
+      },
+      "revId": "525b24b6b9521db05fc676463b856266cc3b86ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "80a83245_7f5ac5f2",
         "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
         "patchSetId": 4

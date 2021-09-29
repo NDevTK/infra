@@ -1,0 +1,211 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dce781b3_d301cbd8",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/tpm_execs.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-29T01:50:32Z",
+      "side": 1,
+      "message": "as you are not using it separate value i think we can keep it just inside hardcodedd exec with details or split if here with details.\n\nif you will create separate constants then you cn add constants for controls-names",
+      "range": {
+        "startLine": 19,
+        "startChar": 1,
+        "endLine": 19,
+        "endChar": 46
+      },
+      "revId": "869b47bf03509e2d0e48b2cf2b5d812371c11809",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f09ed151_719220a8",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/tpm_execs.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-29T01:50:32Z",
+      "side": 1,
+      "message": "description is not telling what is this function is doing.\n\nThe function can be used by many function so we not need to specify where we use it.\n\n\n```// matchCrossystemValue reads value from crossystem and compared to expected value.```\n\nthat will required to provide value and expectation as it can be changed.\n\nalso we can put it in common functions as we can use it for any value compressing from  crossystem.",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 113
+      },
+      "revId": "869b47bf03509e2d0e48b2cf2b5d812371c11809",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0f6d9d97_7b58d397",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/tpm_execs.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-29T01:50:32Z",
+      "side": 1,
+      "message": "not used",
+      "range": {
+        "startLine": 23,
+        "startChar": 65,
+        "endLine": 23,
+        "endChar": 86
+      },
+      "revId": "869b47bf03509e2d0e48b2cf2b5d812371c11809",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ca10f0ed_01fdc70e",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/tpm_execs.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-29T01:50:32Z",
+      "side": 1,
+      "message": "```match crossystem to expectation: fail read %q control. fail with code: %s....```",
+      "range": {
+        "startLine": 26,
+        "startChar": 24,
+        "endLine": 26,
+        "endChar": 114
+      },
+      "revId": "869b47bf03509e2d0e48b2cf2b5d812371c11809",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9f4785a7_1e065a35",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/tpm_execs.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-29T01:50:32Z",
+      "side": 1,
+      "message": "```match crossystem to expectation: %q value % is not match expectation %q```\n\nthe part of `This error may cause firmware provision fail due to the rollback protection` is belong to the verifiers which check specific controls and can print additional information as message when verification fail.",
+      "range": {
+        "startLine": 30,
+        "startChar": 24,
+        "endLine": 30,
+        "endChar": 171
+      },
+      "revId": "869b47bf03509e2d0e48b2cf2b5d812371c11809",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ad68e472_1ce61ffd",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/tpm_execs.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-29T01:50:32Z",
+      "side": 1,
+      "message": "```isOnDevTPMKernelVersionExec verifies dev\u0027s tpm kernel version is match to expected value.``` will it work?",
+      "range": {
+        "startLine": 35,
+        "startChar": 3,
+        "endLine": 35,
+        "endChar": 82
+      },
+      "revId": "869b47bf03509e2d0e48b2cf2b5d812371c11809",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1de8f367_f2a6c9d8",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/tpm_execs.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-29T01:50:32Z",
+      "side": 1,
+      "message": "please provide whole name \u0027tpm_kern\u0027 so it will be easy to read.",
+      "range": {
+        "startLine": 41,
+        "startChar": 50,
+        "endLine": 41,
+        "endChar": 54
+      },
+      "revId": "869b47bf03509e2d0e48b2cf2b5d812371c11809",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "95147d51_a9744340",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/tpm_execs.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-29T01:50:32Z",
+      "side": 1,
+      "message": "please add annotation of the method",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 41,
+        "endChar": 7
+      },
+      "revId": "869b47bf03509e2d0e48b2cf2b5d812371c11809",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "971ed5c6_b16fd0b5",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/tpm_execs.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-29T01:50:32Z",
+      "side": 1,
+      "message": "``cros_match_dev_tpm_fw_version`? and follow",
+      "range": {
+        "startLine": 54,
+        "startChar": 17,
+        "endLine": 54,
+        "endChar": 52
+      },
+      "revId": "869b47bf03509e2d0e48b2cf2b5d812371c11809",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
