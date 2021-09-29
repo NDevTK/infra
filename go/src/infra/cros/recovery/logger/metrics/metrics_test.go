@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 )
@@ -61,6 +62,28 @@ func TestNewMetrics(t *testing.T) {
 	if diff := cmp.Diff(expected, actual); diff != "" {
 		t.Errorf("unexpected diff: %s", diff)
 	}
+}
+
+// TestCreateNil tests creating a new action using a nil metrics handler.
+func TestCreateNil(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	action, closer := Create(ctx, nil, "", "", time.Now())
+	if action != nil {
+		t.Errorf("expected action to be nil not: %#v", action)
+	}
+	// Try this and see if it panics.
+	closer(ctx)
+}
+
+// TestCreate tests creating a new action through the Create convenience function.
+func TestCreate(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	l := newFakeLogger().(*fakeLogger)
+	m := NewLogMetrics(l)
+	_, closer := Create(ctx, m, "a", "b", time.Now())
+	defer closer(ctx)
 }
 
 // Join a sequence of lines together to make a string with newlines inserted after

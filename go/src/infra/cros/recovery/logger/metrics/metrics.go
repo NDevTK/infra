@@ -8,6 +8,8 @@ import (
 	"context"
 	"fmt"
 	"time"
+
+	"infra/cros/recovery/internal/log"
 )
 
 // ActionStatus is the status of an action.
@@ -169,4 +171,39 @@ type Metrics interface {
 	// Search lists all the actions matching a set of constraints, up to
 	// a limit on the number of returned actions.
 	Search(ctx context.Context, q *Query) (*QueryResult, error)
+}
+
+// Create creates a metric with a swarmingTaskID, an actionKind, and a startTime.
+// It returns an action and a closer function.
+//
+// Intended usage:
+//
+//  action, closer := Metrics.Create(ctx, ...)
+//  defer closer(ctx)
+//
+func Create(ctx context.Context, m Metrics, swarmingTaskID string, actionKind string, startTime time.Time) (*Action, func(context.Context)) {
+	if m == nil {
+		return nil, zeroCloser
+	}
+	action, err := m.Create(ctx, &Action{
+		ActionKind:     actionKind,
+		SwarmingTaskID: swarmingTaskID,
+		StartTime:      startTime,
+	})
+	if err != nil {
+		log.Error(ctx, err.Error())
+	}
+	closer := func(ctx context.Context) {
+		_, err := m.Update(ctx, action)
+		if err != nil {
+			log.Error(ctx, err.Error())
+		}
+	}
+	return action, closer
+}
+
+// ZeroCloser is a closer that does nothing.
+// Use this instead of nil when you need to return a close function that is going to be used in a defer block.
+func zeroCloser(ctx context.Context) {
+	// Do nothing.
 }

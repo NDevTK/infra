@@ -14,6 +14,7 @@ import (
 
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/logger/metrics"
 )
 
 const (
@@ -28,6 +29,9 @@ const (
 
 // hasNoServoInUseExec fails if any servo is in-use now.
 func hasNoServoInUseExec(ctx context.Context, args *execs.RunArgs, actionArgs []string) error {
+	// TODO(gregorynisbet): Get the swarming task ID and pass it to metrics.
+	_, closer := metrics.Create(ctx, args.Metrics, "", "has no servo in use", time.Now())
+	defer closer(ctx)
 	// Recursively look for the in-use files which are modified less than or exactly X minutes ago.
 	cmd := fmt.Sprintf("find %s -mmin -%d", inUseFlagFileFilter, inUseFlagFileExpirationMins)
 	r := args.Access.Run(ctx, args.ResourceName, cmd)
