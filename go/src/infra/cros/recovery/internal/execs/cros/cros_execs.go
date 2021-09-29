@@ -304,6 +304,19 @@ func isBatteryChargableOrGoodLevelExec(ctx context.Context, args *execs.RunArgs,
 	return nil
 }
 
+// matchCrosSystemValueToExpectation reads value from crossystem and compared to expected value.
+func matchCrosSystemValueToExpectation(ctx context.Context, args *execs.RunArgs, crossystemField string, expectedValue string) error {
+	r := args.Access.Run(ctx, args.ResourceName, "crossystem "+crossystemField)
+	if r.ExitCode != 0 {
+		return errors.Reason("match cros system value to expectation: fail read %s. fail with code: %d, %q", crossystemField, r.ExitCode, r.Stderr).Err()
+	}
+	actualValue := strings.TrimSpace(r.Stdout)
+	if actualValue != expectedValue {
+		return errors.Reason("match cros system value to expectation: expected: %s, found: %s", expectedValue, actualValue).Err()
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("cros_ping", pingExec)
 	execs.Register("cros_ssh", sshExec)
