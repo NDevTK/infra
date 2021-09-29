@@ -46,6 +46,30 @@
       },
       "revId": "d1fb3fdc5dea73f1bf3c7b1b8175bb6aeac35452",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0d0ce023_8020d541",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/labstation_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-29T17:28:06Z",
+      "side": 1,
+      "message": "thank for english explanation.\n\njust question the command used this constant is on the line 37 and it using find. maybe it is topic for offline talk.",
+      "parentUuid": "7666e9b5_73f709ef",
+      "range": {
+        "startLine": 21,
+        "startChar": 4,
+        "endLine": 21,
+        "endChar": 8
+      },
+      "revId": "d1fb3fdc5dea73f1bf3c7b1b8175bb6aeac35452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
