@@ -1,0 +1,182 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d63689c3_7159877c",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 307,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-30T02:08:49Z",
+      "side": 1,
+      "message": "i think we wanted to move it to the cros.go?",
+      "revId": "ac7576155ae7966e361484e7bb49f94ca245c452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "550fedae_ec75233c",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 308,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-30T02:08:49Z",
+      "side": 1,
+      "message": "that is not field. can be \n1) subcommand\n2) command\n3) param crossystem help\n\nplease",
+      "range": {
+        "startLine": 308,
+        "startChar": 81,
+        "endLine": 308,
+        "endChar": 96
+      },
+      "revId": "ac7576155ae7966e361484e7bb49f94ca245c452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ad19efa6_b22b6fd8",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 311,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-30T02:08:49Z",
+      "side": 1,
+      "message": "crossystem is single name of the tool",
+      "range": {
+        "startLine": 311,
+        "startChar": 30,
+        "endLine": 311,
+        "endChar": 41
+      },
+      "revId": "ac7576155ae7966e361484e7bb49f94ca245c452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c4985c58_5c22bc63",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 315,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-30T02:08:49Z",
+      "side": 1,
+      "message": "`not matched to expected value %q, got %q`",
+      "range": {
+        "startLine": 315,
+        "startChar": 64,
+        "endLine": 315,
+        "endChar": 88
+      },
+      "revId": "ac7576155ae7966e361484e7bb49f94ca245c452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f8dbf62c_3f0a404d",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 315,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-30T02:08:49Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 315,
+        "startChar": 30,
+        "endLine": 315,
+        "endChar": 42
+      },
+      "revId": "ac7576155ae7966e361484e7bb49f94ca245c452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cfeb36c6_77adae54",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/tpm_execs.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-30T02:08:49Z",
+      "side": 1,
+      "message": "we wanted to split it and extra names of command here too?",
+      "range": {
+        "startLine": 17,
+        "startChar": 1,
+        "endLine": 17,
+        "endChar": 46
+      },
+      "revId": "ac7576155ae7966e361484e7bb49f94ca245c452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7605d5a6_92936413",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/tpm_execs.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-30T02:08:49Z",
+      "side": 1,
+      "message": "that part will come from matchCrosSystemValueToExpectation so after annotate it will looks like \n\n`match dev tpm kernel version: match crossystem value to expectation: ....`\n\nif keep as it is\n`match dev tpm kernel version: dev tpm kernel version mismatch: match crossystem value to expectation: ....`",
+      "range": {
+        "startLine": 27,
+        "startChar": 61,
+        "endLine": 27,
+        "endChar": 92
+      },
+      "revId": "ac7576155ae7966e361484e7bb49f94ca245c452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5daa4429_bc9e07b5",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/tpm_execs.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-09-30T02:08:49Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 39,
+        "startChar": 63,
+        "endLine": 39,
+        "endChar": 96
+      },
+      "revId": "ac7576155ae7966e361484e7bb49f94ca245c452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
