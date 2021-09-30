@@ -102,3 +102,16 @@ func WaitUntilSSHable(ctx context.Context, args *execs.RunArgs, resourceName str
 		return IsSSHable(ctx, args, resourceName)
 	}, "wait to ssh access")
 }
+
+// matchCrosSystemValueToExpectation reads value from crossystem and compared to expected value.
+func matchCrosSystemValueToExpectation(ctx context.Context, args *execs.RunArgs, subcommand string, expectedValue string) error {
+	r := args.Access.Run(ctx, args.ResourceName, "crossystem "+subcommand)
+	if r.ExitCode != 0 {
+		return errors.Reason("match value to expectation: fail read %s. fail with code: %d, %q", subcommand, r.ExitCode, r.Stderr).Err()
+	}
+	actualValue := strings.TrimSpace(r.Stdout)
+	if actualValue != expectedValue {
+		return errors.Reason("not matched to expected value: %q, found: %q", expectedValue, actualValue).Err()
+	}
+	return nil
+}
