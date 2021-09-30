@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0b0c3698_b7339d4f",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 307,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-09-30T05:37:33Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "d63689c3_7159877c",
+      "revId": "ac7576155ae7966e361484e7bb49f94ca245c452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "550fedae_ec75233c",
@@ -41,6 +59,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "78c718db_73037df8",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 308,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-09-30T05:37:33Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "550fedae_ec75233c",
+      "range": {
+        "startLine": 308,
+        "startChar": 81,
+        "endLine": 308,
+        "endChar": 96
+      },
+      "revId": "ac7576155ae7966e361484e7bb49f94ca245c452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ad19efa6_b22b6fd8",
@@ -54,6 +96,30 @@
       "writtenOn": "2021-09-30T02:08:49Z",
       "side": 1,
       "message": "crossystem is single name of the tool",
+      "range": {
+        "startLine": 311,
+        "startChar": 30,
+        "endLine": 311,
+        "endChar": 41
+      },
+      "revId": "ac7576155ae7966e361484e7bb49f94ca245c452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "facd178c_ffae03a9",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 311,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-09-30T05:37:33Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ad19efa6_b22b6fd8",
       "range": {
         "startLine": 311,
         "startChar": 30,
@@ -110,6 +176,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a4623c66_cd5008e0",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 315,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-09-30T05:37:33Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f8dbf62c_3f0a404d",
+      "range": {
+        "startLine": 315,
+        "startChar": 30,
+        "endLine": 315,
+        "endChar": 42
+      },
+      "revId": "ac7576155ae7966e361484e7bb49f94ca245c452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e79e24a2_f1b592a5",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 315,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-09-30T05:37:33Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c4985c58_5c22bc63",
+      "range": {
+        "startLine": 315,
+        "startChar": 64,
+        "endLine": 315,
+        "endChar": 88
+      },
+      "revId": "ac7576155ae7966e361484e7bb49f94ca245c452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "cfeb36c6_77adae54",
@@ -123,6 +237,30 @@
       "writtenOn": "2021-09-30T02:08:49Z",
       "side": 1,
       "message": "we wanted to split it and extra names of command here too?",
+      "range": {
+        "startLine": 17,
+        "startChar": 1,
+        "endLine": 17,
+        "endChar": 46
+      },
+      "revId": "ac7576155ae7966e361484e7bb49f94ca245c452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "45837c69_baa4ea68",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/tpm_execs.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-09-30T05:37:33Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "cfeb36c6_77adae54",
       "range": {
         "startLine": 17,
         "startChar": 1,
@@ -156,6 +294,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "db9d1b4c_7376fa4a",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/tpm_execs.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-09-30T05:37:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7605d5a6_92936413",
+      "range": {
+        "startLine": 27,
+        "startChar": 61,
+        "endLine": 27,
+        "endChar": 92
+      },
+      "revId": "ac7576155ae7966e361484e7bb49f94ca245c452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5daa4429_bc9e07b5",
@@ -169,6 +331,30 @@
       "writtenOn": "2021-09-30T02:08:49Z",
       "side": 1,
       "message": "same",
+      "range": {
+        "startLine": 39,
+        "startChar": 63,
+        "endLine": 39,
+        "endChar": 96
+      },
+      "revId": "ac7576155ae7966e361484e7bb49f94ca245c452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4ed68889_031a8cbc",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/tpm_execs.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-09-30T05:37:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5daa4429_bc9e07b5",
       "range": {
         "startLine": 39,
         "startChar": 63,
