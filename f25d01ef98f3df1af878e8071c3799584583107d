@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ff494e6d_acbca05a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-01T02:20:48Z",
+      "side": 1,
+      "message": "I\u0027ll land this CL as it is. And disable memcache for Bucket and Project when it\u0027s necessary ",
+      "revId": "f25d01ef98f3df1af878e8071c3799584583107d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ad1da70d_e498b0bd",
