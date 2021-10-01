@@ -51,6 +51,24 @@
       "parentUuid": "ad1da70d_e498b0bd",
       "revId": "f25d01ef98f3df1af878e8071c3799584583107d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0aa9385a_e7dc3431",
+        "filename": "appengine/cr-buildbucket/config.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1003211
+      },
+      "writtenOn": "2021-10-01T02:09:16Z",
+      "side": 1,
+      "message": "Shouldn\u0027t be necessary. Go service isn\u0027t interacting with Buckets in the datastore right now.",
+      "parentUuid": "ad1da70d_e498b0bd",
+      "revId": "f25d01ef98f3df1af878e8071c3799584583107d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
