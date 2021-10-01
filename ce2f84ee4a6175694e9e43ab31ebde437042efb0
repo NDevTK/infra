@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "54a1da30_cf07cefd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-10-01T02:42:42Z",
+      "side": 1,
+      "message": "% comments",
+      "revId": "ce2f84ee4a6175694e9e43ab31ebde437042efb0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "be46b214_d330bf6b",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-10-01T02:42:42Z",
+      "side": 1,
+      "message": "mismatch to method name\n`match crossystem value to expectation`",
+      "range": {
+        "startLine": 110,
+        "startChar": 24,
+        "endLine": 110,
+        "endChar": 50
+      },
+      "revId": "ce2f84ee4a6175694e9e43ab31ebde437042efb0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "89d02329_4976af4e",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-10-01T02:42:42Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 114,
+        "startChar": 24,
+        "endLine": 114,
+        "endChar": 53
+      },
+      "revId": "ce2f84ee4a6175694e9e43ab31ebde437042efb0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
