@@ -15,6 +15,7 @@ FLAKE_DETECTION_BACKEND = 'flake-detection-backend'
 DISABLED_TEST_BACKEND = 'disabled-test-backend'
 AUTO_ACTION_BACKEND = 'auto-action-backend'
 CODE_COVERAGE_BACKEND = 'code-coverage-backend'
+CODE_COVERAGE_FEATURE_COVERAGE_WORKER = 'code-coverage-feature-coverage-worker'
 
 # Names of all queues.
 DEFAULT_QUEUE = 'default'
