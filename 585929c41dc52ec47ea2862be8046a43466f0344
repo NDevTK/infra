@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ceefde4c_1ab1f34d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-10-01T21:57:29Z",
+      "side": 1,
+      "message": "per discussion, I think it\u0027s simplest to just standardize on the luci lib (or stdlib).  although I suppose there\u0027s not much harm adding a wrapper.  The point of a wrapper is to hide the dependency, and per my other comment you\u0027re leaking the dependency through the wrapper API.",
+      "revId": "585929c41dc52ec47ea2862be8046a43466f0344",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "811f97ec_658d4f40",
+        "filename": "go/src/infra/cros/karte/internal/errors/errors.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-10-01T21:57:29Z",
+      "side": 1,
+      "message": "This is a leaky wrapper.  Should probably be an interface",
+      "range": {
+        "startLine": 20,
+        "startChar": 61,
+        "endLine": 20,
+        "endChar": 78
+      },
+      "revId": "585929c41dc52ec47ea2862be8046a43466f0344",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
