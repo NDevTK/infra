@@ -234,7 +234,8 @@ class GitilesRepository(GitRepository):
 
   def GetSource(self, path, revision):
     """Returns source code of the file at ``path`` of the given revision."""
-    source, _ = self.GetSourceAndStatus(path, revision)
+    url = '%s/+/%s/%s' % (self.repo_url, urllib.quote(revision), path)
+    source, _ = self._SendRequestForTextResponse(url)
     return source
 
   def GetSourceAndStatus(self, path, revision):
