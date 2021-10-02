@@ -1605,21 +1605,20 @@ class ExportAllFeatureCoverageMetricsTest(WaterfallTestCase):
 
 
 class ExportFeatureCoverageMetricsTest(WaterfallTestCase):
+  app_module = webapp2.WSGIApplication([
+      ('/coverage/task/feature-coverage.*',
+       code_coverage.ExportFeatureCoverageMetrics),
+  ],
+                                       debug=True)
 
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(feature_coverage, 'ExportFeatureCoverage')
-  def testFeatureCoverageFilesExported(self, mock_detect):
-    taskqueue.Task(
-        method='PULL', name='test1', payload='modifier_id=123',
-        tag='mytag').add('feature-coverage-metrics-queue')
-    taskqueue.Task(
-        method='PULL', name='test2', payload='modifier_id=123',
-        tag='mytag').add('feature-coverage-metrics-queue')
-    code_coverage.ExportFeatureCoverageMetrics._LeaseAndExecuteTask(
-        taskqueue.Queue('feature-coverage-metrics-queue'))
-    tasks = self.taskqueue_stub.get_filtered_tasks(
-        queue_names='feature-coverage-metrics-queue')
+  def testFeatureCoverageFilesExported(self, mock_detect, _):
+    CoverageReportModifier(gerrit_hashtag='f1', id=123).put()
+    response = self.test_app.get(
+        '/coverage/task/feature-coverage?modifier_id=123', status=200)
     self.assertEqual(1, mock_detect.call_count)
-    self.assertEqual(0, len(tasks))
+    self.assertEqual(200, response.status_int)
 
 
 class UpdatePostsubmitReportTest(WaterfallTestCase):
