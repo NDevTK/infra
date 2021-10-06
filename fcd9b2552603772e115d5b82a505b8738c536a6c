@@ -16,6 +16,23 @@
       "message": "Reland of https://chromium-review.googlesource.com/c/infra/infra/+/3206917",
       "revId": "fcd9b2552603772e115d5b82a505b8738c536a6c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9ae08e9b_178730d9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2021-10-06T21:32:50Z",
+      "side": 1,
+      "message": "Actually, where is the `root: ../../go/bin` entry in this CL? From the comment thread[1] in the previous CL, I believe it\u0027s required?\n\n[1]: https://chromium-review.googlesource.com/c/infra/infra/+/3206917/comments/498305b0_b5366ffe",
+      "revId": "fcd9b2552603772e115d5b82a505b8738c536a6c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
