@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "47524894_cd740f51",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118104
+      },
+      "writtenOn": "2021-10-06T20:37:45Z",
+      "side": 1,
+      "message": "Reland of https://chromium-review.googlesource.com/c/infra/infra/+/3206917",
+      "revId": "fcd9b2552603772e115d5b82a505b8738c536a6c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
