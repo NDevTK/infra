@@ -1,3 +1,0 @@
-# Built *.cipd packages are put here.
-*.cipd
-.cipd_client
