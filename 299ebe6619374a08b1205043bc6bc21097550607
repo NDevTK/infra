@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9846b16f_a2590483",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2021-10-08T19:17:40Z",
+      "side": 1,
+      "message": "lgtm",
+      "revId": "299ebe6619374a08b1205043bc6bc21097550607",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4ffd6023_a05f5f9e",
+        "filename": "recipes/recipe_modules/recipe_autoroller/api.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 322,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2021-10-08T19:17:40Z",
+      "side": 1,
+      "message": "maybe this should just be the \u0027default/else\u0027 case at the bottom?",
+      "revId": "299ebe6619374a08b1205043bc6bc21097550607",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
