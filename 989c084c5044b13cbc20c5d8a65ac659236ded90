@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5b9fbade_f3ba44a8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2021-10-08T22:06:17Z",
+      "side": 1,
+      "message": "lgtm (but the diff is hard to read due to the traceback improvement)",
+      "revId": "989c084c5044b13cbc20c5d8a65ac659236ded90",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
