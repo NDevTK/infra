@@ -16,6 +16,24 @@
       "message": "lgtm (but the diff is hard to read due to the traceback improvement)",
       "revId": "989c084c5044b13cbc20c5d8a65ac659236ded90",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7e2b4ade_ec320381",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1347995
+      },
+      "writtenOn": "2021-10-08T22:16:00Z",
+      "side": 1,
+      "message": "Yeah I thought about trying to avoid that, but I think I would have had to inline the entire function body into a try/except which would be pretty gnarly :/\n\nTurning on \"Ignore whitespace\" in Gerrit helps a lot, at least to confirm that the de-indented lines didn\u0027t otherwise change.",
+      "parentUuid": "5b9fbade_f3ba44a8",
+      "revId": "989c084c5044b13cbc20c5d8a65ac659236ded90",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
