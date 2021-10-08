@@ -343,6 +343,7 @@
       "@@@STEP_LOG_LINE@json.output@    \"trivial\": {@@@",
       "@@@STEP_LOG_LINE@json.output@      \"automatic_commit\": true, @@@",
       "@@@STEP_LOG_LINE@json.output@      \"dry_run\": false, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"self_approve_method\": \"BOT_COMMIT_APPROVE\", @@@",
       "@@@STEP_LOG_LINE@json.output@      \"tbr_emails\": [@@@",
       "@@@STEP_LOG_LINE@json.output@        \"foo@bar.example.com\", @@@",
       "@@@STEP_LOG_LINE@json.output@        \"meep@example.com\"@@@",
@@ -416,92 +417,18 @@
     "name": "build.roll",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@ (already at latest revisions)@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"picked_roll_details\": null, @@@",
-      "@@@STEP_LOG_LINE@json.output@  \"rejected_candidates_count\": 1, @@@",
-      "@@@STEP_LOG_LINE@json.output@  \"roll_details\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@    {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"commit_infos\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"recipe_engine\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@          {@@@",
-      "@@@STEP_LOG_LINE@json.output@            \"author_email\": \"foo@chromium.org\", @@@",
-      "@@@STEP_LOG_LINE@json.output@            \"message_lines\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@              \"some commit summary that is too long to fit in a single line in Gerrit\", @@@",
-      "@@@STEP_LOG_LINE@json.output@              \"R=bar@chromium.org,baz@chromium.org,invalid1,invalid2@chromium\", @@@",
-      "@@@STEP_LOG_LINE@json.output@              \"BUG=123,456\"@@@",
-      "@@@STEP_LOG_LINE@json.output@            ], @@@",
-      "@@@STEP_LOG_LINE@json.output@            \"revision\": \"123abc\"@@@",
-      "@@@STEP_LOG_LINE@json.output@          }@@@",
-      "@@@STEP_LOG_LINE@json.output@        ]@@@",
-      "@@@STEP_LOG_LINE@json.output@      }, @@@",
-      "@@@STEP_LOG_LINE@json.output@      \"spec\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"api_version\": 2, @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"autoroll_recipe_options\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"disable_reason\": \"\", @@@",
-      "@@@STEP_LOG_LINE@json.output@          \"no_cc_authors\": false, @@@",
-      "@@@STEP_LOG_LINE@json.output@          \"nontrivial\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@            \"automatic_commit_dry_run\": true, @@@",
-      "@@@STEP_LOG_LINE@json.output@            \"extra_reviewer_emails\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@              \"foo@chromium.org\", @@@",
-      "@@@STEP_LOG_LINE@json.output@              \"foo@bar.example.com\", @@@",
-      "@@@STEP_LOG_LINE@json.output@              \"meep@example.com\"@@@",
-      "@@@STEP_LOG_LINE@json.output@            ], @@@",
-      "@@@STEP_LOG_LINE@json.output@            \"set_autosubmit\": true@@@",
-      "@@@STEP_LOG_LINE@json.output@          }, @@@",
-      "@@@STEP_LOG_LINE@json.output@          \"trivial\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@            \"automatic_commit\": true, @@@",
-      "@@@STEP_LOG_LINE@json.output@            \"dry_run\": false, @@@",
-      "@@@STEP_LOG_LINE@json.output@            \"tbr_emails\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@              \"foo@bar.example.com\", @@@",
-      "@@@STEP_LOG_LINE@json.output@              \"meep@example.com\"@@@",
-      "@@@STEP_LOG_LINE@json.output@            ]@@@",
-      "@@@STEP_LOG_LINE@json.output@          }@@@",
-      "@@@STEP_LOG_LINE@json.output@        }, @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"deps\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"recipe_engine\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@            \"url\": \"https://chromium.googlesource.com/infra/luci/recipes-py\"@@@",
-      "@@@STEP_LOG_LINE@json.output@          }@@@",
-      "@@@STEP_LOG_LINE@json.output@        }@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@  ], @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"rejected_candidates_count\": 0, @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"roll_details\": [], @@@",
       "@@@STEP_LOG_LINE@json.output@  \"success\": false, @@@",
       "@@@STEP_LOG_LINE@json.output@  \"trivial\": null@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LOG_LINE@candidate #1@{\"api_version\": 2, \"autoroll_recipe_options\": {\"disable_reason\": \"\", \"no_cc_authors\": false, \"nontrivial\": {\"automatic_commit_dry_run\": true, \"extra_reviewer_emails\": [\"foo@chromium.org\", \"foo@bar.example.com\", \"meep@example.com\"], \"set_autosubmit\": true}, \"trivial\": {\"automatic_commit\": true, \"dry_run\": false, \"tbr_emails\": [\"foo@bar.example.com\", \"meep@example.com\"]}}, \"deps\": {\"recipe_engine\": {\"url\": \"https://chromium.googlesource.com/infra/luci/recipes-py\"}}}@@@",
-      "@@@STEP_LOG_END@candidate #1@@@"
+      "@@@STEP_LOG_END@json.output@@@"
     ]
   },
   {
-    "cmd": [
-      "python",
-      "-u",
-      "import sys; sys.exit(1)"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "infra:cron"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "roll result",
-    "~followup_annotations": [
-      "@@@STEP_TEXT@manual intervention needed: automated roll attempt failed@@@",
-      "@@@STEP_FAILURE@@@"
-    ]
-  },
-  {
-    "failure": {
-      "failure": {},
-      "humanReason": "Step('roll result') (retcode: 1)"
-    },
     "name": "$result"
   }
 ]

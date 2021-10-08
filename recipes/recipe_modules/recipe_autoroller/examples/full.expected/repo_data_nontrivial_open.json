@@ -78,10 +78,7 @@
   },
   {
     "cmd": [],
-    "name": "build",
-    "~followup_annotations": [
-      "@@@STEP_FAILURE@@@"
-    ]
+    "name": "build"
   },
   {
     "cmd": [
@@ -346,6 +343,7 @@
       "@@@STEP_LOG_LINE@json.output@    \"trivial\": {@@@",
       "@@@STEP_LOG_LINE@json.output@      \"automatic_commit\": true, @@@",
       "@@@STEP_LOG_LINE@json.output@      \"dry_run\": false, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"self_approve_method\": \"BOT_COMMIT_APPROVE\", @@@",
       "@@@STEP_LOG_LINE@json.output@      \"tbr_emails\": [@@@",
       "@@@STEP_LOG_LINE@json.output@        \"foo@bar.example.com\", @@@",
       "@@@STEP_LOG_LINE@json.output@        \"meep@example.com\"@@@",
@@ -388,7 +386,6 @@
     "name": "build.gsutil repo_state",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_TEXT@ (trivial)@@@",
       "@@@STEP_LINK@Issue 123456789@https://codereview.chromium.org/123456789@@@"
     ]
   },
@@ -419,39 +416,10 @@
     "name": "build.git cl status",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_TEXT@commit@@@"
+      "@@@STEP_TEXT@waiting@@@"
     ]
   },
   {
-    "cmd": [
-      "python",
-      "-u",
-      "import sys; sys.exit(1)"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "infra:cron"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "build.stale roll",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_TEXT@manual intervention needed: automated roll attempt is stale@@@",
-      "@@@STEP_FAILURE@@@"
-    ]
-  },
-  {
-    "failure": {
-      "failure": {},
-      "humanReason": "Rolls failed for the following projects: build"
-    },
     "name": "$result"
   }
 ]

@@ -343,6 +343,7 @@
       "@@@STEP_LOG_LINE@json.output@    \"trivial\": {@@@",
       "@@@STEP_LOG_LINE@json.output@      \"automatic_commit\": true, @@@",
       "@@@STEP_LOG_LINE@json.output@      \"dry_run\": false, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"self_approve_method\": \"BOT_COMMIT_APPROVE\", @@@",
       "@@@STEP_LOG_LINE@json.output@      \"tbr_emails\": [@@@",
       "@@@STEP_LOG_LINE@json.output@        \"foo@bar.example.com\", @@@",
       "@@@STEP_LOG_LINE@json.output@        \"meep@example.com\"@@@",
@@ -367,7 +368,7 @@
       "RECIPE_REPO[depot_tools]/gsutil.py",
       "----",
       "cat",
-      "gs://recipe-mega-roller-crappy-db/repo_metadata/aHR0cHM6Ly9leGFtcGxlLmNvbS9idWlsZC5naXQ="
+      "gs://somebucket/repo_metadata/aHR0cHM6Ly9leGFtcGxlLmNvbS9idWlsZC5naXQ="
     ],
     "infra_step": true,
     "luci_context": {
@@ -385,38 +386,8 @@
     "name": "build.gsutil repo_state",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_TEXT@ (trivial)@@@",
-      "@@@STEP_LINK@Issue 123456789@https://codereview.chromium.org/123456789@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython",
-      "-u",
-      "RECIPE_REPO[depot_tools]/git_cl.py",
-      "status",
-      "--issue",
-      "123456789",
-      "--field",
-      "status"
-    ],
-    "cwd": "[CACHE]/builder/recipe_autoroller/build",
-    "luci_context": {
-      "realm": {
-        "name": "infra:cron"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "build.git cl status",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_TEXT@closed@@@"
+      "@@@STEP_LOG_LINE@stderr@No URLs matched@@@",
+      "@@@STEP_LOG_END@stderr@@@"
     ]
   },
   {
@@ -459,6 +430,24 @@
       "@@@STEP_LOG_LINE@json.output@            \"BUG=123,456\"@@@",
       "@@@STEP_LOG_LINE@json.output@          ], @@@",
       "@@@STEP_LOG_LINE@json.output@          \"revision\": \"123abc\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }, @@@",
+      "@@@STEP_LOG_LINE@json.output@        {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"author_email\": \"foo@chromium.org\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"message_lines\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"some commit summary that is too long to fit in a single line in Gerrit\", @@@",
+      "@@@STEP_LOG_LINE@json.output@            \"R=bar@chromium.org,baz@chromium.org,invalid1,invalid2@chromium\", @@@",
+      "@@@STEP_LOG_LINE@json.output@            \"BUG=123,456\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          ], @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"revision\": \"223abc\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }, @@@",
+      "@@@STEP_LOG_LINE@json.output@        {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"author_email\": \"foo@chromium.org\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"message_lines\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"some commit summary that is too long to fit in a single line in Gerrit\", @@@",
+      "@@@STEP_LOG_LINE@json.output@            \"R=bar@chromium.org,baz@chromium.org,invalid1,invalid2@chromium\", @@@",
+      "@@@STEP_LOG_LINE@json.output@            \"BUG=123,456\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          ], @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"revision\": \"323abc\"@@@",
       "@@@STEP_LOG_LINE@json.output@        }@@@",
       "@@@STEP_LOG_LINE@json.output@      ]@@@",
       "@@@STEP_LOG_LINE@json.output@    }, @@@",
@@ -479,6 +468,7 @@
       "@@@STEP_LOG_LINE@json.output@        \"trivial\": {@@@",
       "@@@STEP_LOG_LINE@json.output@          \"automatic_commit\": true, @@@",
       "@@@STEP_LOG_LINE@json.output@          \"dry_run\": false, @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"self_approve_method\": \"BOT_COMMIT_APPROVE\", @@@",
       "@@@STEP_LOG_LINE@json.output@          \"tbr_emails\": [@@@",
       "@@@STEP_LOG_LINE@json.output@            \"foo@bar.example.com\", @@@",
       "@@@STEP_LOG_LINE@json.output@            \"meep@example.com\"@@@",
@@ -505,6 +495,24 @@
       "@@@STEP_LOG_LINE@json.output@              \"BUG=123,456\"@@@",
       "@@@STEP_LOG_LINE@json.output@            ], @@@",
       "@@@STEP_LOG_LINE@json.output@            \"revision\": \"123abc\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          }, @@@",
+      "@@@STEP_LOG_LINE@json.output@          {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"author_email\": \"foo@chromium.org\", @@@",
+      "@@@STEP_LOG_LINE@json.output@            \"message_lines\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"some commit summary that is too long to fit in a single line in Gerrit\", @@@",
+      "@@@STEP_LOG_LINE@json.output@              \"R=bar@chromium.org,baz@chromium.org,invalid1,invalid2@chromium\", @@@",
+      "@@@STEP_LOG_LINE@json.output@              \"BUG=123,456\"@@@",
+      "@@@STEP_LOG_LINE@json.output@            ], @@@",
+      "@@@STEP_LOG_LINE@json.output@            \"revision\": \"223abc\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          }, @@@",
+      "@@@STEP_LOG_LINE@json.output@          {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"author_email\": \"foo@chromium.org\", @@@",
+      "@@@STEP_LOG_LINE@json.output@            \"message_lines\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"some commit summary that is too long to fit in a single line in Gerrit\", @@@",
+      "@@@STEP_LOG_LINE@json.output@              \"R=bar@chromium.org,baz@chromium.org,invalid1,invalid2@chromium\", @@@",
+      "@@@STEP_LOG_LINE@json.output@              \"BUG=123,456\"@@@",
+      "@@@STEP_LOG_LINE@json.output@            ], @@@",
+      "@@@STEP_LOG_LINE@json.output@            \"revision\": \"323abc\"@@@",
       "@@@STEP_LOG_LINE@json.output@          }@@@",
       "@@@STEP_LOG_LINE@json.output@        ]@@@",
       "@@@STEP_LOG_LINE@json.output@      }, @@@",
@@ -525,6 +533,7 @@
       "@@@STEP_LOG_LINE@json.output@          \"trivial\": {@@@",
       "@@@STEP_LOG_LINE@json.output@            \"automatic_commit\": true, @@@",
       "@@@STEP_LOG_LINE@json.output@            \"dry_run\": false, @@@",
+      "@@@STEP_LOG_LINE@json.output@            \"self_approve_method\": \"BOT_COMMIT_APPROVE\", @@@",
       "@@@STEP_LOG_LINE@json.output@            \"tbr_emails\": [@@@",
       "@@@STEP_LOG_LINE@json.output@              \"foo@bar.example.com\", @@@",
       "@@@STEP_LOG_LINE@json.output@              \"meep@example.com\"@@@",
@@ -552,8 +561,12 @@
       "@@@STEP_LOG_LINE@commit_message@https://ci.chromium.org/b/8945511751514863184@@@",
       "@@@STEP_LOG_LINE@commit_message@@@@",
       "@@@STEP_LOG_LINE@commit_message@recipe_engine:@@@",
-      "@@@STEP_LOG_LINE@commit_message@https://chromium.googlesource.com/infra/luci/recipes-py/+/123abc@@@",
+      "@@@STEP_LOG_LINE@commit_message@https://chromium.googlesource.com/infra/luci/recipes-py/+log/123abc~..323abc@@@",
       "@@@STEP_LOG_LINE@commit_message@  123abc (foo@chromium.org)@@@",
+      "@@@STEP_LOG_LINE@commit_message@      some commit summary that is too long to fit in a single line in...@@@",
+      "@@@STEP_LOG_LINE@commit_message@  223abc (foo@chromium.org)@@@",
+      "@@@STEP_LOG_LINE@commit_message@      some commit summary that is too long to fit in a single line in...@@@",
+      "@@@STEP_LOG_LINE@commit_message@  323abc (foo@chromium.org)@@@",
       "@@@STEP_LOG_LINE@commit_message@      some commit summary that is too long to fit in a single line in...@@@",
       "@@@STEP_LOG_LINE@commit_message@@@@",
       "@@@STEP_LOG_LINE@commit_message@More info is at https://goo.gl/zkKdpD. Use https://goo.gl/noib3a to file a bug.@@@",
@@ -638,7 +651,7 @@
       "-f",
       "--cc=foo@chromium.org",
       "--message-file",
-      "Roll recipe dependencies (trivial).\n\nThis is an automated CL created by the recipe roller. This CL rolls\nrecipe changes from upstream projects (recipe_engine) into this repository.\n\nThe build that created this CL was\nhttps://ci.chromium.org/b/8945511751514863184\n\nrecipe_engine:\nhttps://chromium.googlesource.com/infra/luci/recipes-py/+/123abc\n  123abc (foo@chromium.org)\n      some commit summary that is too long to fit in a single line in...\n\nMore info is at https://goo.gl/zkKdpD. Use https://goo.gl/noib3a to file a bug.\n\nRecipe-Tryjob-Bypass-Reason: Autoroller\nBugdroid-Send-Email: False\n"
+      "Roll recipe dependencies (trivial).\n\nThis is an automated CL created by the recipe roller. This CL rolls\nrecipe changes from upstream projects (recipe_engine) into this repository.\n\nThe build that created this CL was\nhttps://ci.chromium.org/b/8945511751514863184\n\nrecipe_engine:\nhttps://chromium.googlesource.com/infra/luci/recipes-py/+log/123abc~..323abc\n  123abc (foo@chromium.org)\n      some commit summary that is too long to fit in a single line in...\n  223abc (foo@chromium.org)\n      some commit summary that is too long to fit in a single line in...\n  323abc (foo@chromium.org)\n      some commit summary that is too long to fit in a single line in...\n\nMore info is at https://goo.gl/zkKdpD. Use https://goo.gl/noib3a to file a bug.\n\nRecipe-Tryjob-Bypass-Reason: Autoroller\nBugdroid-Send-Email: False\n"
     ],
     "cwd": "[CACHE]/builder/recipe_autoroller/build",
     "luci_context": {
@@ -700,8 +713,8 @@
       "RECIPE_REPO[depot_tools]/gsutil.py",
       "----",
       "cp",
-      "{\"issue\": \"123456789\", \"issue_url\": \"https://codereview.chromium.org/123456789\", \"last_roll_ts_utc\": \"2016-01-01T00:00:03\", \"trivial\": true}",
-      "gs://recipe-mega-roller-crappy-db/repo_metadata/aHR0cHM6Ly9leGFtcGxlLmNvbS9idWlsZC5naXQ="
+      "{\"issue\": \"123456789\", \"issue_url\": \"https://codereview.chromium.org/123456789\", \"last_roll_ts_utc\": \"2012-05-14T12:53:21\", \"trivial\": true}",
+      "gs://somebucket/repo_metadata/aHR0cHM6Ly9leGFtcGxlLmNvbS9idWlsZC5naXQ="
     ],
     "infra_step": true,
     "luci_context": {
@@ -719,7 +732,7 @@
     "name": "build.gsutil upload",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/recipe-mega-roller-crappy-db/repo_metadata/aHR0cHM6Ly9leGFtcGxlLmNvbS9idWlsZC5naXQ=@@@"
+      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/somebucket/repo_metadata/aHR0cHM6Ly9leGFtcGxlLmNvbS9idWlsZC5naXQ=@@@"
     ]
   },
   {

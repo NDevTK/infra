@@ -78,10 +78,7 @@
   },
   {
     "cmd": [],
-    "name": "build",
-    "~followup_annotations": [
-      "@@@STEP_WARNINGS@@@"
-    ]
+    "name": "build"
   },
   {
     "cmd": [
@@ -332,7 +329,7 @@
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"api_version\": 2, @@@",
       "@@@STEP_LOG_LINE@json.output@  \"autoroll_recipe_options\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"disable_reason\": \"I am a water buffalo.\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"disable_reason\": \"\", @@@",
       "@@@STEP_LOG_LINE@json.output@    \"no_cc_authors\": false, @@@",
       "@@@STEP_LOG_LINE@json.output@    \"nontrivial\": {@@@",
       "@@@STEP_LOG_LINE@json.output@      \"automatic_commit_dry_run\": true, @@@",
@@ -346,6 +343,7 @@
       "@@@STEP_LOG_LINE@json.output@    \"trivial\": {@@@",
       "@@@STEP_LOG_LINE@json.output@      \"automatic_commit\": true, @@@",
       "@@@STEP_LOG_LINE@json.output@      \"dry_run\": false, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"self_approve_method\": \"BOT_COMMIT_APPROVE\", @@@",
       "@@@STEP_LOG_LINE@json.output@      \"tbr_emails\": [@@@",
       "@@@STEP_LOG_LINE@json.output@        \"foo@bar.example.com\", @@@",
       "@@@STEP_LOG_LINE@json.output@        \"meep@example.com\"@@@",
@@ -365,8 +363,14 @@
     "cmd": [
       "python",
       "-u",
-      "import sys; sys.exit(0)"
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cat",
+      "gs://recipe-mega-roller-crappy-db/repo_metadata/aHR0cHM6Ly9leGFtcGxlLmNvbS9idWlsZC5naXQ="
     ],
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "infra:cron"
@@ -379,11 +383,41 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "build.disabled",
+    "name": "build.gsutil repo_state",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_TEXT@I am a water buffalo.@@@",
-      "@@@STEP_WARNINGS@@@"
+      "@@@STEP_TEXT@ (trivial)@@@",
+      "@@@STEP_LINK@Issue 123456789@https://codereview.chromium.org/123456789@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_REPO[depot_tools]/git_cl.py",
+      "status",
+      "--issue",
+      "123456789",
+      "--field",
+      "status"
+    ],
+    "cwd": "[CACHE]/builder/recipe_autoroller/build",
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "build.git cl status",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@commit@@@"
     ]
   },
   {

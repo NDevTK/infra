@@ -78,10 +78,7 @@
   },
   {
     "cmd": [],
-    "name": "build",
-    "~followup_annotations": [
-      "@@@STEP_FAILURE@@@"
-    ]
+    "name": "build"
   },
   {
     "cmd": [
@@ -346,6 +343,7 @@
       "@@@STEP_LOG_LINE@json.output@    \"trivial\": {@@@",
       "@@@STEP_LOG_LINE@json.output@      \"automatic_commit\": true, @@@",
       "@@@STEP_LOG_LINE@json.output@      \"dry_run\": false, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"self_approve_method\": \"BOT_COMMIT_APPROVE\", @@@",
       "@@@STEP_LOG_LINE@json.output@      \"tbr_emails\": [@@@",
       "@@@STEP_LOG_LINE@json.output@        \"foo@bar.example.com\", @@@",
       "@@@STEP_LOG_LINE@json.output@        \"meep@example.com\"@@@",
@@ -452,6 +450,7 @@
       "@@@STEP_LOG_LINE@json.output@        \"trivial\": {@@@",
       "@@@STEP_LOG_LINE@json.output@          \"automatic_commit\": true, @@@",
       "@@@STEP_LOG_LINE@json.output@          \"dry_run\": false, @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"self_approve_method\": \"BOT_COMMIT_APPROVE\", @@@",
       "@@@STEP_LOG_LINE@json.output@          \"tbr_emails\": [@@@",
       "@@@STEP_LOG_LINE@json.output@            \"foo@bar.example.com\", @@@",
       "@@@STEP_LOG_LINE@json.output@            \"meep@example.com\"@@@",
@@ -498,6 +497,7 @@
       "@@@STEP_LOG_LINE@json.output@          \"trivial\": {@@@",
       "@@@STEP_LOG_LINE@json.output@            \"automatic_commit\": true, @@@",
       "@@@STEP_LOG_LINE@json.output@            \"dry_run\": false, @@@",
+      "@@@STEP_LOG_LINE@json.output@            \"self_approve_method\": \"BOT_COMMIT_APPROVE\", @@@",
       "@@@STEP_LOG_LINE@json.output@            \"tbr_emails\": [@@@",
       "@@@STEP_LOG_LINE@json.output@              \"foo@bar.example.com\", @@@",
       "@@@STEP_LOG_LINE@json.output@              \"meep@example.com\"@@@",
@@ -562,7 +562,11 @@
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@proto.output@{@@@",
       "@@@STEP_LOG_LINE@proto.output@  \"repo_specs\": {@@@",
-      "@@@STEP_LOG_LINE@proto.output@    \"recipe_engine\": {}@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"recipe_engine\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@      \"autoroll_recipe_options\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"no_cc_authors\": true@@@",
+      "@@@STEP_LOG_LINE@proto.output@      }@@@",
+      "@@@STEP_LOG_LINE@proto.output@    }@@@",
       "@@@STEP_LOG_LINE@proto.output@  }@@@",
       "@@@STEP_LOG_LINE@proto.output@}@@@",
       "@@@STEP_LOG_END@proto.output@@@"
@@ -609,7 +613,6 @@
       "--use-commit-queue",
       "--bypass-hooks",
       "-f",
-      "--cc=foo@chromium.org",
       "--message-file",
       "Roll recipe dependencies (trivial).\n\nThis is an automated CL created by the recipe roller. This CL rolls\nrecipe changes from upstream projects (recipe_engine) into this repository.\n\nThe build that created this CL was\nhttps://ci.chromium.org/b/8945511751514863184\n\nrecipe_engine:\nhttps://chromium.googlesource.com/infra/luci/recipes-py/+/123abc\n  123abc (foo@chromium.org)\n      some commit summary that is too long to fit in a single line in...\n\nMore info is at https://goo.gl/zkKdpD. Use https://goo.gl/noib3a to file a bug.\n\nRecipe-Tryjob-Bypass-Reason: Autoroller\nBugdroid-Send-Email: False\n"
     ],
@@ -657,18 +660,26 @@
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"issue\": null, @@@",
-      "@@@STEP_LOG_LINE@json.output@  \"issue_url\": null@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"issue\": 123456789, @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"issue_url\": \"https://codereview.chromium.org/123456789\"@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@Issue 123456789@https://codereview.chromium.org/123456789@@@"
     ]
   },
   {
     "cmd": [
       "python",
       "-u",
-      "import sys; sys.exit(1)"
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "{\"issue\": \"123456789\", \"issue_url\": \"https://codereview.chromium.org/123456789\", \"last_roll_ts_utc\": \"2012-05-14T12:53:21\", \"trivial\": true}",
+      "gs://recipe-mega-roller-crappy-db/repo_metadata/aHR0cHM6Ly9leGFtcGxlLmNvbS9idWlsZC5naXQ="
     ],
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "infra:cron"
@@ -681,18 +692,13 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "build.git cl upload failed",
+    "name": "build.gsutil upload",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_TEXT@no issue metadata returned@@@",
-      "@@@STEP_FAILURE@@@"
+      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/recipe-mega-roller-crappy-db/repo_metadata/aHR0cHM6Ly9leGFtcGxlLmNvbS9idWlsZC5naXQ=@@@"
     ]
   },
   {
-    "failure": {
-      "failure": {},
-      "humanReason": "Rolls failed for the following projects: build"
-    },
     "name": "$result"
   }
 ]

@@ -78,10 +78,7 @@
   },
   {
     "cmd": [],
-    "name": "build",
-    "~followup_annotations": [
-      "@@@STEP_FAILURE@@@"
-    ]
+    "name": "build"
   },
   {
     "cmd": [
@@ -346,6 +343,7 @@
       "@@@STEP_LOG_LINE@json.output@    \"trivial\": {@@@",
       "@@@STEP_LOG_LINE@json.output@      \"automatic_commit\": true, @@@",
       "@@@STEP_LOG_LINE@json.output@      \"dry_run\": false, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"self_approve_method\": \"BOT_COMMIT_APPROVE\", @@@",
       "@@@STEP_LOG_LINE@json.output@      \"tbr_emails\": [@@@",
       "@@@STEP_LOG_LINE@json.output@        \"foo@bar.example.com\", @@@",
       "@@@STEP_LOG_LINE@json.output@        \"meep@example.com\"@@@",
@@ -388,8 +386,65 @@
     "name": "build.gsutil repo_state",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@stderr@No URLs matched@@@",
-      "@@@STEP_LOG_END@stderr@@@"
+      "@@@STEP_TEXT@ (trivial)@@@",
+      "@@@STEP_LINK@Issue 123456789@https://codereview.chromium.org/123456789@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_REPO[depot_tools]/git_cl.py",
+      "status",
+      "--issue",
+      "123456789",
+      "--field",
+      "status"
+    ],
+    "cwd": "[CACHE]/builder/recipe_autoroller/build",
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "build.git cl status",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@open@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_REPO[depot_tools]/git_cl.py",
+      "set-close",
+      "--issue",
+      "123456789"
+    ],
+    "cwd": "[CACHE]/builder/recipe_autoroller/build",
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "build.git cl set-close",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
@@ -452,6 +507,7 @@
       "@@@STEP_LOG_LINE@json.output@        \"trivial\": {@@@",
       "@@@STEP_LOG_LINE@json.output@          \"automatic_commit\": true, @@@",
       "@@@STEP_LOG_LINE@json.output@          \"dry_run\": false, @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"self_approve_method\": \"BOT_COMMIT_APPROVE\", @@@",
       "@@@STEP_LOG_LINE@json.output@          \"tbr_emails\": [@@@",
       "@@@STEP_LOG_LINE@json.output@            \"foo@bar.example.com\", @@@",
       "@@@STEP_LOG_LINE@json.output@            \"meep@example.com\"@@@",
@@ -498,6 +554,7 @@
       "@@@STEP_LOG_LINE@json.output@          \"trivial\": {@@@",
       "@@@STEP_LOG_LINE@json.output@            \"automatic_commit\": true, @@@",
       "@@@STEP_LOG_LINE@json.output@            \"dry_run\": false, @@@",
+      "@@@STEP_LOG_LINE@json.output@            \"self_approve_method\": \"BOT_COMMIT_APPROVE\", @@@",
       "@@@STEP_LOG_LINE@json.output@            \"tbr_emails\": [@@@",
       "@@@STEP_LOG_LINE@json.output@              \"foo@bar.example.com\", @@@",
       "@@@STEP_LOG_LINE@json.output@              \"meep@example.com\"@@@",
@@ -560,10 +617,12 @@
     "name": "build.get deps",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@proto.output (invalid)@@@",
-      "@@@STEP_LOG_LINE@proto.output (exception)@Failed to load JSON: No JSON object could be decoded@@@",
-      "@@@STEP_LOG_END@proto.output (exception)@@@",
-      "@@@STEP_FAILURE@@@"
+      "@@@STEP_LOG_LINE@proto.output@{@@@",
+      "@@@STEP_LOG_LINE@proto.output@  \"repo_specs\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"recipe_engine\": {}@@@",
+      "@@@STEP_LOG_LINE@proto.output@  }@@@",
+      "@@@STEP_LOG_LINE@proto.output@}@@@",
+      "@@@STEP_LOG_END@proto.output@@@"
     ]
   },
   {
@@ -671,7 +730,7 @@
       "RECIPE_REPO[depot_tools]/gsutil.py",
       "----",
       "cp",
-      "{\"issue\": \"123456789\", \"issue_url\": \"https://codereview.chromium.org/123456789\", \"last_roll_ts_utc\": \"2012-05-14T12:53:21\", \"trivial\": true}",
+      "{\"issue\": \"123456789\", \"issue_url\": \"https://codereview.chromium.org/123456789\", \"last_roll_ts_utc\": \"2016-01-01T00:00:03\", \"trivial\": true}",
       "gs://recipe-mega-roller-crappy-db/repo_metadata/aHR0cHM6Ly9leGFtcGxlLmNvbS9idWlsZC5naXQ="
     ],
     "infra_step": true,
