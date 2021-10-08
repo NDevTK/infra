@@ -33,6 +33,24 @@
       "message": "maybe this should just be the \u0027default/else\u0027 case at the bottom?",
       "revId": "299ebe6619374a08b1205043bc6bc21097550607",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9554ee9f_4e44a6e3",
+        "filename": "recipes/recipe_modules/recipe_autoroller/api.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 322,
+      "author": {
+        "id": 1347995
+      },
+      "writtenOn": "2021-10-08T19:23:56Z",
+      "side": 1,
+      "message": "Sure, done.",
+      "parentUuid": "4ffd6023_a05f5f9e",
+      "revId": "299ebe6619374a08b1205043bc6bc21097550607",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
