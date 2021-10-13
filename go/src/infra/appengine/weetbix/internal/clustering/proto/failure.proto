@@ -1,0 +1,135 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package weetbix.internal.clustering;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
+option go_package = "infra/appengine/weetbix/internal/clustering/proto;clusteringpb";
+
+// Chunk is a set of test failures which are processed together for efficiency.
+message Chunk {
+  repeated Failure failures = 1;
+}
+
+// Weetbix internal representation of a test failure.
+message Failure {
+  // ID for the test result in the test results system.
+  // For test results in ResultDB, the format is:
+  // "invocations/{INVOCATION_ID}/tests/{URL_ESCAPED_TEST_ID}/results/{RESULT_ID}"
+  // Where INVOCATION_ID, URL_ESCAPED_TEST_ID and RESULT_ID are values defined
+  // in ResultDB and do not refer to those in this proto below.
+  // Must be set.
+  string test_result_id = 1;
+
+  // Timestamp representing the start of the data retention period. This acts
+  // as the partitioning key in time/date-partitioned tables.
+  google.protobuf.Timestamp partition_time = 2;
+
+  // The zero-based index of this failure within the chunk. Assigned by
+  // Weetbix ingestion.
+  int64 chunk_index = 3;
+
+  // Security realm of the test result.
+  // For test results from ResultDB, must be set.
+  string realm = 4;
+
+  // Unique identifier for the test.
+  // For test results from ResultDB, see luci.resultdb.v1.TestResult.test_id.
+  string test_id = 5;
+
+  // Description of one specific way of running the test,
+  // e.g. a specific bucket, builder and a test suite.
+  Variant variant = 6;
+
+  // Hash of the variant.
+  // hex(sha256(''.join(sorted('%s:%s\n' for k, v in variant.items())))).
+  string variant_hash = 7;
+
+  // A failure reason describing why the test failed.
+  FailureReason failure_reason = 8;
+
+  // The bug tracking component corresponding to this test case.
+  string component = 9;
+
+  // The point in time when the test case started to execute.
+  google.protobuf.Timestamp start_time = 10;
+
+  // The amount of time the test case took to execute.
+  google.protobuf.Duration duration = 11;
+
+  // Was the test failure exonerated? Exonerated means any failure
+  // was explained and did not have further impact (e.g. failing the build
+  // or rejecting the CL being tested).
+  bool is_exonerated = 12;
+
+  // The top-level invocation (i.e. invocation for the build) which
+  // contained this test result.
+  string root_invocation_id = 13;
+
+  // The one-based index for this test result, in the sequence of results
+  // having this test variant and top-level invocation. Within the sequence,
+  // test results are ordered by start_time. The first test result is 1,
+  // the last test result is root_invocation_result_count.
+  int64 root_invocation_result_seq = 14;
+
+  // The number of test results having this test variant and top-level
+  // invocation.
+  int64 root_invocation_result_count = 15;
+
+  // Is the top-level invocation blocked by this test variant? This is
+  // only true if all test results for this test variant are unexpected
+  // failures (or skips).
+  bool is_root_invocation_blocked = 16;
+
+  // The identifier of the task the test ran in. Test results in different
+  // tasks are generally considered independent as they should be unable to
+  // leak state to one another.
+  string task_id = 17;
+
+  // The one-based index for this test result, in the sequence of results
+  // having this test variant and task. Within the sequence,
+  // test results are ordered by start_time. The first test result is 1,
+  // the last test result is task_result_count.
+  int64 task_result_seq = 18;
+
+  // The number of test results having this test variant and task.
+  int64 task_result_count = 19;
+
+  // Is the task blocked by this test variant? This is only true if all
+  // test results for this test variant are unexpected failures (or skips).
+  bool is_task_blocked = 20;
+
+  // Identity of the CQ run that contained this test result.
+  string cq_id = 21;
+}
+
+// Variant represents a way of running a test case.
+//
+// The same test case can be executed in different ways, for example on
+// different OS, GPUs, with different compile options or runtime flags.
+message Variant {
+  // The definition of the variant. Each key-value pair represents a
+  // parameter describing how the test was run (e.g. OS, GPU, etc.).
+  map<string, string> def = 1;
+}
+
+// Information about why a test failed.
+message FailureReason {
+  // The error message that ultimately caused the test to fail. This should
+  // only be the error message and should not include any stack traces.
+  // An example would be the message from an Exception in a Java test.
+  // In the case that a test failed due to multiple expectation failures, any
+  // immediately fatal failure should be chosen, or otherwise the first
+  // expectation failure.
+  // If this field is empty, other fields may be used to cluster the failure
+  // instead.
+  //
+  // The size of the message must be equal to or smaller than 1024 bytes in
+  // UTF-8.
+  string primary_error_message = 1;
+}
