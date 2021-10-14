@@ -89,6 +89,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "21206acb_36257cf9",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/algorithms/cluster.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-14T04:06:11Z",
+      "side": 1,
+      "message": "So test results with failure reason can be clustered by both algorithm?",
+      "range": {
+        "startLine": 50,
+        "startChar": 2,
+        "endLine": 50,
+        "endChar": 24
+      },
+      "revId": "ad2945b20056957487670790687da050688b50e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "5a53a6af_2041aa36",
         "filename": "go/src/infra/appengine/weetbix/internal/clustering/algorithms/regexp/re.go",
         "patchSetId": 1
