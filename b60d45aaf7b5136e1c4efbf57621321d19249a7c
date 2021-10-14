@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f1e24b48_f217c2aa",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/state/span.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-14T05:00:43Z",
+      "side": 1,
+      "message": "Naming nit: just call it ClusteringState?",
+      "range": {
+        "startLine": 27,
+        "startChar": 5,
+        "endLine": 27,
+        "endChar": 10
+      },
+      "revId": "b60d45aaf7b5136e1c4efbf57621321d19249a7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "34556721_6e8a128c",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/state/span.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-14T05:00:43Z",
+      "side": 1,
+      "message": "Nit: move this section to a separate validate function?",
+      "range": {
+        "startLine": 60,
+        "startChar": 0,
+        "endLine": 77,
+        "endChar": 2
+      },
+      "revId": "b60d45aaf7b5136e1c4efbf57621321d19249a7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
