@@ -29,6 +29,7 @@ import (
 	"infra/libs/skylab/inventory"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/google/go-cmp/cmp"
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/gae/service/datastore"
@@ -534,6 +535,48 @@ func TestGetStableVersion(t *testing.T) {
 		So(err, ShouldNotBeNil)
 		So(resp, ShouldBeNil)
 	})
+}
+
+func TestLooksLikeServo(t *testing.T) {
+	t.Parallel()
+	cases := []struct {
+		name     string
+		hostname string
+		isServo  bool
+	}{
+		{
+			name:     "a servo",
+			hostname: "chromeos32_servo",
+			isServo:  true,
+		},
+		{
+			name:     "dut suffix overrides all",
+			hostname: "servo-dut",
+			isServo:  false,
+		},
+		{
+			name:     "servov4p1 suffix overrides all",
+			hostname: "servo-servov4p1",
+			isServo:  false,
+		},
+		{
+			name:     "legitimate-seeming DUT hostname",
+			hostname: "chromeos100-row100-rack100-host100",
+			isServo:  false,
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			expected := tt.isServo
+			actual := looksLikeServo(tt.hostname)
+			if diff := cmp.Diff(expected, actual); diff != "" {
+				t.Errorf("unexpected diff (-want +got): %s", diff)
+			}
+		})
+	}
 }
 
 func withDutInfoCacheValidity(ctx context.Context, v time.Duration) context.Context {

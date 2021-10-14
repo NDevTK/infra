@@ -405,6 +405,16 @@ func looksLikeLabstation(hostname string) bool {
 
 // This is a heuristic to check if something is a servo and might be wrong.
 func looksLikeServo(hostname string) bool {
+	// See b/203101728 for details.
+	// Here we allow an explicit suffix "-dut" that force us
+	if strings.HasSuffix(hostname, "-dut") {
+		return false
+	}
+	// See b/203101728 for details.
+	// A hostname with the suffix -servov4p1 will be considered a DUT.
+	if strings.HasSuffix(hostname, "-servov4p1") {
+		return false
+	}
 	return strings.Contains(hostname, "servo")
 }
 
