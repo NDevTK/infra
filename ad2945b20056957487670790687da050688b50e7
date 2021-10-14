@@ -244,6 +244,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "015270be_d488ff17",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/clusterref.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-14T04:39:32Z",
+      "side": 1,
+      "message": "I Found it\u0027s a bit hard to follow the logic in https://chromium-review.googlesource.com/c/infra/infra/+/3220102. Then I realized that it\u0027s because of this struct and TestResultClusters.ClusterRef share the same name while they are for different things. Maybe we should rename one of them to reduce the confusion?\n\n[1] https://chromium-review.googlesource.com/c/infra/infra/+/3220101/1/go/src/infra/appengine/weetbix/internal/clustering/proto/clusters.proto#50",
+      "range": {
+        "startLine": 9,
+        "startChar": 5,
+        "endLine": 9,
+        "endChar": 15
+      },
+      "revId": "ad2945b20056957487670790687da050688b50e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "47b53e7c_d77c0e72",
         "filename": "go/src/infra/appengine/weetbix/internal/clustering/clusterref.go",
         "patchSetId": 1
