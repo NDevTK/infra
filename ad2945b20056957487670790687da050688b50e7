@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3cfc0aea_8c0c7281",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/algorithms/cluster.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-14T07:15:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c265ea5f_bec22f9d",
+      "revId": "ad2945b20056957487670790687da050688b50e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "62d41a21_d55ee4dc",
@@ -31,6 +49,30 @@
       "writtenOn": "2021-10-13T23:21:36Z",
       "side": 1,
       "message": "nit: separate them into different import groups.",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 7
+      },
+      "revId": "ad2945b20056957487670790687da050688b50e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "87efca06_ead7359d",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/algorithms/cluster.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-14T07:15:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "62d41a21_d55ee4dc",
       "range": {
         "startLine": 4,
         "startChar": 0,
@@ -64,6 +106,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f7b5e0af_daa0fe72",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/algorithms/cluster.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-14T07:15:02Z",
+      "side": 1,
+      "message": "The Cluster() method will cluster test results using all registered clustering algorithms. This will (in a future CL) include failure association rule-based clustering as an algorithm (albeit a special one).",
+      "parentUuid": "5e228a90_36b4f27e",
+      "range": {
+        "startLine": 36,
+        "startChar": 34,
+        "endLine": 36,
+        "endChar": 59
+      },
+      "revId": "ad2945b20056957487670790687da050688b50e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5cee5ecb_abb163bb",
@@ -77,6 +143,30 @@
       "writtenOn": "2021-10-13T23:21:36Z",
       "side": 1,
       "message": "Is it intended to use time as version here?",
+      "range": {
+        "startLine": 38,
+        "startChar": 1,
+        "endLine": 38,
+        "endChar": 22
+      },
+      "revId": "ad2945b20056957487670790687da050688b50e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "acce2f7a_98fedd08",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/algorithms/cluster.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-14T07:15:02Z",
+      "side": 1,
+      "message": "Indeed. In particular, this will be backed by the Spanner commit timestamp of the most recent rule used in clustering. This is sufficient to identify the entire set of failure association rules that was used.",
+      "parentUuid": "5cee5ecb_abb163bb",
       "range": {
         "startLine": 38,
         "startChar": 1,
@@ -110,6 +200,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "42f0ec6f_22fe87ad",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/algorithms/cluster.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-14T07:15:02Z",
+      "side": 1,
+      "message": "Yes.",
+      "parentUuid": "21206acb_36257cf9",
+      "range": {
+        "startLine": 50,
+        "startChar": 2,
+        "endLine": 50,
+        "endChar": 24
+      },
+      "revId": "ad2945b20056957487670790687da050688b50e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5a53a6af_2041aa36",
@@ -127,6 +241,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "526949ed_6726af86",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/algorithms/regexp/re.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-14T07:15:02Z",
+      "side": 1,
+      "message": "Agree. Done.",
+      "parentUuid": "5a53a6af_2041aa36",
+      "revId": "ad2945b20056957487670790687da050688b50e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "af177b90_2380e108",
@@ -140,6 +272,30 @@
       "writtenOn": "2021-10-13T23:21:36Z",
       "side": 1,
       "message": "Could you explain the version part in the comment. Also, does it relate to the AlgorithmsVersion in [1] in any ways? If yes, I think it would be better to make AlgorithmName a var and use the value of AlgorithmsVersion to construct it.\n\n[1] https://chromium-review.googlesource.com/c/infra/infra/+/3220100/1/go/src/infra/appengine/weetbix/internal/clustering/algorithms/cluster.go#24",
+      "range": {
+        "startLine": 17,
+        "startChar": 31,
+        "endLine": 17,
+        "endChar": 34
+      },
+      "revId": "ad2945b20056957487670790687da050688b50e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "37d4f8b0_5a9b692d",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/algorithms/regexp/re.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-14T07:15:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "af177b90_2380e108",
       "range": {
         "startLine": 17,
         "startChar": 31,
@@ -173,6 +329,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bd3f0fef_66f506b2",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/algorithms/regexp/re.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-14T07:15:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "43053886_f19be06c",
+      "range": {
+        "startLine": 19,
+        "startChar": 3,
+        "endLine": 19,
+        "endChar": 11
+      },
+      "revId": "ad2945b20056957487670790687da050688b50e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f9645299_d77159a4",
@@ -186,6 +366,30 @@
       "writtenOn": "2021-10-13T23:21:36Z",
       "side": 1,
       "message": "Need update",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 2,
+        "endChar": 2
+      },
+      "revId": "ad2945b20056957487670790687da050688b50e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b019aa5b_9f06f6cd",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/algorithms/testname/testname.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-14T07:15:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f9645299_d77159a4",
       "range": {
         "startLine": 1,
         "startChar": 0,
@@ -219,6 +423,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4a297d8f_8da2af46",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/algorithms/testname/testname.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-14T07:15:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "88ccb465_740af5de",
+      "range": {
+        "startLine": 3,
+        "startChar": 27,
+        "endLine": 3,
+        "endChar": 32
+      },
+      "revId": "ad2945b20056957487670790687da050688b50e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0cc9d34f_46303f46",
@@ -232,6 +460,30 @@
       "writtenOn": "2021-10-13T23:21:36Z",
       "side": 1,
       "message": "I vaguely remember that we\u0027ve talked about this bug I forgot the conclusion, are test failures from different projects (for example chrome and chromium) clustered together?",
+      "range": {
+        "startLine": 27,
+        "startChar": 7,
+        "endLine": 27,
+        "endChar": 21
+      },
+      "revId": "ad2945b20056957487670790687da050688b50e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cb07cb55_0ac030a3",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/algorithms/testname/testname.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-14T07:15:02Z",
+      "side": 1,
+      "message": "Failures from different projects are not clustered together, no.\n\nBut we don\u0027t need to worry about that here: the returned cluster ID is treated as being namespaced by the containing LUCI project and algorithm name.",
+      "parentUuid": "0cc9d34f_46303f46",
       "range": {
         "startLine": 27,
         "startChar": 7,
@@ -265,6 +517,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b613f125_ccc04248",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/clusterref.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-14T07:15:02Z",
+      "side": 1,
+      "message": "Good point. Changed to ClusterID.",
+      "parentUuid": "015270be_d488ff17",
+      "range": {
+        "startLine": 9,
+        "startChar": 5,
+        "endLine": 9,
+        "endChar": 15
+      },
+      "revId": "ad2945b20056957487670790687da050688b50e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "47b53e7c_d77c0e72",
@@ -278,6 +554,30 @@
       "writtenOn": "2021-10-13T23:21:36Z",
       "side": 1,
       "message": "nit: use fmt.Sprintf() ?",
+      "range": {
+        "startLine": 19,
+        "startChar": 8,
+        "endLine": 19,
+        "endChar": 40
+      },
+      "revId": "ad2945b20056957487670790687da050688b50e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dde22232_23c8f1b8",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/clusterref.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-14T07:15:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "47b53e7c_d77c0e72",
       "range": {
         "startLine": 19,
         "startChar": 8,
