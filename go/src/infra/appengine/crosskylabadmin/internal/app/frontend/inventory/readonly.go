@@ -401,7 +401,14 @@ func getDUT(ctx context.Context, ic inventoryClient, hostname string) (*inventor
 
 // This is a heuristic to check if something is a servo and might be wrong.
 func looksLikeServo(hostname string) bool {
-	return strings.Contains(hostname, "servo")
+	// See b/203101728 for details.
+	// A hostname with the suffix -servo or -servov4p1 will be considered a DUT.
+	for _, suf := range []string{"-servo", "-servov4p1"} {
+		if strings.HasSuffix(hostname, suf) {
+			return true
+		}
+	}
+	return false
 }
 
 // looksLikeFakeServo is a heuristic to check if a given hostname is an obviously
