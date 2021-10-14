@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e443c8af_d177dc1b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-14T05:06:03Z",
+      "side": 1,
+      "message": "Because the changes in https://chromium-review.googlesource.com/c/infra/infra/+/3220098/1, I assume this CL will be updated significantly. So I\u0027ll hold on reviewing it until it\u0027s updated.",
+      "revId": "b84811af031bb49590a2a633ce2c4b4b50b57f84",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3ee779c3_c2804448",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clusteredfailures/client.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-14T05:06:03Z",
+      "side": 1,
+      "message": "FYI: in resultdb, we use protos[1] to define bq rows. And we have logic to automatically update bq table schema[2]. I think in weetbix we could do something similar.\n\n[1]: https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/proto/bq/\n\n[2]: https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/internal/services/bqexporter/bqexporter.go;l\u003d203;drc\u003da6e53aaf84e8b1c9f00aaf8893dfc535ccf046e6",
+      "range": {
+        "startLine": 19,
+        "startChar": 5,
+        "endLine": 19,
+        "endChar": 10
+      },
+      "revId": "b84811af031bb49590a2a633ce2c4b4b50b57f84",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
