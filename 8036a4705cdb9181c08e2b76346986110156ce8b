@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2552c6a7_96f8c316",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-10-15T17:04:16Z",
+      "side": 1,
+      "message": "servo_v4p1 is single case and should not be the issue. i think we do not need more to naming vs we need move to direction to read inventory to understand what it is  for us.  ",
+      "revId": "8036a4705cdb9181c08e2b76346986110156ce8b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
