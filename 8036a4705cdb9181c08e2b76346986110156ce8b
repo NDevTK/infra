@@ -69,6 +69,24 @@
       "parentUuid": "5f54e4e8_6ebf8c33",
       "revId": "8036a4705cdb9181c08e2b76346986110156ce8b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "77fd1fc9_b0bf2d98",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/readonly.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 418,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-10-15T23:10:56Z",
+      "side": 1,
+      "message": "Just take a look, IIUC we can only determine labstation board/model but not v3 since they\u0027re not tracked in UFS. This probably why we use this naming conversion at first place. So for now use \"strings.HasSuffix(hostname, \"-servo\")\" instead of strings.Contains(hostname, \"servo\") should be able to prevent cases that have unexpected strings in hostname.",
+      "parentUuid": "defd9035_7563d404",
+      "revId": "8036a4705cdb9181c08e2b76346986110156ce8b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
