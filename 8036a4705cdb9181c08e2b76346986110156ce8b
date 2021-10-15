@@ -16,6 +16,23 @@
       "message": "servo_v4p1 is single case and should not be the issue. i think we do not need more to naming vs we need move to direction to read inventory to understand what it is  for us.  ",
       "revId": "8036a4705cdb9181c08e2b76346986110156ce8b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8235620e_f806230d",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/readonly.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 418,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-10-15T20:59:27Z",
+      "side": 1,
+      "message": "Base on our current servo_v4 naming pattern and the fact we\u0027re not adding any new v3s. I think you can just do:\n\nreturn strings.HasSuffix(hostname, \"-servo\")",
+      "revId": "8036a4705cdb9181c08e2b76346986110156ce8b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
