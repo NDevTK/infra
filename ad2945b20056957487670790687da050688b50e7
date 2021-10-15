@@ -106,6 +106,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b0b4fe7b_bdb54dd8",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/algorithms/cluster.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-15T06:23:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9ed762e2_aff6e43d",
+      "range": {
+        "startLine": 29,
+        "startChar": 4,
+        "endLine": 29,
+        "endChar": 8
+      },
+      "revId": "ad2945b20056957487670790687da050688b50e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5e228a90_36b4f27e",
@@ -389,6 +413,30 @@
       "writtenOn": "2021-10-15T05:54:44Z",
       "side": 1,
       "message": "The MVP is using \u0027[0-9]+|[\\\\-0-9a-fA-F\\\\s]{16,}|[0-9a-fA-Fx]{8,}|[/+0-9a-zA-Z]{10,}\u003d+\u0027\n\nThis was refined iteratively to get better clusters for browser.\n\nAny reason to go back to the old version?",
+      "range": {
+        "startLine": 20,
+        "startChar": 37,
+        "endLine": 20,
+        "endChar": 57
+      },
+      "revId": "ad2945b20056957487670790687da050688b50e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d18ff063_b012ce1a",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/algorithms/regexp/re.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-15T06:23:34Z",
+      "side": 1,
+      "message": "I didn\u0027t have the SQL handy, so I left it as the original, expecting to fix it up later. Now that you\u0027ve told me what it is, I can fix it up 😊.\n\nDone.",
+      "parentUuid": "4ea1d903_63a2314a",
       "range": {
         "startLine": 20,
         "startChar": 37,
