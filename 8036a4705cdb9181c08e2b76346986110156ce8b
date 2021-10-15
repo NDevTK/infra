@@ -33,6 +33,24 @@
       "message": "Base on our current servo_v4 naming pattern and the fact we\u0027re not adding any new v3s. I think you can just do:\n\nreturn strings.HasSuffix(hostname, \"-servo\")",
       "revId": "8036a4705cdb9181c08e2b76346986110156ce8b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5f54e4e8_6ebf8c33",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/readonly.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 418,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-10-15T21:18:59Z",
+      "side": 1,
+      "message": "not sure if we need to change anything here for now. we had one case which was just mistake and not relay with any naming convention.\n\nIf we want to really check it then we need just drop the naming and only relay to board/model as we always have then per device.",
+      "parentUuid": "8235620e_f806230d",
+      "revId": "8036a4705cdb9181c08e2b76346986110156ce8b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
