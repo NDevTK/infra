@@ -115,3 +115,13 @@ func matchCrosSystemValueToExpectation(ctx context.Context, args *execs.RunArgs,
 	}
 	return nil
 }
+
+// IsPathExist checks if a given path exists or not.
+func IsPathExist(ctx context.Context, args *execs.RunArgs, path string) bool {
+	path = strings.ReplaceAll(path, "\\", "\\\\")
+	path = strings.ReplaceAll(path, "$", `\$`)
+	path = strings.ReplaceAll(path, `"`, `\"`)
+	path = strings.ReplaceAll(path, "`", `\`+"`")
+	r := args.Access.Run(ctx, args.ResourceName, fmt.Sprintf(`test -e "%s"`, path))
+	return r.ExitCode == 0
+}
