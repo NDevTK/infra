@@ -1,0 +1,146 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a36ac770_2d111a43",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-10-18T23:35:29Z",
+      "side": 1,
+      "message": "Recommend make it return error for consistency, see above examples.",
+      "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "35efa728_5a3e6ffd",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/storage_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-10-18T23:35:29Z",
+      "side": 1,
+      "message": "Does this suggest the input argument can includes multiple path?",
+      "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a3b0e1b8_5d3e2d4b",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/storage_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-10-18T23:35:29Z",
+      "side": 1,
+      "message": "If we assuming input is only one path, then probably should check length of actionArgs first to avoid panic?",
+      "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f6cfbf8f_46fae191",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/storage_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-10-18T23:35:29Z",
+      "side": 1,
+      "message": "Better to split the string and check the length after split, otherwise an invalid input can cause panic here.",
+      "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c04059ef_2a1b0db5",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/storage_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-10-18T23:35:29Z",
+      "side": 1,
+      "message": "Same as above.",
+      "range": {
+        "startLine": 83,
+        "startChar": 1,
+        "endLine": 84,
+        "endChar": 94
+      },
+      "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "91e6378f_77e1cd9a",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/storage_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-10-18T23:35:29Z",
+      "side": 1,
+      "message": "Recommend split it into pathHasEnoughDiskSpace and pathHasEnoughInodes for better readability. Also move it to \"execs/cros/cros.go\" where other helper functions lives.",
+      "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "38d8af3a_3f5b5121",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/storage_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-10-18T23:35:29Z",
+      "side": 1,
+      "message": "Recommend make IsPathExist return error, and \"path: %q not exist\" can come from IsPathExist.",
+      "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6f95e95a_83610ff6",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/storage_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-10-18T23:35:29Z",
+      "side": 1,
+      "message": "Since you\u0027ll need to convert it into GB below anyway, probably not need get in MB block size here, for example\n\ncmd \u003d fmt.Sprintf(`df -P %s | tail -1`, path)\n....\nfreeInBytes, err :\u003d strconv.ParseFloat(outputList[3], 64)\nfreeInGB :\u003d float64(freeInBytes) / math.Pow(2, 20)",
+      "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
