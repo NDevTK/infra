@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f444c1de_8618b16d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2021-10-18T04:54:36Z",
+      "side": 1,
+      "message": "Hm, should we add these to the list of DLLs copied as in https://chromium-review.googlesource.com/c/infra/infra/+/3150368 ?\n",
+      "revId": "9c8c766731921d1fc71f7866163d0f5209d0449e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
