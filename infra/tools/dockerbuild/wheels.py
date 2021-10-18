@@ -654,7 +654,10 @@ SPECS.update({
                     ),
                 ],
             ),
-            packaged=[],
+            packaged=[
+                'windows-x86-py3',
+                'windows-x64-py3',
+            ],
             skip_plat=[
                 'linux-arm64-py3',
             ],
