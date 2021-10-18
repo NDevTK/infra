@@ -16,6 +16,24 @@
       "message": "Hm, should we add these to the list of DLLs copied as in https://chromium-review.googlesource.com/c/infra/infra/+/3150368 ?\n",
       "revId": "9c8c766731921d1fc71f7866163d0f5209d0449e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "14e36358_69216559",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2021-10-18T05:03:52Z",
+      "side": 1,
+      "message": "Yes. I want to do that but VSINSTALLDIR is set in recipe step (https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:recipes/recipe_modules/windows_sdk/api.py;l\u003d114?q\u003dVSINSTALLDIR\u0026sq\u003d\u0026ss\u003dchromium) and not available locally. Although we only upload wheels from try-job, the wheel build failure on local environment may be confusing. I haven\u0027t found a clean solution for the problem, do you have any idea?",
+      "parentUuid": "f444c1de_8618b16d",
+      "revId": "9c8c766731921d1fc71f7866163d0f5209d0449e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
