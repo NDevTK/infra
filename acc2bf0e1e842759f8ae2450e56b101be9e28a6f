@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f13e1b27_af1a34a3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-18T06:35:29Z",
+      "side": 1,
+      "message": "Please hold-off reviewing, this CL will be revised based on changes made further down the commit stack.",
+      "revId": "acc2bf0e1e842759f8ae2450e56b101be9e28a6f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
