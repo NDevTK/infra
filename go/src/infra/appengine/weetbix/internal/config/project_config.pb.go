@@ -35,6 +35,13 @@ type ProjectConfig struct {
 	// The threshold at which to file bugs. If a cluster's impact exceeds
 	// the given threshold, a bug will be filed for it.
 	BugFilingThreshold *ImpactThreshold `protobuf:"bytes,2,opt,name=bug_filing_threshold,json=bugFilingThreshold,proto3" json:"bug_filing_threshold,omitempty"`
+	// The BigQuery table Weetbix should use to store clustered failures.
+	// Weetbix will use this table when performing analysis. Equally, it
+	// may be consumed by the project itself to do other ad-hoc analyses.
+	//
+	// If the table does not exist, it will be automatically created. Weetbix
+	// will manage the schema and contents of this table.
+	ClusteredFailuresTable *BigQueryTable `protobuf:"bytes,3,opt,name=clustered_failures_table,json=clusteredFailuresTable,proto3" json:"clustered_failures_table,omitempty"`
 }
 
 func (x *ProjectConfig) Reset() {
@@ -83,6 +90,80 @@ func (x *ProjectConfig) GetBugFilingThreshold() *ImpactThreshold {
 	return nil
 }
 
+func (x *ProjectConfig) GetClusteredFailuresTable() *BigQueryTable {
+	if x != nil {
+		return x.ClusteredFailuresTable
+	}
+	return nil
+}
+
+// Describes a BigQuery table which will be used by Weetbix.
+type BigQueryTable struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Name of the BigQuery project.
+	Project string `protobuf:"bytes,1,opt,name=project,proto3" json:"project,omitempty"`
+	// Name of the BigQuery Dataset.
+	Dataset string `protobuf:"bytes,2,opt,name=dataset,proto3" json:"dataset,omitempty"`
+	// Name of the BigQuery Table.
+	Table string `protobuf:"bytes,3,opt,name=table,proto3" json:"table,omitempty"`
+}
+
+func (x *BigQueryTable) Reset() {
+	*x = BigQueryTable{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *BigQueryTable) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BigQueryTable) ProtoMessage() {}
+
+func (x *BigQueryTable) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BigQueryTable.ProtoReflect.Descriptor instead.
+func (*BigQueryTable) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_weetbix_internal_config_project_config_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *BigQueryTable) GetProject() string {
+	if x != nil {
+		return x.Project
+	}
+	return ""
+}
+
+func (x *BigQueryTable) GetDataset() string {
+	if x != nil {
+		return x.Dataset
+	}
+	return ""
+}
+
+func (x *BigQueryTable) GetTable() string {
+	if x != nil {
+		return x.Table
+	}
+	return ""
+}
+
 // MonorailProject describes the configuration to use when filing bugs
 // into a given monorail project.
 type MonorailProject struct {
@@ -129,7 +210,7 @@ type MonorailProject struct {
 func (x *MonorailProject) Reset() {
 	*x = MonorailProject{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[1]
+		mi := &file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -142,7 +223,7 @@ func (x *MonorailProject) String() string {
 func (*MonorailProject) ProtoMessage() {}
 
 func (x *MonorailProject) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[1]
+	mi := &file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -155,7 +236,7 @@ func (x *MonorailProject) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MonorailProject.ProtoReflect.Descriptor instead.
 func (*MonorailProject) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_weetbix_internal_config_project_config_proto_rawDescGZIP(), []int{1}
+	return file_infra_appengine_weetbix_internal_config_project_config_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *MonorailProject) GetProject() string {
@@ -226,7 +307,7 @@ type MonorailFieldValue struct {
 func (x *MonorailFieldValue) Reset() {
 	*x = MonorailFieldValue{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[2]
+		mi := &file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -239,7 +320,7 @@ func (x *MonorailFieldValue) String() string {
 func (*MonorailFieldValue) ProtoMessage() {}
 
 func (x *MonorailFieldValue) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[2]
+	mi := &file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -252,7 +333,7 @@ func (x *MonorailFieldValue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MonorailFieldValue.ProtoReflect.Descriptor instead.
 func (*MonorailFieldValue) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_weetbix_internal_config_project_config_proto_rawDescGZIP(), []int{2}
+	return file_infra_appengine_weetbix_internal_config_project_config_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *MonorailFieldValue) GetFieldId() int64 {
@@ -286,7 +367,7 @@ type MonorailPriority struct {
 func (x *MonorailPriority) Reset() {
 	*x = MonorailPriority{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[3]
+		mi := &file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -299,7 +380,7 @@ func (x *MonorailPriority) String() string {
 func (*MonorailPriority) ProtoMessage() {}
 
 func (x *MonorailPriority) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[3]
+	mi := &file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -312,7 +393,7 @@ func (x *MonorailPriority) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MonorailPriority.ProtoReflect.Descriptor instead.
 func (*MonorailPriority) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_weetbix_internal_config_project_config_proto_rawDescGZIP(), []int{3}
+	return file_infra_appengine_weetbix_internal_config_project_config_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *MonorailPriority) GetPriority() string {
@@ -350,7 +431,7 @@ type ImpactThreshold struct {
 func (x *ImpactThreshold) Reset() {
 	*x = ImpactThreshold{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[4]
+		mi := &file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -363,7 +444,7 @@ func (x *ImpactThreshold) String() string {
 func (*ImpactThreshold) ProtoMessage() {}
 
 func (x *ImpactThreshold) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[4]
+	mi := &file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -376,7 +457,7 @@ func (x *ImpactThreshold) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImpactThreshold.ProtoReflect.Descriptor instead.
 func (*ImpactThreshold) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_weetbix_internal_config_project_config_proto_rawDescGZIP(), []int{4}
+	return file_infra_appengine_weetbix_internal_config_project_config_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ImpactThreshold) GetUnexpectedFailures_1D() int64 {
@@ -407,7 +488,7 @@ var file_infra_appengine_weetbix_internal_config_project_config_proto_rawDesc = 
 	0x65, 0x2f, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e,
 	0x61, 0x6c, 0x2f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2f, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63,
 	0x74, 0x5f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0a,
-	0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x22, 0x97, 0x01, 0x0a, 0x0d, 0x50,
+	0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x22, 0xec, 0x01, 0x0a, 0x0d, 0x50,
 	0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x37, 0x0a, 0x08,
 	0x6d, 0x6f, 0x6e, 0x6f, 0x72, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b,
 	0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x6f, 0x6e, 0x6f,
@@ -417,7 +498,18 @@ var file_infra_appengine_weetbix_internal_config_project_config_proto_rawDesc = 
 	0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78, 0x2e, 0x76, 0x31,
 	0x2e, 0x49, 0x6d, 0x70, 0x61, 0x63, 0x74, 0x54, 0x68, 0x72, 0x65, 0x73, 0x68, 0x6f, 0x6c, 0x64,
 	0x52, 0x12, 0x62, 0x75, 0x67, 0x46, 0x69, 0x6c, 0x69, 0x6e, 0x67, 0x54, 0x68, 0x72, 0x65, 0x73,
-	0x68, 0x6f, 0x6c, 0x64, 0x22, 0xa7, 0x02, 0x0a, 0x0f, 0x4d, 0x6f, 0x6e, 0x6f, 0x72, 0x61, 0x69,
+	0x68, 0x6f, 0x6c, 0x64, 0x12, 0x53, 0x0a, 0x18, 0x63, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x65,
+	0x64, 0x5f, 0x66, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x73, 0x5f, 0x74, 0x61, 0x62, 0x6c, 0x65,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x77, 0x65, 0x65, 0x74, 0x62, 0x69, 0x78,
+	0x2e, 0x76, 0x31, 0x2e, 0x42, 0x69, 0x67, 0x51, 0x75, 0x65, 0x72, 0x79, 0x54, 0x61, 0x62, 0x6c,
+	0x65, 0x52, 0x16, 0x63, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x65, 0x64, 0x46, 0x61, 0x69, 0x6c,
+	0x75, 0x72, 0x65, 0x73, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x22, 0x59, 0x0a, 0x0d, 0x42, 0x69, 0x67,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x70, 0x72,
+	0x6f, 0x6a, 0x65, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x70, 0x72, 0x6f,
+	0x6a, 0x65, 0x63, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x64, 0x61, 0x74, 0x61, 0x73, 0x65, 0x74, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x64, 0x61, 0x74, 0x61, 0x73, 0x65, 0x74, 0x12, 0x14,
+	0x0a, 0x05, 0x74, 0x61, 0x62, 0x6c, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74,
+	0x61, 0x62, 0x6c, 0x65, 0x22, 0xa7, 0x02, 0x0a, 0x0f, 0x4d, 0x6f, 0x6e, 0x6f, 0x72, 0x61, 0x69,
 	0x6c, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x70, 0x72, 0x6f, 0x6a,
 	0x65, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x70, 0x72, 0x6f, 0x6a, 0x65,
 	0x63, 0x74, 0x12, 0x50, 0x0a, 0x14, 0x64, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74, 0x5f, 0x66, 0x69,
@@ -482,25 +574,27 @@ func file_infra_appengine_weetbix_internal_config_project_config_proto_rawDescGZ
 	return file_infra_appengine_weetbix_internal_config_project_config_proto_rawDescData
 }
 
-var file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_infra_appengine_weetbix_internal_config_project_config_proto_goTypes = []interface{}{
 	(*ProjectConfig)(nil),      // 0: weetbix.v1.ProjectConfig
-	(*MonorailProject)(nil),    // 1: weetbix.v1.MonorailProject
-	(*MonorailFieldValue)(nil), // 2: weetbix.v1.MonorailFieldValue
-	(*MonorailPriority)(nil),   // 3: weetbix.v1.MonorailPriority
-	(*ImpactThreshold)(nil),    // 4: weetbix.v1.ImpactThreshold
+	(*BigQueryTable)(nil),      // 1: weetbix.v1.BigQueryTable
+	(*MonorailProject)(nil),    // 2: weetbix.v1.MonorailProject
+	(*MonorailFieldValue)(nil), // 3: weetbix.v1.MonorailFieldValue
+	(*MonorailPriority)(nil),   // 4: weetbix.v1.MonorailPriority
+	(*ImpactThreshold)(nil),    // 5: weetbix.v1.ImpactThreshold
 }
 var file_infra_appengine_weetbix_internal_config_project_config_proto_depIdxs = []int32{
-	1, // 0: weetbix.v1.ProjectConfig.monorail:type_name -> weetbix.v1.MonorailProject
-	4, // 1: weetbix.v1.ProjectConfig.bug_filing_threshold:type_name -> weetbix.v1.ImpactThreshold
-	2, // 2: weetbix.v1.MonorailProject.default_field_values:type_name -> weetbix.v1.MonorailFieldValue
-	3, // 3: weetbix.v1.MonorailProject.priorities:type_name -> weetbix.v1.MonorailPriority
-	4, // 4: weetbix.v1.MonorailPriority.threshold:type_name -> weetbix.v1.ImpactThreshold
-	5, // [5:5] is the sub-list for method output_type
-	5, // [5:5] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	2, // 0: weetbix.v1.ProjectConfig.monorail:type_name -> weetbix.v1.MonorailProject
+	5, // 1: weetbix.v1.ProjectConfig.bug_filing_threshold:type_name -> weetbix.v1.ImpactThreshold
+	1, // 2: weetbix.v1.ProjectConfig.clustered_failures_table:type_name -> weetbix.v1.BigQueryTable
+	3, // 3: weetbix.v1.MonorailProject.default_field_values:type_name -> weetbix.v1.MonorailFieldValue
+	4, // 4: weetbix.v1.MonorailProject.priorities:type_name -> weetbix.v1.MonorailPriority
+	5, // 5: weetbix.v1.MonorailPriority.threshold:type_name -> weetbix.v1.ImpactThreshold
+	6, // [6:6] is the sub-list for method output_type
+	6, // [6:6] is the sub-list for method input_type
+	6, // [6:6] is the sub-list for extension type_name
+	6, // [6:6] is the sub-list for extension extendee
+	0, // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_infra_appengine_weetbix_internal_config_project_config_proto_init() }
@@ -522,7 +616,7 @@ func file_infra_appengine_weetbix_internal_config_project_config_proto_init() {
 			}
 		}
 		file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MonorailProject); i {
+			switch v := v.(*BigQueryTable); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -534,7 +628,7 @@ func file_infra_appengine_weetbix_internal_config_project_config_proto_init() {
 			}
 		}
 		file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MonorailFieldValue); i {
+			switch v := v.(*MonorailProject); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -546,7 +640,7 @@ func file_infra_appengine_weetbix_internal_config_project_config_proto_init() {
 			}
 		}
 		file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MonorailPriority); i {
+			switch v := v.(*MonorailFieldValue); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -558,6 +652,18 @@ func file_infra_appengine_weetbix_internal_config_project_config_proto_init() {
 			}
 		}
 		file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MonorailPriority); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ImpactThreshold); i {
 			case 0:
 				return &v.state
@@ -570,14 +676,14 @@ func file_infra_appengine_weetbix_internal_config_project_config_proto_init() {
 			}
 		}
 	}
-	file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[4].OneofWrappers = []interface{}{}
+	file_infra_appengine_weetbix_internal_config_project_config_proto_msgTypes[5].OneofWrappers = []interface{}{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_infra_appengine_weetbix_internal_config_project_config_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
