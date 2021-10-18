@@ -16,6 +16,26 @@ message ProjectConfig {
   // The threshold at which to file bugs. If a cluster's impact exceeds
   // the given threshold, a bug will be filed for it.
   ImpactThreshold bug_filing_threshold = 2;
+
+  // The BigQuery table Weetbix should use to store clustered failures.
+  // Weetbix will use this table when performing analysis. Equally, it
+  // may be consumed by the project itself to do other ad-hoc analyses.
+  //
+  // If the table does not exist, it will be automatically created. Weetbix
+  // will manage the schema and contents of this table.
+  BigQueryTable clustered_failures_table = 3;
+}
+
+// Describes a BigQuery table which will be used by Weetbix.
+message BigQueryTable {
+  // Name of the BigQuery project.
+  string project = 1;
+
+  // Name of the BigQuery Dataset.
+  string dataset = 2;
+
+  // Name of the BigQuery Table.
+  string table = 3;
 }
 
 // MonorailProject describes the configuration to use when filing bugs
