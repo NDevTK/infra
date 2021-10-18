@@ -16,6 +16,75 @@
       "message": "Please hold-off reviewing, this CL will be revised based on changes made further down the commit stack.",
       "revId": "c5a6218d0b65f8d5bc61344fb71ff8c20a4caf59",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "731b529d_9a17fc57",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/ingestion/ingest_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-10-18T06:44:04Z",
+      "side": 1,
+      "message": "needs update after paste?",
+      "range": {
+        "startLine": 100,
+        "startChar": 4,
+        "endLine": 101,
+        "endChar": 28
+      },
+      "revId": "c5a6218d0b65f8d5bc61344fb71ff8c20a4caf59",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c96b7914_d251c499",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/ingestion/resultdb.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-10-18T06:44:04Z",
+      "side": 1,
+      "message": "RootInvocation here makes me think of the root invocation in the ResultDB tree of invocations containing this test result.  Is this the same concept or is it different?",
+      "range": {
+        "startLine": 60,
+        "startChar": 11,
+        "endLine": 60,
+        "endChar": 34
+      },
+      "revId": "c5a6218d0b65f8d5bc61344fb71ff8c20a4caf59",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1b1d8703_0bd03c16",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/ingestion/resultdb.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-10-18T06:44:04Z",
+      "side": 1,
+      "message": "Wondering if this should be factored out to isFailure?  Do we do anything with expected failures?",
+      "range": {
+        "startLine": 88,
+        "startChar": 2,
+        "endLine": 90,
+        "endChar": 37
+      },
+      "revId": "c5a6218d0b65f8d5bc61344fb71ff8c20a4caf59",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
