@@ -52,6 +52,42 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0a3ba9e0_fd72e24f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-18T06:33:32Z",
+      "side": 1,
+      "message": "Noted. At this stage the shared code is still fairly minimal, but feel free to refactor as you go. For example, we might need to implement rate-limiting or retries to deal with quota issues if we run into those.\n\nThe config is obviously already in a shared place, if you wanted to re-use the BigQueryTable message.",
+      "parentUuid": "c8c61efb_c85de13f",
+      "revId": "b84811af031bb49590a2a633ce2c4b4b50b57f84",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a326da8a_d59c08bf",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-18T06:33:32Z",
+      "side": 1,
+      "message": "I have just updated it :). So now it is relevant again.",
+      "parentUuid": "5fa64164_8abc1cfd",
+      "revId": "b84811af031bb49590a2a633ce2c4b4b50b57f84",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3ee779c3_c2804448",
@@ -65,6 +101,30 @@
       "writtenOn": "2021-10-14T05:06:03Z",
       "side": 1,
       "message": "FYI: in resultdb, we use protos[1] to define bq rows. And we have logic to automatically update bq table schema[2]. I think in weetbix we could do something similar.\n\n[1]: https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/proto/bq/\n\n[2]: https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/internal/services/bqexporter/bqexporter.go;l\u003d203;drc\u003da6e53aaf84e8b1c9f00aaf8893dfc535ccf046e6",
+      "range": {
+        "startLine": 19,
+        "startChar": 5,
+        "endLine": 19,
+        "endChar": 10
+      },
+      "revId": "b84811af031bb49590a2a633ce2c4b4b50b57f84",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cb2767a0_3bd27f33",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clusteredfailures/client.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-18T06:33:32Z",
+      "side": 1,
+      "message": "Thanks, good suggestion. Done.",
+      "parentUuid": "3ee779c3_c2804448",
       "range": {
         "startLine": 19,
         "startChar": 5,
