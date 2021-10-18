@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "88d427cd_909b0082",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-10-18T22:46:05Z",
+      "side": 1,
+      "message": "SGTM % comment",
+      "revId": "1ddcb1923cef0848e6e6ead59cd6aa5b724f0dc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "acbf7baa_2d8694c6",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 324,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-10-18T22:46:05Z",
+      "side": 1,
+      "message": "Put this along with other const at top.",
+      "revId": "1ddcb1923cef0848e6e6ead59cd6aa5b724f0dc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
