@@ -34,6 +34,24 @@
       "parentUuid": "f444c1de_8618b16d",
       "revId": "9c8c766731921d1fc71f7866163d0f5209d0449e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ebb0e827_ac7338b4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2021-10-18T05:24:14Z",
+      "side": 1,
+      "message": "Ah, so these DLLs aren\u0027t distributed with cpython but are part of the MSVC installation?\n\nI wonder if there is a script or something in the pandas repo that they use to package the DLLs into the wheel, maybe we could mimic that?",
+      "parentUuid": "14e36358_69216559",
+      "revId": "9c8c766731921d1fc71f7866163d0f5209d0449e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
