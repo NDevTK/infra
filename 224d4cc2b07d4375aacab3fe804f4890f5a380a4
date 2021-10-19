@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "db5a6345_863d2f76",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clusteredfailures/client.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-19T03:54:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2f455e0d_8aa01f41",
+      "range": {
+        "startLine": 57,
+        "startChar": 15,
+        "endLine": 57,
+        "endChar": 35
+      },
+      "revId": "224d4cc2b07d4375aacab3fe804f4890f5a380a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2a5e0f9a_4b3c1639",
@@ -59,6 +83,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ee7ecead_5d0257ac",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clusteredfailures/client.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-19T03:54:38Z",
+      "side": 1,
+      "message": "Done. I\u0027ve limited it to 1000 rows inserted per batch, which should steer well clear of any limits.",
+      "parentUuid": "79baa259_f36341e6",
+      "revId": "224d4cc2b07d4375aacab3fe804f4890f5a380a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "10923d75_40c282f6",
@@ -72,6 +114,24 @@
       "writtenOn": "2021-10-19T03:04:07Z",
       "side": 1,
       "message": "remove as discussed?",
+      "revId": "224d4cc2b07d4375aacab3fe804f4890f5a380a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a5883175_4a811f51",
+        "filename": "go/src/infra/appengine/weetbix/internal/config/project_config.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-19T03:54:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "10923d75_40c282f6",
       "revId": "224d4cc2b07d4375aacab3fe804f4890f5a380a4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
