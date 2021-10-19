@@ -39,6 +39,41 @@
       "message": "To double check, the inserts will not exceed https://cloud.google.com/bigquery/quotas#all_streaming_inserts , right? Do you have any code to restrict that?",
       "revId": "224d4cc2b07d4375aacab3fe804f4890f5a380a4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "79baa259_f36341e6",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clusteredfailures/client.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-10-19T03:04:07Z",
+      "side": 1,
+      "message": "+1",
+      "parentUuid": "2a5e0f9a_4b3c1639",
+      "revId": "224d4cc2b07d4375aacab3fe804f4890f5a380a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "10923d75_40c282f6",
+        "filename": "go/src/infra/appengine/weetbix/internal/config/project_config.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-10-19T03:04:07Z",
+      "side": 1,
+      "message": "remove as discussed?",
+      "revId": "224d4cc2b07d4375aacab3fe804f4890f5a380a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
