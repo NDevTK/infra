@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2f455e0d_8aa01f41",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clusteredfailures/client.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-19T02:41:27Z",
+      "side": 1,
+      "message": "nit: make this a constant?",
+      "range": {
+        "startLine": 57,
+        "startChar": 15,
+        "endLine": 57,
+        "endChar": 35
+      },
+      "revId": "224d4cc2b07d4375aacab3fe804f4890f5a380a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2a5e0f9a_4b3c1639",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clusteredfailures/client.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-19T02:41:27Z",
+      "side": 1,
+      "message": "To double check, the inserts will not exceed https://cloud.google.com/bigquery/quotas#all_streaming_inserts , right? Do you have any code to restrict that?",
+      "revId": "224d4cc2b07d4375aacab3fe804f4890f5a380a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
