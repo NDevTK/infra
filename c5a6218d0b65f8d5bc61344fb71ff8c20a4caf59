@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5b019702_3ab8c17d",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/ingestion/ingest_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-19T23:55:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "731b529d_9a17fc57",
+      "range": {
+        "startLine": 100,
+        "startChar": 4,
+        "endLine": 101,
+        "endChar": 28
+      },
+      "revId": "c5a6218d0b65f8d5bc61344fb71ff8c20a4caf59",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c96b7914_d251c499",
@@ -64,6 +88,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f34a89ec_8838bdb6",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/ingestion/resultdb.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-19T23:55:12Z",
+      "side": 1,
+      "message": "As discussed previously, renaming to IngestedInvocation.\nThe intent was to ingest at the root, but we can\u0027t really guarantee it and in ResultDB there is not even guaranteed to be one root.",
+      "parentUuid": "c96b7914_d251c499",
+      "range": {
+        "startLine": 60,
+        "startChar": 11,
+        "endLine": 60,
+        "endChar": 34
+      },
+      "revId": "c5a6218d0b65f8d5bc61344fb71ff8c20a4caf59",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1b1d8703_0bd03c16",
@@ -77,6 +125,30 @@
       "writtenOn": "2021-10-18T06:44:04Z",
       "side": 1,
       "message": "Wondering if this should be factored out to isFailure?  Do we do anything with expected failures?",
+      "range": {
+        "startLine": 88,
+        "startChar": 2,
+        "endLine": 90,
+        "endChar": 37
+      },
+      "revId": "c5a6218d0b65f8d5bc61344fb71ff8c20a4caf59",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2cb64f2a_7b1dec5b",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/ingestion/resultdb.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-19T23:55:12Z",
+      "side": 1,
+      "message": "We don\u0027t, but Done",
+      "parentUuid": "1b1d8703_0bd03c16",
       "range": {
         "startLine": 88,
         "startChar": 2,
