@@ -40,6 +40,30 @@
       },
       "revId": "6e4edad4cf73b8334f3c5335fed2416ed1f36679",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1ed9a009_db480df2",
+        "filename": "go/src/infra/tools/migrator/internal/plugsupport/repo.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2021-10-19T00:04:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "19167c4f_372d1759",
+      "range": {
+        "startLine": 155,
+        "startChar": 37,
+        "endLine": 155,
+        "endChar": 44
+      },
+      "revId": "6e4edad4cf73b8334f3c5335fed2416ed1f36679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
