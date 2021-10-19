@@ -47,6 +47,7 @@ func validateProjectConfigRaw(ctx *validation.Context, content string) *ProjectC
 func validateProjectConfig(ctx *validation.Context, cfg *ProjectConfig) {
 	validateMonorail(ctx, cfg.Monorail)
 	validateImpactThreshold(ctx, cfg.BugFilingThreshold, "bug_filing_threshold")
+	validateBigQueryTable(ctx, cfg.ClusteredFailuresTable, "clustered_failures_table")
 }
 
 func validateMonorail(ctx *validation.Context, cfg *MonorailProject) {
@@ -159,4 +160,23 @@ func validateFailureCountThresold(ctx *validation.Context, threshold *int64, fie
 		ctx.Errorf("value must be non-negative")
 	}
 	ctx.Exit()
+}
+
+func validateBigQueryTable(ctx *validation.Context, t *BigQueryTable, fieldName string) {
+	ctx.Enter(fieldName)
+	defer ctx.Exit()
+
+	if t == nil {
+		ctx.Errorf("value must be specified")
+		return
+	}
+	if t.Project == "" {
+		ctx.Errorf("project must be specified")
+	}
+	if t.Dataset == "" {
+		ctx.Errorf("dataset must be specified")
+	}
+	if t.Table == "" {
+		ctx.Errorf("table must be specified")
+	}
 }

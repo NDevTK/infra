@@ -6,29 +6,23 @@ package plugsupport
 
 import (
 	"context"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"sort"
 	"sync"
 
 	"github.com/golang/protobuf/proto"
 
 	"go.chromium.org/luci/common/errors"
 	lucipb "go.chromium.org/luci/common/proto"
-	configpb "go.chromium.org/luci/common/proto/config"
 
 	"infra/tools/migrator"
 )
 
 type localProject struct {
-	id   migrator.ReportID
-	repo *repo
-	ctx  context.Context
-
-	relConfigRoot          string
-	relGeneratedConfigRoot string
+	id  migrator.ReportID
+	dir string
+	ctx context.Context
 
 	configsOnce sync.Once
 	configsErr  error
@@ -40,11 +34,8 @@ var _ migrator.Project = (*localProject)(nil)
 func (l *localProject) ID() string { return l.id.Project }
 
 func (l *localProject) ConfigFiles() map[string]migrator.ConfigFile {
-	dir := filepath.Join(l.repo.root, l.relGeneratedConfigRoot)
-
 	l.configsOnce.Do(func() {
-		l.configs = make(map[string]migrator.ConfigFile)
-		l.configsErr = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		l.configsErr = filepath.Walk(l.dir, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
 			}
@@ -52,14 +43,14 @@ func (l *localProject) ConfigFiles() map[string]migrator.ConfigFile {
 				return filepath.SkipDir
 			}
 			if info.Mode().IsRegular() {
-				relpath := filepath.ToSlash(path[len(dir)+1:])
+				relpath := path[len(l.dir)+1:]
 				l.configs[relpath] = &localConfigFile{
 					id: migrator.ReportID{
 						Project:    l.id.Project,
 						ConfigFile: relpath,
 					},
-					abs: path,
-					ctx: l.ctx,
+					generatedConfigRoot: l.dir,
+					ctx:                 l.ctx,
 				}
 			}
 			return nil
@@ -75,55 +66,11 @@ func (l *localProject) Report(tag, description string, opts ...migrator.ReportOp
 	getReportSink(l.ctx).add(l.id, tag, description, opts...)
 }
 
-func (l *localProject) ConfigRoot() string          { return "/" + l.relConfigRoot }
-func (l *localProject) GeneratedConfigRoot() string { return "/" + l.relGeneratedConfigRoot }
-func (l *localProject) Repo() migrator.Repo         { return l.repo }
-
-func (l *localProject) Shell() migrator.Shell {
-	return &shell{
-		ctx:  l.ctx,
-		root: l.repo.root,
-		cwd:  l.relConfigRoot,
-	}
-}
-
-func (l *localProject) RegenerateConfigs() {
-	// Attempt to read lucicfg invocation details from project.cfg.
-	f := l.ConfigFiles()["project.cfg"]
-	if f == nil {
-		panic(errors.Reason("no project.cfg in the configs").Err())
-	}
-	var cfg configpb.ProjectCfg
-	f.TextPb(&cfg)
-
-	// Use the config metadata, if available, or "guess" main.star.
-	meta := cfg.GetLucicfg()
-	if meta.GetEntryPoint() == "" {
-		meta = &configpb.GeneratorMetadata{
-			EntryPoint: "main.star",
-		}
-	}
-
-	// Sort vars for less random logging output.
-	vars := make([]string, 0, len(meta.Vars))
-	for k, v := range meta.Vars {
-		vars = append(vars, fmt.Sprintf("%s=%s", k, v))
-	}
-	sort.Strings(vars)
-	cmd := []string{"generate", meta.EntryPoint}
-	for _, v := range vars {
-		cmd = append(cmd, "-var", v)
-	}
-
-	// lucicfg logs to stderr, make its output less red in the migrator logs.
-	cmd = append(cmd, migrator.TieStderr)
-
-	l.Shell().Run("lucicfg", cmd...)
-}
-
 type localConfigFile struct {
-	id  migrator.ReportID
-	abs string
+	id migrator.ReportID
+
+	generatedConfigRoot string
+
 	ctx context.Context
 
 	rawDataOnce sync.Once
@@ -135,7 +82,7 @@ func (l *localConfigFile) Path() string { return l.id.ConfigFile }
 
 func (l *localConfigFile) RawData() string {
 	l.rawDataOnce.Do(func() {
-		data, err := ioutil.ReadFile(l.abs)
+		data, err := ioutil.ReadFile(filepath.Join(l.generatedConfigRoot, l.id.ConfigFile))
 		l.rawData = string(data)
 		l.rawDataErr = err
 	})

@@ -18,6 +18,18 @@ import (
 	"testing"
 )
 
+// TestUploadWorker will test that network uploads are going to the correct place
+// and that they are correctly handling the responses.
+// TODO(b/197010274): implement mocks and response checking.
+func TestUploadWorker(t *testing.T) {
+	mockChans := make(chan taskConfig)
+	err := uploadWorker(mockChans)
+
+	if err != nil {
+		t.Error("error: " + err.Error())
+	}
+}
+
 // TestDownloadTgz ensures that we are fetching from the correct service and
 // handling the response appropriately.
 func TestDownloadTgz(t *testing.T) {
@@ -144,13 +156,12 @@ func TestUnpackTarball(t *testing.T) {
 
 	// Create an array holding some basic info to build headers. Contains regular files and directories.
 	files := []file{
-		{"/test1.so.sym", "debug symbols", 0600},
-		{"./test2.so.sym", "debug symbols", 0600},
+		{"test1.so.sym", "debug symbols", 0600},
+		{"test2.so.sym", "debug symbols", 0600},
 		{"b/c", "", fs.ModeDir},
-		{"../test3.so.sym", "debug symbols", 0600},
+		{"test3.so.sym", "debug symbols", 0600},
 		{"a/b/c/d/", "", fs.ModeDir},
-		{"./test4.so.sym", "debug symbols", 0600},
-		{"a/shouldntadd.txt", "not a symbol file", 0600},
+		{"test4.so.sym", "debug symbols", 0600},
 	}
 
 	// List of files we expect to see return after the test call.
@@ -194,11 +205,11 @@ func TestUnpackTarball(t *testing.T) {
 	for _, path := range symbolPaths {
 		if val, ok := expectedSymbolFiles[path]; ok {
 			if val {
-				t.Error("error: symbol file appeared multiple times in function return")
+				t.Error("error: symbol file appeared multiple times in function return.")
 			}
 			expectedSymbolFiles[path] = true
 		} else {
-			t.Errorf("error: unexpected symbol file returned %s", path)
+			t.Error("error: unexpected symbol file returned.")
 		}
 	}
 
@@ -207,7 +218,7 @@ func TestUnpackTarball(t *testing.T) {
 // TestGenerateConfigs validates that proper task configs are generated when
 // a list of filepaths are given.
 func TestGenerateConfigs(t *testing.T) {
-	// Create mocks and expected returns.
+	// Create mocks and expected returns/d
 	mockPaths := []string{
 		"/test1.so.sym",
 		"/test2.so.sym",
@@ -215,67 +226,36 @@ func TestGenerateConfigs(t *testing.T) {
 		"/test4.so.sym",
 	}
 	expectedTasks := map[taskConfig]bool{
-		{"/test1.so.sym", "test1.so.sym", "debugId", 0, false, false, false}: false,
-		{"/test2.so.sym", "test2.so.sym", "debugId", 0, false, false, false}: false,
-		{"/test3.so.sym", "test3.so.sym", "debugId", 0, false, false, false}: false,
-		{"/test4.so.sym", "test4.so.sym", "debugId", 0, false, false, false}: false,
+		{"/test1.so.sym", 0, false, false}: false,
+		{"/test2.so.sym", 0, false, false}: false,
+		{"/test3.so.sym", 0, false, false}: false,
+		{"/test4.so.sym", 0, false, false}: false,
 	}
 
-	tasks, err := generateConfigs(mockPaths, 0, false, false)
-	if err != nil {
-		t.Error("error: " + err.Error())
-	}
+	tasks := generateConfigs(mockPaths, false, false)
+
 	// Check that returns aren't nil.
 	if tasks == nil {
-		t.Error("error: recieved tasks when nil was expected")
+		t.Error("error: recieved tasks when nil was expected.")
 	}
 
 	// Verify that we received a list pointing to all the expected files and no others.
 	for _, task := range tasks {
 		if val, ok := expectedTasks[task]; ok {
 			if val {
-				t.Error("error: task appeared multiple times in function return")
+				t.Error("error: task appeared multiple times in function return.")
 			}
 			expectedTasks[task] = true
 		} else {
-			t.Errorf("error: unexpected task returned %+v", task)
+			t.Error("error: unexpected task returned.")
 		}
 	}
 }
 
-// TestUploadSymbols affirms that the worker design and retry model are valid.
-// TODO(b/197010274): implement mocks for upload worker.
-func TestUploadSymbols(t *testing.T) {
-	// Create tasks and expected returns.
-	tasks := []taskConfig{
-		{"/test1.so.sym", "test1.so.sym", "", 0, false, false, false},
-		{"/test1.so.sym", "test2.so.sym", "", 0, false, false, false},
-		{"/test1.so.sym", "test3.so.sym", "", 0, false, false, false},
-		{"/test1.so.sym", "test4.so.sym", "", 0, false, false, false},
-	}
-	expectedTasks := map[taskConfig]bool{
-		{"/test1.so.sym", "test1.so.sym", "", 0, false, false, false}: false,
-		{"/test1.so.sym", "test2.so.sym", "", 0, false, false, false}: false,
-		{"/test1.so.sym", "test3.so.sym", "", 0, false, false, false}: false,
-		{"/test1.so.sym", "test4.so.sym", "", 0, false, false, false}: false,
-	}
-
-	// Mock upload function to check that we are receiving the expected tasks.
-	upload = func(task *taskConfig) bool {
-		if val, ok := expectedTasks[*task]; ok {
-			if val {
-				t.Error("error: task was unexpectedly uploaded multiple times")
-				return false
-			}
-			expectedTasks[*task] = true
-			return true
-		} else {
-			t.Error("error: unexpected task returned")
-			return true
-		}
-
-	}
-	retcode, err := uploadSymbols(tasks, 64, 200, false, false)
+// TestDoUpload affirms that the worker design and retry model are valid.
+// TODO(b/197010274): implement mocks and response checking.
+func TestDoUpload(t *testing.T) {
+	retcode, err := doUpload([]taskConfig{}, 64, 0, false, false)
 
 	if err != nil {
 		t.Error("error: " + err.Error())

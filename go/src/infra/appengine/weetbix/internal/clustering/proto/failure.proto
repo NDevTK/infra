@@ -72,8 +72,8 @@ message Failure {
   // Identity of the presubmit run that contains this test result.
   // This should be unique per "CQ+1"/"CQ+2" attempt on gerrit.
   //
-  // One presumbit run MAY have many ingested invocation IDs (e.g. for its
-  // various tryjobs), but every ingested invocation ID only ever has one
+  // One presumbit run MAY have many root invocation IDs (e.g. for its
+  // various tryjobs), but every root invocation ID only ever has one
   // presubmit run ID (if any).
   //
   // All test results for the same presubmit run will have one
@@ -83,37 +83,32 @@ message Failure {
   // this is unset.
   weetbix.v1.PresubmitRunId presubmit_run_id = 13;
 
-  // The invocation from which this test result was ingested. This is
-  // the top-level invocation that was ingested, an "invocation" being
-  // a container of test results as identified by the source test result
-  // system.
+  // The top-level invocation (i.e. invocation for the build) which
+  // contains this test result.
   //
-  // For ResultDB, Weetbix ingests invocations corresponding to
-  // buildbucket builds.
-  //
-  // All test results ingested from the same invocation (i.e. with the
-  // same ingested_invocation_id) will have the same partition time.
-  string ingested_invocation_id = 14;
+  // All test results with the same root invocation ID will have the same
+  // partition time.
+  string root_invocation_id = 14;
 
-  // The zero-based index for this test result, in the sequence of the
-  // ingested invocation's results for this test variant. Within the sequence,
+  // The zero-based index for this test result, in the sequence of this
+  // root invocation's results for this test variant. Within the sequence,
   // test results are ordered by start_time and then by test result ID.
   // The first test result is 0, the last test result is
-  // ingested_invocation_result_count - 1.
-  int64 ingested_invocation_result_index = 15;
+  // root_invocation_result_count - 1.
+  int64 root_invocation_result_index = 15;
 
-  // The number of test results having this test variant in the ingested
+  // The number of test results having this test variant and root
   // invocation.
-  int64 ingested_invocation_result_count = 16;
+  int64 root_invocation_result_count = 16;
 
-  // Is the ingested invocation blocked by this test variant? This is
+  // Is the root invocation blocked by this test variant? This is
   // only true if all (non-skipped) test results for this test variant
-  // (in the ingested invocation) are unexpected failures.
+  // (in the root invocation) are unexpected failures.
   //
   // Exoneration does not factor into this value; check is_exonerated
-  // to see if the impact of this ingested invocation being blocked was
+  // to see if the impact of this root invocation being blocked was
   // mitigated by exoneration.
-  bool is_ingested_invocation_blocked = 17;
+  bool is_root_invocation_blocked = 17;
 
   // The identifier of the test run the test ran in. Test results in different
   // test runs are generally considered independent as they should be unable
@@ -143,7 +138,7 @@ message Failure {
   // are unexpected failures.
   //
   // Exoneration does not factor into this value; check is_exonerated
-  // to see if the impact of this test run being blocked was
+  // to see if the impact of this root invocation being blocked was
   // mitigated by exoneration.
   bool is_test_run_blocked = 21;
 }

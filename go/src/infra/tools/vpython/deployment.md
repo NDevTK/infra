@@ -5,13 +5,12 @@
 Use following commit to generate change list between two versions:
 
 ```bash
-go/src/infra/tools/vpython/get_commits_info.sh old_commit new_commit
+git --no-pager log --oneline old_commit...new_commit go/src/infra/tools/vpython/
 
 # This change includes commits:
-e9dce35f40e730f637ccdd463e7de284f9288978 Update vpython default verification for python 3.8.
-ee1f0a4d96b1ed901b0d60168c749081b597db2c Allow multiple versions of a wheel as long as only one matches.
-90c82c7c7f6b4f15893f826260783bf0aade2387 Implement CPython's search_for_prefix in vpython
-0587bc796cbcf7a8260972d895502d497918cd8e Add deploy doc for vpython
+# 92464f71a9 Update to new virtualenv with mac-arm64 native wheel support.
+# 4bf15e85d2 Update virtualenv package version.
+# a0d5d3afba Adding .vpython generating tool (Proof of Concept)
 ```
 
 ## LUCI builds

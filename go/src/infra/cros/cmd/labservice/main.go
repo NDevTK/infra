@@ -15,21 +15,16 @@ import (
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 )
 
 var (
-	addr               = flag.String("addr", "0.0.0.0:1485", "Address to listen to")
-	ufsService         = flag.String("ufs-service", "ufs.api.cr.dev", "UFS service host")
-	serviceAccountPath = flag.String("service-account-json", "",
-		"Path to service account JSON file")
+	addr = flag.String("addr", "0.0.0.0:1485", "Address to listen to")
 )
 
 func main() {
 	// Configure the default Go logger only for handling fatal
 	// errors in main and any libraries that are using it.
-	// Otherwise, labservice code should use the labservice
-	// internal log package.
+	// Otherwise, labservice code should use the internal log package.
 	log.SetPrefix("labservice: ")
 	if err := innerMain(); err != nil {
 		log.Fatalf("Fatal error: %s", err)
@@ -42,10 +37,7 @@ func innerMain() error {
 	if err != nil {
 		return err
 	}
-	gs := newGRPCServer(&serverConfig{
-		ufsService:         *ufsService,
-		serviceAccountPath: *serviceAccountPath,
-	})
+	gs := newServer()
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, handledSignals...)
 	ctx := context.Background()
@@ -61,11 +53,11 @@ func innerMain() error {
 	return gs.Serve(l)
 }
 
-// newGRPCServer creates a new gRPC server for labservice.
-func newGRPCServer(c *serverConfig) *grpc.Server {
+// newServer creates a new gRPC server for labservice.
+func newServer() *grpc.Server {
 	ic := interceptor{}
 	gs := grpc.NewServer(ic.unaryOption())
-	s := newServer(c)
+	s := &server{}
 	labapi.RegisterInventoryServiceServer(gs, s)
 	return gs
 }
@@ -75,16 +67,9 @@ func newGRPCServer(c *serverConfig) *grpc.Server {
 type interceptor struct{}
 
 func (interceptor) unary(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, h grpc.UnaryHandler) (interface{}, error) {
-	ctx = withUFSContext(ctx)
 	return h(ctx, req)
 }
 
 func (ic interceptor) unaryOption() grpc.ServerOption {
 	return grpc.ChainUnaryInterceptor(ic.unary)
-}
-
-// Return a context with the gRPC metadata needed to talk to UFS.
-func withUFSContext(ctx context.Context) context.Context {
-	md := metadata.Pairs("namespace", "os")
-	return metadata.NewOutgoingContext(ctx, md)
 }

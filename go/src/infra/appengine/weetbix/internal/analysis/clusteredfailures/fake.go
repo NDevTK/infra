@@ -6,14 +6,14 @@ package clusteredfailures
 
 import (
 	"context"
-
+	"infra/appengine/weetbix/internal/config"
 	bqp "infra/appengine/weetbix/proto/bq"
 )
 
 // FakeClient represents a fake implementation of the clustered failures
 // exporter, for testing.
 type FakeClient struct {
-	InsertionsByProject map[string][]*bqp.ClusteredFailureRow
+	InsertionsByProject map[string][]*bqp.ClusteredFailure
 }
 
 // NewFakeClient creates a new FakeClient for exporting clustered failures.
@@ -22,7 +22,7 @@ func NewFakeClient() *FakeClient {
 }
 
 // Insert inserts the given rows in BigQuery.
-func (fc *FakeClient) Insert(ctx context.Context, luciProject string, rows []*bqp.ClusteredFailureRow) error {
+func (fc *FakeClient) Insert(ctx context.Context, luciProject string, tableCfg *config.BigQueryTable, rows []*bqp.ClusteredFailure) error {
 	inserts := fc.InsertionsByProject[luciProject]
 	inserts = append(inserts, rows...)
 	fc.InsertionsByProject[luciProject] = inserts

@@ -40,11 +40,12 @@ type API interface {
 	// Logging is set up for this context, and will be diverted to a per-project
 	// logfile.
 	//
-	// `proj` is implemented with local filesystem interactions on the checked-out
-	// repo. This may differ from the current state of the luci-config service.
+	// `repo.Project()` is implemented with local filesystem interactions on the
+	// checked-out repo. This may differ from the current state of the luci-config
+	// service.
 	//
 	// This function should panic on error.
-	ApplyFix(ctx context.Context, proj LocalProject)
+	ApplyFix(ctx context.Context, repo Repo)
 }
 
 // InstantiateAPI is the factory for API instances (one per LUCI project).

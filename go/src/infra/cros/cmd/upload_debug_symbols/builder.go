@@ -23,9 +23,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
-	"sync"
-	"sync/atomic"
 )
 
 const (
@@ -36,43 +35,26 @@ const (
 	sleepTimeMs = 100
 )
 
+// Regex used when finding symbol files.
+var fileRegex = regexp.MustCompile(`([\w-]+.so.sym)$`)
+
 // taskConfig will contain the information needed to complete the upload task.
 type taskConfig struct {
-	symbolPath  string
-	debugFile   string
-	debugId     string
-	retryQuota  uint64
-	dryRun      bool
-	isStaging   bool
-	shouldSleep bool
+	symbolPath string
+	retryCount int
+	dryRun     bool
+	isStaging  bool
 }
 
 type uploadDebugSymbols struct {
 	subcommands.CommandRunBase
 	authFlags   authcli.Flags
 	gsPath      string
-	workerCount uint64
-	retryQuota  uint64
+	workerCount int
+	retryCount  int
+	channelSize int
 	isStaging   bool
 	dryRun      bool
-}
-
-// upload will perform the upload of the symbol file to the crash service.
-// Making this function a variable will allow us to mock it easier.
-// TODO(b/197010274): remove skeleton code.
-var upload = func(task *taskConfig) bool {
-	return false
-}
-
-// getFilename takes a file path, relative or full, and returns the filename.
-func getFilename(filePath string) (string, error) {
-	basePath := filepath.Base(filePath)
-
-	if basePath == "." {
-		return filePath, fmt.Errorf("error: given filepath %s is invalid", filePath)
-	}
-
-	return basePath, nil
 }
 
 func getCmdUploadDebugSymbols(authOpts auth.Options) *subcommands.Command {
@@ -85,10 +67,12 @@ func getCmdUploadDebugSymbols(authOpts auth.Options) *subcommands.Command {
 			b.authFlags.Register(b.GetFlags(), authOpts)
 			b.Flags.StringVar(&b.gsPath, "gs-path", "", ("[Required] Url pointing to the GS " +
 				"bucket storing the tarball."))
-			b.Flags.Uint64Var(&b.workerCount, "worker-count", 64, ("Number of worker threads" +
+			b.Flags.IntVar(&b.workerCount, "worker-count", 64, ("Number of worker threads" +
 				" to spawn."))
-			b.Flags.Uint64Var(&b.retryQuota, "retry-count", 200, ("Number of total upload retries" +
+			b.Flags.IntVar(&b.retryCount, "retry-count", 200, ("Number of total upload retries" +
 				" allowed."))
+			b.Flags.IntVar(&b.channelSize, "channel-size", 200, ("Number of task configs allowed" +
+				" in the channel buffer at once."))
 			b.Flags.BoolVar(&b.isStaging, "is-staging", false, ("Specifies if the builder" +
 				" should push to the staging crash service or prod."))
 			b.Flags.BoolVar(&b.dryRun, "dry-run", false, ("Specified whether network" +
@@ -117,6 +101,21 @@ func generateClient(ctx context.Context, authOpts auth.Options) (*gs.ProdClient,
 // filepath to tarball.
 func downloadTgz(client gs.Client, gsPath, tgzPath string) error {
 	return client.Download(lgs.Path(gsPath), tgzPath)
+}
+
+// uploadWorker will perform the upload of the symbol file to the crash service.
+func uploadWorker(configChannel chan taskConfig) error {
+	// Fetch the local file from the unpacked tarball.
+
+	// Open up an https request to the crash service.
+
+	// Verify if the file has been uploaded already.
+
+	// Upload the file.
+
+	// Return with appropriate status code.
+	// TODO(b/197010274): remove skeleton code.
+	return nil
 }
 
 // unzipTgz will take the local path of the fetched tarball and then unpack
@@ -175,11 +174,8 @@ func unpackTarball(inputPath, outputDir string) ([]string, error) {
 		// The header indicates it's a file. Store and save the file if it is a symbol file.
 		if header.FileInfo().Mode().IsRegular() {
 			// Check if the file is a symbol file.
-			filename, err := getFilename(header.Name)
-			if err != nil {
-				return nil, err
-			}
-			if filepath.Ext(filename) != ".sym" {
+			filename := fileRegex.FindString(header.Name)
+			if filename == "" {
 				continue
 			}
 
@@ -205,100 +201,25 @@ func unpackTarball(inputPath, outputDir string) ([]string, error) {
 // generateConfigs will take a list of strings with containing the paths to the
 // unpacked symbol files. It will return a list of generated task configs
 // alongside the communication channels to be used.
-func generateConfigs(symbolFiles []string, retryQuota uint64, dryRun, isStaging bool) ([]taskConfig, error) {
-	// The task should only sleep on retry.
-	shouldSleep := false
+func generateConfigs(symbolFiles []string, dryRun, isStaging bool) []taskConfig {
 
 	tasks := make([]taskConfig, len(symbolFiles))
 
 	// Generate task configurations.
 	for index, filepath := range symbolFiles {
-		// read first line of file and get the symbolid
-		debugFile, err := getFilename(filepath)
-		if err != nil {
-			return nil, err
-		}
-		tasks[index] = taskConfig{filepath, debugFile, "debugId", retryQuota, dryRun, isStaging, shouldSleep}
+		tasks[index] = taskConfig{filepath, 0, dryRun, isStaging}
 	}
 
-	return tasks, nil
+	return tasks
 }
 
-// uploadSymbols is the main loop that will spawn goroutines that will handle the
+// doUpload is the main loop that will spawn goroutines that will handle the
 // upload tasks. Should its worker fail it's upload and we have retries left,
 // send the task to the end of the channel's buffer.
-func uploadSymbols(tasks []taskConfig, maximumWorkers, retryQuota uint64,
+func doUpload(tasks []taskConfig, channelSize int, retryCount int,
 	isStaging, dryRun bool) (int, error) {
-
-	// Number of tasks to process.
-	tasksLeftToComplete := uint64(len(tasks))
-
-	// If there are less tasks to complete than allotted workers, reduce the worker count.
-	if maximumWorkers > tasksLeftToComplete {
-		maximumWorkers = tasksLeftToComplete
-	}
-
-	// This buffered channel will act as a queue for us to pull tasks from.
-	taskQueue := make(chan taskConfig, tasksLeftToComplete)
-
-	// Fill channel with tasks.
-	for _, task := range tasks {
-		taskQueue <- task
-	}
-
-	// currentWorkerCount will track how many workers are.
-	currentWorkerCount := uint64(0)
-
-	var waitgroup sync.WaitGroup
-
-	// This is the main driver loop for the distributed worker design.
-	for {
-		// All tasks completed close channels and exit loop.
-		if tasksLeftToComplete == 0 {
-			// Close the task queue.
-			close(taskQueue)
-			// Wait for all goroutines to finish then exit function.
-			waitgroup.Wait()
-			return 0, nil
-		}
-
-		// Exceeded the allotted number of retries.
-		if retryQuota == 0 {
-			return 1, fmt.Errorf("error: too many retries taken")
-		}
-
-		// If a slot is open then create another worker.
-		if currentWorkerCount >= maximumWorkers {
-			continue
-		}
-
-		select {
-		// If there is a task in the queue, create a worker to handle it.
-		case task := <-taskQueue:
-			atomic.AddUint64(&currentWorkerCount, uint64(1))
-			waitgroup.Add(1)
-
-			// Spawn a worker to handle the task.
-			go func() {
-				defer waitgroup.Done()
-				taskToRetry := upload(&task)
-
-				// If the task failed, toss the task to the end of the queue.
-				if !taskToRetry {
-					taskQueue <- task
-					// Decrement the retryQuota we have left.
-					atomic.AddUint64(&retryQuota, ^uint64(0))
-				} else {
-					// If the worker completed the task successfully, decrement the tasksLeftToComplete counter.
-					atomic.AddUint64(&tasksLeftToComplete, ^uint64(0))
-				}
-				// Remove a worker from the current pool.
-				atomic.AddUint64(&currentWorkerCount, ^uint64(0))
-			}()
-		default:
-			continue
-		}
-	}
+	// TODO(b/197010274): remove skeleton code.
+	return 0, nil
 }
 
 // validate checks the values of the required flags and returns an error they
@@ -318,7 +239,7 @@ func (b *uploadDebugSymbols) validate() error {
 	if b.workerCount <= 0 {
 		errStr = fmt.Sprint(errStr, "error: -worker-count value must be greater than zero.\n")
 	}
-	if b.retryQuota < 0 {
+	if b.retryCount < 0 {
 		errStr = fmt.Sprint(errStr, "error: -retry-count value may not be negative.\n")
 	}
 
@@ -370,12 +291,12 @@ func (b *uploadDebugSymbols) Run(a subcommands.Application, args []string, env s
 		log.Fatal(err)
 	}
 
-	tasks, err := generateConfigs(symbolFiles, b.retryQuota, b.dryRun, b.isStaging)
+	tasks := generateConfigs(symbolFiles, b.dryRun, b.isStaging)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	retcode, err := uploadSymbols(tasks, b.workerCount, b.retryQuota, b.isStaging, b.dryRun)
+	retcode, err := doUpload(tasks, b.channelSize, b.retryCount, b.isStaging, b.dryRun)
 
 	if err != nil {
 		log.Fatal(err)
