@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "eafc031a_7bead3fe",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clustering_handler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-19T06:21:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6ff3a22b_d9b57848",
+      "revId": "af3d3eba32846094a3c41ca35c774d483e47dabd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "29c98db3_4ccfae9a",
@@ -31,6 +49,30 @@
       "writtenOn": "2021-10-19T02:56:29Z",
       "side": 1,
       "message": "Naming nit: mention client? Otherwise it looks like a field containing a slice of failures",
+      "range": {
+        "startLine": 23,
+        "startChar": 1,
+        "endLine": 23,
+        "endChar": 18
+      },
+      "revId": "af3d3eba32846094a3c41ca35c774d483e47dabd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "590163eb_77a8987e",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clustering_handler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-19T06:21:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "29c98db3_4ccfae9a",
       "range": {
         "startLine": 23,
         "startChar": 1,
@@ -64,6 +106,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cb088a95_06a3f908",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clustering_handler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-19T06:21:44Z",
+      "side": 1,
+      "message": "Disagree, this is an event handler for the event that clusters have been already been updated. (Observing the source of truth for clustering is in spanner, not BigQuery.)",
+      "parentUuid": "e7b08b93_c806ab44",
+      "range": {
+        "startLine": 48,
+        "startChar": 28,
+        "endLine": 48,
+        "endChar": 43
+      },
+      "revId": "af3d3eba32846094a3c41ca35c774d483e47dabd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d94d6199_973234e0",
@@ -77,6 +143,30 @@
       "writtenOn": "2021-10-19T02:56:29Z",
       "side": 1,
       "message": "Do you mean a first time clustering doesn\u0027t run this logic?",
+      "range": {
+        "startLine": 64,
+        "startChar": 20,
+        "endLine": 64,
+        "endChar": 32
+      },
+      "revId": "af3d3eba32846094a3c41ca35c774d483e47dabd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3871911b_b212d4d1",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clustering_handler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-19T06:21:44Z",
+      "side": 1,
+      "message": "Put (re-) in brackets to make clear we also run for the original clustering.",
+      "parentUuid": "d94d6199_973234e0",
       "range": {
         "startLine": 64,
         "startChar": 20,
@@ -133,6 +223,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ac9028b5_a304d2b3",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clustering_handler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-19T06:21:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "82f12bc3_6d65cdd5",
+      "range": {
+        "startLine": 104,
+        "startChar": 3,
+        "endLine": 104,
+        "endChar": 30
+      },
+      "revId": "af3d3eba32846094a3c41ca35c774d483e47dabd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "50fc372c_784cffd5",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clustering_handler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-19T06:21:44Z",
+      "side": 1,
+      "message": "A failure will appear with high priority in any bug clusters it appears in, and if appears in are no bug clusters, it will appear with high priority in any suggested clusters it appears in.\n\nHence, it will be true if rc is a bug cluster, or if rc is a suggested cluster, and the test failure appears in no bug clusters.",
+      "parentUuid": "b0d0964d_6a2e19e4",
+      "range": {
+        "startLine": 104,
+        "startChar": 35,
+        "endLine": 104,
+        "endChar": 51
+      },
+      "revId": "af3d3eba32846094a3c41ca35c774d483e47dabd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b998c447_3e03c94c",
@@ -156,6 +294,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "218efa26_5b50afb1",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/update.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-19T06:21:44Z",
+      "side": 1,
+      "message": "clustering only produces one type of Update, so I think I prefer to keep the brevity for now.",
+      "parentUuid": "b998c447_3e03c94c",
+      "range": {
+        "startLine": 12,
+        "startChar": 5,
+        "endLine": 12,
+        "endChar": 11
+      },
+      "revId": "af3d3eba32846094a3c41ca35c774d483e47dabd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dd562882_da79026f",
@@ -169,6 +331,30 @@
       "writtenOn": "2021-10-19T02:56:29Z",
       "side": 1,
       "message": "Then this could be only ID",
+      "range": {
+        "startLine": 17,
+        "startChar": 1,
+        "endLine": 17,
+        "endChar": 8
+      },
+      "revId": "af3d3eba32846094a3c41ca35c774d483e47dabd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bc362158_bbc39e02",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/update.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-19T06:21:44Z",
+      "side": 1,
+      "message": "If this was just \u0027ID\u0027, it could be confused as being the ID of the update, rather than the chunk.",
+      "parentUuid": "dd562882_da79026f",
       "range": {
         "startLine": 17,
         "startChar": 1,
@@ -216,6 +402,30 @@
       "side": 1,
       "message": "From clustering_handler it seems to be option1, but why?\n\nI mean can we make them ClustersToDelete and ClustersToAdd?",
       "parentUuid": "2ae2246a_d616459d",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 25
+      },
+      "revId": "af3d3eba32846094a3c41ca35c774d483e47dabd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "09ce3b7e_da94f90f",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/update.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-19T06:21:44Z",
+      "side": 1,
+      "message": "To determine whether a failure is included into a cluster with high priority, we need the entire set of clusters.\n\nFor example, if c3 is a suggested cluster, we will only include the failure with high priority if its other clusters (e.g. c1) are not bug clusters.\n\nAlternatively, if c3 is a bug cluster, and this is the first bug cluster the failure is being inserted into, we need to stop including it with high priority in all suggested clusters (e.g. c1).\n\nThe reverse logic applies to any removals.\n\nThis leads us to select Option 1.",
+      "parentUuid": "b2fcfa6f_bef42be0",
       "range": {
         "startLine": 28,
         "startChar": 0,
