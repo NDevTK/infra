@@ -1,0 +1,159 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6ff3a22b_d9b57848",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clustering_handler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-19T02:56:29Z",
+      "side": 1,
+      "message": "license header",
+      "revId": "af3d3eba32846094a3c41ca35c774d483e47dabd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "29c98db3_4ccfae9a",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clustering_handler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-19T02:56:29Z",
+      "side": 1,
+      "message": "Naming nit: mention client? Otherwise it looks like a field containing a slice of failures",
+      "range": {
+        "startLine": 23,
+        "startChar": 1,
+        "endLine": 23,
+        "endChar": 18
+      },
+      "revId": "af3d3eba32846094a3c41ca35c774d483e47dabd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e7b08b93_c806ab44",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clustering_handler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-19T02:56:29Z",
+      "side": 1,
+      "message": "Naming nit: UpdateClusters",
+      "range": {
+        "startLine": 48,
+        "startChar": 28,
+        "endLine": 48,
+        "endChar": 43
+      },
+      "revId": "af3d3eba32846094a3c41ca35c774d483e47dabd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d94d6199_973234e0",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clustering_handler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-19T02:56:29Z",
+      "side": 1,
+      "message": "Do you mean a first time clustering doesn\u0027t run this logic?",
+      "range": {
+        "startLine": 64,
+        "startChar": 20,
+        "endLine": 64,
+        "endChar": 32
+      },
+      "revId": "af3d3eba32846094a3c41ca35c774d483e47dabd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b998c447_3e03c94c",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/update.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-19T02:56:29Z",
+      "side": 1,
+      "message": "Naming nit: ChunkUpdate?",
+      "range": {
+        "startLine": 12,
+        "startChar": 5,
+        "endLine": 12,
+        "endChar": 11
+      },
+      "revId": "af3d3eba32846094a3c41ca35c774d483e47dabd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dd562882_da79026f",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/update.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-19T02:56:29Z",
+      "side": 1,
+      "message": "Then this could be only ID",
+      "range": {
+        "startLine": 17,
+        "startChar": 1,
+        "endLine": 17,
+        "endChar": 8
+      },
+      "revId": "af3d3eba32846094a3c41ca35c774d483e47dabd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2ae2246a_d616459d",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/update.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-19T02:56:29Z",
+      "side": 1,
+      "message": "I\u0027m trying to understand how will these fields be used. For example the failure was previously in cluster c1 and c2, and after reclustering it should be in c1 and c3, what will be the value of the fields? \n\nOption1:\nPreviousClusters \u003d [c1, c2]\nNewClusters \u003d [c1, c3]\n\nOption2:\nPreviousClusters \u003d [c2]\nNewClusters \u003d [c3]",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 25
+      },
+      "revId": "af3d3eba32846094a3c41ca35c774d483e47dabd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
