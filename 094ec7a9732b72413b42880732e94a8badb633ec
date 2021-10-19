@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9289d846_5556620a",
+        "filename": "go/src/infra/appengine/weetbix/proto/bq/clustered_failure.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-19T02:24:59Z",
+      "side": 1,
+      "message": "Naming nit: ClusteredFailureRow?",
+      "range": {
+        "startLine": 18,
+        "startChar": 8,
+        "endLine": 18,
+        "endChar": 24
+      },
+      "revId": "094ec7a9732b72413b42880732e94a8badb633ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4486eb74_efa7e964",
+        "filename": "go/src/infra/appengine/weetbix/proto/bq/clustered_failure.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-19T02:24:59Z",
+      "side": 1,
+      "message": "nit: latest?",
+      "range": {
+        "startLine": 68,
+        "startChar": 19,
+        "endLine": 68,
+        "endChar": 23
+      },
+      "revId": "094ec7a9732b72413b42880732e94a8badb633ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "842a1ade_1b560491",
+        "filename": "go/src/infra/appengine/weetbix/proto/bq/clustered_failure.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-19T02:24:59Z",
+      "side": 1,
+      "message": "I just had another thought on this field: we should guarantee that all failures have the same level of root invocation: i.e. for both ci and try failures, the root invocation should all be build level. So that when external users use this table, they know which table (bb or cv) they can join.",
+      "range": {
+        "startLine": 159,
+        "startChar": 9,
+        "endLine": 159,
+        "endChar": 27
+      },
+      "revId": "094ec7a9732b72413b42880732e94a8badb633ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c84c341e_4f441829",
+        "filename": "go/src/infra/appengine/weetbix/proto/v1/failure_reason.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-19T02:24:59Z",
+      "side": 1,
+      "message": "Why not put this message in common?",
+      "range": {
+        "startLine": 12,
+        "startChar": 8,
+        "endLine": 12,
+        "endChar": 21
+      },
+      "revId": "094ec7a9732b72413b42880732e94a8badb633ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
