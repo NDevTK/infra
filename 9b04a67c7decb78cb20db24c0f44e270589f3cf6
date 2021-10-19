@@ -3,6 +3,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "771935aa_069d7771",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-10-19T01:38:56Z",
+      "side": 1,
+      "message": "Please reformat your commit message, assuming you\u0027re not intended to make the description in commit message as well. Example:\n\nRecovery: Add two more storage related verifiers\n\n1. cros_has_enough_storage_space\n2. cros_has_enough_inodes",
+      "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a36ac770_2d111a43",
         "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
         "patchSetId": 2
