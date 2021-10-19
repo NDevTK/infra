@@ -295,6 +295,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4d117f3d_ada55d7e",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/algorithms/cluster.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-19T07:10:28Z",
+      "side": 1,
+      "message": "The plan is to file the cluster that is biggest, and use the \"Included with High Priority\" mechanism to filter out impact from suggested clusters for failures which already have bugs filed for them.\n\nRace conditions are possible if multiple clusters are filed before analysis updates, we plan to deal with these as we get to it. Various solutions are possible.",
+      "parentUuid": "81855838_bab1d768",
+      "range": {
+        "startLine": 50,
+        "startChar": 2,
+        "endLine": 50,
+        "endChar": 24
+      },
+      "revId": "ad2945b20056957487670790687da050688b50e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5a53a6af_2041aa36",
