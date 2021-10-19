@@ -52,6 +52,24 @@
       "parentUuid": "14e36358_69216559",
       "revId": "9c8c766731921d1fc71f7866163d0f5209d0449e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b42f8bed_2d1f28a0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2021-10-19T03:14:02Z",
+      "side": 1,
+      "message": "It\u0027s in their ci pipeline (The link in the comment https://github.com/MacPython/pandas-wheels/blob/master/azure/windows.yml). Well, they just hard coded it and depends on the azure vm image they are using.\n\n```\ncp \"C:/Program Files (x86)/Microsoft Visual Studio/2017/Enterprise/VC/Redist/MSVC/14.16.27012/$PYTHON_ARCH/Microsoft.VC141.CRT/msvcp140.dll\" pandas/_libs/window\ncp \"C:/Program Files (x86)/Microsoft Visual Studio/2017/Enterprise/VC/Redist/MSVC/14.16.27012/$PYTHON_ARCH/Microsoft.VC141.CRT/concrt140.dll\" pandas/_libs/window\n```",
+      "parentUuid": "ebb0e827_ac7338b4",
+      "revId": "9c8c766731921d1fc71f7866163d0f5209d0449e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
