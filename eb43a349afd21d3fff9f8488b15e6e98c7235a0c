@@ -16,6 +16,24 @@
       "message": "Do you need to add prod config as well?",
       "revId": "eb43a349afd21d3fff9f8488b15e6e98c7235a0c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9c51629b_c570907b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-19T22:10:10Z",
+      "side": 1,
+      "message": "We will need to create the corresponding config, for dev and prod, but not here.\nThe actual service config lives in another repository.\n\nThe file in here is a config template, which is copied on the machine and used for testing config code locally.",
+      "parentUuid": "381d2356_3956910b",
+      "revId": "eb43a349afd21d3fff9f8488b15e6e98c7235a0c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
