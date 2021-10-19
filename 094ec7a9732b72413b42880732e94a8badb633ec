@@ -26,6 +26,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "651d3399_a0a24d15",
+        "filename": "go/src/infra/appengine/weetbix/proto/bq/clustered_failure.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-10-19T03:22:54Z",
+      "side": 1,
+      "message": "Do bug clusters go in here?  Or is that in a field yet to be added?",
+      "range": {
+        "startLine": 33,
+        "startChar": 9,
+        "endLine": 33,
+        "endChar": 19
+      },
+      "revId": "094ec7a9732b72413b42880732e94a8badb633ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "4486eb74_efa7e964",
         "filename": "go/src/infra/appengine/weetbix/proto/bq/clustered_failure.proto",
         "patchSetId": 6
@@ -42,6 +65,52 @@
         "startChar": 19,
         "endLine": 68,
         "endChar": 23
+      },
+      "revId": "094ec7a9732b72413b42880732e94a8badb633ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1f834822_4264a6aa",
+        "filename": "go/src/infra/appengine/weetbix/proto/bq/clustered_failure.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-10-19T03:22:54Z",
+      "side": 1,
+      "message": "Probably should give some example SQL here.  Or better yet we should define a view so that people (and ourselves) cannot get it wrong.",
+      "range": {
+        "startLine": 68,
+        "startChar": 37,
+        "endLine": 68,
+        "endChar": 41
+      },
+      "revId": "094ec7a9732b72413b42880732e94a8badb633ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "55dc5450_8a697a56",
+        "filename": "go/src/infra/appengine/weetbix/proto/bq/clustered_failure.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-10-19T03:22:54Z",
+      "side": 1,
+      "message": "This is unclear to me.  What scope does the last last updated time have?  When I do a join to a MAX(last updated times), should that last updated time be for the whole table, a single test id, a single cluster id, or the test id/cluster combo?",
+      "range": {
+        "startLine": 67,
+        "startChar": 61,
+        "endLine": 68,
+        "endChar": 42
       },
       "revId": "094ec7a9732b72413b42880732e94a8badb633ec",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
