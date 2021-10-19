@@ -52,20 +52,33 @@ message ClusteredFailureRow {
   // record type was used).
   string test_result_id = 4;
 
-  // Last Updated defines the version of test result-clusterion inclusion
-  // status represented by this row. During its lifetime, due to changing
+  // Last Updated defines the version of test result-cluster inclusion status,
+  // as represented by this row. During its lifetime, due to changing
   // failure association rules and clustering algorithm revisions, the
   // clusters a test result is in may be updated.
   //
   // To achieve deletion in an append-optimised datastore like BigQuery,
   // a new row will be exported for a given (cluster_algorithm, cluster_id,
-  // test_result_system, test_result_id) quadruple with a later last_updated
+  // test_result_system, test_result_id) tuple with a later last_updated
   // time that changes the is_included and/or is_included_with_high_priority
   // fields. A scheduled query periodically purges superseded rows, to
   // avoid excessive growth in the table.
   //
   // Clients should filter the rows they read to ensure they only use the
-  // rows with the last last_updated time.
+  // rows with the lastest last_updated time.
+  //
+  // The following is the definition of a view that correctly uses
+  // the last updated time column to query the table:
+  //   SELECT
+  //     ARRAY_AGG(cf ORDER BY last_updated DESC LIMIT 1)[OFFSET(0)] as row
+  //   FROM ${LUCI_PROJECT}.clustered_failures cf
+  //   -- Optional: Apply restriction on partitions (e.g. last 14 days) as
+  //   -- desired.
+  //   -- WHERE partition_time >= TIMESTAMP_SUB(@as_at_time, INTERVAL 14 DAY)
+  //   GROUP BY cluster_algorithm, cluster_id, test_result_system, test_result_id
+  //
+  // This is based on the query design in [1].
+  // [1]: https://cloud.google.com/blog/products/bigquery/performing-large-scale-mutations-in-bigquery
   google.protobuf.Timestamp last_updated = 5;
 
   // The test result partition time identifies the beginning of the test
