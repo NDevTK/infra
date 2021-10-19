@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "74e4ff66_825f4c86",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-10-19T21:40:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "771935aa_069d7771",
+      "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a36ac770_2d111a43",
@@ -31,6 +49,24 @@
       "writtenOn": "2021-10-18T23:35:29Z",
       "side": 1,
       "message": "Recommend make it return error for consistency, see above examples.",
+      "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "458a9086_6748bf48",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-10-19T21:40:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "a36ac770_2d111a43",
       "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -52,6 +88,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fae7fa15_ce35c532",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/storage_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-10-19T21:40:48Z",
+      "side": 1,
+      "message": "As I include in the config.go file, the input will look something like this when calling this exec function:\n\n\"cros_encrypted_stateful_partition_has_enough_storage_space\":{\n\t\"docs\":[\n\t\t\"check the encrypted stateful partition have enough disk space.\"\n\t\t],\n\t\t\t\t\t \n         \"exec_name\":\"cros_has_enough_storage_space\",\n\t \"exec_extra_args\":[\n\t\t\"/mnt/stateful_partition/encrypted:0.1\"\n\t\t\t    ]\n}\n\nIt still will be the format of \"path:value of space\". I will change it to just [\"path:x\"], sorry for the confusion.",
+      "parentUuid": "35efa728_5a3e6ffd",
+      "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a3b0e1b8_5d3e2d4b",
@@ -65,6 +119,24 @@
       "writtenOn": "2021-10-18T23:35:29Z",
       "side": 1,
       "message": "If we assuming input is only one path, then probably should check length of actionArgs first to avoid panic?",
+      "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f699991a_5a25bbb9",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/storage_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-10-19T21:40:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "a3b0e1b8_5d3e2d4b",
       "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -86,6 +158,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c942b9e7_aeffad1c",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/storage_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-10-19T21:40:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f6cfbf8f_46fae191",
+      "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c04059ef_2a1b0db5",
@@ -99,6 +189,30 @@
       "writtenOn": "2021-10-18T23:35:29Z",
       "side": 1,
       "message": "Same as above.",
+      "range": {
+        "startLine": 83,
+        "startChar": 1,
+        "endLine": 84,
+        "endChar": 94
+      },
+      "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "73fa9a78_428a63cb",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/storage_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-10-19T21:40:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c04059ef_2a1b0db5",
       "range": {
         "startLine": 83,
         "startChar": 1,
@@ -128,6 +242,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e3bee14c_a6cc06d7",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/storage_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-10-19T21:40:48Z",
+      "side": 1,
+      "message": "Already move it to the cros.go. However, since most of the logic is pretty much the same between checking inode value and space value. Isn\u0027t it simpler to put it into one func that does it all? \n\nIf you think this is not clear from the reader perspective, I will change it. Thanks, Garry.",
+      "parentUuid": "91e6378f_77e1cd9a",
+      "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "38d8af3a_3f5b5121",
         "filename": "go/src/infra/cros/recovery/internal/execs/cros/storage_execs.go",
         "patchSetId": 2
@@ -139,6 +271,24 @@
       "writtenOn": "2021-10-18T23:35:29Z",
       "side": 1,
       "message": "Recommend make IsPathExist return error, and \"path: %q not exist\" can come from IsPathExist.",
+      "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6bbc7d48_a083950e",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/storage_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-10-19T21:40:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "38d8af3a_3f5b5121",
       "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -156,6 +306,24 @@
       "writtenOn": "2021-10-18T23:35:29Z",
       "side": 1,
       "message": "Since you\u0027ll need to convert it into GB below anyway, probably not need get in MB block size here, for example\n\ncmd \u003d fmt.Sprintf(`df -P %s | tail -1`, path)\n....\nfreeInBytes, err :\u003d strconv.ParseFloat(outputList[3], 64)\nfreeInGB :\u003d float64(freeInBytes) / math.Pow(2, 20)",
+      "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b98fd3a9_2d430fde",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/storage_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-10-19T21:40:48Z",
+      "side": 1,
+      "message": "As discussed through 1 to 1. Since the current manufacture uses 1000 as the storage calculation base, we should keep with the original logic.",
+      "parentUuid": "6f95e95a_83610ff6",
       "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
