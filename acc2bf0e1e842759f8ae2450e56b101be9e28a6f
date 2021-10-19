@@ -16,6 +16,24 @@
       "message": "Please hold-off reviewing, this CL will be revised based on changes made further down the commit stack.",
       "revId": "acc2bf0e1e842759f8ae2450e56b101be9e28a6f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c6938a57_000683da",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-19T01:27:43Z",
+      "side": 1,
+      "message": "Updated and ready for review again.",
+      "parentUuid": "f13e1b27_af1a34a3",
+      "revId": "acc2bf0e1e842759f8ae2450e56b101be9e28a6f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
