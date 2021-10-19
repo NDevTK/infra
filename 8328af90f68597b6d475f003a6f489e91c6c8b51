@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e3bc681c_ee802d99",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-10-19T21:47:14Z",
+      "side": 1,
+      "message": "Sorry about this, seems like Otabek still prefer me fill in the config.go file for these types of complex verifiers. So this is just to redo the changes in config.go from previous patch.\n\n",
+      "revId": "8328af90f68597b6d475f003a6f489e91c6c8b51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
