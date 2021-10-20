@@ -278,6 +278,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b5cc49b0_f9f36104",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/storage_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-10-20T03:04:19Z",
+      "side": 1,
+      "message": "BTW: it\u0027s also good to have function doc string make it clear that the expected input is in GB.",
+      "parentUuid": "9f5b3190_5c624800",
+      "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "38d8af3a_3f5b5121",
         "filename": "go/src/infra/cros/recovery/internal/execs/cros/storage_execs.go",
         "patchSetId": 2
