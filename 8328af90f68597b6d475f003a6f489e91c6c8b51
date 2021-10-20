@@ -16,6 +16,23 @@
       "message": "Sorry about this, seems like Otabek still prefer me fill in the config.go file for these types of complex verifiers. So this is just to redo the changes in config.go from previous patch.\n\n",
       "revId": "8328af90f68597b6d475f003a6f489e91c6c8b51",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4cff4847_566a9068",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-10-20T02:53:30Z",
+      "side": 1,
+      "message": "SGTM % nit.",
+      "revId": "8328af90f68597b6d475f003a6f489e91c6c8b51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

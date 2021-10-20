@@ -260,6 +260,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "9f5b3190_5c624800",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/storage_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2021-10-20T02:53:30Z",
+      "side": 1,
+      "message": "In general I try to avoid use a string input to control main logic of a function(though in this case they have some similarity). We may introduced some duplicate lines, but in high level it\u0027s more clear for read to see pathHasEnoughDiskSpace(n) compared to pathHasEnoughValue(\"disk space\", n).\n\nThis is a nit, you can make the call.",
+      "parentUuid": "e3bee14c_a6cc06d7",
+      "revId": "9b04a67c7decb78cb20db24c0f44e270589f3cf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "38d8af3a_3f5b5121",
         "filename": "go/src/infra/cros/recovery/internal/execs/cros/storage_execs.go",
         "patchSetId": 2
