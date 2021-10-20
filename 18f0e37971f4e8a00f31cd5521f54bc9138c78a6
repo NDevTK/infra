@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e6f62c50_d96c42b9",
+        "filename": "go/src/infra/appengine/weetbix/configs/services/chops-weetbix-dev/config-template.cfg",
+        "patchSetId": 4
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-20T03:02:03Z",
+      "side": 1,
+      "message": "nit: add the new line back.",
+      "revId": "18f0e37971f4e8a00f31cd5521f54bc9138c78a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
