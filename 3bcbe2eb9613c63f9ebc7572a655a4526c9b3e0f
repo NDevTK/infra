@@ -16,6 +16,69 @@
       "message": "Updated and ready for review again (although mwarton@\u0027s comments not yet addressed.)",
       "revId": "3bcbe2eb9613c63f9ebc7572a655a4526c9b3e0f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "42edfe82_c30ab609",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/ingestion/resultdb.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-20T02:59:57Z",
+      "side": 1,
+      "message": "nit: test run",
+      "range": {
+        "startLine": 34,
+        "startChar": 32,
+        "endLine": 34,
+        "endChar": 36
+      },
+      "revId": "3bcbe2eb9613c63f9ebc7572a655a4526c9b3e0f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "36cafec1_cddb279c",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/ingestion/resultdb.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-20T02:59:57Z",
+      "side": 1,
+      "message": "\".*\" is fine?",
+      "range": {
+        "startLine": 77,
+        "startChar": 54,
+        "endLine": 77,
+        "endChar": 79
+      },
+      "revId": "3bcbe2eb9613c63f9ebc7572a655a4526c9b3e0f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e34ee71f_95ed5c94",
+        "filename": "go/src/infra/appengine/weetbix/pbutil/converters.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-20T02:59:57Z",
+      "side": 1,
+      "message": "WDYT naming this file resultdb.go?",
+      "revId": "3bcbe2eb9613c63f9ebc7572a655a4526c9b3e0f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

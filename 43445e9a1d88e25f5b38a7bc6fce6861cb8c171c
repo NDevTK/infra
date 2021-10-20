@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ca41d64d_af4a8f9e",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/ingestion/ingest.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-20T02:59:57Z",
+      "side": 1,
+      "message": "Nit: remove one space",
+      "range": {
+        "startLine": 79,
+        "startChar": 21,
+        "endLine": 79,
+        "endChar": 23
+      },
+      "revId": "43445e9a1d88e25f5b38a7bc6fce6861cb8c171c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ccccd468_c4a18ce1",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/ingestion/ingest.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-20T02:59:57Z",
+      "side": 1,
+      "message": "Nit: move this out of the func?",
+      "range": {
+        "startLine": 156,
+        "startChar": 1,
+        "endLine": 160,
+        "endChar": 23
+      },
+      "revId": "43445e9a1d88e25f5b38a7bc6fce6861cb8c171c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f9cd69fa_410dba95",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/ingestion/ingest.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-20T02:59:57Z",
+      "side": 1,
+      "message": "nit: inline.",
+      "revId": "43445e9a1d88e25f5b38a7bc6fce6861cb8c171c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b351450b_2c769619",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/ingestion/ingest.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-20T02:59:57Z",
+      "side": 1,
+      "message": "Could you point me to the special handling on this? Looks like the err is failing writeChunk.",
+      "range": {
+        "startLine": 200,
+        "startChar": 37,
+        "endLine": 200,
+        "endChar": 49
+      },
+      "revId": "43445e9a1d88e25f5b38a7bc6fce6861cb8c171c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
