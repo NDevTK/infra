@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "20effd18_c893733e",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clustering_handler.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-20T02:30:40Z",
+      "side": 1,
+      "message": "nit: \"not appears in any bug clusters\"?",
+      "range": {
+        "startLine": 95,
+        "startChar": 28,
+        "endLine": 95,
+        "endChar": 58
+      },
+      "revId": "97a9286da0349349d951415f42921845e82ae0d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

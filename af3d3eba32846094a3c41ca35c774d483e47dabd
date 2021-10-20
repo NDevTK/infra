@@ -132,6 +132,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6e7ad4d5_a485fca0",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clustering_handler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-20T02:30:40Z",
+      "side": 1,
+      "message": "Then how able \"HandleUpdatedClusters\" or \"ExportClusteredFailures\"?\n\nBased on go/go-style/best-practices#function-name-conventions, function name should be verb-like if it does something.",
+      "parentUuid": "cb088a95_06a3f908",
+      "range": {
+        "startLine": 48,
+        "startChar": 28,
+        "endLine": 48,
+        "endChar": 43
+      },
+      "revId": "af3d3eba32846094a3c41ca35c774d483e47dabd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d94d6199_973234e0",
         "filename": "go/src/infra/appengine/weetbix/internal/analysis/clustering_handler.go",
         "patchSetId": 3
