@@ -22,6 +22,30 @@
       },
       "revId": "97a9286da0349349d951415f42921845e82ae0d3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c92c8ae_dc7b906d",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clustering_handler.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-20T03:05:30Z",
+      "side": 1,
+      "message": "Good spot ... changed to \"and if it appears in no bug clusters\".\n\nSometimes when you redraft a comment a few times to explain a tricky concept, it no longer says what you thought it did 😊",
+      "parentUuid": "20effd18_c893733e",
+      "range": {
+        "startLine": 95,
+        "startChar": 28,
+        "endLine": 95,
+        "endChar": 58
+      },
+      "revId": "97a9286da0349349d951415f42921845e82ae0d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

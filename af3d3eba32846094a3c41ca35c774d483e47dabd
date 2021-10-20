@@ -154,6 +154,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "25d564a6_e5bcb614",
+        "filename": "go/src/infra/appengine/weetbix/internal/analysis/clustering_handler.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-20T03:05:30Z",
+      "side": 1,
+      "message": "Good suggestion. Done.",
+      "parentUuid": "6e7ad4d5_a485fca0",
+      "range": {
+        "startLine": 48,
+        "startChar": 28,
+        "endLine": 48,
+        "endChar": 43
+      },
+      "revId": "af3d3eba32846094a3c41ca35c774d483e47dabd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d94d6199_973234e0",
