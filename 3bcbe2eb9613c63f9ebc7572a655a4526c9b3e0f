@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5d70c383_ad0f4d9f",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/ingestion/resultdb.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-20T03:19:07Z",
+      "side": 1,
+      "message": "Done. Also fixed one more reference to task in this file.",
+      "parentUuid": "42edfe82_c30ab609",
+      "range": {
+        "startLine": 34,
+        "startChar": 32,
+        "endLine": 34,
+        "endChar": 36
+      },
+      "revId": "3bcbe2eb9613c63f9ebc7572a655a4526c9b3e0f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "36cafec1_cddb279c",
@@ -64,6 +88,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "79e66e67_3cf1627c",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/ingestion/resultdb.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-20T03:19:07Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "36cafec1_cddb279c",
+      "range": {
+        "startLine": 77,
+        "startChar": 54,
+        "endLine": 77,
+        "endChar": 79
+      },
+      "revId": "3bcbe2eb9613c63f9ebc7572a655a4526c9b3e0f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e34ee71f_95ed5c94",
@@ -77,6 +125,24 @@
       "writtenOn": "2021-10-20T02:59:57Z",
       "side": 1,
       "message": "WDYT naming this file resultdb.go?",
+      "revId": "3bcbe2eb9613c63f9ebc7572a655a4526c9b3e0f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "173aec42_32dc95f3",
+        "filename": "go/src/infra/appengine/weetbix/pbutil/converters.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-20T03:19:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e34ee71f_95ed5c94",
       "revId": "3bcbe2eb9613c63f9ebc7572a655a4526c9b3e0f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

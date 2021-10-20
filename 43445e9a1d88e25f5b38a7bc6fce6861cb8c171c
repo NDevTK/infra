@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "04d7f777_36f0d684",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/ingestion/ingest.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-20T03:19:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ca41d64d_af4a8f9e",
+      "range": {
+        "startLine": 79,
+        "startChar": 21,
+        "endLine": 79,
+        "endChar": 23
+      },
+      "revId": "43445e9a1d88e25f5b38a7bc6fce6861cb8c171c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ccccd468_c4a18ce1",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-10-20T02:59:57Z",
       "side": 1,
       "message": "Nit: move this out of the func?",
+      "range": {
+        "startLine": 156,
+        "startChar": 1,
+        "endLine": 160,
+        "endChar": 23
+      },
+      "revId": "43445e9a1d88e25f5b38a7bc6fce6861cb8c171c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3cd0af1c_5124dca3",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/ingestion/ingest.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-20T03:19:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ccccd468_c4a18ce1",
       "range": {
         "startLine": 156,
         "startChar": 1,
@@ -64,6 +112,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2ce753f1_50ef1302",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/ingestion/ingest.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-20T03:19:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f9cd69fa_410dba95",
+      "revId": "43445e9a1d88e25f5b38a7bc6fce6861cb8c171c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b351450b_2c769619",
@@ -77,6 +143,30 @@
       "writtenOn": "2021-10-20T02:59:57Z",
       "side": 1,
       "message": "Could you point me to the special handling on this? Looks like the err is failing writeChunk.",
+      "range": {
+        "startLine": 200,
+        "startChar": 37,
+        "endLine": 200,
+        "endChar": 49
+      },
+      "revId": "43445e9a1d88e25f5b38a7bc6fce6861cb8c171c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0e72cceb_d56b7e22",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/ingestion/ingest.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-10-20T03:19:07Z",
+      "side": 1,
+      "message": "Removed the comment as I think it created more confusion than it was worth. All I was saying is if two copies of the task were racing, one would fail and that would be fine.\n\nGenerally speaking, there should be no duplicate tasks running; only retries of the original task (which will occur sequential to the original task and hence have no risk of racing).\n\nThe main scenario where races could occur were if the pub/sub receiver was retried and scheduled two (or more) tasks.",
+      "parentUuid": "b351450b_2c769619",
       "range": {
         "startLine": 200,
         "startChar": 37,
