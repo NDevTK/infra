@@ -40,14 +40,14 @@ type storageSMART struct {
 	StorageState StorageState
 }
 
-// ParseSMARTInfo reads the storage info from SMART.
+// ReadSMARTInfo reads the storage info from SMART.
 // The info will be located as collection of lines
-func ParseSMARTInfo(ctx context.Context, rawOutput string) (*storageSMART, error) {
+func ReadSMARTInfo(ctx context.Context, rawOutput string) (*storageSMART, error) {
 	storageType, storageState, err := storageSMARTFieldValue(ctx, rawOutput)
 	return &storageSMART{
 		StorageType:  storageType,
 		StorageState: storageState,
-	}, errors.Annotate(err, "parse smart info").Err()
+	}, errors.Annotate(err, "read smart info").Err()
 }
 
 type storageStateFunc func(context.Context, []string) (StorageState, error)
