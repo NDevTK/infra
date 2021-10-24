@@ -216,6 +216,9 @@ class AnalysisAPITest(wf_testcase.TestCase):
             'failures': failures,
             'first_failed_build': build_122_info,
             'last_passed_build': build_121_info,
+            'properties': {
+                'step_passed_in_last_passed_build': True,
+            },
         },
     }
 
@@ -266,6 +269,9 @@ class AnalysisAPITest(wf_testcase.TestCase):
             'failures': {},
             'first_failed_build': build_122_info,
             'last_passed_build': build_121_info,
+            'properties': {
+                'step_passed_in_last_passed_build': True,
+            },
         },
     }
 
@@ -318,6 +324,9 @@ class AnalysisAPITest(wf_testcase.TestCase):
             'failures': failures,
             'first_failed_build': self.build_info,
             'last_passed_build': self._GetBuildInfo(122),
+            'properties': {
+                'step_passed_in_last_passed_build': True,
+            },
         },
     }
     self.assertEqual(expected_failures, detailed_compile_failures)
@@ -364,6 +373,9 @@ class AnalysisAPITest(wf_testcase.TestCase):
             'failures': failure,
             'first_failed_build': self.build_info,
             'last_passed_build': self._GetBuildInfo(121),
+            'properties': {
+                'step_passed_in_last_passed_build': True,
+            },
         },
     }
     self.assertEqual(expected_failures, detailed_compile_failures)
@@ -557,6 +569,9 @@ class AnalysisAPITest(wf_testcase.TestCase):
             },
             'first_failed_build': self.build_info,
             'last_passed_build': build_121_info,
+            'properties': {
+                'step_passed_in_last_passed_build': True,
+            },
         },
     }
     self.assertEqual(expected_failures, detailed_compile_failures)
