@@ -407,6 +407,7 @@ class AnalysisAPI(object):
     # Updates step level last pass build id.
     step_info[
         'last_passed_build'] = step_info['last_passed_build'] or prev_build_info
+    step_info['step_passed_in_last_passed_build'] = True
 
     # Updates last pass build id for atomic failures.
     for failure in step_info['failures'].itervalues():
