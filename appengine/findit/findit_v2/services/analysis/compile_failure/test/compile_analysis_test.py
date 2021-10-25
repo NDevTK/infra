@@ -63,13 +63,16 @@ class CompileAnalysisTest(wf_testcase.TestCase):
   @mock.patch.object(
       CompileAnalysisAPI, 'GetSuspectedCulprits', return_value=None)
   @mock.patch.object(CompileAnalysisAPI, 'SaveFailures')
+  @mock.patch.object(
+      ChromiumProjectAPI, 'GetCompileFailures', return_value={'compile': {}})
   @mock.patch.object(CompileAnalysisAPI, 'UpdateFailuresWithFirstFailureInfo')
-  @mock.patch.object(ChromiumProjectAPI, 'GetCompileFailures', return_value={})
   @mock.patch.object(CompileAnalysisAPI,
                      'GetFirstFailuresInCurrentBuildWithoutGroup')
   @mock.patch.object(CompileAnalysisAPI, 'GetFirstFailuresInCurrentBuild')
-  def testAnalyzeCompileFailureNotBailoutChromium(
-      self, mock_first_failure_in_build, mock_no_group, *_):
+  def testAnalyzeCompileFailureNotBailoutChromium(self,
+                                                  mock_first_failure_in_build,
+                                                  mock_no_group,
+                                                  mock_update_failures, *_):
     mock_first_failure_in_build.return_value = {
         'failures': {
             self.compile_step_name: {
@@ -84,6 +87,7 @@ class CompileAnalysisTest(wf_testcase.TestCase):
             }
         }
     }
+    mock_update_failures.side_effect = update_failures_side_effect
     self.context.luci_project_name = 'chromium'
     self.assertTrue(
         compile_analysis.AnalyzeCompileFailure(self.context, Build(), []))
@@ -138,13 +142,14 @@ class CompileAnalysisTest(wf_testcase.TestCase):
   @mock.patch.object(CompileAnalysisAPI, 'RerunBasedAnalysis')
   @mock.patch.object(CompileAnalysisAPI, 'SaveFailureAnalysis')
   @mock.patch.object(CompileAnalysisAPI, 'SaveFailures')
+  @mock.patch.object(
+      ChromeOSProjectAPI, 'GetCompileFailures', return_value={'compile': {}})
   @mock.patch.object(CompileAnalysisAPI, 'UpdateFailuresWithFirstFailureInfo')
-  @mock.patch.object(ChromeOSProjectAPI, 'GetCompileFailures', return_value={})
   @mock.patch.object(CompileAnalysisAPI,
                      'GetFirstFailuresInCurrentBuildWithoutGroup')
   @mock.patch.object(CompileAnalysisAPI, 'GetFirstFailuresInCurrentBuild')
   def testAnalyzeCompileFailure(self, mock_first_failure_in_build,
-                                mock_no_group, *_):
+                                mock_no_group, mock_update_failures, *_):
     mock_first_failure_in_build.return_value = {
         'failures': {
             self.compile_step_name: {
@@ -159,7 +164,36 @@ class CompileAnalysisTest(wf_testcase.TestCase):
             }
         }
     }
+    mock_update_failures.side_effect = update_failures_side_effect
     self.assertTrue(
+        compile_analysis.AnalyzeCompileFailure(self.context, Build(), []))
+
+  @mock.patch.object(CompileAnalysisAPI, 'RerunBasedAnalysis')
+  @mock.patch.object(CompileAnalysisAPI, 'SaveFailureAnalysis')
+  @mock.patch.object(CompileAnalysisAPI, 'SaveFailures')
+  @mock.patch.object(CompileAnalysisAPI, 'UpdateFailuresWithFirstFailureInfo')
+  @mock.patch.object(
+      ChromeOSProjectAPI, 'GetCompileFailures', return_value={'compile': {}})
+  @mock.patch.object(CompileAnalysisAPI,
+                     'GetFirstFailuresInCurrentBuildWithoutGroup')
+  @mock.patch.object(CompileAnalysisAPI, 'GetFirstFailuresInCurrentBuild')
+  def testAnalyzeCompileFailureNoPassedStepShouldBailOut(
+      self, mock_first_failure_in_build, mock_no_group, *_):
+    mock_first_failure_in_build.return_value = {
+        'failures': {
+            self.compile_step_name: {
+                'atomic_failures': ['target4', 'target1', 'target2']
+            }
+        }
+    }
+    mock_no_group.return_value = {
+        'failures': {
+            self.compile_step_name: {
+                'atomic_failures': ['target4', 'target1', 'target2']
+            }
+        }
+    }
+    self.assertFalse(
         compile_analysis.AnalyzeCompileFailure(self.context, Build(), []))
 
   @mock.patch.object(ChromeOSProjectAPI, 'GetCompileFailures')
@@ -460,3 +494,7 @@ class CompileAnalysisTest(wf_testcase.TestCase):
     self.assertEqual(0, len(responses[0].culprits))
     self.assertFalse(responses[0].is_finished)
     self.assertTrue(responses[0].is_supported)
+
+
+def update_failures_side_effect(_context, _build, detailed_failures):
+  detailed_failures['compile']['step_passed_in_last_passed_build'] = True
