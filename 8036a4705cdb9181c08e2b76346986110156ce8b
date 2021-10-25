@@ -87,6 +87,24 @@
       "parentUuid": "defd9035_7563d404",
       "revId": "8036a4705cdb9181c08e2b76346986110156ce8b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "55d0d5d3_d4cb3f5f",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/readonly.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 418,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-10-25T16:29:50Z",
+      "side": 1,
+      "message": "Still think we d not need do anything here now as that is single case issue and we will revisit it later next year with proper solution.",
+      "parentUuid": "77fd1fc9_b0bf2d98",
+      "revId": "8036a4705cdb9181c08e2b76346986110156ce8b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
