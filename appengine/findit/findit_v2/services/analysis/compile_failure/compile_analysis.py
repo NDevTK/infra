@@ -64,6 +64,28 @@ def AnalyzeCompileFailure(context, build, compile_steps):
                                                   detailed_compile_failures)
   analysis_api.SaveFailures(context, build, detailed_compile_failures)
 
+  # Only proceed if there is at least one step that actually passed
+  # in the last passed build identified. This is to reduce the false positives.
+  # Note that in detailed_compile_failures[<step_name>]['last_passed_build'],
+  # the step <step_name> did not necessarily pass in last_passed_build,
+  # it only means that the compile target failures were not found in
+  # last_passed_build. Checking step_passed_in_last_passed_build will make
+  # sure the step <step_name> passed in last_passed_build.
+  step_passed = False
+  for step_name, step_info in detailed_compile_failures.iteritems():
+    if step_info.get('step_passed_in_last_passed_build', False):
+      logging.info(
+          'Step %s passed in the last passed build. '
+          'Continuing with the analysis.', step_name)
+      step_passed = True
+      break
+
+  if not step_passed:
+    logging.info(
+        'Could not find past builds where any failed steps (%s) passed. '
+        'Skipping the analysis.', ','.join(detailed_compile_failures.keys()))
+    return False
+
   # Looks for the failures that started to fail in the current build.
   first_failures_in_current_build = (
       analysis_api.GetFirstFailuresInCurrentBuild(build,
