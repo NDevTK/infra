@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "12aa1c52_657d9d9f",
+        "filename": "appengine/findit/findit_v2/services/analysis/analysis_api.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 410,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-10-26T02:46:26Z",
+      "side": 1,
+      "message": "I don\u0027t see this ever set to False.  Are we relying on non-presence for the False case?",
+      "range": {
+        "startLine": 410,
+        "startChar": 52,
+        "endLine": 410,
+        "endChar": 56
+      },
+      "revId": "8c0bbb346477925d8ddc76ea5d2e88bfbd4ef2ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7262c08f_00426e30",
+        "filename": "appengine/findit/findit_v2/services/analysis/compile_failure/compile_analysis.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-10-26T02:46:26Z",
+      "side": 1,
+      "message": "I\u0027m not quite following this comment.  Should this be build?",
+      "range": {
+        "startLine": 69,
+        "startChar": 40,
+        "endLine": 69,
+        "endChar": 44
+      },
+      "revId": "8c0bbb346477925d8ddc76ea5d2e88bfbd4ef2ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ff96579d_81b164fc",
+        "filename": "appengine/findit/findit_v2/services/analysis/compile_failure/compile_analysis.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-10-26T02:46:26Z",
+      "side": 1,
+      "message": "you are not checking step_name in the condition, so this is any step passed in the previous build, regardless of which step it was?  Don\u0027t we want to limit it to the same step in the last build, or am I misunderstanding?",
+      "range": {
+        "startLine": 72,
+        "startChar": 6,
+        "endLine": 72,
+        "endChar": 15
+      },
+      "revId": "8c0bbb346477925d8ddc76ea5d2e88bfbd4ef2ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3281e091_2a0cc0e6",
+        "filename": "appengine/findit/findit_v2/services/analysis/compile_failure/compile_analysis.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-10-26T02:46:26Z",
+      "side": 1,
+      "message": "\"in last build\"\n\nAlso, are there any helpful details you can give (like step_name in the message above)?",
+      "range": {
+        "startLine": 81,
+        "startChar": 18,
+        "endLine": 81,
+        "endChar": 48
+      },
+      "revId": "8c0bbb346477925d8ddc76ea5d2e88bfbd4ef2ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
