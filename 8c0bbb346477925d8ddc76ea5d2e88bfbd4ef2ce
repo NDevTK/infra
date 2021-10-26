@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5339f447_f5573da2",
+        "filename": "appengine/findit/findit_v2/services/analysis/analysis_api.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 410,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2021-10-26T03:58:48Z",
+      "side": 1,
+      "message": "Yes, this function is only called when the previous step/build was successful.",
+      "parentUuid": "12aa1c52_657d9d9f",
+      "range": {
+        "startLine": 410,
+        "startChar": 52,
+        "endLine": 410,
+        "endChar": 56
+      },
+      "revId": "8c0bbb346477925d8ddc76ea5d2e88bfbd4ef2ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7262c08f_00426e30",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-10-26T02:46:26Z",
       "side": 1,
       "message": "I\u0027m not quite following this comment.  Should this be build?",
+      "range": {
+        "startLine": 69,
+        "startChar": 40,
+        "endLine": 69,
+        "endChar": 44
+      },
+      "revId": "8c0bbb346477925d8ddc76ea5d2e88bfbd4ef2ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "33cf40a7_e834f0a7",
+        "filename": "appengine/findit/findit_v2/services/analysis/compile_failure/compile_analysis.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2021-10-26T03:58:48Z",
+      "side": 1,
+      "message": "I actually want to refer to the detailed_compile_failures[step][last_passed_build], like\n\nhttps://source.corp.google.com/chromium_infra/appengine/findit/findit_v2/services/analysis/analysis_api.py;l\u003d458-484\n\nI will change the comment to clarify.",
+      "parentUuid": "7262c08f_00426e30",
       "range": {
         "startLine": 69,
         "startChar": 40,
@@ -70,6 +118,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4b4f6618_8d3ff3ba",
+        "filename": "appengine/findit/findit_v2/services/analysis/compile_failure/compile_analysis.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2021-10-26T03:58:48Z",
+      "side": 1,
+      "message": "It is a bit confusing, but the detailed_compile_failures is a dictionary that contains all step failures in the last build:\n\nhttps://source.corp.google.com/chromium_infra/appengine/findit/findit_v2/services/analysis/analysis_api.py;l\u003d458-484\n\nSo this for loop is actually only consider the failed step. And the if condition in line 73 makes sure that that we found a build that the step passed.",
+      "parentUuid": "ff96579d_81b164fc",
+      "range": {
+        "startLine": 72,
+        "startChar": 6,
+        "endLine": 72,
+        "endChar": 15
+      },
+      "revId": "8c0bbb346477925d8ddc76ea5d2e88bfbd4ef2ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3281e091_2a0cc0e6",
@@ -83,6 +155,30 @@
       "writtenOn": "2021-10-26T02:46:26Z",
       "side": 1,
       "message": "\"in last build\"\n\nAlso, are there any helpful details you can give (like step_name in the message above)?",
+      "range": {
+        "startLine": 81,
+        "startChar": 18,
+        "endLine": 81,
+        "endChar": 48
+      },
+      "revId": "8c0bbb346477925d8ddc76ea5d2e88bfbd4ef2ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9de2591d_c6538816",
+        "filename": "appengine/findit/findit_v2/services/analysis/compile_failure/compile_analysis.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2021-10-26T03:58:48Z",
+      "side": 1,
+      "message": "I changed the message to make it clearer.",
+      "parentUuid": "3281e091_2a0cc0e6",
       "range": {
         "startLine": 81,
         "startChar": 18,
