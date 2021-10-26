@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b8a5606e_192d12c1",
+        "filename": "appengine/findit/findit_v2/services/analysis/analysis_api.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 570,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-26T04:06:04Z",
+      "side": 1,
+      "message": "I think the right work around is to comment out this section: i.e. we don\u0027t drill into each individual failures.\n\nSo that it will go all the way back until it finds a passing step or reaching MAX_BUILDS_TO_CHECK",
+      "range": {
+        "startLine": 537,
+        "startChar": 8,
+        "endLine": 570,
+        "endChar": 0
+      },
+      "revId": "421a6f2a00c65315be50fe455b9ca2904d1d710e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
