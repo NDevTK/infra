@@ -22,6 +22,30 @@
       },
       "revId": "421a6f2a00c65315be50fe455b9ca2904d1d710e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9de28591_fc4240fa",
+        "filename": "appengine/findit/findit_v2/services/analysis/analysis_api.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 570,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2021-10-26T06:05:39Z",
+      "side": 1,
+      "message": "I think like your approach better, it will make sure that we will not prematurely stop finding for builds when the step is not green yet.\n\nBut I think commenting out all those code will lead to the problem that the first_failed_build will not be updated appropriately (i.e. v2 will try to bisect from the last green to the current failed build, not the first failed). I think we still need to keep part of the code to update the first failed build. Will send an updated CL later.",
+      "parentUuid": "b8a5606e_192d12c1",
+      "range": {
+        "startLine": 537,
+        "startChar": 8,
+        "endLine": 570,
+        "endChar": 0
+      },
+      "revId": "421a6f2a00c65315be50fe455b9ca2904d1d710e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
