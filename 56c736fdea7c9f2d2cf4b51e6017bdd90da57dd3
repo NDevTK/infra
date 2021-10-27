@@ -1,0 +1,107 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "21b57ba0_9bb15249",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/bluetooth_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-10-27T23:39:46Z",
+      "side": 1,
+      "message": "nit: the string is long or we need split it to show in review or just keep it as single and long",
+      "range": {
+        "startLine": 27,
+        "startChar": 25,
+        "endLine": 28,
+        "endChar": 84
+      },
+      "revId": "56c736fdea7c9f2d2cf4b51e6017bdd90da57dd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2f9b92ac_acdb321e",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/bluetooth_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-10-27T23:39:46Z",
+      "side": 1,
+      "message": "if we do not pass runner you can useAccess interface here. so you can determine if exit-code is 127 or something like that? just idea.",
+      "range": {
+        "startLine": 35,
+        "startChar": 1,
+        "endLine": 36,
+        "endChar": 45
+      },
+      "revId": "56c736fdea7c9f2d2cf4b51e6017bdd90da57dd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9586ea28_2cc56abc",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/bluetooth_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-10-27T23:39:46Z",
+      "side": 1,
+      "message": "please place example of the result we receiving after running command",
+      "revId": "56c736fdea7c9f2d2cf4b51e6017bdd90da57dd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c5706d13_1ff38da9",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/bluetooth_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-10-27T23:39:46Z",
+      "side": 1,
+      "message": "i think the condition is revert https://source.corp.google.com/chromeos_public/src/third_party/labpack/files/site_utils/admin_audit/bluetooth_validator.py;l\u003d86",
+      "range": {
+        "startLine": 48,
+        "startChar": 4,
+        "endLine": 48,
+        "endChar": 32
+      },
+      "revId": "56c736fdea7c9f2d2cf4b51e6017bdd90da57dd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "101e6082_76b06ec0",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/bluetooth_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-10-27T23:39:46Z",
+      "side": 1,
+      "message": "i think we have oethr state to set https://source.corp.google.com/chromeos_public/src/third_party/labpack/files/site_utils/admin_audit/bluetooth_validator.py;l\u003d89",
+      "revId": "56c736fdea7c9f2d2cf4b51e6017bdd90da57dd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
