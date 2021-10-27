@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "510e7081_bf6db710",
+        "filename": "appengine/findit/findit_v2/services/analysis/analysis_api.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 552,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-10-27T03:06:32Z",
+      "side": 1,
+      "message": "To double check: in the patch, it\u0027s possible that there\u0027s a gap between last_pass and first failed.\n\nFor example: b1 has a successful compile step, b2 ~ b9 all have failed compile target [t1, t2]; b10 has failed compile target [t3]. The when Findit analyzes b1Ω, it\u0027ll see that  t3\u0027s first_failed_build is b10, and last_pass is b1. \n\nI don\u0027t remember the detailed logic, but just want to make sure it\u0027ll not be a problem.",
+      "range": {
+        "startLine": 551,
+        "startChar": 0,
+        "endLine": 552,
+        "endChar": 61
+      },
+      "revId": "16662676c6dad21e77f857b4932bdf20d3d61c07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
