@@ -22,6 +22,30 @@
       },
       "revId": "16662676c6dad21e77f857b4932bdf20d3d61c07",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4b2c2752_7adcf7d3",
+        "filename": "appengine/findit/findit_v2/services/analysis/analysis_api.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 552,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2021-10-27T03:24:42Z",
+      "side": 1,
+      "message": "Yup, I also noticed this subtle change of behavior when fixing the broken tests in the file analysis_api_test (changing self.build_info -\u003e  build_121_info).\n\nI think this is OK because there is no guarantee that the compile target [t1,t2] actually succeeded in b2~b9, what we know is just that there is no information of [t1, t2] in b2-\u003eb9. For example, in https://docs.google.com/document/d/12p-JSWOtRV1-8liHYweZf8buJoQpvbl3gnfyZXAMP5o, Case 1, although some compile target failures were not found in a build, they actually did happen in previous builds. So I think in this case, it is safer to take the range from b1-\u003eb10.",
+      "parentUuid": "510e7081_bf6db710",
+      "range": {
+        "startLine": 551,
+        "startChar": 0,
+        "endLine": 552,
+        "endChar": 61
+      },
+      "revId": "16662676c6dad21e77f857b4932bdf20d3d61c07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
