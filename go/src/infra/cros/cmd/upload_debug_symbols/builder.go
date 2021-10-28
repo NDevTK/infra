@@ -15,22 +15,22 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/auth/client/authcli"
+	lgs "go.chromium.org/luci/common/gcloud/gs"
 	"infra/cros/internal/gs"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
-
-	"github.com/maruel/subcommands"
-	"go.chromium.org/luci/auth"
-	"go.chromium.org/luci/auth/client/authcli"
-	lgs "go.chromium.org/luci/common/gcloud/gs"
 )
 
 const (
@@ -108,7 +108,7 @@ var (
 // retrieveApiKey fetches the crash API key stored in the local keystore.
 func retrieveApiKey() error {
 	// TODO(juahurta): Locate and verify the key wanted on the bot.
-	apiKey = "HARDCODED KEY"
+	apiKey = "HIDDEN KEY"
 	return nil
 }
 
@@ -213,13 +213,13 @@ func completeUpload(uploadKey string, task taskConfig) (int, error) {
 	}
 	defer response.Body.Close()
 
-	var uploadStatus string
+	var uploadStatus completeUploadResponse
 	err = json.Unmarshal(responseBody, &uploadStatus)
 	if err != nil {
 		return -1, err
 	}
 
-	if uploadStatus == "RESULT_UNSPECIFIED" {
+	if uploadStatus.Result == "RESULT_UNSPECIFIED" {
 		return response.StatusCode, fmt.Errorf("upload could not be completed")
 	}
 
@@ -230,8 +230,7 @@ func completeUpload(uploadKey string, task taskConfig) (int, error) {
 // Making this function a variable will allow us to mock it easier.
 func upload(task *taskConfig) bool {
 	message := bytes.Buffer{}
-	uploadLogger := log.New(&message, "", logFlags)
-	uploadLogger.Printf("Uploading %s\n", task.debugFile)
+	uploadLogger := log.New(&message, fmt.Sprintf("Uploading %s\n", task.debugFile), logFlags)
 	if task.dryRun {
 		LogOut("Would have uploaded %s to crash", task.debugFile)
 		return true
@@ -312,19 +311,38 @@ func generateClient(ctx context.Context, authOpts auth.Options) (*gs.ProdClient,
 	return gsClient, err
 }
 
-// downloadTgz will download the tarball from google storage which contains all
+// downloadZippedSymbols will download the tarball from google storage which contains all
 // of the symbol files to be uploaded. Once downloaded it will return the local
 // filepath to tarball.
-func downloadTgz(client gs.Client, gsPath, tgzPath string) error {
-	LogOut("Downloading compressed symbols from %s and storing in %s\n", gsPath, tgzPath)
-	return client.Download(lgs.Path(gsPath), tgzPath)
+func downloadZippedSymbols(client gs.Client, gsPath, workDir string) (string, error) {
+	var destPath string
+
+	if strings.HasSuffix(gsPath, ".tgz") {
+		destPath = filepath.Join(workDir, "debug.tgz")
+	} else {
+		destPath = filepath.Join(workDir, "debug.tar.xz")
+	}
+
+	LogOut("Downloading compressed symbols from %s and storing in %s\n", gsPath, destPath)
+	return destPath, client.Download(lgs.Path(gsPath), destPath)
 }
 
-// unzipTgz will take the local path of the fetched tarball and then unpack it.
+// unzipSymbols will take the local path of the fetched tarball and then unpack it.
 // It will then return a list of file paths pointing to the unpacked symbol
 // files.
-func unzipTgz(inputPath, outputPath string) error {
-	LogOut("Uncompressing files from %s and storing %s\n", inputPath, outputPath)
+func unzipSymbols(inputPath, outputPath string) error {
+	LogOut("Decompressing files from %s and storing %s\n", inputPath, outputPath)
+
+	if strings.HasSuffix(inputPath, ".tar.xz") {
+		// use tar CLI to extract xz tools
+		cmd := exec.Command("unxz", inputPath)
+		err := cmd.Run()
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
 	srcReader, err := os.Open(inputPath)
 	if err != nil {
 		return err
@@ -479,6 +497,7 @@ func filterTasksAlreadyUploaded(tasks []taskConfig, dryRun bool) ([]taskConfig, 
 	}
 	postBody, err := json.Marshal(symbols)
 	if err != nil {
+		LogErr(err.Error())
 		return nil, err
 	}
 
@@ -487,6 +506,9 @@ func filterTasksAlreadyUploaded(tasks []taskConfig, dryRun bool) ([]taskConfig, 
 	response, err := httpRequest(fmt.Sprintf(crashUrl+"/symbols:checkStatuses?key=%s", apiKey), http.MethodPost, bytes.NewReader(postBody), nil)
 	if err != nil {
 		return nil, err
+	}
+	if response.StatusCode > 399 {
+		return tasks, fmt.Errorf("error: request to %s failed with status %d", crashUrl, response.StatusCode)
 	}
 
 	// Parse the response from the API.
@@ -613,8 +635,8 @@ func (b *uploadDebugSymbols) validate() error {
 	if !strings.HasPrefix(b.gsPath, "gs://") {
 		return fmt.Errorf("error: -gs-path must point to a google storage location. E.g. gs://some-bucket/debug.tgz")
 	}
-	if !strings.HasSuffix(b.gsPath, "debug.tgz") {
-		return fmt.Errorf("error: -gs-path must point to a debug.tgz file. %s", b.gsPath)
+	if !(strings.HasSuffix(b.gsPath, ".tgz") || strings.HasSuffix(b.gsPath, ".tar.xz")) {
+		return fmt.Errorf("error: -gs-path must point to a compressed tar file. %s", b.gsPath)
 	}
 	if b.workerCount <= 0 {
 		return fmt.Errorf("error: -worker-count value must be greater than zero")
@@ -676,17 +698,15 @@ func (b *uploadDebugSymbols) Run(a subcommands.Application, args []string, env s
 		return 1
 	}
 
-	tgzPath := filepath.Join(workDir, "debug.tgz")
 	tarbalPath := filepath.Join(workDir, "debug.tar")
 	defer os.RemoveAll(workDir)
 
-	err = downloadTgz(client, b.gsPath, tgzPath)
+	zippedSymbolsPath, err := downloadZippedSymbols(client, b.gsPath, workDir)
 	if err != nil {
 		LogErr(err.Error())
 		return 1
 	}
-
-	err = unzipTgz(tgzPath, tarbalPath)
+	err = unzipSymbols(zippedSymbolsPath, tarbalPath)
 	if err != nil {
 		LogErr(err.Error())
 		return 1
