@@ -148,6 +148,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6bcf0e83_d837d993",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/bluetooth_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-10-28T22:50:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "915c4ca7_1cef8f04",
+      "revId": "56c736fdea7c9f2d2cf4b51e6017bdd90da57dd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c5706d13_1ff38da9",
@@ -209,6 +227,30 @@
       "side": 1,
       "message": "not yet",
       "parentUuid": "6613d4bc_fe36be7c",
+      "range": {
+        "startLine": 48,
+        "startChar": 4,
+        "endLine": 48,
+        "endChar": 32
+      },
+      "revId": "56c736fdea7c9f2d2cf4b51e6017bdd90da57dd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "16fe5187_54f9a61f",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/bluetooth_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-10-28T22:50:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a477290_bf4c8055",
       "range": {
         "startLine": 48,
         "startChar": 4,
