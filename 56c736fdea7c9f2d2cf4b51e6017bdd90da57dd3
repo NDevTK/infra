@@ -97,6 +97,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1ba30131_ba8fb058",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/bluetooth_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-10-28T23:50:10Z",
+      "side": 1,
+      "message": "I see. What states are you proposing to use if the exit code is not zero? \n\nFrom the logic in LABPACK, all we care about is whether exit code is zero, or otherwise. We are not setting a different state there based on the value of non-zero exit code. \n\nYou can check with Otabek if he means the exit code to just be printed to logs, instead of being used for setting a different state. If so, that is happening within the error returned from runner here: \"https://source.corp.google.com/chromium_infra/go/src/infra/cros/recovery/internal/execs/execs.go;l\u003d82\"\n\nSo if just displaying the exit code is the goal, perhaps it will suffice if you just print this error to logs, because it will contain the non-zero exit code. \n\nI think it is always a good idea to print any errors since it will later help debug any execution log. In the current code, if err is not nil, we are not doing that. Let me point that out in its own comment below.",
+      "parentUuid": "47e18e50_cda03db7",
+      "range": {
+        "startLine": 35,
+        "startChar": 1,
+        "endLine": 36,
+        "endChar": 45
+      },
+      "revId": "56c736fdea7c9f2d2cf4b51e6017bdd90da57dd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9586ea28_2cc56abc",
         "filename": "go/src/infra/cros/recovery/internal/execs/cros/bluetooth_execs.go",
         "patchSetId": 1

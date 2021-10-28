@@ -16,6 +16,40 @@
       "message": "Please wait Vineet.",
       "revId": "41ba5037987cb4be8d6b6cf4b8cd9e27368dd266",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aae334a7_885a2bf0",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/bluetooth_execs.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-10-28T23:50:10Z",
+      "side": 1,
+      "message": "In servo verifiers, we return an error from the exec-functions if any error was found and handled during the verification. E.g. https://source.corp.google.com/chromium_infra/go/src/infra/cros/recovery/internal/execs/servo/servo_execs.go;l\u003d158\n\nSo, basically, a nil error returned means that the verification succeeded and everything is good, the hardware state is \u0027normal\u0027. \n\nIn DUT verifiers, is that not the case? In the scenario on this line, shouldn\u0027t we return an error from this exec function too? Perhaps Otabek can share his thoughts.",
+      "revId": "41ba5037987cb4be8d6b6cf4b8cd9e27368dd266",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2791dd3a_834965b1",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/bluetooth_execs.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-10-28T23:50:10Z",
+      "side": 1,
+      "message": "Same, if the error is not-nil, should this exec-function return its own error value too?",
+      "revId": "41ba5037987cb4be8d6b6cf4b8cd9e27368dd266",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
