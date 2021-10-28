@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "697efa30_2f193e2e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-10-28T22:43:06Z",
+      "side": 1,
+      "message": "Hi Otabek and Vineet,\n\n\nVineet, Otabek would like me to ask you for review as you understand the audit_bluetooth logic better.\n\nThanks,\nDavid",
+      "revId": "49d999177a6c311647facd5da185e179103dc513",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
