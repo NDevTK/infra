@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5b9ab5a5_fe701187",
+        "filename": "go/src/infra/cros/karte/internal/errors/errors.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-10-29T23:34:49Z",
+      "side": 1,
+      "message": "Should avoid referencing the LUCI annotator if the point of this package is to abstract away the underlying impl.",
+      "range": {
+        "startLine": 13,
+        "startChar": 14,
+        "endLine": 13,
+        "endChar": 57
+      },
+      "revId": "cd8fe0359c3be8b83a695fbd75ad90bb16a602b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "84c770ab_6bdd6def",
+        "filename": "go/src/infra/cros/karte/internal/errors/errors.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-10-29T23:34:49Z",
+      "side": 1,
+      "message": "This is still being leaked?",
+      "range": {
+        "startLine": 25,
+        "startChar": 61,
+        "endLine": 25,
+        "endChar": 78
+      },
+      "revId": "cd8fe0359c3be8b83a695fbd75ad90bb16a602b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
