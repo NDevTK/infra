@@ -10,7 +10,6 @@ import (
 	"regexp"
 
 	"infra/appengine/weetbix/internal/bugs"
-	"infra/appengine/weetbix/internal/clustering"
 	"infra/appengine/weetbix/internal/config"
 	mpb "infra/monorailv2/api/v3/api_proto"
 
@@ -43,8 +42,8 @@ const monorailPageSize = 100
 // for clusters.
 type BugManager struct {
 	client *Client
-	// The snapshot of monorail configuration to use for each project.
-	monorailCfgs map[string]*config.MonorailProject
+	// The snapshot of monorail configuration to use for the project.
+	monorailCfg *config.MonorailProject
 	// Simulate, if set, tells BugManager not to make mutating changes
 	// to monorail but only log the changes it would make. Must be set
 	// when running locally as RPCs made from developer systems will
@@ -55,22 +54,18 @@ type BugManager struct {
 
 // NewBugManager initialises a new bug manager, using the specified
 // monorail client.
-func NewBugManager(client *Client, monorailCfgs map[string]*config.MonorailProject) *BugManager {
+func NewBugManager(client *Client, monorailCfg *config.MonorailProject) *BugManager {
 	return &BugManager{
-		client:       client,
-		monorailCfgs: monorailCfgs,
-		Simulate:     false,
+		client:      client,
+		monorailCfg: monorailCfg,
+		Simulate:    false,
 	}
 }
 
 // Create creates a new bug for the given cluster, returning its name, or
 // any encountered error.
-func (m *BugManager) Create(ctx context.Context, cluster *clustering.Cluster) (string, error) {
-	monorailCfg, ok := m.monorailCfgs[cluster.Project]
-	if !ok {
-		return "", fmt.Errorf("no monorail configuration exists for project %q", cluster.Project)
-	}
-	g, err := NewGenerator(cluster, monorailCfg)
+func (m *BugManager) Create(ctx context.Context, cluster *bugs.Cluster) (string, error) {
+	g, err := NewGenerator(cluster, m.monorailCfg)
 	if err != nil {
 		return "", errors.Annotate(err, "create issue generator").Err()
 	}
@@ -92,23 +87,22 @@ func (m *BugManager) Create(ctx context.Context, cluster *clustering.Cluster) (s
 }
 
 type clusterIssue struct {
-	cluster *clustering.Cluster
-	issue   *mpb.Issue
+	impact *bugs.ClusterImpact
+	issue  *mpb.Issue
 }
 
 // Update updates the specified list of bugs.
-func (m *BugManager) Update(ctx context.Context, bugs []*bugs.BugToUpdate) error {
+func (m *BugManager) Update(ctx context.Context, bugsToUpdate []*bugs.BugToUpdate) error {
 	// Fetch issues for bugs to update.
-	cis, err := m.fetchIssues(ctx, bugs)
+	cis, err := m.fetchIssues(ctx, bugsToUpdate)
 	if err != nil {
 		return err
 	}
 	for _, ci := range cis {
-		monorailCfg, ok := m.monorailCfgs[ci.cluster.Project]
-		if !ok {
-			return fmt.Errorf("no monorail configuration exists for project %q", ci.cluster.Project)
+		cluster := &bugs.Cluster{
+			Impact: ci.impact,
 		}
-		g, err := NewGenerator(ci.cluster, monorailCfg)
+		g, err := NewGenerator(cluster, m.monorailCfg)
 		if err != nil {
 			return errors.Annotate(err, "create issue generator").Err()
 		}
@@ -159,8 +153,8 @@ func (m *BugManager) fetchIssues(ctx context.Context, updates []*bugs.BugToUpdat
 		}
 		for i, upd := range updatesPage {
 			clusterIssues = append(clusterIssues, &clusterIssue{
-				cluster: upd.Cluster,
-				issue:   issues[i],
+				impact: upd.Impact,
+				issue:  issues[i],
 			})
 		}
 	}

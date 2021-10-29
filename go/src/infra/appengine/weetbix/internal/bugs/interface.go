@@ -6,13 +6,48 @@ package bugs
 
 import (
 	"errors"
-	"infra/appengine/weetbix/internal/clustering"
+	"infra/appengine/weetbix/internal/analysis"
 )
 
 type BugToUpdate struct {
 	BugName string
-	// Current cluster statistics for the given bug.
-	Cluster *clustering.Cluster
+	// Cluster details for the given bug.
+	Impact *ClusterImpact
 }
 
 var ErrCreateSimulated = errors.New("CreateNew did not create a bug as the bug manager is in simulation mode")
+
+// Cluster captures key details of a cluster and its impact,
+// as needed for filing new bugs.
+type Cluster struct {
+	// DisplayName is a human-readable display name for the cluster,
+	// for use in bug titles. Only required when creating new bugs.
+	DisplayName string
+	// Description is a detailed description of the cluster, to appear
+	// in the bug body. Only required when creating new bugs.
+	Description string
+	// Impact describes the impact of cluster.
+	Impact *ClusterImpact
+}
+
+// ClusterImpact captures details of a cluster's impact, as needed
+// to control the priority and verified status of bugs.
+type ClusterImpact struct {
+	Failures1d int64
+	Failures3d int64
+	Failures7d int64
+}
+
+func ExtractResidualImpact(cs *analysis.ClusterSummary) *ClusterImpact {
+	return &ClusterImpact{
+		Failures1d: cs.Failures1d.Residual,
+		Failures3d: cs.Failures3d.Residual,
+		Failures7d: cs.Failures7d.Residual,
+	}
+}
+
+func SetResidualImpact(cs *analysis.ClusterSummary, impact *ClusterImpact) {
+	cs.Failures1d.Residual = impact.Failures1d
+	cs.Failures3d.Residual = impact.Failures3d
+	cs.Failures7d.Residual = impact.Failures7d
+}

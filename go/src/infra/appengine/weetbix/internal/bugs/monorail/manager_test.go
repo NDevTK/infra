@@ -7,21 +7,18 @@ package monorail
 import (
 	"context"
 	"infra/appengine/weetbix/internal/bugs"
-	"infra/appengine/weetbix/internal/clustering"
 	mpb "infra/monorailv2/api/v3/api_proto"
 	"testing"
 
-	"cloud.google.com/go/bigquery"
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"google.golang.org/genproto/protobuf/field_mask"
 )
 
-func NewCluster() *clustering.Cluster {
-	cluster := &clustering.Cluster{
-		Project:              "chromium",
-		ClusterID:            "ClusterID",
-		ExampleFailureReason: bigquery.NullString{StringVal: "Some failure reason.", Valid: true},
+func NewCluster() *bugs.Cluster {
+	cluster := &bugs.Cluster{
+		DisplayName: "ClusterID",
+		Description: "Tests are failing with reason: Some failure reason.",
 	}
 	return cluster
 }
@@ -43,14 +40,14 @@ func TestManager(t *testing.T) {
 
 		Convey("Create", func() {
 			c := NewCluster()
-			SetChromiumHighP2Impact(c)
+			c.Impact = ChromiumHighP2Impact()
 			Convey("With reason-based failure cluster", func() {
 				reason := `Expected equality of these values:
 					"Expected_Value"
 					my_expr.evaluate(123)
 						Which is: "Unexpected_Value"`
-				c.ClusterID = "ClusterIDShouldNotAppearInOutput"
-				c.ExampleFailureReason = bigquery.NullString{StringVal: reason, Valid: true}
+				c.DisplayName = reason
+				c.Description = "A cluster of failures has been found with reason: " + reason
 
 				bug, err := bm.Create(ctx, c)
 				So(err, ShouldBeNil)
@@ -88,8 +85,8 @@ func TestManager(t *testing.T) {
 				So(issue.NotifyCount, ShouldEqual, 1)
 			})
 			Convey("With test name failure cluster", func() {
-				c.ClusterID = "ninja://:blink_web_tests/media/my-suite/my-test.html"
-				c.ExampleFailureReason = bigquery.NullString{Valid: false}
+				c.DisplayName = "ninja://:blink_web_tests/media/my-suite/my-test.html"
+				c.Description = "A test is failing " + c.DisplayName
 
 				bug, err := bm.Create(ctx, c)
 				So(err, ShouldBeNil)
@@ -131,63 +128,21 @@ func TestManager(t *testing.T) {
 				So(err, ShouldEqual, bugs.ErrCreateSimulated)
 				So(len(f.Issues), ShouldEqual, 0)
 			})
-			Convey("Filed bug is below keep-open thresholds", func() {
-				// This scenario is indicative of poor configuration.
-				// The objective is simply to ensure the system handles
-				// this case gracefully.
-				c.ClusterID = "ninja://:blink_web_tests/media/my-suite/my-test.html"
-				c.ExampleFailureReason = bigquery.NullString{Valid: false}
-				SetChromiumClosureImpact(c)
-
-				bug, err := bm.Create(ctx, c)
-				So(err, ShouldBeNil)
-				So(bug, ShouldEqual, "chromium/100")
-				So(len(f.Issues), ShouldEqual, 1)
-				issue := f.Issues[0]
-
-				So(issue.Issue, ShouldResembleProto, &mpb.Issue{
-					Name:     "projects/chromium/issues/100",
-					Summary:  "Tests are failing: ninja://:blink_web_tests/media/my-suite/my-test.html",
-					Reporter: AutomationUsers[0],
-					State:    mpb.IssueContentState_ACTIVE,
-					Status:   &mpb.Issue_StatusValue{Status: "Untriaged"},
-					FieldValues: []*mpb.FieldValue{
-						{
-							// Type field.
-							Field: "projects/chromium/fieldDefs/10",
-							Value: "Bug",
-						},
-						{
-							// Priority field.
-							Field: "projects/chromium/fieldDefs/11",
-							Value: "3",
-						},
-					},
-					Labels: []*mpb.Issue_LabelValue{{
-						Label: "Restrict-View-Google",
-					}, {
-						Label: "Weetbix-Managed",
-					}},
-				})
-				So(len(issue.Comments), ShouldEqual, 1)
-				So(issue.NotifyCount, ShouldEqual, 1)
-			})
 		})
 		Convey("Update", func() {
 			c := NewCluster()
-			SetChromiumP1Impact(c)
+			c.Impact = ChromiumP1Impact()
 			bug, err := bm.Create(ctx, c)
 			So(err, ShouldBeNil)
 			So(bug, ShouldEqual, "chromium/100")
 			So(len(f.Issues), ShouldEqual, 1)
 			So(ChromiumTestIssuePriority(f.Issues[0].Issue), ShouldEqual, "1")
 
-			bugsToUpdate := []*bugs.BugToUpdate{
-				{
-					BugName: bug,
-					Cluster: c,
-				},
+			bugToUpdate := &bugs.BugToUpdate{
+				BugName: bug,
+				Impact:  c.Impact,
 			}
+			bugsToUpdate := []*bugs.BugToUpdate{bugToUpdate}
 			updateDoesNothing := func() {
 				originalIssues := CopyIssuesStore(f)
 				err := bm.Update(ctx, bugsToUpdate)
@@ -205,20 +160,14 @@ func TestManager(t *testing.T) {
 				updateDoesNothing()
 			})
 			Convey("If impact changed", func() {
-				SetChromiumP3Impact(c)
-				bugsToUpdate := []*bugs.BugToUpdate{
-					{
-						BugName: bug,
-						Cluster: c,
-					},
-				}
+				bugToUpdate.Impact = ChromiumP3Impact()
 				Convey("Does not reduce priority if impact within hysteresis range", func() {
-					SetChromiumHighP2Impact(c)
+					c.Impact = ChromiumHighP2Impact()
 
 					updateDoesNothing()
 				})
 				Convey("Reduces priority in response to reduced impact", func() {
-					SetChromiumP2Impact(c)
+					bugToUpdate.Impact = ChromiumP2Impact()
 					originalNotifyCount := f.Issues[0].NotifyCount
 					err := bm.Update(ctx, bugsToUpdate)
 					So(err, ShouldBeNil)
@@ -231,12 +180,12 @@ func TestManager(t *testing.T) {
 					updateDoesNothing()
 				})
 				Convey("Does not increase priority if impact within hysteresis range", func() {
-					SetChromiumLowP0Impact(c)
+					bugToUpdate.Impact = ChromiumLowP0Impact()
 
 					updateDoesNothing()
 				})
 				Convey("Increases priority in response to increased impact", func() {
-					SetChromiumP0Impact(c)
+					bugToUpdate.Impact = ChromiumP0Impact()
 
 					originalNotifyCount := f.Issues[0].NotifyCount
 					err := bm.Update(ctx, bugsToUpdate)
@@ -302,15 +251,9 @@ func TestManager(t *testing.T) {
 				})
 			})
 			Convey("If impact falls below lowest priority threshold", func() {
-				SetChromiumClosureImpact(c)
-				bugsToUpdate := []*bugs.BugToUpdate{
-					{
-						BugName: bug,
-						Cluster: c,
-					},
-				}
+				bugToUpdate.Impact = ChromiumClosureImpact()
 				Convey("Update leaves bug open if impact within hysteresis range", func() {
-					SetChromiumClosureHighImpact(c)
+					bugToUpdate.Impact = ChromiumClosureHighImpact()
 
 					// Update may reduce the priority from P1 to P3, but the
 					// issue should be left open. This is because hysteresis on
@@ -328,13 +271,13 @@ func TestManager(t *testing.T) {
 					updateDoesNothing()
 
 					Convey("Does not reopen bug if impact within hysteresis range", func() {
-						SetChromiumP3LowImpact(c)
+						c.Impact = ChromiumP3LowImpact()
 
 						updateDoesNothing()
 					})
 
 					Convey("If impact increases, bug is re-opened with correct priority", func() {
-						SetChromiumP3Impact(c)
+						bugToUpdate.Impact = ChromiumP3Impact()
 						Convey("Issue has owner", func() {
 							// Update issue owner.
 							updateReq := updateOwnerRequest(f.Issues[0].Issue.Name, "users/100")

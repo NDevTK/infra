@@ -9,7 +9,7 @@ import (
 	"regexp"
 	"strings"
 
-	"infra/appengine/weetbix/internal/clustering"
+	"infra/appengine/weetbix/internal/bugs"
 	"infra/appengine/weetbix/internal/config"
 	mpb "infra/monorailv2/api/v3/api_proto"
 
@@ -17,12 +17,7 @@ import (
 )
 
 const (
-	FailureReasonTemplate = `This bug is for all test failures where the primary error message is similar to the following (ignoring numbers and hexadecimal values):
-%s
-
-This bug has been automatically filed by Weetbix in response to a cluster of test failures.`
-
-	TestNameTemplate = `This bug is for all test failures with the test name: %s
+	DescriptionTemplate = `%s
 
 This bug has been automatically filed by Weetbix in response to a cluster of test failures.`
 )
@@ -58,15 +53,15 @@ const UntriagedStatus = "Untriaged"
 // updates for a cluster.
 type Generator struct {
 	// The cluster to generate monorail changes for.
-	cluster *clustering.Cluster
+	cluster *bugs.Cluster
 	// The monorail configuration to use.
 	monorailCfg *config.MonorailProject
 }
 
 // NewGenerator initialises a new Generator.
-func NewGenerator(cluster *clustering.Cluster, monorailCfg *config.MonorailProject) (*Generator, error) {
+func NewGenerator(cluster *bugs.Cluster, monorailCfg *config.MonorailProject) (*Generator, error) {
 	if len(monorailCfg.Priorities) == 0 {
-		return nil, fmt.Errorf("invalid configuration in use for monorail project %q; no monorail priorities configured", monorailCfg.Project)
+		return nil, fmt.Errorf("invalid configuration for monorail project %q; no monorail priorities configured", monorailCfg.Project)
 	}
 	return &Generator{
 		cluster:     cluster,
@@ -76,10 +71,7 @@ func NewGenerator(cluster *clustering.Cluster, monorailCfg *config.MonorailProje
 
 // PrepareNew prepares a new bug from the given cluster.
 func (g *Generator) PrepareNew() *mpb.MakeIssueRequest {
-	title := g.cluster.ClusterID
-	if g.cluster.ExampleFailureReason.Valid {
-		title = g.cluster.ExampleFailureReason.StringVal
-	}
+	title := g.cluster.DisplayName
 	issue := &mpb.Issue{
 		Summary: fmt.Sprintf("Tests are failing: %v", sanitiseTitle(title, 150)),
 		State:   mpb.IssueContentState_ACTIVE,
@@ -341,13 +333,7 @@ func (g *Generator) indexOfPriority(priority string) int {
 // bugDescription returns the description that should be used when creating
 // a new bug for the cluster.
 func (g *Generator) bugDescription() string {
-	if g.cluster.ExampleFailureReason.Valid {
-		// We should escape the failure reason in future, if monorail is
-		// extended to support markdown.
-		return fmt.Sprintf(FailureReasonTemplate, g.cluster.ExampleFailureReason.String())
-	} else {
-		return fmt.Sprintf(TestNameTemplate, g.cluster.ClusterID)
-	}
+	return fmt.Sprintf(DescriptionTemplate, g.cluster.Description)
 }
 
 // isCompatibleWithVerified returns whether the impact of the current cluster
@@ -359,11 +345,11 @@ func (g *Generator) isCompatibleWithVerified(verified bool) bool {
 	if verified {
 		// The issue is verified. Only reopen if there is enough impact
 		// to exceed the threshold with hysteresis.
-		return !g.cluster.MeetsInflatedThreshold(lowestPriority.Threshold, hysteresisPerc)
+		return !g.cluster.Impact.MeetsInflatedThreshold(lowestPriority.Threshold, hysteresisPerc)
 	} else {
 		// The issue is not verified. Only close if the impact falls
 		// below the threshold with hysteresis.
-		return g.cluster.MeetsInflatedThreshold(lowestPriority.Threshold, -hysteresisPerc)
+		return g.cluster.Impact.MeetsInflatedThreshold(lowestPriority.Threshold, -hysteresisPerc)
 	}
 }
 
@@ -387,13 +373,13 @@ func (g *Generator) isCompatibleWithPriority(issuePriority string) bool {
 	// The cluster does not satisfy its current priority if it falls below
 	// the current priority's thresholds, even after deflating them by
 	// the hystersis margin.
-	if !g.cluster.MeetsInflatedThreshold(p.Threshold, -hysteresisPerc) {
+	if !g.cluster.Impact.MeetsInflatedThreshold(p.Threshold, -hysteresisPerc) {
 		return false
 	}
 	// It also does not satisfy its current priority if it meets the
 	// the next priority's priority's thresholds, after inflating them by
 	// the hystersis margin. (Assuming there exists a higher priority.)
-	if nextP != nil && g.cluster.MeetsInflatedThreshold(nextP.Threshold, hysteresisPerc) {
+	if nextP != nil && g.cluster.Impact.MeetsInflatedThreshold(nextP.Threshold, hysteresisPerc) {
 		return false
 	}
 	return true
@@ -406,7 +392,7 @@ func (g *Generator) clusterPriority() string {
 	priority := g.monorailCfg.Priorities[len(g.monorailCfg.Priorities)-1]
 	for i := len(g.monorailCfg.Priorities) - 2; i >= 0; i-- {
 		p := g.monorailCfg.Priorities[i]
-		if !g.cluster.MeetsThreshold(p.Threshold) {
+		if !g.cluster.Impact.MeetsThreshold(p.Threshold) {
 			// A cluster cannot reach a higher priority unless it has
 			// met the thresholds for all lower priorities.
 			break
@@ -420,7 +406,7 @@ func (g *Generator) clusterPriority() string {
 // verified, if no hysteresis has been applied.
 func (g *Generator) clusterResolved() bool {
 	lowestPriority := g.monorailCfg.Priorities[len(g.monorailCfg.Priorities)-1]
-	return !g.cluster.MeetsThreshold(lowestPriority.Threshold)
+	return !g.cluster.Impact.MeetsThreshold(lowestPriority.Threshold)
 }
 
 // sanitiseTitle removes tabs and line breaks from input, replacing them with

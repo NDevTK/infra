@@ -13,8 +13,10 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"regexp"
+	"strconv"
+	"strings"
 
-	cpb "infra/appengine/weetbix/internal/clustering/proto"
+	"infra/appengine/weetbix/internal/clustering"
 )
 
 // AlgorithmVersion is the version of the clustering algorithm. The algorithm
@@ -46,15 +48,48 @@ func (a *Algorithm) Name() string {
 
 // Cluster clusters the given test failure and returns its cluster ID (if it
 // can be clustered) or nil otherwise.
-func (a *Algorithm) Cluster(failure *cpb.Failure) []byte {
-	if failure.FailureReason == nil || failure.FailureReason.PrimaryErrorMessage == "" {
+func (a *Algorithm) Cluster(failure *clustering.Failure) []byte {
+	if failure.Reason == "" {
 		return nil
 	}
 	// Replace numbers and hex values.
-	id := clusterExp.ReplaceAllString(failure.FailureReason.PrimaryErrorMessage, "0")
+	id := clusterExp.ReplaceAllString(failure.Reason, "0")
 	// sha256 hash the resulting string.
 	h := sha256.Sum256([]byte(id))
 	// Take first 16 bytes as the ID. (Risk of collision is
 	// so low as to not warrant full 32 bytes.)
 	return h[0:16]
+}
+
+// ClusterDisplayName returns a human-readable display name for the
+// cluster containing the given example.
+func (a *Algorithm) ClusterDisplayName(example *clustering.Failure) string {
+	return example.Reason
+}
+
+const BugDescriptionTemplate = `This bug is for all test failures where the primary error message is similar to the following (ignoring numbers and hexadecimal values):
+%s`
+
+// BugDescription returns a description of the cluster containing the
+// given example, to appear in newly-filed bugs.
+func (a *Algorithm) BugDescription(example *clustering.Failure) string {
+	return fmt.Sprintf(BugDescriptionTemplate, example.Reason)
+}
+
+// FailureAssociationRule returns a failure association rule that
+// captures the definition of cluster containing the given example.
+func (a *Algorithm) FailureAssociationRule(example *clustering.Failure) string {
+	// Escape \, % and _ so that they are not interpreted as by LIKE
+	// patern matching.
+	rewriter := strings.NewReplacer(`\`, `\\`, `%`, `\%`, `_`, `\_`)
+	likePattern := rewriter.Replace(example.Reason)
+
+	// Replace hexadecimal seqeunces with wildcard matches. This is technically
+	// broader than our original cluster definition, but is more readable, and
+	// usually ends up matching the exact same set of failures.
+	likePattern = clusterExp.ReplaceAllString(likePattern, "%")
+
+	// Escape the pattern as a string literal.
+	stringLiteral := strconv.QuoteToGraphic(likePattern)
+	return fmt.Sprintf("reason LIKE %s", stringLiteral)
 }

@@ -146,7 +146,7 @@ func (hc *handlers) listBugClusters(ctx *router.Context) {
 	transctx, cancel := spanmodule.ReadOnlyTransaction(ctx.Context)
 	defer cancel()
 
-	bcs, err := bugclusters.ReadActive(transctx)
+	bcs, err := bugclusters.ReadActive(transctx, "chromium")
 	if err != nil {
 		logging.Errorf(ctx.Context, "Reading bugs: %s", err)
 		http.Error(ctx.Writer, "Internal server error.", http.StatusInternalServerError)

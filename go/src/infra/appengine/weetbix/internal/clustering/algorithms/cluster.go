@@ -5,12 +5,13 @@
 package algorithms
 
 import (
+	"encoding/hex"
+	"errors"
 	"time"
 
 	"infra/appengine/weetbix/internal/clustering"
 	"infra/appengine/weetbix/internal/clustering/algorithms/failurereason"
 	"infra/appengine/weetbix/internal/clustering/algorithms/testname"
-	cpb "infra/appengine/weetbix/internal/clustering/proto"
 )
 
 // Algorithm represents the interface that each clustering algorithm must
@@ -21,7 +22,16 @@ type Algorithm interface {
 	// Cluster clusters the given test failure and returns its cluster ID (if
 	// it can be clustered) or nil otherwise. THe returned cluster ID must be
 	// at most 16 bytes.
-	Cluster(failure *cpb.Failure) []byte
+	Cluster(failure *clustering.Failure) []byte
+	// FailureAssociationRule returns a failure association rule that
+	// captures the definition of cluster containing the given example.
+	FailureAssociationRule(example *clustering.Failure) string
+	// ClusterDisplayName returns a human-readable display name for the
+	// cluster containing the given example.
+	ClusterDisplayName(example *clustering.Failure) string
+	// BugDescription returns a description of the cluster containing the
+	// given example, to appear in newly-filed bugs.
+	BugDescription(example *clustering.Failure) string
 }
 
 // AlgorithmsVersion is the version of the set of algorithms used.
@@ -52,7 +62,7 @@ type ClusterResults struct {
 
 // Cluster clusters the given test failures using all registered
 // clustering algorithms.
-func Cluster(failures []*cpb.Failure) *ClusterResults {
+func Cluster(failures []*clustering.Failure) *ClusterResults {
 	var result [][]*clustering.ClusterID
 	for _, f := range failures {
 		var ids []*clustering.ClusterID
@@ -63,7 +73,7 @@ func Cluster(failures []*cpb.Failure) *ClusterResults {
 			}
 			ids = append(ids, &clustering.ClusterID{
 				Algorithm: a.Name(),
-				ID:        id,
+				ID:        hex.EncodeToString(id),
 			})
 		}
 		result = append(result, ids)
@@ -74,4 +84,22 @@ func Cluster(failures []*cpb.Failure) *ClusterResults {
 		RuleVersion: time.Date(1900, time.January, 1, 0, 0, 0, 0, time.UTC),
 		Clusters:    result,
 	}
+}
+
+// ErrAlgorithmNotExist is returned if a clusterID is passed whose
+// clustering algorithm is not supported. This may indicate the algorithm
+// is newer or older than the current version.
+var ErrAlgorithmNotExist = errors.New("algorithm does not exist")
+
+// ByName returns the algorithm with the given name. If the algorithm
+// does not exist, ErrAlgorithmNotExist is returned.
+func ByName(algorithm string) (Algorithm, error) {
+	for _, a := range algorithms {
+		if a.Name() == algorithm {
+			return a, nil
+		}
+	}
+	// We may be running old code, or the caller may be asking
+	// for an old (version of an) algorithm.
+	return nil, ErrAlgorithmNotExist
 }

@@ -170,6 +170,7 @@ export class ClusterPage extends LitElement {
 interface Cluster {
     clusterAlgorithm: string;
     clusterId: number;
+    description: string;
     presubmitRejects1d: Counts;
     presubmitRejects3d: Counts;
     presubmitRejects7d: Counts;
