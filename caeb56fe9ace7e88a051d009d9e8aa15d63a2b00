@@ -22,6 +22,30 @@
       },
       "revId": "caeb56fe9ace7e88a051d009d9e8aa15d63a2b00",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cc7af294_3000e78a",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1456797
+      },
+      "writtenOn": "2021-10-29T15:40:18Z",
+      "side": 1,
+      "message": "Totally yeah, thankfully our git set up recognizes the pattern and won\u0027t let me upload it since it sees it as a key. I\u0027ll move to the file method though because that\u0027s what the final version will end up being anyway.",
+      "parentUuid": "c0d1931a_0496196d",
+      "range": {
+        "startLine": 111,
+        "startChar": 11,
+        "endLine": 111,
+        "endChar": 21
+      },
+      "revId": "caeb56fe9ace7e88a051d009d9e8aa15d63a2b00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
