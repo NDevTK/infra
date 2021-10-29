@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1269176f_7e02e37c",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/bluetooth_execs.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-10-29T00:09:04Z",
+      "side": 1,
+      "message": "right. forgot about it",
+      "parentUuid": "aae334a7_885a2bf0",
+      "revId": "41ba5037987cb4be8d6b6cf4b8cd9e27368dd266",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "2791dd3a_834965b1",
         "filename": "go/src/infra/cros/recovery/internal/execs/cros/bluetooth_execs.go",
         "patchSetId": 3
@@ -48,6 +66,24 @@
       "writtenOn": "2021-10-28T23:50:10Z",
       "side": 1,
       "message": "Same, if the error is not-nil, should this exec-function return its own error value too?",
+      "revId": "41ba5037987cb4be8d6b6cf4b8cd9e27368dd266",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0ff1f9e5_9faaa981",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/bluetooth_execs.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-10-29T00:09:04Z",
+      "side": 1,
+      "message": "right. forgot about it",
+      "parentUuid": "2791dd3a_834965b1",
       "revId": "41ba5037987cb4be8d6b6cf4b8cd9e27368dd266",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
