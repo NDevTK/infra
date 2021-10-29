@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c0d1931a_0496196d",
+        "filename": "go/src/infra/cros/cmd/upload_debug_symbols/builder.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2021-10-29T14:53:19Z",
+      "side": 1,
+      "message": "be careful you don\u0027t forget to remove the key before uploading, I know I would :P could always read it from a file for now if you wanted to be extra safe",
+      "range": {
+        "startLine": 111,
+        "startChar": 11,
+        "endLine": 111,
+        "endChar": 21
+      },
+      "revId": "caeb56fe9ace7e88a051d009d9e8aa15d63a2b00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
