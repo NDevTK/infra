@@ -53,6 +53,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cdd18058_1c47dd5d",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/bluetooth_execs.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-01T17:35:20Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "1269176f_7e02e37c",
+      "revId": "41ba5037987cb4be8d6b6cf4b8cd9e27368dd266",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2791dd3a_834965b1",
@@ -84,6 +102,24 @@
       "side": 1,
       "message": "right. forgot about it",
       "parentUuid": "2791dd3a_834965b1",
+      "revId": "41ba5037987cb4be8d6b6cf4b8cd9e27368dd266",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0b9c619e_e0a3860d",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/bluetooth_execs.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-01T17:35:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0ff1f9e5_9faaa981",
       "revId": "41ba5037987cb4be8d6b6cf4b8cd9e27368dd266",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
