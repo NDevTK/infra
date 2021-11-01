@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -144,13 +145,38 @@ func (hc *handlers) monorailTest(ctx *router.Context) {
 }
 
 func (hc *handlers) listBugClusters(ctx *router.Context) {
+	projectID := ctx.Params.ByName("project")
+	if projectID != "chromium" {
+		http.Error(ctx.Writer, "Only the chromium project is currently supported", 400)
+		return
+	}
+
+	active := ctx.Request.URL.Query().Get("active")
+
 	transctx, cancel := spanmodule.ReadOnlyTransaction(ctx.Context)
 	defer cancel()
 
-	bcs, err := bugclusters.ReadActive(transctx)
-	if err != nil {
-		logging.Errorf(ctx.Context, "Reading bugs: %s", err)
-		http.Error(ctx.Writer, "Internal server error.", http.StatusInternalServerError)
+	var bcs []*bugclusters.BugCluster
+	var err error
+	clusterID := ctx.Request.URL.Query().Get("cluster")
+	if clusterID != "" && active != "true" {
+		bcs, err = bugclusters.ReadBugsForCluster(transctx, projectID, clusterID)
+		if err != nil {
+			logging.Errorf(ctx.Context, "Reading bugs for cluster %s: %s", clusterID, err)
+			http.Error(ctx.Writer, "Internal server error.", http.StatusInternalServerError)
+			return
+		}
+	} else if active == "true" {
+		bcs, err = bugclusters.ReadActive(transctx, projectID)
+		if err != nil {
+			logging.Errorf(ctx.Context, "Reading bugs: %s", err)
+			http.Error(ctx.Writer, "Internal server error.", http.StatusInternalServerError)
+			return
+		}
+	} else {
+		http.Error(ctx.Writer,
+			fmt.Sprintf("Unsupported query: project: %s cluster: %s active: %v", projectID, clusterID, active == "true"),
+			http.StatusBadRequest)
 		return
 	}
 
@@ -274,7 +300,7 @@ func main() {
 		srv.Routes.GET("/api/monorailtest", mw, handlers.monorailTest)
 		srv.Routes.GET("/api/project/:project/cluster/*id", mw, handlers.getCluster)
 		srv.Routes.GET("/api/cluster", mw, handlers.listClusters)
-		srv.Routes.GET("/api/bugcluster", mw, handlers.listBugClusters)
+		srv.Routes.GET("/api/project/:project/bugcluster", mw, handlers.listBugClusters)
 		srv.Routes.Static("/static/", mw, http.Dir("./ui/dist"))
 		// Anything that is not found, serve app html and let the client side router handle it.
 		srv.Routes.NotFound(mw, handlers.indexPage)

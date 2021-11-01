@@ -12,7 +12,7 @@ export class BugClusterTable extends LitElement {
 
     connectedCallback() {
         super.connectedCallback()
-        fetch("/api/bugcluster").then(r => r.json()).then(bugClusters => this.bugClusters = bugClusters);
+        fetch("/api/project/chromium/bugcluster?active=true").then(r => r.json()).then(bugClusters => this.bugClusters = bugClusters);
     }
 
     render() {
@@ -43,7 +43,7 @@ export class BugClusterTable extends LitElement {
 
 // BugCluster is the bug cluster information sent by the server.
 interface BugCluster {
-    project: number;
-    bug: number;
-    associatedClusterId: number;
+    project: string;
+    bug: string;
+    associatedClusterId: string;
 }
