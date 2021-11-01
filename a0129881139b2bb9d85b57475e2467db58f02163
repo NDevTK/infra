@@ -60,6 +60,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "57c3919e_cc7d8d86",
+        "filename": "go/src/infra/appengine/weetbix/frontend/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-11-01T01:15:08Z",
+      "side": 1,
+      "message": "What do you suggest?",
+      "parentUuid": "fe0c4b57_47909015",
+      "range": {
+        "startLine": 151,
+        "startChar": 13,
+        "endLine": 151,
+        "endChar": 64
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c740e993_56ecc65d",
         "filename": "go/src/infra/appengine/weetbix/frontend/ui/src/element/cluster_page.ts",
         "patchSetId": 2
@@ -71,6 +95,30 @@
       "writtenOn": "2021-09-23T00:32:31Z",
       "side": 1,
       "message": "not this CL, but as discussed below, I think it clusters should be queried namespaced by project.",
+      "range": {
+        "startLine": 29,
+        "startChar": 27,
+        "endLine": 29,
+        "endChar": 65
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "10363e6a_03f2f084",
+        "filename": "go/src/infra/appengine/weetbix/frontend/ui/src/element/cluster_page.ts",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-11-01T01:15:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c740e993_56ecc65d",
       "range": {
         "startLine": 29,
         "startChar": 27,
@@ -104,6 +152,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "32dd8c5b_be5ee14e",
+        "filename": "go/src/infra/appengine/weetbix/frontend/ui/src/element/cluster_page.ts",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-11-01T01:15:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9bdfd7f6_c1d4b18c",
+      "range": {
+        "startLine": 32,
+        "startChar": 30,
+        "endLine": 32,
+        "endChar": 76
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9de3f6dc_b7c5fb0b",
@@ -127,6 +199,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c784fd7d_ac7b8ee0",
+        "filename": "go/src/infra/appengine/weetbix/frontend/ui/src/element/cluster_page.ts",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-11-01T01:15:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9de3f6dc_b7c5fb0b",
+      "range": {
+        "startLine": 47,
+        "startChar": 70,
+        "endLine": 47,
+        "endChar": 71
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0538824f_1f48d74c",
+        "filename": "go/src/infra/appengine/weetbix/frontend/ui/src/element/cluster_page.ts",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-11-01T01:15:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9de3f6dc_b7c5fb0b",
+      "range": {
+        "startLine": 47,
+        "startChar": 70,
+        "endLine": 47,
+        "endChar": 71
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "44759e38_7ee5cce0",
@@ -140,6 +260,30 @@
       "writtenOn": "2021-09-23T05:49:36Z",
       "side": 1,
       "message": "why not \"https\"?",
+      "range": {
+        "startLine": 49,
+        "startChar": 112,
+        "endLine": 49,
+        "endChar": 119
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a7c8645b_be0c9050",
+        "filename": "go/src/infra/appengine/weetbix/frontend/ui/src/element/cluster_page.ts",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-11-01T01:15:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "44759e38_7ee5cce0",
       "range": {
         "startLine": 49,
         "startChar": 112,
@@ -175,6 +319,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "d1e7e4fe_e6089ced",
+        "filename": "go/src/infra/appengine/weetbix/frontend/ui/src/element/cluster_page.ts",
+        "patchSetId": 2
+      },
+      "lineNbr": 257,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-11-01T01:15:08Z",
+      "side": 1,
+      "message": "link to href\u003d\"#\" just stays on the same page.  Is there something you would prefer?",
+      "parentUuid": "76ef2764_97065241",
+      "range": {
+        "startLine": 257,
+        "startChar": 4,
+        "endLine": 257,
+        "endChar": 15
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e095e876_441d8ae8",
         "filename": "go/src/infra/appengine/weetbix/internal/bugclusters/span.go",
         "patchSetId": 2
@@ -186,6 +354,30 @@
       "writtenOn": "2021-09-22T17:38:08Z",
       "side": 1,
       "message": "Update?",
+      "range": {
+        "startLine": 60,
+        "startChar": 0,
+        "endLine": 60,
+        "endChar": 52
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ec8aed19_92b94fb5",
+        "filename": "go/src/infra/appengine/weetbix/internal/bugclusters/span.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-11-01T01:15:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e095e876_441d8ae8",
       "range": {
         "startLine": 60,
         "startChar": 0,
@@ -242,6 +434,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "11e297fe_8bc12f56",
+        "filename": "go/src/infra/appengine/weetbix/internal/bugclusters/span.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-11-01T01:15:08Z",
+      "side": 1,
+      "message": "Not adding the index for now, we can add later if we see performance issues.",
+      "parentUuid": "c548010d_cf34d894",
+      "range": {
+        "startLine": 65,
+        "startChar": 0,
+        "endLine": 65,
+        "endChar": 40
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "180db85c_1b1bacfe",
+        "filename": "go/src/infra/appengine/weetbix/internal/bugclusters/span.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-11-01T01:15:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "adbed207_2e0b896d",
+      "range": {
+        "startLine": 65,
+        "startChar": 2,
+        "endLine": 65,
+        "endChar": 40
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fed0f3be_b4ad819d",
@@ -255,6 +495,30 @@
       "writtenOn": "2021-09-22T17:38:08Z",
       "side": 1,
       "message": "spanner.NullBool",
+      "range": {
+        "startLine": 73,
+        "startChar": 14,
+        "endLine": 73,
+        "endChar": 18
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c148ab3b_11def8b4",
+        "filename": "go/src/infra/appengine/weetbix/internal/bugclusters/span.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-11-01T01:15:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fed0f3be_b4ad819d",
       "range": {
         "startLine": 73,
         "startChar": 14,
