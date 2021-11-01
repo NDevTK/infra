@@ -73,7 +73,7 @@ func TestRun(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// No bug clusters.
-			bugClusters, err := ReadActive(span.Single(ctx))
+			bugClusters, err := ReadActiveForAllProjects(span.Single(ctx))
 			So(err, ShouldBeNil)
 			So(bugClusters, ShouldResemble, []*BugCluster{})
 
@@ -88,7 +88,7 @@ func TestRun(t *testing.T) {
 				err = bu.Run(ctx)
 				So(err, ShouldBeNil)
 
-				bugClusters, err := ReadActive(span.Single(ctx))
+				bugClusters, err := ReadActiveForAllProjects(span.Single(ctx))
 				So(err, ShouldBeNil)
 				So(bugClusters, ShouldResemble, []*BugCluster{
 					{
@@ -117,7 +117,7 @@ func TestRun(t *testing.T) {
 		})
 		Convey("With multiple clusters above impact thresold", func() {
 			expectBugClusters := func(count int) {
-				bugClusters, err := ReadActive(span.Single(ctx))
+				bugClusters, err := ReadActiveForAllProjects(span.Single(ctx))
 				So(err, ShouldBeNil)
 				So(len(bugClusters), ShouldEqual, count)
 				So(len(f.Issues), ShouldEqual, count)
@@ -144,7 +144,7 @@ func TestRun(t *testing.T) {
 
 			expectFinalBugClusters := func() {
 				// Check final set of bugs is as expected.
-				bugClusters, err := ReadActive(span.Single(ctx))
+				bugClusters, err := ReadActiveForAllProjects(span.Single(ctx))
 				So(err, ShouldBeNil)
 				So(bugClusters, ShouldResemble, []*BugCluster{
 					{
