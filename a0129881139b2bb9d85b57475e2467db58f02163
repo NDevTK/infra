@@ -106,6 +106,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a09568df_005eb540",
+        "filename": "go/src/infra/appengine/weetbix/frontend/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-11-01T03:19:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "67bc7dbe_2c95c3c2",
+      "range": {
+        "startLine": 151,
+        "startChar": 13,
+        "endLine": 151,
+        "endChar": 64
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c740e993_56ecc65d",
@@ -379,6 +403,30 @@
       "side": 1,
       "message": "I find the weird that the bug link just points to the current page when the bug string can\u0027t be parsed.\n\nMaybe return \"\" and do some conditional rendering. But up to you.",
       "parentUuid": "d1e7e4fe_e6089ced",
+      "range": {
+        "startLine": 257,
+        "startChar": 4,
+        "endLine": 257,
+        "endChar": 15
+      },
+      "revId": "a0129881139b2bb9d85b57475e2467db58f02163",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "42657bda_9dc00461",
+        "filename": "go/src/infra/appengine/weetbix/frontend/ui/src/element/cluster_page.ts",
+        "patchSetId": 2
+      },
+      "lineNbr": 257,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-11-01T03:19:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "39613fe0_09561a90",
       "range": {
         "startLine": 257,
         "startChar": 4,
