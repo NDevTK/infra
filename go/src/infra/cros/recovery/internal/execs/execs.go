@@ -83,7 +83,8 @@ func (args RunArgs) NewRunner(host string) Runner {
 	runner := func(ctx context.Context, cmd string) (string, error) {
 		r := args.Access.Run(ctx, host, cmd)
 		if r.ExitCode != 0 {
-			return "", errors.Reason("runner: command %q completed with exit code %q", cmd, r.ExitCode).Err()
+			tagKey := errors.NewTagKey("exit_code")
+			return "", errors.Reason("runner: command %q completed with exit code %q", cmd, r.ExitCode).Tag(errors.TagValue{Key: tagKey, Value: r.ExitCode}).Err()
 		}
 		return strings.TrimSpace(r.Stdout), nil
 	}
