@@ -29,8 +29,10 @@ type BugCluster struct {
 	IsActive bool `json:"isActive"`
 }
 
-// ReadActive reads all active Weetbix bug clusters.
-func ReadActive(ctx context.Context) ([]*BugCluster, error) {
+// ReadActiveForAllProjects reads all active Weetbix bug clusters for all projects.
+// TODO(mwarton): Remove this function.  It is only used by the bug filing logic, which
+// should be modified to be per-project.
+func ReadActiveForAllProjects(ctx context.Context) ([]*BugCluster, error) {
 	stmt := spanner.NewStatement(`
 		SELECT Project, Bug, AssociatedClusterId
 		FROM BugClusters
@@ -54,7 +56,71 @@ func ReadActive(ctx context.Context) ([]*BugCluster, error) {
 		return nil
 	})
 	if err != nil {
-		return nil, errors.Annotate(err, "query active bug clusters").Err()
+		return nil, errors.Annotate(err, "query active bug clusters for all projects").Err()
+	}
+	return bcs, nil
+}
+
+// ReadActive reads all active Weetbix bug clusters for the given project.
+func ReadActive(ctx context.Context, project string) ([]*BugCluster, error) {
+	stmt := spanner.NewStatement(`
+		SELECT Project, Bug, AssociatedClusterId
+		FROM BugClusters
+		WHERE Project = @project AND IsActive
+		ORDER BY Project, Bug
+	`)
+	stmt.Params["project"] = project
+	it := span.Query(ctx, stmt)
+	bcs := []*BugCluster{}
+	err := it.Do(func(r *spanner.Row) error {
+		var project, bugName, associatedClusterID string
+		if err := r.Columns(&project, &bugName, &associatedClusterID); err != nil {
+			return errors.Annotate(err, "read bug cluster row").Err()
+		}
+		bc := &BugCluster{
+			Project:             project,
+			Bug:                 bugName,
+			AssociatedClusterID: associatedClusterID,
+			IsActive:            true,
+		}
+		bcs = append(bcs, bc)
+		return nil
+	})
+	if err != nil {
+		return nil, errors.Annotate(err, "query active bug clusters for project %s", project).Err()
+	}
+	return bcs, nil
+}
+
+// ReadBugsForCluster reads all Weetbix bug clusters for the given clusterID.
+func ReadBugsForCluster(ctx context.Context, project string, clusterID string) ([]*BugCluster, error) {
+	stmt := spanner.NewStatement(`
+		SELECT Project, Bug, IsActive
+		FROM BugClusters
+		WHERE Project = @project AND AssociatedClusterId = @clusterID
+		ORDER BY Project, Bug
+	`)
+	stmt.Params["project"] = project
+	stmt.Params["clusterID"] = clusterID
+	it := span.Query(ctx, stmt)
+	bcs := []*BugCluster{}
+	err := it.Do(func(r *spanner.Row) error {
+		var project, bugName string
+		var active *bool
+		if err := r.Columns(&project, &bugName, &active); err != nil {
+			return errors.Annotate(err, "read bug cluster row").Err()
+		}
+		bc := &BugCluster{
+			Project:             project,
+			Bug:                 bugName,
+			AssociatedClusterID: clusterID,
+			IsActive:            active != nil,
+		}
+		bcs = append(bcs, bc)
+		return nil
+	})
+	if err != nil {
+		return nil, errors.Annotate(err, "query bugs for cluster").Err()
 	}
 	return bcs, nil
 }

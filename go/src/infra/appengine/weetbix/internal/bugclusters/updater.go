@@ -196,7 +196,7 @@ func (b *BugUpdater) createBugCluster(ctx context.Context, cluster *clustering.C
 }
 
 func (b *BugUpdater) readActiveBugClusters(ctx context.Context) (map[string]*BugCluster, error) {
-	bcs, err := ReadActive(span.Single(ctx))
+	bcs, err := ReadActiveForAllProjects(span.Single(ctx))
 	if err != nil {
 		return nil, err
 	}
