@@ -70,6 +70,8 @@ func Exist(name string) bool {
 	return ok
 }
 
+var CmdNotFoundTag = errors.BoolTag{Key: errors.NewTagKey("command_not_found")}
+
 // Runner defines the type for a function that will execute a command
 // on a host, and returns the result as a single line.
 type Runner func(context.Context, string) (string, error)
@@ -82,8 +84,13 @@ type Runner func(context.Context, string) (string, error)
 func (args RunArgs) NewRunner(host string) Runner {
 	runner := func(ctx context.Context, cmd string) (string, error) {
 		r := args.Access.Run(ctx, host, cmd)
-		if r.ExitCode != 0 {
-			return "", errors.Reason("runner: command %q completed with exit code %q", cmd, r.ExitCode).Err()
+		exitCode := r.ExitCode
+		if exitCode != 0 {
+			errAnnotator := errors.Reason("runner: command %q completed with exit code %q", cmd, r.ExitCode)
+			if exitCode == -1 || exitCode == -2 || exitCode == 127 {
+				return "", CmdNotFoundTag.Apply(errAnnotator.Err())
+			}
+			return "", errAnnotator.Err()
 		}
 		return strings.TrimSpace(r.Stdout), nil
 	}
