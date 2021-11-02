@@ -80,6 +80,30 @@
       },
       "revId": "e924318d9582ecf201e1296e61c4c62d3fceecb6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bc127549_1aa4a478",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/Makefile",
+        "patchSetId": 3
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2021-11-02T22:26:35Z",
+      "side": 1,
+      "message": ":( I hoped it looks at the content to figure out the type of the file.",
+      "parentUuid": "c1621fb4_18fafc56",
+      "range": {
+        "startLine": 69,
+        "startChar": 1,
+        "endLine": 69,
+        "endChar": 102
+      },
+      "revId": "e924318d9582ecf201e1296e61c4c62d3fceecb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
