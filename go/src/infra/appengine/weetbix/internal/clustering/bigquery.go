@@ -31,7 +31,6 @@ type ImpactfulClusterReadOptions struct {
 
 // Cluster represents a group of failures, with associated impact metrics.
 type Cluster struct {
-	Project                string              `json:"project"`
 	ClusterID              string              `json:"clusterId"`
 	UnexpectedFailures1d   int64               `json:"unexpectedFailures1d"`
 	UnexpectedFailures3d   int64               `json:"unexpectedFailures3d"`
@@ -46,7 +45,6 @@ type Cluster struct {
 	AffectedTests3d        []SubCluster        `json:"affectedTests3d"`
 	AffectedTests7d        []SubCluster        `json:"affectedTests7d"`
 	ExampleFailureReason   bigquery.NullString `json:"exampleFailureReason"`
-	ExampleResultID        string              `json:"exampleResultId"`
 }
 
 type SubCluster struct {
@@ -141,7 +139,6 @@ func (c *Client) ReadImpactfulClusters(ctx context.Context, opts ImpactfulCluste
 		if err != nil {
 			return nil, errors.Annotate(err, "obtain next cluster row").Err()
 		}
-		row.Project = opts.Project
 		clusters = append(clusters, row)
 	}
 	return clusters, nil

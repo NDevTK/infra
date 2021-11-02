@@ -6,95 +6,121 @@ package bugclusters
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"testing"
 
 	"cloud.google.com/go/spanner"
 	"go.chromium.org/luci/server/span"
 
+	"infra/appengine/weetbix/internal/clustering"
 	"infra/appengine/weetbix/internal/testutil"
 
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
 )
 
+const testProject = "myproject"
+
 func TestRead(t *testing.T) {
 	ctx := testutil.SpannerTestContext(t)
 	Convey(`Read`, t, func() {
 		Convey(`Empty`, func() {
-			setBugClusters(ctx, nil)
+			setRules(ctx, nil)
 
-			clusters, err := ReadActive(span.Single(ctx))
+			rules, err := ReadActive(span.Single(ctx), testProject)
 			So(err, ShouldBeNil)
-			So(clusters, ShouldResemble, []*BugCluster{})
+			So(rules, ShouldResemble, []*FailureAssociationRule{})
 		})
 		Convey(`Multiple`, func() {
-			clustersToCreate := []*BugCluster{
-				newBugCluster(0),
-				newBugCluster(1),
-				newBugCluster(2),
+			rulesToCreate := []*FailureAssociationRule{
+				newRule(0),
+				newRule(1),
+				newRule(2),
 			}
-			clustersToCreate[1].IsActive = false
-			setBugClusters(ctx, clustersToCreate)
+			rulesToCreate[1].IsActive = false
+			setRules(ctx, rulesToCreate)
 
-			clusters, err := ReadActive(span.Single(ctx))
+			rules, err := ReadActive(span.Single(ctx), testProject)
 			So(err, ShouldBeNil)
-			So(clusters, ShouldResemble, []*BugCluster{
-				newBugCluster(0),
-				newBugCluster(2),
+			So(rules, ShouldResemble, []*FailureAssociationRule{
+				newRule(0),
+				newRule(2),
 			})
 		})
 	})
 	Convey(`Create`, t, func() {
-		testCreate := func(bc *BugCluster) error {
+		testCreate := func(bc *FailureAssociationRule) error {
 			_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
 				return Create(ctx, bc)
 			})
 			return err
 		}
+		r := newRule(100)
 		Convey(`Valid`, func() {
-			bc := newBugCluster(103)
-			err := testCreate(bc)
-			So(err, ShouldBeNil)
+			Convey(`With Source Cluster`, func() {
+				So(r.SourceCluster.Algorithm, ShouldNotBeEmpty)
+				So(r.SourceCluster.ID, ShouldNotBeNil)
+				err := testCreate(r)
+				So(err, ShouldBeNil)
+			})
+			Convey(`Without Source Cluster`, func() {
+				// E.g. in case of a manually created cluster.
+				r.SourceCluster = clustering.ClusterID{}
+				err := testCreate(r)
+				So(err, ShouldBeNil)
+			})
 			// Create followed by read already tested as part of Read tests.
 		})
-		Convey(`With missing Project`, func() {
-			bc := newBugCluster(100)
-			bc.Project = ""
-			err := testCreate(bc)
-			So(err, ShouldErrLike, "project must be specified")
+		Convey(`With invalid Project`, func() {
+			Convey(`Missing`, func() {
+				r.Project = ""
+				err := testCreate(r)
+				So(err, ShouldErrLike, "project must be valid")
+			})
+			Convey(`Invalid`, func() {
+				r.Project = "!"
+				err := testCreate(r)
+				So(err, ShouldErrLike, "project must be valid")
+			})
 		})
-		Convey(`With missing Bug`, func() {
-			bc := newBugCluster(101)
-			bc.Bug = ""
-			err := testCreate(bc)
+		Convey(`With invalid Bug`, func() {
+			r.Bug = ""
+			err := testCreate(r)
 			So(err, ShouldErrLike, "bug must be specified")
 		})
-		Convey(`With missing Associated Cluster`, func() {
-			bc := newBugCluster(102)
-			bc.AssociatedClusterID = ""
-			err := testCreate(bc)
-			So(err, ShouldErrLike, "associated cluster must be specified")
+		Convey(`With invalid Source Cluster`, func() {
+			So(r.SourceCluster.ID, ShouldNotBeNil)
+			r.SourceCluster.Algorithm = ""
+			err := testCreate(r)
+			So(err, ShouldErrLike, "source cluster ID is not valid")
 		})
 	})
 }
 
-func newBugCluster(uniqifier int) *BugCluster {
-	return &BugCluster{
-		Project:             fmt.Sprintf("project%v", uniqifier),
-		Bug:                 fmt.Sprintf("monorail/project/%v", uniqifier),
-		AssociatedClusterID: fmt.Sprintf("some-cluster-id%v", uniqifier),
-		IsActive:            true,
+func newRule(uniqifier int) *FailureAssociationRule {
+	ruleIDBytes := sha256.Sum256([]byte(fmt.Sprintf("rule-id%v", uniqifier)))
+	return &FailureAssociationRule{
+		Project:        testProject,
+		RuleID:         hex.EncodeToString(ruleIDBytes[0:16]),
+		RuleDefinition: "reason LIKE \"%exit code 5%\" AND test LIKE \"tast.arc.%\"",
+		Bug:            fmt.Sprintf("monorail/project/%v", uniqifier),
+		IsActive:       true,
+		SourceCluster: clustering.ClusterID{
+			Algorithm: fmt.Sprintf("clusteralg%v", uniqifier),
+			ID:        hex.EncodeToString([]byte(fmt.Sprintf("id%v", uniqifier))),
+		},
 	}
 }
 
-// setBugClusters replaces the set of stored bug clusters to match the given set.
-func setBugClusters(ctx context.Context, bcs []*BugCluster) {
+// setRules replaces the set of stored rules to match the given set.
+func setRules(ctx context.Context, rs []*FailureAssociationRule) {
 	testutil.MustApply(ctx,
-		spanner.Delete("BugClusters", spanner.AllKeys()))
-	// Insert some BugClusters.
+		spanner.Delete("FailureAssociationRules", spanner.AllKeys()))
+	// Insert some FailureAssociationRules.
 	_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
-		for _, bc := range bcs {
+		for _, bc := range rs {
 			if err := Create(ctx, bc); err != nil {
 				return err
 			}
