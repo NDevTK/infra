@@ -25,6 +25,6 @@ describe('Index Page', () => {
     })
     it('loads a cluster page', () => {
         cy.get('cluster-table').get('td').first().click();
-        cy.get('body').contains('Example Failure')
+        cy.get('body').contains('Cluster Definition')
     })
 })
