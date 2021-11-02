@@ -33,6 +33,29 @@
       "message": "I really don\u0027t know anything about gae, so I don\u0027t think I have value as a reviewer here.",
       "revId": "e924318d9582ecf201e1296e61c4c62d3fceecb6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ae8c7f50_85fc037f",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/Makefile",
+        "patchSetId": 3
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2021-11-02T18:45:11Z",
+      "side": 1,
+      "message": "I believe this would work just as well:\n\n  gcloud app deploy --project sheriff-o-matic-staging cron_staging.yaml",
+      "range": {
+        "startLine": 69,
+        "startChar": 1,
+        "endLine": 69,
+        "endChar": 102
+      },
+      "revId": "e924318d9582ecf201e1296e61c4c62d3fceecb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
