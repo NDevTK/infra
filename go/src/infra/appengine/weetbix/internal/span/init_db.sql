@@ -120,23 +120,53 @@ INTERLEAVE IN PARENT AnalyzedTestVariants ON DELETE CASCADE;
 CREATE NULL_FILTERED INDEX VerdictsByTInvocationCreationTime
  ON Verdicts (Realm, TestId, VariantHash, InvocationCreationTime DESC);
 
--- BugClusters contains the bugs tracked by Weetbix, and the failure clusters
--- they are associated with.
-CREATE TABLE BugClusters (
+-- FailureAssociationRules associate failures with bugs. When the rules
+-- are used to match incoming test failures, the resultant clusters are
+-- known as 'bug clusters' because clusters are associated with a bug
+-- (via the failure association rule.
+-- The ID of failure association rule is used as the cluster ID by the
+-- failure association rule-based clustering algorithm.
+CREATE TABLE FailureAssociationRules (
   -- The LUCI Project this bug belongs to.
   Project STRING(40) NOT NULL,
-  -- The bug. For monorail, the scheme is monorail/{project}/{numeric id}.
+  -- The unique identifier for the rule. This is a randomly generated
+  -- 128-bit ID, encoded as 32 lowercase hexadecimal characters.
+  RuleId STRING(32) NOT NULL,
+  -- The rule predicate, defining which failures are being associated.
+  RuleDefinition STRING(4096) NOT NULL,
+  -- The time the rule was created.
+  CreationTime TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true),
+  -- The last time the rule was updated.
+  LastUpdated TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true),
+  -- The bug the failures are associated to. For monorail, the scheme
+  -- is monorail/{project}/{numeric id}.
   Bug STRING(255) NOT NULL,
-  -- The associated failure cluster. In future, the intent is to replace
-  -- this in favour of a failure association rule.
-  AssociatedClusterId STRING(MAX) NOT NULL,
-  -- Whether the bug must still be updated by Weetbix. The only allowed
+  -- Whether the bug must still be updated by Weetbix, and whether failures
+  -- should still be matched against this rule. The only allowed
   -- values are true or NULL (to indicate false). Only if the bug has
   -- been closed and no failures have been observed for a while should
   -- this be NULL. This makes it easy to retrofit a NULL_FILTERED index
   -- in future, if it is needed for performance.
   IsActive BOOL,
-) PRIMARY KEY (Project, Bug);
+  -- The clustering algorithm of the suggested cluster that this failure
+  -- association rule was created from (if any).
+  -- Until re-clustering is complete (and the residual impact of the source
+  -- cluster has reduced to zero), SourceClusterAlgorithm and SourceClusterId
+  -- tell bug filing to ignore the source suggested cluster when
+  -- determining whether new bugs need to be filed.
+  SourceClusterAlgorithm STRING(32) NOT NULL,
+  -- The algorithm-defined Cluster ID of the suggested cluster that this
+  -- bug cluster was created from (if any).
+  SourceClusterId STRING(32) NOT NULL,
+) PRIMARY KEY (Project, ClusterId);
+
+-- The failure association rule associated with a bug. This also enforces
+-- the constraint that each rule must have a unique bug, even if the rules
+-- are in different LUCI Projects.
+-- This is required to ensure that automatic bug filing does not attempt to
+-- take conflicting actions (e.g. simultaneously increase and decrease priority)
+-- on the same bug, because of differing priorities in different projects.
+CREATE UNIQUE INDEX FailureAssociationRuleByBug ON FailureAssociationRules(Bug);
 
 -- Clustering state records the clustering state of failed test results, organised
 -- by chunk.
