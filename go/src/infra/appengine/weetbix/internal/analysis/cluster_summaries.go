@@ -25,7 +25,12 @@ type ImpactfulClusterReadOptions struct {
 	Project string
 	// Thresholds is the set of thresholds, which if any are met
 	// or exceeded, should result in the cluster being returned.
+	// Thresholds are applied based on cluster nominal impact.
 	Thresholds *config.ImpactThreshold
+	// AlwaysInclude is the set of clusters to always include.
+	AlwaysInclude []clustering.ClusterID
+	// Always include analysis for bug clusters.
+	AlwaysIncludeBugClusters bool
 }
 
 // ClusterSummary represents a statistical summary of a cluster's failures,
@@ -124,6 +129,8 @@ func (c *Client) ReadImpactfulClusters(ctx context.Context, opts ImpactfulCluste
 		WHERE (failures_1d > @unexpFailThreshold1d
 			OR failures_3d > @unexpFailThreshold3d
 			OR failures_7d > @unexpFailThreshold7d)
+			OR ClusterID IN @alwaysInclude
+			OR (@alwaysIncludeBugClusters AND cluster_algorithm LIKE 'rules-%')
 		ORDER BY
 			failures_1d DESC,
 			failures_3d DESC,
@@ -141,6 +148,14 @@ func (c *Client) ReadImpactfulClusters(ctx context.Context, opts ImpactfulCluste
 		{
 			Name:  "unexpFailThreshold7d",
 			Value: valueOrDefault(opts.Thresholds.UnexpectedFailures_7D, math.MaxInt64),
+		},
+		{
+			Name:  "alwaysInclude",
+			Value: opts.AlwaysInclude,
+		},
+		{
+			Name:  "alwaysIncludeBugClusters",
+			Value: opts.AlwaysIncludeBugClusters,
 		},
 	}
 	job, err := q.Run(ctx)
@@ -192,7 +207,8 @@ func (c *Client) ReadCluster(ctx context.Context, luciProject, clusterAlgorithm,
 
 	q := c.client.Query(`
 		SELECT
-			STRUCT(cluster_algorithm AS Algorithm, cluster_id as ID) as ClusterID,` +
+			cluster_algorithm as ClusterAlgorithm,
+			cluster_id as ClusterID,` +
 		selectCounts("presubmit_rejects", "PresubmitRejects", "1d") +
 		selectCounts("presubmit_rejects", "PresubmitRejects", "3d") +
 		selectCounts("presubmit_rejects", "PresubmitRejects", "7d") +
