@@ -77,6 +77,24 @@ func Exist(name string) bool {
 	return ok
 }
 
+// command not found linux error tag.
+var CmdNotFoundTag = errors.BoolTag{Key: errors.NewTagKey("command_not_found")}
+
+// other linux error tag.
+var GeneralErrorTag = errors.BoolTag{Key: errors.NewTagKey("general_error")}
+
+// internal error tag.
+var InternalErrorTag = errors.BoolTag{Key: errors.NewTagKey("internal_error")}
+
+// default internal error tag.
+var InternalErrorDefaultTag = errors.BoolTag{Key: errors.NewTagKey("internal_error")}
+
+// exit missing internal error tag.
+var InternalErrorExitMissingTag = errors.BoolTag{Key: errors.NewTagKey("internal_error")}
+
+// other internal error tag.
+var InternalErrorOtherTag = errors.BoolTag{Key: errors.NewTagKey("internal_error")}
+
 // Runner defines the type for a function that will execute a command
 // on a host, and returns the result as a single line.
 type Runner func(context.Context, string) (string, error)
@@ -86,11 +104,29 @@ type Runner func(context.Context, string) (string, error)
 // defines the specific host on which the command will be
 // executed. Examples of such specific hosts can be the DUT, or the
 // servo-host etc.
-func (args RunArgs) NewRunner(host string) Runner {
+func (args *RunArgs) NewRunner(host string) Runner {
 	runner := func(ctx context.Context, cmd string) (string, error) {
 		r := args.Access.Run(ctx, host, cmd)
-		if r.ExitCode != 0 {
-			return "", errors.Reason("runner: command %q completed with exit code %q", cmd, r.ExitCode).Err()
+		exitCode := r.ExitCode
+		if exitCode != 0 {
+			errAnnotator := errors.Reason("runner: command %q completed with exit code %q", cmd, r.ExitCode)
+			// different kinds of internal errors
+			if exitCode < 0 {
+				errAnnotator.Tag(InternalErrorTag)
+				if exitCode == -1 {
+					errAnnotator.Tag(InternalErrorDefaultTag)
+				} else if exitCode == -2 {
+					errAnnotator.Tag(InternalErrorExitMissingTag)
+				} else if exitCode == -3 {
+					errAnnotator.Tag(InternalErrorOtherTag)
+				}
+				// general linux errors
+			} else if exitCode == 127 {
+				errAnnotator.Tag(CmdNotFoundTag)
+			} else {
+				errAnnotator.Tag(GeneralErrorTag)
+			}
+			return "", errAnnotator.Err()
 		}
 		return strings.TrimSpace(r.Stdout), nil
 	}
