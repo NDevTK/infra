@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a9aaf628_e0c1b992",
+        "filename": "go/src/infra/appengine/weetbix/frontend/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-02T04:21:23Z",
+      "side": 1,
+      "message": "nit: active \u003d\u003d \"\"?",
+      "range": {
+        "startLine": 162,
+        "startChar": 23,
+        "endLine": 162,
+        "endChar": 39
+      },
+      "revId": "53984f50471fd7b2d3430e44b51cf979ca8b6b2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6de90c9a_abbd26ce",
+        "filename": "go/src/infra/appengine/weetbix/frontend/ui/src/element/cluster_page.ts",
+        "patchSetId": 5
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-02T04:21:23Z",
+      "side": 1,
+      "message": "nit: See other comment below. This should be just one bug.",
+      "range": {
+        "startLine": 24,
+        "startChar": 10,
+        "endLine": 24,
+        "endChar": 22
+      },
+      "revId": "53984f50471fd7b2d3430e44b51cf979ca8b6b2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3846c460_64923a7e",
+        "filename": "go/src/infra/appengine/weetbix/internal/bugclusters/span.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-02T04:21:23Z",
+      "side": 1,
+      "message": "nit: this should probably only return one cluster, it is a feature of the design that we will only file one bug per cluster.",
+      "range": {
+        "startLine": 96,
+        "startChar": 80,
+        "endLine": 96,
+        "endChar": 93
+      },
+      "revId": "53984f50471fd7b2d3430e44b51cf979ca8b6b2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9fbe5faf_7494c9ef",
+        "filename": "go/src/infra/appengine/weetbix/internal/bugclusters/span_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-02T04:21:23Z",
+      "side": 1,
+      "message": "nit: No bugs in cluster? (i.e. add spaces between words here and below?)\nSee usage on https://github.com/smartystreets/goconvey",
+      "range": {
+        "startLine": 75,
+        "startChar": 10,
+        "endLine": 75,
+        "endChar": 25
+      },
+      "revId": "53984f50471fd7b2d3430e44b51cf979ca8b6b2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
