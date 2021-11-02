@@ -56,6 +56,30 @@
       },
       "revId": "e924318d9582ecf201e1296e61c4c62d3fceecb6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c1621fb4_18fafc56",
+        "filename": "go/src/infra/appengine/sheriff-o-matic/Makefile",
+        "patchSetId": 3
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2021-11-02T22:13:38Z",
+      "side": 1,
+      "message": "When I tried that, it gave me an error\n\n```\ngcloud app deploy --project sheriff-o-matic-staging cron_staging.yaml\nERROR: (gcloud.app.deploy) An error occurred while parsing file: [/usr/local/google/home/nqmtuan/cr/infra/go/src/infra/appengine/sheriff-o-matic/cron_staging.yaml]\nUnexpected attribute \u0027cron\u0027 for object of type AppInfoExternal.\n  in \"/usr/local/google/home/nqmtuan/cr/infra/go/src/infra/appengine/sheriff-o-matic/cron_staging.yaml\", line 2, column 1\nmake: *** [Makefile:68: deploy_cron_staging] Error 1\n\n```\n\nI guess perhaps it expect the cron file to be named cron.yaml.",
+      "parentUuid": "ae8c7f50_85fc037f",
+      "range": {
+        "startLine": 69,
+        "startChar": 1,
+        "endLine": 69,
+        "endChar": 102
+      },
+      "revId": "e924318d9582ecf201e1296e61c4c62d3fceecb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
