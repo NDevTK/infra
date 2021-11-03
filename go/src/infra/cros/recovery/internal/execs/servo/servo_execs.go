@@ -84,7 +84,7 @@ func servodRestartActionExec(ctx context.Context, args *execs.RunArgs, actionArg
 	return nil
 }
 
-func servoDetectUSBKey(ctx context.Context, args *execs.RunArgs, actionArgs []string) error {
+func servoDetectUSBKeyExec(ctx context.Context, args *execs.RunArgs, actionArgs []string) error {
 	res, err := ServodCallGet(ctx, args, "image_usbkey_dev")
 	if err != nil {
 		args.DUT.ServoHost.UsbkeyState = tlw.HardwareStateNotDetected
@@ -134,7 +134,7 @@ func runCheckOnHost(ctx context.Context, args *execs.RunArgs, resourceName strin
 	}
 }
 
-func servoAuditUSBKey(ctx context.Context, args *execs.RunArgs, actionArgs []string) error {
+func servoAuditUSBKeyExec(ctx context.Context, args *execs.RunArgs, actionArgs []string) error {
 	dutUsb := ""
 	if cros.IsSSHable(ctx, args, args.DUT.Name) == nil {
 		log.Debug(ctx, "Servo Audit USB Key: %q is reachable through SSH", args.DUT.Name)
@@ -202,7 +202,7 @@ func isRootServoPresentExec(ctx context.Context, args *execs.RunArgs, actionArgs
 }
 
 // Verify that the root servo is enumerated/present on the host.
-func servoTopologyUpdate(ctx context.Context, args *execs.RunArgs, actionArgs []string) error {
+func servoTopologyUpdateExec(ctx context.Context, args *execs.RunArgs, actionArgs []string) error {
 	runner := args.NewRunner(args.DUT.ServoHost.Name)
 	servoTopology, err := topology.RetrieveServoTopology(ctx, runner, args.DUT.ServoHost.Servo.SerialNumber)
 	if err != nil {
@@ -250,7 +250,7 @@ func servoTopologyUpdate(ctx context.Context, args *execs.RunArgs, actionArgs []
 }
 
 // Verify that servod is responsive
-func servoServodEchoHost(ctx context.Context, args *execs.RunArgs, actionArgs []string) error {
+func servoServodEchoHostExec(ctx context.Context, args *execs.RunArgs, actionArgs []string) error {
 	runner := args.NewRunner(args.DUT.ServoHost.Name)
 	v, err := runner(ctx, fmt.Sprintf(servodHostCheckupCmd, args.DUT.ServoHost.ServodPort))
 	if err != nil {
@@ -297,10 +297,10 @@ func init() {
 	execs.Register("servo_host_servod_init", servodInitActionExec)
 	execs.Register("servo_host_servod_stop", servodStopActionExec)
 	execs.Register("servo_host_servod_restart", servodRestartActionExec)
-	execs.Register("servo_detect_usbkey", servoDetectUSBKey)
-	execs.Register("servo_audit_usbkey", servoAuditUSBKey)
+	execs.Register("servo_detect_usbkey", servoDetectUSBKeyExec)
+	execs.Register("servo_audit_usbkey", servoAuditUSBKeyExec)
 	execs.Register("servo_v4_root_present", isRootServoPresentExec)
-	execs.Register("servo_topology_update", servoTopologyUpdate)
-	execs.Register("servo_servod_echo_host", servoServodEchoHost)
+	execs.Register("servo_topology_update", servoTopologyUpdateExec)
+	execs.Register("servo_servod_echo_host", servoServodEchoHostExec)
 	execs.Register("servo_fw_need_update", servoFirmwareNeedsUpdateExec)
 }
