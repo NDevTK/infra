@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "974016c6_d95cf2c6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-11-03T22:14:19Z",
+      "side": 1,
+      "message": "Otabek, this is a very trivial change. I have updated the names of servo execs to follow the naming convention for exec function. \n\nCan you kindly have a look? ",
+      "revId": "0b2e773654859ceae8a57024e3fd730e00c7be6d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
