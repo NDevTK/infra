@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "1774f714_bef32ae7",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 7
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-11-03T18:45:55Z",
+      "side": 1,
+      "message": "b/200578943 has the immediate motivation. Right now, if you poke around the karte dev instance with the `karte` command line tool, you will frequently get `Internal Error`, even in cases where a more specific error is usable.\n\nI like the `errors.Annotate(err, ...).Err()` thing for adding information and managing it, but I also want to be able to control the GRPC error code that\u0027s currently in effect easily.\n\nI think having a single place where I keep the error manipulation API is a good idea.",
+      "parentUuid": "e42ad142_61189b10",
+      "range": {
+        "startLine": 9,
+        "startChar": 21,
+        "endLine": 9,
+        "endChar": 48
+      },
+      "revId": "9add9f1385a92fdc2524218c9de4e65feec09ac4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "e8eec708_fe13bd7b",
