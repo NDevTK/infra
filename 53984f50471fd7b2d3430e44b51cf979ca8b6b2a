@@ -26,6 +26,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "0415ccb9_05f4802f",
+        "filename": "go/src/infra/appengine/weetbix/frontend/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1178685
+      },
+      "writtenOn": "2021-11-03T02:03:59Z",
+      "side": 1,
+      "message": "Should we use `clusterID \u003d\u003d \"\" \u0026\u0026 active \u003d\u003d \"true\"`?\n\nIt\u0027s a big surprising that clusterID is just ignored when active is \"true\".",
+      "range": {
+        "startLine": 169,
+        "startChar": 11,
+        "endLine": 169,
+        "endChar": 27
+      },
+      "revId": "53984f50471fd7b2d3430e44b51cf979ca8b6b2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6de90c9a_abbd26ce",
         "filename": "go/src/infra/appengine/weetbix/frontend/ui/src/element/cluster_page.ts",
         "patchSetId": 5
