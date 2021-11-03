@@ -22,6 +22,30 @@
       },
       "revId": "b57be7467be14d0d465546050e0457f2afa53c76",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d4366520_0d3a491a",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/state/encoding.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-03T07:08:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cda385c0_f3636b34",
+      "range": {
+        "startLine": 57,
+        "startChar": 16,
+        "endLine": 57,
+        "endChar": 19
+      },
+      "revId": "b57be7467be14d0d465546050e0457f2afa53c76",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
