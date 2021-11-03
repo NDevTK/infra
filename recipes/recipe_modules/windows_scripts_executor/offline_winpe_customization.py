@@ -183,6 +183,10 @@ class OfflineWinPECustomization(customization.Customization):
       src = self._source.get_local_src(action.add_windows_package.src)
       return self.add_windows_package(action.add_windows_package, src)
 
+    if a == 'add_windows_driver':
+      src = self._source.get_local_src(action.add_windows_driver.src)
+      return self.add_windows_driver(action.add_windows_driver, src)
+
     if a == 'edit_offline_registry':
       return regedit.edit_offline_registry(self._powershell, self._scripts,
                                            action.edit_offline_registry,

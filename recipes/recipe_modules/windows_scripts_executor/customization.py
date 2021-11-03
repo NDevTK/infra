@@ -6,6 +6,7 @@ COPYPE = 'Copy-PE.ps1'
 ADDFILE = 'Copy-Item'
 
 from . import add_windows_package
+from . import add_windows_driver
 
 
 class Customization(object):
@@ -59,6 +60,17 @@ class Customization(object):
     add_windows_package.install_package(self._powershell, awp, src,
                                         self._workdir.join('mount'),
                                         self._scratchpad)
+
+  def add_windows_driver(self, awd, src):
+    """ add_windows_driver runs Add-WindowsDriver command in powershell.
+        https://docs.microsoft.com/en-us/powershell/module/dism/add-windowsdriver?view=windowsserver2019-ps
+        Args:
+          awd: actions.AddWindowsDriver proto object
+          src: Path to the driver on bot disk
+    """
+    add_windows_driver.install_driver(self._powershell, awd, src,
+                                      self._workdir.join('mount'),
+                                      self._scratchpad)
 
   def add_file(self, af):
     """ add_file runs Copy-Item in Powershell to copy the given file to image.
