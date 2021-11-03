@@ -121,4 +121,5 @@ SELECT
 FROM failed_test_variants tv, tv.patchsets_with_failures
 JOIN affected_files USING (change, patchset)
 GROUP BY change, patchset
+HAVING COUNT(testVariant) < 20000
 `
