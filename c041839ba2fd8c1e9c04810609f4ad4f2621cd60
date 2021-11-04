@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c9ea1f1_80f20b5e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2021-11-04T19:37:03Z",
+      "side": 1,
+      "message": "LGTM",
+      "revId": "c041839ba2fd8c1e9c04810609f4ad4f2621cd60",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "02f7a275_b53acdf3",
+        "filename": "go/src/infra/rts/cmd/rts-chromium/rejections.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2021-11-04T19:37:03Z",
+      "side": 1,
+      "message": "Could also call this failedTestsLimit. No big deal.",
+      "revId": "c041839ba2fd8c1e9c04810609f4ad4f2621cd60",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
