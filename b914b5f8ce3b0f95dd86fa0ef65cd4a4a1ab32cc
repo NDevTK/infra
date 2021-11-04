@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6d7502c3_b688bd3c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-11-04T21:32:44Z",
+      "side": 1,
+      "message": "Otabek, I updated a few messages to comply with the name of the function. \n\nCan you kindly review this? ",
+      "revId": "b914b5f8ce3b0f95dd86fa0ef65cd4a4a1ab32cc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
