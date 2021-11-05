@@ -33,6 +33,24 @@
       "message": "Could also call this failedTestsLimit. No big deal.",
       "revId": "c041839ba2fd8c1e9c04810609f4ad4f2621cd60",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1ff7ffb0_f2f0245c",
+        "filename": "go/src/infra/rts/cmd/rts-chromium/rejections.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2021-11-05T00:11:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "02f7a275_b53acdf3",
+      "revId": "c041839ba2fd8c1e9c04810609f4ad4f2621cd60",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
