@@ -4,7 +4,16 @@
 
 package config
 
-import "regexp"
+import (
+	"regexp"
+	"time"
+)
+
+// TestVariantBQExportJobDuration is the duration that test variant bq export
+// job uses. In each job, it exports data of the test variants and their
+// verdicts within the duration to BigQuery.
+// The cron job of exporting test variant rows runs once per day.
+const TestVariantBQExportJobDuration = 24 * time.Hour
 
 // ProjectRe matches validly formed LUCI Project names.
 // From https://source.chromium.org/chromium/infra/infra/+/main:luci/appengine/components/components/config/common.py?q=PROJECT_ID_PATTERN
