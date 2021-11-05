@@ -20,6 +20,9 @@ message Verdict {
   // Status of the verdict.
   // String representation of weetbix.v1.VerdictStatus.
   string status = 2;
+
+  // Invocation creation time.
+  google.protobuf.Timestamp create_time = 3;
   // TODO: Add information about clusters and bugs.
 }
 
@@ -43,7 +46,7 @@ message TestVariantRow {
 
   // Description of one specific way of running the test,
   // e.g. a specific bucket, builder and a test suite.
-  weetbix.v1.StringPair variant = 5;
+  repeated weetbix.v1.StringPair variant = 5;
 
   // Information about the test at the time of its execution.
   weetbix.v1.TestMetadata test_metadata = 6;
