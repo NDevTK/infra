@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "324cad13_40531300",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-11-05T05:11:59Z",
+      "side": 1,
+      "message": "PTAL.\n\nTests will be added in the next CL.",
+      "revId": "bddb4b0bfa40a20d742ae1b0fce7235a952a291d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
