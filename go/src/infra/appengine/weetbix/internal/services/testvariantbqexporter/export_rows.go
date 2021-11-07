@@ -43,6 +43,13 @@ type BigQueryExport struct {
 	TimeRange    *pb.TimeRange
 }
 
+func (b *BigQueryExport) GetPredicate() *pb.AnalyzedTestVariantPredicate {
+	if b.Predicate == nil {
+		return &pb.AnalyzedTestVariantPredicate{}
+	}
+	return b.Predicate
+}
+
 // BQExporter exports test variant rows to the dedicated table.
 type BQExporter struct {
 	BqExport *BigQueryExport

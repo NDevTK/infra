@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"sort"
 	"strconv"
 	"strings"
 	"text/template"
@@ -52,8 +53,9 @@ func generateStatement(tmpl *template.Template, input interface{}) (spanner.Stat
 
 func (b *BQExporter) populateQueryParameters() (inputs, params map[string]interface{}, err error) {
 	inputs = map[string]interface{}{
-		"TestIdFilter": b.BqExport.Predicate.TestIdRegexp != "",
-		"StatusFilter": b.BqExport.Predicate.Status != pb.AnalyzedTestVariantStatus_STATUS_UNSPECIFIED,
+		"WithFilter":   b.BqExport.Predicate != nil,
+		"TestIdFilter": b.BqExport.GetPredicate().GetTestIdRegexp() != "",
+		"StatusFilter": b.BqExport.GetPredicate().GetStatus() != pb.AnalyzedTestVariantStatus_STATUS_UNSPECIFIED,
 	}
 
 	params = map[string]interface{}{
@@ -73,15 +75,15 @@ func (b *BQExporter) populateQueryParameters() (inputs, params map[string]interf
 	}
 	params["endTime"] = et
 
-	if re := b.BqExport.Predicate.GetTestIdRegexp(); re != "" && re != ".*" {
+	if re := b.BqExport.GetPredicate().GetTestIdRegexp(); re != "" && re != ".*" {
 		params["testIdRegexp"] = fmt.Sprintf("^%s$", re)
 	}
 
-	if status := b.BqExport.Predicate.GetStatus(); status != pb.AnalyzedTestVariantStatus_STATUS_UNSPECIFIED {
+	if status := b.BqExport.GetPredicate().GetStatus(); status != pb.AnalyzedTestVariantStatus_STATUS_UNSPECIFIED {
 		params["status"] = int(status)
 	}
 
-	switch p := b.BqExport.Predicate.GetVariant().GetPredicate().(type) {
+	switch p := b.BqExport.GetPredicate().GetVariant().GetPredicate().(type) {
 	case *pb.VariantPredicate_Equals:
 		inputs["VariantHashEquals"] = true
 		params["variantHashEquals"] = pbutil.VariantHash(p.Equals)
@@ -106,49 +108,145 @@ type result struct {
 	Invocations           []string
 }
 
-func (b *BQExporter) populateTimeRange(tv *bqpb.TestVariantRow, statusUpdateTime spanner.NullTime) {
-	tv.TimeRange = b.BqExport.TimeRange
-	tv.PartitionTime = tv.TimeRange.Latest
+func (b *BQExporter) timeRanges(previousStatus, currentStatus pb.AnalyzedTestVariantStatus, statusUpdateTime spanner.NullTime) map[pb.AnalyzedTestVariantStatus]*pb.TimeRange {
+	// - if previousStatus satisfies the predicate, insert one row with range (earliest, statusUpdateTime)
+	//   - verdicts also need to be bounded by narrowed time range
+	// - if currentStatus satisfies the predicate, insert one row with range (statusUpdateTime, latest)
+	// - if both satisfy, then 2 rows
+	if !statusUpdateTime.Valid {
+		panic("Empty Status Update time")
+	}
+
+	earliestP := b.BqExport.TimeRange.Earliest
+	// The timestamps have been verified in populateQueryParameters.
+	earliest, _ := pbutil.AsTime(earliestP)
+	sut := statusUpdateTime.Time
+	sutP := pbutil.MustTimestampProto(sut)
+
+	if sut.Before(earliest) {
+		// During the entire b.BqExport.TimeRange the test variant's status has
+		// not changed. Return the original time range as it is.
+		return map[pb.AnalyzedTestVariantStatus]*pb.TimeRange{currentStatus: b.BqExport.TimeRange}
+	}
+
+	trBefore := &pb.TimeRange{
+		Earliest: earliestP,
+		Latest:   sutP,
+	}
+	trAfter := &pb.TimeRange{
+		Earliest: sutP,
+		Latest:   b.BqExport.TimeRange.Latest,
+	}
+
+	exportStatus := b.BqExport.GetPredicate().GetStatus()
+	switch {
+	case previousStatus == pb.AnalyzedTestVariantStatus_STATUS_UNSPECIFIED:
+		// The test variant is newly detected, reduce the time range to trAfter.
+		return map[pb.AnalyzedTestVariantStatus]*pb.TimeRange{currentStatus: trAfter}
+	case exportStatus == pb.AnalyzedTestVariantStatus_STATUS_UNSPECIFIED:
+		// No requirement on test variant status.
+		return map[pb.AnalyzedTestVariantStatus]*pb.TimeRange{previousStatus: trBefore, currentStatus: trAfter}
+	case previousStatus == exportStatus:
+		// Previously the test variant satisfied the predicate, need a row for before status change.
+		return map[pb.AnalyzedTestVariantStatus]*pb.TimeRange{previousStatus: trBefore}
+	case currentStatus == exportStatus:
+		// Currently the test variant satisfies the predicate, need a row for after status change.
+		return map[pb.AnalyzedTestVariantStatus]*pb.TimeRange{currentStatus: trAfter}
+	}
+	return nil
 }
 
-func (b *BQExporter) populateVerdicts(tv *bqpb.TestVariantRow, vs []string) error {
-	verdicts := make([]*bqpb.Verdict, 0, len(vs))
+type verdictInfo struct {
+	verdict               *bqpb.Verdict
+	ingestionTime         time.Time
+	unexpectedResultCount int
+	totalResultCount      int
+}
+
+// convertVerdicts converts strings to verdictInfos.
+// Ordered by IngestionTime.
+func (b *BQExporter) convertVerdicts(vs []string) ([]verdictInfo, error) {
+	verdicts := make([]verdictInfo, 0, len(vs))
 	for _, v := range vs {
 		parts := strings.Split(v, "/")
-		if len(parts) != 3 {
-			return fmt.Errorf("verdict %s in wrong format", v)
+		if len(parts) != 6 {
+			return nil, fmt.Errorf("verdict %s in wrong format", v)
 		}
 		verdict := &bqpb.Verdict{
 			Invocation: parts[0],
 		}
 		s, err := strconv.Atoi(parts[1])
 		if err != nil {
-			return err
+			return nil, err
 		}
 		verdict.Status = pb.VerdictStatus(s).String()
 
-		t, err := time.Parse(time.RFC3339Nano, parts[2])
+		ct, err := time.Parse(time.RFC3339Nano, parts[2])
 		if err != nil {
-			return err
+			return nil, err
 		}
-		verdict.CreateTime = timestamppb.New(t)
-		verdicts = append(verdicts, verdict)
+		verdict.CreateTime = timestamppb.New(ct)
+
+		it, err := time.Parse(time.RFC3339Nano, parts[3])
+		if err != nil {
+			return nil, err
+		}
+
+		unexpectedResultCount, err := strconv.Atoi(parts[4])
+		if err != nil {
+			return nil, err
+		}
+
+		totalResultCount, err := strconv.Atoi(parts[5])
+		if err != nil {
+			return nil, err
+		}
+
+		verdicts = append(verdicts, verdictInfo{
+			verdict:               verdict,
+			ingestionTime:         it,
+			unexpectedResultCount: unexpectedResultCount,
+			totalResultCount:      totalResultCount,
+		})
 	}
-	tv.Verdicts = verdicts
-	return nil
+
+	sort.Slice(verdicts, func(i, j int) bool { return verdicts[i].ingestionTime.Before(verdicts[j].ingestionTime) })
+
+	return verdicts, nil
 }
 
-func (b *BQExporter) populateFlakeStatistics(tv *bqpb.TestVariantRow, res *result) {
+func (b *BQExporter) populateVerdictsInRange(tv *bqpb.TestVariantRow, vs []verdictInfo, tr *pb.TimeRange) {
+	earliest, _ := pbutil.AsTime(tr.Earliest)
+	latest, _ := pbutil.AsTime(tr.Latest)
+	var vsInRange []*bqpb.Verdict
+	for _, v := range vs {
+		if (v.ingestionTime.After(earliest) || v.ingestionTime.Equal(earliest)) && v.ingestionTime.Before(latest) {
+			vsInRange = append(vsInRange, v.verdict)
+		}
+	}
+	tv.Verdicts = vsInRange
+}
+
+func zeroFlakyStatistics() *pb.FlakeStatistics {
+	zero64 := int64(0)
+	return &pb.FlakeStatistics{
+		FlakyVerdictCount:     zero64,
+		TotalVerdictCount:     zero64,
+		FlakyVerdictRate:      float32(0),
+		UnexpectedResultCount: zero64,
+		TotalResultCount:      zero64,
+		UnexpectedResultRate:  float32(0),
+	}
+}
+
+func (b *BQExporter) populateFlakeStatistics(tv *bqpb.TestVariantRow, res *result, vs []verdictInfo, tr *pb.TimeRange) {
+	if b.BqExport.TimeRange.Earliest != tr.Earliest || b.BqExport.TimeRange.Latest != tr.Latest {
+		b.populateFlakeStatisticsByVerdicts(tv, vs, tr)
+		return
+	}
 	zero64 := int64(0)
 	if res.TotalVerdictCount.Valid && res.TotalVerdictCount.Int64 == zero64 {
-		tv.FlakeStatistics = &pb.FlakeStatistics{
-			FlakyVerdictCount:     zero64,
-			TotalVerdictCount:     zero64,
-			FlakyVerdictRate:      float32(0),
-			UnexpectedResultCount: zero64,
-			TotalResultCount:      zero64,
-			UnexpectedResultRate:  float32(0),
-		}
+		tv.FlakeStatistics = zeroFlakyStatistics()
 		return
 	}
 	tv.FlakeStatistics = &pb.FlakeStatistics{
@@ -161,13 +259,69 @@ func (b *BQExporter) populateFlakeStatistics(tv *bqpb.TestVariantRow, res *resul
 	}
 }
 
-func (b *BQExporter) generateTestVariantRow(row *spanner.Row, bf spanutil.Buffer) (*bqpb.TestVariantRow, error) {
+func (b *BQExporter) populateFlakeStatisticsByVerdicts(tv *bqpb.TestVariantRow, vs []verdictInfo, tr *pb.TimeRange) {
+	if len(vs) == 0 {
+		tv.FlakeStatistics = zeroFlakyStatistics()
+		return
+	}
+
+	earliest, _ := pbutil.AsTime(tr.Earliest)
+	latest, _ := pbutil.AsTime(tr.Latest)
+	flakyVerdicts := 0
+	totalVerdicts := 0
+	unexpectedResults := 0
+	totalResults := 0
+	for _, v := range vs {
+		if (v.ingestionTime.After(earliest) || v.ingestionTime.Equal(earliest)) && v.ingestionTime.Before(latest) {
+			totalVerdicts++
+			unexpectedResults += v.unexpectedResultCount
+			totalResults += v.totalResultCount
+			if v.verdict.Status == pb.VerdictStatus_VERDICT_FLAKY.String() {
+				flakyVerdicts++
+			}
+		}
+	}
+
+	if totalVerdicts == 0 {
+		tv.FlakeStatistics = zeroFlakyStatistics()
+		return
+	}
+
+	tv.FlakeStatistics = &pb.FlakeStatistics{
+		FlakyVerdictCount:     int64(flakyVerdicts),
+		TotalVerdictCount:     int64(totalVerdicts),
+		FlakyVerdictRate:      float32(flakyVerdicts) / float32(totalVerdicts),
+		UnexpectedResultCount: int64(unexpectedResults),
+		TotalResultCount:      int64(totalResults),
+		UnexpectedResultRate:  float32(unexpectedResults) / float32(totalResults),
+	}
+}
+
+func deepCopy(tv *bqpb.TestVariantRow) *bqpb.TestVariantRow {
+	return &bqpb.TestVariantRow{
+		Name:         tv.Name,
+		Realm:        tv.Realm,
+		TestId:       tv.TestId,
+		VariantHash:  tv.VariantHash,
+		Variant:      tv.Variant,
+		TestMetadata: tv.TestMetadata,
+		Tags:         tv.Tags,
+	}
+}
+
+// generateTestVariantRows converts a bq.Row to *bqpb.TestVariantRows.
+//
+// For the most cases it should return one row. But if the test variant
+// changes status during the default time range, it may need to export 2 rows
+// for the previous and current statuses with smaller time ranges.
+func (b *BQExporter) generateTestVariantRows(row *spanner.Row, bf spanutil.Buffer) ([]*bqpb.TestVariantRow, error) {
 	tv := &bqpb.TestVariantRow{}
 	va := &pb.Variant{}
 	var vs []*result
 	var statusUpdateTime spanner.NullTime
 	var tmd spanutil.Compressed
-	var status pb.AnalyzedTestVariantStatus
+	var status, previousStatus pb.AnalyzedTestVariantStatus
+	var psInt spanner.NullInt64
 	if err := bf.FromSpanner(
 		row,
 		&tv.Realm,
@@ -177,10 +331,17 @@ func (b *BQExporter) generateTestVariantRow(row *spanner.Row, bf spanutil.Buffer
 		&tv.Tags,
 		&tmd,
 		&status,
+		&psInt,
 		&statusUpdateTime,
 		&vs,
 	); err != nil {
 		return nil, err
+	}
+
+	if psInt.Valid {
+		previousStatus = pb.AnalyzedTestVariantStatus(psInt.Int64)
+	} else {
+		previousStatus = pb.AnalyzedTestVariantStatus_STATUS_UNSPECIFIED
 	}
 
 	tv.Name = testVariantName(tv.Realm, tv.TestId, tv.VariantHash)
@@ -198,12 +359,24 @@ func (b *BQExporter) generateTestVariantRow(row *spanner.Row, bf spanutil.Buffer
 		}
 	}
 
-	b.populateTimeRange(tv, statusUpdateTime)
-	b.populateFlakeStatistics(tv, vs[0])
-	if err := b.populateVerdicts(tv, vs[0].Invocations); err != nil {
+	timeRanges := b.timeRanges(previousStatus, status, statusUpdateTime)
+	verdicts, err := b.convertVerdicts(vs[0].Invocations)
+	if err != nil {
 		return nil, err
 	}
-	return tv, nil
+
+	var tvs []*bqpb.TestVariantRow
+	for s, r := range timeRanges {
+		newTV := deepCopy(tv)
+		newTV.TimeRange = r
+		newTV.PartitionTime = r.Latest
+		newTV.Status = s.String()
+		b.populateFlakeStatistics(newTV, vs[0], verdicts, r)
+		b.populateVerdictsInRange(newTV, verdicts, r)
+		tvs = append(tvs, newTV)
+	}
+
+	return tvs, nil
 }
 
 func (b *BQExporter) query(ctx context.Context, f func(*bqpb.TestVariantRow) error) error {
@@ -220,11 +393,16 @@ func (b *BQExporter) query(ctx context.Context, f func(*bqpb.TestVariantRow) err
 	var bf spanutil.Buffer
 	return span.Query(ctx, st).Do(
 		func(row *spanner.Row) error {
-			tvr, err := b.generateTestVariantRow(row, bf)
+			tvrs, err := b.generateTestVariantRows(row, bf)
 			if err != nil {
 				return err
 			}
-			return f(tvr)
+			for _, tvr := range tvrs {
+				if err := f(tvr); err != nil {
+					return err
+				}
+			}
+			return nil
 		},
 	)
 }
@@ -360,9 +538,6 @@ var testVariantRowsTmpl = template.Must(template.New("testVariantRowsTmpl").Pars
 			VariantHash,
 		FROM AnalyzedTestVariants
 		WHERE Realm = @realm
-		{{if .StatusFilter}}
-			AND Status = @status
-    {{end}}
 		{{/* Filter by TestId */}}
 		{{if .TestIdFilter}}
 			AND REGEXP_CONTAINS(TestId, @testIdRegexp)
@@ -374,7 +549,14 @@ var testVariantRowsTmpl = template.Must(template.New("testVariantRowsTmpl").Pars
 		{{if .VariantContains }}
 			AND (SELECT LOGICAL_AND(kv IN UNNEST(Variant)) FROM UNNEST(@variantContains) kv)
 		{{end}}
-		And StatusUpdateTime < @endTime
+		AND StatusUpdateTime < @endTime
+		{{/* Filter by status */}}
+		{{if .StatusFilter}}
+			AND (
+				Status = @status
+				OR (StatusUpdateTime > @startTime AND PreviousStatus = @status)
+			)
+    {{end}}
 	)
 
 	SELECT
@@ -385,6 +567,7 @@ var testVariantRowsTmpl = template.Must(template.New("testVariantRowsTmpl").Pars
 		Tags,
 		TestMetadata,
 		Status,
+		PreviousStatus,
 		StatusUpdateTime,
 		ARRAY(
 		SELECT
@@ -395,7 +578,7 @@ var testVariantRowsTmpl = template.Must(template.New("testVariantRowsTmpl").Pars
 			-- Using struct here will trigger the "null-valued array of struct" query shape
 			-- which is not supported by Spanner.
 			-- Use a string to work around it.
-			ARRAY_AGG(FORMAT('%s/%d/%s', InvocationId, Status, FORMAT_TIMESTAMP("%FT%H:%M:%E*S%Ez", InvocationCreationTime))) Invocations
+			ARRAY_AGG(FORMAT('%s/%d/%s/%s/%d/%d', InvocationId, Status, FORMAT_TIMESTAMP("%FT%H:%M:%E*S%Ez", InvocationCreationTime), FORMAT_TIMESTAMP("%FT%H:%M:%E*S%Ez", IngestionTime), UnexpectedResultCount, TotalResultCount)) Invocations
 		FROM
 			Verdicts
 		WHERE
