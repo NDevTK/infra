@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e2ba6f2e_fb0e89b2",
+        "filename": "go/src/infra/appengine/weetbix/internal/services/testvariantbqexporter/export_rows_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-08T23:17:59Z",
+      "side": 1,
+      "message": "Do we need tests for other predicates too?",
+      "range": {
+        "startLine": 115,
+        "startChar": 3,
+        "endLine": 117,
+        "endChar": 5
+      },
+      "revId": "e34f996a649c2e0de65a6479ea291285dde07ffe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2f550c41_8592ec85",
+        "filename": "go/src/infra/appengine/weetbix/internal/services/testvariantbqexporter/test_variant_row.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-08T23:17:59Z",
+      "side": 1,
+      "message": "clar: why do we have these predicates? what use case does it enable?",
+      "range": {
+        "startLine": 53,
+        "startChar": 18,
+        "endLine": 53,
+        "endChar": 37
+      },
+      "revId": "e34f996a649c2e0de65a6479ea291285dde07ffe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "90f993a0_afd0d5d6",
+        "filename": "go/src/infra/appengine/weetbix/internal/services/testvariantbqexporter/test_variant_row.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-08T23:17:59Z",
+      "side": 1,
+      "message": "clar: Does writing \"0\" not work?",
+      "range": {
+        "startLine": 143,
+        "startChar": 26,
+        "endLine": 143,
+        "endChar": 32
+      },
+      "revId": "e34f996a649c2e0de65a6479ea291285dde07ffe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
