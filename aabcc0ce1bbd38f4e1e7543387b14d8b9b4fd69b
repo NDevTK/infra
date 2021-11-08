@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5939460c_0c0e8df1",
+        "filename": "go/src/infra/appengine/weetbix/internal/services/testvariantbqexporter/test_variant_row.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-11-08T20:19:35Z",
+      "side": 1,
+      "message": "I don\u0027t think it\u0027s necessary, actually since the approximate batch size is 2MB, I don\u0027t think batchSize is needed. Removed.",
+      "parentUuid": "6de96196_c083d3f5",
+      "range": {
+        "startLine": 41,
+        "startChar": 15,
+        "endLine": 41,
+        "endChar": 25
+      },
+      "revId": "aabcc0ce1bbd38f4e1e7543387b14d8b9b4fd69b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "629ed671_912298cb",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-11-07T23:36:09Z",
       "side": 1,
       "message": "I wonder if you would consider lifting this up to the bqutil level, so the other BigQuery export code would benefit from it?\n(Possibly also the detection of the accessDenied error.)",
+      "range": {
+        "startLine": 104,
+        "startChar": 0,
+        "endLine": 130,
+        "endChar": 1
+      },
+      "revId": "aabcc0ce1bbd38f4e1e7543387b14d8b9b4fd69b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bcf9f07d_cdcc3dbf",
+        "filename": "go/src/infra/appengine/weetbix/internal/services/testvariantbqexporter/test_variant_row.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-11-08T20:19:35Z",
+      "side": 1,
+      "message": "Good idea. Moved.",
+      "parentUuid": "629ed671_912298cb",
       "range": {
         "startLine": 104,
         "startChar": 0,
