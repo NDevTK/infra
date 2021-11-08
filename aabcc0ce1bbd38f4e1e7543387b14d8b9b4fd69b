@@ -3,6 +3,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6de96196_c083d3f5",
+        "filename": "go/src/infra/appengine/weetbix/internal/services/testvariantbqexporter/test_variant_row.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-11-08T02:36:31Z",
+      "side": 1,
+      "message": "This is quite an expensive function, as the proto needs to be reflected walked and (almost) serialized.\n\nIs it really necessary to know the exact batch size in bytes?",
+      "range": {
+        "startLine": 41,
+        "startChar": 15,
+        "endLine": 41,
+        "endChar": 25
+      },
+      "revId": "aabcc0ce1bbd38f4e1e7543387b14d8b9b4fd69b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "629ed671_912298cb",
         "filename": "go/src/infra/appengine/weetbix/internal/services/testvariantbqexporter/test_variant_row.go",
         "patchSetId": 4
