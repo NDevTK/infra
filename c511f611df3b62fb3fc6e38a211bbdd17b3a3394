@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8a26409a_e5f49940",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-11-10T00:40:13Z",
+      "side": 1,
+      "message": "I don\u0027t really understand what this CL is doing.\n\nCan you give examples here, in the code, or in a linked doc?",
+      "revId": "c511f611df3b62fb3fc6e38a211bbdd17b3a3394",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
