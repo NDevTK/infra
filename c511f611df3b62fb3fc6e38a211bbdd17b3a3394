@@ -16,6 +16,24 @@
       "message": "I don\u0027t really understand what this CL is doing.\n\nCan you give examples here, in the code, or in a linked doc?",
       "revId": "c511f611df3b62fb3fc6e38a211bbdd17b3a3394",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c0478a1f_1fbdd32b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-11-10T01:47:56Z",
+      "side": 1,
+      "message": "Added the explanation and example in the CL description. There are also examples in the tests at export_rows_test.go.",
+      "parentUuid": "8a26409a_e5f49940",
+      "revId": "c511f611df3b62fb3fc6e38a211bbdd17b3a3394",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
