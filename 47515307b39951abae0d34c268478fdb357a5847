@@ -16,6 +16,29 @@
       "message": "PTAL.\n",
       "revId": "47515307b39951abae0d34c268478fdb357a5847",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6b800a05_d663a29c",
+        "filename": "go/src/infra/appengine/weetbix/internal/services/testvariantbqexporter/export_rows.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-11T01:24:07Z",
+      "side": 1,
+      "message": "consider defaulting it on line ~68, when you create the BQExporter (or throw an error if it is not set?)\n\nWhile such methods exist on protos, having two ways to access the same field creates opportunities for errors.",
+      "range": {
+        "startLine": 48,
+        "startChar": 0,
+        "endLine": 51,
+        "endChar": 19
+      },
+      "revId": "47515307b39951abae0d34c268478fdb357a5847",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
