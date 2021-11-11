@@ -256,6 +256,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "a62cb094_1ee7508d",
+        "filename": "go/src/infra/appengine/weetbix/internal/services/testvariantbqexporter/test_variant_row.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-11T01:25:45Z",
+      "side": 1,
+      "message": "what about: ranges\n\nstrs reads like \"strings\"",
+      "range": {
+        "startLine": 156,
+        "startChar": 4,
+        "endLine": 156,
+        "endChar": 8
+      },
+      "revId": "09980783eb3d4e3539d7e2ab342800d9fa21d1f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c6cb74c8_04016330",
         "filename": "go/src/infra/appengine/weetbix/internal/services/testvariantbqexporter/test_variant_row.go",
         "patchSetId": 6
