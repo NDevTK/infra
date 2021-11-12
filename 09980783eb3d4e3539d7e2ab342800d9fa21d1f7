@@ -544,6 +544,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "2a1ad41c_ec952d55",
+        "filename": "go/src/infra/appengine/weetbix/internal/services/testvariantbqexporter/test_variant_row.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-12T00:03:53Z",
+      "side": 1,
+      "message": "I think this method will be easier to understand if the same time types are used throughout. \n\nIn my view rangeStart should be a time.Time. Then you can eliminate the updateTimeProto variable and use the approach proposed here.",
+      "parentUuid": "e060e60c_fb25d0ed",
+      "range": {
+        "startLine": 150,
+        "startChar": 3,
+        "endLine": 150,
+        "endChar": 25
+      },
+      "revId": "09980783eb3d4e3539d7e2ab342800d9fa21d1f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a62cb094_1ee7508d",
         "filename": "go/src/infra/appengine/weetbix/internal/services/testvariantbqexporter/test_variant_row.go",
         "patchSetId": 6

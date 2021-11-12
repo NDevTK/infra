@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dd197be1_76502e1b",
+        "filename": "go/src/infra/appengine/weetbix/internal/services/testvariantbqexporter/test_variant_row.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-12T00:03:53Z",
+      "side": 1,
+      "message": "\"returns a list of updated timeranges\" still does not seem that informative to me, I would still recommend updating that part to be more precise, e.g.:\n\n\"timeRanges splits the exported time range into the distinct time ranges to be exported, corresponding to the different statuses the test had during the exported time range. Only the time ranges which had a status meeting the criteria to be exported are returned.\"",
+      "range": {
+        "startLine": 113,
+        "startChar": 2,
+        "endLine": 113,
+        "endChar": 52
+      },
+      "revId": "e78564268c9317f739d861b070bdc52aace66ac4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4db1c5b5_d2ef8385",
+        "filename": "go/src/infra/appengine/weetbix/internal/services/testvariantbqexporter/test_variant_row.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-12T00:03:53Z",
+      "side": 1,
+      "message": "nit: use space instead of tab",
+      "range": {
+        "startLine": 123,
+        "startChar": 2,
+        "endLine": 123,
+        "endChar": 3
+      },
+      "revId": "e78564268c9317f739d861b070bdc52aace66ac4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fb3ae1bb_02c47487",
+        "filename": "go/src/infra/appengine/weetbix/internal/services/testvariantbqexporter/test_variant_row.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-12T00:03:53Z",
+      "side": 1,
+      "message": "nit: I think the mixed use of times and protos in this method is confusing. Pick either prototime or golang time and stick with it as far as possible.\n\nprefer:\nrangeEnd :\u003d exportEnd",
+      "range": {
+        "startLine": 142,
+        "startChar": 1,
+        "endLine": 142,
+        "endChar": 39
+      },
+      "revId": "e78564268c9317f739d861b070bdc52aace66ac4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bc9f3f60_bd0bdc20",
+        "filename": "go/src/infra/appengine/weetbix/internal/services/testvariantbqexporter/test_variant_row.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-12T00:03:53Z",
+      "side": 1,
+      "message": "nit: having parallel time variables adds to complexity, prefer to convert to proto only when you need to (i.e. at the last step, when you construct the proto).",
+      "range": {
+        "startLine": 150,
+        "startChar": 2,
+        "endLine": 150,
+        "endChar": 58
+      },
+      "revId": "e78564268c9317f739d861b070bdc52aace66ac4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
