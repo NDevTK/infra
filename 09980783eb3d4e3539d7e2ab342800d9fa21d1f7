@@ -566,6 +566,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dece6fc7_ec757e25",
+        "filename": "go/src/infra/appengine/weetbix/internal/services/testvariantbqexporter/test_variant_row.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-11-12T01:33:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2a1ad41c_ec952d55",
+      "range": {
+        "startLine": 150,
+        "startChar": 3,
+        "endLine": 150,
+        "endChar": 25
+      },
+      "revId": "09980783eb3d4e3539d7e2ab342800d9fa21d1f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a62cb094_1ee7508d",

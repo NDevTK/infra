@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1bd3ef5c_660418b1",
+        "filename": "go/src/infra/appengine/weetbix/internal/services/testvariantbqexporter/test_variant_row.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-11-12T01:33:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dd197be1_76502e1b",
+      "range": {
+        "startLine": 113,
+        "startChar": 2,
+        "endLine": 113,
+        "endChar": 52
+      },
+      "revId": "e78564268c9317f739d861b070bdc52aace66ac4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4db1c5b5_d2ef8385",
@@ -54,6 +78,30 @@
       "writtenOn": "2021-11-12T00:03:53Z",
       "side": 1,
       "message": "nit: use space instead of tab",
+      "range": {
+        "startLine": 123,
+        "startChar": 2,
+        "endLine": 123,
+        "endChar": 3
+      },
+      "revId": "e78564268c9317f739d861b070bdc52aace66ac4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f48b983d_ba8bb8f0",
+        "filename": "go/src/infra/appengine/weetbix/internal/services/testvariantbqexporter/test_variant_row.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-11-12T01:33:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4db1c5b5_d2ef8385",
       "range": {
         "startLine": 123,
         "startChar": 2,
@@ -87,6 +135,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e799b6b5_0a4ddcba",
+        "filename": "go/src/infra/appengine/weetbix/internal/services/testvariantbqexporter/test_variant_row.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-11-12T01:33:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fb3ae1bb_02c47487",
+      "range": {
+        "startLine": 142,
+        "startChar": 1,
+        "endLine": 142,
+        "endChar": 39
+      },
+      "revId": "e78564268c9317f739d861b070bdc52aace66ac4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bc9f3f60_bd0bdc20",
@@ -100,6 +172,30 @@
       "writtenOn": "2021-11-12T00:03:53Z",
       "side": 1,
       "message": "nit: having parallel time variables adds to complexity, prefer to convert to proto only when you need to (i.e. at the last step, when you construct the proto).",
+      "range": {
+        "startLine": 150,
+        "startChar": 2,
+        "endLine": 150,
+        "endChar": 58
+      },
+      "revId": "e78564268c9317f739d861b070bdc52aace66ac4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "35b052e3_c500c1bc",
+        "filename": "go/src/infra/appengine/weetbix/internal/services/testvariantbqexporter/test_variant_row.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-11-12T01:33:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bc9f3f60_bd0bdc20",
       "range": {
         "startLine": 150,
         "startChar": 2,
