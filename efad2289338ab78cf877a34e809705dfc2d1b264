@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e8d8755a_565c66ca",
+        "filename": "go/src/infra/appengine/weetbix/internal/admin/proto/admin.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-11-15T19:01:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "df6041f4_6b6624af",
+      "range": {
+        "startLine": 14,
+        "startChar": 9,
+        "endLine": 14,
+        "endChar": 11
+      },
+      "revId": "efad2289338ab78cf877a34e809705dfc2d1b264",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3837a8ca_07c591ef",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-11-15T04:24:55Z",
       "side": 1,
       "message": "See comments on\nhttps://chromium-review.googlesource.com/c/infra/infra/+/3280405/1\n\nIt would be good to document the purpose and limitations of this API. At present it is not clear when it would be used. (Backfill seems limited to last 24 hours, and does not cover ingestion, which is not discussed in any of the documentation?)",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 87
+      },
+      "revId": "efad2289338ab78cf877a34e809705dfc2d1b264",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c4a6ab04_535c41cf",
+        "filename": "go/src/infra/appengine/weetbix/internal/admin/proto/admin.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-11-15T19:01:07Z",
+      "side": 1,
+      "message": "Added comments.\n\nNot sure where does the 24 hours come from though.",
+      "parentUuid": "3837a8ca_07c591ef",
       "range": {
         "startLine": 21,
         "startChar": 0,
