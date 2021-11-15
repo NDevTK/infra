@@ -43,6 +43,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "4aa57ecf_c55dc1a0",
+        "filename": "go/src/infra/appengine/weetbix/internal/admin/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-11-15T23:36:55Z",
+      "side": 1,
+      "message": "crbug.com/1270508",
+      "parentUuid": "529ff8d0_6b5d4fb7",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 30,
+        "endChar": 49
+      },
+      "revId": "86a3dc351b73a3717dd32aefca0903eb2944ff97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "781eb24e_254d67f7",
         "filename": "go/src/infra/appengine/weetbix/internal/admin/server.go",
         "patchSetId": 1
@@ -219,6 +243,30 @@
       "side": 1,
       "message": "The 24 hours came from my recollection of the retention period on Status history.\n\nThough looking at the code currently checked-in, we don\u0027t apply any retention. So this seems fine.",
       "parentUuid": "65fe9bdc_68a0061d",
+      "range": {
+        "startLine": 174,
+        "startChar": 2,
+        "endLine": 177,
+        "endChar": 4
+      },
+      "revId": "86a3dc351b73a3717dd32aefca0903eb2944ff97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b9cba31f_af2e59db",
+        "filename": "go/src/infra/appengine/weetbix/internal/admin/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-11-15T23:36:55Z",
+      "side": 1,
+      "message": "Yeah I mentioned that currently all status update records are kept at https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/appengine/weetbix/internal/services/testvariantupdator/update_test_variant.go;l\u003d150;drc\u003dcf4f5d9479bd36e45db3233d271759b5041f127c",
+      "parentUuid": "e45ccd7a_3d28eea9",
       "range": {
         "startLine": 174,
         "startChar": 2,
