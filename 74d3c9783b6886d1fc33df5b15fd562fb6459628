@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c26acbd9_917225c8",
+        "filename": "go/src/infra/appengine/weetbix/frontend/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 333,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-15T22:23:39Z",
+      "side": 1,
+      "message": "It would be good to document somewhere how we can call this manually.",
+      "range": {
+        "startLine": 333,
+        "startChar": 2,
+        "endLine": 333,
+        "endChar": 61
+      },
+      "revId": "74d3c9783b6886d1fc33df5b15fd562fb6459628",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "960bc0c0_a8297b2c",
+        "filename": "go/src/infra/appengine/weetbix/internal/admin/server.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-15T22:23:39Z",
+      "side": 1,
+      "message": "Should we validate that the latest time is not too far ahead of the current time?",
+      "revId": "74d3c9783b6886d1fc33df5b15fd562fb6459628",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

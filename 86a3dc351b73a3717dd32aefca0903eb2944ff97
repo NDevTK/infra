@@ -205,6 +205,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e45ccd7a_3d28eea9",
+        "filename": "go/src/infra/appengine/weetbix/internal/admin/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-15T22:23:39Z",
+      "side": 1,
+      "message": "The 24 hours came from my recollection of the retention period on Status history.\n\nThough looking at the code currently checked-in, we don\u0027t apply any retention. So this seems fine.",
+      "parentUuid": "65fe9bdc_68a0061d",
+      "range": {
+        "startLine": 174,
+        "startChar": 2,
+        "endLine": 177,
+        "endChar": 4
+      },
+      "revId": "86a3dc351b73a3717dd32aefca0903eb2944ff97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c4969556_694a4c8c",
