@@ -60,6 +60,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e812afef_54c40e40",
+        "filename": "go/src/infra/appengine/weetbix/internal/admin/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-11-15T22:01:59Z",
+      "side": 1,
+      "message": "I don\u0027t have strong opinion on this: it\u0027s just schedule a bunch of bqexport tasks.\n\nLMK what limit do you prefer.",
+      "parentUuid": "781eb24e_254d67f7",
+      "revId": "86a3dc351b73a3717dd32aefca0903eb2944ff97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d47a3344_9ef44452",
         "filename": "go/src/infra/appengine/weetbix/internal/admin/server.go",
         "patchSetId": 1
@@ -71,6 +89,30 @@
       "writtenOn": "2021-11-15T02:20:28Z",
       "side": 1,
       "message": "technically this is truncate, not round.",
+      "range": {
+        "startLine": 130,
+        "startChar": 4,
+        "endLine": 130,
+        "endChar": 9
+      },
+      "revId": "86a3dc351b73a3717dd32aefca0903eb2944ff97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4e7f6dba_8c94908a",
+        "filename": "go/src/infra/appengine/weetbix/internal/admin/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-11-15T22:01:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d47a3344_9ef44452",
       "range": {
         "startLine": 130,
         "startChar": 4,
@@ -100,6 +142,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1c09bc6d_83901099",
+        "filename": "go/src/infra/appengine/weetbix/internal/admin/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-11-15T22:01:59Z",
+      "side": 1,
+      "message": "Sorry I don\u0027t get it. What should I round end to?",
+      "parentUuid": "7d18554c_8cfc0c0b",
+      "revId": "86a3dc351b73a3717dd32aefca0903eb2944ff97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e6ad8dff_193a47e3",
         "filename": "go/src/infra/appengine/weetbix/internal/admin/server.go",
         "patchSetId": 1
@@ -111,6 +171,30 @@
       "writtenOn": "2021-11-15T04:14:07Z",
       "side": 1,
       "message": "clar: will this actually work? / when will this API be used?\n\nIIUC, the export job relies upon the test variant state in Spanner, which remains for only a short time.\n\nAlso, how will the ingestion of data be handled if backfill is desired?",
+      "range": {
+        "startLine": 174,
+        "startChar": 2,
+        "endLine": 177,
+        "endChar": 4
+      },
+      "revId": "86a3dc351b73a3717dd32aefca0903eb2944ff97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "65fe9bdc_68a0061d",
+        "filename": "go/src/infra/appengine/weetbix/internal/admin/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-11-15T22:01:59Z",
+      "side": 1,
+      "message": "See reply at https://chromium-review.googlesource.com/c/infra/infra/+/3280404/comments/3837a8ca_07c591ef.",
+      "parentUuid": "e6ad8dff_193a47e3",
       "range": {
         "startLine": 174,
         "startChar": 2,
@@ -134,6 +218,24 @@
       "writtenOn": "2021-11-15T02:20:28Z",
       "side": 1,
       "message": "probably should also check a logged in user who is not part of the group.",
+      "revId": "86a3dc351b73a3717dd32aefca0903eb2944ff97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5e60d83f_41d97378",
+        "filename": "go/src/infra/appengine/weetbix/internal/admin/server_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-11-15T22:01:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c4969556_694a4c8c",
       "revId": "86a3dc351b73a3717dd32aefca0903eb2944ff97",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
