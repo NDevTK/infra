@@ -39,6 +39,80 @@
       },
       "revId": "86a3dc351b73a3717dd32aefca0903eb2944ff97",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "781eb24e_254d67f7",
+        "filename": "go/src/infra/appengine/weetbix/internal/admin/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-11-15T02:20:28Z",
+      "side": 1,
+      "message": "Should we add a limit as to how much time can be scheduled in one request?",
+      "revId": "86a3dc351b73a3717dd32aefca0903eb2944ff97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d47a3344_9ef44452",
+        "filename": "go/src/infra/appengine/weetbix/internal/admin/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-11-15T02:20:28Z",
+      "side": 1,
+      "message": "technically this is truncate, not round.",
+      "range": {
+        "startLine": 130,
+        "startChar": 4,
+        "endLine": 130,
+        "endChar": 9
+      },
+      "revId": "86a3dc351b73a3717dd32aefca0903eb2944ff97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7d18554c_8cfc0c0b",
+        "filename": "go/src/infra/appengine/weetbix/internal/admin/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-11-15T02:20:28Z",
+      "side": 1,
+      "message": "I think you might need to round the end value here to account for leap seconds and such things.",
+      "revId": "86a3dc351b73a3717dd32aefca0903eb2944ff97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c4969556_694a4c8c",
+        "filename": "go/src/infra/appengine/weetbix/internal/admin/server_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-11-15T02:20:28Z",
+      "side": 1,
+      "message": "probably should also check a logged in user who is not part of the group.",
+      "revId": "86a3dc351b73a3717dd32aefca0903eb2944ff97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
