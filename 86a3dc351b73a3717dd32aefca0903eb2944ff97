@@ -100,6 +100,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e6ad8dff_193a47e3",
+        "filename": "go/src/infra/appengine/weetbix/internal/admin/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-15T04:14:07Z",
+      "side": 1,
+      "message": "clar: will this actually work? / when will this API be used?\n\nIIUC, the export job relies upon the test variant state in Spanner, which remains for only a short time.\n\nAlso, how will the ingestion of data be handled if backfill is desired?",
+      "range": {
+        "startLine": 174,
+        "startChar": 2,
+        "endLine": 177,
+        "endChar": 4
+      },
+      "revId": "86a3dc351b73a3717dd32aefca0903eb2944ff97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c4969556_694a4c8c",
         "filename": "go/src/infra/appengine/weetbix/internal/admin/server_test.go",
         "patchSetId": 1
