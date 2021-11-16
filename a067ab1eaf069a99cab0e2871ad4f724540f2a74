@@ -16,6 +16,40 @@
       "message": "Otabek, I have tested this CL. Can you kindly review this? ",
       "revId": "a067ab1eaf069a99cab0e2871ad4f724540f2a74",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "187b7d32_0046474b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-16T16:51:37Z",
+      "side": 1,
+      "message": "% comment",
+      "revId": "a067ab1eaf069a99cab0e2871ad4f724540f2a74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "911c72ea_f40d6339",
+        "filename": "go/src/infra/cros/recovery/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 565,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-16T16:51:37Z",
+      "side": 1,
+      "message": "missing `\"expected_string_value:on\"`",
+      "revId": "a067ab1eaf069a99cab0e2871ad4f724540f2a74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
