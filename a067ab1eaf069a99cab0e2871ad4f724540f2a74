@@ -50,6 +50,24 @@
       "message": "missing `\"expected_string_value:on\"`",
       "revId": "a067ab1eaf069a99cab0e2871ad4f724540f2a74",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "456c39e4_66c364f4",
+        "filename": "go/src/infra/cros/recovery/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 565,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-11-16T19:18:12Z",
+      "side": 1,
+      "message": "As discussed offline, updated this to \"off\". \n\nI will submit this CL now since it has the required approvals.",
+      "parentUuid": "911c72ea_f40d6339",
+      "revId": "a067ab1eaf069a99cab0e2871ad4f724540f2a74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
