@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "93385218_80b1cbf5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-11-16T09:52:03Z",
+      "side": 1,
+      "message": "Otabek, I have tested this CL. Can you kindly review this? ",
+      "revId": "a067ab1eaf069a99cab0e2871ad4f724540f2a74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
