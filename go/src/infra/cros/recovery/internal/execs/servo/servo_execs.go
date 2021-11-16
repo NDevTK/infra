@@ -310,7 +310,7 @@ func servoFirmwareNeedsUpdateExec(ctx context.Context, args *execs.RunArgs, acti
 //
 // the actionArgs should be in the format of ["command:....", "string_value:...."]
 func servoSetExec(ctx context.Context, args *execs.RunArgs, actionArgs []string) error {
-	m := execs.ParseActionArgs(ctx, actionArgs, ":")
+	m := execs.ParseActionArgs(ctx, actionArgs, execs.DefaultSplitter)
 	command, existed := m["command"]
 	if !existed {
 		return errors.Reason("servo match state: command not found in the argument").Err()
@@ -379,6 +379,8 @@ func servoCheckServodControlExec(ctx context.Context, args *execs.RunArgs, actio
 			return errors.Reason("servo check servod control exec: for servod control %s, the value %s returned from servod is different from the expected value %s", command, controlValue, expectedValue).Err()
 		}
 		log.Debug(ctx, "Servo Check Servod Control Exec: actual control value matches the expected value")
+	} else {
+		log.Debug(ctx, "Servo Check Servod Control Exec: no expected value was specified, verification concluded upon successful response from servod.")
 	}
 	return nil
 }
