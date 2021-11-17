@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fb1d8a79_f297f583",
+        "filename": "appengine/monorail/package-lock.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 9849,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2021-11-17T22:35:32Z",
+      "side": 1,
+      "message": "This version is too new, I believe we typically wait 3 or 4 weeks before updating to a particular version. I wish that we had somewhere more static to point to around this policy http://g/chops-workflow-team/wAzdT2GU6uY/jTOkQmZFAgAJ.\n\nIs it necessary for us to update the package-lock.json when we don\u0027t appear to be using any new packages? Or maybe I missed it",
+      "range": {
+        "startLine": 9849,
+        "startChar": 5,
+        "endLine": 9849,
+        "endChar": 25
+      },
+      "revId": "8cf3ce6e481302612ef190defb8c05ba265e5b98",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1e8f20e5_2fe13575",
+        "filename": "appengine/monorail/package-lock.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 12440,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2021-11-17T22:35:32Z",
+      "side": 1,
+      "message": "It\u0027s not clear to me why we need this now?",
+      "range": {
+        "startLine": 12440,
+        "startChar": 0,
+        "endLine": 12440,
+        "endChar": 13
+      },
+      "revId": "8cf3ce6e481302612ef190defb8c05ba265e5b98",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "48d3626d_fbf70d60",
+        "filename": "appengine/monorail/static_src/shared/md-helper.test.js",
+        "patchSetId": 4
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2021-11-17T22:35:32Z",
+      "side": 1,
+      "message": "Why do we need to import this?",
+      "range": {
+        "startLine": 2,
+        "startChar": 0,
+        "endLine": 2,
+        "endChar": 57
+      },
+      "revId": "8cf3ce6e481302612ef190defb8c05ba265e5b98",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fa4c57d1_107df9fd",
+        "filename": "appengine/monorail/static_src/shared/md-helper.test.js",
+        "patchSetId": 4
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2021-11-17T22:35:32Z",
+      "side": 1,
+      "message": "Was this added by `git cl format`?",
+      "range": {
+        "startLine": 78,
+        "startChar": 82,
+        "endLine": 78,
+        "endChar": 83
+      },
+      "revId": "8cf3ce6e481302612ef190defb8c05ba265e5b98",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
