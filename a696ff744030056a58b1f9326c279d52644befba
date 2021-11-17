@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "abcc8ca1_0b7dd09b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-11-17T18:42:27Z",
+      "side": 1,
+      "message": "I\u0027ll land this CL now. And I can address any future comments in a follow-up CL.",
+      "revId": "a696ff744030056a58b1f9326c279d52644befba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
