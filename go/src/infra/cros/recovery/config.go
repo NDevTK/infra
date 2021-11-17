@@ -614,6 +614,7 @@ const defaultConfig = `
 				"tools_checks",
 				"hardware_audit",
 				"firmware_check",
+				"rw_vpd",
 				"servo_keyboard"
 			],
 			"actions": {
@@ -701,6 +702,12 @@ const defaultConfig = `
 						"cros_rw_firmware_stable_verion"
 					],
 					"exec_name":"sample_pass"
+				},
+				"rw_vpd":{
+					"docs":[
+						"checks if there is any rw vpd keys missing."
+					],
+					"exec_name":"cros_is_rw_vpd_keys_missing"
 				},
 				"servo_keyboard":{
 					"conditions":[
