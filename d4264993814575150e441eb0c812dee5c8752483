@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "99bbb014_42a2b411",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-17T06:26:13Z",
+      "side": 1,
+      "message": "LGTM % nits",
+      "revId": "d4264993814575150e441eb0c812dee5c8752483",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "96fa7628_1837efa8",
+        "filename": "go/src/infra/appengine/weetbix/internal/admin/proto/admin.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-17T06:26:13Z",
+      "side": 1,
+      "message": "nit: using",
+      "range": {
+        "startLine": 15,
+        "startChar": 27,
+        "endLine": 15,
+        "endChar": 30
+      },
+      "revId": "d4264993814575150e441eb0c812dee5c8752483",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "45889f27_028605d3",
+        "filename": "go/src/infra/appengine/weetbix/internal/admin/proto/admin.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-17T06:26:13Z",
+      "side": 1,
+      "message": "nit: can",
+      "range": {
+        "startLine": 15,
+        "startChar": 7,
+        "endLine": 15,
+        "endChar": 12
+      },
+      "revId": "d4264993814575150e441eb0c812dee5c8752483",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
