@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f71627e3_f391eb8d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-11-17T18:56:59Z",
+      "side": 1,
+      "message": "PTAL",
+      "revId": "95e35beb1b395bfeadb6ab618ca6878c1954d5f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "92c43142_3a0a436c",
+        "filename": "go/src/infra/appengine/weetbix/internal/testutil/spantest.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2021-11-17T18:56:59Z",
+      "side": 1,
+      "message": "moved from L175. No functional change.",
+      "revId": "95e35beb1b395bfeadb6ab618ca6878c1954d5f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
