@@ -16,6 +16,23 @@
       "message": "PTAL",
       "revId": "de042ff325772c96014b61e7093dcfcf40f5c16b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c354a871_8822a9f3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2021-11-17T23:57:21Z",
+      "side": 1,
+      "message": "It is already default and this change should be basically noop. What problem are you solving?",
+      "revId": "de042ff325772c96014b61e7093dcfcf40f5c16b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
