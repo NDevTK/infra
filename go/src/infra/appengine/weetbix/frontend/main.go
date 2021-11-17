@@ -330,6 +330,14 @@ func main() {
 		testvariantupdator.RegisterTaskClass()
 
 		// Register pRPC servers.
+		srv.PRPC.Authenticator = &auth.Authenticator{
+			Methods: []auth.Method{
+				// The default method used by majority of clients.
+				&auth.GoogleOAuth2Method{
+					Scopes: []string{"https://www.googleapis.com/auth/userinfo.email"},
+				},
+			},
+		}
 		adminpb.RegisterAdminServer(srv.PRPC, admin.CreateServer())
 
 		return nil
