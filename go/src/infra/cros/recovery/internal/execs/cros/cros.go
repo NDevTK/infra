@@ -168,3 +168,28 @@ func pathHasEnoughValue(ctx context.Context, args *execs.RunArgs, dutName string
 	log.Info(ctx, "Found %f (GB/inodes) >= %f (GB/inodes) of %s under %s on machine %s", free, minSpaceNeeded, typeOfSpace, path, dutName)
 	return nil
 }
+
+// RwVPDMap are the default requared values for RW_VPD
+var RwVPDMap = map[string]string{
+	"should_send_rlz_ping": "0",
+	"gbind_attribute":      "=CikKIKxeOtv7AqiCHCDBHkyLN-HF0S7JRcZgsoIRvkPlfMqaEAAaA2V2ZRCX0O3NBg==",
+	"ubind_attribute":      "=CikKILiLqJanLAzsXFuVPmfc_aOZxnyNirT9iesdM6kt59x6EAEaA2V2ZRCIkb3GCQ==",
+}
+
+const (
+	// getRwVPDValuesCmd will get the value of the RW vpd keys. And produce and exit code of non zero
+	// when the DUT does not have the RW vpd key.
+	getRwVPDValuesCmd = "vpd -i RW_VPD -g %s"
+)
+
+// missingVPDKeys returns all the RW_VPD missing keys in passed map.
+func missingVPDKeys(ctx context.Context, r execs.Runner, m map[string]string) []string {
+	var keys = []string{}
+	for k := range m {
+		cmd := fmt.Sprintf(getRwVPDValuesCmd, k)
+		if _, err := r(ctx, cmd); err != nil {
+			keys = append(keys, k)
+		}
+	}
+	return keys
+}

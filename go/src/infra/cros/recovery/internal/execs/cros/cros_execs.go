@@ -291,6 +291,17 @@ func isToolPresentExec(ctx context.Context, args *execs.RunArgs, actionArgs []st
 	return nil
 }
 
+// isRWVPDKeysMissingExec confirms that there are no required RW_VPD keys missing on the DUT.
+func isRWVPDKeysMissingExec(ctx context.Context, args *execs.RunArgs, actionArgs []string) error {
+	r := args.NewRunner(args.ResourceName)
+	missingKeys := missingVPDKeys(ctx, r, RwVPDMap)
+	if len(missingKeys) > 0 {
+		return errors.Reason(fmt.Sprintf("rw_vpd keys missing: %v", missingKeys)).Err()
+	}
+	log.Info(ctx, "no rw_vpd values missing")
+	return nil
+}
+
 func init() {
 	execs.Register("cros_ping", pingExec)
 	execs.Register("cros_ssh", sshExec)
@@ -308,4 +319,5 @@ func init() {
 	execs.Register("cros_wait_for_system", waitForSystemExec)
 	execs.Register("cros_is_gsc_tool_present", isGscToolPresentExec)
 	execs.Register("cros_is_tool_present", isToolPresentExec)
+	execs.Register("cros_is_rw_vpd_keys_missing", isRWVPDKeysMissingExec)
 }
