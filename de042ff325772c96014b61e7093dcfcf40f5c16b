@@ -51,6 +51,24 @@
       "parentUuid": "c354a871_8822a9f3",
       "revId": "de042ff325772c96014b61e7093dcfcf40f5c16b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "15b13f7e_becb779c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2021-11-18T00:31:55Z",
+      "side": 1,
+      "message": "There\u0027s an entity called \"OAuth 2 Web client\". It has a property called \"allowed Javascript origins\". RPC Explorer defaults to using https://pantheon.corp.google.com/apis/credentials/oauthclient/446450136466-e77v49thuh5dculh78gumq3oncqe28m3.apps.googleusercontent.com?project\u003dchrome-infra-auth. You either need to add all relevant weetbix origins there or create a new OAuth 2 web client specifically for weetbix, allow-list origins there and pass its client ID via `-frontend-client-id` flag.",
+      "parentUuid": "151df4b1_aa5d4752",
+      "revId": "de042ff325772c96014b61e7093dcfcf40f5c16b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
