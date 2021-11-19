@@ -43,6 +43,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "67d7f501_d63907e9",
+        "filename": "recipes/recipe_modules/cloudbuildhelper/api.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 526,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2021-11-19T23:41:18Z",
+      "side": 1,
+      "message": "`git number ...` here is intentional. Doesn\u0027t it cache computations? Git checkouts will be in builder caches. And there should be no local commits there.\n\nWhat else do you propose for getting a commit position? `git number ...` was recommended by Andrii.",
+      "parentUuid": "8ac2cdac_db15f233",
+      "range": {
+        "startLine": 526,
+        "startChar": 8,
+        "endLine": 526,
+        "endChar": 24
+      },
+      "revId": "54178d63864dbaf681237d9c3a9fc28f8d2be37a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "5e1217c5_f1a81a1a",
         "filename": "recipes/recipe_modules/cloudbuildhelper/examples/commit_label.py",
         "patchSetId": 3
@@ -54,6 +78,24 @@
       "writtenOn": "2021-11-19T23:33:51Z",
       "side": 1,
       "message": "any chance you can make this a proto instead? https://chromium.googlesource.com/infra/luci/recipes-py/+/refs/heads/main/doc/user_guide.md#PROPERTIES_GLOBAL_PROPERTIES-and-ENV_PROPERTIES",
+      "revId": "54178d63864dbaf681237d9c3a9fc28f8d2be37a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "85659370_93a19ca9",
+        "filename": "recipes/recipe_modules/cloudbuildhelper/examples/commit_label.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2021-11-19T23:41:18Z",
+      "side": 1,
+      "message": "For example to generate coverage? No, thanks.",
+      "parentUuid": "5e1217c5_f1a81a1a",
       "revId": "54178d63864dbaf681237d9c3a9fc28f8d2be37a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
