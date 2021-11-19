@@ -10,14 +10,14 @@ import (
 	"regexp"
 	"strings"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	"infra/unifiedfleet/app/util"
-
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/chromiumos/config/go/payload"
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	ufspb "infra/unifiedfleet/api/v1/models"
+	"infra/unifiedfleet/util"
 )
 
 // Error messages for input validation
