@@ -18,7 +18,7 @@ import (
 	ufspb "infra/unifiedfleet/api/v1/models"
 	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
-	ufsutil "infra/unifiedfleet/app/util"
+	ufsutil "infra/unifiedfleet/util"
 )
 
 // FleetClient mocks the UFS client

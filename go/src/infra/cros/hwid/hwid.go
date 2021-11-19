@@ -11,7 +11,7 @@ import (
 	"net/url"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
-	"infra/unifiedfleet/app/util"
+	"infra/unifiedfleet/util"
 )
 
 const hwidEndpoint = "chromeoshwid-pa.googleapis.com"
