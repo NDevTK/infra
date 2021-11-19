@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "108a9108_6869cbd7",
+        "filename": "go/src/infra/cmd/shivas/internal/swarming/cmds/repair_duts.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-11-19T04:06:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "50e519a0_180b7953",
+      "revId": "83a124f7a5dba59ff1cb00dc841faf0427ae8601",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "09e94b61_3baa5ced",
@@ -48,6 +66,24 @@
       "writtenOn": "2021-11-19T03:48:20Z",
       "side": 1,
       "message": "remove?",
+      "revId": "83a124f7a5dba59ff1cb00dc841faf0427ae8601",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "208ea71a_fa97cc53",
+        "filename": "go/src/infra/cmd/shivas/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-11-19T04:06:29Z",
+      "side": 1,
+      "message": "Good catch. I did this to split the CL :/",
+      "parentUuid": "09e94b61_3baa5ced",
       "revId": "83a124f7a5dba59ff1cb00dc841faf0427ae8601",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
