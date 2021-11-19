@@ -1,0 +1,78 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ad3693f9_58938d5a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2021-11-19T23:33:51Z",
+      "side": 1,
+      "message": "lgtm",
+      "revId": "54178d63864dbaf681237d9c3a9fc28f8d2be37a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8ac2cdac_db15f233",
+        "filename": "recipes/recipe_modules/cloudbuildhelper/api.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 526,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2021-11-19T23:33:51Z",
+      "side": 1,
+      "message": "nit: I\u0027m sure this is just here b/c of refactoring, but this seems super dangerous (because `git number` is fantastically slow; Some random local commit shows up and suddenly this function becomes 10000x slower)",
+      "range": {
+        "startLine": 526,
+        "startChar": 8,
+        "endLine": 526,
+        "endChar": 24
+      },
+      "revId": "54178d63864dbaf681237d9c3a9fc28f8d2be37a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5e1217c5_f1a81a1a",
+        "filename": "recipes/recipe_modules/cloudbuildhelper/examples/commit_label.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2021-11-19T23:33:51Z",
+      "side": 1,
+      "message": "any chance you can make this a proto instead? https://chromium.googlesource.com/infra/luci/recipes-py/+/refs/heads/main/doc/user_guide.md#PROPERTIES_GLOBAL_PROPERTIES-and-ENV_PROPERTIES",
+      "revId": "54178d63864dbaf681237d9c3a9fc28f8d2be37a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b701f7bd_7bab0777",
+        "filename": "recipes/recipes/gae_tarball_uploader.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2021-11-19T23:33:51Z",
+      "side": 1,
+      "message": "f... this is a really horrible API 😡",
+      "revId": "54178d63864dbaf681237d9c3a9fc28f8d2be37a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
