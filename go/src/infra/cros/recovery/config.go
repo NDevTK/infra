@@ -627,7 +627,8 @@ const defaultConfig = `
 				"tools_checks",
 				"hardware_audit",
 				"firmware_check",
-				"servo_keyboard"
+				"servo_keyboard",
+				"device_sku_label"
 			],
 			"actions": {
 				"cros_ssh":{
@@ -907,6 +908,13 @@ const defaultConfig = `
 					"exec_extra_args":[
 						"/mnt/stateful_partition/encrypted:0.1"
 					]
+				},
+				"device_sku_label":{
+					"docs":[
+						"Determine and update the correct device_sku label for the device."
+					],
+					"exec_name":"cros_update_device_sku_label",
+					"allow_fail_after_recovery": true
 				}
 			}
 		},

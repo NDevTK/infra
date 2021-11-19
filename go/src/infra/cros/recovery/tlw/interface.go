@@ -230,6 +230,9 @@ const (
 	AudioLoopbackStateWorking AudioLoopbackState = "WORKING"
 )
 
+// DUT's stock-keeping labels
+type DeviceSku string
+
 // Dut holds info about setup used as testbed.
 type Dut struct {
 	// Name is the resource name for the DUT.
@@ -252,6 +255,8 @@ type Dut struct {
 	Cr50KeyEnv Cr50KeyEnv
 	// Audio loopback dongle is plugged in.
 	AudioLoopbackState AudioLoopbackState
+	// Stock-keeping unit
+	DeviceSku DeviceSku
 	// State of the DUT.
 	State dutstate.State
 
