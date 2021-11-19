@@ -8,7 +8,7 @@ import (
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	UfleetAPI "infra/unifiedfleet/api/v1/rpc"
-	UfleetUtil "infra/unifiedfleet/app/util"
+	UfleetUtil "infra/unifiedfleet/util"
 )
 
 const (

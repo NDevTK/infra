@@ -29,7 +29,7 @@ import (
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufschromeoslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
-	ufsutil "infra/unifiedfleet/app/util"
+	ufsutil "infra/unifiedfleet/util"
 )
 
 // DeviceData holds the invV2 Device and updatetime(of MachineLSE)
