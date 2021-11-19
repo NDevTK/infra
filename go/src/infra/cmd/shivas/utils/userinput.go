@@ -21,7 +21,7 @@ import (
 	fleet "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	UfleetAPI "infra/unifiedfleet/api/v1/rpc"
-	UfleetUtil "infra/unifiedfleet/app/util"
+	UfleetUtil "infra/unifiedfleet/util"
 )
 
 // Interactive mode messages for user input

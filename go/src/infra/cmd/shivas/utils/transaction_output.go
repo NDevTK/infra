@@ -12,7 +12,7 @@ import (
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	ufsUtil "infra/unifiedfleet/util"
 )
 
 // PrintExistingAsset prints the old asset in update/delete operations.

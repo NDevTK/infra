@@ -11,8 +11,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
-	"infra/unifiedfleet/app/util"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"infra/unifiedfleet/util"
+	ufsUtil "infra/unifiedfleet/util"
 )
 
 var numRegex = regexp.MustCompile(`[0-9]+`)

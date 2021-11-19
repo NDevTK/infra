@@ -25,7 +25,7 @@ import (
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeoslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	ufsUtil "infra/unifiedfleet/util"
 )
 
 const (
