@@ -48,6 +48,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b332cc13_9851265b",
+        "filename": "appengine/monorail/package-lock.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 9849,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2021-11-19T00:19:31Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "46c04cc0_67a59f24",
+      "range": {
+        "startLine": 9849,
+        "startChar": 5,
+        "endLine": 9849,
+        "endChar": 25
+      },
+      "revId": "8cf3ce6e481302612ef190defb8c05ba265e5b98",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1e8f20e5_2fe13575",
@@ -85,6 +109,30 @@
       "side": 1,
       "message": "I didn\u0027t manually update this file, it shouldn\u0027t have even been included in this CL. When I try to restore it, I get a \"no changes were made\" error.",
       "parentUuid": "1e8f20e5_2fe13575",
+      "range": {
+        "startLine": 12440,
+        "startChar": 0,
+        "endLine": 12440,
+        "endChar": 13
+      },
+      "revId": "8cf3ce6e481302612ef190defb8c05ba265e5b98",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b3c88374_fbfd0e87",
+        "filename": "appengine/monorail/package-lock.json",
+        "patchSetId": 4
+      },
+      "lineNbr": 12440,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2021-11-19T00:19:31Z",
+      "side": 1,
+      "message": "What happens if you copy over the contents from https://source.chromium.org/chromium/infra/infra/+/main:appengine/monorail/package-lock.json ?",
+      "parentUuid": "33cf3a56_443f09cf",
       "range": {
         "startLine": 12440,
         "startChar": 0,
