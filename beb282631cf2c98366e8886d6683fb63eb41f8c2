@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7e8a4531_29a8831a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1306133
+      },
+      "writtenOn": "2021-11-19T23:33:15Z",
+      "side": 1,
+      "message": "Why did we have to re-implement a cipd client when one already exists for recipes? Just wondering",
+      "revId": "beb282631cf2c98366e8886d6683fb63eb41f8c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d8d32e4b_4d4966d4",
+        "filename": "recipes/recipe_modules/windows_scripts_executor/examples/cipd_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1306133
+      },
+      "writtenOn": "2021-11-19T23:33:15Z",
+      "side": 1,
+      "message": "Should we be using a value tied to your username for this service? Tmk, the experimental folder is not supported for long term uses like a test written into src",
+      "revId": "beb282631cf2c98366e8886d6683fb63eb41f8c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
