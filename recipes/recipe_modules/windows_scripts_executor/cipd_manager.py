@@ -34,6 +34,7 @@ class CIPDManager:
     # dict to avoid multiple downloads of the same package
     self._packages = {}
     self._pkg_record = []
+    self._pending_uploads = {}
 
   def record_package(self, src):
     """ record_package records the given src for download. If it is a cipd_src
@@ -94,3 +95,44 @@ class CIPDManager:
         [src.cipd_src.refs, src.cipd_src.package, src.cipd_src.platform])
     # return the deref
     return self._cache.join(helper.conv_to_win_path(key))
+
+  def get_cipd_url(self, src):
+    """ get_url returns string containing an url referencing the given src
+        Args:
+          src: sources.Src object representing cipd_src object
+    """
+    if src and src.WhichOneof('src') == 'cipd_src':  # pragma: no cover
+      pkg = src.cipd_src.package
+      refs = src.cipd_src.refs
+      plt = src.cipd_src.platform
+      return 'https://chrome-infra-packages.appspot.com/p/{}/{}/+/{}'.format(
+          pkg, plt, refs)
+
+  def record_upload(self, up_dest, source):
+    """ record_upload records the upload to be made on upload_packages
+        Args:
+          up_dest: dest.Dest proto object representing a file to be created on
+                   CIPD.
+          source: local path for the file to be uploaded
+    """
+    if up_dest and up_dest.WhichOneof('dest') == 'cipd_src':
+      if source in self._pending_uploads.keys():
+        self._pending_uploads[source].append(up_dest)
+      else:
+        self._pending_uploads[source] = [up_dest]
+
+  def upload_packages(self):
+    """ upload_packages uploads all the packages that were recorded by
+        record_upload """
+    failed_uploads = {}
+    for source, up_dests in self._pending_uploads.items():
+      if self._path.exists(source):
+        for up_dest in up_dests:
+          name = '{}/{}'.format(up_dest.cipd_src.package,
+                                up_dest.cipd_src.platform)
+          pkg = self._cipd.PackageDefinition(name, self._path.dirname(source))
+          self._cipd.create_from_pkg(
+              pkg, refs=[up_dest.cipd_src.refs], tags=up_dest.tags)
+      else:
+        failed_uploads[source] = up_dests  # pragma: no cover
+    self._pending_uploads = failed_uploads
