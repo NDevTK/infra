@@ -1,0 +1,199 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b7f40398_1d194133",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-20T02:45:58Z",
+      "side": 1,
+      "message": "% commenst",
+      "revId": "5e9c2298d16ce322706ace8e18751a0dfee6b2f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3a13ef53_f4571752",
+        "filename": "go/src/infra/cros/recovery/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 631,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-20T02:45:58Z",
+      "side": 1,
+      "message": "please create group action for all labels and make all of them dependencies.\n```\n\"devices_lables\":{\n   \"dependencies\":[\n      cros_device_sku_label\n   ]\n   \"exec_name\":\"sample_pass\"\n}\n```",
+      "range": {
+        "startLine": 631,
+        "startChar": 5,
+        "endLine": 631,
+        "endChar": 21
+      },
+      "revId": "5e9c2298d16ce322706ace8e18751a0dfee6b2f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7298a739_ce9376da",
+        "filename": "go/src/infra/cros/recovery/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 914,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-20T02:45:58Z",
+      "side": 1,
+      "message": "`Update the device_sku label from the device if not present in inventory data.`",
+      "range": {
+        "startLine": 914,
+        "startChar": 7,
+        "endLine": 914,
+        "endChar": 72
+      },
+      "revId": "5e9c2298d16ce322706ace8e18751a0dfee6b2f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2b41b47e_bec2b4e5",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-20T02:45:58Z",
+      "side": 1,
+      "message": "SKU is upper case as it is abbreviation",
+      "range": {
+        "startLine": 18,
+        "startChar": 31,
+        "endLine": 18,
+        "endChar": 34
+      },
+      "revId": "5e9c2298d16ce322706ace8e18751a0dfee6b2f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b3bb8fea_3dba1167",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-20T02:45:58Z",
+      "side": 1,
+      "message": "updateDeviceSKUExec - label it is just for us, for action naming.",
+      "range": {
+        "startLine": 24,
+        "startChar": 5,
+        "endLine": 24,
+        "endChar": 29
+      },
+      "revId": "5e9c2298d16ce322706ace8e18751a0dfee6b2f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f8d6023d_b71092b3",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-20T02:45:58Z",
+      "side": 1,
+      "message": "please unblock the logic in recovery/internal/localtlw/dutinfo/dutinfo.go;l\u003d297 to fill this data per device, otherwise we will read this data always.\n\nIf possible to split CL to introduce the fields and fill it from inventory and update back to inventory \n\nand second Cl to create action/exec to update it",
+      "revId": "5e9c2298d16ce322706ace8e18751a0dfee6b2f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "81882d11_f94e70f8",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-20T02:45:58Z",
+      "side": 1,
+      "message": "`Device SKU found in the inventory: %s. Skipping update.`",
+      "range": {
+        "startLine": 27,
+        "startChar": 17,
+        "endLine": 27,
+        "endChar": 33
+      },
+      "revId": "5e9c2298d16ce322706ace8e18751a0dfee6b2f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "401412e1_d17c9c7e",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-20T02:45:58Z",
+      "side": 1,
+      "message": "`cros_update_device_sku`",
+      "range": {
+        "startLine": 41,
+        "startChar": 17,
+        "endLine": 41,
+        "endChar": 45
+      },
+      "revId": "5e9c2298d16ce322706ace8e18751a0dfee6b2f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d52b7c6d_2515e16b",
+        "filename": "go/src/infra/cros/recovery/tlw/interface.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-20T02:45:58Z",
+      "side": 1,
+      "message": "just string, not need to create the type.",
+      "range": {
+        "startLine": 259,
+        "startChar": 11,
+        "endLine": 259,
+        "endChar": 20
+      },
+      "revId": "5e9c2298d16ce322706ace8e18751a0dfee6b2f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
