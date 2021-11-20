@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b03a012f_7d344722",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-20T03:00:26Z",
+      "side": 1,
+      "message": "readRwVPDValuesCmdGlob glob to read the value of VPD key from RW_VPD partition by name.",
+      "range": {
+        "startLine": 180,
+        "startChar": 22,
+        "endLine": 181,
+        "endChar": 45
+      },
+      "revId": "3d22c6bba0d2a70591a940d40130d9c4946da08f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9bde5249_31c531c5",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-20T03:00:26Z",
+      "side": 1,
+      "message": "readRwVPDValuesCmdGlob?",
+      "range": {
+        "startLine": 182,
+        "startChar": 1,
+        "endLine": 182,
+        "endChar": 18
+      },
+      "revId": "3d22c6bba0d2a70591a940d40130d9c4946da08f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "78df5293_c737614c",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-20T03:00:26Z",
+      "side": 1,
+      "message": "`verifyVPDKeysMissMatch returns list of the keys which dow not match be present value in VPD RW_VPD partition.`",
+      "range": {
+        "startLine": 186,
+        "startChar": 5,
+        "endLine": 186,
+        "endChar": 19
+      },
+      "revId": "3d22c6bba0d2a70591a940d40130d9c4946da08f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9504239c_8bb4e2c6",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-20T03:00:26Z",
+      "side": 1,
+      "message": "please return \n```\n(keys []strings, err error)\n```\nif we set name of rerun type then we do not need declare it in the body.",
+      "range": {
+        "startLine": 186,
+        "startChar": 78,
+        "endLine": 186,
+        "endChar": 86
+      },
+      "revId": "3d22c6bba0d2a70591a940d40130d9c4946da08f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fe5921cd_72b8a0e0",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-20T03:00:26Z",
+      "side": 1,
+      "message": "nit: Mostly recomended or create for particular side or just declare it like \n```\nvar keys []string\n```",
+      "range": {
+        "startLine": 187,
+        "startChar": 1,
+        "endLine": 187,
+        "endChar": 22
+      },
+      "revId": "3d22c6bba0d2a70591a940d40130d9c4946da08f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0634407f_b3463725",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-20T03:00:26Z",
+      "side": 1,
+      "message": "please return error as we can stop check other keys if we already have error.",
+      "range": {
+        "startLine": 190,
+        "startChar": 28,
+        "endLine": 190,
+        "endChar": 31
+      },
+      "revId": "3d22c6bba0d2a70591a940d40130d9c4946da08f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "febbfeef_35e6ba39",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 301,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-20T03:00:26Z",
+      "side": 1,
+      "message": "or \n1) \u0027VPD (RW_VPD) contains all required makes: %s\u0027 please provide list of keys\n2) Remove the log. and print the name of the key when we check it. with received values.",
+      "range": {
+        "startLine": 301,
+        "startChar": 1,
+        "endLine": 301,
+        "endChar": 42
+      },
+      "revId": "3d22c6bba0d2a70591a940d40130d9c4946da08f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
