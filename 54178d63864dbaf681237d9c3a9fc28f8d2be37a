@@ -65,6 +65,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cf0d8c33_02bc8839",
+        "filename": "recipes/recipe_modules/cloudbuildhelper/api.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 526,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2021-11-20T00:03:28Z",
+      "side": 1,
+      "message": "Oh, right; I forgot it had a cache (and I wrote it). (though the cache is local to the checkout, so it\u0027ll be slow after a cache wipe... I guess that\u0027s fine)",
+      "parentUuid": "67d7f501_d63907e9",
+      "range": {
+        "startLine": 526,
+        "startChar": 8,
+        "endLine": 526,
+        "endChar": 24
+      },
+      "revId": "54178d63864dbaf681237d9c3a9fc28f8d2be37a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5e1217c5_f1a81a1a",
