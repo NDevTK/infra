@@ -16,6 +16,46 @@
       "message": "LGTM",
       "revId": "e3744cfd7038a129a6a9549c0eb7279e8f6132a7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b2ed0d56_c75411ed",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2021-11-20T00:28:33Z",
+      "side": 1,
+      "message": "LGTM % nit",
+      "revId": "e3744cfd7038a129a6a9549c0eb7279e8f6132a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f76670b3_775a7ea0",
+        "filename": "go/src/infra/cmd/shivas/internal/swarming/cmds/repair_duts.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2021-11-20T00:28:33Z",
+      "side": 1,
+      "message": "c.paris? bc!\u003dnil is not the direct cause.",
+      "range": {
+        "startLine": 86,
+        "startChar": 5,
+        "endLine": 86,
+        "endChar": 14
+      },
+      "revId": "e3744cfd7038a129a6a9549c0eb7279e8f6132a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
