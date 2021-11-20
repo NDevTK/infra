@@ -56,6 +56,30 @@
       },
       "revId": "e3744cfd7038a129a6a9549c0eb7279e8f6132a7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6a00aafc_8111fc6f",
+        "filename": "go/src/infra/cmd/shivas/internal/swarming/cmds/repair_duts.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-20T02:34:31Z",
+      "side": 1,
+      "message": "bc is using only fro PARIS, means if paris is not enabled then we do not have the bc. As I understand.",
+      "parentUuid": "f76670b3_775a7ea0",
+      "range": {
+        "startLine": 86,
+        "startChar": 5,
+        "endLine": 86,
+        "endChar": 14
+      },
+      "revId": "e3744cfd7038a129a6a9549c0eb7279e8f6132a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
