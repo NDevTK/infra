@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "319c7e57_940bdaae",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2021-11-20T00:34:32Z",
+      "side": 1,
+      "message": "I... don\u0027t get the reason of doing this...",
+      "revId": "93cc22015a607287106c29c210e5f9d5d9ce46be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
