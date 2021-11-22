@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "44daf949_68678a9c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-11-22T20:18:35Z",
+      "side": 1,
+      "message": "Multiple reasons. Main one being, we need to be able to perform pinning, downloading, checking for existence for out refs in one go. And ideally all required artifacts must be available on disk before any update is performed to the image.",
+      "parentUuid": "7e8a4531_29a8831a",
+      "revId": "beb282631cf2c98366e8886d6683fb63eb41f8c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d8d32e4b_4d4966d4",
@@ -31,6 +49,24 @@
       "writtenOn": "2021-11-19T23:33:15Z",
       "side": 1,
       "message": "Should we be using a value tied to your username for this service? Tmk, the experimental folder is not supported for long term uses like a test written into src",
+      "revId": "beb282631cf2c98366e8886d6683fb63eb41f8c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "466b9e8e_9729ac42",
+        "filename": "recipes/recipe_modules/windows_scripts_executor/examples/cipd_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-11-22T20:18:35Z",
+      "side": 1,
+      "message": "My bad, I meant to change it before upload. It shouldn\u0027t matter as this is a test package and nothing here is actually uploaded to cipd and those are just mock values",
+      "parentUuid": "d8d32e4b_4d4966d4",
       "revId": "beb282631cf2c98366e8886d6683fb63eb41f8c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
