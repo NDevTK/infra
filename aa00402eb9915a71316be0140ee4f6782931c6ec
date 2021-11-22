@@ -16,6 +16,184 @@
       "message": "Hi, Otabek,\n\nSince there is a lot of changes, could you help me to review it again? \n\nThanks,\nDavid",
       "revId": "aa00402eb9915a71316be0140ee4f6782931c6ec",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a56fa251_3d576fce",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-22T23:53:20Z",
+      "side": 1,
+      "message": "looks good % commnets",
+      "revId": "aa00402eb9915a71316be0140ee4f6782931c6ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "adaf12de_44f50e8f",
+        "filename": "go/src/infra/cros/recovery/config.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 370,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-22T23:53:20Z",
+      "side": 1,
+      "message": "not related to CL",
+      "range": {
+        "startLine": 370,
+        "startChar": 5,
+        "endLine": 370,
+        "endChar": 38
+      },
+      "revId": "aa00402eb9915a71316be0140ee4f6782931c6ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bc766c7d_57735671",
+        "filename": "go/src/infra/cros/recovery/config.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 927,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-22T23:53:20Z",
+      "side": 1,
+      "message": "not allowed.",
+      "range": {
+        "startLine": 927,
+        "startChar": 5,
+        "endLine": 927,
+        "endChar": 38
+      },
+      "revId": "aa00402eb9915a71316be0140ee4f6782931c6ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c072f7b0_26d56fd5",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-22T23:53:20Z",
+      "side": 1,
+      "message": "`moSysSkuCmd retrieves the SKU label from the ChromeOS device.`",
+      "range": {
+        "startLine": 17,
+        "startChar": 4,
+        "endLine": 17,
+        "endChar": 12
+      },
+      "revId": "aa00402eb9915a71316be0140ee4f6782931c6ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "291c230c_e941ca27",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-22T23:53:20Z",
+      "side": 1,
+      "message": "`updates`",
+      "range": {
+        "startLine": 21,
+        "startChar": 23,
+        "endLine": 21,
+        "endChar": 34
+      },
+      "revId": "aa00402eb9915a71316be0140ee4f6782931c6ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7b6a120c_3c1205a3",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-22T23:53:20Z",
+      "side": 1,
+      "message": "if not present in inventory.",
+      "range": {
+        "startLine": 21,
+        "startChar": 55,
+        "endLine": 21,
+        "endChar": 76
+      },
+      "revId": "aa00402eb9915a71316be0140ee4f6782931c6ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6f7be25e_cbd618ed",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-22T23:53:20Z",
+      "side": 1,
+      "message": "`device\u0027s`",
+      "range": {
+        "startLine": 21,
+        "startChar": 39,
+        "endLine": 21,
+        "endChar": 44
+      },
+      "revId": "aa00402eb9915a71316be0140ee4f6782931c6ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2410b213_7c094d6e",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/dutinfo/dutinfo.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 299,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-22T23:53:20Z",
+      "side": 1,
+      "message": "`//TODO: update logic if required by b/184391605`",
+      "range": {
+        "startLine": 298,
+        "startChar": 1,
+        "endLine": 299,
+        "endChar": 25
+      },
+      "revId": "aa00402eb9915a71316be0140ee4f6782931c6ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
