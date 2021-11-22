@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "77299ad1_3346dac5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-11-22T16:57:03Z",
+      "side": 1,
+      "message": "Otabek, can you kindly review this? \n\nThis CL deals with servod_has, and I will follow this up with CLs for servod_get.\n\nI thought smaller CLs for has and get will be easier to review than a single CL that includes everything. ",
+      "revId": "3f2ac47ce9563ffe01c07b3f136c93f74be328cc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
