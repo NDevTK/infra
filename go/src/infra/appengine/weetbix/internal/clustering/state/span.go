@@ -81,7 +81,7 @@ func Create(ctx context.Context, e *Entry) error {
 }
 
 // UpdateClustering updates the clustering results on a chunk. The update
-// implements optimistic concurrency control by validating the chunk
+// implements opportunistic concurrency control by validating the chunk
 // has not changed from the previous entry before modifying it, returning
 // an error otherwise. This allows detection of update races.
 //
