@@ -52,6 +52,24 @@
       "parentUuid": "02a81b33_147ebacd",
       "revId": "93cc22015a607287106c29c210e5f9d5d9ce46be",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "368367b1_ee2a79bd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-11-22T21:17:24Z",
+      "side": 1,
+      "message": "I think so. The packages that I could not make private as part of this CL are `util` and `osutil`. I think those packages are shared more broadly than intended. By creating an internal area and using it for most things in UFS, subsequent CLs can move functionality out of utils and into the UFS implementation or a common CrOS library as appropriate.",
+      "parentUuid": "4136eb55_af122951",
+      "revId": "93cc22015a607287106c29c210e5f9d5d9ce46be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
