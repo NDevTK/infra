@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "becb5a49_66e57004",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-22T19:39:11Z",
+      "side": 1,
+      "message": "Hi, Otabek,\n\nSince there is a lot of changes, could you help me to review it again? \n\nThanks,\nDavid",
+      "revId": "aa00402eb9915a71316be0140ee4f6782931c6ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1d5cfb1d_7c224263",
+        "filename": "go/src/infra/cros/recovery/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 631,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-22T19:39:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3a13ef53_f4571752",
+      "range": {
+        "startLine": 631,
+        "startChar": 5,
+        "endLine": 631,
+        "endChar": 21
+      },
+      "revId": "5e9c2298d16ce322706ace8e18751a0dfee6b2f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7298a739_ce9376da",
@@ -54,6 +78,30 @@
       "writtenOn": "2021-11-20T02:45:58Z",
       "side": 1,
       "message": "`Update the device_sku label from the device if not present in inventory data.`",
+      "range": {
+        "startLine": 914,
+        "startChar": 7,
+        "endLine": 914,
+        "endChar": 72
+      },
+      "revId": "5e9c2298d16ce322706ace8e18751a0dfee6b2f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "53fa1fec_1e9529e8",
+        "filename": "go/src/infra/cros/recovery/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 914,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-22T19:39:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7298a739_ce9376da",
       "range": {
         "startLine": 914,
         "startChar": 7,
@@ -87,6 +135,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f3381928_9995dc22",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-22T19:39:11Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "2b41b47e_bec2b4e5",
+      "range": {
+        "startLine": 18,
+        "startChar": 31,
+        "endLine": 18,
+        "endChar": 34
+      },
+      "revId": "5e9c2298d16ce322706ace8e18751a0dfee6b2f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b3bb8fea_3dba1167",
@@ -100,6 +172,30 @@
       "writtenOn": "2021-11-20T02:45:58Z",
       "side": 1,
       "message": "updateDeviceSKUExec - label it is just for us, for action naming.",
+      "range": {
+        "startLine": 24,
+        "startChar": 5,
+        "endLine": 24,
+        "endChar": 29
+      },
+      "revId": "5e9c2298d16ce322706ace8e18751a0dfee6b2f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5cc20862_fceae0ab",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-22T19:39:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b3bb8fea_3dba1167",
       "range": {
         "startLine": 24,
         "startChar": 5,
@@ -127,6 +223,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "56394d70_a29af279",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-22T19:39:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f8d6023d_b71092b3",
+      "revId": "5e9c2298d16ce322706ace8e18751a0dfee6b2f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "81882d11_f94e70f8",
@@ -140,6 +254,30 @@
       "writtenOn": "2021-11-20T02:45:58Z",
       "side": 1,
       "message": "`Device SKU found in the inventory: %s. Skipping update.`",
+      "range": {
+        "startLine": 27,
+        "startChar": 17,
+        "endLine": 27,
+        "endChar": 33
+      },
+      "revId": "5e9c2298d16ce322706ace8e18751a0dfee6b2f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fa3b8ef9_67c17899",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-22T19:39:11Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "81882d11_f94e70f8",
       "range": {
         "startLine": 27,
         "startChar": 17,
@@ -173,6 +311,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1a5cfc8c_e6eb1f74",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-22T19:39:11Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "401412e1_d17c9c7e",
+      "range": {
+        "startLine": 41,
+        "startChar": 17,
+        "endLine": 41,
+        "endChar": 45
+      },
+      "revId": "5e9c2298d16ce322706ace8e18751a0dfee6b2f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d52b7c6d_2515e16b",
@@ -186,6 +348,30 @@
       "writtenOn": "2021-11-20T02:45:58Z",
       "side": 1,
       "message": "just string, not need to create the type.",
+      "range": {
+        "startLine": 259,
+        "startChar": 11,
+        "endLine": 259,
+        "endChar": 20
+      },
+      "revId": "5e9c2298d16ce322706ace8e18751a0dfee6b2f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e523fff9_d9a42b70",
+        "filename": "go/src/infra/cros/recovery/tlw/interface.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-22T19:39:11Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "d52b7c6d_2515e16b",
       "range": {
         "startLine": 259,
         "startChar": 11,
