@@ -366,7 +366,8 @@ const defaultConfig = `
 					],
 					"recovery_actions": [
 						"servo_fw_update"
-					]
+					],
+					"allow_fail_after_recovery": true
 				},
 				"servod_get_serialname": {
 					"docs":[
@@ -630,7 +631,8 @@ const defaultConfig = `
 				"tools_checks",
 				"hardware_audit",
 				"firmware_check",
-				"servo_keyboard"
+				"servo_keyboard",
+				"device_labels"
 			],
 			"actions": {
 				"cros_ssh":{
@@ -910,6 +912,19 @@ const defaultConfig = `
 					"exec_extra_args":[
 						"/mnt/stateful_partition/encrypted:0.1"
 					]
+				},
+				"device_labels":{
+					"dependencies":[
+						"device_sku"
+					 ],
+					 "exec_name":"sample_pass"
+				},
+				"device_sku":{
+					"docs":[
+						"Update the device_sku label from the device if not present in inventory data."
+					],
+					"exec_name":"cros_update_device_sku",
+					"allow_fail_after_recovery": true
 				}
 			}
 		},
