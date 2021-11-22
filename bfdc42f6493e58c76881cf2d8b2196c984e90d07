@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f05278e5_057a4daa",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-11-22T21:03:22Z",
+      "side": 1,
+      "message": "Otabek, this CL is for check of servod control values of various types, such as string, int, bool, etc. \n\nI will shortly test this and will send this over for final review. \n\nI wanted to bring this to your attention because I have tried to make the comparison of expected and real value as clean as possible. I thought I should invite any feedback you might have about this while I proceed to test this. ",
+      "revId": "bfdc42f6493e58c76881cf2d8b2196c984e90d07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
