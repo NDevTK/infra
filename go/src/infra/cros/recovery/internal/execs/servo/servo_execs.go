@@ -63,6 +63,18 @@ const (
 	// This token represents the string in config extra arguments that
 	// conveys the expected string value for a servod command.
 	stringValueExtraArgToken = "expected_string_value"
+
+	// This token represents the string in config extra arguments that
+	// conveys the expected int value for a servod command.
+	intValueExtraArgToken = "expected_int_value"
+
+	// This token represents the string in config extra arguments that
+	// conveys the expected floating-point value for a servod command.
+	floatValueExtraArgToken = "expected_float_value"
+
+	// This token represents the string in config extra arguments that
+	// conveys the expected boolean value for a servod command.
+	boolValueExtraArgToken = "expected_bool_value"
 )
 
 // NOTE: That is just fake execs for local testing during developing.
@@ -362,24 +374,35 @@ func servoCheckServodControlExec(ctx context.Context, args *execs.RunArgs, actio
 		// and does not specify the servod command.
 		return errors.Reason("servo check servod control exec: no command is mentioned for this action.").Err()
 	}
-	if _, err := ServodCallHas(ctx, args, command); err != nil {
-		return errors.Annotate(err, "servo check servod control exec").Err()
-	}
-	log.Debug(ctx, "Servo Check Servod Control Exec: Command %s is supported by servod", command)
-	res, err := ServodCallGet(ctx, args, command)
-	if err != nil {
-		return errors.Annotate(err, "servo check servod control exec: could not obtain the value of control %s from servod", command).Err()
-	}
-	if expectedValue, ok := argsMap[stringValueExtraArgToken]; ok {
-		// The value returned from servod in response to the command
-		// is expected to be of type string.
-		controlValue := res.Value.GetString_()
-		if controlValue != expectedValue {
-			return errors.Reason("servo check servod control exec: for servod control %s, the value %s returned from servod is different from the expected value %s", command, controlValue, expectedValue).Err()
+	var realValue equalable
+	var expectedValue string
+	if expectedValue, ok = argsMap[stringValueExtraArgToken]; ok {
+		controlValue, err := servodGetString(ctx, args, command)
+		if err != nil {
+			return errors.Annotate(err, "servo check servod control exec").Err()
 		}
-		log.Debug(ctx, "Servo Check Servod Control Exec: actual control value matches the expected value")
-	} else {
-		log.Debug(ctx, "Servo Check Servod Control Exec: no expected value was specified, verification concluded upon successful response from servod.")
+		realValue = newString(controlValue)
+	} else if expectedValue, ok = argsMap[intValueExtraArgToken]; ok {
+		controlValue, err := servodGetInt(ctx, args, command)
+		if err != nil {
+			return errors.Annotate(err, "servo check servod control exec").Err()
+		}
+		realValue = newString(controlValue)
+	} else if expectedValue, ok = argsMap[floatValueExtraArgToken]; ok {
+		controlValue, err := servodGetDouble(ctx, args, command)
+		if err != nil {
+			return errors.Annotate(err, "servo check servod control exec").Err()
+		}
+		realValue = newDouble(controlValue)
+	} else if expectedValue, ok = argsMap[boolValueExtraArgToken]; ok {
+		controlValue, err := servodGetBool(ctx, args, command)
+		if err != nil {
+			return errors.Annotate(err, "servo check servod control exec").Err()
+		}
+		realValue = newBool(controlValue)
+	}
+	if err := realValue.isEqual(ctx, expectedValue); err != nil {
+		return errors.Reason("").Err()
 	}
 	return nil
 }

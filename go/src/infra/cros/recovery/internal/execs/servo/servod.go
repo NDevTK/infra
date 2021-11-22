@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"strconv"
 
 	"go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 	"go.chromium.org/luci/common/errors"
@@ -121,4 +122,100 @@ func packToXMLRPCValues(values ...interface{}) []*xmlrpc.Value {
 		}
 	}
 	return r
+}
+
+// servodGetString retrieves from servod the value of servod command
+// passed as an argument, and returns it as a string.
+func servodGetString(ctx context.Context, args *execs.RunArgs, command string) (string, error) {
+	res, err := ServodCallGet(ctx, args, command)
+	if err != nil {
+		return "", errors.Annotate(err, "servod get: could not obtain the value of control %s from servod", command).Err()
+	}
+	return res.Value.GetString_(), nil
+}
+
+// servodGetInt retrieves from servod the value of servod command
+// passed as an argument, and returns it as a 32-bit integer.
+func servodGetInt(ctx context.Context, args *execs.RunArgs, command string) (int32, error) {
+	res, err := ServodCallGet(ctx, args, command)
+	if err != nil {
+		return 0, errors.Annotate(err, "servod get: could not obtain the value of control %s from servod", command).Err()
+	}
+	return res.Value.GetInt(), nil
+}
+
+// servodGetBool retrieves from servod the value of servod command
+// passed as an argument, and returns it as boolean.
+func servodGetBool(ctx context.Context, args *execs.RunArgs, command string) (bool, error) {
+	res, err := ServodCallGet(ctx, args, command)
+	if err != nil {
+		return false, errors.Annotate(err, "servod get: could not obtain the value of control %s from servod", command).Err()
+	}
+	return res.Value.GetBoolean(), nil
+}
+
+// servodGetDouble retrieves from servod the value of servod command
+// passed as an argument, and returns it as 64-bit floating point
+// value.
+func servodGetDouble(ctx context.Context, args *execs.RunArgs, command string) (float64, error) {
+	res, err := ServodCallGet(ctx, args, command)
+	if err != nil {
+		return 0.0, errors.Annotate(err, "servod get: could not obtain the value of control %s from servod", command).Err()
+	}
+	return res.Value.GetDouble(), nil
+}
+
+// equalable supports comparison with string values.
+type equalable interface {
+	// isEqual checks whether the value of receiver is equal to the
+	// expecteddValue in the argument.
+	isEqual(ctx context.Context, expectedValue string) error
+}
+
+type newString string
+
+func (s newString) isEqual(ctx context.Context, expectedValue string) error {
+	if expectedValue != string(s) {
+		return errors.Reason("is equal: expected value %s is not equal to actual value %s", expectedValue, s).Err()
+	}
+	return nil
+}
+
+type newInt int32
+
+func (i newInt) isEqual(ctx context.Context, expectedValue string) error {
+	expectedInt, err := strconv.Atoi(expectedValue)
+	if err != nil {
+		return errors.Annotate(err, "is equal").Err()
+	}
+	if newInt(expectedInt) != i {
+		return errors.Reason("is equal: expected value %d is not equal to actual value %d", expectedValue, i).Err()
+	}
+	return nil
+}
+
+type newDouble float64
+
+func (f newDouble) isEqual(ctx context.Context, expectedValue string) error {
+	expectedDouble, err := strconv.ParseFloat(expectedValue, 64)
+	if err != nil {
+		return errors.Annotate(err, "is equal").Err()
+	}
+	if newDouble(expectedDouble) != f {
+		return errors.Reason("is equal: expected value %f is not equal to actual value %f", expectedValue, f).Err()
+	}
+	return nil
+}
+
+type newBool bool
+
+func (b newBool) isEqual(ctx context.Context, expectedValue string) error {
+	expectedBool, err := strconv.ParseBool(expectedValue)
+	if err != nil {
+		return errors.Annotate(err, "is equal").Err()
+	}
+	if newBool(expectedBool) != b {
+		return errors.Reason("is equal: expected value %t is not equal to actual value %t", expectedValue, b).Err()
+	}
+	return nil
 }
