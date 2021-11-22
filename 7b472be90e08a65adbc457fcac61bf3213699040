@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b2757fe0_e4596523",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-11-22T22:28:22Z",
+      "side": 1,
+      "message": "Tested for config parameter of type string, it is working as expected. \n\nThis CL now is ready for review. ",
+      "revId": "7b472be90e08a65adbc457fcac61bf3213699040",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
