@@ -16,6 +16,80 @@
       "message": "Tested for config parameter of type string, it is working as expected. \n\nThis CL now is ready for review. ",
       "revId": "7b472be90e08a65adbc457fcac61bf3213699040",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4aaa2d43_e7153d4a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-22T23:33:18Z",
+      "side": 1,
+      "message": "some comments, and offline topics\n",
+      "revId": "7b472be90e08a65adbc457fcac61bf3213699040",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e90a1de6_746f6e23",
+        "filename": "go/src/infra/cros/recovery/internal/execs/servo/servod.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-22T23:33:18Z",
+      "side": 1,
+      "message": "nit: i think that is extra. but I am ok with that.",
+      "range": {
+        "startLine": 132,
+        "startChar": 47,
+        "endLine": 132,
+        "endChar": 84
+      },
+      "revId": "7b472be90e08a65adbc457fcac61bf3213699040",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e1f76ca7_f3a3847d",
+        "filename": "go/src/infra/cros/recovery/internal/execs/servo/servod.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-22T23:33:18Z",
+      "side": 1,
+      "message": "please move to sepaarete file as that is only for exec functions",
+      "revId": "7b472be90e08a65adbc457fcac61bf3213699040",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "405c1b3c_568a2e5b",
+        "filename": "go/src/infra/cros/recovery/internal/execs/servo/servod.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-22T23:33:18Z",
+      "side": 1,
+      "message": "update the name of revisit based offline chat.",
+      "revId": "7b472be90e08a65adbc457fcac61bf3213699040",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
