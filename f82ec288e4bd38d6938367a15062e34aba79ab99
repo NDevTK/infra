@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "549d8838_3db8d3bd",
+        "filename": "go/src/infra/cros/recovery/internal/execs/servo/servo_execs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 384,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-11-23T04:22:07Z",
+      "side": 1,
+      "message": "Done. I have added a note right after declaration of this function.",
+      "parentUuid": "b6a31fd7_edcc16f0",
+      "revId": "f82ec288e4bd38d6938367a15062e34aba79ab99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a045abc5_2076d03f",
@@ -48,6 +66,30 @@
       "writtenOn": "2021-11-23T01:42:01Z",
       "side": 1,
       "message": "please add else block in case somebody does not have any expectation and just want to print the value.",
+      "range": {
+        "startLine": 440,
+        "startChar": 1,
+        "endLine": 440,
+        "endChar": 2
+      },
+      "revId": "f82ec288e4bd38d6938367a15062e34aba79ab99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "afe4b230_ef1a96a7",
+        "filename": "go/src/infra/cros/recovery/internal/execs/servo/servo_execs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 440,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-11-23T04:22:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a045abc5_2076d03f",
       "range": {
         "startLine": 440,
         "startChar": 1,

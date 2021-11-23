@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "207e983b_951e7cd9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-11-23T04:22:07Z",
+      "side": 1,
+      "message": "I have addressed the review comments, and made changes to the program as suggested.\n\nI will submit this shortly. ",
+      "revId": "a675b1d81b5f8428ebfe82a77f0de0a445b5f47c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
