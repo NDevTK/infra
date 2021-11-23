@@ -16,6 +16,46 @@
       "message": "Otabek, as discussed offline, I have changed the logic in the exec to create a comparison function, and then call it to execute the comparison.\n\nCan you kindly review this?",
       "revId": "f82ec288e4bd38d6938367a15062e34aba79ab99",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b6a31fd7_edcc16f0",
+        "filename": "go/src/infra/cros/recovery/internal/execs/servo/servo_execs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 384,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-23T01:42:01Z",
+      "side": 1,
+      "message": "Please add todo to think about. at the end we probably will create some helper for that.",
+      "revId": "f82ec288e4bd38d6938367a15062e34aba79ab99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a045abc5_2076d03f",
+        "filename": "go/src/infra/cros/recovery/internal/execs/servo/servo_execs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 440,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-23T01:42:01Z",
+      "side": 1,
+      "message": "please add else block in case somebody does not have any expectation and just want to print the value.",
+      "range": {
+        "startLine": 440,
+        "startChar": 1,
+        "endLine": 440,
+        "endChar": 2
+      },
+      "revId": "f82ec288e4bd38d6938367a15062e34aba79ab99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
