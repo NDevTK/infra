@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8d4f1b86_fb1140b1",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-23T21:30:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b03a012f_7d344722",
+      "range": {
+        "startLine": 180,
+        "startChar": 22,
+        "endLine": 181,
+        "endChar": 45
+      },
+      "revId": "3d22c6bba0d2a70591a940d40130d9c4946da08f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9bde5249_31c531c5",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-11-20T03:00:26Z",
       "side": 1,
       "message": "readRwVPDValuesCmdGlob?",
+      "range": {
+        "startLine": 182,
+        "startChar": 1,
+        "endLine": 182,
+        "endChar": 18
+      },
+      "revId": "3d22c6bba0d2a70591a940d40130d9c4946da08f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "43a043ee_a0ea8511",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-23T21:30:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9bde5249_31c531c5",
       "range": {
         "startLine": 182,
         "startChar": 1,
@@ -93,6 +141,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d0ddcb05_5e921f51",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-23T21:30:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "78df5293_c737614c",
+      "range": {
+        "startLine": 186,
+        "startChar": 5,
+        "endLine": 186,
+        "endChar": 19
+      },
+      "revId": "3d22c6bba0d2a70591a940d40130d9c4946da08f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0766a2ad_5be88a83",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-23T21:30:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9504239c_8bb4e2c6",
+      "range": {
+        "startLine": 186,
+        "startChar": 78,
+        "endLine": 186,
+        "endChar": 86
+      },
+      "revId": "3d22c6bba0d2a70591a940d40130d9c4946da08f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fe5921cd_72b8a0e0",
@@ -106,6 +202,30 @@
       "writtenOn": "2021-11-20T03:00:26Z",
       "side": 1,
       "message": "nit: Mostly recomended or create for particular side or just declare it like \n```\nvar keys []string\n```",
+      "range": {
+        "startLine": 187,
+        "startChar": 1,
+        "endLine": 187,
+        "endChar": 22
+      },
+      "revId": "3d22c6bba0d2a70591a940d40130d9c4946da08f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7283fb45_a7988019",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-23T21:30:11Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "fe5921cd_72b8a0e0",
       "range": {
         "startLine": 187,
         "startChar": 1,
@@ -139,6 +259,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef238223_d1c750db",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-23T21:30:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0634407f_b3463725",
+      "range": {
+        "startLine": 190,
+        "startChar": 28,
+        "endLine": 190,
+        "endChar": 31
+      },
+      "revId": "3d22c6bba0d2a70591a940d40130d9c4946da08f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "febbfeef_35e6ba39",
@@ -152,6 +296,30 @@
       "writtenOn": "2021-11-20T03:00:26Z",
       "side": 1,
       "message": "or \n1) \u0027VPD (RW_VPD) contains all required makes: %s\u0027 please provide list of keys\n2) Remove the log. and print the name of the key when we check it. with received values.",
+      "range": {
+        "startLine": 301,
+        "startChar": 1,
+        "endLine": 301,
+        "endChar": 42
+      },
+      "revId": "3d22c6bba0d2a70591a940d40130d9c4946da08f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "65b2607c_35d456e9",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 301,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-23T21:30:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "febbfeef_35e6ba39",
       "range": {
         "startLine": 301,
         "startChar": 1,
