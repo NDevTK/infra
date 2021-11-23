@@ -58,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "15aec747_6516ccf8",
+        "filename": "go/src/infra/cros/recovery/internal/execs/servo/servod.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-11-23T01:36:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e90a1de6_746f6e23",
+      "range": {
+        "startLine": 132,
+        "startChar": 47,
+        "endLine": 132,
+        "endChar": 84
+      },
+      "revId": "7b472be90e08a65adbc457fcac61bf3213699040",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e1f76ca7_f3a3847d",
@@ -75,6 +99,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bd941bb6_09af8caa",
+        "filename": "go/src/infra/cros/recovery/internal/execs/servo/servod.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-11-23T01:36:50Z",
+      "side": 1,
+      "message": "This logic has completely been changed. Now we are creating a function in the exec and calling it. This section of the program, on which this review comment was suggested, no longer exists.",
+      "parentUuid": "e1f76ca7_f3a3847d",
+      "revId": "7b472be90e08a65adbc457fcac61bf3213699040",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "405c1b3c_568a2e5b",
@@ -88,6 +130,24 @@
       "writtenOn": "2021-11-22T23:33:18Z",
       "side": 1,
       "message": "update the name of revisit based offline chat.",
+      "revId": "7b472be90e08a65adbc457fcac61bf3213699040",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c83abc34_1a468125",
+        "filename": "go/src/infra/cros/recovery/internal/execs/servo/servod.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-11-23T01:36:50Z",
+      "side": 1,
+      "message": "This logic has completely been changed. Now we are creating a function in the exec and calling it. This section of the program, on which this review comment was suggested, no longer exists.",
+      "parentUuid": "405c1b3c_568a2e5b",
       "revId": "7b472be90e08a65adbc457fcac61bf3213699040",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c75d5e7_11d99ce6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-11-23T01:36:50Z",
+      "side": 1,
+      "message": "Otabek, as discussed offline, I have changed the logic in the exec to create a comparison function, and then call it to execute the comparison.\n\nCan you kindly review this?",
+      "revId": "f82ec288e4bd38d6938367a15062e34aba79ab99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
