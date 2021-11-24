@@ -19,7 +19,8 @@ const crosRepairPlanBody = `
 	"hardware_audit",
 	"firmware_check",
 	"servo_keyboard",
-	"servo_mac_address"
+	"servo_mac_address",
+	"device_labels"
 ],
 "actions": {
 	"cros_ssh":{
@@ -319,6 +320,28 @@ const crosRepairPlanBody = `
 		"exec_extra_args":[
 			"/mnt/stateful_partition/encrypted:0.1"
 		]
+	},
+	"device_labels":{
+		"dependencies":[
+			"device_sku"
+		 ],
+		 "exec_name":"sample_pass"
+	},
+	"device_sku":{
+		"docs":[
+			"Update the device_sku label from the device if not present in inventory data."
+		],
+		"conditions":[
+			"dut_does_not_have_device_sku"
+		],
+		"exec_name":"cros_update_device_sku",
+		"allow_fail_after_recovery": true
+	},
+	"dut_does_not_have_device_sku":{
+		"conditions":[
+			"has_dut_device_sku"
+		],
+		"exec_name":"sample_fail"
 	}
 }
 `
