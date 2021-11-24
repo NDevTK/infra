@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "72dd75f9_9f60a1f1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-24T01:39:45Z",
+      "side": 1,
+      "message": "I am ok to have big CL but it has to be splited to 3\n1) introduce tlw level field with reading and updating it to/from UFS\n2) Add exec with correction fro repair plan\n3) update deploy plan\n\nfor now please add res like comment with update the plans and we good to merge.\n",
+      "revId": "a67242ffa5e8a9f9b8ea445c90962e07c25e0dc4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9356cbde_8f126f8e",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-24T01:39:45Z",
+      "side": 1,
+      "message": "sorry missed last time. that part is condition, right?",
+      "range": {
+        "startLine": 24,
+        "startChar": 1,
+        "endLine": 28,
+        "endChar": 2
+      },
+      "revId": "a67242ffa5e8a9f9b8ea445c90962e07c25e0dc4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
