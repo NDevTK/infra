@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9e2a1786_8a6617e5",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/rw_vpd_execs.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-24T01:35:32Z",
+      "side": 1,
+      "message": "`confirms that one or more required RW_VPD keys missing on the device.`",
+      "range": {
+        "startLine": 29,
+        "startChar": 29,
+        "endLine": 29,
+        "endChar": 96
+      },
+      "revId": "986b527021d51da5d863e4ac4623c007705dc23b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1c0cbd03_0ca5f2ae",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/rw_vpd_execs.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-24T01:35:32Z",
+      "side": 1,
+      "message": "isRWVPDKeysMissingExec?",
+      "range": {
+        "startLine": 30,
+        "startChar": 5,
+        "endLine": 30,
+        "endChar": 30
+      },
+      "revId": "986b527021d51da5d863e4ac4623c007705dc23b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
