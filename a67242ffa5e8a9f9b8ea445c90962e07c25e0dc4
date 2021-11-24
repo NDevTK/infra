@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c3378690_c0e00231",
+        "filename": "go/src/infra/cros/recovery/config.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 923,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-24T06:47:50Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "6bd2842b_14565916",
+      "revId": "a67242ffa5e8a9f9b8ea445c90962e07c25e0dc4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4818d282_3d850150",
@@ -48,6 +66,24 @@
       "writtenOn": "2021-11-24T01:41:01Z",
       "side": 1,
       "message": "update plan with condition",
+      "revId": "a67242ffa5e8a9f9b8ea445c90962e07c25e0dc4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f055f9c2_b76e1ef1",
+        "filename": "go/src/infra/cros/recovery/config.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 1020,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-24T06:47:50Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "4818d282_3d850150",
       "revId": "a67242ffa5e8a9f9b8ea445c90962e07c25e0dc4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -89,6 +125,30 @@
       "side": 1,
       "message": "to avoid double review. please put condition in dut execs and call it dut_has_device_sku",
       "parentUuid": "9356cbde_8f126f8e",
+      "range": {
+        "startLine": 24,
+        "startChar": 1,
+        "endLine": 28,
+        "endChar": 2
+      },
+      "revId": "a67242ffa5e8a9f9b8ea445c90962e07c25e0dc4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c797eaa6_1ac37388",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-24T06:47:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ad0a5453_5b5a8221",
       "range": {
         "startLine": 24,
         "startChar": 1,
