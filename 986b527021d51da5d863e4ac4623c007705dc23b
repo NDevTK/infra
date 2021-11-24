@@ -48,6 +48,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cca5623f_41f0151d",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/rw_vpd_execs.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-24T21:54:29Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "b7110f9e_a70d1c71",
+      "range": {
+        "startLine": 29,
+        "startChar": 29,
+        "endLine": 29,
+        "endChar": 96
+      },
+      "revId": "986b527021d51da5d863e4ac4623c007705dc23b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1c0cbd03_0ca5f2ae",
@@ -85,6 +109,30 @@
       "side": 1,
       "message": "changed it to cros_are_required_rw_vpd_keys_present as the meaning of this exec should be check are all the required rw vpd keys are present.",
       "parentUuid": "1c0cbd03_0ca5f2ae",
+      "range": {
+        "startLine": 30,
+        "startChar": 5,
+        "endLine": 30,
+        "endChar": 30
+      },
+      "revId": "986b527021d51da5d863e4ac4623c007705dc23b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dd797e37_2ec7d59e",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/rw_vpd_execs.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-24T21:54:29Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "25807895_31ade8a4",
       "range": {
         "startLine": 30,
         "startChar": 5,
