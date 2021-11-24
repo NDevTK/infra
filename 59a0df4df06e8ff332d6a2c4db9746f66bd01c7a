@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6107a2ad_b28116bd",
+        "filename": "go/src/infra/cros/recovery/config_cros_deploy.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-24T21:57:52Z",
+      "side": 1,
+      "message": "please add docs to explain it.",
+      "revId": "59a0df4df06e8ff332d6a2c4db9746f66bd01c7a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9db84744_bc524f25",
+        "filename": "go/src/infra/cros/recovery/config_cros_repair.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 340,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-24T21:57:52Z",
+      "side": 1,
+      "message": "that is smart move. thank you.",
+      "range": {
+        "startLine": 340,
+        "startChar": 2,
+        "endLine": 340,
+        "endChar": 30
+      },
+      "revId": "59a0df4df06e8ff332d6a2c4db9746f66bd01c7a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e8bb0c73_d31e9a9b",
+        "filename": "go/src/infra/cros/recovery/config_cros_repair.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 341,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-24T21:57:52Z",
+      "side": 1,
+      "message": "same",
+      "revId": "59a0df4df06e8ff332d6a2c4db9746f66bd01c7a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ac6c1241_16642b71",
+        "filename": "go/src/infra/cros/recovery/internal/execs/dut/dut_execs.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-24T21:57:52Z",
+      "side": 1,
+      "message": "Debug?",
+      "range": {
+        "startLine": 49,
+        "startChar": 5,
+        "endLine": 49,
+        "endChar": 9
+      },
+      "revId": "59a0df4df06e8ff332d6a2c4db9746f66bd01c7a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
