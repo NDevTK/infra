@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "af23a377_f7253e9e",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/reclustering/worker.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-24T00:58:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fd3c449a_5de0e8d4",
+      "range": {
+        "startLine": 53,
+        "startChar": 1,
+        "endLine": 53,
+        "endChar": 3
+      },
+      "revId": "7e3f45978b08649bd38b54316a9b6de457ab698b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "00f4a88e_3980cb25",
@@ -41,6 +65,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a91badb0_092fe1d3",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/reclustering/worker.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-24T00:58:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "00f4a88e_3980cb25",
+      "revId": "7e3f45978b08649bd38b54316a9b6de457ab698b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fc1142f2_a1c6244f",
@@ -54,6 +96,30 @@
       "writtenOn": "2021-11-23T06:40:59Z",
       "side": 1,
       "message": "net?",
+      "range": {
+        "startLine": 57,
+        "startChar": 4,
+        "endLine": 57,
+        "endChar": 16
+      },
+      "revId": "7e3f45978b08649bd38b54316a9b6de457ab698b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c69e5cd2_5f0c5036",
+        "filename": "go/src/infra/appengine/weetbix/internal/clustering/reclustering/worker_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-11-24T00:58:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fc1142f2_a1c6244f",
       "range": {
         "startLine": 57,
         "startChar": 4,
