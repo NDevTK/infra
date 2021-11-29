@@ -36,6 +36,92 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a9c4501a_33a8cfd5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2021-11-29T23:09:24Z",
+      "side": 1,
+      "message": "LGTM % comments",
+      "revId": "beb282631cf2c98366e8886d6683fb63eb41f8c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d301606b_00944a98",
+        "filename": "recipes/recipe_modules/windows_scripts_executor/cipd_manager.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2021-11-29T23:09:24Z",
+      "side": 1,
+      "message": "const?",
+      "range": {
+        "startLine": 109,
+        "startChar": 13,
+        "endLine": 109,
+        "endChar": 69
+      },
+      "revId": "beb282631cf2c98366e8886d6683fb63eb41f8c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ab08bfda_2b239e19",
+        "filename": "recipes/recipe_modules/windows_scripts_executor/cipd_manager.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2021-11-29T23:09:24Z",
+      "side": 1,
+      "message": "directly use src.cipd_src.XXX? inline variable",
+      "range": {
+        "startLine": 110,
+        "startChar": 10,
+        "endLine": 110,
+        "endChar": 24
+      },
+      "revId": "beb282631cf2c98366e8886d6683fb63eb41f8c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "43b5ffd1_e2704a54",
+        "filename": "recipes/recipe_modules/windows_scripts_executor/cipd_manager.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2021-11-29T23:09:24Z",
+      "side": 1,
+      "message": "dest? same for other up_dest. as it\u0027s in uploader functions (cipd, gcs), dest obviously are the destination to upload.",
+      "range": {
+        "startLine": 112,
+        "startChar": 26,
+        "endLine": 112,
+        "endChar": 33
+      },
+      "revId": "beb282631cf2c98366e8886d6683fb63eb41f8c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d8d32e4b_4d4966d4",
@@ -67,6 +153,29 @@
       "side": 1,
       "message": "My bad, I meant to change it before upload. It shouldn\u0027t matter as this is a test package and nothing here is actually uploaded to cipd and those are just mock values",
       "parentUuid": "d8d32e4b_4d4966d4",
+      "revId": "beb282631cf2c98366e8886d6683fb63eb41f8c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "83562c20_a35f9af9",
+        "filename": "recipes/recipe_modules/windows_scripts_executor/offline_winpe_customization.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2021-11-29T23:09:24Z",
+      "side": 1,
+      "message": "cust.image_dests",
+      "range": {
+        "startLine": 174,
+        "startChar": 26,
+        "endLine": 174,
+        "endChar": 45
+      },
       "revId": "beb282631cf2c98366e8886d6683fb63eb41f8c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
