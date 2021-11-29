@@ -49,7 +49,7 @@ build-dumper:
 # Run service locally
 .PHONY: dev
 dev: build
-	./ufs-service --cloud-project="unified-fleet-system-dev" --auth-service-host="chrome-infra-auth-dev.appspot.com"
+	./ufs-service --cloud-project="unified-fleet-system" --auth-service-host="chrome-infra-auth-dev.appspot.com"
 
 .PHONY: dev-dumper
 dev-dumper: build-dumper
