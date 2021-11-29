@@ -331,9 +331,20 @@ const crosRepairPlanBody = `
 	},
 	"device_labels":{
 		"dependencies":[
-			"device_sku"
+			"device_sku",
+			"cr_50"
 		 ],
 		 "exec_name":"sample_pass"
+	},
+	"cr_50":{
+		"docs":[
+			"Update the cr_50 label on the cros Device."
+		],
+		"conditions":[
+			"cros_is_cr_50_firmware_exist"
+		],
+		"exec_name":"cros_update_cr_50",
+		"allow_fail_after_recovery": true
 	},
 	"device_sku":{
 		"docs":[
