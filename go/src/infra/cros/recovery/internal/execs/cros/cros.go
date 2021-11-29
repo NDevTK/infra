@@ -303,3 +303,29 @@ func ServoNICMacAddress(ctx context.Context, r execs.Runner, nicPath string) (st
 	log.Info(ctx, "Servo NIC MAC address visible from DUT: %s", macAddress)
 	return macAddress, nil
 }
+
+const (
+	// findFWVersionRegexp is the regular expression for finding the RW/RO version from the output
+	findFWVersionRegexp = `%s (\d+\.\d+\.\d+)`
+)
+
+// cr50FWVersion gets either the RW/RO firmware version from the output of the gsctool version cmd.
+// @param region: "RW" or "RO"
+func cr50FWVersion(ctx context.Context, r execs.Runner, region string) (string, error) {
+	output, err := r(ctx, cr50VersionCmd)
+	if err != nil {
+		return "", errors.Annotate(err, "cr 50 fw version").Err()
+	}
+	fwVersionRegexp, err := regexp.Compile(fmt.Sprintf(findFWVersionRegexp, region))
+	if err != nil {
+		return "", errors.Annotate(err, "cr 50 fw version").Err()
+	}
+	matches := fwVersionRegexp.FindStringSubmatch(output)
+	if len(matches) == 0 {
+		return "", errors.Reason("cr 50 fw version: %s version not found", region).Err()
+	}
+	if len(matches) != 2 {
+		return "", errors.Reason("cr 50 rw version: cr 50 fw version output is in wrong format").Err()
+	}
+	return matches[1], nil
+}
