@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6b0ac5be_a07b05f7",
+        "filename": "go/src/infra/cros/karte/cli/listswarmingtasks.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-29T22:37:26Z",
+      "side": 1,
+      "message": "nit: maybe including more information in the `LongDesc`: `List recent swarming tasks along with the number of times this swarming task was executed.`",
+      "revId": "ba8b09e0f5f95e07dd7d5640f1aba6cf02e60a99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c0c933e5_dca1b2f6",
+        "filename": "go/src/infra/cros/karte/cli/listswarmingtasks.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-11-29T22:37:26Z",
+      "side": 1,
+      "message": "This is of course correct by using the golang map\u0027s default map behaviour that when a key does not exist, its value is the zero value of the defined type.\n\nBut, isn\u0027t it more clear to use the syntax like this: (so that it is more readable)\n\nif tally, ok :\u003d swarmingTasksSeenTally[action.GetSwarmingTaskId()]; !ok {\n...\n}\n...",
+      "range": {
+        "startLine": 77,
+        "startChar": 2,
+        "endLine": 77,
+        "endChar": 81
+      },
+      "revId": "ba8b09e0f5f95e07dd7d5640f1aba6cf02e60a99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
