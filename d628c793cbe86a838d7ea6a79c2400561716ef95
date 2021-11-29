@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4187fcc9_36bf23c8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2021-11-29T23:47:06Z",
+      "side": 1,
+      "message": "LGTM % comments",
+      "revId": "d628c793cbe86a838d7ea6a79c2400561716ef95",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "06748582_fd566e78",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/asset/add_asset.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2021-11-29T23:47:06Z",
+      "side": 1,
+      "message": "you can directly set it without checking empty string.",
+      "range": {
+        "startLine": 232,
+        "startChar": 2,
+        "endLine": 247,
+        "endChar": 2
+      },
+      "revId": "d628c793cbe86a838d7ea6a79c2400561716ef95",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
