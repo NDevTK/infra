@@ -39,6 +39,30 @@
       },
       "revId": "d628c793cbe86a838d7ea6a79c2400561716ef95",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cdc060b7_a7f0a545",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/asset/add_asset.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-11-30T00:25:13Z",
+      "side": 1,
+      "message": "Ack. Still need the check for row and zone as they might get overwritten with \"\" (after being derived from rack).",
+      "parentUuid": "06748582_fd566e78",
+      "range": {
+        "startLine": 232,
+        "startChar": 2,
+        "endLine": 247,
+        "endChar": 2
+      },
+      "revId": "d628c793cbe86a838d7ea6a79c2400561716ef95",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
