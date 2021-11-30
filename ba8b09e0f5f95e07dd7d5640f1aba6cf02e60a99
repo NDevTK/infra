@@ -38,6 +38,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "807efa88_7959cfb3",
+        "filename": "go/src/infra/cros/karte/cli/listswarmingtasks.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-30T18:28:44Z",
+      "side": 1,
+      "message": "maybe call it last as you select last 1000 action to collect this info.",
+      "range": {
+        "startLine": 23,
+        "startChar": 13,
+        "endLine": 23,
+        "endChar": 17
+      },
+      "revId": "ba8b09e0f5f95e07dd7d5640f1aba6cf02e60a99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6b0ac5be_a07b05f7",
         "filename": "go/src/infra/cros/karte/cli/listswarmingtasks.go",
         "patchSetId": 1
@@ -49,6 +72,47 @@
       "writtenOn": "2021-11-29T22:37:26Z",
       "side": 1,
       "message": "nit: maybe including more information in the `LongDesc`: `List recent swarming tasks along with the number of times this swarming task was executed.`",
+      "revId": "ba8b09e0f5f95e07dd7d5640f1aba6cf02e60a99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2283e624_1d7d9a7b",
+        "filename": "go/src/infra/cros/karte/cli/listswarmingtasks.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-30T18:28:44Z",
+      "side": 1,
+      "message": "+1 to tell what is happening inside.",
+      "parentUuid": "6b0ac5be_a07b05f7",
+      "revId": "ba8b09e0f5f95e07dd7d5640f1aba6cf02e60a99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b1429494_440643de",
+        "filename": "go/src/infra/cros/karte/cli/listswarmingtasks.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-30T18:28:44Z",
+      "side": 1,
+      "message": "nit: not need as if params provided it will be ignored or failed on subcommands level",
+      "range": {
+        "startLine": 55,
+        "startChar": 1,
+        "endLine": 57,
+        "endChar": 2
+      },
       "revId": "ba8b09e0f5f95e07dd7d5640f1aba6cf02e60a99",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
