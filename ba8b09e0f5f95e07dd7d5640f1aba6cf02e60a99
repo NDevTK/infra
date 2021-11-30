@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d8c8b7e7_bc10f43a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-11-30T17:58:16Z",
+      "side": 1,
+      "message": "I\u0027m putting tools in the Karte command line client to make it easier to inspect production issues (while the project is new). The bar for adding and removing commands should be relatively low.",
+      "parentUuid": "56878f18_80f9dabd",
+      "revId": "ba8b09e0f5f95e07dd7d5640f1aba6cf02e60a99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6b0ac5be_a07b05f7",
