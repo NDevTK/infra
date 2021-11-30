@@ -59,6 +59,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "21099516_3d01553e",
+        "filename": "go/src/infra/cros/karte/cli/listswarmingtasks.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-11-30T19:30:31Z",
+      "side": 1,
+      "message": "I\u0027m going to change the behavior of this command in the future to make it easier to search for swarming tasks with particular characteristics. This is just supposed to be a first step.",
+      "parentUuid": "807efa88_7959cfb3",
+      "range": {
+        "startLine": 23,
+        "startChar": 13,
+        "endLine": 23,
+        "endChar": 17
+      },
+      "revId": "ba8b09e0f5f95e07dd7d5640f1aba6cf02e60a99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6b0ac5be_a07b05f7",
@@ -94,6 +118,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "afcff63e_98ed0784",
+        "filename": "go/src/infra/cros/karte/cli/listswarmingtasks.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-11-30T19:30:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2283e624_1d7d9a7b",
+      "revId": "ba8b09e0f5f95e07dd7d5640f1aba6cf02e60a99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b1429494_440643de",
@@ -117,6 +159,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "514c16ed_d7bc9089",
+        "filename": "go/src/infra/cros/karte/cli/listswarmingtasks.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-11-30T19:30:31Z",
+      "side": 1,
+      "message": "I don\u0027t want extra arguments to be ignored. I want the command to be user friendly and fail if the user does something reasonable but unsupported.",
+      "parentUuid": "b1429494_440643de",
+      "range": {
+        "startLine": 55,
+        "startChar": 1,
+        "endLine": 57,
+        "endChar": 2
+      },
+      "revId": "ba8b09e0f5f95e07dd7d5640f1aba6cf02e60a99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c0c933e5_dca1b2f6",
@@ -130,6 +196,30 @@
       "writtenOn": "2021-11-29T22:37:26Z",
       "side": 1,
       "message": "This is of course correct by using the golang map\u0027s default map behaviour that when a key does not exist, its value is the zero value of the defined type.\n\nBut, isn\u0027t it more clear to use the syntax like this: (so that it is more readable)\n\nif tally, ok :\u003d swarmingTasksSeenTally[action.GetSwarmingTaskId()]; !ok {\n...\n}\n...",
+      "range": {
+        "startLine": 77,
+        "startChar": 2,
+        "endLine": 77,
+        "endChar": 81
+      },
+      "revId": "ba8b09e0f5f95e07dd7d5640f1aba6cf02e60a99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4bcfe44b_ce1c87cc",
+        "filename": "go/src/infra/cros/karte/cli/listswarmingtasks.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-11-30T19:30:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c0c933e5_dca1b2f6",
       "range": {
         "startLine": 77,
         "startChar": 2,
