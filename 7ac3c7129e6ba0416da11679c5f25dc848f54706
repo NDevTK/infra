@@ -1,0 +1,239 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5ffb6802_5aaf8043",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-30T01:58:15Z",
+      "side": 1,
+      "message": "\u003e \"correponding\" is a possible misspelling of \"corresponding\".\n\nPlease fix.",
+      "parentUuid": "bc8862d6_b5e55863",
+      "range": {
+        "startLine": 12,
+        "startChar": 7,
+        "endLine": 12,
+        "endChar": 19
+      },
+      "revId": "7ac3c7129e6ba0416da11679c5f25dc848f54706",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "24b93cc3_f43ad0af",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-30T01:58:15Z",
+      "side": 1,
+      "message": "please try to keep the documentation in the code which we have in the pythong. as it explain the logic and help to the read the code. ",
+      "revId": "7ac3c7129e6ba0416da11679c5f25dc848f54706",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3c0cd5df_557bc547",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 314,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-30T01:58:15Z",
+      "side": 1,
+      "message": "please create separate type and use it to pass the value.\n\ntype CR50Region string\nCR50RegionRO\nCR50RegionRW",
+      "range": {
+        "startLine": 314,
+        "startChar": 56,
+        "endLine": 314,
+        "endChar": 69
+      },
+      "revId": "7ac3c7129e6ba0416da11679c5f25dc848f54706",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9e026816_edc22347",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 314,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-30T01:58:15Z",
+      "side": 1,
+      "message": "please move to cros_cr50.go",
+      "revId": "7ac3c7129e6ba0416da11679c5f25dc848f54706",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4d937f5c_507784d6",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 314,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-30T01:58:15Z",
+      "side": 1,
+      "message": "please add example of results to tell what is expecting to provide it here.",
+      "revId": "7ac3c7129e6ba0416da11679c5f25dc848f54706",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "753ddb64_28cc0a29",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 315,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-30T01:58:15Z",
+      "side": 1,
+      "message": "feel free to show raw output data here for example and print them as well",
+      "revId": "7ac3c7129e6ba0416da11679c5f25dc848f54706",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "37eb3e00_b260bd89",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-30T01:58:15Z",
+      "side": 1,
+      "message": "please print to the debug level",
+      "revId": "7ac3c7129e6ba0416da11679c5f25dc848f54706",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "16473840_3cd49742",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-30T01:58:15Z",
+      "side": 1,
+      "message": "please move to cros_cr50.go",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 1
+      },
+      "revId": "7ac3c7129e6ba0416da11679c5f25dc848f54706",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1cce2e74_45165b0b",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-30T01:58:15Z",
+      "side": 1,
+      "message": "generateCr50LabelExec?",
+      "range": {
+        "startLine": 52,
+        "startChar": 5,
+        "endLine": 52,
+        "endChar": 19
+      },
+      "revId": "7ac3c7129e6ba0416da11679c5f25dc848f54706",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4f9b3d5d_a629a2b3",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-30T01:58:15Z",
+      "side": 1,
+      "message": "` # Check the major version to determine prePVT vs PVT`",
+      "revId": "7ac3c7129e6ba0416da11679c5f25dc848f54706",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cc3d885d_7b190cbc",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-30T01:58:15Z",
+      "side": 1,
+      "message": "`# PVT images have a odd major version prePVT have even`",
+      "revId": "7ac3c7129e6ba0416da11679c5f25dc848f54706",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aa6ccc2f_1ae42651",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-11-30T01:58:15Z",
+      "side": 1,
+      "message": "please move to cros_cr50_execs.go as can be use not only for cr50",
+      "range": {
+        "startLine": 81,
+        "startChar": 1,
+        "endLine": 81,
+        "endChar": 72
+      },
+      "revId": "7ac3c7129e6ba0416da11679c5f25dc848f54706",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
