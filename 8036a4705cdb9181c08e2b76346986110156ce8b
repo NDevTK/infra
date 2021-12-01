@@ -105,6 +105,24 @@
       "parentUuid": "77fd1fc9_b0bf2d98",
       "revId": "8036a4705cdb9181c08e2b76346986110156ce8b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2e35e662_ef8b5f4b",
+        "filename": "go/src/infra/appengine/crosskylabadmin/app/frontend/inventory/readonly.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 418,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-12-01T04:11:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "55d0d5d3_d4cb3f5f",
+      "revId": "8036a4705cdb9181c08e2b76346986110156ce8b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
