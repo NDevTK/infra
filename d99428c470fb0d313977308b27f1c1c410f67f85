@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e0c04e32_dca743a7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-12-01T22:35:32Z",
+      "side": 1,
+      "message": "Hi, Otabek,\n\nI added the cl for Cr50_KeyID label as well, please review these two together. As the cr50FWComponent function is being used in both these two Exec functions.\n\nThanks,\nDavid",
+      "revId": "d99428c470fb0d313977308b27f1c1c410f67f85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
