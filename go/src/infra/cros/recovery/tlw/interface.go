@@ -223,6 +223,14 @@ const (
 	Cr50KeyEnvDev         Cr50KeyEnv = "CR50_KEYENV_DEV"
 )
 
+// CR50Region describes either the RO or RW of the firmware.
+type CR50Region string
+
+const (
+	CR50RegionRO CR50Region = "RO"
+	CR50RegionRW CR50Region = "RW"
+)
+
 // Audio loopback dongle is plugged in.
 type AudioLoopbackState string
 
