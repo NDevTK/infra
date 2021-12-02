@@ -140,6 +140,30 @@
       },
       "revId": "7b7a7f80e67426df7cf8f3fc707ead645a7142b8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "14c586d4_73296ac9",
+        "filename": "go/src/infra/appengine/crosskylabadmin/internal/app/frontend/inventory/readonly.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 406,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-02T03:48:21Z",
+      "side": 1,
+      "message": "Just to be sure the device in the bug using servo_v4p1 which is servo usied labstation with right name and DUT which name finished with `-servov4p1`. The link to the failed task in #1.",
+      "parentUuid": "60965752_f6cb1538",
+      "range": {
+        "startLine": 406,
+        "startChar": 40,
+        "endLine": 406,
+        "endChar": 52
+      },
+      "revId": "7b7a7f80e67426df7cf8f3fc707ead645a7142b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
