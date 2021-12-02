@@ -16,6 +16,155 @@
       "message": "Hi, Otabek,\n\nI added the cl for Cr50_KeyID label as well, please review these two together. As the cr50FWComponent function is being used in both these two Exec functions.\n\nThanks,\nDavid",
       "revId": "d99428c470fb0d313977308b27f1c1c410f67f85",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "86421709_d3ba84fd",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_cr50.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-02T00:06:59Z",
+      "side": 1,
+      "message": "offline talk: \nCreate separate public method like\n```\nfunc GetCr50FwVersion(ctx, r, region) (string, error)\n    return  cr50FWComponent(ctx, r, regior, regex-string)\n``",
+      "revId": "d99428c470fb0d313977308b27f1c1c410f67f85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ca9df529_61d850b3",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_cr50.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-02T00:06:59Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 37,
+        "startChar": 35,
+        "endLine": 37,
+        "endChar": 40
+      },
+      "revId": "d99428c470fb0d313977308b27f1c1c410f67f85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7ea42f76_f2191f39",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_cr50.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-02T00:06:59Z",
+      "side": 1,
+      "message": "Cr50? as that calling the team and componenent.",
+      "range": {
+        "startLine": 39,
+        "startChar": 17,
+        "endLine": 39,
+        "endChar": 22
+      },
+      "revId": "d99428c470fb0d313977308b27f1c1c410f67f85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "efd8bbf6_1ad129ec",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-02T00:06:59Z",
+      "side": 1,
+      "message": "cr50 or Cr50 please.",
+      "range": {
+        "startLine": 52,
+        "startChar": 38,
+        "endLine": 52,
+        "endChar": 43
+      },
+      "revId": "d99428c470fb0d313977308b27f1c1c410f67f85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8858f465_146d7dba",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-02T00:06:59Z",
+      "side": 1,
+      "message": "please add detail of the logic with example so reader can get the logic and undertstand what is input and output here.",
+      "revId": "d99428c470fb0d313977308b27f1c1c410f67f85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2ef6c945_99cc401c",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-02T00:06:59Z",
+      "side": 1,
+      "message": "cros_update_cr_50_label",
+      "range": {
+        "startLine": 80,
+        "startChar": 17,
+        "endLine": 80,
+        "endChar": 34
+      },
+      "revId": "d99428c470fb0d313977308b27f1c1c410f67f85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "74e59ba6_b12a47f7",
+        "filename": "go/src/infra/cros/recovery/tlw/interface.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-02T00:06:59Z",
+      "side": 1,
+      "message": "please keep it in cros_cr50.go",
+      "range": {
+        "startLine": 226,
+        "startChar": 0,
+        "endLine": 232,
+        "endChar": 1
+      },
+      "revId": "d99428c470fb0d313977308b27f1c1c410f67f85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
