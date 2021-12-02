@@ -116,6 +116,30 @@
       },
       "revId": "7b7a7f80e67426df7cf8f3fc707ead645a7142b8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "60965752_f6cb1538",
+        "filename": "go/src/infra/appengine/crosskylabadmin/internal/app/frontend/inventory/readonly.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 406,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2021-12-02T02:52:26Z",
+      "side": 1,
+      "message": "The logic is correct. The `-servov4p1` suffix should identify a servo according to a bug.",
+      "parentUuid": "14bec179_b66a32c1",
+      "range": {
+        "startLine": 406,
+        "startChar": 40,
+        "endLine": 406,
+        "endChar": 52
+      },
+      "revId": "7b7a7f80e67426df7cf8f3fc707ead645a7142b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
