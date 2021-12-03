@@ -192,6 +192,18 @@ const servoRepairPlanBody = `
 		],
 		"exec_name":"sample_pass"
 	},
+	"servo_get_ppdut5_mv": {
+		"exec_extra_args": [
+			"command:ppdut5_mv"
+		],
+		"exec_name":"servo_check_servod_control"
+	},
+	"servo_get_ppchg5_mv": {
+		"exec_extra_args": [
+			"command:ppchg5_mv"
+		],
+		"exec_name":"servo_check_servod_control"
+	},
 	"servod_servo_pd": {
 		"docs":[
 			"run command from xmlrpc"
@@ -199,10 +211,15 @@ const servoRepairPlanBody = `
 		"conditions": [
 			"servo_type_c"
 		],
+		"dependencies": [
+			"servo_get_ppdut5_mv",
+			"servo_get_ppchg5_mv"
+		],
 		"allow_fail_after_recovery": true,
-		"exec_name":"sample_pass",
+		"exec_name":"servo_check_servod_control",
 		"exec_extra_args": [
-			"exclude_model:puff,hh"
+			"command:servo_pd_role",
+			"expected_string_value:snk"
 		]
 	},
 	"servo_cr50_checks": {
