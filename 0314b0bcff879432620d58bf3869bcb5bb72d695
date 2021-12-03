@@ -1,0 +1,285 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aaec2335_125e5815",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T16:56:57Z",
+      "side": 1,
+      "message": "LGTM % commnets",
+      "revId": "0314b0bcff879432620d58bf3869bcb5bb72d695",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a5f3a17c_6e50807a",
+        "filename": "go/src/infra/cros/recovery/config_cros_repair.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 351,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T16:56:57Z",
+      "side": 1,
+      "message": "loopback is single word",
+      "range": {
+        "startLine": 351,
+        "startChar": 33,
+        "endLine": 351,
+        "endChar": 42
+      },
+      "revId": "0314b0bcff879432620d58bf3869bcb5bb72d695",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0f7a7fa3_c5b0343b",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_audio_loop_back.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T16:56:57Z",
+      "side": 1,
+      "message": "note: please treat help files as eternal files as we possible will move them out of exec as separate lib",
+      "revId": "0314b0bcff879432620d58bf3869bcb5bb72d695",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "df1a9d4d_8d10f806",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_audio_loop_back.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T16:56:57Z",
+      "side": 1,
+      "message": "nit: please correct formating",
+      "range": {
+        "startLine": 35,
+        "startChar": 2,
+        "endLine": 36,
+        "endChar": 11
+      },
+      "revId": "0314b0bcff879432620d58bf3869bcb5bb72d695",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "910eb620_a4a77283",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_audio_loop_back.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T16:56:57Z",
+      "side": 1,
+      "message": "nit: hint: just to be clear when you receive err you are ignore other return values. mostly other result provided only garbage return when err detected.",
+      "range": {
+        "startLine": 42,
+        "startChar": 13,
+        "endLine": 42,
+        "endChar": 25
+      },
+      "revId": "0314b0bcff879432620d58bf3869bcb5bb72d695",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "43777cc1_c31b955e",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_audio_loop_back.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T16:56:57Z",
+      "side": 1,
+      "message": "please make it public",
+      "revId": "0314b0bcff879432620d58bf3869bcb5bb72d695",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "869df63c_6adc8df8",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T16:56:57Z",
+      "side": 1,
+      "message": "CrasAudiHeadphone - I think headphone is single word.",
+      "range": {
+        "startLine": 44,
+        "startChar": 1,
+        "endLine": 44,
+        "endChar": 19
+      },
+      "revId": "0314b0bcff879432620d58bf3869bcb5bb72d695",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "85f3737a_1c086e8c",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T16:56:57Z",
+      "side": 1,
+      "message": "please move close to the help function which need it and make them public",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 1
+      },
+      "revId": "0314b0bcff879432620d58bf3869bcb5bb72d695",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8b73b7f0_91ab1007",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T16:56:57Z",
+      "side": 1,
+      "message": "I think Loopback is one word",
+      "range": {
+        "startLine": 52,
+        "startChar": 16,
+        "endLine": 52,
+        "endChar": 24
+      },
+      "revId": "0314b0bcff879432620d58bf3869bcb5bb72d695",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "84952960_ec02ad78",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T16:56:57Z",
+      "side": 1,
+      "message": "better always read from the var to witch you set (args.DUT.AudioLoopbackState) as it will prove that value set in case if somehow code will be change then logs will lie",
+      "range": {
+        "startLine": 70,
+        "startChar": 63,
+        "endLine": 70,
+        "endChar": 92
+      },
+      "revId": "0314b0bcff879432620d58bf3869bcb5bb72d695",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "199ba1cd_c384a508",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T16:56:57Z",
+      "side": 1,
+      "message": "i think you can set state at the beggining and check to the working if needed otherwise do not change. it will simplify the code.",
+      "range": {
+        "startLine": 73,
+        "startChar": 1,
+        "endLine": 73,
+        "endChar": 64
+      },
+      "revId": "0314b0bcff879432620d58bf3869bcb5bb72d695",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a4c96e6e_e7c537f9",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T16:56:57Z",
+      "side": 1,
+      "message": "cros_is_audio_loopback_state_working",
+      "range": {
+        "startLine": 80,
+        "startChar": 17,
+        "endLine": 80,
+        "endChar": 54
+      },
+      "revId": "0314b0bcff879432620d58bf3869bcb5bb72d695",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f8710568_e0c9be96",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T16:56:57Z",
+      "side": 1,
+      "message": "cros_update_audio_loopback_state_label",
+      "range": {
+        "startLine": 81,
+        "startChar": 17,
+        "endLine": 81,
+        "endChar": 56
+      },
+      "revId": "0314b0bcff879432620d58bf3869bcb5bb72d695",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
