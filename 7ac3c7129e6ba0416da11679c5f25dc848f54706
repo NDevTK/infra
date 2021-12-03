@@ -371,6 +371,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "147aca6a_45a250f1",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-12-03T01:25:19Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f79508c6_d269c504",
+      "range": {
+        "startLine": 52,
+        "startChar": 5,
+        "endLine": 52,
+        "endChar": 19
+      },
+      "revId": "7ac3c7129e6ba0416da11679c5f25dc848f54706",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4f9b3d5d_a629a2b3",
@@ -478,6 +502,30 @@
       "side": 1,
       "message": "if we want to seperate it into a new file, should\u0027t the file call \"cros_cr50_labels_execs.go\" since this is all about cr50 labels, such as CR50Label and CR50KeyIDLabel.",
       "parentUuid": "aa6ccc2f_1ae42651",
+      "range": {
+        "startLine": 81,
+        "startChar": 1,
+        "endLine": 81,
+        "endChar": 72
+      },
+      "revId": "7ac3c7129e6ba0416da11679c5f25dc848f54706",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2ae3f79e_b20f80fa",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-12-03T01:25:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d7d87882_76ac9c29",
       "range": {
         "startLine": 81,
         "startChar": 1,

@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bf261ce3_5f1e5a6a",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_cr50.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-12-03T01:25:19Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "86421709_d3ba84fd",
+      "revId": "d99428c470fb0d313977308b27f1c1c410f67f85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ca9df529_61d850b3",
@@ -48,6 +66,30 @@
       "writtenOn": "2021-12-02T00:06:59Z",
       "side": 1,
       "message": "same",
+      "range": {
+        "startLine": 37,
+        "startChar": 35,
+        "endLine": 37,
+        "endChar": 40
+      },
+      "revId": "d99428c470fb0d313977308b27f1c1c410f67f85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cae36a5f_de20e108",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_cr50.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-12-03T01:25:19Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ca9df529_61d850b3",
       "range": {
         "startLine": 37,
         "startChar": 35,
@@ -81,6 +123,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6f386024_e8760918",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_cr50.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-12-03T01:25:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7ea42f76_f2191f39",
+      "range": {
+        "startLine": 39,
+        "startChar": 17,
+        "endLine": 39,
+        "endChar": 22
+      },
+      "revId": "d99428c470fb0d313977308b27f1c1c410f67f85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "efd8bbf6_1ad129ec",
@@ -94,6 +160,30 @@
       "writtenOn": "2021-12-02T00:06:59Z",
       "side": 1,
       "message": "cr50 or Cr50 please.",
+      "range": {
+        "startLine": 52,
+        "startChar": 38,
+        "endLine": 52,
+        "endChar": 43
+      },
+      "revId": "d99428c470fb0d313977308b27f1c1c410f67f85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e876d91b_a84273b1",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-12-03T01:25:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "efd8bbf6_1ad129ec",
       "range": {
         "startLine": 52,
         "startChar": 38,
@@ -121,6 +211,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7da8488a_3891495e",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-12-03T01:25:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8858f465_146d7dba",
+      "revId": "d99428c470fb0d313977308b27f1c1c410f67f85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2ef6c945_99cc401c",
@@ -144,6 +252,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fcbe3141_03aed74d",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_labels_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-12-03T01:25:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2ef6c945_99cc401c",
+      "range": {
+        "startLine": 80,
+        "startChar": 17,
+        "endLine": 80,
+        "endChar": 34
+      },
+      "revId": "d99428c470fb0d313977308b27f1c1c410f67f85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "74e59ba6_b12a47f7",
@@ -157,6 +289,30 @@
       "writtenOn": "2021-12-02T00:06:59Z",
       "side": 1,
       "message": "please keep it in cros_cr50.go",
+      "range": {
+        "startLine": 226,
+        "startChar": 0,
+        "endLine": 232,
+        "endChar": 1
+      },
+      "revId": "d99428c470fb0d313977308b27f1c1c410f67f85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "db007747_4fe5db2b",
+        "filename": "go/src/infra/cros/recovery/tlw/interface.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2021-12-03T01:25:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "74e59ba6_b12a47f7",
       "range": {
         "startLine": 226,
         "startChar": 0,
