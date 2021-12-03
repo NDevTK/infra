@@ -1,0 +1,101 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7216d24f_96f4134b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T02:58:44Z",
+      "side": 1,
+      "message": "LGTM % comments",
+      "revId": "05b219d13bf76a7c5f7a0004aeef21101c9fe9a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cbd25041_85093ad3",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_cr50.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T02:58:44Z",
+      "side": 1,
+      "message": "nit: you can simplify it as\n```\nreturn fwVersion, errors.Annotate(err, \"get cr50 fw version\").Err()\n```",
+      "range": {
+        "startLine": 35,
+        "startChar": 1,
+        "endLine": 38,
+        "endChar": 22
+      },
+      "revId": "05b219d13bf76a7c5f7a0004aeef21101c9fe9a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fa599e95_d777abb2",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_cr50.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T02:58:44Z",
+      "side": 1,
+      "message": "please include example of source you are working to extract the data.",
+      "revId": "05b219d13bf76a7c5f7a0004aeef21101c9fe9a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "99e56925_9fc8d862",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_cr50_labels_execs.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T02:58:44Z",
+      "side": 1,
+      "message": "nit: btw we have cros_run_shell_command which is good enough to test it. Sorry forgot it in first review. We still can keep it here.",
+      "revId": "05b219d13bf76a7c5f7a0004aeef21101c9fe9a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "328fba41_efa52b1a",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_cr50_labels_execs.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T02:58:44Z",
+      "side": 1,
+      "message": "nit: please add expected version look like `0.5.40`",
+      "range": {
+        "startLine": 31,
+        "startChar": 1,
+        "endLine": 31,
+        "endChar": 10
+      },
+      "revId": "05b219d13bf76a7c5f7a0004aeef21101c9fe9a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
