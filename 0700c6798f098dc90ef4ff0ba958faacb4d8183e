@@ -16,6 +16,58 @@
       "message": "Otabek, this CL has two actions that together verify CCD power delivery (as discussed yesterday).\n\nHowever, the original plan included extra-args to exclude models puff (it also includes \"hh\" as excluded model, but that looks like a typing mistake).\n\nThis can be done by adding an exec in dut_execs.go that checks whether the value of a DUT property (such as Model) matches an expected value. Then a condition can be created about his.\n\nPlease let me know if this models should be handled for this CCD Power Delivery verifier, and will complete that within this CL. \n",
       "revId": "0700c6798f098dc90ef4ff0ba958faacb4d8183e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "53b04cfe_f487a932",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T17:06:57Z",
+      "side": 1,
+      "message": "Yes. that was just example as how we can set exception per board or models in future (not now)",
+      "parentUuid": "9338b345_c15126e3",
+      "revId": "0700c6798f098dc90ef4ff0ba958faacb4d8183e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "45619d39_1cb73f4c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T17:06:57Z",
+      "side": 1,
+      "message": "LGTM % comments",
+      "revId": "0700c6798f098dc90ef4ff0ba958faacb4d8183e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "07ba3da7_d98972c2",
+        "filename": "go/src/infra/cros/recovery/config_servo.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T17:06:57Z",
+      "side": 1,
+      "message": "please mark as allowed to fail.",
+      "revId": "0700c6798f098dc90ef4ff0ba958faacb4d8183e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
