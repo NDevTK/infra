@@ -53,6 +53,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "805d43a3_195b7638",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-12-03T17:26:37Z",
+      "side": 1,
+      "message": "I have responded to the review comment. \n\nThis CL has the required approvals, I will submit this in some time. ",
+      "revId": "0700c6798f098dc90ef4ff0ba958faacb4d8183e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "07ba3da7_d98972c2",
@@ -66,6 +83,24 @@
       "writtenOn": "2021-12-03T17:06:57Z",
       "side": 1,
       "message": "please mark as allowed to fail.",
+      "revId": "0700c6798f098dc90ef4ff0ba958faacb4d8183e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ca1a8673_0e0f38b3",
+        "filename": "go/src/infra/cros/recovery/config_servo.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2021-12-03T17:26:37Z",
+      "side": 1,
+      "message": "I think it already does, on line 218 above: \"allow_fail_after_recovery\": true\n\nI will wait to hear from you if this is what you had in mind.",
+      "parentUuid": "07ba3da7_d98972c2",
       "revId": "0700c6798f098dc90ef4ff0ba958faacb4d8183e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
