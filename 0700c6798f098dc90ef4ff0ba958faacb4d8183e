@@ -70,6 +70,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "13e3ea85_99402377",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T17:34:25Z",
+      "side": 1,
+      "message": "Thank you for quick response",
+      "revId": "0700c6798f098dc90ef4ff0ba958faacb4d8183e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "07ba3da7_d98972c2",
@@ -101,6 +118,24 @@
       "side": 1,
       "message": "I think it already does, on line 218 above: \"allow_fail_after_recovery\": true\n\nI will wait to hear from you if this is what you had in mind.",
       "parentUuid": "07ba3da7_d98972c2",
+      "revId": "0700c6798f098dc90ef4ff0ba958faacb4d8183e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "43880271_4beb7e49",
+        "filename": "go/src/infra/cros/recovery/config_servo.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-03T17:34:25Z",
+      "side": 1,
+      "message": "sorry my bad. I mostly expect it in the last line. That is my bad, sorry.",
+      "parentUuid": "ca1a8673_0e0f38b3",
       "revId": "0700c6798f098dc90ef4ff0ba958faacb4d8183e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
