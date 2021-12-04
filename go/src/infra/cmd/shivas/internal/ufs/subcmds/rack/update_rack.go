@@ -36,7 +36,8 @@ var UpdateRackCmd = &subcommands.Command{
 
 		c.Flags.StringVar(&c.rackName, "name", "", "the name of the rack to update")
 		c.Flags.StringVar(&c.zoneName, "zone", "", cmdhelp.ZoneHelpText)
-		c.Flags.IntVar(&c.capacity, "capacity_ru", 0, "indicate the size of the rack in rack units (U). "+"To clear this field set it to -1.")
+		c.Flags.IntVar(&c.bbNum, "bbnum", 0, "indicate the breadboard number of the rack. To clear this field set it to -1.")
+		c.Flags.IntVar(&c.capacity, "capacity_ru", 0, "indicate the size of the rack in rack units (U). To clear this field set it to -1.")
 		c.Flags.StringVar(&c.tags, "tags", "", "comma separated tags. You can only append/add new tags here. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.state, "state", "", cmdhelp.StateHelp)
 		return c
@@ -54,6 +55,7 @@ type updateRack struct {
 	rackName string
 	zoneName string
 	capacity int
+	bbNum    int
 	tags     string
 	state    string
 }
@@ -110,6 +112,7 @@ func (c *updateRack) innerRun(a subcommands.Application, args []string, env subc
 		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
 			"zone":        "zone",
 			"capacity_ru": "capacity",
+			"bbnum":       "bbnum",
 			"tags":        "tags",
 			"state":       "resourceState",
 		}),
@@ -138,6 +141,11 @@ func (c *updateRack) parseArgs(rack *ufspb.Rack) {
 	} else {
 		rack.Tags = utils.GetStringSlice(c.tags)
 	}
+	if c.bbNum == -1 {
+		rack.Bbnum = 0
+	} else {
+		rack.Bbnum = int32(c.bbNum)
+	}
 	if c.capacity == -1 {
 		rack.CapacityRu = 0
 	} else {
@@ -157,6 +165,9 @@ func (c *updateRack) validateArgs() error {
 		if c.capacity != 0 {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON input file is already specified. '-capacity_ru' cannot be specified at the same time.")
 		}
+		if c.bbNum != 0 {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON input file is already specified. '-bbnum' cannot be specified at the same time.")
+		}
 		if c.tags != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON input file is already specified. '-tags' cannot be specified at the same time.")
 		}
@@ -167,7 +178,7 @@ func (c *updateRack) validateArgs() error {
 		if c.rackName == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-name' is required, no mode ('-f') is specified.")
 		}
-		if c.zoneName == "" && c.capacity == 0 && c.tags == "" && c.state == "" {
+		if c.zoneName == "" && c.capacity == 0 && c.bbNum == 0 && c.tags == "" && c.state == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nNothing to update. Please provide any field to update")
 		}
 		if c.zoneName != "" && !ufsUtil.IsUFSZone(ufsUtil.RemoveZonePrefix(c.zoneName)) {
