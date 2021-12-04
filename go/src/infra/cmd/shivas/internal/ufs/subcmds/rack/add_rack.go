@@ -39,6 +39,7 @@ var AddRackCmd = &subcommands.Command{
 		c.Flags.BoolVar(&c.interactive, "i", false, "enable interactive mode for input")
 
 		c.Flags.StringVar(&c.rackName, "name", "", "the name of the rack to add")
+		c.Flags.IntVar(&c.bbNum, "bbnum", 0, "indicate the breadboard number of the rack")
 		c.Flags.StringVar(&c.zoneName, "zone", "", cmdhelp.ZoneHelpText)
 		c.Flags.IntVar(&c.capacity, "capacity_ru", 0, "indicate the size of the rack in rack units (U).")
 		c.Flags.StringVar(&c.tags, "tags", "", "comma separated tags. You can only append/add new tags here.")
@@ -58,6 +59,7 @@ type addRack struct {
 	rackName string
 	zoneName string
 	capacity int
+	bbNum    int
 	tags     string
 }
 
@@ -145,7 +147,8 @@ func (c *addRack) innerRun(a subcommands.Application, args []string, env subcomm
 func (c *addRack) parseArgs(req *ufsAPI.RackRegistrationRequest) {
 	ufsZone := ufsUtil.ToUFSZone(c.zoneName)
 	req.Rack = &ufspb.Rack{
-		Name: c.rackName,
+		Name:  c.rackName,
+		Bbnum: int32(c.bbNum),
 		Location: &ufspb.Location{
 			Zone: ufsZone,
 		},
@@ -177,6 +180,9 @@ func (c *addRack) validateArgs() error {
 		}
 		if c.capacity != 0 {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/file mode is specified. '-capacity_ru' cannot be specified at the same time.")
+		}
+		if c.bbNum != 0 {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/file mode is specified. '-bbnum' cannot be specified at the same time.")
 		}
 		if c.tags != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/file mode is specified. '-tags' cannot be specified at the same time.")
@@ -222,7 +228,7 @@ func (c *addRack) parseMCSV() ([]*ufsAPI.RackRegistrationRequest, error) {
 				req.Rack.Name = value
 			case "zone":
 				if !ufsUtil.IsUFSZone(ufsUtil.RemoveZonePrefix(value)) {
-					return nil, fmt.Errorf("Error in line %d.\n%s is not a valid zone name. %s", i, value, cmdhelp.ZoneFilterHelpText)
+					return nil, fmt.Errorf("error in line %d.\n%s is not a valid zone name. %s", i, value, cmdhelp.ZoneFilterHelpText)
 				}
 				ufsZone := ufsUtil.ToUFSZone(value)
 				req.Rack.Location = &ufspb.Location{
@@ -234,13 +240,19 @@ func (c *addRack) parseMCSV() ([]*ufsAPI.RackRegistrationRequest, error) {
 			case "capacity_ru":
 				capacityRu, err := strconv.ParseInt(value, 10, 32)
 				if err != nil {
-					return nil, fmt.Errorf("Error in line %d.\nFailed to parse capacity %s", i, value)
+					return nil, fmt.Errorf("error in line %d.\nFailed to parse capacity %s", i, value)
 				}
 				req.Rack.CapacityRu = int32(capacityRu)
+			case "bbnum":
+				bbnum, err := strconv.ParseInt(value, 10, 32)
+				if err != nil {
+					return nil, fmt.Errorf("error in line %d.\nFailed to parse bbnum %s", i, value)
+				}
+				req.Rack.Bbnum = int32(bbnum)
 			case "tags":
 				req.Rack.Tags = strings.Fields(value)
 			default:
-				return nil, fmt.Errorf("Error in line %d.\nUnknown field: %s", i, name)
+				return nil, fmt.Errorf("error in line %d.\nUnknown field: %s", i, name)
 			}
 		}
 		reqs = append(reqs, req)
