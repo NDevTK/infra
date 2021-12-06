@@ -76,6 +76,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f3dfeb02_24400896",
+        "filename": "recipes/recipe_modules/windows_scripts_executor/cipd_manager.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-12-06T21:28:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d301606b_00944a98",
+      "range": {
+        "startLine": 109,
+        "startChar": 13,
+        "endLine": 109,
+        "endChar": 69
+      },
+      "revId": "beb282631cf2c98366e8886d6683fb63eb41f8c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ab08bfda_2b239e19",
@@ -99,6 +123,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6e3e775b_f220a984",
+        "filename": "recipes/recipe_modules/windows_scripts_executor/cipd_manager.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-12-06T21:28:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ab08bfda_2b239e19",
+      "range": {
+        "startLine": 110,
+        "startChar": 10,
+        "endLine": 110,
+        "endChar": 24
+      },
+      "revId": "beb282631cf2c98366e8886d6683fb63eb41f8c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "43b5ffd1_e2704a54",
@@ -112,6 +160,30 @@
       "writtenOn": "2021-11-29T23:09:24Z",
       "side": 1,
       "message": "dest? same for other up_dest. as it\u0027s in uploader functions (cipd, gcs), dest obviously are the destination to upload.",
+      "range": {
+        "startLine": 112,
+        "startChar": 26,
+        "endLine": 112,
+        "endChar": 33
+      },
+      "revId": "beb282631cf2c98366e8886d6683fb63eb41f8c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "685eedf7_3770570b",
+        "filename": "recipes/recipe_modules/windows_scripts_executor/cipd_manager.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-12-06T21:28:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "43b5ffd1_e2704a54",
       "range": {
         "startLine": 112,
         "startChar": 26,
@@ -157,6 +229,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c4166a15_7f208810",
+        "filename": "recipes/recipe_modules/windows_scripts_executor/examples/cipd_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-12-06T21:28:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "466b9e8e_9729ac42",
+      "revId": "beb282631cf2c98366e8886d6683fb63eb41f8c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "83562c20_a35f9af9",
@@ -170,6 +260,30 @@
       "writtenOn": "2021-11-29T23:09:24Z",
       "side": 1,
       "message": "cust.image_dests",
+      "range": {
+        "startLine": 174,
+        "startChar": 26,
+        "endLine": 174,
+        "endChar": 45
+      },
+      "revId": "beb282631cf2c98366e8886d6683fb63eb41f8c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0884104f_921964c5",
+        "filename": "recipes/recipe_modules/windows_scripts_executor/offline_winpe_customization.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2021-12-06T21:28:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "83562c20_a35f9af9",
       "range": {
         "startLine": 174,
         "startChar": 26,
