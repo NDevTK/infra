@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ee12a364_67fbc587",
+        "filename": "go/src/infra/cros/cmd/labservice/internal/ufs/ufs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-12-07T23:53:53Z",
+      "side": 1,
+      "message": "suggest croslse for readability/familiarity",
+      "range": {
+        "startLine": 83,
+        "startChar": 1,
+        "endLine": 83,
+        "endChar": 6
+      },
+      "revId": "1550711b6d289412dd64026d2e24332917578a4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cfd30404_6c03de1a",
+        "filename": "go/src/infra/cros/cmd/labservice/internal/ufs/ufs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-12-07T23:53:53Z",
+      "side": 1,
+      "message": "all uppercase.  format is TODO(blah):",
+      "range": {
+        "startLine": 159,
+        "startChar": 6,
+        "endLine": 159,
+        "endChar": 10
+      },
+      "revId": "1550711b6d289412dd64026d2e24332917578a4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4322311d_6f62d6b1",
+        "filename": "go/src/infra/cros/cmd/labservice/internal/ufs/ufs_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2021-12-07T23:53:53Z",
+      "side": 1,
+      "message": "why swap this?",
+      "range": {
+        "startLine": 128,
+        "startChar": 21,
+        "endLine": 128,
+        "endChar": 29
+      },
+      "revId": "1550711b6d289412dd64026d2e24332917578a4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
