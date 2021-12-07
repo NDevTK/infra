@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ae9fb90d_10e33d2a",
+        "filename": "go/src/infra/cros/recovery/internal/execs/execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-07T23:08:04Z",
+      "side": 1,
+      "message": "\u003e \"Separater\" is a possible misspelling of \"Separator\".\n\nPlease fix.",
+      "parentUuid": "79354845_ba103ed8",
+      "range": {
+        "startLine": 186,
+        "startChar": 5,
+        "endLine": 186,
+        "endChar": 14
+      },
+      "revId": "ab6df02ae645c81ce610d56c33d475aac0675486",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
