@@ -16,6 +16,24 @@
       "message": "nit: the makeTopology change can be one CL.  It\u0027s self contained, can be reviewed separately/faster.",
       "revId": "d3fbee085c588c4503855b6041da53280ba3f7c7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e5999581_b5091b85",
+        "filename": "go/src/infra/cros/cmd/labservice/internal/ufs/ufs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1449997
+      },
+      "writtenOn": "2021-12-08T16:57:49Z",
+      "side": 0,
+      "message": "yeah, I still need to learn how to create a list of dependent CLs.",
+      "parentUuid": "c49658db_9a7dd6b5",
+      "revId": "d3fbee085c588c4503855b6041da53280ba3f7c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

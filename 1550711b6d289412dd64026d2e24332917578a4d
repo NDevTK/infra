@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "211da0b1_0ff3faf3",
+        "filename": "go/src/infra/cros/cmd/labservice/internal/ufs/ufs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1449997
+      },
+      "writtenOn": "2021-12-08T16:57:49Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ee12a364_67fbc587",
+      "range": {
+        "startLine": 83,
+        "startChar": 1,
+        "endLine": 83,
+        "endChar": 6
+      },
+      "revId": "1550711b6d289412dd64026d2e24332917578a4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "cfd30404_6c03de1a",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d26f6e6c_af7d73f0",
+        "filename": "go/src/infra/cros/cmd/labservice/internal/ufs/ufs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1449997
+      },
+      "writtenOn": "2021-12-08T16:57:49Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "cfd30404_6c03de1a",
+      "range": {
+        "startLine": 159,
+        "startChar": 6,
+        "endLine": 159,
+        "endChar": 10
+      },
+      "revId": "1550711b6d289412dd64026d2e24332917578a4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4322311d_6f62d6b1",
@@ -60,6 +108,30 @@
       "writtenOn": "2021-12-07T23:53:53Z",
       "side": 1,
       "message": "why swap this?",
+      "range": {
+        "startLine": 128,
+        "startChar": 21,
+        "endLine": 128,
+        "endChar": 29
+      },
+      "revId": "1550711b6d289412dd64026d2e24332917578a4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4b753b2c_a9c8a7a2",
+        "filename": "go/src/infra/cros/cmd/labservice/internal/ufs/ufs_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1449997
+      },
+      "writtenOn": "2021-12-08T16:57:49Z",
+      "side": 1,
+      "message": "ha, sorry was testing something, I\u0027ll revert this back.",
+      "parentUuid": "4322311d_6f62d6b1",
       "range": {
         "startLine": 128,
         "startChar": 21,
