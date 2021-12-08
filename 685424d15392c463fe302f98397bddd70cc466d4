@@ -16,6 +16,46 @@
       "message": "Otabek, this CL introduces a function to retrieve parameter values from the parsed args. Can you kindly review this? ",
       "revId": "685424d15392c463fe302f98397bddd70cc466d4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "96d7f35c_fed66cb3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-08T17:50:46Z",
+      "side": 1,
+      "message": "LGTM % comment",
+      "revId": "685424d15392c463fe302f98397bddd70cc466d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ae3bdb53_1945dbd9",
+        "filename": "go/src/infra/cros/recovery/internal/execs/execs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-08T17:50:46Z",
+      "side": 1,
+      "message": "ParsedArgs?",
+      "range": {
+        "startLine": 199,
+        "startChar": 80,
+        "endLine": 199,
+        "endChar": 97
+      },
+      "revId": "685424d15392c463fe302f98397bddd70cc466d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
