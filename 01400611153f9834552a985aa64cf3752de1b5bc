@@ -64,6 +64,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5fdb9766_edfc37cd",
+        "filename": "appengine/monorail/static_src/shared/md-helper.js",
+        "patchSetId": 9
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1434285
+      },
+      "writtenOn": "2021-12-11T01:18:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "08698cde_492fe96d",
+      "range": {
+        "startLine": 99,
+        "startChar": 0,
+        "endLine": 99,
+        "endChar": 52
+      },
+      "revId": "01400611153f9834552a985aa64cf3752de1b5bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0556bb53_720d00b4",
+        "filename": "appengine/monorail/static_src/shared/md-helper.js",
+        "patchSetId": 9
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1434285
+      },
+      "writtenOn": "2021-12-11T01:18:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "960b4bb1_56605fb1",
+      "range": {
+        "startLine": 99,
+        "startChar": 2,
+        "endLine": 99,
+        "endChar": 52
+      },
+      "revId": "01400611153f9834552a985aa64cf3752de1b5bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1a6dd65b_66c55138",
@@ -77,6 +125,30 @@
       "writtenOn": "2021-11-29T20:35:01Z",
       "side": 1,
       "message": "Can we rename this something like isEmailLink or similar to explain that this is really matching mailto links, not email addresses?",
+      "range": {
+        "startLine": 103,
+        "startChar": 6,
+        "endLine": 103,
+        "endChar": 20
+      },
+      "revId": "01400611153f9834552a985aa64cf3752de1b5bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6ef8b91f_0f76e71e",
+        "filename": "appengine/monorail/static_src/shared/md-helper.js",
+        "patchSetId": 9
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1434285
+      },
+      "writtenOn": "2021-12-11T01:18:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a6dd65b_66c55138",
       "range": {
         "startLine": 103,
         "startChar": 6,
@@ -112,6 +184,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "cd702293_40aeb0e8",
+        "filename": "appengine/monorail/static_src/shared/md-helper.js",
+        "patchSetId": 9
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1434285
+      },
+      "writtenOn": "2021-12-11T01:18:45Z",
+      "side": 1,
+      "message": "This feels out of the scope of this CL, as an email regex is used elsewhere and I\u0027d have to update that file as well",
+      "parentUuid": "5d72fb8b_02892874",
+      "range": {
+        "startLine": 107,
+        "startChar": 31,
+        "endLine": 107,
+        "endChar": 205
+      },
+      "revId": "01400611153f9834552a985aa64cf3752de1b5bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "036c3e50_ee85e44f",
         "filename": "appengine/monorail/static_src/shared/md-helper.js",
         "patchSetId": 9
@@ -123,6 +219,30 @@
       "writtenOn": "2021-11-29T20:35:01Z",
       "side": 1,
       "message": "It looks to me like the code that adds user profile URLs, https://source.chromium.org/chromium/infra/infra/+/main:appengine/monorail/static_src/autolink.js;l\u003d258\n\nadded them with a format like \"/u/user@email.com\"\n\nSome thoughts: \n\n- I\u0027m curious how this becomes \"bugs.chromium.org/u\", especially without http/https added - is some part of the frontend implicitly adding the domain to a relative URL? \n- Did we manually test this to ensure that this is working as expected? \n- This regex wouldn\u0027t work for domains like monorail-staging.appspot.com, monorail-d.appspotspot.com, etc.",
+      "range": {
+        "startLine": 108,
+        "startChar": 0,
+        "endLine": 108,
+        "endChar": 228
+      },
+      "revId": "01400611153f9834552a985aa64cf3752de1b5bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b43669cb_daf9f14e",
+        "filename": "appengine/monorail/static_src/shared/md-helper.js",
+        "patchSetId": 9
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1434285
+      },
+      "writtenOn": "2021-12-11T01:18:45Z",
+      "side": 1,
+      "message": "I wasn\u0027t sure where the domain was added, so I just stuck it here. The way you suggested makes more sense, so I\u0027ve updated it.",
+      "parentUuid": "036c3e50_ee85e44f",
       "range": {
         "startLine": 108,
         "startChar": 0,
