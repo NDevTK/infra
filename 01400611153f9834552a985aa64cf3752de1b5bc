@@ -208,6 +208,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "65db3ee0_a4a302dc",
+        "filename": "appengine/monorail/static_src/shared/md-helper.js",
+        "patchSetId": 9
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2021-12-14T06:07:58Z",
+      "side": 1,
+      "message": "IMO it\u0027s reasonably in scope because there wasn\u0027t a need for a shared constant until this CL was created - it\u0027s a good practice to keep code maintainable as you make new changes. \n\nThat said, if you\u0027d like to avoid making a shard constant, I\u0027d propose two alternate changes you could make instead: \n\n1. Move these constant declarations for EMAIL_REGX and MONORAIL_USER_REGEX outside of the function. Regex initialization is expensive, and in a function that\u0027s run once per an email link on a page, this can create a non-trivial performance hit. [1] \n2. File a bug (http://crbug.com/monorail/new) and add a TODO referencing that bug (ie: \"TODO(crbug.com/monorail/xxxx):\") to create a new regexes.js file and move existing email constants to that file.\n\n\n[1] In the past, we\u0027ve been able to get performance gains on Monorail\u0027s frontend of as much as 200m simply from removing Regex initializations from repeated functions. Example: https://chromium-review.googlesource.com/c/infra/infra/+/1566179",
+      "parentUuid": "cd702293_40aeb0e8",
+      "range": {
+        "startLine": 107,
+        "startChar": 31,
+        "endLine": 107,
+        "endChar": 205
+      },
+      "revId": "01400611153f9834552a985aa64cf3752de1b5bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "036c3e50_ee85e44f",
         "filename": "appengine/monorail/static_src/shared/md-helper.js",
         "patchSetId": 9
