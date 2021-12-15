@@ -230,6 +230,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b5131a86_38e03ca4",
+        "filename": "appengine/monorail/static_src/shared/md-helper.js",
+        "patchSetId": 9
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1434285
+      },
+      "writtenOn": "2021-12-15T01:00:21Z",
+      "side": 1,
+      "message": "I\u0027ve moved them out of the function for now. Thanks for the feedback!",
+      "parentUuid": "65db3ee0_a4a302dc",
+      "range": {
+        "startLine": 107,
+        "startChar": 31,
+        "endLine": 107,
+        "endChar": 205
+      },
+      "revId": "01400611153f9834552a985aa64cf3752de1b5bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "036c3e50_ee85e44f",
