@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ba38366a_3f23c0fb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-12-17T05:12:23Z",
+      "side": 1,
+      "message": "I have abandon my previous CL. This one is the CL for initial support of cros-test in cros-tool-runner. It has not started provision server and DUT server. It will be done in future CLs.",
+      "revId": "91a94dbdb9a28b28a14ed173abea64d91eb011cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
