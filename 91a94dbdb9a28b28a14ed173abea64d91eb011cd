@@ -16,6 +16,333 @@
       "message": "I have abandon my previous CL. This one is the CL for initial support of cros-test in cros-tool-runner. It has not started provision server and DUT server. It will be done in future CLs.",
       "revId": "91a94dbdb9a28b28a14ed173abea64d91eb011cd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3fb5d8b9_802c9923",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-20T17:08:34Z",
+      "side": 1,
+      "message": "LGTM % comments",
+      "revId": "91a94dbdb9a28b28a14ed173abea64d91eb011cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "13f18eae_8d0e949a",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/services/services.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-20T17:08:34Z",
+      "side": 1,
+      "message": "not used! please remove",
+      "range": {
+        "startLine": 97,
+        "startChar": 126,
+        "endLine": 97,
+        "endChar": 139
+      },
+      "revId": "91a94dbdb9a28b28a14ed173abea64d91eb011cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "33054d70_eab522ca",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/tasks/testexec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-20T17:08:34Z",
+      "side": 1,
+      "message": "`Run: fail to create output file with error: %s`",
+      "range": {
+        "startLine": 75,
+        "startChar": 14,
+        "endLine": 75,
+        "endChar": 21
+      },
+      "revId": "91a94dbdb9a28b28a14ed173abea64d91eb011cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7d605bd1_c159e3fc",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/tasks/testexec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-20T17:08:34Z",
+      "side": 1,
+      "message": "forgot `:`",
+      "range": {
+        "startLine": 87,
+        "startChar": 45,
+        "endLine": 87,
+        "endChar": 46
+      },
+      "revId": "91a94dbdb9a28b28a14ed173abea64d91eb011cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5bfc85c9_321b9ca2",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/tasks/testexec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-20T17:08:34Z",
+      "side": 1,
+      "message": "forgot `inner run:`",
+      "range": {
+        "startLine": 92,
+        "startChar": 25,
+        "endLine": 92,
+        "endChar": 26
+      },
+      "revId": "91a94dbdb9a28b28a14ed173abea64d91eb011cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1b68282d_e4bb3e32",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/tasks/testexec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-20T17:08:34Z",
+      "side": 1,
+      "message": "forgot `:`",
+      "range": {
+        "startLine": 97,
+        "startChar": 45,
+        "endLine": 97,
+        "endChar": 46
+      },
+      "revId": "91a94dbdb9a28b28a14ed173abea64d91eb011cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2cefe5b2_f6bd5fa5",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/tasks/testexec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-20T17:08:34Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 103,
+        "startChar": 37,
+        "endLine": 103,
+        "endChar": 38
+      },
+      "revId": "91a94dbdb9a28b28a14ed173abea64d91eb011cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2c5aa088_6fd62591",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/tasks/testexec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-20T17:08:34Z",
+      "side": 1,
+      "message": "i think messages should to start with \"save output: \"",
+      "range": {
+        "startLine": 123,
+        "startChar": 31,
+        "endLine": 123,
+        "endChar": 32
+      },
+      "revId": "91a94dbdb9a28b28a14ed173abea64d91eb011cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a10dc226_7ce4db43",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/testexec/testexec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-20T17:08:34Z",
+      "side": 1,
+      "message": "nit: maybe it is good to print path to artifacts in the logs in case we want to debug it. also it is good if we will print where we created input and output for debugging.",
+      "range": {
+        "startLine": 28,
+        "startChar": 1,
+        "endLine": 28,
+        "endChar": 12
+      },
+      "revId": "91a94dbdb9a28b28a14ed173abea64d91eb011cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0915b0ed_2a749dcb",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/testexec/testexec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-20T17:08:34Z",
+      "side": 1,
+      "message": "`run test: failed to create directory %s`",
+      "range": {
+        "startLine": 39,
+        "startChar": 35,
+        "endLine": 39,
+        "endChar": 66
+      },
+      "revId": "91a94dbdb9a28b28a14ed173abea64d91eb011cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "358b7749_9d23c580",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/testexec/testexec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-20T17:08:34Z",
+      "side": 1,
+      "message": "`run test: failed to create directory %s`",
+      "range": {
+        "startLine": 42,
+        "startChar": 36,
+        "endLine": 42,
+        "endChar": 65
+      },
+      "revId": "91a94dbdb9a28b28a14ed173abea64d91eb011cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "99053753_3e11df64",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/testexec/testexec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-20T17:08:34Z",
+      "side": 1,
+      "message": "nit: please move close where you create all paths",
+      "range": {
+        "startLine": 45,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 56
+      },
+      "revId": "91a94dbdb9a28b28a14ed173abea64d91eb011cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fb115f5c_85ec91c9",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/testexec/testexec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-20T17:08:34Z",
+      "side": 1,
+      "message": "not needed as not used.",
+      "revId": "91a94dbdb9a28b28a14ed173abea64d91eb011cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f4e4f25b_4d5c166f",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/testexec/testexec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-20T17:08:34Z",
+      "side": 1,
+      "message": "nit: you do not need extra variable for that as you can read directly from requests.",
+      "revId": "91a94dbdb9a28b28a14ed173abea64d91eb011cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "66b876ef_40b7fcb2",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/testexec/testexec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-20T17:08:34Z",
+      "side": 1,
+      "message": "`run test: failed to create input file %s`",
+      "range": {
+        "startLine": 72,
+        "startChar": 36,
+        "endLine": 72,
+        "endChar": 66
+      },
+      "revId": "91a94dbdb9a28b28a14ed173abea64d91eb011cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
