@@ -1,15 +1,18 @@
 create {
-  verify { test: "python_test.py" }
-  source { patch_version: "chromium.39" }
+  source {
+    patch_version: "chromium.39"
+    cpe_base_address: "cpe:/a:python:python"
+  }
+  verify {
+    test: "python_test.py"
+  }
 }
-
 create {
   platform_re: "linux-.*|mac-.*"
   source {
-    # Python 2 is officially done, and 2.7.18 is the last official release.
     url {
       download_url: "https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz"
-      version: "2.7.18",
+      version: "2.7.18"
       extension: ".tgz"
     }
     unpack_archive: true
@@ -18,10 +21,9 @@ create {
   build {
     tool: "build_support/pip_bootstrap"
     tool: "tools/autoconf"
-    tool: "tools/sed"            # Used by python's makefiles
+    tool: "tools/sed"
   }
 }
-
 create {
   platform_re: "mac-.*"
   source {
@@ -37,7 +39,6 @@ create {
     dep: "static_libs/zlib"
   }
 }
-
 create {
   platform_re: "linux-.*"
   build {
@@ -47,23 +48,25 @@ create {
     dep: "static_libs/readline"
     dep: "static_libs/sqlite"
     dep: "static_libs/zlib"
-
-    # On Linux, we need to explicitly build libnsl; on other platforms, it is
-    # part of 'libc'.
     dep: "static_libs/nsl"
   }
 }
-
 create {
   platform_re: "windows-.*"
-  source { script { name: "fetch.py" } }
+  source {
+    script {
+      name: "fetch.py"
+    }
+  }
   build {
+    install: "install_win.sh"
     tool: "build_support/pip_bootstrap"
     tool: "tools/lessmsi"
-
-    install: "install_win.sh"
   }
-  verify { test: "python_test.py" }
+  verify {
+    test: "python_test.py"
+  }
 }
-
-upload { pkg_prefix: "tools" }
+upload {
+  pkg_prefix: "tools"
+}
