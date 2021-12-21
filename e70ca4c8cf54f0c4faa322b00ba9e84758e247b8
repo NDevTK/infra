@@ -16,6 +16,121 @@
       "message": "Feedback has been addressed. Please review. Thanks.",
       "revId": "e70ca4c8cf54f0c4faa322b00ba9e84758e247b8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "87d13bbf_47d66bc9",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/tasks/testexec.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-21T02:53:00Z",
+      "side": 1,
+      "message": "typo?",
+      "range": {
+        "startLine": 92,
+        "startChar": 37,
+        "endLine": 92,
+        "endChar": 38
+      },
+      "revId": "e70ca4c8cf54f0c4faa322b00ba9e84758e247b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cc6f1c26_5d6013c4",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/tasks/testexec.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-21T02:53:00Z",
+      "side": 1,
+      "message": "please use `save test output: ...` here and other messages in the method.",
+      "range": {
+        "startLine": 123,
+        "startChar": 32,
+        "endLine": 123,
+        "endChar": 46
+      },
+      "revId": "e70ca4c8cf54f0c4faa322b00ba9e84758e247b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d0c57e03_0a1435bc",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/testexec/testexec.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-21T02:53:00Z",
+      "side": 1,
+      "message": "nit: please start log message from upper case like `Run test: ....`",
+      "range": {
+        "startLine": 48,
+        "startChar": 13,
+        "endLine": 48,
+        "endChar": 14
+      },
+      "revId": "e70ca4c8cf54f0c4faa322b00ba9e84758e247b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "858e2c63_70e32e3d",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/testexec/testexec.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-21T02:53:00Z",
+      "side": 1,
+      "message": "typo?",
+      "range": {
+        "startLine": 75,
+        "startChar": 46,
+        "endLine": 75,
+        "endChar": 51
+      },
+      "revId": "e70ca4c8cf54f0c4faa322b00ba9e84758e247b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2532ee6a_5a761628",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/testexec/testexec.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2021-12-21T02:53:00Z",
+      "side": 1,
+      "message": "typo?",
+      "range": {
+        "startLine": 84,
+        "startChar": 46,
+        "endLine": 84,
+        "endChar": 51
+      },
+      "revId": "e70ca4c8cf54f0c4faa322b00ba9e84758e247b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
