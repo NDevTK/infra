@@ -6,8 +6,11 @@ create {
       version: "2.0.4"
     }
     unpack_archive: true
+    cpe_base_address: "cpe:/a:libidn2_project:libidn2"
   }
-  build {}
+  build {
+  }
 }
-
-upload { pkg_prefix: "static_libs" }
+upload {
+  pkg_prefix: "static_libs"
+}
