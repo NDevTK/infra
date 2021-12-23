@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c995f67c_a49d90b3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2021-12-23T20:43:56Z",
+      "side": 1,
+      "message": "Yes -- if all of an orch\u0027s child builds fail, we don\u0027t want to run any tests. This case was handled elsewhere in the flow for the existing use case, but I didn\u0027t handle it when adding the ./generate_test_config logic. Added some comments explaining.",
+      "parentUuid": "6d7539a2_b1da8961",
+      "revId": "c2b3f59189ed55e795fff1d7abb0ecf739a45256",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e90166ee_b6676e3f",
@@ -31,6 +49,30 @@
       "writtenOn": "2021-12-23T20:32:04Z",
       "side": 1,
       "message": "Warning log level?",
+      "range": {
+        "startLine": 289,
+        "startChar": 0,
+        "endLine": 289,
+        "endChar": 12
+      },
+      "revId": "c2b3f59189ed55e795fff1d7abb0ecf739a45256",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8287e1dd_b17bfe36",
+        "filename": "go/src/infra/cros/cmd/test_plan_generator/test_plan_generator.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2021-12-23T20:43:56Z",
+      "side": 1,
+      "message": "Right now, test_plan_generator doesn\u0027t have separate channels for info/warning/error. I\u0027d like to improve the logging in a follow-on CL to match some of our newer CLIs.",
+      "parentUuid": "e90166ee_b6676e3f",
       "range": {
         "startLine": 289,
         "startChar": 0,
