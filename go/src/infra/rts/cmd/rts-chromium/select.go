@@ -136,10 +136,10 @@ func (r *selectRun) Run(a subcommands.Application, args []string, env subcommand
 // writeFilterFiles writes filter files in r.filterFilesDir directory.
 func (r *selectRun) writeFilterFiles() error {
 	// Maps a test target to the list of tests to skip.
-	testsToSkip := map[string][]string{}
+	testsToSkip := map[string]stringset.Set{}
 	err := r.selectTests(func(testFileToSkip *TestFile) error {
 		for _, target := range testFileToSkip.TestTargets {
-			testsToSkip[target] = append(testsToSkip[target], testFileToSkip.TestNames...)
+			testsToSkip[target].AddAll(testFileToSkip.TestNames)
 		}
 		return nil
 	})
@@ -150,7 +150,7 @@ func (r *selectRun) writeFilterFiles() error {
 	// Write the files.
 	for target, testNames := range testsToSkip {
 		fileName := filepath.Join(r.out, target+".filter")
-		if err := writeFilterFile(fileName, testNames); err != nil {
+		if err := writeFilterFile(fileName, testNames.ToSlice()); err != nil {
 			return errors.Annotate(err, "failed to write %q", fileName).Err()
 		}
 		fmt.Printf("wrote %s\n", fileName)
