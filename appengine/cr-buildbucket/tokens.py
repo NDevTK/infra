@@ -21,9 +21,16 @@ def _token_message(build_id):
 
 def generate_build_token(build_id):
   """Returns a token associated with the build."""
-  return BuildToken.generate(_token_message(build_id))
+  build_id_str = _token_message(build_id)
+  return str(build_id) + '/' + BuildToken.generate(build_id_str)
 
 
 def validate_build_token(token, build_id):
   """Raises auth.InvalidTokenError if the token is invalid."""
-  return BuildToken.validate(token, _token_message(build_id))
+  parts = token.split('/')
+  if len(parts) == 2:
+    token_without_build_id = parts[1]
+  else:  # pragma: no cover
+    # TODO(chanli@): Remove after all build tokens have build_id as prefix.
+    token_without_build_id = token
+  return BuildToken.validate(token_without_build_id, _token_message(build_id))
