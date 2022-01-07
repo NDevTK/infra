@@ -6,7 +6,7 @@ diff -ur freetype-py-2.2.0.orig/setup-build-freetype.py freetype-py-2.2.0/setup-
  
  if sys.platform == "darwin":
 -    print("# Making a 64 bit build.")
-+    arch = os.environ.get("PLAT", "macosx-10.9-x86_64").split('-')[2]
++    arch = os.environ.get("PLAT", "none-none-invalid").split('-')[2]
 +    if arch == 'x86_64':
 +        print("# Making a x86_64 build.")
 +        CMAKE_GLOBAL_SWITCHES += (
