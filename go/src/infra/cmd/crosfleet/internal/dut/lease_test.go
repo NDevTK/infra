@@ -22,9 +22,9 @@ var testValidateData = []struct {
 		leaseFlags{
 			durationMins: 0,
 			reason:       "this desc is barely too long!!!",
-			host:         "",
-			model:        "",
-			board:        "",
+			hosts:        nil,
+			models:       nil,
+			boards:       nil,
 		},
 		`must specify DUT dimensions (-board/-model/-dim(s)) or DUT hostname (-host), but not both
 duration should be greater than 0
@@ -34,9 +34,9 @@ reason cannot exceed 30 characters`,
 		leaseFlags{
 			durationMins: 1441,
 			reason:       "this desc is just short enough",
-			host:         "sample-host",
-			model:        "sample-model",
-			board:        "sample-board",
+			hosts:        []string{"sample-host"},
+			models:       []string{"sample-model"},
+			boards:       []string{"sample-board"},
 		},
 		`must specify DUT dimensions (-board/-model/-dim(s)) or DUT hostname (-host), but not both
 duration cannot exceed 1440 minutes (24 hours)`,
@@ -45,12 +45,22 @@ duration cannot exceed 1440 minutes (24 hours)`,
 		leaseFlags{
 			durationMins: 1440,
 			reason:       "this desc is just short enough",
-			host:         "",
-			model:        "sample-model",
-			board:        "sample-board",
+			hosts:        nil,
+			models:       []string{"sample-model"},
+			boards:       []string{"sample-board"},
 			freeformDims: map[string]string{"foo": "bar"},
 		},
 		"",
+	},
+	{ // Duplicate hostname error
+		leaseFlags{
+			durationMins: 1440,
+			reason:       "this desc is just short enough",
+			hosts:        []string{"sample-host-1", "sample-host-2", "sample-host-1"},
+			models:       nil,
+			boards:       nil,
+		},
+		"duplicate host 'sample-host-1' found in input",
 	},
 }
 
@@ -67,51 +77,54 @@ func TestValidate(t *testing.T) {
 			}
 		})
 	}
+
 }
 
 // We avoid testing this function for a host-based lease since we'd have to
 // fake a Swarming API call.
 var testBotDimsAndBuildTagsData = []struct {
 	leaseFlags
-	wantDims, wantTags map[string]string
+	wantDims, wantTags []map[string]string
 }{
 	{ // Model-based lease with added dims
 		leaseFlags{
-			model:        "sample-model",
+			boards:       []string{""},
+			models:       []string{"sample-model"},
 			reason:       "sample reason",
 			freeformDims: map[string]string{"added-key": "added-val"},
 		},
-		map[string]string{
+		[]map[string]string{{
 			"added-key":   "added-val",
 			"dut_state":   "ready",
 			"label-model": "sample-model",
 			"label-pool":  "DUT_POOL_QUOTA",
-		},
-		map[string]string{
+		}},
+		[]map[string]string{{
 			"added-key":      "added-val",
 			"crosfleet-tool": "lease",
 			"lease-reason":   "sample reason",
 			"label-model":    "sample-model",
 			"qs_account":     "leases",
-		},
+		}},
 	},
 	{ // Board-based lease without added dims
 		leaseFlags{
-			board:        "sample-board",
+			boards:       []string{"sample-board"},
+			models:       []string{""},
 			reason:       "sample reason",
 			freeformDims: nil,
 		},
-		map[string]string{
+		[]map[string]string{{
 			"dut_state":   "ready",
 			"label-board": "sample-board",
 			"label-pool":  "DUT_POOL_QUOTA",
-		},
-		map[string]string{
+		}},
+		[]map[string]string{{
 			"crosfleet-tool": "lease",
 			"lease-reason":   "sample reason",
 			"label-board":    "sample-board",
 			"qs_account":     "leases",
-		},
+		}},
 	},
 }
 

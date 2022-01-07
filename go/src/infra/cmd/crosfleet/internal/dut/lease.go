@@ -15,12 +15,14 @@ import (
 	"infra/cmd/crosfleet/internal/site"
 	"infra/cmdsupport/cmdlib"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
 	swarmingapi "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/cli"
+	luciflag "go.chromium.org/luci/common/flag"
 )
 
 const (
@@ -78,129 +80,208 @@ func (c *leaseRun) innerRun(a subcommands.Application, env subcommands.Env) erro
 	if err := c.leaseFlags.validate(&c.Flags); err != nil {
 		return err
 	}
+	// Extend board or models as necessary
+	if len(c.boards) != len(c.models) {
+		c.extendBoardOrModels()
+	}
+	c.printReceivedRequestsInfo()
+
 	ctx := cli.GetContext(a, c, env)
 	swarmingService, err := newSwarmingService(ctx, c.envFlags.Env().SwarmingService, &c.authFlags)
 	if err != nil {
 		return err
 	}
-	botDims, buildTags, err := botDimsAndBuildTags(ctx, swarmingService, c.leaseFlags)
+
+	botDimsList, buildTagsList, err := botDimsAndBuildTags(ctx, swarmingService, c.leaseFlags)
 	if err != nil {
 		return err
 	}
+
+	// Verify provided DUT dimensions
+	noMatchingDutFound := false
 	c.printer.WriteTextStderr("Verifying the provided DUT dimensions...")
-	duts, err := countBotsWithDims(ctx, swarmingService, botDims)
-	if err != nil {
-		return err
+	for i, botDims := range botDimsList {
+		duts, err := countBotsWithDims(ctx, swarmingService, botDims)
+		if err != nil {
+			return err
+		}
+		if duts.Count == 0 {
+			c.printer.WriteTextStderr(fmt.Sprintf("(%v) No matching DUTs found; please double-check the provided DUT dimensions", i+1))
+			noMatchingDutFound = true
+		} else {
+			c.printer.WriteTextStderr("(%v) Found %d DUT(s) (%d busy) matching the provided DUT dimensions", i+1, duts.Count, duts.Busy)
+		}
 	}
-	if duts.Count == 0 {
-		return fmt.Errorf("no matching DUTs found; please double-check the provided DUT dimensions")
-	}
-	c.printer.WriteTextStderr("Found %d DUT(s) (%d busy) matching the provided DUT dimensions", duts.Count, duts.Busy)
-	buildProps := map[string]interface{}{
-		"lease_length_minutes": c.durationMins,
+
+	// Should fail if any request has invalid dimension
+	if noMatchingDutFound {
+		return fmt.Errorf("please provide correct DUT dimensions for all requests")
 	}
 
 	leasesBBClient, err := buildbucket.NewClient(ctx, c.envFlags.Env().DUTLeaserBuilder, c.envFlags.Env().BuildbucketService, c.authFlags)
 	if err != nil {
 		return err
 	}
-	var leaseInfo crosfleetpb.LeaseInfo
-	leaseInfo.Build, err = leasesBBClient.ScheduleBuild(ctx, buildProps, botDims, buildTags, dutLeaserBuildPriority)
-	if err != nil {
-		return err
-	}
-	c.printer.WriteTextStderr("Requesting %d minute lease at %s", c.durationMins, leasesBBClient.BuildURL(leaseInfo.Build.Id))
+
+	waitGroup := sync.WaitGroup{}
+	mutex := sync.Mutex{}
+
+	c.printer.WriteTextStderr("\nScheduling builds to lease DUTs...\n")
 	if !c.exitEarly {
-		c.printer.WriteTextStderr("Waiting to confirm DUT %s request validation and print leased DUT details...\n(To skip this step, pass the -exit-early flag on future DUT %s commands)", leaseCmdName, leaseCmdName)
-		leaseInfo.Build, err = leasesBBClient.WaitForBuildStepStart(ctx, leaseInfo.Build.Id, c.leaseStartStepName())
-		if err != nil {
-			return err
-		}
-		host := buildbucket.FindDimValInFinalDims("dut_name", leaseInfo.Build)
-		endTime := time.Now().Add(time.Duration(c.durationMins) * time.Minute).Format(time.RFC822)
-		c.printer.WriteTextStdout("Leased %s until %s\n", host, endTime)
-		ufsClient, err := newUFSClient(ctx, c.envFlags.Env().UFSService, &c.authFlags)
-		if err != nil {
-			// Don't fail the command here, since the DUT is already leased.
-			c.printer.WriteTextStderr("Unable to contact UFS to print DUT info: %v", err)
-			return nil
-		}
-		leaseInfo.DUT, err = getDutInfo(ctx, ufsClient, host)
-		if err != nil {
-			// Don't fail the command here, since the DUT is already leased.
-			c.printer.WriteTextStderr("Unable to print DUT info: %v", err)
-			return nil
-		}
-		c.printer.WriteTextStderr("%s\n", dutInfoAsBashVariables(leaseInfo.DUT))
+		c.printer.WriteTextStderr("Will wait to confirm %s completion and print leased DUT details...\n(To skip this step, pass the -exit-early flag on future DUT %s commands)", leaseCmdName, leaseCmdName)
 	}
-	c.printer.WriteJSONStdout(&leaseInfo)
+	for i, botDimensions := range botDimsList {
+		buildTags := buildTagsList[i]
+		buildProps := map[string]interface{}{
+			"lease_length_minutes": c.durationMins,
+		}
+		reqNum := i + 1
+		botDims := botDimensions
+
+		waitGroup.Add(1)
+		go func() {
+			var leaseInfo crosfleetpb.LeaseInfo
+			var err error
+			leaseInfo.Build, err = leasesBBClient.ScheduleBuild(ctx, buildProps, botDims, buildTags, dutLeaserBuildPriority)
+			if err != nil {
+				c.printer.WriteTextStderr("(%v) Unable to schedule build to lease DUT: %v", reqNum, err)
+				waitGroup.Done()
+				return
+			}
+
+			c.printer.WriteTextStderr("(%v) Requesting %d minute lease at %s", reqNum, c.durationMins, leasesBBClient.BuildURL(leaseInfo.Build.Id))
+			mutex.Lock()
+			defer func() {
+				waitGroup.Done()
+				mutex.Unlock()
+			}()
+			if !c.exitEarly {
+				leaseInfo.Build, err = leasesBBClient.WaitForBuildStepStart(ctx, leaseInfo.Build.Id, c.leaseStartStepName())
+				if err != nil {
+					c.printer.WriteTextStderr("(%v) Unable to confirm DUT lease through scheduled build: %v", reqNum, err)
+					return
+				}
+				host := buildbucket.FindDimValInFinalDims("dut_name", leaseInfo.Build)
+				endTime := time.Now().Add(time.Duration(c.durationMins) * time.Minute).Format(time.RFC822)
+				c.printer.WriteTextStdout("\n(%v) Leased %s until %s\n", reqNum, host, endTime)
+				ufsClient, err := newUFSClient(ctx, c.envFlags.Env().UFSService, &c.authFlags)
+				if err != nil {
+					// Don't fail the command here, since the DUT is already leased.
+					c.printer.WriteTextStderr("Unable to contact UFS to print DUT info: %v", err)
+					return
+				}
+				leaseInfo.DUT, err = getDutInfo(ctx, ufsClient, host)
+				if err != nil {
+					// Don't fail the command here, since the DUT is already leased.
+					c.printer.WriteTextStderr("Unable to print DUT info: %v", err)
+					return
+				}
+				c.printer.WriteTextStderr("%s\n", dutInfoAsBashVariables(leaseInfo.DUT))
+			}
+			c.printer.WriteJSONStdout(&leaseInfo)
+		}()
+	}
+	waitGroup.Wait()
+
 	return nil
+}
+
+// Print received requests info so that user can track using request number later
+func (c *leaseRun) printReceivedRequestsInfo() {
+	c.createRequestStrings()
+	c.printer.WriteTextStderr("Requests received:")
+	for _, req := range c.requestStrings {
+		c.printer.WriteTextStderr(req)
+	}
+	// New line to separate rest of the section from this info section
+	c.printer.WriteTextStderr("")
 }
 
 // botDimsAndBuildTags constructs bot dimensions and Buildbucket build tags for
 // a dut_leaser build from the given lease flags and optional bot ID.
-func botDimsAndBuildTags(ctx context.Context, swarmingService *swarmingapi.Service, leaseFlags leaseFlags) (dims, tags map[string]string, err error) {
-	dims = map[string]string{}
-	tags = map[string]string{}
-	if leaseFlags.host != "" {
+func botDimsAndBuildTags(ctx context.Context, swarmingService *swarmingapi.Service, leaseFlags leaseFlags) (dimList, tagList []map[string]string, err error) {
+	dimList = []map[string]string{}
+	tagList = []map[string]string{}
+	if len(leaseFlags.hosts) > 0 {
 		// Hostname-based lease.
-		correctedHostname := correctedHostname(leaseFlags.host)
-		id, err := hostnameToBotID(ctx, swarmingService, correctedHostname)
-		if err != nil {
-			return nil, nil, err
+		for _, host := range leaseFlags.hosts {
+			correctedHostname := correctedHostname(host)
+			id, err := hostnameToBotID(ctx, swarmingService, correctedHostname)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			dimMap := make(map[string]string)
+			tagMap := make(map[string]string)
+
+			tagMap["lease-by"] = "host"
+			tagMap["id"] = id
+			dimMap["id"] = id
+
+			tagMap[common.CrosfleetToolTag] = leaseCmdName
+			tagMap["lease-reason"] = leaseFlags.reason
+			tagMap["qs_account"] = "leases"
+
+			dimList = append(dimList, dimMap)
+			tagList = append(tagList, tagMap)
 		}
-		tags["lease-by"] = "host"
-		tags["id"] = id
-		dims["id"] = id
 	} else {
 		// Swarming dimension-based lease.
-		dims["dut_state"] = "ready"
-		userSpecifiedPool := false
-		// Add user-added dimensions to both bot dimensions and build tags.
-		for key, val := range leaseFlags.freeformDims {
-			if key == "label-pool" {
-				userSpecifiedPool = true
+		for i, board := range leaseFlags.boards {
+			dimMap := make(map[string]string)
+			tagMap := make(map[string]string)
+			// Models should have the same length as of boards.
+			// If they are provided in different lengths as input,
+			// the remaining values should have been already extended with null strings.
+			model := leaseFlags.models[i]
+
+			dimMap["dut_state"] = "ready"
+			dimMap["label-pool"] = defaultLeasesPool
+			// Add user-added dimensions to both bot dimensions and build tags.
+			for key, val := range leaseFlags.freeformDims {
+				dimMap[key] = val
+				tagMap[key] = val
 			}
-			dims[key] = val
-			tags[key] = val
-		}
-		if !userSpecifiedPool {
-			dims["label-pool"] = defaultLeasesPool
-		}
-		if board := leaseFlags.board; board != "" {
-			tags["label-board"] = board
-			dims["label-board"] = board
-		}
-		if model := leaseFlags.model; model != "" {
-			tags["label-model"] = model
-			dims["label-model"] = model
+			if board != "" {
+				tagMap["label-board"] = board
+				dimMap["label-board"] = board
+			}
+			if model != "" {
+				tagMap["label-model"] = model
+				dimMap["label-model"] = model
+			}
+
+			// Add these metadata tags last to avoid being overwritten by freeform dims.
+			tagMap[common.CrosfleetToolTag] = leaseCmdName
+			tagMap["lease-reason"] = leaseFlags.reason
+			tagMap["qs_account"] = "leases"
+
+			dimList = append(dimList, dimMap)
+			tagList = append(tagList, tagMap)
 		}
 	}
-	// Add these metadata tags last to avoid being overwritten by freeform dims.
-	tags[common.CrosfleetToolTag] = leaseCmdName
-	tags["lease-reason"] = leaseFlags.reason
-	tags["qs_account"] = "leases"
 	return
 }
 
 // leaseFlags contains parameters for the "dut lease" subcommand.
 type leaseFlags struct {
-	durationMins int64
-	reason       string
-	host         string
-	model        string
-	board        string
-	freeformDims map[string]string
-	exitEarly    bool
+	durationMins   int64
+	reason         string
+	hosts          []string
+	models         []string
+	boards         []string
+	freeformDims   map[string]string
+	exitEarly      bool
+	requestStrings []string
 }
 
 // Registers lease-specific flags.
 func (c *leaseFlags) register(f *flag.FlagSet) {
 	f.Int64Var(&c.durationMins, "minutes", 60, "Duration of lease in minutes.")
 	f.StringVar(&c.reason, "reason", "", fmt.Sprintf("Optional reason for leasing (limit %d characters).", maxLeaseReasonCharacters))
-	f.StringVar(&c.board, "board", "", "'label-board' Swarming dimension to lease DUT by.")
-	f.StringVar(&c.model, "model", "", "'label-model' Swarming dimension to lease DUT by.")
-	f.StringVar(&c.host, "host", "", `Hostname of an individual DUT to lease. If leasing by hostname instead of other Swarming dimensions,
+	f.Var(luciflag.CommaList(&c.boards), "board", "Comma-separated list of 'label-board' Swarming dimension to lease DUTs by. Board and model placed in same list position in input will result in AND logic while requesting DUTs.")
+	f.Var(luciflag.CommaList(&c.models), "model", "Comma-separated list of 'label-model' Swarming dimension to lease DUTs by.Board and model placed in same list position in input will result in AND logic while requesting DUTs.")
+	f.Var(luciflag.CommaList(&c.hosts), "host", `Comma-separated list of hostnames of individual DUTs to lease. If leasing by hostname instead of other Swarming dimensions,
 and the host DUT is running another task, the lease won't start until that task completes.
 Mutually exclusive with -board/-model/-dim(s).`)
 	f.Var(flagx.KeyVals(&c.freeformDims), "dim", "Freeform Swarming dimension to lease DUT by, in format key=val or key:val; may be specified multiple times.")
@@ -213,7 +294,10 @@ func (c *leaseFlags) validate(f *flag.FlagSet) error {
 	var errors []string
 	if !c.hasEitherHostnameOrSwarmingDims() {
 		errors = append(errors, "must specify DUT dimensions (-board/-model/-dim(s)) or DUT hostname (-host), but not both")
+	} else if len(c.hosts) > 0 {
+		c.checkHostNameDuplicates(&errors)
 	}
+
 	if c.durationMins <= 0 {
 		errors = append(errors, "duration should be greater than 0")
 	}
@@ -233,8 +317,8 @@ func (c *leaseFlags) validate(f *flag.FlagSet) error {
 // hasOnePrimaryDim verifies that the lease flags contain either a DUT hostname
 // or swarming dimensions (via -board/-model/-dim(s)), but not both.
 func (c *leaseFlags) hasEitherHostnameOrSwarmingDims() bool {
-	hasHostname := c.host != ""
-	hasSwarmingDims := c.board != "" || c.model != "" || len(c.freeformDims) > 0
+	hasHostname := len(c.hosts) > 0
+	hasSwarmingDims := len(c.boards) > 0 || len(c.models) > 0 || len(c.freeformDims) > 0
 	return hasHostname != hasSwarmingDims
 }
 
@@ -242,4 +326,66 @@ func (c *leaseRun) leaseStartStepName() string {
 	hours := c.durationMins / 60
 	mins := c.durationMins % 60
 	return fmt.Sprintf("lease DUT for %d hr %d min", hours, mins)
+}
+
+// Extend board or models with null strings as necessary. They need to be of same length because,
+// board and model in same position will result in AND logic while requesting DUT.
+func (c *leaseFlags) extendBoardOrModels() {
+	longer := &c.boards
+	shorter := &c.models
+	if len(c.boards) < len(c.models) {
+		longer = &c.models
+		shorter = &c.boards
+	}
+	newSlice := make([]string, len(*longer), cap(*longer))
+	copy(newSlice, *shorter)
+	*shorter = newSlice
+}
+
+// Check for duplicates in provided hostnames.
+func (c *leaseFlags) checkHostNameDuplicates(errors *[]string) {
+	visited := make(map[string]bool)
+	for _, host := range c.hosts {
+		_, ok := visited[host]
+		if ok {
+			*errors = append(*errors, fmt.Sprintf("duplicate host '%s' found in input", host))
+		} else {
+			visited[host] = true
+		}
+	}
+}
+
+// Create request strings to be used to print info.
+func (c *leaseFlags) createRequestStrings() {
+	if len(c.requestStrings) > 0 {
+		return
+	}
+
+	if len(c.hosts) > 0 {
+		for i, host := range c.hosts {
+			c.requestStrings = append(c.requestStrings, fmt.Sprintf("(%v) Host name: %s", i+1, host))
+		}
+	} else {
+		if len(c.boards) != len(c.models) {
+			c.extendBoardOrModels()
+		}
+		for i, board := range c.boards {
+			model := c.models[i]
+			var reqString = fmt.Sprintf("(%v)", i+1)
+			if board != "" {
+				reqString += fmt.Sprintf(" Board: %s", board)
+			}
+			if model != "" {
+				reqString += fmt.Sprintf(" Model: %s", model)
+			}
+			if len(c.freeformDims) > 0 {
+				dimsString := ""
+				for k, v := range c.freeformDims {
+					dimsString += fmt.Sprintf("%s:%s ", k, v)
+				}
+				reqString += fmt.Sprintf(" Dims: [%s]", dimsString)
+			}
+			c.requestStrings = append(c.requestStrings, reqString)
+		}
+	}
 }
