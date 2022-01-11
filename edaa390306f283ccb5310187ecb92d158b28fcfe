@@ -70,6 +70,24 @@
       "parentUuid": "716a34f6_39e951e9",
       "revId": "edaa390306f283ccb5310187ecb92d158b28fcfe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0a7e3bda_55daf0a4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2022-01-11T23:08:58Z",
+      "side": 1,
+      "message": "About JWTs, is there a library (in both py and go) to use for generating/validating JWTs?",
+      "parentUuid": "bc0bcef6_0177ab5d",
+      "revId": "edaa390306f283ccb5310187ecb92d158b28fcfe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
