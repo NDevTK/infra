@@ -86,6 +86,24 @@
       "parentUuid": "cc984954_1e008aa3",
       "revId": "ee97ab82a3e89ef37f912384675b90a1f15e4d8f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "78760edb_369add1f",
+        "filename": "appengine/cr-buildbucket/tokens.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2022-01-11T08:03:31Z",
+      "side": 1,
+      "message": "Oh, actually, \u0027state\u0027 here is the same as message (i.e. the build id). The terminology just changed between python and go.",
+      "parentUuid": "916d0ba2_4920bd8a",
+      "revId": "ee97ab82a3e89ef37f912384675b90a1f15e4d8f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
