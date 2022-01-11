@@ -88,6 +88,24 @@
       "parentUuid": "bc0bcef6_0177ab5d",
       "revId": "edaa390306f283ccb5310187ecb92d158b28fcfe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0b4c981d_0e649b90",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2022-01-11T23:30:21Z",
+      "side": 1,
+      "message": "Yes, though I found in practice it is usually more transparent not to use them. Generating/parsing JWTs is relatively trivial.\n\nThinking more about this issue:\n1. The build token is currently actually not interpreted by the backend at all, it is just used as a \"password\" string (go [1], python doesn\u0027t validate it at all [2]).\n2. It means we can put whatever mumbo-jumbo we want into it as long as it is random/non-guessable. We also don\u0027t need to worry about backward compatibility of the format.\n3. I kind of like that... I\u0027m asking once again, will the bbagent code try to interpret the token? If not, we can keep using some \"undisclosed\" format understood only by the backend. It doesn\u0027t have to be JWT. It doesn\u0027t have to be auth.TokenKind either. It can be something trivial as a base64-encoded serialized protobuf message with a random string somewhere inside of it, perhaps obfuscated in some trivial way to discourage deserializing it from clients. This would allow us to easily add/remove stuff there later, if necessary (using protos backward/forward compatibility).\n\n[1]: https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/buildbucket/appengine/rpc/common.go;l\u003d299?q\u003d%22func%20validateBuildToken%22\u0026ss\u003dchromium\n[2]: https://source.chromium.org/search?q\u003dvalidate_build_token\u0026sq\u003d\u0026ss\u003dchromium",
+      "parentUuid": "0a7e3bda_55daf0a4",
+      "revId": "edaa390306f283ccb5310187ecb92d158b28fcfe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
