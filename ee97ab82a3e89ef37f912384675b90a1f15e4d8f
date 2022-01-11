@@ -33,6 +33,24 @@
       "message": "if you look at the definition of `generate`, it allows embedding some data: https://source.chromium.org/chromium/infra/infra/+/main:luci/appengine/components/components/auth/tokens.py;l\u003d84?q\u003dTokenKind\u0026ss\u003dchromium\n\nI think that would probably be a better mechanism than manually tweaking the token format.",
       "revId": "ee97ab82a3e89ef37f912384675b90a1f15e4d8f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cc984954_1e008aa3",
+        "filename": "appengine/cr-buildbucket/tokens.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2022-01-11T02:39:10Z",
+      "side": 1,
+      "message": "I used embedded initially and decided not to, because I couldn\u0027t figure out the value of \"state\" to pass to [1]. Do we save the state somewhere?\n\n[1]: https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/server/tokens/tokens.go;l\u003d142;drc\u003deae489f926427b8a756f47946ce5d5d161612cde",
+      "parentUuid": "a0371c3e_cd04317b",
+      "revId": "ee97ab82a3e89ef37f912384675b90a1f15e4d8f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
