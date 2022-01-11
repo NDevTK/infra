@@ -104,6 +104,24 @@
       "parentUuid": "916d0ba2_4920bd8a",
       "revId": "ee97ab82a3e89ef37f912384675b90a1f15e4d8f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "98456c82_be487473",
+        "filename": "appengine/cr-buildbucket/tokens.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2022-01-11T08:05:22Z",
+      "side": 1,
+      "message": "Actually; I think it would be fine to change the token so that \u0027message\u0027 is empty (i.e. just move the data from `message` to `embedded`). There may be a migration issue for that, however (so we\u0027d need to change the validation code to first try a nil state, followed by a buildid state in the interim)",
+      "parentUuid": "78760edb_369add1f",
+      "revId": "ee97ab82a3e89ef37f912384675b90a1f15e4d8f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
