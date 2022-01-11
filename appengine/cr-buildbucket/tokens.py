@@ -14,16 +14,21 @@ class BuildToken(auth.TokenKind):
   secret_key = auth.SecretKey('build_id')
 
 
-def _token_message(build_id):
+def _build_id_string(build_id):
   assert isinstance(build_id, (int, long)), build_id
   return str(build_id)
 
 
 def generate_build_token(build_id):
   """Returns a token associated with the build."""
-  return BuildToken.generate(_token_message(build_id))
+  return BuildToken.generate(embedded={'build_id': _build_id_string(build_id)})
 
 
 def validate_build_token(token, build_id):
   """Raises auth.InvalidTokenError if the token is invalid."""
-  return BuildToken.validate(token, _token_message(build_id))
+  try:
+    return BuildToken.validate(token)
+  except auth.InvalidTokenError:  # pragma: no cover.
+    # TODO(crbug.com/1031205): Remove after all build tokens have build_id
+    # embedded.
+    return BuildToken.validate(token, _build_id_string(build_id))
