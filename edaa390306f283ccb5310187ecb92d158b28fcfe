@@ -34,6 +34,24 @@
       "parentUuid": "cbba14a3_3c5836ed",
       "revId": "edaa390306f283ccb5310187ecb92d158b28fcfe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f070af97_c01bf190",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2022-01-11T22:34:31Z",
+      "side": 1,
+      "message": "Another approach is to change the build token format to something more standard and transparent like a JWT. Current tokens are semantically JWTs, just structured differently (because I didn\u0027t now about JWTs at the time).",
+      "parentUuid": "716a34f6_39e951e9",
+      "revId": "edaa390306f283ccb5310187ecb92d158b28fcfe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
