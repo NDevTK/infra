@@ -388,7 +388,6 @@ func (g *gcrRepo) allTagsOnImage(auth authn.Authenticator, tag string) ([]string
 
 // applyToK8s applies the generated YAML to K8s.
 func applyToK8s(generatedYAML string) error {
-	// TODO(guocb): log to BigQuery.
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err := k8sApply(ctx, generatedYAML); err != nil {
