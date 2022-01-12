@@ -8,7 +8,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 
+	"github.com/google/go-cmp/cmp"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -57,13 +59,72 @@ func k8sApply(ctx context.Context, content string) error {
 		dr = dyn.Resource(mapping.Resource)
 	}
 
-	data, err := json.Marshal(obj)
+	before, after, err := putResource(ctx, dr, obj)
 	if err != nil {
 		return fmt.Errorf("apply to k8s: %s", err)
 	}
-
-	if _, err = dr.Patch(ctx, obj.GetName(), types.ApplyPatchType, data, metav1.PatchOptions{FieldManager: "k8s_app_roller"}); err != nil {
+	if err := logChanges(before, after); err != nil {
 		return fmt.Errorf("apply to k8s: %s", err)
 	}
 	return nil
+}
+
+// putResource puts (i.e. create or patch) the target resource.
+func putResource(ctx context.Context, dr dynamic.ResourceInterface, obj *unstructured.Unstructured) (before, after *unstructured.Unstructured, err error) {
+	before, err = dr.Get(ctx, obj.GetName(), metav1.GetOptions{})
+	if err != nil {
+		log.Printf("Failed to get the resource (not created yet?): %s", err)
+		log.Printf("Will try to create the resource")
+		after, err = dr.Create(ctx, obj, metav1.CreateOptions{})
+		if err != nil {
+			return nil, nil, fmt.Errorf("put resource: create the resource: %s", err)
+		}
+		return nil, after, nil
+	}
+
+	data, err := json.Marshal(obj)
+	if err != nil {
+		return nil, nil, fmt.Errorf("put resource: %s", err)
+	}
+	// Overwrite all changes made by others, otherwise there might be conflicts
+	// which cannot be resolved automatically.
+	force := true
+	after, err = dr.Patch(ctx, obj.GetName(), types.ApplyPatchType, data,
+		metav1.PatchOptions{FieldManager: "k8s_app_roller", Force: &force},
+	)
+	if err != nil {
+		return nil, nil, fmt.Errorf("put resource: patch the resource: %s", err)
+	}
+	return before, after, nil
+}
+
+// logChanges compares the resources and log the changes in human readable way.
+func logChanges(before, after *unstructured.Unstructured) error {
+	filterFields(before)
+	filterFields(after)
+
+	js, err := json.Marshal(after)
+	if err != nil {
+		return fmt.Errorf("log changes %s", err)
+	}
+	log.Printf("Applied resource:\n%s", js)
+
+	d := cmp.Diff(before, after)
+	if d == "" {
+		log.Printf("Nothing changed")
+		return nil
+	}
+	log.Printf("Changes: (-before, +after)\n%s", d)
+	// TODO(guocb) log the change to BQ.
+	return nil
+}
+
+// filterFields filters out fields that constantly changing even there's no
+// real changes.
+func filterFields(obj *unstructured.Unstructured) {
+	if obj == nil {
+		return
+	}
+	obj.Object["metadata"].(map[string]interface{})["managedFields"] = nil
+	obj.Object["metadata"].(map[string]interface{})["resourceVersion"] = nil
 }
