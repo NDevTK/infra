@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c2537e9c_e18e5f06",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-01-17T06:44:39Z",
+      "side": 1,
+      "message": "Otabek, this is the CL for servo ec console verifier. \n\nCan you kindly review this? ",
+      "revId": "83993f42dcca0068d376e20d41311e16c8ab8bfd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
