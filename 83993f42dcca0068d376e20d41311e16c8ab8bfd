@@ -39,6 +39,30 @@
       },
       "revId": "83993f42dcca0068d376e20d41311e16c8ab8bfd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "348cbe87_4b66fd11",
+        "filename": "go/src/infra/cros/recovery/config_servo.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 397,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-01-18T07:27:06Z",
+      "side": 1,
+      "message": "I see. Earlier I was thinking that just a support of this servod control is sufficient. But now I have added a check for the expected value of \"yes\" as suggested in the review comment.",
+      "parentUuid": "a9109a89_674f70a6",
+      "range": {
+        "startLine": 397,
+        "startChar": 3,
+        "endLine": 397,
+        "endChar": 43
+      },
+      "revId": "83993f42dcca0068d376e20d41311e16c8ab8bfd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
