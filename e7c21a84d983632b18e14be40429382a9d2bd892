@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d3a62c29_b95119e1",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/skylab_local_state/cmd/load.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 350,
+      "author": {
+        "id": 1438503
+      },
+      "writtenOn": "2022-01-18T23:45:52Z",
+      "side": 1,
+      "message": "is Duts guaranteed to have exactly one entry?",
+      "range": {
+        "startLine": 350,
+        "startChar": 8,
+        "endLine": 350,
+        "endChar": 23
+      },
+      "revId": "e7c21a84d983632b18e14be40429382a9d2bd892",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
