@@ -16,6 +16,29 @@
       "message": "Otabek, this is the CL for servo ec console verifier. \n\nCan you kindly review this? ",
       "revId": "83993f42dcca0068d376e20d41311e16c8ab8bfd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a9109a89_674f70a6",
+        "filename": "go/src/infra/cros/recovery/config_servo.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 397,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-01-18T01:29:51Z",
+      "side": 1,
+      "message": "do we need set expected value for the action?\nfor example `expected_string_value:yes`",
+      "range": {
+        "startLine": 397,
+        "startChar": 3,
+        "endLine": 397,
+        "endChar": 43
+      },
+      "revId": "83993f42dcca0068d376e20d41311e16c8ab8bfd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
