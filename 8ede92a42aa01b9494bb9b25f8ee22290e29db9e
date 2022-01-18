@@ -1,0 +1,216 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e04061dc_4602b64d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2022-01-18T18:58:20Z",
+      "side": 1,
+      "message": "Awesome, looks like a great start to me on question configuration. \n\nHigh level, taking a step back, if you feel inclined, I think a design sketch on this new wizard configuration would be a good idea to make. For a few reasons: \n\n* Some attributes of the proposed configuration seem to suggest requirements that we probably want to discuss how best to handle, such as the nested questions. Decisions like this have maintainability and UX implications, so it may be helpful to think through these configuration choices in the context of the larger picture. \n* Long-term we uses and future developers will edit this configuration, so we will benefit from having a thorough paper tail on why we chose the format we did and what different options mean. ",
+      "revId": "8ede92a42aa01b9494bb9b25f8ee22290e29db9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "da6769b6_6a29701a",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardConfig.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2022-01-18T18:58:20Z",
+      "side": 1,
+      "message": "Nit: there is no need for this file to be .tsx when there is no JSX in this file - this file should be .ts instead.",
+      "revId": "8ede92a42aa01b9494bb9b25f8ee22290e29db9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0e53841b_42af48ca",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardConfig.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2022-01-18T18:58:20Z",
+      "side": 1,
+      "message": "Optional: \n\nWe may want to consider adding a TODO to create a new `shared/config` folder or similar for Monorail\u0027s frontend, akin to Monorail\u0027s settings.py and similar. \n\nRight now, configuration files for various Monorail frontend features are spread out in a few places. ie: https://source.chromium.org/chromium/infra/infra/+/main:appengine/monorail/static_src/elements/framework/mr-issue-slo/slo-rules.js - configuration for the \"SLO\" feature.",
+      "revId": "8ede92a42aa01b9494bb9b25f8ee22290e29db9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "24b51ed1_dfec388a",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardTypes.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2022-01-18T18:58:20Z",
+      "side": 1,
+      "message": "Wouldn\u0027t a question just not exist in the list of questions if we wanted to say there were no questions?",
+      "range": {
+        "startLine": 7,
+        "startChar": 10,
+        "endLine": 7,
+        "endChar": 54
+      },
+      "revId": "8ede92a42aa01b9494bb9b25f8ee22290e29db9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "06c62ef9_728cbe93",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardTypes.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2022-01-18T18:58:20Z",
+      "side": 1,
+      "message": "Nit: NULL?",
+      "range": {
+        "startLine": 7,
+        "startChar": 2,
+        "endLine": 7,
+        "endChar": 5
+      },
+      "revId": "8ede92a42aa01b9494bb9b25f8ee22290e29db9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "afadd7d5_d8319faa",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardTypes.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2022-01-18T18:58:20Z",
+      "side": 1,
+      "message": "Should this just be \"CustomQuestion\"? It seems like this defines on the the data for one question, not many.",
+      "range": {
+        "startLine": 12,
+        "startChar": 12,
+        "endLine": 12,
+        "endChar": 27
+      },
+      "revId": "8ede92a42aa01b9494bb9b25f8ee22290e29db9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1ca5b176_196c779e",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardTypes.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2022-01-18T18:58:20Z",
+      "side": 1,
+      "message": "Could we call this something more standard like \"options\"?",
+      "range": {
+        "startLine": 15,
+        "startChar": 2,
+        "endLine": 15,
+        "endChar": 10
+      },
+      "revId": "8ede92a42aa01b9494bb9b25f8ee22290e29db9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ad6fd36f_f352496a",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardTypes.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2022-01-18T18:58:20Z",
+      "side": 1,
+      "message": "I\u0027m not sure I understand the structure being proposed here - why are questions being nested inside of other questions?",
+      "range": {
+        "startLine": 16,
+        "startChar": 2,
+        "endLine": 16,
+        "endChar": 35
+      },
+      "revId": "8ede92a42aa01b9494bb9b25f8ee22290e29db9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3f40a378_e2052a8f",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardTypes.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2022-01-18T18:58:20Z",
+      "side": 1,
+      "message": "Nit: Can we call this something like IssueCategory or IssueDescriptor instead? \n\nMonorail issues already have \"Types\", so IssueType might end up getting confusing as a name once we start doing things like setting specific issue types based on IssueType.",
+      "range": {
+        "startLine": 19,
+        "startChar": 12,
+        "endLine": 19,
+        "endChar": 21
+      },
+      "revId": "8ede92a42aa01b9494bb9b25f8ee22290e29db9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d6beef5b_198013a6",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardTypes.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2022-01-18T18:58:20Z",
+      "side": 1,
+      "message": "Nit: Can we call this userGroup, persona, or similar? User is confusing since it sounds like it\u0027s actually referring to an embedded user object, as opposed to a general descriptor of a kind of user.",
+      "range": {
+        "startLine": 21,
+        "startChar": 2,
+        "endLine": 21,
+        "endChar": 24
+      },
+      "revId": "8ede92a42aa01b9494bb9b25f8ee22290e29db9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
