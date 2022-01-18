@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fd5fcb60_8483bc63",
+        "filename": "go/src/infra/cros/cmd/manifest_doctor/public_buildspec.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2022-01-18T21:28:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "99e2280a_5c6bcd61",
+      "revId": "37509e22d766852d2b2f45c557c324b96786f99b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3985c8c2_34e4c9d8",
@@ -31,6 +49,24 @@
       "writtenOn": "2022-01-18T21:16:20Z",
       "side": 1,
       "message": "nit/style: Here\u0027s the style recommended by https://go.dev/doc/effective_go#for:\n\n    for _, buildspec :\u003d range legacyExternalBuildspecs {\n        legacyExternalBuildspecMap[filepath.Join(watchPath, buildspec)] \u003d true\n    }",
+      "revId": "37509e22d766852d2b2f45c557c324b96786f99b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fcfa9f2e_3400983c",
+        "filename": "go/src/infra/cros/cmd/manifest_doctor/public_buildspec.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2022-01-18T21:28:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3985c8c2_34e4c9d8",
       "revId": "37509e22d766852d2b2f45c557c324b96786f99b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
