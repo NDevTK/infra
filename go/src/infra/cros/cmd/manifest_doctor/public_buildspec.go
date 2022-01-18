@@ -125,6 +125,22 @@ func (b *publicBuildspec) CreatePublicBuildspecs(ctx context.Context, gsClient g
 			continue
 		}
 
+		legacyExternalBuildspecMap := make(map[string]bool)
+		if b.readFromManifestVersions {
+			// If legacy, also fetch list of existing external buildspecs.
+			var legacyExternalBuildspecs []string
+			legacyExternalBuildspecs, err := gerritClient.ListFiles(ctx, chromeExternalHost, externalManifestVersionsProject, "HEAD", watchPath)
+			if err != nil {
+				LogErr(errors.Annotate(err, "failed to list external buildspecs for dir %s in %s, skipping...", watchPath, externalManifestVersionsProject).Err().Error())
+				errs = append(errs, err)
+				continue
+			}
+			// Unlike GS, Gerrit lists relative paths so we need to reconstruct them here.
+			for i := range legacyExternalBuildspecs {
+				legacyExternalBuildspecMap[filepath.Join(watchPath, legacyExternalBuildspecs[i])] = true
+			}
+		}
+
 		externalPath := watchPath
 		externalBuildspecs, err := gsClient.List(ctx, b.externalBuildspecsGSBucket, externalPath)
 		if err != nil {
@@ -165,7 +181,7 @@ func (b *publicBuildspec) CreatePublicBuildspecs(ctx context.Context, gsClient g
 			}
 
 			// If legacy, upload the internal buildspec to the internal bucket for internal consistency.
-			if b.readFromManifestVersions {
+			if b.readFromManifestVersions && b.push {
 				uploadPath := lgs.MakePath(b.internalBuildspecsGSBucket, internalBuildspec)
 				if err := WriteManifestToGS(gsClient, uploadPath, buildspec); err != nil {
 					LogErr(errors.Annotate(err, "failed to write internal buildspec to %s", string(uploadPath)).Err().Error())
@@ -174,12 +190,32 @@ func (b *publicBuildspec) CreatePublicBuildspecs(ctx context.Context, gsClient g
 				}
 			}
 
-			// Create and upload external buildspec.
-			LogOut("Attempting to create external buildspec %s for %s...", externalBuildspec, internalBuildspec)
-			uploadPath := lgs.MakePath(b.externalBuildspecsGSBucket, externalBuildspec)
-			if err := createPublicBuildspec(gsClient, gerritClient, buildspec, uploadPath, b.push); err != nil {
-				LogErr(errors.Annotate(err, "failed to create external buildspec %s", externalBuildspec).Err().Error())
-				errs = append(errs, err)
+			// If we're reading from legacy and an external buildspec already exists, we should
+			// use that instead of creating a new one.
+			if _, ok := legacyExternalBuildspecMap[externalBuildspec]; ok {
+				data, err := gerritClient.DownloadFileFromGitiles(ctx, chromeExternalHost,
+					externalManifestVersionsProject, "HEAD", externalBuildspec)
+				if err != nil {
+					LogErr(errors.Annotate(err, "failed to download %s from %s", externalBuildspec, externalManifestVersionsProject).Err().Error())
+					errs = append(errs, err)
+					continue
+				}
+				if b.push {
+					uploadPath := lgs.MakePath(b.externalBuildspecsGSBucket, externalBuildspec)
+					if err := gsClient.WriteFileToGS(uploadPath, []byte(data)); err != nil {
+						LogErr(errors.Annotate(err, "failed to write external buildspec to %s", string(uploadPath)).Err().Error())
+						errs = append(errs, err)
+						continue
+					}
+				}
+			} else {
+				// Create and upload external buildspec.
+				LogOut("Attempting to create external buildspec %s for %s...", externalBuildspec, internalBuildspec)
+				uploadPath := lgs.MakePath(b.externalBuildspecsGSBucket, externalBuildspec)
+				if err := createPublicBuildspec(gsClient, gerritClient, buildspec, uploadPath, b.push); err != nil {
+					LogErr(errors.Annotate(err, "failed to create external buildspec %s", externalBuildspec).Err().Error())
+					errs = append(errs, err)
+				}
 			}
 		}
 	}
