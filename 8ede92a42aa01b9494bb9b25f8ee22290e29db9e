@@ -100,6 +100,54 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "03bc8149_5fcb2397",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardTypes.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-01-18T19:09:49Z",
+      "side": 1,
+      "message": "ah..i can\u0027t think about a better nameing here but \"NULL\" feel it will be confused with the value is null",
+      "parentUuid": "06c62ef9_728cbe93",
+      "range": {
+        "startLine": 7,
+        "startChar": 2,
+        "endLine": 7,
+        "endChar": 5
+      },
+      "revId": "8ede92a42aa01b9494bb9b25f8ee22290e29db9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e8a77a8a_a6ca92f3",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardTypes.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-01-18T19:09:49Z",
+      "side": 1,
+      "message": "i set this value mainly because of the subquestion status. \nthe subquesitons will also be a customquestiontype however not all of them have it.\nthis value is more likely a placehold.\nwill think through it when start work on the custom questions",
+      "parentUuid": "24b51ed1_dfec388a",
+      "range": {
+        "startLine": 7,
+        "startChar": 10,
+        "endLine": 7,
+        "endChar": 54
+      },
+      "revId": "8ede92a42aa01b9494bb9b25f8ee22290e29db9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "afadd7d5_d8319faa",
         "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardTypes.tsx",
         "patchSetId": 3
@@ -134,6 +182,30 @@
       "writtenOn": "2022-01-18T18:58:20Z",
       "side": 1,
       "message": "Could we call this something more standard like \"options\"?",
+      "range": {
+        "startLine": 15,
+        "startChar": 2,
+        "endLine": 15,
+        "endChar": 10
+      },
+      "revId": "8ede92a42aa01b9494bb9b25f8ee22290e29db9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c3acb16c_97f094b7",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardTypes.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-01-18T19:09:49Z",
+      "side": 1,
+      "message": "sounds good.",
+      "parentUuid": "1ca5b176_196c779e",
       "range": {
         "startLine": 15,
         "startChar": 2,
