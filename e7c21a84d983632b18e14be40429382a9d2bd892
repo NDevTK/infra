@@ -46,6 +46,30 @@
       },
       "revId": "e7c21a84d983632b18e14be40429382a9d2bd892",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "84b0db5d_9df43d66",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/skylab_local_state/cmd/load.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 350,
+      "author": {
+        "id": 1438503
+      },
+      "writtenOn": "2022-01-18T23:54:12Z",
+      "side": 1,
+      "message": "hmm.. http://shortn/_fBL02pKlRW seems to imply this could occasionally contain multiple entries, although maybe not in our use-case. Might be helpful to include a check here and return an error if we find multiple entries, just so we don\u0027t fail silently?",
+      "parentUuid": "8662e8f7_81c31bae",
+      "range": {
+        "startLine": 350,
+        "startChar": 8,
+        "endLine": 350,
+        "endChar": 23
+      },
+      "revId": "e7c21a84d983632b18e14be40429382a9d2bd892",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
