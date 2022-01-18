@@ -63,6 +63,30 @@
       },
       "revId": "79ad2c3700bb2bc20bf21dfaa0ee7e3b0de00ded",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "068edf2e_7bf178d2",
+        "filename": "appengine/cr-buildbucket/tokens.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2022-01-18T21:37:42Z",
+      "side": 1,
+      "message": "\u003e In the old formulation, \"Token.generate\" was doing an HMAC over \u0027state\u0027, which mixes build_id with a secret key. In this current version there\u0027s no secret (so anyone could generate this token); I think state must be random for this to still work now.\n\nI resumed the old token generation and use that as the state, WDYT?\n\n\u003e As an aside; I\u0027m slightly uneasy that we have to decode the token before we authenticate it (if we want to use the token to retrieve the build id)... but I guess protobuf should be robust in the face of garbage?  We probably want to put a hard cap on the maximum token size though so we can reject obviously abusive inputs quickly.\n\nI could add the lengh validation in the go change https://chromium-review.googlesource.com/c/infra/luci/luci-go/+/3384637",
+      "parentUuid": "318828f8_e3670b33",
+      "range": {
+        "startLine": 16,
+        "startChar": 12,
+        "endLine": 16,
+        "endChar": 27
+      },
+      "revId": "79ad2c3700bb2bc20bf21dfaa0ee7e3b0de00ded",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
