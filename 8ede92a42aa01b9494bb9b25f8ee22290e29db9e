@@ -146,6 +146,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9e50fdc1_cf22c1f5",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardTypes.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2022-01-18T20:08:33Z",
+      "side": 1,
+      "message": "That makes sense - further exploration SGTM - My gut instinct is that fully nested questions might end up being very heavyweight for conditional questions, but I haven\u0027t thought through it too deeply. \n\nIt might end up working fine enough as long as we don\u0027t have to design anything complicated like an infinitely nestable UI :D",
+      "parentUuid": "e8a77a8a_a6ca92f3",
+      "range": {
+        "startLine": 7,
+        "startChar": 10,
+        "endLine": 7,
+        "endChar": 54
+      },
+      "revId": "8ede92a42aa01b9494bb9b25f8ee22290e29db9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "111a7bd5_d5932e35",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardTypes.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2022-01-18T20:08:33Z",
+      "side": 1,
+      "message": "Could we call this something like \"NONE\" or \"EMPTY\" instead? It seems confusing as well to have this be mispelled NULL haha.",
+      "parentUuid": "03bc8149_5fcb2397",
+      "range": {
+        "startLine": 7,
+        "startChar": 2,
+        "endLine": 7,
+        "endChar": 5
+      },
+      "revId": "8ede92a42aa01b9494bb9b25f8ee22290e29db9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "afadd7d5_d8319faa",
