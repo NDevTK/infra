@@ -7,7 +7,7 @@ export function GetIssueCategoryMap (issues: IssueCategory[]):Map<string, string
 
   issues.forEach((issue) => {
     if (issue.enabled) {
-      const currentIssueUser = issue.user;
+      const currentIssueUser = issue.user.name;
       const currentIssueName = issue.name;
       const topics = issueUserNameAndTopicMap.get(currentIssueUser) ?? [];
       topics.push(currentIssueName);
