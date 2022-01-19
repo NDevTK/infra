@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b544f710_1d030ea9",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardConfig.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2022-01-19T22:57:24Z",
+      "side": 1,
+      "message": "Nit: Space after \u0027: \u0027;",
+      "range": {
+        "startLine": 3,
+        "startChar": 32,
+        "endLine": 3,
+        "endChar": 33
+      },
+      "revId": "7f56585ed7feefd339e4ea4bf5caf22443b228b0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

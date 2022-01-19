@@ -401,6 +401,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "550fb433_03123db5",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardTypes.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2022-01-19T22:57:24Z",
+      "side": 1,
+      "message": "Ack - this design will probably work okay for this, but there will probably need to be other adjustments to make this functionality work. ie: In most cases, we want to show sub questions only when a specific option of the previous question is selected. \n\nIt might also be worth checking if there are any cases when the conditions for a question are affected by more than one other question - if that\u0027s the case, subquestions might end up being the wrong model.",
+      "parentUuid": "06d1afd6_52021212",
+      "range": {
+        "startLine": 16,
+        "startChar": 2,
+        "endLine": 16,
+        "endChar": 35
+      },
+      "revId": "8ede92a42aa01b9494bb9b25f8ee22290e29db9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3f40a378_e2052a8f",
