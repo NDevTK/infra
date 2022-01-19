@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9d102d5d_088d2675",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2022-01-19T19:42:17Z",
+      "side": 1,
+      "message": "verified with led: https://logs.chromium.org/logs/chromeos/led/jackneus_google.com/f463d1a989c80111cb9b6b7c1ba4eec9ca2f66f5306bd297798ed863499962c8/+/u/create_external_buildspecs__legacy_/run_manifest_doctor/stdout",
+      "revId": "2f4448bf4cc41eb463788b2d41bb6cb94cdb1887",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
