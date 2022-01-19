@@ -20,6 +20,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "8b9767ad_2ca79f6a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2022-01-19T23:04:55Z",
+      "side": 1,
+      "message": "(Please make sure to resolve comments before submitting)",
+      "revId": "9dab6e43974a4debc3166dc78116bf4d3b05a46e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "aa441ae0_f535d205",
         "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardConfig.ts",
         "patchSetId": 6
@@ -36,6 +53,29 @@
         "startChar": 32,
         "endLine": 4,
         "endChar": 33
+      },
+      "revId": "9dab6e43974a4debc3166dc78116bf4d3b05a46e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "32c6f0f0_1c23084d",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardConfig.ts",
+        "patchSetId": 6
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2022-01-19T23:04:55Z",
+      "side": 1,
+      "message": "Two naming nits: \n\n1. Because this is a hardcoded constant, let\u0027s use CONSTANT_CASE for this: \n\nIssueWizardMetaData -\u003e ISSUE_WIZARD_METADATA\n\nSee: https://google.github.io/styleguide/tsguide.html#identifiers\n\n2. IssueWizardMetadata as a variable name is long and doesn\u0027t feel like it means anything. Consider renaming this something that explains what the data represented here actually is. ie: \n\n- ISSUE_WIZARD_QUESTIONS",
+      "range": {
+        "startLine": 4,
+        "startChar": 13,
+        "endLine": 4,
+        "endChar": 32
       },
       "revId": "9dab6e43974a4debc3166dc78116bf4d3b05a46e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
