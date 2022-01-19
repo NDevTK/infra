@@ -182,6 +182,29 @@
       },
       "revId": "9dab6e43974a4debc3166dc78116bf4d3b05a46e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bf213c19_b255ab19",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardTypes.tsx",
+        "patchSetId": 6
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2022-01-19T23:18:39Z",
+      "side": 1,
+      "message": "Let\u0027s make sure to rename this property as well with any naming changes we make to IssueWizardUserGroup",
+      "range": {
+        "startLine": 21,
+        "startChar": 2,
+        "endLine": 21,
+        "endChar": 6
+      },
+      "revId": "9dab6e43974a4debc3166dc78116bf4d3b05a46e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
