@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c714fcf3_8be2ce3c",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardTypes.tsx",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-01-20T19:35:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a16ce163_e8b21093",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 12
+      },
+      "revId": "046a1aab58485b9cf2a5ab9a59de6a361702bd44",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "87bcb884_5b327245",
@@ -37,6 +61,30 @@
       "writtenOn": "2022-01-20T18:20:24Z",
       "side": 1,
       "message": "Do we need to have this capitalized?",
+      "range": {
+        "startLine": 10,
+        "startChar": 2,
+        "endLine": 10,
+        "endChar": 13
+      },
+      "revId": "046a1aab58485b9cf2a5ab9a59de6a361702bd44",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3795b4a8_13967c89",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardTypes.tsx",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-01-20T19:35:43Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "87bcb884_5b327245",
       "range": {
         "startLine": 10,
         "startChar": 2,
