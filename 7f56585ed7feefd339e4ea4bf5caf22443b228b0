@@ -22,6 +22,30 @@
       },
       "revId": "7f56585ed7feefd339e4ea4bf5caf22443b228b0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "20f82b19_52febd08",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardConfig.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-01-20T00:00:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b544f710_1d030ea9",
+      "range": {
+        "startLine": 3,
+        "startChar": 32,
+        "endLine": 3,
+        "endChar": 33
+      },
+      "revId": "7f56585ed7feefd339e4ea4bf5caf22443b228b0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
