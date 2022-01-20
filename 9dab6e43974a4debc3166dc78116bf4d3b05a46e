@@ -335,6 +335,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6b24c330_a0689d25",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardTypes.tsx",
+        "patchSetId": 6
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-01-20T00:14:35Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "911120f8_9670c8d4",
+      "range": {
+        "startLine": 7,
+        "startChar": 9,
+        "endLine": 7,
+        "endChar": 59
+      },
+      "revId": "9dab6e43974a4debc3166dc78116bf4d3b05a46e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "515b899c_1e08e7e1",
@@ -395,6 +419,30 @@
       "writtenOn": "2022-01-19T23:18:39Z",
       "side": 1,
       "message": "Let\u0027s make sure to rename this property as well with any naming changes we make to IssueWizardUserGroup",
+      "range": {
+        "startLine": 21,
+        "startChar": 2,
+        "endLine": 21,
+        "endChar": 6
+      },
+      "revId": "9dab6e43974a4debc3166dc78116bf4d3b05a46e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8dce2886_63bc0a6b",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardTypes.tsx",
+        "patchSetId": 6
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-01-20T00:14:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bf213c19_b255ab19",
       "range": {
         "startLine": 21,
         "startChar": 2,
