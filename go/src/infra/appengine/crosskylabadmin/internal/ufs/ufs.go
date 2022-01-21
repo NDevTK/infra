@@ -8,12 +8,14 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
 
 	"infra/appengine/crosskylabadmin/site"
+	"infra/libs/skylab/common/heuristics"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
@@ -33,12 +35,13 @@ func NewUFSClient(ctx context.Context, hostname string) (ufsAPI.FleetClient, err
 	}), nil
 }
 
-// GetPools gets the pools associated with a particular bot.
+// GetPools gets the pools associated with a particular bot or dut.
 // UFSClient may be nil.
-func GetPools(ctx context.Context, ufsClient ufsAPI.FleetClient, botID string) ([]string, error) {
+func GetPools(ctx context.Context, ufsClient ufsAPI.FleetClient, name string) ([]string, error) {
 	if ufsClient == nil {
 		return nil, fmt.Errorf("get pools: ufsClient cannot be nil")
 	}
+	name = heuristics.NormalizeBotNameToDUTName(strings.ToLower(name))
 	res, err := ufsClient.GetMachineLSE(ctx, &ufsAPI.GetMachineLSERequest{
 		Name: ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, botID),
 	})
