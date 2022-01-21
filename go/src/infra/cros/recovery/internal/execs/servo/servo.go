@@ -118,3 +118,19 @@ func IsContainerizedServoHost(ctx context.Context, servoHost *tlw.ServoHost) boo
 	log.Debug(ctx, "Servo uses servod container with the name: %s", servoHost.ContainerName)
 	return true
 }
+
+const (
+	// Commands to kill active servo_updater
+	killActiveUpdatersCmd = `ps aux | grep -ie [s]ervo_updater |grep "%s" | awk '{print $2}' | xargs kill -9`
+)
+
+// KillActiveUpdaterProcesses will run killActiveUpdatersCmd on the DUT's ServoHost
+// to kill any active servo fw updater processes inside the DUT's servo.
+func KillActiveUpdaterProcesses(ctx context.Context, r execs.Runner, deviceSerial string) error {
+	cmd := fmt.Sprintf(killActiveUpdatersCmd, deviceSerial)
+	if _, err := r(ctx, cmd); err != nil {
+		log.Debug(ctx, "Fail to kill active update process")
+		return errors.Annotate(err, "kill active update process").Err()
+	}
+	return nil
+}
