@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9c062f5e_6b5d0fbe",
+        "filename": "go/src/infra/appengine/crosskylabadmin/internal/ufs/ufs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-01-21T21:59:23Z",
+      "side": 1,
+      "message": "I have seen a convention of errors.Reason being used for this. Wanted to check of you have strong opinion about using fmt.Errorf.",
+      "range": {
+        "startLine": 42,
+        "startChar": 14,
+        "endLine": 42,
+        "endChar": 62
+      },
+      "revId": "0d1d16ea1e74fa4196d4966935b2bdfae11c609f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e2be660e_7f0743f0",
+        "filename": "go/src/infra/appengine/crosskylabadmin/internal/ufs/ufs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-01-21T21:59:23Z",
+      "side": 1,
+      "message": "Not sure where this variable is being used after creation.",
+      "revId": "0d1d16ea1e74fa4196d4966935b2bdfae11c609f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3e738546_3065ae01",
+        "filename": "go/src/infra/appengine/crosskylabadmin/internal/ufs/ufs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-01-21T21:59:23Z",
+      "side": 1,
+      "message": "It seems after the change in signature of this function, this parameter does not exit any more. I am guessing perhaps \"name\" is the variable intended for this purpose?",
+      "revId": "0d1d16ea1e74fa4196d4966935b2bdfae11c609f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
