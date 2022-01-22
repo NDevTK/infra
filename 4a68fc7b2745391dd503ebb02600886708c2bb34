@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cff1a31c_f6b58040",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-01-22T01:14:12Z",
+      "side": 1,
+      "message": "LGTM % comments",
+      "revId": "4a68fc7b2745391dd503ebb02600886708c2bb34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b17164af_013ab301",
+        "filename": "go/src/infra/appengine/crosskylabadmin/internal/ufs/ufs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-01-22T01:14:12Z",
+      "side": 1,
+      "message": "nit: recommend use ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, name) inside only without change the name so you can re-use it later.",
+      "range": {
+        "startLine": 52,
+        "startChar": 8,
+        "endLine": 52,
+        "endChar": 12
+      },
+      "revId": "4a68fc7b2745391dd503ebb02600886708c2bb34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9e8294ea_325cbe98",
+        "filename": "go/src/infra/appengine/crosskylabadmin/internal/ufs/ufs_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-01-22T01:14:12Z",
+      "side": 1,
+      "message": "i think that is single test as second can not live without first one. if yes please combine.",
+      "range": {
+        "startLine": 36,
+        "startChar": 1,
+        "endLine": 37,
+        "endChar": 46
+      },
+      "revId": "4a68fc7b2745391dd503ebb02600886708c2bb34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
