@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a9a206a9_1950f48f",
+        "filename": "go/src/infra/appengine/crosskylabadmin/internal/ufs/ufs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-01-22T00:56:53Z",
+      "side": 1,
+      "message": "It can be a botID or a DUT ID.",
+      "parentUuid": "005ec8ef_251adbc2",
+      "range": {
+        "startLine": 40,
+        "startChar": 65,
+        "endLine": 40,
+        "endChar": 69
+      },
+      "revId": "0d1d16ea1e74fa4196d4966935b2bdfae11c609f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9c062f5e_6b5d0fbe",
@@ -60,6 +84,30 @@
       "writtenOn": "2022-01-22T00:08:57Z",
       "side": 1,
       "message": "+1",
+      "parentUuid": "9c062f5e_6b5d0fbe",
+      "range": {
+        "startLine": 42,
+        "startChar": 14,
+        "endLine": 42,
+        "endChar": 62
+      },
+      "revId": "0d1d16ea1e74fa4196d4966935b2bdfae11c609f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5e8b597c_c28bae9e",
+        "filename": "go/src/infra/appengine/crosskylabadmin/internal/ufs/ufs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-01-22T00:56:53Z",
+      "side": 1,
+      "message": "Done",
       "parentUuid": "9c062f5e_6b5d0fbe",
       "range": {
         "startLine": 42,
@@ -111,6 +159,48 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8ae8a1d5_c1cc078d",
+        "filename": "go/src/infra/appengine/crosskylabadmin/internal/ufs/ufs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-01-22T00:56:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "507bb857_c153aa82",
+      "range": {
+        "startLine": 44,
+        "startChar": 45,
+        "endLine": 44,
+        "endChar": 61
+      },
+      "revId": "0d1d16ea1e74fa4196d4966935b2bdfae11c609f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d918fb07_742d3c68",
+        "filename": "go/src/infra/appengine/crosskylabadmin/internal/ufs/ufs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-01-22T00:56:53Z",
+      "side": 1,
+      "message": "Good catch.",
+      "parentUuid": "e2be660e_7f0743f0",
+      "revId": "0d1d16ea1e74fa4196d4966935b2bdfae11c609f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3e738546_3065ae01",
@@ -124,6 +214,24 @@
       "writtenOn": "2022-01-21T21:59:23Z",
       "side": 1,
       "message": "It seems after the change in signature of this function, this parameter does not exit any more. I am guessing perhaps \"name\" is the variable intended for this purpose?",
+      "revId": "0d1d16ea1e74fa4196d4966935b2bdfae11c609f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f6de4ac5_bfa08346",
+        "filename": "go/src/infra/appengine/crosskylabadmin/internal/ufs/ufs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-01-22T00:56:53Z",
+      "side": 1,
+      "message": "Thanks.",
+      "parentUuid": "3e738546_3065ae01",
       "revId": "0d1d16ea1e74fa4196d4966935b2bdfae11c609f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
