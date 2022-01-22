@@ -16,6 +16,24 @@
       "message": "IssueWizardPersona being an enum seems correct to me. It doesn\u0027t seem like it makes sense for every IssueCategory to embed the descriptions of every IssueWizardPersona everytime a Persona is referenced. \n\nHere\u0027s an alternate possible type/data model we could use where we separate out the concerns of the IssueWizardPersona enum and the data for the personas more:\n\n```\nexport enum IssueWizardPersona {\n  EndUser \u003d 0,\n  Developer \u003d 1,\n  Contributor \u003d 2\n};\n\nexport const ISSUE_WIZARD_PERSONAS \u003d Object.freeze({\n  [IssueWizardPersona.EndUser]: {\n    name: \u0027End User\u0027,\n    description: \u0027I am a user trying to do something on a website.\u0027,\n  },\n  [IssueWizardPersona.Developer]: {\n    name: \u0027Web Developer\u0027,\n    description: \u0027I am a web developer trying to build something.\u0027,\n  },\n  [IssueWizardPersona.Contributor]: {\n    name: \u0027Chromium Contributor\u0027,\n    description: \u0027I know about a problem in specific tests or code.\u0027,\n  }\n});\n\n```",
       "revId": "79841cc16a03d52fac2c87b554b489f001324715",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "090cc556_2ecea635",
+        "filename": "appengine/monorail/static_src/react/issue-wizard/IssueWizardTypes.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-01-22T06:08:33Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "b2cb90d6_e136656a",
+      "revId": "79841cc16a03d52fac2c87b554b489f001324715",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
