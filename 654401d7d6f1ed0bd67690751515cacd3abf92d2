@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "db3f3ec9_cfbe4dab",
+        "filename": "go/src/infra/libs/skylab/common/heuristics/heuristics.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-01-22T00:02:18Z",
+      "side": 1,
+      "message": "i think pools can have `-` (dash) also.",
+      "range": {
+        "startLine": 42,
+        "startChar": 67,
+        "endLine": 42,
+        "endChar": 68
+      },
+      "revId": "654401d7d6f1ed0bd67690751515cacd3abf92d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
