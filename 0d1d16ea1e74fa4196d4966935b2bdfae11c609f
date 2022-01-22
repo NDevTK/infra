@@ -3,6 +3,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "005ec8ef_251adbc2",
+        "filename": "go/src/infra/appengine/crosskylabadmin/internal/ufs/ufs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-01-22T00:08:57Z",
+      "side": 1,
+      "message": "are we provide name of bot-ID? if bot-id then please keep previous name",
+      "range": {
+        "startLine": 40,
+        "startChar": 65,
+        "endLine": 40,
+        "endChar": 69
+      },
+      "revId": "0d1d16ea1e74fa4196d4966935b2bdfae11c609f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9c062f5e_6b5d0fbe",
         "filename": "go/src/infra/appengine/crosskylabadmin/internal/ufs/ufs.go",
         "patchSetId": 1
@@ -26,6 +49,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1cee016e_1d7b1c8d",
+        "filename": "go/src/infra/appengine/crosskylabadmin/internal/ufs/ufs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-01-22T00:08:57Z",
+      "side": 1,
+      "message": "+1",
+      "parentUuid": "9c062f5e_6b5d0fbe",
+      "range": {
+        "startLine": 42,
+        "startChar": 14,
+        "endLine": 42,
+        "endChar": 62
+      },
+      "revId": "0d1d16ea1e74fa4196d4966935b2bdfae11c609f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e2be660e_7f0743f0",
         "filename": "go/src/infra/appengine/crosskylabadmin/internal/ufs/ufs.go",
         "patchSetId": 1
@@ -37,6 +84,29 @@
       "writtenOn": "2022-01-21T21:59:23Z",
       "side": 1,
       "message": "Not sure where this variable is being used after creation.",
+      "revId": "0d1d16ea1e74fa4196d4966935b2bdfae11c609f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "507bb857_c153aa82",
+        "filename": "go/src/infra/appengine/crosskylabadmin/internal/ufs/ufs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-01-22T00:08:57Z",
+      "side": 1,
+      "message": "please do not changes the case of name",
+      "range": {
+        "startLine": 44,
+        "startChar": 45,
+        "endLine": 44,
+        "endChar": 61
+      },
       "revId": "0d1d16ea1e74fa4196d4966935b2bdfae11c609f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
