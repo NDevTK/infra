@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ff45a208_04e0c644",
+        "filename": "go/src/infra/libs/skylab/common/heuristics/heuristics.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-01-22T00:04:16Z",
+      "side": 1,
+      "message": "just idea the name is not DUT-name that is device name for ufs? maybe call it NormalizeBotNameToDeviceName or NormalizeBotNameToUFSName",
+      "range": {
+        "startLine": 35,
+        "startChar": 5,
+        "endLine": 35,
+        "endChar": 30
+      },
+      "revId": "75b89bf95fee36515c933d89fdcf6fa12062c529",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
