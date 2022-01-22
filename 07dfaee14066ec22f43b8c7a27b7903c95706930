@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f204c7ce_0388530e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-01-22T00:18:50Z",
+      "side": 1,
+      "message": "LGTM % comments",
+      "revId": "07dfaee14066ec22f43b8c7a27b7903c95706930",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "839c6d26_8ef12ff5",
+        "filename": "go/src/infra/cros/recovery/internal/execs/servo/servo.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-01-22T00:18:50Z",
+      "side": 1,
+      "message": "kills any active servo_updater processes running on the host.",
+      "range": {
+        "startLine": 127,
+        "startChar": 30,
+        "endLine": 128,
+        "endChar": 72
+      },
+      "revId": "07dfaee14066ec22f43b8c7a27b7903c95706930",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a823f954_b439282c",
+        "filename": "go/src/infra/cros/recovery/internal/execs/servo/servo.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-01-22T00:18:50Z",
+      "side": 1,
+      "message": "please keep it inside servo_updater.",
+      "range": {
+        "startLine": 122,
+        "startChar": 0,
+        "endLine": 136,
+        "endChar": 1
+      },
+      "revId": "07dfaee14066ec22f43b8c7a27b7903c95706930",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
