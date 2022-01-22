@@ -11,11 +11,11 @@ export function GetCategoriesByPersona (categories: IssueCategory[]): Map<string
 
   categories.forEach((category) => {
     if (category.enabled) {
-      const currentIssuePersona = category.persona;
+      const currentIssuePersonaName = category.persona.name;
       const currentCategoryName = category.name;
-      const currentCategories = categoriesByPersona.get(currentIssuePersona) ?? [];
+      const currentCategories = categoriesByPersona.get(currentIssuePersonaName) ?? [];
       currentCategories.push(currentCategoryName);
-      categoriesByPersona.set(currentIssuePersona, currentCategories);
+      categoriesByPersona.set(currentIssuePersonaName, currentCategories);
     }
   });
 

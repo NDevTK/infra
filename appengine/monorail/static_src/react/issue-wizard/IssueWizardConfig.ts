@@ -3,87 +3,87 @@
 // found in the LICENSE file.
 
 // TODO: create a `monorail/frontend/config/` folder to store all the feature config file
-import {IssueCategory, IssueWizardPersona} from "./IssueWizardTypes";
+import {IssueCategory, IssueWizardPersonas} from "./IssueWizardTypes";
 
 export const ISSUE_WIZARD_QUESTIONS: IssueCategory[] = [
   {
     name: 'UI',
-    persona: IssueWizardPersona.EndUser,
+    persona: IssueWizardPersonas.EndUser,
     enabled: true,
   },
   {
     name: 'Network / Downloading',
-    persona: IssueWizardPersona.EndUser,
+    persona: IssueWizardPersonas.EndUser,
     enabled: true,
   },
   {
     name: 'Audio / Video',
-    persona: IssueWizardPersona.EndUser,
+    persona: IssueWizardPersonas.EndUser,
     enabled: true,
   },
   {
     name: 'Content',
-    persona: IssueWizardPersona.EndUser,
+    persona: IssueWizardPersonas.EndUser,
     enabled: true,
   },
   {
     name: 'Apps',
-    persona: IssueWizardPersona.EndUser,
+    persona: IssueWizardPersonas.EndUser,
     enabled: true,
   },
   {
     name: 'Extensions / Themes',
-    persona: IssueWizardPersona.EndUser,
+    persona: IssueWizardPersonas.EndUser,
     enabled: true,
   },
   {
     name: 'Webstore',
-    persona: IssueWizardPersona.EndUser,
+    persona: IssueWizardPersonas.EndUser,
     enabled: true,
   },
   {
     name: 'Sync',
-    persona: IssueWizardPersona.EndUser,
+    persona: IssueWizardPersonas.EndUser,
     enabled: true,
   },
   {
     name: 'Enterprise',
-    persona: IssueWizardPersona.EndUser,
+    persona: IssueWizardPersonas.EndUser,
     enabled: true,
   },
   {
     name: 'Installation',
-    persona: IssueWizardPersona.EndUser,
+    persona: IssueWizardPersonas.EndUser,
     enabled: true,
   },
   {
     name: 'Crashes',
-    persona: IssueWizardPersona.EndUser,
+    persona: IssueWizardPersonas.EndUser,
     enabled: true,
   },
   {
     name: 'Security',
-    persona: IssueWizardPersona.EndUser,
+    persona: IssueWizardPersonas.EndUser,
     enabled: true,
   },
   {
     name: 'Other',
-    persona: IssueWizardPersona.EndUser,
+    persona: IssueWizardPersonas.EndUser,
     enabled: true,
   },
   {
     name: 'API',
-    persona: IssueWizardPersona.Developer,
+    persona: IssueWizardPersonas.Developer,
     enabled: true,
   },
   {
     name: 'JavaScript',
-    persona: IssueWizardPersona.Developer,
+    persona: IssueWizardPersonas.Developer,
     enabled: true,
   },
   {
     name: 'Developer Tools',
-    persona: IssueWizardPersona.Developer,
+    persona: IssueWizardPersonas.Developer,
     enabled: true,
   },
 ];

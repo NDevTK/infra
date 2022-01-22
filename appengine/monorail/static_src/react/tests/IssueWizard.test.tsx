@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chai';
-import {IssueWizardPersona, IssueCategory, CustomQuestionType} from '../issue-wizard/IssueWizardTypes.tsx';
+import {IssueWizardPersonas, IssueCategory, CustomQuestionType} from '../issue-wizard/IssueWizardTypes.tsx';
 import {GetCategoriesByPersona, GetQuestionsByCategory} from '../issue-wizard/IssueWizardUtils.tsx';
 
 describe('IssueWizardUtils', () => {
@@ -11,18 +11,18 @@ describe('IssueWizardUtils', () => {
     const categories: IssueCategory[]= [
       {
         name: 't1',
-        persona: IssueWizardPersona.EndUser,
+        persona: IssueWizardPersonas.EndUser,
         enabled: true,
       },
       {
         name: 't2',
-        persona: IssueWizardPersona.EndUser,
+        persona: IssueWizardPersonas.EndUser,
         enabled: false,
       },
     ];
 
     const categoriesByPersonaMap = GetCategoriesByPersona(categories);
-    const validCategories = categoriesByPersonaMap.get(IssueWizardPersona.EndUser);
+    const validCategories = categoriesByPersonaMap.get(IssueWizardPersonas.EndUser.name);
 
     assert.equal(validCategories?.length, 1);
     assert.equal(validCategories[0], 't1');
@@ -32,7 +32,7 @@ describe('IssueWizardUtils', () => {
     const categories: IssueCategory[]= [
       {
         name: 't1',
-        persona: IssueWizardPersona.EndUser,
+        persona: IssueWizardPersonas.EndUser,
         enabled: true,
         customQuestions: [
           {
