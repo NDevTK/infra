@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "af75b4e1_7dbb9ec0",
+        "filename": "3pp/esbuild/3pp.pb",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-01-24T06:14:05Z",
+      "side": 1,
+      "message": "If the package never built successfully on Windows, there\u0027s no need to update the patch_version (might save you some work updating call sites). Up to you.",
+      "revId": "9c7935de50906741a9bed53387c40d6614fad1a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
