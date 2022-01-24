@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9ed820dd_6ad4763c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-01-24T17:11:55Z",
+      "side": 1,
+      "message": "Otabek, this CL includes the change to verify whether the servo device is of type A.\n\nThis was pending as to-be-implementing in the config_servo.go.\n\nI have not yet tested this. I am setting this as WIP at this time. ",
+      "revId": "dba22007345ae9478473c90b75d41f344eb18d53",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
