@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6afc823d_71cf396f",
+        "filename": "appengine/cr-buildbucket/tokens.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2022-01-24T20:49:57Z",
+      "side": 1,
+      "message": "imo just using os.urandom(16) would be less deceptive\nHMAC nature of `state` is totally unused and just confuses the reader",
+      "range": {
+        "startLine": 28,
+        "startChar": 12,
+        "endLine": 28,
+        "endChar": 57
+      },
+      "revId": "7070da061a5f52a3a1b4c8d27e1f667ee0f0b087",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "82e20bbb_6d809e16",
+        "filename": "appengine/cr-buildbucket/tokens.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2022-01-24T20:49:57Z",
+      "side": 1,
+      "message": "the ship has sailed, but it should have been an enum `version\u003dUNENCRYPTED_PASSWORDLIKE` or something",
+      "range": {
+        "startLine": 30,
+        "startChar": 32,
+        "endLine": 30,
+        "endChar": 41
+      },
+      "revId": "7070da061a5f52a3a1b4c8d27e1f667ee0f0b087",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
