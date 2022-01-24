@@ -16,6 +16,24 @@
       "message": "If the package never built successfully on Windows, there\u0027s no need to update the patch_version (might save you some work updating call sites). Up to you.",
       "revId": "9c7935de50906741a9bed53387c40d6614fad1a4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "667879a1_7c297360",
+        "filename": "3pp/esbuild/3pp.pb",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2022-01-24T06:16:56Z",
+      "side": 1,
+      "message": "This is necessary. esbuild package was built without .exe extention.",
+      "parentUuid": "af75b4e1_7dbb9ec0",
+      "revId": "9c7935de50906741a9bed53387c40d6614fad1a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
