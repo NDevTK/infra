@@ -58,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1f7cdc37_1a4c4719",
+        "filename": "go/src/infra/appengine/crosskylabadmin/internal/ufs/ufs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-01-24T19:03:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b17164af_013ab301",
+      "range": {
+        "startLine": 52,
+        "startChar": 8,
+        "endLine": 52,
+        "endChar": 12
+      },
+      "revId": "4a68fc7b2745391dd503ebb02600886708c2bb34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9e8294ea_325cbe98",
@@ -71,6 +95,30 @@
       "writtenOn": "2022-01-22T01:14:12Z",
       "side": 1,
       "message": "i think that is single test as second can not live without first one. if yes please combine.",
+      "range": {
+        "startLine": 36,
+        "startChar": 1,
+        "endLine": 37,
+        "endChar": 46
+      },
+      "revId": "4a68fc7b2745391dd503ebb02600886708c2bb34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "afdf0e25_08a898fa",
+        "filename": "go/src/infra/appengine/crosskylabadmin/internal/ufs/ufs_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-01-24T19:03:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9e8294ea_325cbe98",
       "range": {
         "startLine": 36,
         "startChar": 1,
