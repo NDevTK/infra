@@ -501,6 +501,12 @@ const servoRepairPlanBody = `
 			"servo_v4"
 		]
 	},
+	"is_servo_v4_type_a": {
+		"docs": ["This action will detect whether or not the attached servo V4 device is connect to DUT using Type-A connection."],
+		"conditions": [
+			"servo_v4"
+		]
+	},
 	"servo_lid_open": {
 		"recovery_actions": [
 			"servo_host_servod_restart"
