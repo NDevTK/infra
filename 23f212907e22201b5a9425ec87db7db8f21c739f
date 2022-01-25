@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9bdbb29c_63c33f28",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1003293
+      },
+      "writtenOn": "2022-01-25T21:39:34Z",
+      "side": 1,
+      "message": "LGTM\n\nIn theory it should be safe to change the token format like that, but please make sure it works on -dev by observing in-flight builds with old tokes are still finishing and new builds with new tokens can start and progress.",
+      "revId": "23f212907e22201b5a9425ec87db7db8f21c739f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
