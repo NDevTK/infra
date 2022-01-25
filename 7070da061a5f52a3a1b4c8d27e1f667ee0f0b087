@@ -48,6 +48,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "b13d909b_73fa0971",
+        "filename": "appengine/cr-buildbucket/tokens.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2022-01-25T01:15:36Z",
+      "side": 1,
+      "message": "It has to be cryptorand since it is used in a cryptographic context. If it is just a PRNG, observing one build token may allow you to predict the next one for the build you don\u0027t \"own\", which is not good.",
+      "parentUuid": "ce6e831d_139dd230",
+      "range": {
+        "startLine": 28,
+        "startChar": 12,
+        "endLine": 28,
+        "endChar": 57
+      },
+      "revId": "7070da061a5f52a3a1b4c8d27e1f667ee0f0b087",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "82e20bbb_6d809e16",
