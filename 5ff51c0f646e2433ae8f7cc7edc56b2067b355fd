@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef308dd3_68145bc5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-01-25T06:17:04Z",
+      "side": 1,
+      "message": "Otabek, this CL is the implementation of exec to check whether the connection type is A. \n\nCan you kindly review this? ",
+      "revId": "5ff51c0f646e2433ae8f7cc7edc56b2067b355fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
