@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3e762c78_078c3eb1",
+        "filename": "go/src/infra/cros/recovery/internal/execs/servo/servo_info_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-01-25T20:16:36Z",
+      "side": 1,
+      "message": "I have removed this. After the change in response to the second comment below, this is no longer required.",
+      "parentUuid": "6051aa80_31c3cccd",
+      "revId": "5ff51c0f646e2433ae8f7cc7edc56b2067b355fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c4e31437_11adaa27",
@@ -48,6 +66,30 @@
       "writtenOn": "2022-01-25T17:32:22Z",
       "side": 1,
       "message": "notes: i some how missed why we do not used existed exec to get and compare value from it.\n\nrelated to  servoVerifyV4TypeAExec and servoVerifyV4TypeCExec. i think we still can merge it. please TODO to revisit it later.",
+      "range": {
+        "startLine": 98,
+        "startChar": 5,
+        "endLine": 98,
+        "endChar": 27
+      },
+      "revId": "5ff51c0f646e2433ae8f7cc7edc56b2067b355fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1db21635_f3ba5b48",
+        "filename": "go/src/infra/cros/recovery/internal/execs/servo/servo_info_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-01-25T20:16:36Z",
+      "side": 1,
+      "message": "Indeed! \n\nI am not sure why I also did not thing of using the existing exec that fetches servod control values.\n\nI have updated this CL to use that exec. Think it is better to do it correctly right now.\n\nFurther, I have also made the same change for check for Type-C. The exec funtions added for Type-C as well as Type-A have been removed, and the action in the config has been updated to fetch the value of the servod control, and check whether its value is as expected. \n\nThanks for pointing this out, it made things simpler. I should have done it this way myself.",
+      "parentUuid": "c4e31437_11adaa27",
       "range": {
         "startLine": 98,
         "startChar": 5,
