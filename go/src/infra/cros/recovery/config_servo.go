@@ -418,7 +418,7 @@ const servoRepairPlanBody = `
 	"servo_dut_detected": {
 		"conditions": [
 			"is_not_servo_v3",
-			"servo_v4_type_a"
+			"is_servo_v4_type_a"
 		],
 		"recovery_actions": [
 			"servo_host_servod_restart",
@@ -517,8 +517,11 @@ const servoRepairPlanBody = `
 		],
 		"exec_name":"sample_fail"
 	},
-	"servo_v4_type_a": {
-		"exec_name":"sample_pass"
+	"is_servo_v4_type_a": {
+		"docs": ["This action will detect whether or not the attached servo V4 device is connect to DUT using Type-A connection."],
+		"conditions": [
+			"is_servo_v4"
+		]
 	},
 	"is_dual_setup": {
 		"exec_name":"sample_pass"
@@ -602,7 +605,7 @@ const servoRepairPlanBody = `
 	"servo_cold_reset_pin": {
 		"conditions": [
 			"is_servo_v3",
-			"servo_v4_type_a"
+			"is_servo_v4_type_a"
 		],
 		"exec_extra_args": [
 			"command:cold_reset",

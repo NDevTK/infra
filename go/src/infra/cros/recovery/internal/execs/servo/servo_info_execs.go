@@ -39,12 +39,15 @@ func servoVerifyV4Exec(ctx context.Context, args *execs.RunArgs, actionArgs []st
 	return nil
 }
 
+const (
+	dutConnectionTypeControl = "root.dut_connection_type"
+)
+
 // servoVerifyV4TypeCExec verifies whether the type of a V4 servo is
 // type-c or not.
 //
 // This applies only to servo V4.
 func servoVerifyV4TypeCExec(ctx context.Context, args *execs.RunArgs, actionArgs []string) error {
-	dutConnectionTypeControl := "root.dut_connection_type"
 	connectionType, err := servodGetString(ctx, args, dutConnectionTypeControl)
 	if err != nil {
 		return errors.Annotate(err, "servo verify v4 type c").Err()
@@ -88,10 +91,30 @@ func servoVerifyServoMicroExec(ctx context.Context, args *execs.RunArgs, actionA
 	return nil
 }
 
+// servoVerifyV4TypeAExec verifies whether the type of a V4 servo is
+// type-a or not.
+//
+// This applies only to servo V4.
+func servoVerifyV4TypeAExec(ctx context.Context, args *execs.RunArgs, actionArgs []string) error {
+	connectionType, err := servodGetString(ctx, args, dutConnectionTypeControl)
+	if err != nil {
+		return errors.Annotate(err, "servo verify v4 type a").Err()
+	}
+	log.Debug(ctx, "Servo Verify V4 Type A: connection type is %q", connectionType)
+	if connectionType == "" {
+		return errors.Reason("servo verify v4 type a: value of control %q is empty.", dutConnectionTypeControl).Err()
+	}
+	if connectionType != "type-a" {
+		return errors.Reason("servo verify v4 type a: connection type %q does not correspond to type-a.", connectionType).Err()
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("servo_servod_port_present", servoVerifyPortNumberExec)
 	execs.Register("is_servo_v4", servoVerifyV4Exec)
 	execs.Register("is_servo_v4_type_c", servoVerifyV4TypeCExec)
 	execs.Register("is_servo_v3", servoVerifyV3Exec)
 	execs.Register("is_servo_micro", servoVerifyServoMicroExec)
+	execs.Register("is_servo_v4_type_a", servoVerifyV4TypeAExec)
 }
