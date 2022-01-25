@@ -16,6 +16,46 @@
       "message": "Otabek, this CL is the implementation of exec to check whether the connection type is A. \n\nCan you kindly review this? ",
       "revId": "5ff51c0f646e2433ae8f7cc7edc56b2067b355fd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6051aa80_31c3cccd",
+        "filename": "go/src/infra/cros/recovery/internal/execs/servo/servo_info_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-01-25T17:32:22Z",
+      "side": 1,
+      "message": "please add details what is possible result received by this control.",
+      "revId": "5ff51c0f646e2433ae8f7cc7edc56b2067b355fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c4e31437_11adaa27",
+        "filename": "go/src/infra/cros/recovery/internal/execs/servo/servo_info_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-01-25T17:32:22Z",
+      "side": 1,
+      "message": "notes: i some how missed why we do not used existed exec to get and compare value from it.\n\nrelated to  servoVerifyV4TypeAExec and servoVerifyV4TypeCExec. i think we still can merge it. please TODO to revisit it later.",
+      "range": {
+        "startLine": 98,
+        "startChar": 5,
+        "endLine": 98,
+        "endChar": 27
+      },
+      "revId": "5ff51c0f646e2433ae8f7cc7edc56b2067b355fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
