@@ -39,7 +39,8 @@ export function IssueWizard(): ReactElement {
   } else if (activeStep === 1) {
     page = <DetailsStep textValues={textValues} setTextValues={setTextValues} category={category} setActiveStep={setActiveStep}/>;
   } else if (activeStep === 2) {
-    page = <CustomQuestionsStep setActiveStep={setActiveStep}/>;
+    // TODO: (yuxuanch) get the customQuestions List
+    page = <CustomQuestionsStep setActiveStep={setActiveStep} questionsList={[]}/>;
   }
 
   return (
