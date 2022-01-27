@@ -1,0 +1,107 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "63353df3_3f653d19",
+        "filename": "go/src/infra/cros/cmd/k8s-management/app-roller/k8s_apply.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-01-27T00:30:01Z",
+      "side": 1,
+      "message": "Is this vulnerable to races?  Alternatives?",
+      "revId": "ef6e5d912964d27ed7d37c99d416bb3edd5180ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "df4959f6_b0aad753",
+        "filename": "go/src/infra/cros/cmd/k8s-management/app-roller/k8s_apply.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-01-27T00:30:01Z",
+      "side": 1,
+      "message": "What\u0027s the point of the dry run?  What happens if you just patch with no change?",
+      "revId": "ef6e5d912964d27ed7d37c99d416bb3edd5180ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a1a82135_5737f6f2",
+        "filename": "go/src/infra/cros/cmd/k8s-management/app-roller/k8s_apply.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-01-27T00:30:01Z",
+      "side": 1,
+      "message": "s//patchResource/",
+      "range": {
+        "startLine": 114,
+        "startChar": 5,
+        "endLine": 114,
+        "endChar": 10
+      },
+      "revId": "ef6e5d912964d27ed7d37c99d416bb3edd5180ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bbfae7a6_cd3e76c5",
+        "filename": "go/src/infra/cros/cmd/k8s-management/app-roller/k8s_apply.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-01-27T00:30:01Z",
+      "side": 1,
+      "message": "s//diffResource",
+      "range": {
+        "startLine": 134,
+        "startChar": 5,
+        "endLine": 134,
+        "endChar": 15
+      },
+      "revId": "ef6e5d912964d27ed7d37c99d416bb3edd5180ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c3cb7306_07f09b24",
+        "filename": "go/src/infra/cros/cmd/k8s-management/app-roller/k8s_apply.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-01-27T00:30:01Z",
+      "side": 1,
+      "message": "s//filterNoisyFields",
+      "range": {
+        "startLine": 166,
+        "startChar": 5,
+        "endLine": 166,
+        "endChar": 17
+      },
+      "revId": "ef6e5d912964d27ed7d37c99d416bb3edd5180ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
