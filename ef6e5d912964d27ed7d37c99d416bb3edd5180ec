@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "18f596d2_96143053",
+        "filename": "go/src/infra/cros/cmd/k8s-management/app-roller/k8s_apply.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2022-01-27T03:17:54Z",
+      "side": 1,
+      "message": "We suppose there\u0027s only one `app-roller` runs in each K8s cluster.\n\nAdditionally, we run `app-roller` in every N minutes, so even there\u0027s a race condition some how, it should be fine in the following runs.",
+      "parentUuid": "63353df3_3f653d19",
+      "revId": "ef6e5d912964d27ed7d37c99d416bb3edd5180ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "df4959f6_b0aad753",
         "filename": "go/src/infra/cros/cmd/k8s-management/app-roller/k8s_apply.go",
         "patchSetId": 6
@@ -37,6 +55,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "18239ba6_9d0b1078",
+        "filename": "go/src/infra/cros/cmd/k8s-management/app-roller/k8s_apply.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2022-01-27T03:17:54Z",
+      "side": 1,
+      "message": "If we patch without changes, K8s still changes some fields of the resource, e.g. \u0027generation\u0027, \u0027resourceVersion\u0027, etc. So far I am not sure if that matters. But usually dry run should consume less resources.",
+      "parentUuid": "df4959f6_b0aad753",
+      "revId": "ef6e5d912964d27ed7d37c99d416bb3edd5180ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a1a82135_5737f6f2",
         "filename": "go/src/infra/cros/cmd/k8s-management/app-roller/k8s_apply.go",
         "patchSetId": 6
@@ -48,6 +84,30 @@
       "writtenOn": "2022-01-27T00:30:01Z",
       "side": 1,
       "message": "s//patchResource/",
+      "range": {
+        "startLine": 114,
+        "startChar": 5,
+        "endLine": 114,
+        "endChar": 10
+      },
+      "revId": "ef6e5d912964d27ed7d37c99d416bb3edd5180ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3226376e_ef9d37ff",
+        "filename": "go/src/infra/cros/cmd/k8s-management/app-roller/k8s_apply.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2022-01-27T03:17:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a1a82135_5737f6f2",
       "range": {
         "startLine": 114,
         "startChar": 5,
@@ -81,6 +141,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9a4fbf0d_f2adf7d3",
+        "filename": "go/src/infra/cros/cmd/k8s-management/app-roller/k8s_apply.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2022-01-27T03:17:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bbfae7a6_cd3e76c5",
+      "range": {
+        "startLine": 134,
+        "startChar": 5,
+        "endLine": 134,
+        "endChar": 15
+      },
+      "revId": "ef6e5d912964d27ed7d37c99d416bb3edd5180ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c3cb7306_07f09b24",
@@ -94,6 +178,30 @@
       "writtenOn": "2022-01-27T00:30:01Z",
       "side": 1,
       "message": "s//filterNoisyFields",
+      "range": {
+        "startLine": 166,
+        "startChar": 5,
+        "endLine": 166,
+        "endChar": 17
+      },
+      "revId": "ef6e5d912964d27ed7d37c99d416bb3edd5180ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "06f8376e_b7e13371",
+        "filename": "go/src/infra/cros/cmd/k8s-management/app-roller/k8s_apply.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2022-01-27T03:17:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c3cb7306_07f09b24",
       "range": {
         "startLine": 166,
         "startChar": 5,
