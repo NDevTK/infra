@@ -1711,6 +1711,21 @@ wheel: <
 * *windows-x64*
 * *windows-x86*
 
+### 1.5.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/debugpy/${vpython_platform}"
+  version: "version:1.5.1"
+>
+```
+
+
+* *mac-x64-cp38*
+* *manylinux-x64-py3*
+* *windows-x64-py3*
+* *windows-x86-py3*
+
 ## **decorator-py3**
 
 ### 4.4.2
@@ -3264,12 +3279,12 @@ wheel: <
 
 ## **infra_libs-py2**
 
-### 2.2.1
+### 2.3.0
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/infra_libs-py2"
-  version: "version:2.2.1"
+  version: "version:2.3.0"
 >
 ```
 
