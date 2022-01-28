@@ -17,7 +17,7 @@ type Props = {
   updateAnswers: Function,
 }
 
-export default function InputTypeCustomQuestion(props: Props): React.ReactElement {
+export default function TextareaTypeCustomQuestion(props: Props): React.ReactElement {
 
   const classes = userSytles();
 
@@ -32,6 +32,8 @@ export default function InputTypeCustomQuestion(props: Props): React.ReactElemen
     <>
       <h3>{question}</h3>
       <OutlinedInput
+        multiline={true}
+        rows={3}
         value={answer}
         onChange={handleChange}
         className={classes.inputArea}
