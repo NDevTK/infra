@@ -589,98 +589,55 @@ func TestToProto(t *testing.T) {
 		"PepperFlash/libpepflashplayer.so":                                  45*time.Millisecond/6 + 97*time.Millisecond/5 + 2*time.Millisecond/4 + 1*time.Millisecond/3 + 1*time.Millisecond/2,
 		"obj/third_party/angle/src/copy_scripts.actions_rules_copies.stamp": 1*time.Millisecond/2 + 2*time.Millisecond,
 	}
-	want := []*npb.NinjaTask{
-		{
-			BuildId:  12345,
-			Targets:  []string{"all"},
-			StepName: "compile",
-			Jobs:     50,
-			LogEntry: &npb.NinjaTask_LogEntry{
-				Outputs:          []string{"resources/inspector/devtools_api.js", "resources/inspector/devtools_extension_api.js"},
-				StartDurationSec: (76 * time.Millisecond).Seconds(),
-				EndDurationSec:   (187 * time.Millisecond).Seconds(),
+	want := &npb.NinjaTask{
+		BuildId:  12345,
+		Targets:  []string{"all"},
+		StepName: "compile",
+		Jobs:     50,
+		LogEntries: []*npb.NinjaTask_LogEntry{
+			{
+				Outputs:             []string{"resources/inspector/devtools_api.js", "resources/inspector/devtools_extension_api.js"},
+				StartDurationSec:    (76 * time.Millisecond).Seconds(),
+				EndDurationSec:      (187 * time.Millisecond).Seconds(),
+				WeightedDurationSec: (wantWeightedTime["resources/inspector/devtools_extension_api.js"].Seconds()),
 			},
-			WeightedDurationSec: (wantWeightedTime["resources/inspector/devtools_extension_api.js"].Seconds()),
-			CreatedAt:           createdTime,
-		},
-		{
-			BuildId:  12345,
-			Targets:  []string{"all"},
-			StepName: "compile",
-			Jobs:     50,
-			LogEntry: &npb.NinjaTask_LogEntry{
-				Outputs:          []string{"gen/angle/commit_id.py", "gen/angle/commit_id_2.py", "gen/angle/commit_id_3.py"},
-				StartDurationSec: (78 * time.Millisecond).Seconds(),
-				EndDurationSec:   (286 * time.Millisecond).Seconds(),
+			{
+				Outputs:             []string{"gen/angle/commit_id.py", "gen/angle/commit_id_2.py", "gen/angle/commit_id_3.py"},
+				StartDurationSec:    (78 * time.Millisecond).Seconds(),
+				EndDurationSec:      (286 * time.Millisecond).Seconds(),
+				WeightedDurationSec: (wantWeightedTime["gen/angle/commit_id.py"]).Seconds(),
 			},
-			WeightedDurationSec: (wantWeightedTime["gen/angle/commit_id.py"]).Seconds(),
-			CreatedAt:           createdTime,
-		},
-		{
-			BuildId:  12345,
-			Targets:  []string{"all"},
-			StepName: "compile",
-			Jobs:     50,
-			LogEntry: &npb.NinjaTask_LogEntry{
-				Outputs:          []string{"gen/angle/copy_compiler_dll.bat"},
-				StartDurationSec: (79 * time.Millisecond).Seconds(),
-				EndDurationSec:   (287 * time.Millisecond).Seconds(),
+			{
+				Outputs:             []string{"gen/angle/copy_compiler_dll.bat"},
+				StartDurationSec:    (79 * time.Millisecond).Seconds(),
+				EndDurationSec:      (287 * time.Millisecond).Seconds(),
+				WeightedDurationSec: (wantWeightedTime["gen/angle/copy_compiler_dll.bat"]).Seconds(),
 			},
-			WeightedDurationSec: (wantWeightedTime["gen/angle/copy_compiler_dll.bat"]).Seconds(),
-			CreatedAt:           createdTime,
-		},
-		{
-			BuildId:  12345,
-			Targets:  []string{"all"},
-			StepName: "compile",
-			Jobs:     50,
-			LogEntry: &npb.NinjaTask_LogEntry{
-				Outputs:          []string{"gen/autofill_regex_constants.cc"},
-				StartDurationSec: (80 * time.Millisecond).Seconds(),
-				EndDurationSec:   (284 * time.Millisecond).Seconds(),
+			{
+				Outputs:             []string{"gen/autofill_regex_constants.cc"},
+				StartDurationSec:    (80 * time.Millisecond).Seconds(),
+				EndDurationSec:      (284 * time.Millisecond).Seconds(),
+				WeightedDurationSec: (wantWeightedTime["gen/autofill_regex_constants.cc"]).Seconds(),
 			},
-			WeightedDurationSec: (wantWeightedTime["gen/autofill_regex_constants.cc"]).Seconds(),
-			CreatedAt:           createdTime,
-		},
-		{
-			BuildId:  12345,
-			Targets:  []string{"all"},
-			StepName: "compile",
-			Jobs:     50,
-			LogEntry: &npb.NinjaTask_LogEntry{
-				Outputs:          []string{"PepperFlash/manifest.json"},
-				StartDurationSec: (141 * time.Millisecond).Seconds(),
-				EndDurationSec:   (287 * time.Millisecond).Seconds(),
+			{
+				Outputs:             []string{"PepperFlash/manifest.json"},
+				StartDurationSec:    (141 * time.Millisecond).Seconds(),
+				EndDurationSec:      (287 * time.Millisecond).Seconds(),
+				WeightedDurationSec: (wantWeightedTime["PepperFlash/manifest.json"]).Seconds(),
 			},
-			WeightedDurationSec: (wantWeightedTime["PepperFlash/manifest.json"]).Seconds(),
-			CreatedAt:           createdTime,
-		},
-		{
-			BuildId:  12345,
-			Targets:  []string{"all"},
-			StepName: "compile",
-			Jobs:     50,
-			LogEntry: &npb.NinjaTask_LogEntry{
-				Outputs:          []string{"PepperFlash/libpepflashplayer.so"},
-				StartDurationSec: (142 * time.Millisecond).Seconds(),
-				EndDurationSec:   (288 * time.Millisecond).Seconds(),
+			{
+				Outputs:             []string{"PepperFlash/libpepflashplayer.so"},
+				StartDurationSec:    (142 * time.Millisecond).Seconds(),
+				EndDurationSec:      (288 * time.Millisecond).Seconds(),
+				WeightedDurationSec: (wantWeightedTime["PepperFlash/libpepflashplayer.so"]).Seconds(),
 			},
-			WeightedDurationSec: (wantWeightedTime["PepperFlash/libpepflashplayer.so"]).Seconds(),
-			CreatedAt:           createdTime,
+			{
+				Outputs:             []string{"obj/third_party/angle/src/copy_scripts.actions_rules_copies.stamp"},
+				StartDurationSec:    (287 * time.Millisecond).Seconds(),
+				EndDurationSec:      (290 * time.Millisecond).Seconds(),
+				WeightedDurationSec: (wantWeightedTime["obj/third_party/angle/src/copy_scripts.actions_rules_copies.stamp"]).Seconds()},
 		},
-		{
-			BuildId:  12345,
-			Targets:  []string{"all"},
-			StepName: "compile",
-			Jobs:     50,
-			LogEntry: &npb.NinjaTask_LogEntry{
-				Outputs:          []string{"obj/third_party/angle/src/copy_scripts.actions_rules_copies.stamp"},
-				StartDurationSec: (287 * time.Millisecond).Seconds(),
-				EndDurationSec:   (290 * time.Millisecond).Seconds(),
-			},
-			WeightedDurationSec: (wantWeightedTime["obj/third_party/angle/src/copy_scripts.actions_rules_copies.stamp"]).Seconds(),
-			CreatedAt:           createdTime,
-		},
+		CreatedAt: createdTime,
 	}
 	if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
 		t.Errorf("ToProto(%v)\n differs: (-want +got)\n%s", info, diff)

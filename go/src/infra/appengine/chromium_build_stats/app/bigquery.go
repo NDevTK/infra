@@ -8,7 +8,6 @@ import (
 	"context"
 
 	"cloud.google.com/go/bigquery"
-	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/bq"
 	"google.golang.org/appengine/v2"
 	"google.golang.org/appengine/v2/log"
@@ -35,17 +34,13 @@ func SendToBigquery(ctx context.Context, info *ninjalog.NinjaLog, bqResultTable 
 	}()
 
 	up := bq.NewUploader(ctx, client, bqDataset, bqResultTable)
-	ninjaTasks := ninjalog.ToProto(info)
-	m := make([]proto.Message, len(ninjaTasks))
-	for i, t := range ninjaTasks {
-		m[i] = t
-	}
+	ninjaTask := ninjalog.ToProto(info)
 
-	if err := up.Put(ctx, m...); err != nil {
-		log.Errorf(ctx, "failed to put %d entries to BigQuery: %v", len(m), err)
+	if err := up.Put(ctx, ninjaTask); err != nil {
+		log.Errorf(ctx, "failed to put to BigQuery: %v", err)
 		return err
 	}
-	log.Debugf(ctx, "success to send %d entries", len(m))
+	log.Debugf(ctx, "success to send")
 
 	return nil
 }

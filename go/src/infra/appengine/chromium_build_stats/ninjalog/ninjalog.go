@@ -525,10 +525,10 @@ func StatsByType(steps []Step, weighted map[string]time.Duration, typeOf func(St
 var createdTimestamp = timestamppb.Now
 
 // ToProto converts ninjalog to structs of protocol buffer.
-func ToProto(info *NinjaLog) []*npb.NinjaTask {
+func ToProto(info *NinjaLog) *npb.NinjaTask {
 	weightedTime := WeightedTime(info.Steps)
 	steps := Dedup(info.Steps)
-	timestamp := createdTimestamp()
+	// timestamp := createdTimestamp()
 
 	buildID := info.Metadata.BuildID
 	if buildID == 0 {
@@ -596,29 +596,29 @@ func ToProto(info *NinjaLog) []*npb.NinjaTask {
 		}
 	}
 
-	ninjaTasks := make([]*npb.NinjaTask, 0, len(steps))
+	ninjaTask := &npb.NinjaTask{
+		BuildId:      buildID,
+		Targets:      targets,
+		StepName:     info.Metadata.StepName,
+		Jobs:         int64(info.Metadata.Jobs),
+		Os:           os,
+		CpuCore:      info.Metadata.CPUCore,
+		BuildConfigs: buildConfigs,
+		LogEntries:   make([]*npb.NinjaTask_LogEntry, 0, len(steps)),
+		// CreatedAt:    timestamp,
+	}
 
 	for _, s := range steps {
-		ninjalog := &npb.NinjaTask{
-			BuildId:      buildID,
-			Targets:      targets,
-			StepName:     info.Metadata.StepName,
-			Jobs:         int64(info.Metadata.Jobs),
-			Os:           os,
-			CpuCore:      info.Metadata.CPUCore,
-			BuildConfigs: buildConfigs,
-			LogEntry: &npb.NinjaTask_LogEntry{
-				Outputs:          append(s.Outs, s.Out),
-				StartDurationSec: s.Start.Seconds(),
-				EndDurationSec:   s.End.Seconds(),
-			},
+		logEntry := &npb.NinjaTask_LogEntry{
+			Outputs:             append(s.Outs, s.Out),
+			StartDurationSec:    s.Start.Seconds(),
+			EndDurationSec:      s.End.Seconds(),
 			WeightedDurationSec: weightedTime[s.Out].Seconds(),
-			CreatedAt:           timestamp,
 		}
-		sort.Strings(ninjalog.LogEntry.Outputs)
-		ninjaTasks = append(ninjaTasks, ninjalog)
+		sort.Strings(logEntry.Outputs)
+		ninjaTask.LogEntries = append(ninjaTask.LogEntries, logEntry)
 	}
-	return ninjaTasks
+	return ninjaTask
 }
 
 func getJobs(cmdLine []string) (int, error) {
