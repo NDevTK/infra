@@ -1,0 +1,123 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f0ff61a9_597cec80",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2022-02-01T18:57:06Z",
+      "side": 1,
+      "message": "Still reviewing some parts, but here\u0027s some quick feedback.",
+      "revId": "1d5586916910b49915376fedd3a26b40e5d14727",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "acbcb25a_733a1838",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2022-02-01T18:57:06Z",
+      "side": 1,
+      "message": "This \"outfile \u003d in\" var naming is confusing.",
+      "revId": "1d5586916910b49915376fedd3a26b40e5d14727",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "72fee379_82f0ad6e",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2022-02-01T18:57:06Z",
+      "side": 1,
+      "message": "Let\u0027s be clear about these semantics in the doc comment.",
+      "revId": "1d5586916910b49915376fedd3a26b40e5d14727",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "68defdf2_2db663ee",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2022-02-01T18:57:06Z",
+      "side": 1,
+      "message": "Let\u0027s check that the columns match up by reading the first row first, to be resilient to changes in features.",
+      "revId": "1d5586916910b49915376fedd3a26b40e5d14727",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fb532c11_a1aa633f",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2022-02-01T18:57:06Z",
+      "side": 1,
+      "message": "Not sure what you mean by \"figure out average\"\n\nnit: here and other places -- spaces after //. Capitalization.",
+      "revId": "1d5586916910b49915376fedd3a26b40e5d14727",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1b9813ad_776d5523",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 341,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2022-02-01T18:57:06Z",
+      "side": 1,
+      "message": "nit: mixing spaces (in this subquery) and tabs (in the next). Misindentation and trailing spaces and later queries.",
+      "revId": "1d5586916910b49915376fedd3a26b40e5d14727",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "60a5a44a_aa047ad8",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 483,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2022-02-01T18:57:06Z",
+      "side": 1,
+      "message": "What\u0027s the purpose of this?\n\nTraining algos should handle random sampling by themselves. Having the data formatted neatly would help with human readability.",
+      "revId": "1d5586916910b49915376fedd3a26b40e5d14727",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
