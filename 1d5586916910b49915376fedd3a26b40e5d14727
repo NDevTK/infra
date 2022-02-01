@@ -158,6 +158,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7ed220c6_1dc70d96",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2022-02-01T21:29:32Z",
+      "side": 1,
+      "message": "Can\u0027t find it now. Looks good!",
+      "parentUuid": "cdffea1d_036c9e4b",
+      "revId": "1d5586916910b49915376fedd3a26b40e5d14727",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1b9813ad_776d5523",
@@ -224,6 +242,24 @@
       "side": 1,
       "message": "Recreating the distances is prohibitively expensive to run on all results. Maybe I\u0027m misusing RunQuery, but the only optimization I can imagine is to group by CL and run the query once per CL. I added a todo for this optimization",
       "parentUuid": "60a5a44a_aa047ad8",
+      "revId": "1d5586916910b49915376fedd3a26b40e5d14727",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f7efcfe9_7db0aa2a",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 483,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2022-02-01T21:29:32Z",
+      "side": 1,
+      "message": "Oh I just haven\u0027t seen rand() in the ORDER BY, just in the WHERE as in https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/rts/cmd/rts-chromium/durations.go;l\u003d193",
+      "parentUuid": "cd8fef3b_fb46a56f",
       "revId": "1d5586916910b49915376fedd3a26b40e5d14727",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
