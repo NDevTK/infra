@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "013d9fb4_19fd54e5",
+        "filename": "go/src/infra/cros/cmd/k8s-management/app-roller/k8s_apply.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-02-02T21:54:14Z",
+      "side": 1,
+      "message": "Add a comment maybe?",
+      "parentUuid": "18f596d2_96143053",
+      "revId": "ef6e5d912964d27ed7d37c99d416bb3edd5180ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "df4959f6_b0aad753",
         "filename": "go/src/infra/cros/cmd/k8s-management/app-roller/k8s_apply.go",
         "patchSetId": 6
@@ -67,6 +85,24 @@
       "side": 1,
       "message": "If we patch without changes, K8s still changes some fields of the resource, e.g. \u0027generation\u0027, \u0027resourceVersion\u0027, etc. So far I am not sure if that matters. But usually dry run should consume less resources.",
       "parentUuid": "df4959f6_b0aad753",
+      "revId": "ef6e5d912964d27ed7d37c99d416bb3edd5180ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3a605e93_6e043409",
+        "filename": "go/src/infra/cros/cmd/k8s-management/app-roller/k8s_apply.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-02-02T21:54:14Z",
+      "side": 1,
+      "message": "mmm.  I\u0027m slightly against (better to have simpler code even if it\u0027s a little bit inefficient).  We can revisit if we need to add more complexity later.",
+      "parentUuid": "18239ba6_9d0b1078",
       "revId": "ef6e5d912964d27ed7d37c99d416bb3edd5180ec",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
