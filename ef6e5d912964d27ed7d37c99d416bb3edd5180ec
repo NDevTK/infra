@@ -54,6 +54,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "589fb845_3a82e90d",
+        "filename": "go/src/infra/cros/cmd/k8s-management/app-roller/k8s_apply.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2022-02-03T00:59:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "013d9fb4_19fd54e5",
+      "revId": "ef6e5d912964d27ed7d37c99d416bb3edd5180ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "df4959f6_b0aad753",
