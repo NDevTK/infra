@@ -262,6 +262,24 @@
       "parentUuid": "cd8fef3b_fb46a56f",
       "revId": "1d5586916910b49915376fedd3a26b40e5d14727",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ad5a6ad0_fe0c18e3",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 483,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2022-02-09T19:29:21Z",
+      "side": 1,
+      "message": "I made it extra weird to down sample the passes",
+      "parentUuid": "f7efcfe9_7db0aa2a",
+      "revId": "1d5586916910b49915376fedd3a26b40e5d14727",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
