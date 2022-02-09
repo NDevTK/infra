@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "eb3bcedb_3e279c65",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2022-02-09T19:27:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "be215988_bcb1337a",
+      "revId": "e15ce0576ad8e0973d34212e5104dc618343658d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5f6d7412_ca38de98",
@@ -31,6 +49,24 @@
       "writtenOn": "2022-02-01T21:29:32Z",
       "side": 1,
       "message": "I think these in/out semantics are confusing. How about just 1 param, out, and we note that if out exists we will append to it?",
+      "revId": "e15ce0576ad8e0973d34212e5104dc618343658d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4786568a_248ea74a",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2022-02-09T19:27:47Z",
+      "side": 1,
+      "message": "Well, see, that just makes too much sense... done.",
+      "parentUuid": "5f6d7412_ca38de98",
       "revId": "e15ce0576ad8e0973d34212e5104dc618343658d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -52,6 +88,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "01b9fc31_527d3d3a",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2022-02-09T19:27:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a020d6ec_6b32c9f4",
+      "revId": "e15ce0576ad8e0973d34212e5104dc618343658d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6cb271b5_0d96fbb5",
@@ -65,6 +119,24 @@
       "writtenOn": "2022-02-01T21:29:32Z",
       "side": 1,
       "message": "nit: This assumes we\u0027re always going to use average to fill in missing values. I would just leave this as \"Training will handle missing values\".",
+      "revId": "e15ce0576ad8e0973d34212e5104dc618343658d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ecf0cb51_0c034d35",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2022-02-09T19:27:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6cb271b5_0d96fbb5",
       "revId": "e15ce0576ad8e0973d34212e5104dc618343658d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -88,6 +160,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "f16d7e04_77b1fa5a",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2022-02-09T19:27:47Z",
+      "side": 1,
+      "message": "I\u0027m a little torn about this one. It\u0027ll make it slightly more human readable for a probably insignificant loss in precision. I\u0027d rather leave this for now and come back to it when I can be more sure of how much it does/doesn\u0027t affect the precision (it almost definitely won\u0027t but the fewer things that could go wrong the better at first)",
+      "parentUuid": "223a5a84_bf81bf31",
+      "revId": "e15ce0576ad8e0973d34212e5104dc618343658d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "2b8806d6_b1fad4d3",
         "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
         "patchSetId": 7
@@ -99,6 +189,24 @@
       "writtenOn": "2022-02-01T21:29:32Z",
       "side": 1,
       "message": "Let\u0027s clarify which column of the CSV this aligns with and what the purpose is",
+      "revId": "e15ce0576ad8e0973d34212e5104dc618343658d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "404204ed_616bfcf1",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2022-02-09T19:27:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2b8806d6_b1fad4d3",
       "revId": "e15ce0576ad8e0973d34212e5104dc618343658d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -120,6 +228,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "630a5920_1e614181",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2022-02-09T19:27:47Z",
+      "side": 1,
+      "message": "It was faster to write than discover/use that package. As it grows I should move over to using that though. Added a todo",
+      "parentUuid": "b53f6a1d_f14d1251",
+      "revId": "e15ce0576ad8e0973d34212e5104dc618343658d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "83cd13fb_e7e0755b",
@@ -133,6 +259,24 @@
       "writtenOn": "2022-02-01T21:29:32Z",
       "side": 1,
       "message": "Any reason why we didn\u0027t use the same scheme as here to 1. output to a list and 2. do the replacement? https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/rts/cmd/rts-chromium/durations.go;l\u003d100?q\u003dfile:go%2Fsrc%2Finfra%2Frts%20%5C%22%2F%2F%5C%22\u0026ss\u003dchromium%2Finfra%2Finfra:go%2Fsrc%2Finfra%2Frts%2Fcmd%2F",
+      "revId": "e15ce0576ad8e0973d34212e5104dc618343658d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a973f3a6_fcc7373b",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2022-02-09T19:27:47Z",
+      "side": 1,
+      "message": "This was just organic debugging/rushing to get something functional together. Fixed",
+      "parentUuid": "83cd13fb_e7e0755b",
       "revId": "e15ce0576ad8e0973d34212e5104dc618343658d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -154,6 +298,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5e0da7c7_01b9ea9e",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2022-02-09T19:27:47Z",
+      "side": 1,
+      "message": "I think this was discussed in previous comments, there\u0027s a todo for this currently around line 107",
+      "parentUuid": "0bb37f8d_464fb30a",
+      "revId": "e15ce0576ad8e0973d34212e5104dc618343658d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2b0c3cfb_5b492a2d",
@@ -167,6 +329,24 @@
       "writtenOn": "2022-02-01T21:29:32Z",
       "side": 1,
       "message": "Perhaps put a comment here about why we wouldn\u0027t use the distance.",
+      "revId": "e15ce0576ad8e0973d34212e5104dc618343658d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fea47b3f_db77dbf9",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 335,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2022-02-09T19:27:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2b0c3cfb_5b492a2d",
       "revId": "e15ce0576ad8e0973d34212e5104dc618343658d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -188,6 +368,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7ad7f0ca_d05b7faf",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 339,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2022-02-09T19:27:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8332130e_7ff37c6f",
+      "revId": "e15ce0576ad8e0973d34212e5104dc618343658d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5ebc0c3a_bc58d09a",
@@ -201,6 +399,24 @@
       "writtenOn": "2022-02-01T21:29:32Z",
       "side": 1,
       "message": "Trailing whitespace here and L374, 388, 389, 390, 403, 433, 466",
+      "revId": "e15ce0576ad8e0973d34212e5104dc618343658d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "697b100e_52fd6c84",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 375,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2022-02-09T19:27:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5ebc0c3a_bc58d09a",
       "revId": "e15ce0576ad8e0973d34212e5104dc618343658d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
