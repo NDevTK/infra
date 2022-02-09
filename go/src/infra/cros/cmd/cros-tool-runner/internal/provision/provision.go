@@ -71,6 +71,18 @@ func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device,
 	}
 	log.Printf("--> Container of cros-dut was started for %q", dutName)
 
+	log.Printf("--> Starting cacheserver for %q ...", dutName)
+	cacheserver, err := services.Createcacheserver(ctx, crosDutContainer, dutName, networkName, token)
+	defer func() {
+		cacheserver.Remove(ctx)
+	}()
+	if err != nil {
+		res.Err = errors.Annotate(err, "run provision").Err()
+		return res
+	}
+	log.Printf("--> Container of cacheserver was started for %q", dutName)
+
+
 	dir, err := ioutil.TempDir("", "provision-result")
 	if err != nil {
 		res.Err = errors.Annotate(err, "run provision: create temp dir").Err()
