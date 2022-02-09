@@ -17,7 +17,7 @@ import (
 
 // CreateNetwork created network for docker.
 func CreateNetwork(ctx context.Context, name string) error {
-	cmd := exec.Command("docker", "network", "create", name)
+	cmd := exec.Command("sudo", "docker", "network", "create", name)
 	out, e, err := common.RunWithTimeout(ctx, cmd, time.Minute)
 	if err != nil {
 		log.Printf("Create network %q: %s", name, e)
@@ -29,7 +29,7 @@ func CreateNetwork(ctx context.Context, name string) error {
 
 // RemoveNetwork removes network from docker.
 func RemoveNetwork(ctx context.Context, name string) error {
-	cmd := exec.Command("docker", "network", "rm", name)
+	cmd := exec.Command("sudo", "docker", "network", "rm", name)
 	out, e, err := common.RunWithTimeout(ctx, cmd, time.Minute)
 	if err != nil {
 		log.Printf("Remove network %q: %s", name, e)

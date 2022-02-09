@@ -34,6 +34,26 @@ const (
 	OutputFileName = "out.json"
 )
 
+// Createcacheserver pulls and starts cacheserver.
+func Createcacheserver(ctx context.Context, image *build_api.ContainerImageInfo, dutName, networkName string, t string) (*docker.Docker, error) {
+	d := &docker.Docker{
+		Name:               fmt.Sprintf(crosProvisionContainerNameTemplate, dutName),
+		RequestedImageName: "us-docker.pkg.dev/cros-registry/test-services/cacheserver:cacheserver1",
+		Registry:           "us-docker.pkg.dev/cros-registry/test-services",
+		Token:              t, /// NEED TO DO
+		// Fallback version used in case when main image fail to pull.
+		FallbackImageName: "us-docker.pkg.dev/cros-registry/test-services/cacheserver:cacheserver1",
+		ExecCommand: []string{
+			"cacheserver",
+		},
+		Detach:  true,
+		Network: networkName,
+	}
+
+	return startService(ctx, d)
+
+}
+
 // CreateDutService pulls and starts cros-dut service.
 func CreateDutService(ctx context.Context, image *build_api.ContainerImageInfo, dutName, networkName string, t string) (*docker.Docker, error) {
 	p, err := createImagePath(image)
