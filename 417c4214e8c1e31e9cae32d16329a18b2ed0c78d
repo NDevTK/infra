@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2b543078_d69c2e75",
+        "filename": "recipes/recipe_modules/windows_scripts_executor/resources/WindowsPowerShell/Scripts/Add-WindowsPackage.ps1",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2022-02-09T22:21:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "edadac6c_66ddb8fa",
+      "range": {
+        "startLine": 29,
+        "startChar": 4,
+        "endLine": 29,
+        "endChar": 126
+      },
+      "revId": "417c4214e8c1e31e9cae32d16329a18b2ed0c78d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "468958e4_5b794922",
@@ -37,6 +61,30 @@
       "writtenOn": "2022-02-09T21:29:34Z",
       "side": 1,
       "message": "Add validation for each of these parameters in the try block prior to use.\n\nWe do not perform any validation prior try block to ensure all errors are caught. validation should still be performed to check presence of mandatory params and typing of them.\n\ne.g.: Check for mandatory param PackagePath\nif (\u0027PackagePath\u0027 -notin $PSBoundParameters.keys) {\n  throw \u0027PackagePath was not provided and is a REQUIRED parameter\u0027\n}",
+      "range": {
+        "startLine": 57,
+        "startChar": 4,
+        "endLine": 60,
+        "endChar": 26
+      },
+      "revId": "417c4214e8c1e31e9cae32d16329a18b2ed0c78d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a62d81ed_9ab79192",
+        "filename": "recipes/recipe_modules/windows_scripts_executor/resources/WindowsPowerShell/Scripts/Add-WindowsPackage.ps1",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2022-02-09T22:21:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "468958e4_5b794922",
       "range": {
         "startLine": 57,
         "startChar": 4,
