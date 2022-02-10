@@ -318,6 +318,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "5ce74624_3174fdc0",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2022-02-10T19:41:45Z",
+      "side": 1,
+      "message": "Can you add a short \"why\" to that, like \"because generating RTS distances is processor intensive and computing them in bulk is more efficient\", so we don\u0027t forget.",
+      "parentUuid": "5e0da7c7_01b9ea9e",
+      "revId": "e15ce0576ad8e0973d34212e5104dc618343658d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "2b0c3cfb_5b492a2d",
         "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
         "patchSetId": 7
