@@ -12,11 +12,15 @@ import (
 	"infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/flagx"
 	crosfleetpb "infra/cmd/crosfleet/internal/proto"
+	"infra/cmd/crosfleet/internal/site"
 	"infra/cmdsupport/cmdlib"
 	"math"
 	"strings"
 	"sync"
 	"time"
+
+	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	ufsutil "infra/unifiedfleet/app/util"
 
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
@@ -24,6 +28,8 @@ import (
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	luciflag "go.chromium.org/luci/common/flag"
+	"go.chromium.org/luci/grpc/prpc"
+	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
@@ -287,6 +293,7 @@ func (l *ctpRunLauncher) launchAndOutputTests(ctx context.Context) error {
 // build. Unless the exitEarly arg is passed as true, the function waits to
 // return until the build passes request-validation and setup steps.
 func (l *ctpRunLauncher) launchTestsAsync(ctx context.Context) (*crosfleetpb.BuildLaunchList, error) {
+
 	buildLaunchList, scheduledAnyBuilds, schedulingErrors := l.scheduleCTPBuildsAsync(ctx)
 	if len(schedulingErrors) > 0 {
 		fullErrorMsg := fmt.Sprintf("Encountered the following errors requesting %s run(s):\n%s\n",
@@ -613,4 +620,124 @@ func (c *testCommonFlags) secondaryDevices() []*test_platform.Request_Params_Sec
 		secondary_devices = append(secondary_devices, sd)
 	}
 	return secondary_devices
+}
+
+// Client exposes a deliberately chosen subset of the UFS functionality.
+type Client interface {
+	CheckFleetTestsPolicy(context.Context, *ufsapi.CheckFleetTestsPolicyRequest, ...grpc.CallOption) (*ufsapi.CheckFleetTestsPolicyResponse, error)
+}
+
+// ClientImpl is the concrete implementation of this client.
+type clientImpl struct {
+	client ufsapi.FleetClient
+}
+
+// CheckFleetTestsPolicy checks the fleet test policy for the given test parameters.
+func (c *clientImpl) CheckFleetTestsPolicy(ctx context.Context, req *ufsapi.CheckFleetTestsPolicyRequest) (*ufsapi.CheckFleetTestsPolicyResponse, error) {
+	return c.client.CheckFleetTestsPolicy(ctx, req)
+}
+
+// newUFSClient returns a new client to interact with the Unified Fleet System.
+func newUFSClient(ctx context.Context, ufsService string, authFlags *authcli.Flags) (Client, error) {
+	httpClient, err := cmdlib.NewHTTPClient(ctx, authFlags)
+	if err != nil {
+		return nil, err
+	}
+	return ufsapi.NewFleetPRPCClient(&prpc.Client{
+		C:       httpClient,
+		Host:    ufsService,
+		Options: site.DefaultPRPCOptions,
+	}), nil
+}
+
+// callUFSToVerifyPublicTest calls UFS CheckFleetTestsPolicy RPC for each testName, board, image and model combination.
+// The test run stops if an invalid board or image is specified. If an invalid model or testName is specified,
+// it is removed from the list of models or testNames and the remaining models and testNames are used to run the tests
+func (c *testCommonFlags) callUFSToVerifyPublicTest(ctx context.Context, ufsClient Client,
+	testCmdName string, testNames []string) (anyValidTests bool, validTests []string, validModels []string, testValidationErrors []string) {
+	invalidTestNamesMap := map[string]string{}
+	invalidModelsMap := map[string]string{}
+
+	// First check if it is a private test, for a private test there is no validation on the UFS side so it will return a valid test response for empty test params
+	isPublicTestResponse, err := ufsClient.CheckFleetTestsPolicy(ctx, &ufsapi.CheckFleetTestsPolicyRequest{
+		TestName: "",
+		Board:    "",
+		Model:    "",
+		Image:    "",
+	})
+	if err == nil && isPublicTestResponse.IsTestValid {
+		return true, testNames, c.models, nil
+	}
+
+	if len(c.models) == 0 {
+		errString := fmt.Sprintf("Error requesting %s run for public test - model shpuld be specified", testCmdName)
+		testValidationErrors = append(testValidationErrors, errString)
+		return false, testNames, c.models, testValidationErrors
+	}
+	for _, model := range c.models {
+		for _, testName := range testNames {
+			_, err := ufsClient.CheckFleetTestsPolicy(ctx, &ufsapi.CheckFleetTestsPolicyRequest{
+				TestName: testName,
+				Board:    c.board,
+				Model:    model,
+				Image:    c.image,
+			})
+			if err == nil {
+				anyValidTests = true
+				continue
+			}
+			if ufsutil.IsInvalidBoard(err) {
+				errString := fmt.Sprintf("Error requesting %s run for invalid board %s: %s", testCmdName, c.board, err.Error())
+				testValidationErrors = append(testValidationErrors, errString)
+				return false, testNames, c.models, testValidationErrors
+			}
+			if ufsutil.IsInvalidImage(err) {
+				errString := fmt.Sprintf("Error requesting %s run for invalid image %s: %s", testCmdName, c.image, err.Error())
+				testValidationErrors = append(testValidationErrors, errString)
+				return false, testNames, c.models, testValidationErrors
+			}
+			if ufsutil.IsInvalidModel(err) {
+				if _, modelPresent := invalidModelsMap[model]; !modelPresent {
+					errString := fmt.Sprintf("Error requesting %s run for invalid model %s: %s", testCmdName, model, err.Error())
+					testValidationErrors = append(testValidationErrors, errString)
+					invalidModelsMap[model] = model
+				}
+			}
+			if ufsutil.IsInvalidTest(err) {
+				if _, testPresent := invalidTestNamesMap[testName]; !testPresent {
+					errString := fmt.Sprintf("Error requesting %s run for invalid test name %s: %s", testCmdName, testName, err.Error())
+					testValidationErrors = append(testValidationErrors, errString)
+					invalidTestNamesMap[testName] = testName
+				}
+
+			}
+		}
+	}
+
+	for _, testName := range testNames {
+		if _, testPresent := invalidTestNamesMap[testName]; !testPresent {
+			validTests = append(validTests, testName)
+		}
+	}
+	for _, model := range c.models {
+		if _, modelPresent := invalidModelsMap[model]; !modelPresent {
+			validModels = append(validModels, model)
+		}
+	}
+
+	return anyValidTests, validTests, validModels, testValidationErrors
+}
+
+func printAndCheckValidationErrors(validationErrors []string, testCmdName string, anyValidTests bool, printer common.CLIPrinter) error {
+	if len(validationErrors) > 0 {
+		fullErrorMsg := fmt.Sprintf("Encountered the following errors requesting %s run(s):\n%s\n",
+			testCmdName, strings.Join(validationErrors, "\n"))
+		if anyValidTests {
+			// Don't fail the command if we were able to request some runs.
+			printer.WriteTextStderr(fullErrorMsg)
+		} else {
+			return fmt.Errorf(fullErrorMsg)
+		}
+	}
+	return nil
 }
