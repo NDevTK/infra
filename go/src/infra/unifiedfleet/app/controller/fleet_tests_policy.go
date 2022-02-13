@@ -13,6 +13,9 @@ import (
 	"google.golang.org/grpc/status"
 
 	api "infra/unifiedfleet/api/v1/rpc"
+	"infra/unifiedfleet/app/util"
+
+	grpcStatus "google.golang.org/grpc/status"
 )
 
 const (
@@ -37,32 +40,32 @@ func IsValidTest(ctx context.Context, req *api.CheckFleetTestsPolicyRequest) err
 
 	// Validate if the board and model are public
 	if req.Board == "" {
-		return status.Errorf(codes.InvalidArgument, "Invalid input - Board cannot be empty for public tests.")
+		return grpcStatus.Errorf(codes.InvalidArgument, "Invalid input - Board cannot be empty for public tests.")
 	}
 	if !contains(getValidPublicBoards(), req.Board) {
-		return status.Errorf(codes.InvalidArgument, "cannnot run public tests on a private board : %s", req.Board)
+		return grpcStatus.Errorf(codes.InvalidArgument, util.InvalidBoard, req.Board)
 	}
 	if req.Model == "" {
-		return status.Errorf(codes.InvalidArgument, "Invalid input - Model cannot be empty for public tests.")
+		return grpcStatus.Errorf(codes.InvalidArgument, "Invalid input - Model cannot be empty for public tests.")
 	}
 	if !contains(getValidPublictModels(), req.Model) {
-		return status.Errorf(codes.InvalidArgument, "cannnot run public tests on a private model : %s", req.Model)
+		return grpcStatus.Errorf(codes.InvalidArgument, util.InvalidModel, req.Model)
 	}
 
 	// Validate Test Name
 	if req.TestName == "" {
-		return status.Errorf(codes.InvalidArgument, "Invalid input - Test name cannot be empty for public tests.")
+		return grpcStatus.Errorf(codes.InvalidArgument, "Invalid input - Test name cannot be empty for public tests.")
 	}
 	if !contains(getValidPublicTestNames(), req.TestName) {
-		return status.Errorf(codes.InvalidArgument, "Test name not present in the allowlist for public tests : %s", req.TestName)
+		return grpcStatus.Errorf(codes.InvalidArgument, util.InvalidTest, req.TestName)
 	}
 
 	// Validate Image
 	if req.Image == "" {
-		return status.Errorf(codes.InvalidArgument, "Invalid input - Image cannot be empty for public tests.")
+		return grpcStatus.Errorf(codes.InvalidArgument, "Invalid input - Image cannot be empty for public tests.")
 	}
 	if !contains(getValidPublicImages(), req.Image) {
-		return status.Errorf(codes.InvalidArgument, "Image name not present in the allowlist for public tests : %s", req.Image)
+		return grpcStatus.Errorf(codes.InvalidArgument, util.InvalidImage, req.Image)
 	}
 
 	return nil
