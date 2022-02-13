@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "89921a3b_dedfc71d",
+        "filename": "go/src/infra/unifiedfleet/app/util/errors.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-13T09:26:16Z",
+      "side": 1,
+      "message": "it\u0027s pretty unstable to check error msg to determine if it\u0027s a specific error type. Better to initialize new error class like InvalidBoardError, InvalidModelError, InvalidTestImageError, then detect the error by type directly. e.g. https://source.corp.google.com/chromium_infra/go/src/infra/cros/lab_inventory/datastore/labstation.go;l\u003d33?q\u003d%22Error()%20string%22\u0026sq\u003dpackage:%5Echromium_infra$",
+      "range": {
+        "startLine": 49,
+        "startChar": 0,
+        "endLine": 73,
+        "endChar": 13
+      },
+      "revId": "2decc3849f8e811862607e997721a899298858a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
