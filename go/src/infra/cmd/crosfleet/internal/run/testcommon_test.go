@@ -5,8 +5,10 @@
 package run
 
 import (
+	"context"
 	"flag"
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -16,6 +18,13 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+
+	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	ufsutil "infra/unifiedfleet/app/util"
+
+	grpcStatus "google.golang.org/grpc/status"
 )
 
 var testValidateArgsData = []struct {
@@ -537,6 +546,178 @@ func TestSecondaryDevices(t *testing.T) {
 			gotDeps := tt.testCommonFlags.secondaryDevices()
 			if diff := cmp.Diff(tt.wantDeps, gotDeps, common.CmpOpts); diff != "" {
 				t.Errorf("unexpected diff (%s)", diff)
+			}
+		})
+	}
+}
+
+var testValidatePublicChromiumOnChromeOsData = []struct {
+	testCommonFlags
+	wantValidationErrString string
+	testNames               []string
+	validTests              []string
+	validModels             []string
+	testCmdName             string
+	status                  bool
+	ufsError                error
+}{
+	{ // Invalid Board
+		testCommonFlags{
+			board:    "eve",
+			models:   []string{"eve", "kevin"},
+			repeats:  7,
+			pool:     "",
+			image:    "sample-image",
+			release:  "sample-release",
+			priority: 256,
+		},
+		`invalid board`,
+		[]string{"tast.lacros"},
+		[]string{"tast.lacros"},
+		[]string{"eve", "kevin"},
+		"",
+		false,
+		grpcStatus.Error(codes.InvalidArgument, ufsutil.InvalidBoard),
+	},
+	{ // Invalid Model
+		testCommonFlags{
+			board:    "eve",
+			models:   []string{"eve"},
+			repeats:  7,
+			pool:     "",
+			image:    "sample-image",
+			release:  "sample-release",
+			priority: 256,
+		},
+		`invalid model`,
+		[]string{"tast.lacros"},
+		[]string{"tast.lacros"},
+		nil,
+		"",
+		false,
+		grpcStatus.Error(codes.InvalidArgument, ufsutil.InvalidModel),
+	},
+	{ // Invalid Image
+		testCommonFlags{
+			board:    "eve",
+			models:   []string{"eve", "kevin"},
+			repeats:  7,
+			pool:     "",
+			image:    "sample-image",
+			release:  "sample-release",
+			priority: 256,
+		},
+		`invalid image`,
+		[]string{"tast.lacros"},
+		[]string{"tast.lacros"},
+		[]string{"eve", "kevin"},
+		"",
+		false,
+		grpcStatus.Error(codes.InvalidArgument, ufsutil.InvalidImage),
+	},
+	{ // Invalid Test
+		testCommonFlags{
+			board:    "eve",
+			models:   []string{"eve"},
+			repeats:  7,
+			pool:     "",
+			image:    "sample-image",
+			release:  "sample-release",
+			priority: 256,
+		},
+		`invalid test`,
+		[]string{"tast.lacros"},
+		nil,
+		[]string{"eve"},
+		"",
+		false,
+		grpcStatus.Error(codes.InvalidArgument, ufsutil.InvalidTest),
+	},
+	{ // One valid Test
+		testCommonFlags{
+			board:    "eve",
+			models:   []string{"eve"},
+			repeats:  7,
+			pool:     "",
+			image:    "sample-image",
+			release:  "sample-release",
+			priority: 256,
+		},
+		`invalid test`,
+		[]string{"tast.lacros", "tast.lacros2"},
+		[]string{"tast.lacros2"},
+		[]string{"eve"},
+		"",
+		true,
+		grpcStatus.Error(codes.InvalidArgument, ufsutil.InvalidTest),
+	},
+	{ // One valid Model
+		testCommonFlags{
+			board:    "eve",
+			models:   []string{"eve", "kevin"},
+			repeats:  7,
+			pool:     "",
+			image:    "sample-image",
+			release:  "sample-release",
+			priority: 256,
+		},
+		`invalid model`,
+		[]string{"tast.lacros"},
+		[]string{"tast.lacros"},
+		[]string{"kevin"},
+		"",
+		true,
+		grpcStatus.Error(codes.InvalidArgument, ufsutil.InvalidModel),
+	},
+}
+
+// FakeGetPoolsClient mimics a UFS client and records what it was asked to look up.
+type fakeUfsClient struct {
+	requestCount int
+}
+
+// CheckFleetTestsPolicy returns a dummy response.
+func (f *fakeUfsClient) CheckFleetTestsPolicy(ctx context.Context, in *ufsapi.CheckFleetTestsPolicyRequest, opts ...grpc.CallOption) (*ufsapi.CheckFleetTestsPolicyResponse, error) {
+	f.requestCount++
+	if ctx.Value("error1") != nil && f.requestCount == 1 {
+		return nil, grpcStatus.Error(codes.InvalidArgument, fmt.Sprint(ctx.Value("error1")))
+	}
+	if ctx.Value("error2") != nil && f.requestCount == 2 {
+		return nil, grpcStatus.Error(codes.InvalidArgument, fmt.Sprint(ctx.Value("error2")))
+	}
+	return &ufsapi.CheckFleetTestsPolicyResponse{
+		IsTestValid: true,
+	}, nil
+}
+
+func TestValidatePublicChromiumTest(t *testing.T) {
+	t.Parallel()
+	for _, tt := range testValidatePublicChromiumOnChromeOsData {
+		tt := tt
+		t.Run(fmt.Sprintf("(%s)", tt.wantValidationErrString), func(t *testing.T) {
+			t.Parallel()
+
+			ctx := context.Background()
+			ctx = context.WithValue(ctx, "error1", tt.ufsError)
+			ctx = context.WithValue(ctx, "error2", tt.ufsError)
+
+			anyValidTests, gotValidTests, gotValidModels, errs := tt.testCommonFlags.callUFSToVerifyPublicTest(ctx, &fakeUfsClient{}, tt.testCmdName, tt.testNames)
+
+			if anyValidTests != tt.status {
+				t.Errorf("unexpected error: wanted valid tests : %v", tt.status)
+			}
+			gotValidationErrString := ""
+			if errs != nil && len(errs) != 0 {
+				gotValidationErrString = errs[0]
+			}
+			if !strings.Contains(gotValidationErrString, tt.wantValidationErrString) {
+				t.Errorf("unexpected error: wanted '%s', got '%s'", tt.wantValidationErrString, gotValidationErrString)
+			}
+			if diff := cmp.Diff(gotValidTests, tt.validTests, common.CmpOpts); diff != "" {
+				t.Errorf("unexpected tests (%s)", diff)
+			}
+			if diff := cmp.Diff(gotValidModels, tt.validModels, common.CmpOpts); diff != "" {
+				t.Errorf("unexpected models (%s)", diff)
 			}
 		})
 	}

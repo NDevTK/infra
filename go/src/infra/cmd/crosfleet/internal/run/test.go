@@ -71,6 +71,21 @@ func (c *testRun) innerRun(a subcommands.Application, args []string, env subcomm
 		return err
 	}
 
+	ufsClient, err := newUFSClient(ctx, c.envFlags.Env().UFSService, &c.authFlags)
+	if err != nil {
+		return err
+	}
+
+	anyValidTests, validTestNames, validModels, validationErrors := c.callUFSToVerifyPublicTest(ctx, ufsClient, testCmdName, args)
+	err = printAndCheckValidationErrors(validationErrors, testCmdName, anyValidTests, c.printer)
+	if err != nil {
+		return err
+	}
+	if validationErrors != nil {
+		c.models = validModels
+		args = validTestNames
+	}
+
 	testLauncher := ctpRunLauncher{
 		mainArgsTag: testOrSuiteNamesTag(args),
 		printer:     c.printer,
