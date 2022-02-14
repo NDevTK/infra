@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e98c6b03_1a9f7b07",
+        "filename": "go/src/infra/unifiedfleet/app/controller/fleet_tests_policy.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-14T22:29:05Z",
+      "side": 1,
+      "message": "Removed this unnecessary method.",
+      "parentUuid": "75ef0702_9d556698",
+      "range": {
+        "startLine": 110,
+        "startChar": 1,
+        "endLine": 110,
+        "endChar": 93
+      },
+      "revId": "a94bb545d1c8cb5af9b5343612b872af6c9a93ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d81acb7a_a85a7ca8",
@@ -37,6 +61,30 @@
       "writtenOn": "2022-02-14T06:57:16Z",
       "side": 1,
       "message": "same here, duplicated logging.",
+      "range": {
+        "startLine": 114,
+        "startChar": 2,
+        "endLine": 114,
+        "endChar": 93
+      },
+      "revId": "a94bb545d1c8cb5af9b5343612b872af6c9a93ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2f6ea525_882ef77a",
+        "filename": "go/src/infra/unifiedfleet/app/controller/fleet_tests_policy.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-14T22:29:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d81acb7a_a85a7ca8",
       "range": {
         "startLine": 114,
         "startChar": 2,
@@ -70,6 +118,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "72d0b9b6_e2f2dbde",
+        "filename": "go/src/infra/unifiedfleet/app/controller/fleet_tests_policy.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-14T22:29:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "81273d58_09f40334",
+      "range": {
+        "startLine": 118,
+        "startChar": 1,
+        "endLine": 118,
+        "endChar": 20
+      },
+      "revId": "a94bb545d1c8cb5af9b5343612b872af6c9a93ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d68206bd_16b3846a",
@@ -83,6 +155,30 @@
       "writtenOn": "2022-02-14T06:57:16Z",
       "side": 1,
       "message": "it\u0027s not needed here or controller.IsValidTest? controller.IsValidTest checks this at the very beginning. You only need to keep one of them. Also the error here needs to be logged instead of returned?\n\nPrivate_user is not a valid code I think, it\u0027s part of OK.",
+      "range": {
+        "startLine": 19,
+        "startChar": 1,
+        "endLine": 28,
+        "endChar": 2
+      },
+      "revId": "a94bb545d1c8cb5af9b5343612b872af6c9a93ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1d20e8c7_d6f83387",
+        "filename": "go/src/infra/unifiedfleet/app/frontend/fleet_tests_policy.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-14T22:29:05Z",
+      "side": 1,
+      "message": "Removed",
+      "parentUuid": "d68206bd_16b3846a",
       "range": {
         "startLine": 19,
         "startChar": 1,
@@ -116,6 +212,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "758e7f23_5bbf0512",
+        "filename": "go/src/infra/unifiedfleet/app/frontend/fleet_tests_policy.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-14T22:29:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "334be4c0_22cb6acb",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 2
+      },
+      "revId": "a94bb545d1c8cb5af9b5343612b872af6c9a93ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "aec9294f_bbde3542",
@@ -129,6 +249,30 @@
       "writtenOn": "2022-02-14T06:57:16Z",
       "side": 1,
       "message": "you could log err.Error() instead of having 4 logging.Infof here?",
+      "range": {
+        "startLine": 42,
+        "startChar": 2,
+        "endLine": 42,
+        "endChar": 53
+      },
+      "revId": "a94bb545d1c8cb5af9b5343612b872af6c9a93ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "86ddca86_d848abe3",
+        "filename": "go/src/infra/unifiedfleet/app/frontend/fleet_tests_policy.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-14T22:29:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aec9294f_bbde3542",
       "range": {
         "startLine": 42,
         "startChar": 2,
