@@ -16,15 +16,30 @@ import (
 
 // CheckFleetTestsPolicy returns whether the given the test parameters are for a valid test.
 func (fs *FleetServerImpl) CheckFleetTestsPolicy(ctx context.Context, req *api.CheckFleetTestsPolicyRequest) (response *ufsAPI.CheckFleetTestsPolicyResponse, err error) {
-	validTestResponse := &ufsAPI.CheckFleetTestsPolicyResponse{
-		IsTestValid: true,
+	// Check test parameters
+	status := api.CheckFleetTestsPolicyResponse_UNSPECIFIED
+	err = controller.IsValidTest(ctx, req)
+	if err == nil {
+		return &ufsAPI.CheckFleetTestsPolicyResponse{
+			Status: api.CheckFleetTestsPolicyResponse_OK,
+		}, nil
 	}
 
-	// Check test parameters
-	err = controller.IsValidTest(ctx, req)
-	if err != nil {
-		logging.Errorf(ctx, "Error validating test parameters : %s", err.Error())
+	logging.Errorf(ctx, "Returning error %s", err.Error())
+	switch err.(type) {
+	case *controller.InvalidBoardError:
+		status = api.CheckFleetTestsPolicyResponse_NOT_A_PUBLIC_BOARD
+	case *controller.InvalidModelError:
+		status = api.CheckFleetTestsPolicyResponse_NOT_A_PUBLIC_MODEL
+	case *controller.InvalidTestError:
+		status = api.CheckFleetTestsPolicyResponse_NOT_A_PUBLIC_TEST
+	case *controller.InvalidImageError:
+		status = api.CheckFleetTestsPolicyResponse_NOT_A_PUBLIC_IMAGE
+	default:
 		return nil, err
 	}
-	return validTestResponse, nil
+	return &ufsAPI.CheckFleetTestsPolicyResponse{
+		Status:        status,
+		StatusMessage: err.Error(),
+	}, nil
 }
