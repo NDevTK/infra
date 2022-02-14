@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7957f663_8790b483",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 295,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-14T22:28:43Z",
+      "side": 1,
+      "message": "Removed",
+      "parentUuid": "e1187171_7a6bdfa7",
+      "revId": "812e16cd6cbc8a9c828c8652550aed5ffd37d298",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "770c5c1a_2322c3f6",
@@ -31,6 +49,30 @@
       "writtenOn": "2022-02-14T07:02:31Z",
       "side": 1,
       "message": "// verifyFleetTestsPolicy validate tests based on fleet-side permission check.\n// ### empty line ###\n// Add detailed description here \n// Second line ...\n// Third line ...",
+      "range": {
+        "startLine": 652,
+        "startChar": 0,
+        "endLine": 654,
+        "endChar": 118
+      },
+      "revId": "812e16cd6cbc8a9c828c8652550aed5ffd37d298",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b6405ec1_e23c2d41",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 654,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-14T22:28:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "770c5c1a_2322c3f6",
       "range": {
         "startLine": 652,
         "startChar": 0,
@@ -64,6 +106,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5193203a_eace3be6",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 656,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-14T22:28:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "69208884_925619c1",
+      "range": {
+        "startLine": 656,
+        "startChar": 42,
+        "endLine": 656,
+        "endChar": 60
+      },
+      "revId": "812e16cd6cbc8a9c828c8652550aed5ffd37d298",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8cf28c35_fbe36e6c",
@@ -77,6 +143,30 @@
       "writtenOn": "2022-02-14T07:02:31Z",
       "side": 1,
       "message": "code\u003dOK is good enough?",
+      "range": {
+        "startLine": 662,
+        "startChar": 2,
+        "endLine": 662,
+        "endChar": 135
+      },
+      "revId": "812e16cd6cbc8a9c828c8652550aed5ffd37d298",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1e972ca0_7215479e",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 662,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-14T22:28:43Z",
+      "side": 1,
+      "message": "Using Status code OK",
+      "parentUuid": "8cf28c35_fbe36e6c",
       "range": {
         "startLine": 662,
         "startChar": 2,
@@ -128,6 +218,54 @@
         "startChar": 21,
         "endLine": 677,
         "endChar": 32
+      },
+      "revId": "812e16cd6cbc8a9c828c8652550aed5ffd37d298",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "07885cba_ae9d26ca",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 677,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-14T22:28:43Z",
+      "side": 1,
+      "message": "Removed nil check.",
+      "parentUuid": "9d85eee6_cf945472",
+      "range": {
+        "startLine": 677,
+        "startChar": 21,
+        "endLine": 677,
+        "endChar": 32
+      },
+      "revId": "812e16cd6cbc8a9c828c8652550aed5ffd37d298",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "51cabf55_647494fa",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 677,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-14T22:28:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0cf63c08_d371718f",
+      "range": {
+        "startLine": 677,
+        "startChar": 41,
+        "endLine": 677,
+        "endChar": 52
       },
       "revId": "812e16cd6cbc8a9c828c8652550aed5ffd37d298",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
