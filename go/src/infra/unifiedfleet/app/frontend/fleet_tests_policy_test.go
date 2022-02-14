@@ -40,9 +40,10 @@ func TestGetPublicChromiumTestStatus(t *testing.T) {
 				Image:    "R100-14495.0.0-rc1",
 			}
 
-			_, err := tf.Fleet.CheckFleetTestsPolicy(ctx, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Test name not present in the allowlist")
+			res, err := tf.Fleet.CheckFleetTestsPolicy(ctx, req)
+			So(err, ShouldBeNil)
+			So(res.IsTestValid, ShouldBeFalse)
+			So(res.Status, ShouldEqual, api.CheckFleetTestsPolicyResponse_NOT_A_PUBLIC_TEST)
 		})
 		Convey("Public test name and not a public auth group member", func() {
 			req := &api.CheckFleetTestsPolicyRequest{
