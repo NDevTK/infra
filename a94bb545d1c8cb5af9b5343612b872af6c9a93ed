@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "75ef0702_9d556698",
+        "filename": "go/src/infra/unifiedfleet/app/controller/fleet_tests_policy.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-14T06:57:16Z",
+      "side": 1,
+      "message": "you\u0027re duplicating logging. Either here, either in the caller side.",
+      "range": {
+        "startLine": 110,
+        "startChar": 1,
+        "endLine": 110,
+        "endChar": 93
+      },
+      "revId": "a94bb545d1c8cb5af9b5343612b872af6c9a93ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d81acb7a_a85a7ca8",
+        "filename": "go/src/infra/unifiedfleet/app/controller/fleet_tests_policy.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-14T06:57:16Z",
+      "side": 1,
+      "message": "same here, duplicated logging.",
+      "range": {
+        "startLine": 114,
+        "startChar": 2,
+        "endLine": 114,
+        "endChar": 93
+      },
+      "revId": "a94bb545d1c8cb5af9b5343612b872af6c9a93ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "81273d58_09f40334",
+        "filename": "go/src/infra/unifiedfleet/app/controller/fleet_tests_policy.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-14T06:57:16Z",
+      "side": 1,
+      "message": "remove?",
+      "range": {
+        "startLine": 118,
+        "startChar": 1,
+        "endLine": 118,
+        "endChar": 20
+      },
+      "revId": "a94bb545d1c8cb5af9b5343612b872af6c9a93ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d68206bd_16b3846a",
+        "filename": "go/src/infra/unifiedfleet/app/frontend/fleet_tests_policy.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-14T06:57:16Z",
+      "side": 1,
+      "message": "it\u0027s not needed here or controller.IsValidTest? controller.IsValidTest checks this at the very beginning. You only need to keep one of them. Also the error here needs to be logged instead of returned?\n\nPrivate_user is not a valid code I think, it\u0027s part of OK.",
+      "range": {
+        "startLine": 19,
+        "startChar": 1,
+        "endLine": 28,
+        "endChar": 2
+      },
+      "revId": "a94bb545d1c8cb5af9b5343612b872af6c9a93ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "334be4c0_22cb6acb",
+        "filename": "go/src/infra/unifiedfleet/app/frontend/fleet_tests_policy.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-14T06:57:16Z",
+      "side": 1,
+      "message": "you could return status.code\u003dOK",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 2
+      },
+      "revId": "a94bb545d1c8cb5af9b5343612b872af6c9a93ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aec9294f_bbde3542",
+        "filename": "go/src/infra/unifiedfleet/app/frontend/fleet_tests_policy.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-14T06:57:16Z",
+      "side": 1,
+      "message": "you could log err.Error() instead of having 4 logging.Infof here?",
+      "range": {
+        "startLine": 42,
+        "startChar": 2,
+        "endLine": 42,
+        "endChar": 53
+      },
+      "revId": "a94bb545d1c8cb5af9b5343612b872af6c9a93ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
