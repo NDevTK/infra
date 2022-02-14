@@ -29,7 +29,6 @@ export function IssueWizard(): ReactElement {
       oneLineSummary: '',
       stepsToReproduce: '',
       describeProblem: '',
-      additionalComments: '',
     });
     const [osName, setOsName] = React.useState(getOs())
     const [browserName, setBrowserName] = React.useState(getBrowser())
@@ -58,10 +57,10 @@ export function IssueWizard(): ReactElement {
           setIsRegression={setIsRegression}
     />;
    } else if (activeStep === 2) {
-    const onSubmitIssue = () => {
+    const onSubmitIssue = (comments: string) => {
       const summary = textValues.oneLineSummary;
       // TODO: (Issue 10627) add the extra detail from custom questions.
-      const description = buildIssueDescription(textValues.stepsToReproduce, textValues.describeProblem, textValues.additionalComments, osName, browserName);
+      const description = buildIssueDescription(textValues.stepsToReproduce, textValues.describeProblem, comments, osName, browserName);
       const labels = buildIssueLables(category, osName);
       if (isRegression) {
         labels.push({
@@ -69,14 +68,14 @@ export function IssueWizard(): ReactElement {
         })
       }
       const response = prpcClient.call('monorail.v3.Issues', 'MakeIssue', {
-        parent: 'projects/chromium',
+        parent: 'projects/test1',
         issue: {
           summary,
           status: {
             status: 'Untriaged',
           },
           components: [{
-            component: 'projects/chromium/componentDefs/'+category
+            component: 'projects/test1/componentDefs/'+category
           }],
           labels: labels,
         },
