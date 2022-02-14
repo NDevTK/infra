@@ -69,6 +69,21 @@ func (c *suiteRun) innerRun(a subcommands.Application, args []string, env subcom
 		return err
 	}
 
+	ufsClient, err := newUFSClient(ctx, c.envFlags.Env().UFSService, &c.authFlags)
+	if err != nil {
+		return err
+	}
+
+	fleetValidationResults := c.verifyFleetTestsPolicy(ctx, ufsClient, testCmdName, args)
+	err = checkAndPrintFleetValidationErrors(fleetValidationResults, c.printer)
+	if err != nil {
+		return err
+	}
+	if fleetValidationResults.testValidationErrors != nil {
+		c.models = fleetValidationResults.validModels
+		args = fleetValidationResults.validTests
+	}
+
 	testLauncher := ctpRunLauncher{
 		mainArgsTag: testOrSuiteNamesTag(args),
 		printer:     c.printer,
