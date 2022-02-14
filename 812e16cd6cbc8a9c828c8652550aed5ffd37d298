@@ -1,0 +1,136 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e1187171_7a6bdfa7",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 295,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-14T07:02:31Z",
+      "side": 1,
+      "message": "empty line?",
+      "revId": "812e16cd6cbc8a9c828c8652550aed5ffd37d298",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "770c5c1a_2322c3f6",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 654,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-14T07:02:31Z",
+      "side": 1,
+      "message": "// verifyFleetTestsPolicy validate tests based on fleet-side permission check.\n// ### empty line ###\n// Add detailed description here \n// Second line ...\n// Third line ...",
+      "range": {
+        "startLine": 652,
+        "startChar": 0,
+        "endLine": 654,
+        "endChar": 118
+      },
+      "revId": "812e16cd6cbc8a9c828c8652550aed5ffd37d298",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "69208884_925619c1",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 656,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-14T07:02:31Z",
+      "side": 1,
+      "message": "as you return anyValidTests \u0026 testValidationErrors together here, and use them together in print function, better to wrap them to a struct. wrapping validtests and validmodels into it is also ok. Users will know from your struct what\u0027s a standard output look like after validate the test policy, and easy to add/remove elements if you further change the response.",
+      "range": {
+        "startLine": 656,
+        "startChar": 42,
+        "endLine": 656,
+        "endChar": 60
+      },
+      "revId": "812e16cd6cbc8a9c828c8652550aed5ffd37d298",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8cf28c35_fbe36e6c",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 662,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-14T07:02:31Z",
+      "side": 1,
+      "message": "code\u003dOK is good enough?",
+      "range": {
+        "startLine": 662,
+        "startChar": 2,
+        "endLine": 662,
+        "endChar": 135
+      },
+      "revId": "812e16cd6cbc8a9c828c8652550aed5ffd37d298",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0cf63c08_d371718f",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 677,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-14T07:02:31Z",
+      "side": 1,
+      "message": "code\u003dtrue",
+      "range": {
+        "startLine": 677,
+        "startChar": 41,
+        "endLine": 677,
+        "endChar": 52
+      },
+      "revId": "812e16cd6cbc8a9c828c8652550aed5ffd37d298",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9d85eee6_cf945472",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 677,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-14T07:02:31Z",
+      "side": 1,
+      "message": "why it could be nil?",
+      "range": {
+        "startLine": 677,
+        "startChar": 21,
+        "endLine": 677,
+        "endChar": 32
+      },
+      "revId": "812e16cd6cbc8a9c828c8652550aed5ffd37d298",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
