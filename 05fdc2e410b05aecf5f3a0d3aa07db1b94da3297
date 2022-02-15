@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bb147637_2e711b88",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-15T05:03:51Z",
+      "side": 1,
+      "message": "if err :\u003d checkAndPrintFleetValidationErrors(fleetValidationResults, c.printer); err !\u003d nil {\n    return err\n}\n\nsame for the other file",
+      "range": {
+        "startLine": 80,
+        "startChar": 1,
+        "endLine": 83,
+        "endChar": 2
+      },
+      "revId": "05fdc2e410b05aecf5f3a0d3aa07db1b94da3297",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2dc2f913_c7b7e3ce",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-15T05:03:51Z",
+      "side": 1,
+      "message": "somehow I think you don\u0027t need this as you return c.models \u0026 args when no errors. but up to you.",
+      "range": {
+        "startLine": 84,
+        "startChar": 1,
+        "endLine": 84,
+        "endChar": 54
+      },
+      "revId": "05fdc2e410b05aecf5f3a0d3aa07db1b94da3297",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bdf46311_a0a99d4e",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 664,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-15T05:03:51Z",
+      "side": 1,
+      "message": "*fleetValidationResults, return pointer usually for struct",
+      "range": {
+        "startLine": 664,
+        "startChar": 41,
+        "endLine": 664,
+        "endChar": 63
+      },
+      "revId": "05fdc2e410b05aecf5f3a0d3aa07db1b94da3297",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bb81ec77_88341402",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 671,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-15T05:03:51Z",
+      "side": 1,
+      "message": "is it possible that isPublicTestResponse.Status \u003d\u003d ufsapi.CheckFleetTestsPolicyResponse_OK but err !\u003d nil? kind of duplicated here",
+      "range": {
+        "startLine": 671,
+        "startChar": 1,
+        "endLine": 671,
+        "endChar": 88
+      },
+      "revId": "05fdc2e410b05aecf5f3a0d3aa07db1b94da3297",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "20c2d1c0_fe4dbc97",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 690,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-15T05:03:51Z",
+      "side": 1,
+      "message": "same here",
+      "range": {
+        "startLine": 690,
+        "startChar": 3,
+        "endLine": 690,
+        "endChar": 74
+      },
+      "revId": "05fdc2e410b05aecf5f3a0d3aa07db1b94da3297",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
