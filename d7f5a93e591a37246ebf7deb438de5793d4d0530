@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9a8f24bc_4a20edb4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-15T04:53:34Z",
+      "side": 1,
+      "message": "generally good without some nits",
+      "revId": "d7f5a93e591a37246ebf7deb438de5793d4d0530",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eb0c7a19_a9ad896e",
+        "filename": "go/src/infra/unifiedfleet/app/controller/fleet_tests_policy.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-15T04:53:34Z",
+      "side": 1,
+      "message": "could you move this behind the next logging (line 64)?",
+      "range": {
+        "startLine": 63,
+        "startChar": 1,
+        "endLine": 63,
+        "endChar": 84
+      },
+      "revId": "d7f5a93e591a37246ebf7deb438de5793d4d0530",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6716ca9d_afc8ab42",
+        "filename": "go/src/infra/unifiedfleet/app/controller/fleet_tests_policy.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-15T04:53:34Z",
+      "side": 1,
+      "message": "isMemberInPublicGroup",
+      "range": {
+        "startLine": 63,
+        "startChar": 1,
+        "endLine": 63,
+        "endChar": 25
+      },
+      "revId": "d7f5a93e591a37246ebf7deb438de5793d4d0530",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "48128680_af0bf378",
+        "filename": "go/src/infra/unifiedfleet/app/controller/fleet_tests_policy.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-15T04:53:34Z",
+      "side": 1,
+      "message": "remove?",
+      "range": {
+        "startLine": 69,
+        "startChar": 1,
+        "endLine": 69,
+        "endChar": 15
+      },
+      "revId": "d7f5a93e591a37246ebf7deb438de5793d4d0530",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ac9525bf_d0340fc5",
+        "filename": "go/src/infra/unifiedfleet/app/frontend/fleet_tests_policy.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-15T04:53:34Z",
+      "side": 1,
+      "message": "var status CheckFleetTestsPolicyResponse_Status\n\nby default it\u0027s UNSPECIFIED",
+      "range": {
+        "startLine": 20,
+        "startChar": 1,
+        "endLine": 20,
+        "endChar": 56
+      },
+      "revId": "d7f5a93e591a37246ebf7deb438de5793d4d0530",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
