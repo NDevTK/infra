@@ -12,11 +12,14 @@ import (
 	"infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/flagx"
 	crosfleetpb "infra/cmd/crosfleet/internal/proto"
+	"infra/cmd/crosfleet/internal/site"
 	"infra/cmdsupport/cmdlib"
 	"math"
 	"strings"
 	"sync"
 	"time"
+
+	ufsapi "infra/unifiedfleet/api/v1/rpc"
 
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
@@ -24,6 +27,8 @@ import (
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	luciflag "go.chromium.org/luci/common/flag"
+	"go.chromium.org/luci/grpc/prpc"
+	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
@@ -73,6 +78,13 @@ type testCommonFlags struct {
 	exitEarly            bool
 	lacrosPath           string
 	secondaryLacrosPaths []string
+}
+
+type fleetValidationResults struct {
+	anyValidTests        bool
+	validTests           []string
+	validModels          []string
+	testValidationErrors []string
 }
 
 // Registers run command-specific flags
@@ -613,4 +625,103 @@ func (c *testCommonFlags) secondaryDevices() []*test_platform.Request_Params_Sec
 		secondary_devices = append(secondary_devices, sd)
 	}
 	return secondary_devices
+}
+
+// Client exposes a deliberately chosen subset of the UFS functionality.
+type Client interface {
+	CheckFleetTestsPolicy(context.Context, *ufsapi.CheckFleetTestsPolicyRequest, ...grpc.CallOption) (*ufsapi.CheckFleetTestsPolicyResponse, error)
+}
+
+// ClientImpl is the concrete implementation of this client.
+type clientImpl struct {
+	client ufsapi.FleetClient
+}
+
+// CheckFleetTestsPolicy checks the fleet test policy for the given test parameters.
+func (c *clientImpl) CheckFleetTestsPolicy(ctx context.Context, req *ufsapi.CheckFleetTestsPolicyRequest) (*ufsapi.CheckFleetTestsPolicyResponse, error) {
+	return c.client.CheckFleetTestsPolicy(ctx, req)
+}
+
+// newUFSClient returns a new client to interact with the Unified Fleet System.
+func newUFSClient(ctx context.Context, ufsService string, authFlags *authcli.Flags) (Client, error) {
+	httpClient, err := cmdlib.NewHTTPClient(ctx, authFlags)
+	if err != nil {
+		return nil, err
+	}
+	return ufsapi.NewFleetPRPCClient(&prpc.Client{
+		C:       httpClient,
+		Host:    ufsService,
+		Options: site.DefaultPRPCOptions,
+	}), nil
+}
+
+// verifyFleetTestsPolicy validate tests based on fleet-side permission check.
+//
+// This method calls UFS CheckFleetTestsPolicy RPC for each testName, board, image and model combination.
+// The test run stops if an invalid board or image is specified.
+// After this validation only valid models and tests will be used in the run command.
+func (c *testCommonFlags) verifyFleetTestsPolicy(ctx context.Context, ufsClient Client,
+	testCmdName string, testNames []string) *fleetValidationResults {
+	validTestNamesMap := map[string]bool{}
+	validModelsMap := map[string]bool{}
+	results := &fleetValidationResults{}
+
+	// First check if it is a private crosfleet user, for a private user's tests there is no validation on the UFS side so it will return a valid test response for empty test params
+	isPublicTestResponse, _ := ufsClient.CheckFleetTestsPolicy(ctx, &ufsapi.CheckFleetTestsPolicyRequest{})
+	if isPublicTestResponse.TestStatus.Code == ufsapi.TestStatus_OK {
+		results.anyValidTests = true
+		results.validModels = c.models
+		results.validTests = testNames
+		return results
+	}
+
+	if len(c.models) == 0 {
+		results.testValidationErrors = []string{"model is required for public users for crosfleet run cmd"}
+		return results
+	}
+	for _, model := range c.models {
+		for _, testName := range testNames {
+			resp, _ := ufsClient.CheckFleetTestsPolicy(ctx, &ufsapi.CheckFleetTestsPolicyRequest{
+				TestName: testName,
+				Board:    c.board,
+				Model:    model,
+				Image:    c.image,
+			})
+			if resp.TestStatus.Code == ufsapi.TestStatus_OK {
+				results.anyValidTests = true
+				validModelsMap[model] = true
+				validTestNamesMap[testName] = true
+				continue
+			}
+			results.testValidationErrors = append(results.testValidationErrors, resp.TestStatus.Message)
+			if resp.TestStatus.Code == ufsapi.TestStatus_NOT_A_PUBLIC_BOARD || resp.TestStatus.Code == ufsapi.TestStatus_NOT_A_PUBLIC_IMAGE {
+				// No tests can be run with Invalid Board or Image so returning early to avoid unnecessary calls to UFS
+				results.anyValidTests = false
+				return results
+			}
+		}
+	}
+
+	for test := range validTestNamesMap {
+		results.validTests = append(results.validTests, test)
+	}
+	for model := range validModelsMap {
+		results.validModels = append(results.validModels, model)
+	}
+
+	return results
+}
+
+func checkAndPrintFleetValidationErrors(results fleetValidationResults, printer common.CLIPrinter) error {
+	if len(results.testValidationErrors) > 0 {
+		fullErrorMsg := fmt.Sprintf("Encountered the following errors requesting %s run(s):\n%s\n",
+			testCmdName, strings.Join(results.testValidationErrors, "\n"))
+		if results.anyValidTests {
+			// Don't fail the command if we were able to request some runs.
+			printer.WriteTextStderr(fullErrorMsg)
+		} else {
+			return fmt.Errorf(fullErrorMsg)
+		}
+	}
+	return nil
 }
