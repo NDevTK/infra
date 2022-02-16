@@ -129,6 +129,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "8ed1b69a_83249b3d",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 669,
+      "author": {
+        "id": 1438503
+      },
+      "writtenOn": "2022-02-16T17:47:51Z",
+      "side": 1,
+      "message": "Two things:\n(1) this comment is misleading since we aren\u0027t explicitly checking *if* it is a private crosfleet user. We\u0027re checking if the API will return a valid response for empty params, which *happens* to happen for a private user. Either the comment needs to reflect this reality, or we should perform some other kind of explicit check for the user.\n(2) AFAIK crosfleet is *only* usable by private users (I\u0027m taking private to mean an authenticated Googler). We will need to make a lot of permissions changes to make crosfleet work with other users; is that the goal of this feature?",
+      "range": {
+        "startLine": 669,
+        "startChar": 1,
+        "endLine": 669,
+        "endChar": 178
+      },
+      "revId": "80076d10d00ee4154ec9ee05bea96da45d91f00c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "0e486b95_55fc8bef",
         "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
         "patchSetId": 7
