@@ -16,6 +16,23 @@
       "message": "LGTM, but add Jared for double check as we add one bit in crosfleet.",
       "revId": "80076d10d00ee4154ec9ee05bea96da45d91f00c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a0a3d8bb_c5e2ad12",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1438503
+      },
+      "writtenOn": "2022-02-16T17:36:29Z",
+      "side": 1,
+      "message": "We have another UFS client implementation in go/src/infra/cmd/crosfleet/internal/dut/dutcommon.go. Can you extract that client out into a common client package (e.g. something go/src/infra/cmd/crosfleet/internal/ufs/ufs.go) ? That would be much preferable for readability/maintainability than having two separate clients.",
+      "revId": "80076d10d00ee4154ec9ee05bea96da45d91f00c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
