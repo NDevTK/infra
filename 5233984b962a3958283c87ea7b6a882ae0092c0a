@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e3ea8f26_0e2fcb1c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-16T04:54:39Z",
+      "side": 1,
+      "message": "LGTM % comments",
+      "revId": "5233984b962a3958283c87ea7b6a882ae0092c0a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "698c6c6e_b61b2b78",
+        "filename": "go/src/infra/unifiedfleet/app/frontend/fleet_tests_policy.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-16T04:54:39Z",
+      "side": 1,
+      "message": "no need to initialize it.",
+      "range": {
+        "startLine": 20,
+        "startChar": 1,
+        "endLine": 20,
+        "endChar": 48
+      },
+      "revId": "5233984b962a3958283c87ea7b6a882ae0092c0a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0bd2387b_69d59105",
+        "filename": "go/src/infra/unifiedfleet/app/frontend/fleet_tests_policy.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-16T04:54:39Z",
+      "side": 1,
+      "message": "return \u0026api.CheckFleetTestsPolicyResponse{...}",
+      "range": {
+        "startLine": 26,
+        "startChar": 2,
+        "endLine": 26,
+        "endChar": 22
+      },
+      "revId": "5233984b962a3958283c87ea7b6a882ae0092c0a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8079e8aa_817c5438",
+        "filename": "go/src/infra/unifiedfleet/app/frontend/fleet_tests_policy.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-16T04:54:39Z",
+      "side": 1,
+      "message": "return \u0026api.CheckFleetTestsPolicyResponse{TestStatus: ...}",
+      "range": {
+        "startLine": 42,
+        "startChar": 1,
+        "endLine": 46,
+        "endChar": 21
+      },
+      "revId": "5233984b962a3958283c87ea7b6a882ae0092c0a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
