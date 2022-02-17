@@ -22,6 +22,30 @@
       },
       "revId": "0c49a61dc60062178429fd9814ec5e401291ee87",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7ec44401_b6e1270f",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testplan.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-17T20:29:40Z",
+      "side": 1,
+      "message": "Fixed. Thanks for catching it! I wish go complained about these kind of mistakes.",
+      "parentUuid": "2a09f163_0d2e988c",
+      "range": {
+        "startLine": 91,
+        "startChar": 68,
+        "endLine": 91,
+        "endChar": 79
+      },
+      "revId": "0c49a61dc60062178429fd9814ec5e401291ee87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
