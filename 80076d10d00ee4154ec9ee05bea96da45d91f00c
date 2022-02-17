@@ -72,6 +72,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "09c61808_ccfec192",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-17T00:08:28Z",
+      "side": 1,
+      "message": "Can you please point me to the CTP code so I can look into adding this check there?",
+      "parentUuid": "c4e0b219_9df4769e",
+      "revId": "80076d10d00ee4154ec9ee05bea96da45d91f00c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "f8500098_ebfcc753",
         "filename": "go/src/infra/cmd/crosfleet/internal/run/suite.go",
         "patchSetId": 7
