@@ -106,6 +106,42 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "62d68a1c_b2446c96",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-17T07:46:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a0a3d8bb_c5e2ad12",
+      "revId": "80076d10d00ee4154ec9ee05bea96da45d91f00c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a0ff5fe0_1565ac9f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-17T07:46:38Z",
+      "side": 1,
+      "message": "Thanks!",
+      "parentUuid": "23a2677a_89f9a223",
+      "revId": "80076d10d00ee4154ec9ee05bea96da45d91f00c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f8500098_ebfcc753",
@@ -119,6 +155,30 @@
       "writtenOn": "2022-02-16T17:44:13Z",
       "side": 1,
       "message": "the args here are suite names, but are being passed as the testNames arg. Does the UFS API handle suites and tests differently?",
+      "range": {
+        "startLine": 77,
+        "startChar": 81,
+        "endLine": 77,
+        "endChar": 85
+      },
+      "revId": "80076d10d00ee4154ec9ee05bea96da45d91f00c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7b57424d_1bbd08c0",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/suite.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-17T07:46:38Z",
+      "side": 1,
+      "message": "No, UFS API just checks that the test/suite name is present in an allowlist.",
+      "parentUuid": "f8500098_ebfcc753",
       "range": {
         "startLine": 77,
         "startChar": 81,
@@ -152,6 +212,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "76926ca6_250878f5",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-17T07:46:38Z",
+      "side": 1,
+      "message": "I think you meant to add the comment in suite.go. Changed to \"suiteCmdName\" there.",
+      "parentUuid": "2fcf1c6c_0eff0608",
+      "range": {
+        "startLine": 79,
+        "startChar": 68,
+        "endLine": 79,
+        "endChar": 79
+      },
+      "revId": "80076d10d00ee4154ec9ee05bea96da45d91f00c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6ca8b5b4_1d23836c",
@@ -175,6 +259,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1a1773a7_e8cdadcc",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-17T07:46:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6ca8b5b4_1d23836c",
+      "range": {
+        "startLine": 74,
+        "startChar": 0,
+        "endLine": 86,
+        "endChar": 2
+      },
+      "revId": "80076d10d00ee4154ec9ee05bea96da45d91f00c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b3c28287_280a25cd",
@@ -188,6 +296,30 @@
       "writtenOn": "2022-02-16T17:44:13Z",
       "side": 1,
       "message": "this should just be cmdName, and test.go/suite.go/testplan.go should pass in testCmdName, suiteCmdName, and testPlanCmdName respectively.",
+      "range": {
+        "startLine": 664,
+        "startChar": 1,
+        "endLine": 664,
+        "endChar": 12
+      },
+      "revId": "80076d10d00ee4154ec9ee05bea96da45d91f00c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b02070b5_5dffa09a",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 664,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-17T07:46:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b3c28287_280a25cd",
       "range": {
         "startLine": 664,
         "startChar": 1,
@@ -293,6 +425,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e59bd9c6_c456a4d8",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 669,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-17T07:46:38Z",
+      "side": 1,
+      "message": "Updated the comment to reflect that we are indirectly checking the service account restrictions.",
+      "parentUuid": "ede1c0f3_f59500d5",
+      "range": {
+        "startLine": 669,
+        "startChar": 1,
+        "endLine": 669,
+        "endChar": 178
+      },
+      "revId": "80076d10d00ee4154ec9ee05bea96da45d91f00c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0e486b95_55fc8bef",
@@ -306,6 +462,30 @@
       "writtenOn": "2022-02-16T17:44:13Z",
       "side": 1,
       "message": "why is there no error handling here?",
+      "range": {
+        "startLine": 670,
+        "startChar": 23,
+        "endLine": 670,
+        "endChar": 24
+      },
+      "revId": "80076d10d00ee4154ec9ee05bea96da45d91f00c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bf04a24c_34ba7ec5",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 670,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-17T07:46:38Z",
+      "side": 1,
+      "message": "Added error handling.",
+      "parentUuid": "0e486b95_55fc8bef",
       "range": {
         "startLine": 670,
         "startChar": 23,
