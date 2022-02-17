@@ -1,0 +1,21 @@
+diff -ur crcmod-1.7.orig/setup.py crcmod-1.7/setup.py
+--- crcmod-1.7.orig/setup.py	2010-06-27 21:48:59.000000000 +1000
++++ crcmod-1.7/setup.py	2022-02-17 15:21:12.308414898 +1100
+@@ -20,10 +20,12 @@
+     'crcmod' : os.path.join(base_dir,'crcmod'),
+ },
+ 
+-ext_modules=[ 
+-    Extension('crcmod._crcfunext', [os.path.join(base_dir,'src/_crcfunext.c'), ],
+-    ),
+-],
++if sys.platform != 'win32' || sys.version_info[0] > 2:
++    ext_modules=[
++        Extension('crcmod._crcfunext',
++                  [os.path.join(base_dir,'src/_crcfunext.c'), ],
++                  ),
++    ],
+ 
+ long_description=open('README').read(),
+ 
+Only in crcmod-1.7: setup.py~
