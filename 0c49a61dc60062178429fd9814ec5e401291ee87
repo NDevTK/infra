@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2a09f163_0d2e988c",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testplan.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1438503
+      },
+      "writtenOn": "2022-02-17T20:25:16Z",
+      "side": 1,
+      "message": "testPlanCmdName (sorry, these constants are cumbersome to use)",
+      "range": {
+        "startLine": 91,
+        "startChar": 68,
+        "endLine": 91,
+        "endChar": 79
+      },
+      "revId": "0c49a61dc60062178429fd9814ec5e401291ee87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
