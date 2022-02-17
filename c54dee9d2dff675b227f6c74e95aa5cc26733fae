@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ca7365bb_8f088ada",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2022-02-17T02:00:11Z",
+      "side": 1,
+      "message": "Seems nothing in infra/config/subprojects/infra.star is currently using py3. Not sure if that should be cause for concern.",
+      "revId": "c54dee9d2dff675b227f6c74e95aa5cc26733fae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
