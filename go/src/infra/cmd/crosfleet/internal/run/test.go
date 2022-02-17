@@ -10,6 +10,7 @@ import (
 	"infra/cmd/crosfleet/internal/buildbucket"
 	"infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/site"
+	"infra/cmd/crosfleet/internal/ufs"
 	"infra/cmdsupport/cmdlib"
 
 	"github.com/maruel/subcommands"
@@ -69,6 +70,20 @@ func (c *testRun) innerRun(a subcommands.Application, args []string, env subcomm
 	ctpBBClient, err := buildbucket.NewClient(ctx, c.envFlags.Env().CTPBuilder, bbService, c.authFlags)
 	if err != nil {
 		return err
+	}
+
+	ufsClient, err := ufs.NewUFSClient(ctx, c.envFlags.Env().UFSService, &c.authFlags)
+	if err != nil {
+		return err
+	}
+
+	fleetValidationResults := c.verifyFleetTestsPolicy(ctx, ufsClient, testCmdName, args)
+	if err = checkAndPrintFleetValidationErrors(*fleetValidationResults, c.printer); err != nil {
+		return err
+	}
+	if fleetValidationResults.testValidationErrors != nil {
+		c.models = fleetValidationResults.validModels
+		args = fleetValidationResults.validTests
 	}
 
 	testLauncher := ctpRunLauncher{
