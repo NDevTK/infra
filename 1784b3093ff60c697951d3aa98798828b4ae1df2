@@ -16,6 +16,24 @@
       "message": "LGTM % I think this CL needs to be split to 2. One for ufs package refactoring, another one for the real logic.",
       "revId": "1784b3093ff60c697951d3aa98798828b4ae1df2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1b7555b2_8ea19531",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-18T01:52:28Z",
+      "side": 1,
+      "message": "Created a new CL for the UFS client refactoring - https://chromium-review.googlesource.com/c/infra/infra/+/3473634",
+      "parentUuid": "9bc58781_03b5938b",
+      "revId": "1784b3093ff60c697951d3aa98798828b4ae1df2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
