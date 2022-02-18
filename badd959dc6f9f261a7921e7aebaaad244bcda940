@@ -24,6 +24,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "901e8b5a_fbdf9799",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1438503
+      },
+      "writtenOn": "2022-02-18T16:34:09Z",
+      "side": 1,
+      "message": "Thanks for working with us so much on this CL! Close to being done from my end but there\u0027s a few function call-related issues that need addressing first.",
+      "revId": "badd959dc6f9f261a7921e7aebaaad244bcda940",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5bec30b1_8c6d8e88",
@@ -42,6 +59,52 @@
         "startChar": 1,
         "endLine": 634,
         "endChar": 15
+      },
+      "revId": "badd959dc6f9f261a7921e7aebaaad244bcda940",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2628c156_1cc883ae",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 643,
+      "author": {
+        "id": 1438503
+      },
+      "writtenOn": "2022-02-18T16:34:09Z",
+      "side": 1,
+      "message": "Leaving this error unhandled will lead to some very difficult-to-debug crosfleet failures. We need to handle it, which will also require `verifyFleetTestsPolicy` to return an err.",
+      "range": {
+        "startLine": 643,
+        "startChar": 23,
+        "endLine": 643,
+        "endChar": 24
+      },
+      "revId": "badd959dc6f9f261a7921e7aebaaad244bcda940",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "38c047c2_3c7f0574",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 663,
+      "author": {
+        "id": 1438503
+      },
+      "writtenOn": "2022-02-18T16:34:09Z",
+      "side": 1,
+      "message": "Seems like this err would be an API error; we should `return nil, err` from the function here instead of treating it like a negative validation response.",
+      "range": {
+        "startLine": 663,
+        "startChar": 0,
+        "endLine": 663,
+        "endChar": 18
       },
       "revId": "badd959dc6f9f261a7921e7aebaaad244bcda940",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
@@ -72,6 +135,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "14e1068d_2fbc285c",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 695,
+      "author": {
+        "id": 1438503
+      },
+      "writtenOn": "2022-02-18T16:34:09Z",
+      "side": 1,
+      "message": "Should be `cmdName`. No error was thrown because `testCmdName` is declared in another file from the same package.",
+      "parentUuid": "2ee2e31d_a3caa701",
+      "range": {
+        "startLine": 695,
+        "startChar": 3,
+        "endLine": 695,
+        "endChar": 14
+      },
+      "revId": "badd959dc6f9f261a7921e7aebaaad244bcda940",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "f7d5f549_d8a7f3e7",
         "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon_test.go",
         "patchSetId": 12
@@ -88,6 +175,29 @@
         "startChar": 0,
         "endLine": 551,
         "endChar": 44
+      },
+      "revId": "badd959dc6f9f261a7921e7aebaaad244bcda940",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "49126b6a_933a8abf",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testplan.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1438503
+      },
+      "writtenOn": "2022-02-18T16:34:09Z",
+      "side": 1,
+      "message": "See l28 and l77 of this file; the `run testplan` command takes a path to a custom testplan JSON file as its single arg. You will have to inject the tests back into testPlan.\n\nThis command is designed for more bespoke test plans that the `run test` and `run suite` commands; maybe we should just block public users from running it for the sake of simplicity?",
+      "range": {
+        "startLine": 97,
+        "startChar": 2,
+        "endLine": 97,
+        "endChar": 42
       },
       "revId": "badd959dc6f9f261a7921e7aebaaad244bcda940",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
