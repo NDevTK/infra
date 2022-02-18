@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "09330624_1456d452",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 12
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-18T06:49:38Z",
+      "side": 1,
+      "message": "followed by last CL, could you add the test section, like some local test cases against your tool for different conditions?",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 15
+      },
+      "revId": "badd959dc6f9f261a7921e7aebaaad244bcda940",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5bec30b1_8c6d8e88",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 634,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-18T06:49:38Z",
+      "side": 1,
+      "message": "you don\u0027t actually use it?",
+      "range": {
+        "startLine": 634,
+        "startChar": 1,
+        "endLine": 634,
+        "endChar": 15
+      },
+      "revId": "badd959dc6f9f261a7921e7aebaaad244bcda940",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2ee2e31d_a3caa701",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 695,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-18T06:49:38Z",
+      "side": 1,
+      "message": "not specified?",
+      "range": {
+        "startLine": 695,
+        "startChar": 3,
+        "endLine": 695,
+        "endChar": 14
+      },
+      "revId": "badd959dc6f9f261a7921e7aebaaad244bcda940",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f7d5f549_d8a7f3e7",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon_test.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 551,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-02-18T06:49:38Z",
+      "side": 1,
+      "message": "move variables close to where it used.",
+      "range": {
+        "startLine": 551,
+        "startChar": 0,
+        "endLine": 551,
+        "endChar": 44
+      },
+      "revId": "badd959dc6f9f261a7921e7aebaaad244bcda940",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
