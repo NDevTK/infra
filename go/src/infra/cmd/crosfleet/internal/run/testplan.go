@@ -13,6 +13,7 @@ import (
 	"infra/cmd/crosfleet/internal/buildbucket"
 	"infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/site"
+	"infra/cmd/crosfleet/internal/ufs"
 	"infra/cmdsupport/cmdlib"
 
 	"github.com/maruel/subcommands"
@@ -82,6 +83,20 @@ func (c *planRun) innerRun(a subcommands.Application, args []string, env subcomm
 		return err
 	}
 
+	ufsClient, err := ufs.NewUFSClient(ctx, c.envFlags.Env().UFSService, &c.authFlags)
+	if err != nil {
+		return err
+	}
+
+	fleetValidationResults := c.verifyFleetTestsPolicy(ctx, ufsClient, testPlanCmdName, getTestAndSuiteNamesFromTestPlan(testPlan))
+	if err = checkAndPrintFleetValidationErrors(*fleetValidationResults, c.printer); err != nil {
+		return err
+	}
+	if fleetValidationResults.testValidationErrors != nil {
+		c.models = fleetValidationResults.validModels
+		args = fleetValidationResults.validTests
+	}
+
 	testLauncher := ctpRunLauncher{
 		// Don't create a tag for the user's test plan file.
 		mainArgsTag: "",
@@ -107,4 +122,14 @@ func readTestPlan(path string) (*test_platform.Request_TestPlan, error) {
 		return nil, fmt.Errorf("error reading test plan: %v", err)
 	}
 	return testPlan, nil
+}
+
+func getTestAndSuiteNamesFromTestPlan(testPlan *test_platform.Request_TestPlan) (names []string) {
+	for _, test := range testPlan.Test {
+		names = append(names, test.GetAutotest().Name)
+	}
+	for _, suite := range testPlan.Suite {
+		names = append(names, suite.Name)
+	}
+	return names
 }
