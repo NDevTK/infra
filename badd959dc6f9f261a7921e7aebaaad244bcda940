@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "3bf16aed_f7e7861b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 12
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-19T00:09:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "09330624_1456d452",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 15
+      },
+      "revId": "badd959dc6f9f261a7921e7aebaaad244bcda940",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "901e8b5a_fbdf9799",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 12
@@ -54,6 +78,30 @@
       "writtenOn": "2022-02-18T06:49:38Z",
       "side": 1,
       "message": "you don\u0027t actually use it?",
+      "range": {
+        "startLine": 634,
+        "startChar": 1,
+        "endLine": 634,
+        "endChar": 15
+      },
+      "revId": "badd959dc6f9f261a7921e7aebaaad244bcda940",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3cfca8cd_762a87db",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 634,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-19T00:09:57Z",
+      "side": 1,
+      "message": "Using cmdName now in the error messages.",
+      "parentUuid": "5bec30b1_8c6d8e88",
       "range": {
         "startLine": 634,
         "startChar": 1,
@@ -183,6 +231,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "13f68201_63c366e5",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 643,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-19T00:09:57Z",
+      "side": 1,
+      "message": "Fixed error handling so no unexpected errors are thrown from verifyFleetTestsPolicy.",
+      "parentUuid": "c8a5ab1a_c677784d",
+      "range": {
+        "startLine": 643,
+        "startChar": 23,
+        "endLine": 643,
+        "endChar": 24
+      },
+      "revId": "badd959dc6f9f261a7921e7aebaaad244bcda940",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "38c047c2_3c7f0574",
@@ -301,6 +373,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "07c1ca0f_cb61f22d",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 695,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-19T00:09:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "14e1068d_2fbc285c",
+      "range": {
+        "startLine": 695,
+        "startChar": 3,
+        "endLine": 695,
+        "endChar": 14
+      },
+      "revId": "badd959dc6f9f261a7921e7aebaaad244bcda940",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f7d5f549_d8a7f3e7",
@@ -314,6 +410,30 @@
       "writtenOn": "2022-02-18T06:49:38Z",
       "side": 1,
       "message": "move variables close to where it used.",
+      "range": {
+        "startLine": 551,
+        "startChar": 0,
+        "endLine": 551,
+        "endChar": 44
+      },
+      "revId": "badd959dc6f9f261a7921e7aebaaad244bcda940",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "209fa128_5c07d3d7",
+        "filename": "go/src/infra/cmd/crosfleet/internal/run/testcommon_test.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 551,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-02-19T00:09:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f7d5f549_d8a7f3e7",
       "range": {
         "startLine": 551,
         "startChar": 0,
