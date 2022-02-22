@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d39d2d93_1d36b70b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 14
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1438503
+      },
+      "writtenOn": "2022-02-22T22:32:36Z",
+      "side": 1,
+      "message": "LGTM except for one other nit.",
+      "revId": "2ef6584f88f67a21dc59e5dfcc5ff44d28595e67",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e80859e3_16e7f136",
