@@ -70,6 +70,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "191488e8_75cc37ff",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 14
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1438503
+      },
+      "writtenOn": "2022-02-22T22:56:37Z",
+      "side": 1,
+      "message": "Resolved offline; the test cases are all after having logged in with a public service account.",
+      "parentUuid": "6f3d993d_366d2924",
+      "revId": "2ef6584f88f67a21dc59e5dfcc5ff44d28595e67",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e80859e3_16e7f136",
