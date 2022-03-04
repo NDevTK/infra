@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5a10547d_5cb84a5b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-03-04T19:01:29Z",
+      "side": 1,
+      "message": "Adding peripheral wifi state/features to swarming label.",
+      "revId": "6a4afdb7b4c9347c56c3b00d313f27e5f3df746d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
