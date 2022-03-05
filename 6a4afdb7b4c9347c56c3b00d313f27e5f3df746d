@@ -50,6 +50,29 @@
       "message": "This seems not needed.",
       "revId": "6a4afdb7b4c9347c56c3b00d313f27e5f3df746d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "659abd40_39baeb43",
+        "filename": "go/src/infra/unifiedfleet/app/util/osutil/exporting_adapter_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 604,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-03-05T05:02:01Z",
+      "side": 1,
+      "message": "your test doesn\u0027t verify \"PeripheralWifiFeatures\"?",
+      "range": {
+        "startLine": 604,
+        "startChar": 10,
+        "endLine": 604,
+        "endChar": 31
+      },
+      "revId": "6a4afdb7b4c9347c56c3b00d313f27e5f3df746d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
