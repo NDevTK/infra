@@ -16,6 +16,40 @@
       "message": "Adding peripheral wifi state/features to swarming label.",
       "revId": "6a4afdb7b4c9347c56c3b00d313f27e5f3df746d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "77a0c1e7_d3204483",
+        "filename": "go/src/infra/unifiedfleet/app/util/osutil/exporting_adapter.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2022-03-05T00:42:18Z",
+      "side": 1,
+      "message": "Assuming you want to remove this line?",
+      "revId": "6a4afdb7b4c9347c56c3b00d313f27e5f3df746d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dad33e44_3bac696b",
+        "filename": "go/src/infra/unifiedfleet/app/util/osutil/exporting_adapter.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2022-03-05T00:42:18Z",
+      "side": 1,
+      "message": "This seems not needed.",
+      "revId": "6a4afdb7b4c9347c56c3b00d313f27e5f3df746d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
