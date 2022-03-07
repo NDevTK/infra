@@ -7,6 +7,7 @@ package osutil
 import (
 	"fmt"
 	"runtime/debug"
+	"sort"
 	"strings"
 
 	"github.com/golang/protobuf/proto"
@@ -136,6 +137,34 @@ func setDutPeripherals(labels *inventory.SchedulableLabels, d *chromeosLab.Perip
 			p.Router_802_11Ax = &trueValue
 		} else {
 			p.Router_802_11Ax = &falseValue
+		}
+
+		uniqFeatures := make(map[string]bool)
+		// Collect wifi features
+		for _, wifiFeature := range wifi.GetFeatures() {
+			if wifiFeature != chromeosLab.Wifi_UNKNOWN {
+				v1Feature := wifiFeature.String()
+				uniqFeatures[v1Feature] = true
+			}
+		}
+		// Collect wifirouters features
+		for _, wifiRouter := range wifi.GetWifiRouters() {
+			for _, routerFeature := range wifiRouter.GetFeatures() {
+				if routerFeature != chromeosLab.WifiRouter_UNKNOWN {
+					v1Feature := routerFeature.String()
+					uniqFeatures[v1Feature] = true
+				}
+			}
+		}
+		// peripheral_wifi_features is keys of uniqFeatures
+		features := make([]string, 0, len(uniqFeatures))
+		for feature := range uniqFeatures {
+			features = append(features, feature)
+		}
+		// Sort the features so that peripheral_wifi_features can be tested in alphabetically order.
+		sort.Strings(features)
+		for _, feature := range features {
+			p.PeripheralWifiFeatures = append(p.PeripheralWifiFeatures, inventory.Peripherals_WifiFeature(inventory.Peripherals_WifiFeature_value[feature]))
 		}
 	}
 
@@ -465,6 +494,7 @@ func setDutState(l *inventory.SchedulableLabels, s *chromeosLab.DutState) {
 	p.WifiState = setHardwareState(s.GetWifiState())
 	p.BluetoothState = setHardwareState(s.GetBluetoothState())
 	p.RpmState = setPeripheralState(s.GetRpmState())
+	p.PeripheralWifiState = setPeripheralState(s.GetWifiPeripheralState())
 
 	if n := s.GetWorkingBluetoothBtpeer(); n > 0 {
 		p.WorkingBluetoothBtpeer = &n
