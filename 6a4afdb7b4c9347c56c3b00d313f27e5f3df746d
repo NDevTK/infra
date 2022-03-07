@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2fa961cd_a7ac9ee6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-03-07T17:22:45Z",
+      "side": 1,
+      "message": "Just replying the comments. Will update new patchset this morning. Hopefully",
+      "revId": "6a4afdb7b4c9347c56c3b00d313f27e5f3df746d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "77a0c1e7_d3204483",
@@ -31,6 +48,24 @@
       "writtenOn": "2022-03-05T00:42:18Z",
       "side": 1,
       "message": "Assuming you want to remove this line?",
+      "revId": "6a4afdb7b4c9347c56c3b00d313f27e5f3df746d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7bd2618d_9e346b9c",
+        "filename": "go/src/infra/unifiedfleet/app/util/osutil/exporting_adapter.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-03-07T17:22:45Z",
+      "side": 1,
+      "message": "yes.  I need to proofread carefully before submitting",
+      "parentUuid": "77a0c1e7_d3204483",
       "revId": "6a4afdb7b4c9347c56c3b00d313f27e5f3df746d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -54,6 +89,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c58196b4_6b85546e",
+        "filename": "go/src/infra/unifiedfleet/app/util/osutil/exporting_adapter.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-03-07T17:22:45Z",
+      "side": 1,
+      "message": "Oh it is already initialized? Let me try and update in the next patchset",
+      "parentUuid": "dad33e44_3bac696b",
+      "revId": "6a4afdb7b4c9347c56c3b00d313f27e5f3df746d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "659abd40_39baeb43",
         "filename": "go/src/infra/unifiedfleet/app/util/osutil/exporting_adapter_test.go",
         "patchSetId": 1
@@ -65,6 +118,30 @@
       "writtenOn": "2022-03-05T05:02:01Z",
       "side": 1,
       "message": "your test doesn\u0027t verify \"PeripheralWifiFeatures\"?",
+      "range": {
+        "startLine": 604,
+        "startChar": 10,
+        "endLine": 604,
+        "endChar": 31
+      },
+      "revId": "6a4afdb7b4c9347c56c3b00d313f27e5f3df746d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2603ac5b_ad28f826",
+        "filename": "go/src/infra/unifiedfleet/app/util/osutil/exporting_adapter_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 604,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-03-07T17:22:45Z",
+      "side": 1,
+      "message": "Good catch Xixuan. We don\u0027t have real wifi feature labels yet. The test currently only verifies that with Unknown WifiPeripheralFeatures in UFS the swarming label will not have unknown PeripheralWifiFeatures. \n\nI\u0027m not sure what the standard procedure is but I can add some fake labels and submit another cl for fake review?",
+      "parentUuid": "659abd40_39baeb43",
       "range": {
         "startLine": 604,
         "startChar": 10,
