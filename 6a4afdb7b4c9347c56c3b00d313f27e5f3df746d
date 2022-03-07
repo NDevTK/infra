@@ -150,6 +150,30 @@
       },
       "revId": "6a4afdb7b4c9347c56c3b00d313f27e5f3df746d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4c56e649_6f7952c0",
+        "filename": "go/src/infra/unifiedfleet/app/util/osutil/exporting_adapter_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 604,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-03-07T19:24:38Z",
+      "side": 1,
+      "message": "we don\u0027t have wifi feature labels except for UNKNOWN (assuming it\u0027s enum not string) in proto or we don\u0027t have real wifi feature labels in lab?\n\nIf we have some enums defined in proto, you could add some fake labels here. If not, adding some comments here about what you\u0027re verifying, and we may need to add new enums and verify the case later.",
+      "parentUuid": "2603ac5b_ad28f826",
+      "range": {
+        "startLine": 604,
+        "startChar": 10,
+        "endLine": 604,
+        "endChar": 31
+      },
+      "revId": "6a4afdb7b4c9347c56c3b00d313f27e5f3df746d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
