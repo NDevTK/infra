@@ -57,6 +57,30 @@
       },
       "revId": "9bc51edc2a7913b265f025f918802c6bcf8cd886",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bd5168c3_c67e9f54",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 485,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-03-07T18:55:33Z",
+      "side": 1,
+      "message": "The JumpHost is not needed in the current production flow; that is true, but is JumpHost really a dev-only feature?\n\nAFAICT it just adds an extra step to ssh-ing which seems like a good feature to have.",
+      "parentUuid": "14369feb_c8da8a2c",
+      "range": {
+        "startLine": 485,
+        "startChar": 1,
+        "endLine": 485,
+        "endChar": 9
+      },
+      "revId": "9bc51edc2a7913b265f025f918802c6bcf8cd886",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
