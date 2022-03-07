@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6d79c248_46872b7d",
+        "filename": "go/src/infra/cmd/mallet/internal/cmd/tasks/local_recovery.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-03-07T17:47:37Z",
+      "side": 1,
+      "message": "missed part to pass jump host to recovery.",
+      "revId": "9bc51edc2a7913b265f025f918802c6bcf8cd886",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "14369feb_c8da8a2c",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 485,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-03-07T17:47:37Z",
+      "side": 1,
+      "message": "Just an idea to add something to tell that is only for debugging and dev env like `DevJumpHost`?",
+      "range": {
+        "startLine": 485,
+        "startChar": 1,
+        "endLine": 485,
+        "endChar": 9
+      },
+      "revId": "9bc51edc2a7913b265f025f918802c6bcf8cd886",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
