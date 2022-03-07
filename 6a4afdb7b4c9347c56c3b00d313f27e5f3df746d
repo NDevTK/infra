@@ -174,6 +174,30 @@
       },
       "revId": "6a4afdb7b4c9347c56c3b00d313f27e5f3df746d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "55e262ab_8ea141e2",
+        "filename": "go/src/infra/unifiedfleet/app/util/osutil/exporting_adapter_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 604,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-03-07T22:52:12Z",
+      "side": 1,
+      "message": "We don\u0027t have wifi feature exepct for UNKNOWN defined in proto. I just tested it locally with fake enum and labels. I also added more testing required comment in the proto.",
+      "parentUuid": "4c56e649_6f7952c0",
+      "range": {
+        "startLine": 604,
+        "startChar": 10,
+        "endLine": 604,
+        "endChar": 31
+      },
+      "revId": "6a4afdb7b4c9347c56c3b00d313f27e5f3df746d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
