@@ -16,6 +16,24 @@
       "message": "LGTM, though has merge conflicts. ",
       "revId": "f9bf130229a02e0ad2ab9a10b7ad23482318d472",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0bb610f8_0ff0ad57",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-03-08T04:47:11Z",
+      "side": 1,
+      "message": "Well, it does not show conflicts now! So all good now.",
+      "parentUuid": "def408ff_877cc560",
+      "revId": "f9bf130229a02e0ad2ab9a10b7ad23482318d472",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
