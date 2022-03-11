@@ -21,10 +21,11 @@ var osNameArg = fmt.Sprintf("os_name:%s", galeOsName)
 var wifiRouterRepairPlan = &planpb.Plan{
 	CriticalActions: []string{
 		"wifirouter_state_broken",
-		"Device is pingable",
+		//		"Device is pingable",
 		"cros_ssh",
 		"Device is on stable-version",
 		"is_wifirouter_tools_present",
+		"Device has 50%% tmp diskspace",
 		"wifirouter_state_working",
 	},
 	Actions: map[string]*planpb.Action{
@@ -69,6 +70,26 @@ var wifiRouterRepairPlan = &planpb.Plan{
 			ExecName:      "cros_provision",
 			ExecExtraArgs: []string{osNameArg},
 			ExecTimeout:   &durationpb.Duration{Seconds: 3600},
+		},
+		"Device has 50%% tmp diskspace": {
+			Docs: []string{
+				"Check if there are more than 50%% of diskspace in /tmp",
+			},
+			Dependencies:    []string{"Device is on stable-version"},
+			ExecName:        "cros_has_enough_storage_space_percentage",
+			ExecExtraArgs:   []string{"/tmp:50"},
+			RecoveryActions: []string{"Clean up tmp space"},
+		},
+		"Clean up tmp space": {
+			Docs: []string{
+				"Clean up tmp space",
+			},
+			Dependencies: []string{},
+			ExecName:     "cros_run_shell_command",
+			ExecExtraArgs: []string{
+				"rm",
+				"/tmp",
+			},
 		},
 	},
 }

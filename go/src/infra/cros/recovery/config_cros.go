@@ -22,12 +22,12 @@ func copyPlan(plan *planpb.Plan, allowFail bool) *planpb.Plan {
 func CrosRepairConfig() io.Reader {
 	c := &planpb.Configuration{
 		PlanNames: []string{
-			PlanServo,
-			PlanCrOS,
-			PlanChameleon,
-			PlanBluetoothPeer,
+			//	PlanServo,
+			//	PlanCrOS,
+			//	PlanChameleon,
+			//	PlanBluetoothPeer,
 			PlanWifiRouter,
-			PlanClosing,
+			//	PlanClosing,
 		},
 		Plans: map[string]*planpb.Plan{
 			PlanServo:         copyPlan(servoRepairPlan, true),
