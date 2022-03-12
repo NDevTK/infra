@@ -136,7 +136,11 @@ func (c *tlwClient) Ping(ctx context.Context, resourceName string, count int) er
 		}
 		return errors.Reason("ping: container %q is down", containerName).Err()
 	} else {
-		err = ping(resourceName, count)
+		ip, err := localproxy.LookupHost(resourceName)
+		if err != nil {
+			return errors.Annotate(err, "ping").Err()
+		}
+		err = ping(ip, count)
 		return errors.Annotate(err, "ping").Err()
 	}
 }

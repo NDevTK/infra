@@ -35,7 +35,7 @@ type proxy struct {
 func newProxy(ctx context.Context, host string, hostPort int, jumpHost string, jumpHostPort int) *proxy {
 	p, ok := proxyPool[host]
 	if !ok {
-		ip, err := lookupHost(host)
+		ip, err := LookupHost(host)
 		p = &proxy{
 			host:         host,
 			hostIp:       ip,
@@ -95,9 +95,9 @@ func (p *proxy) Port() int {
 	return p.hostPort
 }
 
-// lookupHost is a helper function that looks up the IP address of the provided
+// LookupHost is a helper function that looks up the IP address of the provided
 // host by using the local resolver.
-func lookupHost(hostname string) (string, error) {
+func LookupHost(hostname string) (string, error) {
 	addrs, err := net.LookupHost(hostname)
 	if err != nil {
 		return "", err
