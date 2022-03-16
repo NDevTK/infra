@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cb7552c0_72ffc2c8",
+        "filename": "go/src/infra/unifiedfleet/app/util/common.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-03-16T04:13:12Z",
+      "side": 1,
+      "message": "SFO36_OS",
+      "range": {
+        "startLine": 175,
+        "startChar": 8,
+        "endLine": 175,
+        "endChar": 13
+      },
+      "revId": "8baef00387abf7e79b95b1eb9b75aa1a2e7dac3b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7d535666_c77e7b9a",
+        "filename": "go/src/infra/unifiedfleet/app/util/common.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-03-16T04:13:12Z",
+      "side": 1,
+      "message": "sfo36OSRegex",
+      "range": {
+        "startLine": 176,
+        "startChar": 1,
+        "endLine": 176,
+        "endChar": 11
+      },
+      "revId": "8baef00387abf7e79b95b1eb9b75aa1a2e7dac3b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
