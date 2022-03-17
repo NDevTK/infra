@@ -12,12 +12,11 @@ import (
 	"strings"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
+	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
-
-	. "github.com/smartystreets/goconvey/convey"
-	. "go.chromium.org/luci/common/testing/assertions"
 )
 
 const snippetInSummaryHtml = `<p><text-artifact artifact-id="snippet" /></p>`
@@ -502,6 +501,46 @@ func TestGTestConversions(t *testing.T) {
 		Convey("windows line endings", func() {
 			example := "blah\r\n../../base/allocator/partition_allocator/partition_root.h(998) Check failed: !slot_span->bucket->is_direct_mapped()\r\nblah"
 			test(example, "partition_root.h(998): Check failed: !slot_span->bucket->is_direct_mapped()")
+		})
+		Convey("GTest Expectation", func() {
+			// Test a log with multiple expectation failures, to make
+			// sure only one gets picekd up.
+			example := `One log line
+../../content/public/test/browser_test_base.cc:718: Failure
+Expected equality of these values:
+  expected_exit_code_
+    Which is: 0
+  ContentMain(std::move(params))
+    Which is: 1
+Stack trace:
+#0 0x5640a41b448b content::BrowserTestBase::SetUp()
+../../content/public/test/browser_test_base.cc:719: Failure
+Expected something else
+Stack trace:
+#0 0x5640a41b448b content::BrowserTestBase::SetUp()`
+			expected := `Expected equality of these values:
+  expected_exit_code_
+    Which is: 0
+  ContentMain(std::move(params))
+    Which is: 1`
+			test(example, expected)
+		})
+		Convey("GTest Expectation (Windows)", func() {
+			example := `One log line
+../../chrome/browser/net/network_context_configuration_browsertest.cc(984): error: Expected equality of these values:
+  net::ERR_CONNECTION_REFUSED
+    Which is: -102
+  simple_loader2->NetError()
+    Which is: -21
+Stack trace:
+Backtrace:
+	std::__1::unique_ptr<network::ResourceRequest,std::__1::default_delete<network::ResourceRequest> >::reset [0x007A3C5B+7709]`
+			expected := `Expected equality of these values:
+  net::ERR_CONNECTION_REFUSED
+    Which is: -102
+  simple_loader2->NetError()
+    Which is: -21`
+			test(example, expected)
 		})
 		Convey("empty snippet", func() {
 			example := ""
