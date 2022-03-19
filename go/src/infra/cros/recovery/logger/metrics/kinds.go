@@ -8,4 +8,7 @@ const (
 	// LastRecordedCr50FwReflashTimeKeyword is the name/kind in the karte metrics
 	// used for query or update the cr 50 fw reflash information.
 	LastRecordedCr50FwReflashTimeKeyword = "cr50_flash"
+	// eachResourceRecoveryKeywordTemplate is the template for the name/kind for
+	// query the complete recovery record for each resource.
+	EachResourceRecoveryKeywordTemplate = "run_recovery_%s"
 )
