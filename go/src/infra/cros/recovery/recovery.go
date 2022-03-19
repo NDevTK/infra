@@ -41,7 +41,7 @@ func Run(ctx context.Context, args *RunArgs) (rErr error) {
 	if args.Logger == nil {
 		args.Logger = logger.NewLogger()
 	}
-	action := &metrics.Action{}
+
 	ctx = log.WithLogger(ctx, args.Logger)
 	if !args.EnableRecovery {
 		log.Info(ctx, "Recovery actions is blocker by run arguments.")
@@ -56,41 +56,7 @@ func Run(ctx context.Context, args *RunArgs) (rErr error) {
 		step, ctx = build.StartStep(ctx, fmt.Sprintf("Start %s", args.TaskName))
 		defer func() { step.End(err) }()
 	}
-	if args.Metrics == nil {
-		log.Debug(ctx, "run: metrics is nil")
-	} else {
-		log.Debug(ctx, "run: metrics is non-nil")
-		start := time.Now()
-		// TODO(gregorynisbet): Create a helper function to make this more compact.
-		defer (func() {
-			stop := time.Now()
-			status := metrics.ActionStatusUnspecified
-			failReason := ""
-			if rErr == nil {
-				status = metrics.ActionStatusFail
-			} else {
-				status = metrics.ActionStatusSuccess
-				failReason = rErr.Error()
-			}
-			// Keep this call up to date with NewMetric in execs.go.
-			if args.Metrics != nil { // Guard against incorrectly setting up Karte client. See b:217746479 for details.
-				*action = metrics.Action{
-					ActionKind:     "run_recovery",
-					StartTime:      start,
-					StopTime:       stop,
-					SwarmingTaskID: args.SwarmingTaskID,
-					BuildbucketID:  args.BuildbucketID,
-					Hostname:       args.UnitName,
-					Status:         status,
-					FailReason:     failReason,
-				}
 
-				if mErr := args.Metrics.Create(ctx, action); mErr != nil {
-					args.Logger.Error("Metrics error during teardown: %s", err)
-				}
-			}
-		})()
-	}
 	// Close all created local proxies.
 	defer func() {
 		localproxy.ClosePool()
@@ -102,12 +68,46 @@ func Run(ctx context.Context, args *RunArgs) (rErr error) {
 		if ir != 0 {
 			log.Debug(ctx, "Continue to the next resource.")
 		}
-		if err := runResource(ctx, resource, args); err != nil {
+		startTime := time.Now()
+		err := runResource(ctx, resource, args)
+		if err != nil {
 			errs = append(errs, errors.Annotate(err, "run recovery %q", resource).Err())
+		}
+		// Create karte metric
+		if createMetricErr := createKarteActionForEachResource(ctx, args, startTime, resource, err); createMetricErr != nil {
+			args.Logger.Error("create metric for resource: %s with error: %s", resource, createMetricErr)
 		}
 	}
 	if len(errs) > 0 {
 		return errors.Annotate(errors.MultiError(errs), "run recovery").Err()
+	}
+	return nil
+}
+
+// createKarteActionForEachResource creates Karte Metric for each one of the resource.
+func createKarteActionForEachResource(ctx context.Context, args *RunArgs, startTime time.Time, resource string, runResourceErr error) error {
+	if args.Metrics == nil {
+		log.Debug(ctx, "For resource %s: Karte metrics is nil")
+		return nil
+	}
+	karteAction := &metrics.Action{
+		ActionKind:     fmt.Sprintf("run_recovery_%s", resource),
+		StartTime:      startTime,
+		StopTime:       time.Now(),
+		SwarmingTaskID: args.SwarmingTaskID,
+		BuildbucketID:  args.BuildbucketID,
+		Hostname:       resource,
+		Status:         metrics.ActionStatusUnspecified,
+		FailReason:     "",
+	}
+	if runResourceErr != nil {
+		karteAction.Status = metrics.ActionStatusFail
+		karteAction.FailReason = runResourceErr.Error()
+	} else {
+		karteAction.Status = metrics.ActionStatusSuccess
+	}
+	if mErr := args.Metrics.Create(ctx, karteAction); mErr != nil {
+		return errors.Annotate(mErr, "create karte action for each resource").Err()
 	}
 	return nil
 }
