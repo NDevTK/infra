@@ -23,7 +23,6 @@ from components import utils
 import gae_ts_mon
 
 from legacy import api_common
-from go.chromium.org.luci.buildbucket.proto import build_pb2
 from go.chromium.org.luci.buildbucket.proto import builder_pb2
 from go.chromium.org.luci.buildbucket.proto import builds_service_pb2 as rpc_pb2
 from go.chromium.org.luci.buildbucket.proto import common_pb2
@@ -1000,47 +999,6 @@ class BuildBucketApi(remote.Service):
         ),
     ).get_result()
     return build_to_response_message(build)
-
-  ####### CANCEL_BATCH #########################################################
-
-  class CancelBatchRequestMessage(messages.Message):
-    build_ids = messages.IntegerField(1, repeated=True)
-    result_details_json = messages.StringField(2)
-
-  class CancelBatchResponseMessage(messages.Message):
-
-    class OneResult(messages.Message):
-      build_id = messages.IntegerField(1, required=True)
-      build = messages.MessageField(api_common.BuildMessage, 2)
-      error = messages.MessageField(ErrorMessage, 3)
-
-    results = messages.MessageField(OneResult, 1, repeated=True)
-    error = messages.MessageField(ErrorMessage, 2)
-
-  @buildbucket_api_method(
-      CancelBatchRequestMessage,
-      CancelBatchResponseMessage,
-      path='builds/cancel',
-      http_method='POST'
-  )
-  @auth.public
-  def cancel_batch(self, request):
-    """Cancels builds."""
-    res = self.CancelBatchResponseMessage()
-    result_details = parse_json_object(
-        request.result_details_json, 'result_details_json'
-    )
-    futs = [(
-        build_id, service.cancel_async(build_id, result_details=result_details)
-    ) for build_id in request.build_ids]
-    for build_id, cancel_fut in futs:
-      one_res = res.OneResult(build_id=build_id)
-      try:
-        one_res.build = build_to_message(cancel_fut.get_result())
-      except errors.Error as ex:
-        one_res.error = exception_to_error_message(ex)
-      res.results.append(one_res)
-    return res
 
   ####### PAUSE ################################################################
 
