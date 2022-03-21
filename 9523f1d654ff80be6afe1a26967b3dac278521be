@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "92947e58_c8f8b03c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2022-03-21T22:29:56Z",
+      "side": 1,
+      "message": "I was notified by chanli@ that chromiumcodereview-hr-staging was using an old swarmbucket API which foundation wants to delete. The code doesn\u0027t use that anymore but seems to be calling it, so I\u0027m guessing it\u0027s stale.",
+      "revId": "9523f1d654ff80be6afe1a26967b3dac278521be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
