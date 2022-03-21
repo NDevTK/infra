@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b4e1b5ce_4dddc424",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-03-21T18:07:24Z",
+      "side": 0,
+      "message": "Gregory did we decided to remove it?",
+      "revId": "98871fde835105942ac01e1269825ced7a721ce9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

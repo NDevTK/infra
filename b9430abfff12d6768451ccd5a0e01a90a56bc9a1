@@ -3,6 +3,46 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "75593cdb_0fbdbd01",
+        "filename": "go/src/infra/cros/recovery/logger/metrics/kinds.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-03-21T18:07:24Z",
+      "side": 1,
+      "message": "`PerResourceTaskKindGlob \u003d \"run_%s\"`? where we can have run_deploy, run_audit and e.t.c.\n\ni think we can add `RunLibraryKind \u003d \"run_recovery\"`",
+      "range": {
+        "startLine": 13,
+        "startChar": 1,
+        "endLine": 13,
+        "endChar": 36
+      },
+      "revId": "b9430abfff12d6768451ccd5a0e01a90a56bc9a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c12f5069_eab3d872",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-03-21T18:07:24Z",
+      "side": 1,
+      "message": "i think you ned to create and add close with set reason based on err.",
+      "revId": "b9430abfff12d6768451ccd5a0e01a90a56bc9a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "5bd662ca_f402e3c0",
         "filename": "go/src/infra/cros/recovery/recovery.go",
         "patchSetId": 2
@@ -20,6 +60,23 @@
         "endLine": 88,
         "endChar": 37
       },
+      "revId": "b9430abfff12d6768451ccd5a0e01a90a56bc9a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ff8ae327_7464fe9e",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-03-21T18:07:24Z",
+      "side": 1,
+      "message": "do we need update at the end or not?",
       "revId": "b9430abfff12d6768451ccd5a0e01a90a56bc9a1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
