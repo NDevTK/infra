@@ -6,5 +6,6 @@ gentasks:
 .PHONY: deploy
 deploy:
 	gae.py upload --app-id chromiumcodereview-hr --app-dir . default
+	gae.py upload --app-id chromiumcodereview-hr-staging --app-dir . default
 	gae.py upload --app-id chromiumcodereview-private --app-dir . default
 
