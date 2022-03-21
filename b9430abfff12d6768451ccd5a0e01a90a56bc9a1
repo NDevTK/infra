@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5bd662ca_f402e3c0",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-03-21T18:00:46Z",
+      "side": 1,
+      "message": "Please add a test for this function.",
+      "range": {
+        "startLine": 88,
+        "startChar": 5,
+        "endLine": 88,
+        "endChar": 37
+      },
+      "revId": "b9430abfff12d6768451ccd5a0e01a90a56bc9a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
