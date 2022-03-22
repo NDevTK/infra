@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2ef8e2a0_d646411a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-03-22T16:08:44Z",
+      "side": 1,
+      "message": "LGTM % comments",
+      "revId": "02dba8a2349a8cecdd4bc9a2d93aa359aa839233",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b41a8a92_bb8c1d40",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-03-22T16:08:44Z",
+      "side": 1,
+      "message": "metrics?",
+      "range": {
+        "startLine": 119,
+        "startChar": 25,
+        "endLine": 119,
+        "endChar": 30
+      },
+      "revId": "02dba8a2349a8cecdd4bc9a2d93aa359aa839233",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "acde5701_2ef1d178",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-03-22T16:08:44Z",
+      "side": 1,
+      "message": "`...: metrics is not provided`",
+      "range": {
+        "startLine": 119,
+        "startChar": 74,
+        "endLine": 119,
+        "endChar": 94
+      },
+      "revId": "02dba8a2349a8cecdd4bc9a2d93aa359aa839233",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2d911397_4b809ede",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-03-22T16:08:44Z",
+      "side": 1,
+      "message": "Simplification: you set it as default value o the action.",
+      "range": {
+        "startLine": 136,
+        "startChar": 2,
+        "endLine": 136,
+        "endChar": 45
+      },
+      "revId": "02dba8a2349a8cecdd4bc9a2d93aa359aa839233",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a554b14e_e2f809e1",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-03-22T16:08:44Z",
+      "side": 1,
+      "message": "based on method name it need to be `..., \"create task run metrics for resource %s\", resource)`",
+      "range": {
+        "startLine": 139,
+        "startChar": 31,
+        "endLine": 139,
+        "endChar": 68
+      },
+      "revId": "02dba8a2349a8cecdd4bc9a2d93aa359aa839233",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
