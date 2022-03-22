@@ -34,6 +34,24 @@
       "parentUuid": "b4e1b5ce_4dddc424",
       "revId": "98871fde835105942ac01e1269825ced7a721ce9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ba84eb33_1db31590",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-03-22T02:12:34Z",
+      "side": 0,
+      "message": "Ack",
+      "parentUuid": "85ce8476_6c2e85f9",
+      "revId": "98871fde835105942ac01e1269825ced7a721ce9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
