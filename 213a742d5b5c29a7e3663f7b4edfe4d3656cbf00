@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "16955a85_7021b40c",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2022-03-22T02:26:28Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "85043146_c530597f",
+      "range": {
+        "startLine": 76,
+        "startChar": 3,
+        "endLine": 86,
+        "endChar": 4
+      },
+      "revId": "213a742d5b5c29a7e3663f7b4edfe4d3656cbf00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5d33b997_80109682",
@@ -70,6 +94,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f394b7d1_151a91c1",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2022-03-22T02:26:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c361ed70_5f026acb",
+      "range": {
+        "startLine": 112,
+        "startChar": 50,
+        "endLine": 112,
+        "endChar": 52
+      },
+      "revId": "213a742d5b5c29a7e3663f7b4edfe4d3656cbf00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b7ec3f91_56511939",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2022-03-22T02:26:28Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "5d33b997_80109682",
+      "range": {
+        "startLine": 112,
+        "startChar": 22,
+        "endLine": 112,
+        "endChar": 23
+      },
+      "revId": "213a742d5b5c29a7e3663f7b4edfe4d3656cbf00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1ae752e7_cd9ce286",
@@ -83,6 +155,30 @@
       "writtenOn": "2022-03-22T02:09:15Z",
       "side": 1,
       "message": "please exclude karte and use metrics `createTaskRunMetricsForResource` and `createTaskRunMetricsForResource creates metric action for resource with reporting what is the tasking is running for it.`",
+      "range": {
+        "startLine": 122,
+        "startChar": 5,
+        "endLine": 122,
+        "endChar": 37
+      },
+      "revId": "213a742d5b5c29a7e3663f7b4edfe4d3656cbf00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9b5faa93_83c819a1",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2022-03-22T02:26:28Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "1ae752e7_cd9ce286",
       "range": {
         "startLine": 122,
         "startChar": 5,
@@ -116,6 +212,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e38ca8d8_b06efc8a",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2022-03-22T02:26:28Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "6cc154ed_e1a6226b",
+      "range": {
+        "startLine": 127,
+        "startChar": 1,
+        "endLine": 127,
+        "endChar": 12
+      },
+      "revId": "213a742d5b5c29a7e3663f7b4edfe4d3656cbf00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f5fe8afe_efd618ab",
@@ -129,6 +249,30 @@
       "writtenOn": "2022-03-22T02:09:15Z",
       "side": 1,
       "message": "you can simplify: as annotate is not create error if it was nil\n```\nmErr :\u003d args.Metrics.Create(ctx, karteAction)\nreturn errors.Annotate(mErr, \"...\").Err()\n```",
+      "range": {
+        "startLine": 143,
+        "startChar": 1,
+        "endLine": 146,
+        "endChar": 11
+      },
+      "revId": "213a742d5b5c29a7e3663f7b4edfe4d3656cbf00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "15bb27fb_460cb8b3",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2022-03-22T02:26:28Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f5fe8afe_efd618ab",
       "range": {
         "startLine": 143,
         "startChar": 1,
