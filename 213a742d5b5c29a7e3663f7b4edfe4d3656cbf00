@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "85043146_c530597f",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-03-22T02:09:15Z",
+      "side": 1,
+      "message": "please move action creating upper before create `status` var and then insert all data directly to the action.",
+      "range": {
+        "startLine": 76,
+        "startChar": 3,
+        "endLine": 86,
+        "endChar": 4
+      },
+      "revId": "213a742d5b5c29a7e3663f7b4edfe4d3656cbf00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5d33b997_80109682",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-03-22T02:09:15Z",
+      "side": 1,
+      "message": "logs always start from upper case as sentances.",
+      "range": {
+        "startLine": 112,
+        "startChar": 22,
+        "endLine": 112,
+        "endChar": 23
+      },
+      "revId": "213a742d5b5c29a7e3663f7b4edfe4d3656cbf00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c361ed70_5f026acb",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-03-22T02:09:15Z",
+      "side": 1,
+      "message": "please use `%q`",
+      "range": {
+        "startLine": 112,
+        "startChar": 50,
+        "endLine": 112,
+        "endChar": 52
+      },
+      "revId": "213a742d5b5c29a7e3663f7b4edfe4d3656cbf00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1ae752e7_cd9ce286",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-03-22T02:09:15Z",
+      "side": 1,
+      "message": "please exclude karte and use metrics `createTaskRunMetricsForResource` and `createTaskRunMetricsForResource creates metric action for resource with reporting what is the tasking is running for it.`",
+      "range": {
+        "startLine": 122,
+        "startChar": 5,
+        "endLine": 122,
+        "endChar": 37
+      },
+      "revId": "213a742d5b5c29a7e3663f7b4edfe4d3656cbf00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6cc154ed_e1a6226b",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-03-22T02:09:15Z",
+      "side": 1,
+      "message": "just `action` or `a` not karte.",
+      "range": {
+        "startLine": 127,
+        "startChar": 1,
+        "endLine": 127,
+        "endChar": 12
+      },
+      "revId": "213a742d5b5c29a7e3663f7b4edfe4d3656cbf00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f5fe8afe_efd618ab",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-03-22T02:09:15Z",
+      "side": 1,
+      "message": "you can simplify: as annotate is not create error if it was nil\n```\nmErr :\u003d args.Metrics.Create(ctx, karteAction)\nreturn errors.Annotate(mErr, \"...\").Err()\n```",
+      "range": {
+        "startLine": 143,
+        "startChar": 1,
+        "endLine": 146,
+        "endChar": 11
+      },
+      "revId": "213a742d5b5c29a7e3663f7b4edfe4d3656cbf00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
