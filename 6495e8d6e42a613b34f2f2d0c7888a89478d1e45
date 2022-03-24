@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3760a75f_e53b36fd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-03-24T07:00:15Z",
+      "side": 1,
+      "message": "LGTM",
+      "revId": "6495e8d6e42a613b34f2f2d0c7888a89478d1e45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ca19ce8f_65835ea3",
+        "filename": "go/src/infra/cros/recovery/recovery.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 379,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-03-24T07:00:15Z",
+      "side": 1,
+      "message": "Should we also drop the plan closing action from the config files (not in the scope of this CL)? Because we are going to ignore/skip over any plan-closing action here anyway.",
+      "revId": "6495e8d6e42a613b34f2f2d0c7888a89478d1e45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
