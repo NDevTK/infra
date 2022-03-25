@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5e95b0ae_48415cc8",
+        "filename": "3pp/httpd-php/install.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 270,
+      "author": {
+        "id": 1476473
+      },
+      "writtenOn": "2022-03-25T00:44:32Z",
+      "side": 1,
+      "message": "@bryner, any suggestion on how to copy this library? Should I hard code it, or using ldd to find out the path?\n\nThe path used above is not correct.",
+      "range": {
+        "startLine": 270,
+        "startChar": 5,
+        "endLine": 270,
+        "endChar": 33
+      },
+      "revId": "48e5d5c3c4b08469179858110e835208402835f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
