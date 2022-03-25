@@ -713,7 +713,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Reset GBB flags by host",
 				"cros_switch_to_secure_mode",
-				"cros_reboot",
+				"Simple reboot",
 				// Waiting to boot to tell if switch was successful.
 				"Wait DUT to be pingable after reset",
 			},
@@ -1068,8 +1068,20 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Set default boot as disk",
+				"Simple reboot",
 			},
-			ExecName: "cros_reboot",
+			ExecName:   "sample_pass",
+			RunControl: 1,
+		},
+		"Simple reboot": {
+			Docs: []string{
+				"Simple un-blocker reboot.",
+			},
+			ExecName: "cros_run_shell_command",
+			ExecExtraArgs: []string{
+				"reboot && exit",
+			},
+			RunControl: 1,
 		},
 		"Set default boot as disk": {
 			Docs: []string{
