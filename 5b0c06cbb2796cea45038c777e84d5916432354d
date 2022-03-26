@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f3e68d6e_93fc5b43",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1476473
+      },
+      "writtenOn": "2022-03-26T19:39:30Z",
+      "side": 1,
+      "message": "Brian, downloading package failed in this CL, but I was able to download with curl with the same url. Any suggestion?",
+      "revId": "5b0c06cbb2796cea45038c777e84d5916432354d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
