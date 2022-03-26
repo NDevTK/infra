@@ -9,4 +9,15 @@ create {
   }
 }
 
+create {
+  platform_re: "windows-.*"
+  source {
+    script { name: "fetch_win.py" }
+    unpack_archive: true
+  }
+  build {
+    install: "install_win.sh"
+  }
+}
+
 upload { pkg_prefix: "tools" }
