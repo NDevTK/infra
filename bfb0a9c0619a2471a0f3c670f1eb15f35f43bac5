@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2e976410_6d6a31d4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-03-28T17:21:34Z",
+      "side": 1,
+      "message": "LGTM",
+      "revId": "bfb0a9c0619a2471a0f3c670f1eb15f35f43bac5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cab18915_244597e7",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/tlwclient.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-03-28T17:21:34Z",
+      "side": 1,
+      "message": "GetSchedulingUnit and GetChromeOSDeviceData are for getting Data from UFS. May Not need to roll them back now.",
+      "revId": "bfb0a9c0619a2471a0f3c670f1eb15f35f43bac5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
