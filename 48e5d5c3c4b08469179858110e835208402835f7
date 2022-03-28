@@ -22,6 +22,30 @@
       },
       "revId": "48e5d5c3c4b08469179858110e835208402835f7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "247773c8_c103bdc5",
+        "filename": "3pp/httpd-php/install.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 270,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-03-28T22:42:44Z",
+      "side": 1,
+      "message": "ldd would be \"better\", but in practice this is probably a stable location for linux-amd64 -- copy it from /usr/local/lib/libcrypt.so.2.",
+      "parentUuid": "5e95b0ae_48415cc8",
+      "range": {
+        "startLine": 270,
+        "startChar": 5,
+        "endLine": 270,
+        "endChar": 33
+      },
+      "revId": "48e5d5c3c4b08469179858110e835208402835f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
