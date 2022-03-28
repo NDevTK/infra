@@ -134,6 +134,9 @@ type Config struct {
 	// The parent directory should be writable to allow creation
 	// of the drain file.
 	WorkDirectory string
+	// Hive is the hive of the bot which inherited from the drone agent. Hive
+	// will be reported to Swarming as a dimension so we can filter on it.
+	Hive string
 }
 
 func (c Config) drainFilePath() string {
@@ -155,5 +158,6 @@ func (c Config) botCodeURL() string {
 func (c Config) env() []string {
 	return []string{
 		"SWARMING_BOT_ID=" + c.BotID,
+		"SKYLAB_DUT_HIVE=" + c.Hive,
 	}
 }

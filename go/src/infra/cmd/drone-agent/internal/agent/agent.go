@@ -339,6 +339,7 @@ func (h hook) botConfig(dutID string, workDir string) bot.Config {
 		SwarmingURL:   h.a.SwarmingURL,
 		BotID:         botID,
 		WorkDirectory: workDir,
+		Hive:          h.a.Hive,
 	}
 }
 
