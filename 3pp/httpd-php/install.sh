@@ -262,3 +262,10 @@ then
     fi
   done
 fi
+
+if [[ $OSTYPE == linux* ]]
+then
+  # The docker environment uses libcrypt.so.2, which isn't available
+  # where we run the resulting binary.
+  cp /usr/local/lib/libcrypt.so.2 "${out}/lib"
+fi
