@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2654fb48_3e3a40a4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-03-29T00:33:11Z",
+      "side": 1,
+      "message": "Can we get this from inside the Swarming script directly? and/or are we sure we want to filter based on hive?  Can we filter based on physical location instead?\n\nHive is purely a drone queen scheduling concept and does not/should not be used to infer location/functionality/etc.\n\nPre-planning for getting rid of drone queen/twill",
+      "revId": "8f89e3f541bb84972ae9d1feb1855b48cd5b41e3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c2543112_a71a2a31",
+        "filename": "go/src/infra/cmd/drone-agent/internal/bot/bot.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-03-29T00:33:11Z",
+      "side": 1,
+      "message": "just SKYLAB_HIVE? how about multi dut units?",
+      "range": {
+        "startLine": 161,
+        "startChar": 10,
+        "endLine": 161,
+        "endChar": 13
+      },
+      "revId": "8f89e3f541bb84972ae9d1feb1855b48cd5b41e3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
