@@ -117,6 +117,30 @@
       },
       "revId": "8932d44694d7365b93582a15e60ec68b0a699ec8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "82e7f39c_452dd121",
+        "filename": "3pp/httpd-php/install.sh",
+        "patchSetId": 12
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-03-29T23:41:39Z",
+      "side": 1,
+      "message": "I see, thanks. That is kind of broken -- normally setting CC is the only thing necessary. I don\u0027t have a better idea than what you did, but please do add a comment that this is necessary in order for it to detect that we\u0027re using gcc.",
+      "parentUuid": "ccd6f26e_10e55c69",
+      "range": {
+        "startLine": 41,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 6
+      },
+      "revId": "8932d44694d7365b93582a15e60ec68b0a699ec8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
