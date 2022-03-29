@@ -36,6 +36,42 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e1814617_54d48d76",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1476473
+      },
+      "writtenOn": "2022-03-29T23:30:45Z",
+      "side": 1,
+      "message": "Looks like they are saying zlib1.2.",
+      "parentUuid": "c88320c3_7ba91d30",
+      "revId": "8932d44694d7365b93582a15e60ec68b0a699ec8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6a8cbd68_74e40179",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1476473
+      },
+      "writtenOn": "2022-03-29T23:30:45Z",
+      "side": 1,
+      "message": "Looks like they are saying zlib1.2.11 is not secure, so downloading this will fail. I did not try hard with the 1.2.11 version though.\n\nINFO:root:Connecting to https://www.zlib.net/zlib-1.2.11.tar.gz ...\nDEBUG:requests.packages.urllib3.connectionpool:Starting new HTTPS connection (1): www.zlib.net\nDEBUG:requests.packages.urllib3.connectionpool:https://www.zlib.net:443 \"GET /zlib-1.2.11.tar.gz HTTP/1.1\" 404 315\n\nThey said \"Due to the bug fixes, any installations of 1.2.11 should be replaced with 1.2.12.\" in their site. So it would make sense to not allow download the old version.",
+      "parentUuid": "c88320c3_7ba91d30",
+      "revId": "8932d44694d7365b93582a15e60ec68b0a699ec8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2d9f0ffb_f39d3113",
@@ -49,6 +85,30 @@
       "writtenOn": "2022-03-29T22:52:27Z",
       "side": 1,
       "message": "Can you explain why you\u0027re adding this cc\u003d$CC , is this to work around the earlier errors with not using -fPIC?\n\nI think the root problem there is that zlib configure sees $CROSS_PREFIX which we set in our docker environment ( https://source.chromium.org/chromium/infra/infra/+/main:infra/tools/dockerbuild/resources/Dockerfile.template;l\u003d30;drc\u003d161a68b7d0cab407915b89b0cd6ac3b1b1a3311a ) and interprets it to mean something else, breaking the compiler detection. I think a better way around this would be to unset CROSS_PREFIX before running configure. Please leave a comment explaining why.",
+      "range": {
+        "startLine": 41,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 6
+      },
+      "revId": "8932d44694d7365b93582a15e60ec68b0a699ec8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ccd6f26e_10e55c69",
+        "filename": "3pp/httpd-php/install.sh",
+        "patchSetId": 12
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1476473
+      },
+      "writtenOn": "2022-03-29T23:30:45Z",
+      "side": 1,
+      "message": "Yes it is to fix the compile error.\n\nThe reason is we have CC set in our env. The configuration file has below sections:\nif test -z \"$CC\"; then\n  echo Checking for ${CROSS_PREFIX}gcc... | tee -a configure.log\n  if ${CROSS_PREFIX}gcc -v \u003e/dev/null 2\u003e\u00261; then\n    cc\u003d${CROSS_PREFIX}gcc\n  else\n    cc\u003d${CROSS_PREFIX}cc\n  fi\nfi\n\ncc is empty in our case, and setting it to $CC should be the right fix.\n\nI did try to unset CROSS_PREFIX, but that did not help.\n\nDo I need add a comment to the CL?",
+      "parentUuid": "2d9f0ffb_f39d3113",
       "range": {
         "startLine": 41,
         "startChar": 0,
