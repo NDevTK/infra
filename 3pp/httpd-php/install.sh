@@ -10,6 +10,9 @@
 # path on Mac
 
 set -e
+set -x
+
+uname -a
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
@@ -21,7 +24,7 @@ libxml2_version="2.9.12"
 openssl_version="1.1.1j"
 pcre_version="8.41"
 php_version="7.3.31"
-zlib_version="1.2.11"
+zlib_version="1.2.12"
 
 out="$1"
 build="$PWD/build"
@@ -261,4 +264,11 @@ then
       exit 1
     fi
   done
+fi
+
+if [[ $OSTYPE == linux* ]]
+then
+  # The docker environment uses libcrypt.so.2, which isn't available
+  # where we run the resulting binary.
+  cp /usr/local/lib/libcrypt.so.2 "${out}/lib"
 fi
