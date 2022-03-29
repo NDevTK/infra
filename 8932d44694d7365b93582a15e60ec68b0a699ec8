@@ -16,6 +16,47 @@
       "message": "Hi Brian, can you pls take a look? I finally was able to make it pass after bumping up zlib version.",
       "revId": "8932d44694d7365b93582a15e60ec68b0a699ec8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c88320c3_7ba91d30",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-03-29T22:52:27Z",
+      "side": 1,
+      "message": "It\u0027s fine to bump the zlib version, though I\u0027m confused why that would be _necessary_ for it to pass.",
+      "parentUuid": "2fb445c9_200284f0",
+      "revId": "8932d44694d7365b93582a15e60ec68b0a699ec8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2d9f0ffb_f39d3113",
+        "filename": "3pp/httpd-php/install.sh",
+        "patchSetId": 12
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-03-29T22:52:27Z",
+      "side": 1,
+      "message": "Can you explain why you\u0027re adding this cc\u003d$CC , is this to work around the earlier errors with not using -fPIC?\n\nI think the root problem there is that zlib configure sees $CROSS_PREFIX which we set in our docker environment ( https://source.chromium.org/chromium/infra/infra/+/main:infra/tools/dockerbuild/resources/Dockerfile.template;l\u003d30;drc\u003d161a68b7d0cab407915b89b0cd6ac3b1b1a3311a ) and interprets it to mean something else, breaking the compiler detection. I think a better way around this would be to unset CROSS_PREFIX before running configure. Please leave a comment explaining why.",
+      "range": {
+        "startLine": 41,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 6
+      },
+      "revId": "8932d44694d7365b93582a15e60ec68b0a699ec8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
