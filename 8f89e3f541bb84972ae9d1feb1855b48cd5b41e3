@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ffcea92e_5efa1222",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2022-03-30T22:35:34Z",
+      "side": 1,
+      "message": "I described the reason why I want to use hive in this doc https://docs.google.com/document/d/1oNtF3Vy16gNNNW0IN5PYmA6g9MwdMEvOTfsIp4x8-fQ/edit?resourcekey\u003d0-sCK0hgXqcHQ5mg5lu3oIMA#heading\u003dh.93no456yrxjq\n\n\u003e Can we filter based on physical location instead?\nI don\u0027t know if that\u0027s possible. The only thing can tell us the location should be the DUT/SU name. But the main problem is that UFS only report aggregated data, so right now the only way is filter by Hive.",
+      "parentUuid": "2654fb48_3e3a40a4",
+      "revId": "8f89e3f541bb84972ae9d1feb1855b48cd5b41e3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c2543112_a71a2a31",
         "filename": "go/src/infra/cmd/drone-agent/internal/bot/bot.go",
         "patchSetId": 2
