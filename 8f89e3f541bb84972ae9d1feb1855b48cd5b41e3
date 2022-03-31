@@ -54,6 +54,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7747ec89_dd8bc2a4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2022-03-31T22:00:40Z",
+      "side": 1,
+      "message": "I will abandon this CL since derive the hive/location from skylab.py might be better because in the long term we will deprecate Drone queen so drone-agent will have nothing to do with the hive/location.",
+      "parentUuid": "c903fb5b_982d496d",
+      "revId": "8f89e3f541bb84972ae9d1feb1855b48cd5b41e3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c2543112_a71a2a31",
