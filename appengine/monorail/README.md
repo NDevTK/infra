@@ -57,15 +57,8 @@ Here's how to run Monorail locally for development on MacOS and Debian stretch/b
                     [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
 1.  Install Python and JS dependencies:
-    1.  Optional: You may need to install `pip`. You can verify whether you have it installed with `which pip`.
-        1. make sure to install `pip` using `python2` instead of `python3` (use `python --version` to check the version for 2.7, `which python2` to check the path)
-            1. If you need python 2.7 for now: `sudo apt install python2.7 python2.7-dev python-is-python2`
-        1. `curl -O /tmp/get-pip.py https://bootstrap.pypa.io/pip/2.7/get-pip.py`
-        1. `sudo python /tmp/get-pip.py`
-    1.  Use `virtualenv` to keep from modifying system dependencies.
-        1. `pip install virtualenv`
-        1. `python -m virtualenv venv` to set up virtualenv within your monorail directory.
-        1. `source venv/bin/activate` to activate it, needed in each terminal instance of the directory.
+    1.  Run `./create_py2_venv`, MacOS no longer comes with Python2 and we'll use vpython to bootstrap the whole thing.
+    1. `source venv/bin/activate` to activate your virtualenv, needed in each terminal instance of the directory.
     1.  Mac only: install [libssl](https://github.com/PyMySQL/mysqlclient-python/issues/74), needed for mysqlclient. (do this in local env not virtual env)
         1. `brew install openssl; export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/opt/openssl/lib/`
     1.  `make dev_deps` (run in virtual env)

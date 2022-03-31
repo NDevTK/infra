@@ -24,6 +24,7 @@ six==1.15.0 --hash=sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82d
 grpcio==1.31.0 --hash=sha256:e8c3264b0fd728aadf3f0324471843f65bd3b38872bdab2a477e31ffb685dd5b \
                --hash=sha256:92e54ab65e782f227e751c7555918afaba8d1229601687e89b80c2b65d2f6642 \
                --hash=sha256:58d7121f48cb94535a4cedcce32921d0d0a78563c7372a143dedeec196d1c637
+futures==3.3.0 --hash=sha256:49b3f5b064b6e3afc3316421a3f25f66c137ae88f068abbf72830170033c5e16
 
 # Required by google-cloud-tasks
 # first sha is for cp27m-macosx_10_9_x86_64
