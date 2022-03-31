@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c3330ee1_9080fd43",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-03-31T18:38:21Z",
+      "side": 1,
+      "message": "Successfully run `GOOS\u003dlinux GOARCH\u003d386 ./build.py shivas`. Merge it",
+      "revId": "ac39341614b08da6eb6be9b7c3b807692303e26d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
