@@ -361,3 +361,123 @@ CREATE TABLE TQLeases (
     SerializedParts ARRAY<STRING(MAX)>,
     ExpiresAt TIMESTAMP NOT NULL,
 ) PRIMARY KEY (SectionID ASC, LeaseID ASC);
+
+-- Stores outcomes of a test variant in one invocation.
+CREATE TABLE TestVerdicts (
+  -- The LUCI Project this test verdict belongs to.
+  Project STRING(40) NOT NULL,
+
+  -- Unique identifier of the test,
+  -- see also luci.resultdb.v1.TestResult.test_id.
+  TestId STRING(MAX) NOT NULL,
+
+  -- A hex-encoded sha256 of concatenated "<key>:<value>\n" variant pairs.
+  -- Combination of Realm, TestId and VariantHash can identify a test variant.
+  VariantHash STRING(16) NOT NULL,
+
+  -- Partition time, as determined by Weetbix ingestion. Start time of the
+  -- ingested build (for postsubmit results) or start time of the presubmit run
+  -- (for presubmit results). Defines date/time axis if test results plotted
+  -- by date/time.
+  -- Including as part of Primary Key allows direct filtering of data for test
+  -- to last N days. This could be used to improve performance for tests with many
+  -- results, or allow experimentation with keeping longer histories
+  -- (e.g. 90 days) without incurring performance penalty on time-windowed
+  -- queries.
+  PartitionTime TIMESTAMP NOT NULL,
+
+  -- The invocation from which these test results were ingested.
+  -- This is the top-level invocation that was ingested.
+  IngestedInvocationId STRING(MAX) NOT NULL,
+
+  -- The realm of the test result, excluding project. 62 as ResultDB allows
+  -- at most 64 characters for the construction "<project>:<realm>" and project
+  -- must be at least one character.
+  SubRealm STRING(62) NOT NULL,
+
+  -- Derived information from the included test results.
+  -- Needed to compute the status of the verdict.
+
+  -- How many expected test results this verdict includes.
+  ExpectedCount INT64 NOT NULL,
+  -- How many unexpected test results this verdict includes.
+  UnexpectedCount INT64 NOT NULL,
+  -- How many skipped test results this verdict includes.
+  SkippedCount INT64 NOT NULL,
+  -- Whether the test verdict was exonerated.
+  IsExonerated BOOL NOT NULL,
+
+  -- How long a passed test execution took on average, in microseconds.
+  PassedAvgDurationUsec INT64,
+
+  -- Whether the included test results were part of a presubmit run. 
+  IsPresubmit BOOL NOT NULL,
+
+  -- Whether the included test results were from a build that has unmerged
+  -- changes applied (such as Gerrit changes).
+  HasUnmergedChanges BOOL NOT NULL,
+) PRIMARY KEY(Project, TestId, PartitionTime, VariantHash, IngestedInvocationId, SubRealm)
+-- The following DDL query needs to be uncommented when applied to real Spanner
+-- instances. But it is commented out for Cloud Spanner Emulator:
+-- https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/issues/32
+-- , DELETION POLICY (OLDER_THAN(PartitionTime, INTERVAL 90 DAY));
+
+-- Stores top-level invocations which were ingested.
+--
+-- TODO(crbug.com/1266759):
+-- This forms part of an experiment embedded into the design.
+-- If joining to this table is efficient, we may leave IsPresumbmit,
+-- realm, commit position data here and drop it off the TestVerdicts table.
+-- If not, we may decide to delete this table.
+CREATE TABLE IngestedInvocations (
+  -- The LUCI Project the test result is a part of.
+  Project STRING(40) NOT NULL,
+
+  -- The (top-level) invocation which was ingested.
+  IngestedInvocationId STRING(MAX) NOT NULL,
+
+  -- The realm of the invocation, excluding project. 62 as ResultDB allows
+  -- at most 64 characters for the construction "<project>:<realm>" and project
+  -- must be at least one character.
+  SubRealm STRING(62) NOT NULL,
+
+  -- Whether the invocation was part of a presubmit run. 
+  IsPresubmit BOOL NOT NULL,
+
+  -- Whether the invocation was part of a build that has unmerged changes
+  -- applied (such as Gerrit changes).
+  HasUnmergedChanges BOOL NOT NULL,
+) PRIMARY KEY(Project, IngestedInvocationId)
+
+-- Serves three purposes:
+-- - Permits listing of distinct tests observed for a project, filtered by Realm.
+--   Tests may be duplicated many times in this table because there is one entry
+--   per test variant and realm. If this creates performance issues we can
+--   create a table with only distinct TestId entries at the cost of some
+--   additional complexity.
+--
+-- - Permits listing of distinct variants observed for a test in a project,
+--   filtered by Realm.
+--
+-- - Provides a mapping back from VariantHash to variant.
+CREATE TABLE TestVariantRealms (
+  Project STRING(40) NOT NULL,
+  TestId STRING(MAX) NOT NULL,
+  VariantHash STRING(16) NOT NULL,
+  SubRealm STRING(62) NOT NULL,
+
+  Variant ARRAY<STRING(MAX)>,
+
+  -- Other information about the test variant, like information from tags,
+  -- could be captured here, as is currently the case for AnalyzedTestVariants.
+  -- (e.g. test ownership).
+
+  -- Last (ingestion) time this test variant was observed in the realm.
+  -- This value may be out of date by up to 24 hours to allow for contention-
+  -- reducing strategies.
+  LastIngestionTime TIMESTAMP NOT NULL,
+) PRIMARY KEY(Project, TestId, VariantHash, SubRealm)
+-- The following DDL query needs to be uncommented when applied to real Spanner
+-- instances. But it is commented out for Cloud Spanner Emulator:
+-- https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/issues/32
+-- , DELETION POLICY (OLDER_THAN(PartitionTime, INTERVAL 90 DAY));
