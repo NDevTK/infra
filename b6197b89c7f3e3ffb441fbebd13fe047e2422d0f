@@ -22,6 +22,30 @@
       },
       "revId": "b6197b89c7f3e3ffb441fbebd13fe047e2422d0f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1687bd81_04584563",
+        "filename": "go/src/infra/appengine/weetbix/internal/span/init_db.sql",
+        "patchSetId": 4
+      },
+      "lineNbr": 450,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2022-04-04T13:30:26Z",
+      "side": 1,
+      "message": "I think this is a good idea, just set the retention period longer, eg. 100 days",
+      "parentUuid": "578070ae_fa7b750d",
+      "range": {
+        "startLine": 450,
+        "startChar": 2,
+        "endLine": 450,
+        "endChar": 45
+      },
+      "revId": "b6197b89c7f3e3ffb441fbebd13fe047e2422d0f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
