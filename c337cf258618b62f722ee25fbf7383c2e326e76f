@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "24c634eb_732f5a47",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2022-04-05T04:00:02Z",
+      "side": 1,
+      "message": "Please follow the process described here to rollout your schema change: go/weetbix-process.",
+      "revId": "c337cf258618b62f722ee25fbf7383c2e326e76f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
