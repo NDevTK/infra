@@ -350,6 +350,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "a8970b82_c0aed998",
+        "filename": "go/src/infra/appengine/weetbix/internal/span/init_db.sql",
+        "patchSetId": 6
+      },
+      "lineNbr": 451,
+      "author": {
+        "id": 1178685
+      },
+      "writtenOn": "2022-04-05T03:01:35Z",
+      "side": 1,
+      "message": "Ahh. I see. Since we don\u0027t plan to support regexp yet, and we haven\u0027t ruled it out either. I think it\u0027s ok to keep the comment here. WDYT?",
+      "parentUuid": "0458bddf_020d0da5",
+      "range": {
+        "startLine": 449,
+        "startChar": 33,
+        "endLine": 451,
+        "endChar": 27
+      },
+      "revId": "396a12ac7b403ef5c6a08725530c0a4ee414e8f2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "5ad3dd50_d534aa71",
         "filename": "go/src/infra/appengine/weetbix/internal/span/init_db.sql",
         "patchSetId": 6
