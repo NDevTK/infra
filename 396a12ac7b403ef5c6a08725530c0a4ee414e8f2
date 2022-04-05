@@ -54,6 +54,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "70ab7b31_63c908f1",
+        "filename": "go/src/infra/appengine/weetbix/internal/span/init_db.sql",
+        "patchSetId": 6
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2022-04-05T01:19:02Z",
+      "side": 1,
+      "message": "Also the truncation, this only stores 8 bytes of hash whereas sha256 returns 32 bytes (256 bits).",
+      "parentUuid": "be178c88_a6bd14fa",
+      "revId": "396a12ac7b403ef5c6a08725530c0a4ee414e8f2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "0b719c50_cab4da76",
         "filename": "go/src/infra/appengine/weetbix/internal/span/init_db.sql",
         "patchSetId": 6
@@ -128,6 +146,30 @@
       "writtenOn": "2022-04-04T13:30:26Z",
       "side": 1,
       "message": "Do we know the answer to this now from using this in ResultDB?",
+      "range": {
+        "startLine": 449,
+        "startChar": 33,
+        "endLine": 451,
+        "endChar": 27
+      },
+      "revId": "396a12ac7b403ef5c6a08725530c0a4ee414e8f2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5a251798_3a3144f6",
+        "filename": "go/src/infra/appengine/weetbix/internal/span/init_db.sql",
+        "patchSetId": 6
+      },
+      "lineNbr": 451,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2022-04-05T01:19:02Z",
+      "side": 1,
+      "message": "I think listing tests alphabetically will be no problem, but doing a regexp search could be a problem if it needs to scan the whole (or a significant fraction of) the table. I recall full-table scan on UniqueTestVariants in ResultDB was \u003e30 seconds.",
+      "parentUuid": "c9d55a1a_3e5311a1",
       "range": {
         "startLine": 449,
         "startChar": 33,

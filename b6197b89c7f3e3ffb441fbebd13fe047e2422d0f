@@ -46,6 +46,30 @@
       },
       "revId": "b6197b89c7f3e3ffb441fbebd13fe047e2422d0f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fba85e01_1075e43a",
+        "filename": "go/src/infra/appengine/weetbix/internal/span/init_db.sql",
+        "patchSetId": 4
+      },
+      "lineNbr": 450,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2022-04-05T01:19:02Z",
+      "side": 1,
+      "message": "Yes, that sounds like a good idea.",
+      "parentUuid": "578070ae_fa7b750d",
+      "range": {
+        "startLine": 450,
+        "startChar": 2,
+        "endLine": 450,
+        "endChar": 45
+      },
+      "revId": "b6197b89c7f3e3ffb441fbebd13fe047e2422d0f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
