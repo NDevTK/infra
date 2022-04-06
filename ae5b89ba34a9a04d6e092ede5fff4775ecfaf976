@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b102185a_88494dee",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-04-06T00:32:13Z",
+      "side": 1,
+      "message": "Hi Justin, Can you review peripheral-wifi json and csv option",
+      "revId": "ae5b89ba34a9a04d6e092ede5fff4775ecfaf976",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
