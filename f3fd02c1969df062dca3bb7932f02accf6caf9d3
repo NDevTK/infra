@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef480d04_fab73823",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1519712
+      },
+      "writtenOn": "2022-04-07T16:58:32Z",
+      "side": 1,
+      "message": "Hi Otabek,\n\nJust curious whether you have been able to duplicate the issue I mentioned to you yesterday? But I am ok with merging this and testing whether that issue persist.\n",
+      "revId": "f3fd02c1969df062dca3bb7932f02accf6caf9d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
