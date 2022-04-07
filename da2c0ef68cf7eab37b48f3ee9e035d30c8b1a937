@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "52017b5f_7f3f6678",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2022-04-07T18:55:04Z",
+      "side": 1,
+      "message": "Just naming nits.",
+      "revId": "da2c0ef68cf7eab37b48f3ee9e035d30c8b1a937",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8cde90ec_4c323c6b",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2022-04-07T18:55:04Z",
+      "side": 1,
+      "message": "\"pass-down-sample-factor\" maybe?",
+      "revId": "da2c0ef68cf7eab37b48f3ee9e035d30c8b1a937",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fec9d65c_c265cc9e",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2022-04-07T18:55:04Z",
+      "side": 1,
+      "message": "Lol I was confused about how this is different from the previous one, but I think I finally got it. I\u0027d maybe rename these two to \"ignore-passed-builds\" and \"only-failed-tests\"",
+      "revId": "da2c0ef68cf7eab37b48f3ee9e035d30c8b1a937",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
