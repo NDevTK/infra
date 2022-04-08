@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "536c6336_b163b81b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1530597
+      },
+      "writtenOn": "2022-04-08T17:52:16Z",
+      "side": 1,
+      "message": "I have to run to a meeting, but I\u0027ll do another pass later. Don\u0027t block on me though.",
+      "revId": "bbbe52b2f5abcb26f043998ddd75502e164acc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "df38223a_c1d57a65",
@@ -43,6 +60,23 @@
         "endLine": 2132,
         "endChar": 31
       },
+      "revId": "bbbe52b2f5abcb26f043998ddd75502e164acc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a5cd8391_7400b7f7",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/wifi.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1530597
+      },
+      "writtenOn": "2022-04-08T17:52:16Z",
+      "side": 1,
+      "message": "Since you need `c` here maybe make it a \"method\" on `manageWifiCmd` instead?",
       "revId": "bbbe52b2f5abcb26f043998ddd75502e164acc81",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
