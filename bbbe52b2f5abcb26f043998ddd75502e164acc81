@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "df38223a_c1d57a65",
+        "filename": "go/src/infra/cmd/shivas/cmdhelp/description.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 2128,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-04-08T17:46:21Z",
+      "side": 1,
+      "message": "Is there a reason why we have both CSV and JSON modes? Can we just have JSON?",
+      "range": {
+        "startLine": 2128,
+        "startChar": 0,
+        "endLine": 2128,
+        "endChar": 6
+      },
+      "revId": "bbbe52b2f5abcb26f043998ddd75502e164acc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bf7be068_2abe8dd1",
+        "filename": "go/src/infra/cmd/shivas/cmdhelp/description.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 2132,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-04-08T17:46:21Z",
+      "side": 1,
+      "message": "Does this mean if you want 3 routers, then the CSV header will be `dut,wifi_features,router,router,router`?\n\nI think if possible, it would be good to keep the CSV header format the same for all files. Maybe that means separating the routers into additional rows? For your example, maybe\n```\ndut,wifi_features,router\nd1,f1;f2,hostname:h1;model:m1;feature:f1;feature:f2\nd1,f1;f2,hostname:h2\nd2,f2,hostname:h3;model:m2\n```",
+      "range": {
+        "startLine": 2132,
+        "startChar": 18,
+        "endLine": 2132,
+        "endChar": 31
+      },
+      "revId": "bbbe52b2f5abcb26f043998ddd75502e164acc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

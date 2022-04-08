@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "42b11dc5_8555dbe5",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/wifi.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-04-08T17:46:21Z",
+      "side": 0,
+      "message": "Why is this deleted?",
+      "range": {
+        "startLine": 35,
+        "startChar": 30,
+        "endLine": 35,
+        "endChar": 49
+      },
+      "revId": "c196f2a903d79deab1d8a7a466fd4877f5873d29",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
