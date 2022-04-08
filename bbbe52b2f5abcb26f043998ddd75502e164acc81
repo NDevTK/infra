@@ -43,6 +43,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ad78972e_b1cf0da1",
+        "filename": "go/src/infra/cmd/shivas/cmdhelp/description.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 2128,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-04-08T23:51:54Z",
+      "side": 1,
+      "message": "It was suggestion by Anu -\"Yeah, Ideally your command would support all of them. csv, json and cmdline inputs\"",
+      "parentUuid": "df38223a_c1d57a65",
+      "range": {
+        "startLine": 2128,
+        "startChar": 0,
+        "endLine": 2128,
+        "endChar": 6
+      },
+      "revId": "bbbe52b2f5abcb26f043998ddd75502e164acc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "bf7be068_2abe8dd1",
         "filename": "go/src/infra/cmd/shivas/cmdhelp/description.go",
         "patchSetId": 2
@@ -66,6 +90,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "221e81ab_35c84cb0",
+        "filename": "go/src/infra/cmd/shivas/cmdhelp/description.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 2132,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-04-08T23:51:54Z",
+      "side": 1,
+      "message": "Yeah more router will require more columns. I\u0027m trying to make it closer to cli input.  keeping it one row seems easier to update/maintain.",
+      "parentUuid": "bf7be068_2abe8dd1",
+      "range": {
+        "startLine": 2132,
+        "startChar": 18,
+        "endLine": 2132,
+        "endChar": 31
+      },
+      "revId": "bbbe52b2f5abcb26f043998ddd75502e164acc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a5cd8391_7400b7f7",
         "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/wifi.go",
         "patchSetId": 2
@@ -77,6 +125,24 @@
       "writtenOn": "2022-04-08T17:52:16Z",
       "side": 1,
       "message": "Since you need `c` here maybe make it a \"method\" on `manageWifiCmd` instead?",
+      "revId": "bbbe52b2f5abcb26f043998ddd75502e164acc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2389a3dd_60bd37c9",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/wifi.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-04-08T23:51:54Z",
+      "side": 1,
+      "message": "Is it ok to make it a method with context passing as argument as well? I wasn\u0027t sure if that is ok so I did it this way. I\u0027ll make it a method.",
+      "parentUuid": "a5cd8391_7400b7f7",
       "revId": "bbbe52b2f5abcb26f043998ddd75502e164acc81",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
