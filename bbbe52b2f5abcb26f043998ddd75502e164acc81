@@ -114,6 +114,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "321938d0_f81e2def",
+        "filename": "go/src/infra/cmd/shivas/cmdhelp/description.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 2132,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-04-09T00:05:05Z",
+      "side": 1,
+      "message": "I also chose one dut per row to share the parse and validation (validateSingleDut) for cli and cvs. Multiple row input would be a bit trickier to aggregate then check to share validateSingleDut",
+      "parentUuid": "221e81ab_35c84cb0",
+      "range": {
+        "startLine": 2132,
+        "startChar": 18,
+        "endLine": 2132,
+        "endChar": 31
+      },
+      "revId": "bbbe52b2f5abcb26f043998ddd75502e164acc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a5cd8391_7400b7f7",
         "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/wifi.go",
         "patchSetId": 2
@@ -143,6 +167,24 @@
       "side": 1,
       "message": "Is it ok to make it a method with context passing as argument as well? I wasn\u0027t sure if that is ok so I did it this way. I\u0027ll make it a method.",
       "parentUuid": "a5cd8391_7400b7f7",
+      "revId": "bbbe52b2f5abcb26f043998ddd75502e164acc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "25b3b782_21c63f28",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/wifi.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-04-09T00:05:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2389a3dd_60bd37c9",
       "revId": "bbbe52b2f5abcb26f043998ddd75502e164acc81",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
