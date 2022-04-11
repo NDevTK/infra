@@ -14,6 +14,8 @@ from __future__ import absolute_import
 
 import logging
 import webapp2
+from flask import Flask
+from werkzeug.middleware import dispatcher
 
 from components import endpoints_webapp2
 
@@ -32,6 +34,15 @@ app_routes = registry.Register(services)
 app = webapp2.WSGIApplication(
     app_routes, config={'services': services})
 gae_ts_mon.initialize(app)
+
+flaskapp = Flask(__name__)
+@flaskapp.route("/")
+def hello():
+    return "Hello, World!"
+
+app = dispatcher.DispatcherMiddleware(app, {
+        '/f': flaskapp,
+    })
 
 endpoints = endpoints_webapp2.api_server(
     [api_svc_v1.MonorailApi, api_svc_v1.ClientConfigApi])
