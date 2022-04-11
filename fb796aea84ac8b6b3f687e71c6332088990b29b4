@@ -39,6 +39,30 @@
       },
       "revId": "fb796aea84ac8b6b3f687e71c6332088990b29b4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a267beb6_06d222dd",
+        "filename": "go/src/infra/cros/karte/internal/frontend/frontend.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 317,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-04-11T21:46:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fc3335da_57647199",
+      "range": {
+        "startLine": 317,
+        "startChar": 21,
+        "endLine": 317,
+        "endChar": 43
+      },
+      "revId": "fb796aea84ac8b6b3f687e71c6332088990b29b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
