@@ -65,6 +65,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "55c80280_4a44e0f9",
+        "filename": "go/src/infra/cmd/shivas/cmdhelp/description.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 2128,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-04-11T21:07:03Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ad78972e_b1cf0da1",
+      "range": {
+        "startLine": 2128,
+        "startChar": 0,
+        "endLine": 2128,
+        "endChar": 6
+      },
+      "revId": "bbbe52b2f5abcb26f043998ddd75502e164acc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bf7be068_2abe8dd1",
@@ -126,6 +150,30 @@
       "side": 1,
       "message": "I also chose one dut per row to share the parse and validation (validateSingleDut) for cli and cvs. Multiple row input would be a bit trickier to aggregate then check to share validateSingleDut",
       "parentUuid": "221e81ab_35c84cb0",
+      "range": {
+        "startLine": 2132,
+        "startChar": 18,
+        "endLine": 2132,
+        "endChar": 31
+      },
+      "revId": "bbbe52b2f5abcb26f043998ddd75502e164acc81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c36b6a42_57a6e7b3",
+        "filename": "go/src/infra/cmd/shivas/cmdhelp/description.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 2132,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-04-11T21:07:03Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "321938d0_f81e2def",
       "range": {
         "startLine": 2132,
         "startChar": 18,

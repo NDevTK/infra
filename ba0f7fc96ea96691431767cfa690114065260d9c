@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "35b369ce_5900b549",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2022-04-11T21:07:03Z",
+      "side": 1,
+      "message": "Chatted offline. Will implement `add peripheral-wifi` JSON mode later. Not blocking current CL.",
+      "revId": "ba0f7fc96ea96691431767cfa690114065260d9c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
