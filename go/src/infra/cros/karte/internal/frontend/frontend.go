@@ -314,6 +314,7 @@ func (k *karteFrontend) UpdateAction(ctx context.Context, req *kartepb.UpdateAct
 // It is intentionally EXACTLY equivalent to calling the non-cron API persist-action-range with
 // "reasonable" arguments.
 func (k *karteFrontend) PersistToBigquery(ctx context.Context, req *kartepb.PersistToBigqueryRequest) (*kartepb.PersistToBigqueryResponse, error) {
+	logging.Infof(ctx, "Persisting to BigQuery")
 	now := time.Now()
 	resp, err := k.PersistActionRange(
 		ctx,
