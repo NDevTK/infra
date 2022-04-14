@@ -35,6 +35,42 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c1e66a90_e9ec5cf5",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2022-04-14T04:08:32Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "8cde90ec_4c323c6b",
+      "revId": "da2c0ef68cf7eab37b48f3ee9e035d30c8b1a937",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a80e07ee_2e6bdb3f",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2022-04-14T04:08:32Z",
+      "side": 1,
+      "message": "That seems verbose but not necessarily clearer",
+      "parentUuid": "8cde90ec_4c323c6b",
+      "revId": "da2c0ef68cf7eab37b48f3ee9e035d30c8b1a937",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fec9d65c_c265cc9e",
@@ -48,6 +84,24 @@
       "writtenOn": "2022-04-07T18:55:04Z",
       "side": 1,
       "message": "Lol I was confused about how this is different from the previous one, but I think I finally got it. I\u0027d maybe rename these two to \"ignore-passed-builds\" and \"only-failed-tests\"",
+      "revId": "da2c0ef68cf7eab37b48f3ee9e035d30c8b1a937",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3eb53388_c4b0bce4",
+        "filename": "go/src/infra/rts/cmd/rts-ml-data/gen_training_data.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2022-04-14T04:08:32Z",
+      "side": 1,
+      "message": "I know builds is right in our terminology but I hate it, the tests passing don\u0027t have anything to do with if it built 😐 but yeah these both make more sense",
+      "parentUuid": "fec9d65c_c265cc9e",
       "revId": "da2c0ef68cf7eab37b48f3ee9e035d30c8b1a937",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
