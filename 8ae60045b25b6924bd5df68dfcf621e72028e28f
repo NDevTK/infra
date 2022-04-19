@@ -16,6 +16,24 @@
       "message": "What is the purpose of this change?\n",
       "revId": "8ae60045b25b6924bd5df68dfcf621e72028e28f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "34523ab2_fda19eb8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1408727
+      },
+      "writtenOn": "2022-04-19T18:35:26Z",
+      "side": 1,
+      "message": "Hi Anushruth,\nin the current example, the JSON is invalid and can not be used in it\u0027s current form to create a machine record.\nThe updated example was determined after reviewing the proto and related host creation code and determining a usable JSON representation.",
+      "parentUuid": "881204b4_444a22b2",
+      "revId": "8ae60045b25b6924bd5df68dfcf621e72028e28f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
