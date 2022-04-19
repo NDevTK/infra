@@ -251,9 +251,11 @@ class MonorailRequest(MonorailRequestBase):
       logging.info('Request: %s', self.current_page_url)
 
     with self.profiler.Phase('path parsing'):
+      logging.info('here: ')
       (viewed_user_val, self.project_name,
        self.hotlist_id, self.hotlist_name) = _ParsePathIdentifiers(
            self.request.path)
+      logging.info(self.request)
       self.viewed_username = _GetViewedEmail(
           viewed_user_val, self.cnxn, services)
     with self.profiler.Phase('qs parsing'):

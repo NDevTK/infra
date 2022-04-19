@@ -22,6 +22,7 @@ from components import endpoints_webapp2
 import gae_ts_mon
 
 import registerpages
+import flaskregisterpages
 from framework import sorting
 from services import api_svc_v1
 from services import service_manager
@@ -39,6 +40,11 @@ flaskapp = Flask(__name__)
 @flaskapp.route("/")
 def hello():
     return "Hello, World!"
+
+flaskRegist = flaskregisterpages.FlaskServletRegistry()
+flask_rote = flaskRegist.Register(services)
+for rule in flask_rote:
+    flaskapp.add_url_rule(rule[0], view_func=rule[1])
 
 app = dispatcher.DispatcherMiddleware(app, {
         '/f': flaskapp,

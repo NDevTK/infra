@@ -1,0 +1,79 @@
+{
+  "api_version": 1,
+  "automatic_scaling": {
+    "max_pending_latency": "0.2s",
+    "min_idle_instances": "5"
+  },
+  "default_expiration": "3600d",
+  "env_variables": {
+    "GAE_USE_SOCKETS_HTTPLIB": ""
+  },
+  "handlers": [
+    {
+      "login": "admin",
+      "script": "monorailapp.app",
+      "url": "/_ah/warmup"
+    },
+    {
+      "script": "monorailapp.endpoints",
+      "url": "/_ah/api/.*"
+    },
+    {
+      "login": "admin",
+      "script": "monorailapp.app",
+      "url": "/_task/.*"
+    },
+    {
+      "login": "admin",
+      "script": "monorailapp.app",
+      "url": "/_cron/.*"
+    },
+    {
+      "login": "admin",
+      "script": "monorailapp.app",
+      "url": "/_ah/mail/.*"
+    }
+  ],
+  "inbound_services": [
+    "mail",
+    "mail_bounce",
+    "warmup"
+  ],
+  "includes": [
+    "gae_ts_mon"
+  ],
+  "instance_class": "F4",
+  "libraries": [
+    {
+      "name": "endpoints",
+      "version": "1.0"
+    },
+    {
+      "name": "grpcio",
+      "version": "1.0.0"
+    },
+    {
+      "name": "MySQLdb",
+      "version": "latest"
+    },
+    {
+      "name": "ssl",
+      "version": "latest"
+    }
+  ],
+  "runtime": "python27",
+  "service": "latency-insensitive",
+  "skip_files": [
+    "^(.*/)?#.*#$",
+    "^(.*/)?.*~$",
+    "^(.*/)?.*\\.py[co]$",
+    "^(.*/)?.*/RCS/.*$",
+    "^(.*/)?\\..*$",
+    "node_modules/",
+    "venv/"
+  ],
+  "threadsafe": false,
+  "vpc_access_connector": {
+    "name": "projects/monorail-staging/locations/us-central1/connectors/redis-connector"
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "api_version": 1,
+  "automatic_scaling": {
+    "max_pending_latency": "0.2s",
+    "min_idle_instances": "1"
+  },
+  "default_expiration": "10d",
+  "env_variables": {
+    "GAE_USE_SOCKETS_HTTPLIB": ""
+  },
+  "handlers": [
+    {
+      "script": "monorailapp.endpoints",
+      "url": "/_ah/api/.*"
+    },
+    {
+      "expiration": "10m",
+      "static_files": "static/robots.txt",
+      "upload": "static/robots.txt",
+      "url": "/robots.txt"
+    },
+    {
+      "static_files": "static/database-maintenance.html",
+      "upload": "static/database-maintenance.html",
+      "url": "/database-maintenance"
+    },
+    {
+      "http_headers": {
+        "Access-Control-Allow-Origin": "*"
+      },
+      "mime_type": "application/javascript",
+      "secure": "always",
+      "static_dir": "static/dist",
+      "url": "/static/dist"
+    },
+    {
+      "http_headers": {
+        "Access-Control-Allow-Origin": "*"
+      },
+      "mime_type": "application/javascript",
+      "secure": "always",
+      "static_dir": "static/js",
+      "url": "/static/js"
+    },
+    {
+      "static_dir": "static",
+      "url": "/static"
+    },
+    {
+      "login": "admin",
+      "script": "monorailapp.app",
+      "url": "/_ah/mail/.+"
+    },
+    {
+      "login": "admin",
+      "script": "monorailapp.app",
+      "url": "/_ah/warmup"
+    },
+    {
+      "script": "monorailapp.app",
+      "secure": "always",
+      "url": "/.*"
+    }
+  ],
+  "inbound_services": [
+    "mail",
+    "mail_bounce",
+    "warmup"
+  ],
+  "includes": [
+    "gae_ts_mon"
+  ],
+  "instance_class": "F4",
+  "libraries": [
+    {
+      "name": "endpoints",
+      "version": "1.0"
+    },
+    {
+      "name": "grpcio",
+      "version": "1.0.0"
+    },
+    {
+      "name": "MySQLdb",
+      "version": "latest"
+    },
+    {
+      "name": "ssl",
+      "version": "2.7.11"
+    }
+  ],
+  "runtime": "python27",
+  "skip_files": [
+    "^(.*/)?#.*#$",
+    "^(.*/)?.*~$",
+    "^(.*/)?.*\\.py[co]$",
+    "^(.*/)?.*/RCS/.*$",
+    "^(.*/)?\\..*$",
+    "node_modules/",
+    "venv/",
+    "third_party/tools/"
+  ],
+  "threadsafe": false,
+  "vpc_access_connector": {
+    "name": "projects/monorail-staging/locations/us-central1/connectors/redis-connector"
+  }
+}
