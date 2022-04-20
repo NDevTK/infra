@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e986b8e3_ff4f88bf",
+        "filename": "appengine/monorail/flaskregisterpages.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2022-04-20T22:04:35Z",
+      "side": 1,
+      "message": "Do we know if Flask URL regexes differ from webapp2 ones?",
+      "range": {
+        "startLine": 30,
+        "startChar": 6,
+        "endLine": 30,
+        "endChar": 16
+      },
+      "revId": "322e6be6ef49e5bd4aec11a0a72449a42403f447",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "64a4a7d6_82a0fac9",
+        "filename": "appengine/monorail/flaskregisterpages.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2022-04-20T22:04:35Z",
+      "side": 1,
+      "message": "How will this be used in monorailapp.py? self.routes contains a servlet_class and Flask expects a function.",
+      "revId": "322e6be6ef49e5bd4aec11a0a72449a42403f447",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
