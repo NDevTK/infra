@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "9b19eeb0_9de9cfc7",
+        "filename": "appengine/monorail/flaskregisterpages.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-04-21T20:08:12Z",
+      "side": 1,
+      "message": "this will be resolved in later CL.\nfor webapp2 it will be /p/\u003cproject_name:regex\u003e/\nfor flask it will be /p/\u003cregex:project_name\u003e/\ni haven\u0027t test if the regex type work for flask. if not we will do it as \u003cstring:project_name\u003e and do another check in helper function to make sure the value is valid",
+      "parentUuid": "e986b8e3_ff4f88bf",
+      "range": {
+        "startLine": 30,
+        "startChar": 6,
+        "endLine": 30,
+        "endChar": 16
+      },
+      "revId": "322e6be6ef49e5bd4aec11a0a72449a42403f447",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "64a4a7d6_82a0fac9",
         "filename": "appengine/monorail/flaskregisterpages.py",
         "patchSetId": 1
