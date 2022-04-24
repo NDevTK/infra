@@ -87,13 +87,20 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 		}
 	}
 	for _, lse := range lses {
-		if lseInSUnitMap[lse.GetName()] {
+		name := lse.GetName()
+		if lseInSUnitMap[name] {
 			continue
 		}
-		if len(lse.GetMachines()) < 0 {
-			continue
+		machines := lse.GetMachines()
+		switch n := len(machines); n {
+		case 0:
+			return errors.Reason("report ufs inventory cron handler: no machines associated with %q", name).Err()
+		case 1:
+			// Do nothing.
+		default:
+			return errors.Reason("report ufs inventory cron handler: too many machines %d associated with %q", n, name).Err()
 		}
-		machine, ok := idTomachineMap[lse.GetMachines()[0]]
+		machine, ok := idTomachineMap[machines[0]]
 		if !ok {
 			continue
 		}
