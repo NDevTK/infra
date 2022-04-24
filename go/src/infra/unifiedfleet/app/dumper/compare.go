@@ -413,7 +413,7 @@ func logDiff(crimsonData, ufsData map[string]string, writer *storage.Writer, log
 	}
 	logs = append(logs, "Resources in both UFS and crimson but has difference (crimson first):")
 	logs = append(logs, diffs...)
-	if _, err := fmt.Fprintf(writer, strings.Join(logs, "\n")); err != nil {
+	if _, err := fmt.Fprint(writer, strings.Join(logs, "\n")); err != nil {
 		return err
 	}
 	return nil
