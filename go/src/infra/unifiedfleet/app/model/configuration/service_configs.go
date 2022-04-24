@@ -19,7 +19,7 @@ import (
 
 const (
 	serviceConfigID string = "UFS"
-	lowerHex               = "000000"
+	lowerHex        string = "000000"
 )
 
 // ServiceConfig we stored for ufs.
