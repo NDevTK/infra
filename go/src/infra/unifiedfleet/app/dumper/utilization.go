@@ -90,9 +90,6 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 		if lseInSUnitMap[lse.GetName()] {
 			continue
 		}
-		if len(lse.GetMachines()) < 0 {
-			continue
-		}
 		machine, ok := idTomachineMap[lse.GetMachines()[0]]
 		if !ok {
 			continue
