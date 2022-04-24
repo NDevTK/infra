@@ -239,10 +239,13 @@ func TestGetAllAssets(t *testing.T) {
 			}
 			resp, err := GetAllAssets(ctx)
 			So(len(resp), ShouldEqual, 10)
+			So(len(assets), ShouldEqual, 10)
+			So(assets, ShouldResembleProto, resp)
 			So(err, ShouldBeNil)
 		})
 	})
 }
+
 
 func TestQueryAssetByPropertyName(t *testing.T) {
 	t.Parallel()
