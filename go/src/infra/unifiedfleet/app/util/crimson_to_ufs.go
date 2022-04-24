@@ -105,7 +105,6 @@ func ProcessDatacenters(dc *crimsonconfig.Datacenter) ([]*ufspb.Rack, []*ufspb.K
 	}
 	for _, old := range dc.GetRack() {
 		rackName := old.GetName()
-		switchNames := make([]string, 0)
 		for _, crimsonSwitch := range old.GetSwitch() {
 			s := &ufspb.Switch{
 				Name:          crimsonSwitch.GetName(),
@@ -116,7 +115,6 @@ func ProcessDatacenters(dc *crimsonconfig.Datacenter) ([]*ufspb.Rack, []*ufspb.K
 				ResourceState: ToState(crimsonSwitch.GetState()),
 			}
 			switches = append(switches, s)
-			switchNames = append(switchNames, s.GetName())
 		}
 		// Also add the kvms which is attached to the rack in rack definitation
 		found := false
