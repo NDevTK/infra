@@ -251,13 +251,13 @@ func validateDeleteRPM(ctx context.Context, rpm *ufspb.RPM) error {
 		var errorMsg strings.Builder
 		errorMsg.WriteString(fmt.Sprintf("RPM %s cannot be deleted because there are other resources which are referring this RPM.", rpm.GetName()))
 		if len(machines) > 0 {
-			errorMsg.WriteString(fmt.Sprintf("\nMachines referring the RPM:\n"))
+			errorMsg.WriteString("\nMachines referring the RPM:\n")
 			for _, machine := range machines {
 				errorMsg.WriteString(machine.Name + ", ")
 			}
 		}
 		if len(machinelses) > 0 {
-			errorMsg.WriteString(fmt.Sprintf("\nMachineLSEs referring the RPM:\n"))
+			errorMsg.WriteString("\nMachineLSEs referring the RPM:\n")
 			for _, machinelse := range machinelses {
 				errorMsg.WriteString(machinelse.Name + ", ")
 			}
