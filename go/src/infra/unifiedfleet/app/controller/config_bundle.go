@@ -19,7 +19,7 @@ import (
 // UpdateConfigBundle updates ConfigBundle in datastore.
 func UpdateConfigBundle(ctx context.Context, cb []byte, mask *field_mask.FieldMask, allowMissing bool) ([]byte, error) {
 	// TODO (b/186663540): Implement field mask for partial updates.
-	if allowMissing == false {
+	if !allowMissing {
 		logging.Infof(ctx, "UpdateConfigBundle: default to true to ensure upsert of any missing ConfigBundles")
 	}
 	if mask != nil {

@@ -645,7 +645,7 @@ func (fs *FleetServerImpl) UpdateConfigBundle(ctx context.Context, req *ufsAPI.U
 	}
 	// TODO (b/186663540): Implement field mask for partial updates.
 	// Set allow_missing to true at all times to ensure upsert.
-	if req.AllowMissing == false {
+	if !req.AllowMissing {
 		logging.Infof(ctx, "UpdateConfigBundle: default to true to ensure upsert of any missing ConfigBundles")
 	}
 	if req.UpdateMask != nil {
