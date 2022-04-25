@@ -632,34 +632,28 @@ func validateRackRegistration(ctx context.Context, rack *ufspb.Rack) error {
 	// Aggregate resources to check if rack already exists
 	resourcesAlreadyExists = append(resourcesAlreadyExists, GetRackResource(rack.Name))
 
-	if switches != nil {
-		for _, s := range switches {
-			// Aggregate resources to check if switch already exists
-			resourcesAlreadyExists = append(resourcesAlreadyExists, GetSwitchResource(s.Name))
+	for _, s := range switches {
+		// Aggregate resources to check if switch already exists
+		resourcesAlreadyExists = append(resourcesAlreadyExists, GetSwitchResource(s.Name))
+	}
+
+	for _, kvm := range kvms {
+		// Aggregate resources to check if kvm already exists
+		resourcesAlreadyExists = append(resourcesAlreadyExists, GetKVMResource(kvm.Name))
+
+		// Aggregate resource to check if resources referenced by the kvm does not exist
+		if chromePlatformID := kvm.GetChromePlatform(); chromePlatformID != "" {
+			resourcesNotFound = append(resourcesNotFound, GetChromePlatformResource(chromePlatformID))
+		}
+
+		if err := validateMacAddress(ctx, kvm.GetName(), kvm.GetMacAddress()); err != nil {
+			return err
 		}
 	}
 
-	if kvms != nil {
-		for _, kvm := range kvms {
-			// Aggregate resources to check if kvm already exists
-			resourcesAlreadyExists = append(resourcesAlreadyExists, GetKVMResource(kvm.Name))
-
-			// Aggregate resource to check if resources referenced by the kvm does not exist
-			if chromePlatformID := kvm.GetChromePlatform(); chromePlatformID != "" {
-				resourcesNotFound = append(resourcesNotFound, GetChromePlatformResource(chromePlatformID))
-			}
-
-			if err := validateMacAddress(ctx, kvm.GetName(), kvm.GetMacAddress()); err != nil {
-				return err
-			}
-		}
-	}
-
-	if rpms != nil {
-		for _, rpm := range rpms {
-			// Aggregate resources to check if rpm already exists
-			resourcesAlreadyExists = append(resourcesAlreadyExists, GetRPMResource(rpm.Name))
-		}
+	for _, rpm := range rpms {
+		// Aggregate resources to check if rpm already exists
+		resourcesAlreadyExists = append(resourcesAlreadyExists, GetRPMResource(rpm.Name))
 	}
 
 	// Check if rack/switches/kvms/rpms already exists
