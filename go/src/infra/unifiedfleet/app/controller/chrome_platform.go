@@ -198,13 +198,13 @@ func validateDeleteChromePlatform(ctx context.Context, id string) error {
 		var errorMsg strings.Builder
 		errorMsg.WriteString(fmt.Sprintf("ChromePlatform %s cannot be deleted because there are other resources which are referring this ChromePlatform.", id))
 		if len(machines) > 0 {
-			errorMsg.WriteString(fmt.Sprintf("\nMachines referring the ChromePlatform:\n"))
+			errorMsg.WriteString("\nMachines referring the ChromePlatform:\n")
 			for _, machine := range machines {
 				errorMsg.WriteString(machine.Name + ", ")
 			}
 		}
 		if len(kvms) > 0 {
-			errorMsg.WriteString(fmt.Sprintf("\nKVMs referring the ChromePlatform:\n"))
+			errorMsg.WriteString("\nKVMs referring the ChromePlatform:\n")
 			for _, kvm := range kvms {
 				errorMsg.WriteString(kvm.Name + ", ")
 			}
