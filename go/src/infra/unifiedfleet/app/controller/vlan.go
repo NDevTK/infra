@@ -401,7 +401,7 @@ func ImportOSVlans(ctx context.Context, sheetClient sheet.ClientInterface, gitCl
 }
 
 func logVlans(ctx context.Context, vlans []*ufspb.Vlan) {
-	if vlans != nil && len(vlans) > 0 {
+	if len(vlans) > 0 {
 		for _, v := range vlans {
 			logging.Debugf(ctx, "\tVlan %s (%s)", v.GetName(), v.GetVlanAddress())
 		}
@@ -411,7 +411,7 @@ func logVlans(ctx context.Context, vlans []*ufspb.Vlan) {
 }
 
 func logDHCPs(ctx context.Context, dhcps []*ufspb.DHCPConfig) {
-	if dhcps != nil && len(dhcps) > 0 {
+	if len(dhcps) > 0 {
 		for _, v := range dhcps {
 			logging.Debugf(ctx, "\tHost %s (%s)", v.GetHostname(), v.GetIp())
 		}
@@ -422,7 +422,7 @@ func logDHCPs(ctx context.Context, dhcps []*ufspb.DHCPConfig) {
 }
 
 func logIPs(ctx context.Context, ips []*ufspb.IP) {
-	if ips != nil && len(ips) > 0 {
+	if len(ips) > 0 {
 		for _, v := range ips {
 			logging.Debugf(ctx, "\tIP %s", v.GetId())
 		}
