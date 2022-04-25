@@ -774,7 +774,7 @@ func renameMachineInner(ctx context.Context, oldMachineName, newMachineName stri
 
 func renameMachineHelper(ctx context.Context, oldMachineName, newMachineName string, hc *HistoryClient) error {
 	// Rename the Nic(s) for the machine
-	newNics := make([]*ufspb.Nic, 0, 0)
+	newNics := make([]*ufspb.Nic, 0)
 	// Nic have machine name in their "Name/ID"
 	// Also Update the machine name in all the nics
 	nics, err := registration.QueryNicByPropertyName(ctx, "machine", oldMachineName, false)
