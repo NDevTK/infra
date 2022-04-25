@@ -353,7 +353,7 @@ func assignServoPortIfMissing(labstation *ufspb.MachineLSE, newServo *chromeosLa
 //
 // Checks if the device configuration is known by querying IV2. Returns error if the device config doesn't exist.
 func validateDeviceConfig(ctx context.Context, dut *ufspb.Machine) error {
-	devCfgIds := make([]*device.ConfigId, 0, 0)
+	devCfgIds := make([]*device.ConfigId, 0)
 	devConfigID, err := extractDeviceConfigID(dut)
 	if err != nil {
 		return err
