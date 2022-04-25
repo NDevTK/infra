@@ -252,6 +252,24 @@
       "message": "How will this be used in monorailapp.py? self.routes contains a servlet_class and Flask expects a function.",
       "revId": "322e6be6ef49e5bd4aec11a0a72449a42403f447",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eff9139a_1c0b4976",
+        "filename": "appengine/monorail/flaskregisterpages.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-04-25T16:38:47Z",
+      "side": 1,
+      "message": "this can be seen in the demo: https://chromium-review.googlesource.com/c/infra/infra/+/3597238",
+      "parentUuid": "64a4a7d6_82a0fac9",
+      "revId": "322e6be6ef49e5bd4aec11a0a72449a42403f447",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
