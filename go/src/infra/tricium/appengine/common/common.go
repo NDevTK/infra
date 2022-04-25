@@ -118,7 +118,14 @@ func NewRPCServer() *prpc.Server {
 	// TODO(vadimsh): Enable monitoring interceptor.
 	// UnaryServerInterceptor: grpcmon.NewUnaryServerInterceptor(nil),
 	return &prpc.Server{
-		AccessControl: prpc.AllowOriginAll,
+		// Allow cross-origin calls, in particular calls using Gerrit auth headers.
+		AccessControl: func(context.Context, string) prpc.AccessControlDecision {
+			return prpc.AccessControlDecision{
+				AllowCrossOriginRequests: true,
+				AllowCredentials:         true,
+				AllowHeaders:             []string{gerritauth.Method.Header},
+			}
+		},
 		Authenticator: &auth.Authenticator{
 			Methods: []auth.Method{
 				// The default method used by majority of clients.
