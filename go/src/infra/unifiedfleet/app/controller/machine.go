@@ -924,11 +924,11 @@ func validateDeleteMachine(ctx context.Context, machine *ufspb.Machine) error {
 	if len(machinelses) > 0 {
 		var errorMsg strings.Builder
 		errorMsg.WriteString(fmt.Sprintf("Machine %s is occupied.", machine.GetName()))
-		errorMsg.WriteString(fmt.Sprintf("\nHosts referring the Machine:\n"))
+		errorMsg.WriteString("\nHosts referring the Machine:\n")
 		for _, machinelse := range machinelses {
 			errorMsg.WriteString(machinelse.Name + ", ")
 		}
-		errorMsg.WriteString(fmt.Sprintf("\nPlease delete the hosts first.\n"))
+		errorMsg.WriteString("\nPlease delete the hosts first.\n")
 		logging.Errorf(ctx, errorMsg.String())
 		return status.Errorf(codes.FailedPrecondition, errorMsg.String())
 	}
