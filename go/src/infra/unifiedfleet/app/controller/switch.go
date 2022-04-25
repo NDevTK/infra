@@ -367,19 +367,19 @@ func validateDeleteSwitch(ctx context.Context, s *ufspb.Switch) error {
 		var errorMsg strings.Builder
 		errorMsg.WriteString(fmt.Sprintf("Switch %s cannot be deleted because there are other resources which are referring to this Switch.", s.GetName()))
 		if len(nics) > 0 {
-			errorMsg.WriteString(fmt.Sprintf("\nNics referring to the Switch:\n"))
+			errorMsg.WriteString("\nNics referring to the Switch:\n")
 			for _, nic := range nics {
 				errorMsg.WriteString(nic.Name + ", ")
 			}
 		}
 		if len(dracs) > 0 {
-			errorMsg.WriteString(fmt.Sprintf("\nDracs referring to the Switch:\n"))
+			errorMsg.WriteString("\nDracs referring to the Switch:\n")
 			for _, drac := range dracs {
 				errorMsg.WriteString(drac.Name + ", ")
 			}
 		}
 		if len(machinelses) > 0 {
-			errorMsg.WriteString(fmt.Sprintf("\nChromeOS hosts referring to the Switch:\n"))
+			errorMsg.WriteString("\nChromeOS hosts referring to the Switch:\n")
 			for _, machinelse := range machinelses {
 				errorMsg.WriteString(machinelse.Name + ", ")
 			}
