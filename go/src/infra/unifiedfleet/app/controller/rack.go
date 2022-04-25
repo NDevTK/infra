@@ -529,19 +529,19 @@ func validateDeleteRack(ctx context.Context, rack *ufspb.Rack) error {
 		var errorMsg strings.Builder
 		errorMsg.WriteString(fmt.Sprintf("Rack %s cannot be deleted because there are other resources which are referring this Rack.", rack.GetName()))
 		if len(racklses) > 0 {
-			errorMsg.WriteString(fmt.Sprintf("\nRackLSEs referring the Rack:\n"))
+			errorMsg.WriteString("\nRackLSEs referring the Rack:\n")
 			for _, racklse := range racklses {
 				errorMsg.WriteString(racklse.Name + ", ")
 			}
 		}
 		if len(machines) > 0 {
-			errorMsg.WriteString(fmt.Sprintf("\nMachines referring to the Rack:\n"))
+			errorMsg.WriteString("\nMachines referring to the Rack:\n")
 			for _, machine := range machines {
 				errorMsg.WriteString(machine.Name + ", ")
 			}
 		}
 		if len(assets) > 0 {
-			errorMsg.WriteString(fmt.Sprintf("\nAssets referring to the Rack:\n"))
+			errorMsg.WriteString("\nAssets referring to the Rack:\n")
 			for _, asset := range assets {
 				errorMsg.WriteString(asset.Name + ", ")
 			}
