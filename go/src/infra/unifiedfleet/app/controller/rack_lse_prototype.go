@@ -92,7 +92,7 @@ func validateDeleteRackLSEPrototype(ctx context.Context, id string) error {
 	if len(racklses) > 0 {
 		var errorMsg strings.Builder
 		errorMsg.WriteString(fmt.Sprintf("RackLSEPrototype %s cannot be deleted because there are other resources which are referring this RackLSEPrototype.", id))
-		errorMsg.WriteString(fmt.Sprintf("\nRackLSEs referring the RackLSEPrototype:\n"))
+		errorMsg.WriteString("\nRackLSEs referring the RackLSEPrototype:\n")
 		for _, racklse := range racklses {
 			errorMsg.WriteString(racklse.Name + ", ")
 		}
