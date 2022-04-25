@@ -344,7 +344,7 @@ func validateDeleteKVM(ctx context.Context, kvm *ufspb.KVM) error {
 		var errorMsg strings.Builder
 		errorMsg.WriteString(fmt.Sprintf("KVM %s cannot be deleted because there are other resources which are referring this KVM.", kvm.GetName()))
 		if len(machines) > 0 {
-			errorMsg.WriteString(fmt.Sprintf("\nMachines referring the KVM:\n"))
+			errorMsg.WriteString("\nMachines referring the KVM:\n")
 			for _, machine := range machines {
 				errorMsg.WriteString(machine.Name + ", ")
 			}
