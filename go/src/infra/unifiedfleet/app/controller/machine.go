@@ -1200,7 +1200,7 @@ func setMachine(ctx context.Context, machine *ufspb.Machine) {
 		// Just log a warning message and dont fail operation
 		logging.Warningf(ctx, "GetMachine - failed to query dracs for machine %s: %s", machine.GetName(), err)
 	}
-	if dracs != nil && len(dracs) > 0 {
+	if len(dracs) > 0 {
 		setDracToMachine(machine, dracs[0])
 	}
 }
