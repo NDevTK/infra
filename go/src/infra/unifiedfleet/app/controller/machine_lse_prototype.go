@@ -92,7 +92,7 @@ func validateDeleteMachineLSEPrototype(ctx context.Context, id string) error {
 	if len(machinelses) > 0 {
 		var errorMsg strings.Builder
 		errorMsg.WriteString(fmt.Sprintf("MachineLSEPrototype %s cannot be deleted because there are other resources which are referring this MachineLSEPrototype.", id))
-		errorMsg.WriteString(fmt.Sprintf("\nMachineLSEs referring the MachineLSEPrototype:\n"))
+		errorMsg.WriteString("\nMachineLSEs referring the MachineLSEPrototype:\n")
 		for _, machinelse := range machinelses {
 			errorMsg.WriteString(machinelse.Name + ", ")
 		}
