@@ -225,9 +225,7 @@ func ImportVlans(ctx context.Context, vlans []*crimsonconfig.VLAN, pageSize int)
 		if err != nil {
 			return nil, err
 		}
-		for _, ip := range ips {
-			IPs = append(IPs, ip)
-		}
+		IPs = append(IPs, ips...)
 		vs[i] = &ufspb.Vlan{
 			Name:             vlanName,
 			Description:      vlan.GetAlias(),
