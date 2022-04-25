@@ -112,7 +112,7 @@ func UpdateDrac(ctx context.Context, drac *ufspb.Drac, mask *field_mask.FieldMas
 				if err != nil {
 					return errors.Annotate(err, "UpdateDrac - failed to query old drac for machine %s", drac.GetMachine()).Err()
 				}
-				if dracs != nil && len(dracs) > 0 {
+				if len(dracs) > 0 {
 					return status.Error(codes.InvalidArgument, fmt.Sprintf("validateUpdateDrac - There is already a drac %s associated with machine %s.\n"+
 						"Please delete that drac and then associate this drac to the machine.", dracs[0].GetName(), drac.GetMachine()))
 				}
@@ -169,7 +169,7 @@ func processDracUpdateMask(ctx context.Context, oldDrac *ufspb.Drac, drac *ufspb
 				if err != nil {
 					return oldDrac, errors.Annotate(err, "UpdateDrac - failed to query old drac for machine %s", drac.GetMachine()).Err()
 				}
-				if dracs != nil && len(dracs) > 0 {
+				if len(dracs) > 0 {
 					return oldDrac, status.Error(codes.InvalidArgument, fmt.Sprintf("validateUpdateDrac - There is already a drac %s associated with machine %s.\n"+
 						"Please delete that drac and then associate this drac to the machine.", dracs[0].GetName(), drac.GetMachine()))
 				}
@@ -376,7 +376,7 @@ func getBrowserMachineForDrac(ctx context.Context, dracName string) (*ufspb.Mach
 	if err != nil {
 		return nil, errors.Annotate(err, "Unable to query machine for drac %s", dracName).Err()
 	}
-	if machines == nil || len(machines) == 0 {
+	if len(machines) == 0 {
 		errorMsg := fmt.Sprintf("No machine associated with the drac %s. Data discrepancy error.\n", dracName)
 		return nil, status.Errorf(codes.Internal, errorMsg)
 	}
@@ -407,7 +407,7 @@ func validateCreateDrac(ctx context.Context, drac *ufspb.Drac, machine *ufspb.Ma
 	if err != nil {
 		return errors.Annotate(err, "validateCreateDrac - failed to query old drac for machine %s", drac.GetMachine()).Err()
 	}
-	if dracs != nil && len(dracs) > 0 {
+	if len(dracs) > 0 {
 		return status.Error(codes.InvalidArgument, fmt.Sprintf("validateCreateDrac - There is already a drac %s associated with machine %s.\n"+
 			"Please delete that drac and then add the new drac to the machine.", dracs[0].GetName(), drac.GetMachine()))
 	}
