@@ -16,6 +16,29 @@
       "message": "PTAL",
       "revId": "37e2518a0393cf6d9ebef8cd89f507517845ab83",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fd9ae066_0711d369",
+        "filename": "go/src/infra/tricium/appengine/common/common.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2022-04-25T21:02:04Z",
+      "side": 1,
+      "message": "IIRC, this will not be populated in GAE old gen. It is populated by code that reads CLI flags, which is not executing on GAE old gen (same reason https://chromium-review.googlesource.com/c/infra/infra/+/3202345/ hardcodes values).\n\nJust hardcode \"X-Gerrit-Auth\" here too",
+      "range": {
+        "startLine": 126,
+        "startChar": 39,
+        "endLine": 126,
+        "endChar": 63
+      },
+      "revId": "37e2518a0393cf6d9ebef8cd89f507517845ab83",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
