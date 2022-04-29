@@ -65,6 +65,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "56b14866_c5c8e5fc",
+        "filename": "go/src/infra/appengine/weetbix/common/common.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1178685
+      },
+      "writtenOn": "2022-04-29T04:04:18Z",
+      "side": 1,
+      "message": "moved to internal/verdict_status.go",
+      "parentUuid": "5ab4d73d_287fd5b8",
+      "range": {
+        "startLine": 5,
+        "startChar": 8,
+        "endLine": 5,
+        "endChar": 14
+      },
+      "revId": "07154fe458825beed99a58780c3e2e2279b42f27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "da0341b5_dab75015",
@@ -88,6 +112,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6eb2f21d_a6f3555d",
+        "filename": "go/src/infra/appengine/weetbix/common/common.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1178685
+      },
+      "writtenOn": "2022-04-29T04:04:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da0341b5_dab75015",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 39,
+        "endChar": 1
+      },
+      "revId": "07154fe458825beed99a58780c3e2e2279b42f27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "50e0a4dc_eb7df218",
@@ -101,6 +149,30 @@
       "writtenOn": "2022-04-29T02:59:57Z",
       "side": 1,
       "message": "Do we need this?",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 1
+      },
+      "revId": "07154fe458825beed99a58780c3e2e2279b42f27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "34f6b54c_1fcbbe02",
+        "filename": "go/src/infra/appengine/weetbix/common/common.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1178685
+      },
+      "writtenOn": "2022-04-29T04:04:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "50e0a4dc_eb7df218",
       "range": {
         "startLine": 40,
         "startChar": 0,
