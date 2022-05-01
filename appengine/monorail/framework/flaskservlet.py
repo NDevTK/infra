@@ -305,6 +305,11 @@ class FlaskServlet(object):
     #TODO: implement basic data processing
     logging.info('process post request')
 
+  def _RenderResponse(self, page_data):
+    logging.info('rendering response len(page_data) is %r', len(page_data))
+    self.template.WriteFlaskResponse(
+        self.response, page_data, content_type=self.content_type)
+
   def _GatherFlagData(self, mr):
     page_data = {
         'project_stars_enabled':
@@ -331,7 +336,6 @@ class FlaskServlet(object):
       # self._MaybeRedirectToBrandedDomain(self.request, mr.project_name)
 
       page_data = self.GatherBaseData(mr, nonce)
-      page_data = {}
 
     with mr.profiler.Phase('page processing'):
       page_data.update(self.GatherPageData(mr))
