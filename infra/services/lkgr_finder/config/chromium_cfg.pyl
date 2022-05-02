@@ -4,7 +4,7 @@
   'buckets': {
     'chromium/ci': {  # bucket alias: luci.chromium.ci
       'builders': [
-        'Android arm Builder (dbg)',
+        'GPU FYI Android arm64 Builder',
         'Android ASAN (dbg)',
         'Linux Builder',
         'Linux Builder (dbg)',
