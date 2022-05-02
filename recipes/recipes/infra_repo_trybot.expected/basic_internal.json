@@ -29,7 +29,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "RECIPE_REPO[depot_tools]/gerrit_client.py",
       "changes",
       "--host",
@@ -264,7 +263,6 @@
   {
     "cmd": [
       "python",
-      "-u",
       "test.py",
       "test",
       "--verbose"
@@ -287,7 +285,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "[CACHE]/builder/infra_internal/go/bootstrap_internal.py",
       "/path/to/tmp/json"
     ],

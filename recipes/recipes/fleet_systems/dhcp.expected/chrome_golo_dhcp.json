@@ -61,7 +61,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "RECIPE_REPO[depot_tools]/gerrit_client.py",
       "changes",
       "--host",
@@ -404,7 +403,6 @@
   {
     "cmd": [
       "python",
-      "-u",
       "RECIPE_MODULE[infra::docker]/resources/docker_login.py",
       "--server",
       "gcr.io",
@@ -452,7 +450,6 @@
   {
     "cmd": [
       "python",
-      "-u",
       "RECIPE_MODULE[infra::docker]/resources/docker_run.py",
       "--config-file",
       "[CLEANUP]/.docker",

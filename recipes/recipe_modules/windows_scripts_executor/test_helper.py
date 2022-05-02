@@ -264,7 +264,7 @@ def CHECK_UMOUNT_WIM(api, image, customization, save=True):
   """
       Post check that the wim was unmounted with either save or discard
   """
-  args = ['.*'] * 11  # ignore matching the first 11 terms
+  args = ['.*'] * 10  # ignore matching the first 10 terms
   # check the last option
   if not save:
     args.append('-Discard')
@@ -301,7 +301,7 @@ def CHECK_INSTALL_CAB(api, image, customization, action, args=None):
   """
       Post check for installation
   """
-  wild_card = ['.*'] * 12
+  wild_card = ['.*'] * 11
   if args:
     wild_card.append(*args)
   return api.post_process(
@@ -315,7 +315,7 @@ def CHECK_INSTALL_DRIVER(api, image, customization, action, args=None):
   """
       Post check for installation
   """
-  wild_card = ['.*'] * 12
+  wild_card = ['.*'] * 11
   if args:
     wild_card.append(*args)
   return api.post_process(
@@ -352,9 +352,9 @@ def CHECK_ADD_FILE(api, image, cust, url, dest):
   """
       Check add file step
   """
-  wild_card = ['.*'] * 15
-  wild_card[4] = 'robocopy'
-  wild_card[12] = dest
+  wild_card = ['.*'] * 14
+  wild_card[3] = 'robocopy'
+  wild_card[11] = dest
 
   return api.post_process(
       StepCommandRE,

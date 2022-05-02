@@ -148,7 +148,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "[CACHE]/builder/infra/go/bootstrap.py",
       "/path/to/tmp/json"
     ],
@@ -240,7 +239,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "[CACHE]/builder/infra/build/build.py",
       "--no-freshen-python-env",
       "--builder",
@@ -280,7 +278,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "[CACHE]/builder/infra/build/test_packages.py"
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
@@ -317,7 +314,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "[CACHE]/builder/infra/build/build.py",
       "--no-freshen-python-env",
       "--builder",

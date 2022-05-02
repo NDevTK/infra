@@ -2,7 +2,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "[CACHE]/builder/assume/infra/build/build.py",
       "--no-freshen-python-env",
       "--builder",
@@ -29,7 +28,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "[CACHE]/builder/assume/infra/build/test_packages.py"
     ],
     "env": {
@@ -53,7 +51,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "[CACHE]/builder/assume/infra/build/build.py",
       "--no-rebuild",
       "--upload",

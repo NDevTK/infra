@@ -172,7 +172,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "[CACHE]/builder/infra/go/bootstrap.py",
       "/path/to/tmp/json"
     ],
@@ -306,7 +305,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "RECIPE_REPO[depot_tools]/git_cl.py",
       "upload",
       "--bypass-hooks",
@@ -324,7 +322,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "RECIPE_REPO[depot_tools]/git_cl.py",
       "issue",
       "--json",

@@ -2,7 +2,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "RECIPE_REPO[depot_tools]/gerrit_client.py",
       "changes",
       "--host",
@@ -57,7 +56,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "RECIPE_REPO[depot_tools]/gerrit_client.py",
       "changes",
       "--host",
@@ -110,7 +108,6 @@
   {
     "cmd": [
       "python",
-      "-u",
       "RECIPE_REPO[depot_tools]/git_footers.py",
       "--json",
       "/path/to/tmp/json"
@@ -485,7 +482,6 @@
   {
     "cmd": [
       "python",
-      "-u",
       "[CACHE]/builder/depot_tools/depot_tools/some/path/recipes.py",
       "-O",
       "recipe_engine=[CACHE]/builder/recipe_engine/recipe_engine",
@@ -634,7 +630,6 @@
   {
     "cmd": [
       "python",
-      "-u",
       "[CACHE]/builder/depot_tools/depot_tools/some/path/recipes.py",
       "-O",
       "recipe_engine=[CACHE]/builder/recipe_engine/recipe_engine",
@@ -662,7 +657,6 @@
   {
     "cmd": [
       "python",
-      "-u",
       "[CACHE]/builder/depot_tools/depot_tools/some/path/recipes.py",
       "-O",
       "recipe_engine=[CACHE]/builder/recipe_engine/recipe_engine",

@@ -393,7 +393,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "[CACHE]/builder/recipe_engine/recipes.py",
       "--package",
       "[CACHE]/builder/recipe_autoroller/build/infra/config/recipes.cfg",
@@ -580,7 +579,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "[CACHE]/builder/recipe_engine/recipes.py",
       "--package",
       "[CACHE]/builder/recipe_autoroller/build/infra/config/recipes.cfg",
@@ -639,7 +637,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "RECIPE_REPO[depot_tools]/git_cl.py",
       "upload",
       "--send-mail",
@@ -675,7 +672,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "RECIPE_REPO[depot_tools]/git_cl.py",
       "issue",
       "--json",

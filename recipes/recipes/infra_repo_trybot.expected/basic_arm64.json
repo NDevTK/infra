@@ -29,7 +29,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "RECIPE_REPO[depot_tools]/gerrit_client.py",
       "changes",
       "--host",
@@ -264,7 +263,6 @@
   {
     "cmd": [
       "python",
-      "-u",
       "[CACHE]/builder/infra/recipes/recipes.py",
       "test",
       "run"
@@ -286,7 +284,6 @@
   {
     "cmd": [
       "python",
-      "-u",
       "[CACHE]/builder/infra/recipes/recipes.py",
       "lint"
     ],
@@ -307,7 +304,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "[CACHE]/builder/infra/go/bootstrap.py",
       "/path/to/tmp/json"
     ],

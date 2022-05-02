@@ -149,7 +149,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "[CACHE]/builder/infra/go/bootstrap.py",
       "/path/to/tmp/json"
     ],
@@ -268,7 +267,6 @@
   {
     "cmd": [
       "python",
-      "-u",
       "test.py",
       "test",
       "infra"
@@ -291,7 +289,6 @@
   {
     "cmd": [
       "python",
-      "-u",
       "\n        import sys, os\n        print '\n'.join(os.listdir('./'))\n    "
     ],
     "cwd": "[CACHE]/builder",

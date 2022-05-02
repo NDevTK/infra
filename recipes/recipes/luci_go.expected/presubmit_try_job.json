@@ -29,7 +29,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "RECIPE_REPO[depot_tools]/gerrit_client.py",
       "changes",
       "--host",
@@ -248,7 +247,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "[CACHE]/builder/infra/go/bootstrap.py",
       "/path/to/tmp/json"
     ],
@@ -295,7 +293,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "RECIPE_REPO[depot_tools]/presubmit_support.py",
       "--root",
       "[CACHE]/builder/infra/go/src/go.chromium.org/luci",

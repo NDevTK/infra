@@ -2,7 +2,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "[CACHE]/builder/assume/infra/build/build.py",
       "--no-freshen-python-env",
       "--builder",
@@ -25,7 +24,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "[CACHE]/builder/assume/infra/build/test_packages.py"
     ],
     "luci_context": {
@@ -45,7 +43,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "[CACHE]/builder/assume/infra/build/build.py",
       "--no-rebuild",
       "--upload",

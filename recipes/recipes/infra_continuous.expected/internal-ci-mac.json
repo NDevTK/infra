@@ -237,7 +237,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "[CACHE]/builder/infra_internal/go/bootstrap_internal.py",
       "/path/to/tmp/json"
     ],
@@ -329,7 +328,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "[CACHE]/builder/infra_internal/build/build.py",
       "--no-freshen-python-env",
       "--builder",
@@ -369,7 +367,6 @@
   {
     "cmd": [
       "vpython",
-      "-u",
       "[CACHE]/builder/infra_internal/build/test_packages.py"
     ],
     "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal",
