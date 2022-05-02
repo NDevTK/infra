@@ -260,12 +260,10 @@ class FlaskServlet(object):
       # # Page-specific work happens in this call.
       page_data.update(self._DoPageProcessing(self.mr, nonce))
 
-      #TODO: (crbug.com/monorail/10863)
-      # self._AddHelpDebugPageData(page_data)
+      self._AddHelpDebugPageData(page_data)
 
-      #TODO: (crbug.com/monorail/10868)
-      # with self.mr.profiler.Phase('rendering template'):
-      #   self._RenderResponse(page_data)
+      with self.mr.profiler.Phase('rendering template'):
+        self._RenderResponse(page_data)
 
     except (MethodNotSupportedError, NotImplementedError) as e:
       # Instead of these pages throwing 500s display the 404 message and log.
@@ -296,8 +294,7 @@ class FlaskServlet(object):
         }
         with self.mr.profiler.Phase('gather base data'):
           page_data.update(self.GatherBaseData(self.mr, nonce))
-        # TODO: (crbug.com/monorail/10863)
-        # self._AddHelpDebugPageData(page_data)
+        self._AddHelpDebugPageData(page_data)
         self._missing_permissions_template.WriteFlaskResponse(
             self.response, page_data, content_type=self.content_type)
 
@@ -614,6 +611,69 @@ class FlaskServlet(object):
       base_data['form_token_path'] = form_token_path
 
     return base_data
+
+  def _AddHelpDebugPageData(self, page_data):
+    with self.mr.profiler.Phase('help and debug data'):
+      page_data.update(self.GatherHelpData(self.mr, page_data))
+      page_data.update(self.GatherDebugData(self.mr, page_data))
+
+  # pylint: disable=unused-argument
+  def GatherHelpData(self, mr, page_data):
+    """Return a dict of values to drive on-page user help.
+       Subclasses can override this function
+    Args:
+      mr: common information parsed from the HTTP request.
+      page_data: Dictionary of base and page template data.
+
+    Returns:
+      A dict of values to drive on-page user help, to be added to page_data.
+    """
+    help_data = {
+        'cue': None,  # for cues.ezt
+        'account_cue': None,  # for cues.ezt
+    }
+    dismissed = []
+    if mr.auth.user_pb:
+      with work_env.WorkEnv(mr, self.services) as we:
+        userprefs = we.GetUserPrefs(mr.auth.user_id)
+      dismissed = [pv.name for pv in userprefs.prefs if pv.value == 'true']
+      if (mr.auth.user_pb.vacation_message and
+          'you_are_on_vacation' not in dismissed):
+        help_data['cue'] = 'you_are_on_vacation'
+      if (mr.auth.user_pb.email_bounce_timestamp and
+          'your_email_bounced' not in dismissed):
+        help_data['cue'] = 'your_email_bounced'
+      if mr.auth.user_pb.linked_parent_id:
+        # This one is not dismissable.
+        help_data['account_cue'] = 'switch_to_parent_account'
+        parent_email = self.services.user.LookupUserEmail(
+            mr.cnxn, mr.auth.user_pb.linked_parent_id)
+        help_data['parent_email'] = parent_email
+
+    return help_data
+
+  def GatherDebugData(self, mr, page_data):
+    """Return debugging info for display at the very bottom of the page."""
+    if mr.debug_enabled:
+      # TODO: (crbug.com/monorail/10873)
+      # debug = [_ContextDebugCollection('Page data', page_data)]
+      debug = [('none', 'recorded')]
+      return {
+          'dbg': 'on',
+          'debug': debug,
+          'profiler': mr.profiler,
+      }
+    else:
+      if '?' in mr.current_page_url:
+        debug_url = mr.current_page_url + '&debug=1'
+      else:
+        debug_url = mr.current_page_url + '?debug=1'
+
+      return {
+          'debug_uri': debug_url,
+          'dbg': 'off',
+          'debug': [('none', 'recorded')],
+      }
 
 
 def _ProjectIsRestricted(mr):
