@@ -125,7 +125,7 @@ type TestVariantRow struct {
 	// in the verdicts that were finalized within that range.
 	TimeRange *v1.TimeRange `protobuf:"bytes,8,opt,name=time_range,json=timeRange,proto3" json:"time_range,omitempty"`
 	// Status of the test variant.
-	// String representation of weetbix.v1.AnalyzedTestVariantStatus.
+	// String representation of weetbix.analyzedtestvariant.Status.
 	Status string `protobuf:"bytes,9,opt,name=status,proto3" json:"status,omitempty"`
 	// Flakiness statistics of the test variant.
 	FlakeStatistics *analyzedtestvariant.FlakeStatistics `protobuf:"bytes,10,opt,name=flake_statistics,json=flakeStatistics,proto3" json:"flake_statistics,omitempty"`

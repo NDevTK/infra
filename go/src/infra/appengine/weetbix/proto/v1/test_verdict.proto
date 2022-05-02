@@ -1,0 +1,51 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package weetbix.v1;
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "infra/appengine/weetbix/proto/v1;weetbixpb";
+
+// Status of a test verdict.
+// It is a mirror of luci.resultdb.v1.TestVariantStatus.
+enum TestVerdictStatus {
+  // a test verdict must not have this status.
+  // This is only used when filtering verdicts.
+  TEST_VERDICT_STATUS_UNSPECIFIED = 0;
+  // The test verdict has no exonerations, and all results are unexpected.
+  UNEXPECTED = 10;
+  // The test verdict has no exonerations, and all results are unexpectedly skipped.
+  UNEXPECTEDLY_SKIPPED = 20;
+  // The test verdict has no exonerations, and has both expected and unexpected
+  // results.
+  FLAKY = 30;
+  // The test verdict has one or more test exonerations.
+  EXONERATED = 40;
+  // The test verdict has no exonerations, and all results are expected.
+  EXPECTED = 50;
+}
+
+message TestVerdict {
+  // The ID of the top-level invocation that the test verdict belongs to when
+  // ingested.
+  string invocation_id = 1;
+
+  // The hash of the variant.
+  string variant_hash = 2;
+
+  // The status of the test verdict.
+  TestVerdictStatus status = 3;
+
+  // Start time of the presubmit run (for results that are part of a presubmit
+  // run) or start time of the buildbucket build (otherwise).
+  google.protobuf.Timestamp partition_time = 4;
+
+  // The average duration of the PASSED test results included in the test
+  // verdict.
+  google.protobuf.Duration passed_avg_duration = 5;
+}

@@ -9,3 +9,4 @@ package weetbixpb
 //go:generate svcdec -type ProjectsServer
 //go:generate svcdec -type InitDataGeneratorServer
 //go:generate svcdec -type ClustersServer
+//go:generate svcdec -type TestHistoryServer

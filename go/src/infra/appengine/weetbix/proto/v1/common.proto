@@ -205,3 +205,14 @@ message TestLocation {
   // One-based line number where the test is defined.
   int32 line = 3;
 }
+
+// SubmittedFilter filters test verdicts based on whether they had unsubmitted
+// changes.
+enum SubmittedFilter {
+  // Default value. Include all test verdicts.
+  SUBMITTED_FILTER_UNSPECIFIED = 0;
+  // Only include test verdicts that don't have unsubmitted changes.
+  ONLY_SUBMITTED = 1;
+  // Only include test verdicts that have unsubmitted changes.
+  ONLY_UNSUBMITTED = 2;
+}
