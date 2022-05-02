@@ -1499,10 +1499,10 @@ func ValidateResourceKey(resources interface{}, k string) error {
 	return nil
 }
 
-// ValidateFilter validates if the filter fomrat is correct
+// ValidateFilter validates if the filter format is correct
 func ValidateFilter(filter string) error {
 	if filter != "" {
-		filter = fmt.Sprintf(strings.Replace(filter, " ", "", -1))
+		filter = strings.Replace(filter, " ", "", -1)
 		if !FilterRegex.MatchString(filter) {
 			return status.Errorf(codes.InvalidArgument, InvalidFilterFormat)
 		}
