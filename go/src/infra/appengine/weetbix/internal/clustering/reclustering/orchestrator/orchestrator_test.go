@@ -23,9 +23,9 @@ import (
 	"infra/appengine/weetbix/internal/clustering/runs"
 	"infra/appengine/weetbix/internal/clustering/state"
 	"infra/appengine/weetbix/internal/config"
-	configpb "infra/appengine/weetbix/internal/config/proto"
 	"infra/appengine/weetbix/internal/tasks/taskspb"
 	"infra/appengine/weetbix/internal/testutil"
+	configpb "infra/appengine/weetbix/proto/config"
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/common/clock/testclock"

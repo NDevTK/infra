@@ -5,7 +5,7 @@
 package bugs
 
 import (
-	configpb "infra/appengine/weetbix/internal/config/proto"
+	configpb "infra/appengine/weetbix/proto/config"
 )
 
 // InflateThreshold inflates or deflates impact thresholds by the given factor.

@@ -10,8 +10,8 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
 
-	configpb "infra/appengine/weetbix/internal/config/proto"
-	pb "infra/appengine/weetbix/proto/v1"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
+	configpb "infra/appengine/weetbix/proto/config"
 )
 
 // createPlaceholderProjectWithKey Creates a placeholder project
@@ -93,7 +93,7 @@ func createPlaceholderRealmsWithKey(key string) []*configpb.RealmConfig {
 							Dataset:      key,
 							Table:        "flaky_test_variants",
 						},
-						Predicate: &pb.AnalyzedTestVariantPredicate{},
+						Predicate: &atvpb.Predicate{},
 					},
 				},
 			},

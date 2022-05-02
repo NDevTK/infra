@@ -8,7 +8,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/protobuf/encoding/prototext"
 
-	configpb "infra/appengine/weetbix/internal/config/proto"
+	configpb "infra/appengine/weetbix/proto/config"
 )
 
 var sampleConfigStr = `

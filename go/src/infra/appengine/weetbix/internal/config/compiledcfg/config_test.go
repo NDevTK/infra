@@ -8,7 +8,7 @@ import (
 	"context"
 	"fmt"
 	"infra/appengine/weetbix/internal/config"
-	configpb "infra/appengine/weetbix/internal/config/proto"
+	configpb "infra/appengine/weetbix/proto/config"
 	"testing"
 	"time"
 

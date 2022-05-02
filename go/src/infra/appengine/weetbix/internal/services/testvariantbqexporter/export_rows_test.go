@@ -24,6 +24,7 @@ import (
 	"infra/appengine/weetbix/internal/testutil"
 	"infra/appengine/weetbix/internal/testutil/insert"
 	"infra/appengine/weetbix/pbutil"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
 	bqpb "infra/appengine/weetbix/proto/bq"
 	pb "infra/appengine/weetbix/proto/v1"
 
@@ -77,48 +78,48 @@ func TestQueryTestVariantsToExport(t *testing.T) {
 		halfHAgo := now.Add(-30 * time.Minute)
 		m46Ago := now.Add(-46 * time.Minute)
 		ms := []*spanner.Mutation{
-			insert.AnalyzedTestVariant(realm, tID1, vh, pb.AnalyzedTestVariantStatus_FLAKY, map[string]interface{}{
+			insert.AnalyzedTestVariant(realm, tID1, vh, atvpb.Status_FLAKY, map[string]interface{}{
 				"Variant":          variant,
 				"Tags":             tags,
 				"TestMetadata":     span.Compressed(tmdM),
 				"StatusUpdateTime": start.Add(-time.Hour),
 			}),
 			// New flaky test variant.
-			insert.AnalyzedTestVariant(realm, tID2, vh, pb.AnalyzedTestVariantStatus_FLAKY, map[string]interface{}{
+			insert.AnalyzedTestVariant(realm, tID2, vh, atvpb.Status_FLAKY, map[string]interface{}{
 				"Variant":          variant,
 				"Tags":             tags,
 				"TestMetadata":     span.Compressed(tmdM),
 				"StatusUpdateTime": halfHAgo,
 			}),
 			// Flaky test with no verdicts in time range.
-			insert.AnalyzedTestVariant(realm, tID3, vh, pb.AnalyzedTestVariantStatus_FLAKY, map[string]interface{}{
+			insert.AnalyzedTestVariant(realm, tID3, vh, atvpb.Status_FLAKY, map[string]interface{}{
 				"Variant":          variant,
 				"Tags":             tags,
 				"TestMetadata":     span.Compressed(tmdM),
 				"StatusUpdateTime": start.Add(-time.Hour),
 			}),
 			// Test variant with another status is not exported.
-			insert.AnalyzedTestVariant(realm, tID4, vh, pb.AnalyzedTestVariantStatus_CONSISTENTLY_UNEXPECTED, map[string]interface{}{
+			insert.AnalyzedTestVariant(realm, tID4, vh, atvpb.Status_CONSISTENTLY_UNEXPECTED, map[string]interface{}{
 				"Variant":          variant,
 				"Tags":             tags,
 				"TestMetadata":     span.Compressed(tmdM),
 				"StatusUpdateTime": start.Add(-time.Hour),
 			}),
 			// Test variant has multiple status updates.
-			insert.AnalyzedTestVariant(realm, tID5, vh, pb.AnalyzedTestVariantStatus_FLAKY, map[string]interface{}{
+			insert.AnalyzedTestVariant(realm, tID5, vh, atvpb.Status_FLAKY, map[string]interface{}{
 				"Variant":          variant,
 				"Tags":             tags,
 				"TestMetadata":     span.Compressed(tmdM),
 				"StatusUpdateTime": halfHAgo,
-				"PreviousStatuses": []pb.AnalyzedTestVariantStatus{
-					pb.AnalyzedTestVariantStatus_CONSISTENTLY_EXPECTED,
-					pb.AnalyzedTestVariantStatus_FLAKY},
+				"PreviousStatuses": []atvpb.Status{
+					atvpb.Status_CONSISTENTLY_EXPECTED,
+					atvpb.Status_FLAKY},
 				"PreviousStatusUpdateTimes": []time.Time{
 					m46Ago,
 					now.Add(-24 * time.Hour)},
 			}),
 			// Test variant with different variant.
-			insert.AnalyzedTestVariant(realm, tID6, "c467ccce5a16dc72", pb.AnalyzedTestVariantStatus_CONSISTENTLY_EXPECTED, map[string]interface{}{
+			insert.AnalyzedTestVariant(realm, tID6, "c467ccce5a16dc72", atvpb.Status_CONSISTENTLY_EXPECTED, map[string]interface{}{
 				"Variant":          pbutil.Variant("a", "b"),
 				"Tags":             tags,
 				"TestMetadata":     span.Compressed(tmdM),
@@ -242,7 +243,7 @@ func TestQueryTestVariantsToExport(t *testing.T) {
 			})
 		}
 
-		test := func(predicate *pb.AnalyzedTestVariantPredicate, expRows []*bqpb.TestVariantRow) {
+		test := func(predicate *atvpb.Predicate, expRows []*bqpb.TestVariantRow) {
 			op.Predicate = predicate
 			ins := &mockPassInserter{}
 			err := br.exportTestVariantRows(ctx, ins)
@@ -267,7 +268,7 @@ func TestQueryTestVariantsToExport(t *testing.T) {
 						Latest:   op.TimeRange.Latest,
 					},
 					Status: "FLAKY",
-					FlakeStatistics: &pb.FlakeStatistics{
+					FlakeStatistics: &atvpb.FlakeStatistics{
 						FlakyVerdictRate:      0.5,
 						FlakyVerdictCount:     1,
 						TotalVerdictCount:     2,
@@ -296,7 +297,7 @@ func TestQueryTestVariantsToExport(t *testing.T) {
 						Latest:   op.TimeRange.Latest,
 					},
 					Status: "FLAKY",
-					FlakeStatistics: &pb.FlakeStatistics{
+					FlakeStatistics: &atvpb.FlakeStatistics{
 						FlakyVerdictRate:      1.0,
 						FlakyVerdictCount:     1,
 						TotalVerdictCount:     1,
@@ -315,7 +316,7 @@ func TestQueryTestVariantsToExport(t *testing.T) {
 						Latest:   timestamppb.New(halfHAgo),
 					},
 					Status: "CONSISTENTLY_EXPECTED",
-					FlakeStatistics: &pb.FlakeStatistics{
+					FlakeStatistics: &atvpb.FlakeStatistics{
 						FlakyVerdictRate:      0.0,
 						FlakyVerdictCount:     0,
 						TotalVerdictCount:     1,
@@ -343,7 +344,7 @@ func TestQueryTestVariantsToExport(t *testing.T) {
 						Latest:   op.TimeRange.Latest,
 					},
 					Status: "FLAKY",
-					FlakeStatistics: &pb.FlakeStatistics{
+					FlakeStatistics: &atvpb.FlakeStatistics{
 						FlakyVerdictRate:      1.0,
 						FlakyVerdictCount:     1,
 						TotalVerdictCount:     1,
@@ -378,8 +379,8 @@ func TestQueryTestVariantsToExport(t *testing.T) {
 		})
 
 		Convey(`status predicate`, func() {
-			predicate := &pb.AnalyzedTestVariantPredicate{
-				Status: pb.AnalyzedTestVariantStatus_FLAKY,
+			predicate := &atvpb.Predicate{
+				Status: atvpb.Status_FLAKY,
 			}
 
 			expRows := []*bqpb.TestVariantRow{
@@ -390,7 +391,7 @@ func TestQueryTestVariantsToExport(t *testing.T) {
 						Latest:   op.TimeRange.Latest,
 					},
 					Status: "FLAKY",
-					FlakeStatistics: &pb.FlakeStatistics{
+					FlakeStatistics: &atvpb.FlakeStatistics{
 						FlakyVerdictRate:      1.0,
 						FlakyVerdictCount:     1,
 						TotalVerdictCount:     1,
@@ -409,7 +410,7 @@ func TestQueryTestVariantsToExport(t *testing.T) {
 						Latest:   op.TimeRange.Latest,
 					},
 					Status: "FLAKY",
-					FlakeStatistics: &pb.FlakeStatistics{
+					FlakeStatistics: &atvpb.FlakeStatistics{
 						FlakyVerdictRate:      0.5,
 						FlakyVerdictCount:     1,
 						TotalVerdictCount:     2,
@@ -438,7 +439,7 @@ func TestQueryTestVariantsToExport(t *testing.T) {
 						Latest:   op.TimeRange.Latest,
 					},
 					Status: "FLAKY",
-					FlakeStatistics: &pb.FlakeStatistics{
+					FlakeStatistics: &atvpb.FlakeStatistics{
 						FlakyVerdictRate:      1.0,
 						FlakyVerdictCount:     1,
 						TotalVerdictCount:     1,
@@ -469,7 +470,7 @@ func TestQueryTestVariantsToExport(t *testing.T) {
 		})
 
 		Convey(`testIdRegexp`, func() {
-			predicate := &pb.AnalyzedTestVariantPredicate{
+			predicate := &atvpb.Predicate{
 				TestIdRegexp: tID1,
 			}
 			expRows := []*bqpb.TestVariantRow{
@@ -480,7 +481,7 @@ func TestQueryTestVariantsToExport(t *testing.T) {
 						Latest:   op.TimeRange.Latest,
 					},
 					Status: "FLAKY",
-					FlakeStatistics: &pb.FlakeStatistics{
+					FlakeStatistics: &atvpb.FlakeStatistics{
 						FlakyVerdictRate:      0.5,
 						FlakyVerdictCount:     1,
 						TotalVerdictCount:     2,
@@ -510,7 +511,7 @@ func TestQueryTestVariantsToExport(t *testing.T) {
 			},
 		}
 		Convey(`variantEqual`, func() {
-			predicate := &pb.AnalyzedTestVariantPredicate{
+			predicate := &atvpb.Predicate{
 				Variant: &pb.VariantPredicate{
 					Predicate: &pb.VariantPredicate_Equals{
 						Equals: pbutil.Variant("a", "b"),
@@ -521,7 +522,7 @@ func TestQueryTestVariantsToExport(t *testing.T) {
 		})
 
 		Convey(`variantContain`, func() {
-			predicate := &pb.AnalyzedTestVariantPredicate{
+			predicate := &atvpb.Predicate{
 				Variant: &pb.VariantPredicate{
 					Predicate: &pb.VariantPredicate_Contains{
 						Contains: pbutil.Variant("a", "b"),

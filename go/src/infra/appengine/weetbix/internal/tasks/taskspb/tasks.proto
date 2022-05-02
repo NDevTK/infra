@@ -9,7 +9,7 @@ package weetbix.internal.tasks;
 import "google/protobuf/timestamp.proto";
 import "go.chromium.org/luci/resultdb/proto/v1/invocation.proto";
 import "infra/appengine/weetbix/proto/v1/common.proto";
-import "infra/appengine/weetbix/proto/v1/predicate.proto";
+import "infra/appengine/weetbix/proto/analyzedtestvariant/predicate.proto";
 import "infra/appengine/weetbix/internal/ingestion/control/proto/control.proto";
 
 option go_package = "infra/appengine/weetbix/internal/tasks/taskspb";
@@ -82,7 +82,7 @@ message ExportTestVariants {
 
   // Represents a function Variant -> bool.
   // Test variants satisfy this predicate are exported.
-  weetbix.v1.AnalyzedTestVariantPredicate predicate = 5;
+  weetbix.analyzedtestvariant.Predicate predicate = 5;
 
   // Time range of the task.
   // The ranges serves 2 purposes:

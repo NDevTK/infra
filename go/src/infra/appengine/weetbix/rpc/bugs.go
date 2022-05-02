@@ -8,7 +8,7 @@ import (
 	"fmt"
 
 	"infra/appengine/weetbix/internal/bugs"
-	configpb "infra/appengine/weetbix/internal/config/proto"
+	configpb "infra/appengine/weetbix/proto/config"
 	pb "infra/appengine/weetbix/proto/v1"
 )
 

@@ -16,6 +16,7 @@ import (
 
 	"infra/appengine/weetbix/internal"
 	"infra/appengine/weetbix/pbutil"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
 	pb "infra/appengine/weetbix/proto/v1"
 )
 
@@ -42,7 +43,7 @@ type Ptr interface {
 //   - Value and Ptr
 //   - string
 //   - timestamppb.Timestamp
-//   - pb.AnalyzedTestVariantStatus
+//   - atvpb.Status
 //   - pb.Variant
 //   - pb.StringPair
 //   - proto.Message
@@ -91,7 +92,7 @@ func (b *Buffer) fromSpanner(row *spanner.Row, col int, goPtr interface{}) error
 		spanPtr = &b.NullString
 	case **timestamppb.Timestamp:
 		spanPtr = &b.NullTime
-	case *pb.AnalyzedTestVariantStatus:
+	case *atvpb.Status:
 		spanPtr = &b.Int64
 	case **pb.Variant:
 		spanPtr = &b.StringSlice
@@ -99,7 +100,7 @@ func (b *Buffer) fromSpanner(row *spanner.Row, col int, goPtr interface{}) error
 		spanPtr = &b.StringSlice
 	case proto.Message:
 		spanPtr = &b.ByteSlice
-	case *[]pb.AnalyzedTestVariantStatus:
+	case *[]atvpb.Status:
 		spanPtr = &b.Int64Slice
 	case *internal.VerdictStatus:
 		spanPtr = &b.Int64
@@ -134,8 +135,8 @@ func (b *Buffer) fromSpanner(row *spanner.Row, col int, goPtr interface{}) error
 			*goPtr = pbutil.MustTimestampProto(b.NullTime.Time)
 		}
 
-	case *pb.AnalyzedTestVariantStatus:
-		*goPtr = pb.AnalyzedTestVariantStatus(b.Int64)
+	case *atvpb.Status:
+		*goPtr = atvpb.Status(b.Int64)
 
 	case **pb.Variant:
 		if *goPtr, err = pbutil.VariantFromStrings(b.StringSlice); err != nil {
@@ -164,10 +165,10 @@ func (b *Buffer) fromSpanner(row *spanner.Row, col int, goPtr interface{}) error
 	case *internal.VerdictStatus:
 		*goPtr = internal.VerdictStatus(b.Int64)
 
-	case *[]pb.AnalyzedTestVariantStatus:
-		*goPtr = make([]pb.AnalyzedTestVariantStatus, len(b.Int64Slice))
+	case *[]atvpb.Status:
+		*goPtr = make([]atvpb.Status, len(b.Int64Slice))
 		for i, p := range b.Int64Slice {
-			(*goPtr)[i] = pb.AnalyzedTestVariantStatus(p)
+			(*goPtr)[i] = atvpb.Status(p)
 		}
 
 	default:
@@ -202,7 +203,7 @@ func ToSpanner(v interface{}) interface{} {
 		// of this function and functions based on this one.
 		return ret
 
-	case pb.AnalyzedTestVariantStatus:
+	case atvpb.Status:
 		return int64(v)
 
 	case *pb.Variant:
@@ -240,7 +241,7 @@ func ToSpanner(v interface{}) interface{} {
 	case internal.VerdictStatus:
 		return int64(v)
 
-	case []pb.AnalyzedTestVariantStatus:
+	case []atvpb.Status:
 		spanPtr := make([]int64, len(v))
 		for i, s := range v {
 			spanPtr[i] = int64(s)

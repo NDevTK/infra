@@ -8,7 +8,7 @@ import (
 	"fmt"
 
 	"infra/appengine/weetbix/internal/bugs"
-	configpb "infra/appengine/weetbix/internal/config/proto"
+	configpb "infra/appengine/weetbix/proto/config"
 )
 
 // BugLink provides the details of how to link to a bug in an issue

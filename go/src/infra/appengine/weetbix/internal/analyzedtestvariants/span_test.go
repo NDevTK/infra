@@ -15,7 +15,7 @@ import (
 
 	"infra/appengine/weetbix/internal/testutil"
 	"infra/appengine/weetbix/internal/testutil/insert"
-	pb "infra/appengine/weetbix/proto/v1"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -24,11 +24,11 @@ func TestAnalyzedTestVariantSpan(t *testing.T) {
 	Convey(`TestAnalyzedTestVariantSpan`, t, func() {
 		ctx := testutil.SpannerTestContext(t)
 		realm := "chromium:ci"
-		status := pb.AnalyzedTestVariantStatus_FLAKY
+		status := atvpb.Status_FLAKY
 		now := clock.Now(ctx).UTC()
-		ps := []pb.AnalyzedTestVariantStatus{
-			pb.AnalyzedTestVariantStatus_CONSISTENTLY_EXPECTED,
-			pb.AnalyzedTestVariantStatus_FLAKY,
+		ps := []atvpb.Status{
+			atvpb.Status_CONSISTENTLY_EXPECTED,
+			atvpb.Status_FLAKY,
 		}
 		puts := []time.Time{
 			now.Add(-24 * time.Hour),
@@ -43,7 +43,7 @@ func TestAnalyzedTestVariantSpan(t *testing.T) {
 					"PreviousStatuses":          ps,
 					"PreviousStatusUpdateTimes": puts,
 				}),
-			insert.AnalyzedTestVariant(realm, "ninja://test1", "variantHash2", pb.AnalyzedTestVariantStatus_HAS_UNEXPECTED_RESULTS, map[string]interface{}{
+			insert.AnalyzedTestVariant(realm, "ninja://test1", "variantHash2", atvpb.Status_HAS_UNEXPECTED_RESULTS, map[string]interface{}{
 				"Builder": builder,
 			}),
 			insert.AnalyzedTestVariant(realm, "ninja://test2", "variantHash1", status,
@@ -51,7 +51,7 @@ func TestAnalyzedTestVariantSpan(t *testing.T) {
 					"Builder": "anotherbuilder",
 				}),
 			insert.AnalyzedTestVariant(realm, "ninja://test3", "variantHash", status, nil),
-			insert.AnalyzedTestVariant(realm, "ninja://test4", "variantHash", pb.AnalyzedTestVariantStatus_CONSISTENTLY_EXPECTED,
+			insert.AnalyzedTestVariant(realm, "ninja://test4", "variantHash", atvpb.Status_CONSISTENTLY_EXPECTED,
 				map[string]interface{}{
 					"Builder": builder,
 				}),
@@ -68,8 +68,8 @@ func TestAnalyzedTestVariantSpan(t *testing.T) {
 				spanner.Key{realm, "ninja://test1", "variantHash2"},
 				spanner.Key{realm, "ninja://test-not-exists", "variantHash1"},
 			)
-			atvs := make([]*pb.AnalyzedTestVariant, 0)
-			err := ReadStatusAndTags(span.Single(ctx), ks, func(atv *pb.AnalyzedTestVariant) error {
+			atvs := make([]*atvpb.AnalyzedTestVariant, 0)
+			err := ReadStatusAndTags(span.Single(ctx), ks, func(atv *atvpb.AnalyzedTestVariant) error {
 				So(atv.Realm, ShouldEqual, realm)
 				atvs = append(atvs, atv)
 				return nil
@@ -93,8 +93,8 @@ func TestAnalyzedTestVariantSpan(t *testing.T) {
 		})
 
 		Convey(`TestQueryTestVariantsByBuilder`, func() {
-			atvs := make([]*pb.AnalyzedTestVariant, 0)
-			err := QueryTestVariantsByBuilder(span.Single(ctx), realm, builder, func(atv *pb.AnalyzedTestVariant) error {
+			atvs := make([]*atvpb.AnalyzedTestVariant, 0)
+			err := QueryTestVariantsByBuilder(span.Single(ctx), realm, builder, func(atv *atvpb.AnalyzedTestVariant) error {
 				atvs = append(atvs, atv)
 				return nil
 			})

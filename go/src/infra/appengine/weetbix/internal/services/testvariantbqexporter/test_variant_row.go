@@ -31,6 +31,7 @@ import (
 	"infra/appengine/weetbix/internal/bqutil"
 	spanutil "infra/appengine/weetbix/internal/span"
 	"infra/appengine/weetbix/pbutil"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
 	bqpb "infra/appengine/weetbix/proto/bq"
 	pb "infra/appengine/weetbix/proto/v1"
 )
@@ -52,7 +53,7 @@ func generateStatement(tmpl *template.Template, input interface{}) (spanner.Stat
 func (b *BQExporter) populateQueryParameters() (inputs, params map[string]interface{}, err error) {
 	inputs = map[string]interface{}{
 		"TestIdFilter": b.options.Predicate.GetTestIdRegexp() != "",
-		"StatusFilter": b.options.Predicate.GetStatus() != pb.AnalyzedTestVariantStatus_STATUS_UNSPECIFIED,
+		"StatusFilter": b.options.Predicate.GetStatus() != atvpb.Status_STATUS_UNSPECIFIED,
 	}
 
 	params = map[string]interface{}{
@@ -76,7 +77,7 @@ func (b *BQExporter) populateQueryParameters() (inputs, params map[string]interf
 		params["testIdRegexp"] = fmt.Sprintf("^%s$", re)
 	}
 
-	if status := b.options.Predicate.GetStatus(); status != pb.AnalyzedTestVariantStatus_STATUS_UNSPECIFIED {
+	if status := b.options.Predicate.GetStatus(); status != atvpb.Status_STATUS_UNSPECIFIED {
 		params["status"] = int(status)
 	}
 
@@ -106,7 +107,7 @@ type result struct {
 }
 
 type statusAndTimeRange struct {
-	status pb.AnalyzedTestVariantStatus
+	status atvpb.Status
 	tr     *pb.TimeRange
 }
 
@@ -128,7 +129,7 @@ type statusAndTimeRange struct {
 // [10:00, 10:10), [10:20, 10:30) and [10:50, 11:00).
 // If b.options.Predicate.Status is not specified, the timeRanges will be
 // [10:00, 10:10), [10:10, 10:20),  [10:20, 10:30), [10:20, 10:50) and [10:50, 11:00).
-func (b *BQExporter) timeRanges(currentStatus pb.AnalyzedTestVariantStatus, statusUpdateTime spanner.NullTime, previousStatuses []pb.AnalyzedTestVariantStatus, previousUpdateTimes []time.Time) []statusAndTimeRange {
+func (b *BQExporter) timeRanges(currentStatus atvpb.Status, statusUpdateTime spanner.NullTime, previousStatuses []atvpb.Status, previousUpdateTimes []time.Time) []statusAndTimeRange {
 	if !statusUpdateTime.Valid {
 		panic("Empty Status Update time")
 	}
@@ -138,7 +139,7 @@ func (b *BQExporter) timeRanges(currentStatus pb.AnalyzedTestVariantStatus, stat
 	exportEnd, _ := pbutil.AsTime(b.options.TimeRange.Latest)
 
 	exportStatus := b.options.Predicate.GetStatus()
-	previousStatuses = append([]pb.AnalyzedTestVariantStatus{currentStatus}, previousStatuses...)
+	previousStatuses = append([]atvpb.Status{currentStatus}, previousStatuses...)
 	previousUpdateTimes = append([]time.Time{statusUpdateTime.Time}, previousUpdateTimes...)
 
 	var ranges []statusAndTimeRange
@@ -150,7 +151,7 @@ func (b *BQExporter) timeRanges(currentStatus pb.AnalyzedTestVariantStatus, stat
 		}
 
 		s := previousStatuses[i]
-		shouldExport := s == exportStatus || exportStatus == pb.AnalyzedTestVariantStatus_STATUS_UNSPECIFIED
+		shouldExport := s == exportStatus || exportStatus == atvpb.Status_STATUS_UNSPECIFIED
 		if shouldExport {
 			if updateTime.After(exportStart) {
 				ranges = append(ranges, statusAndTimeRange{status: s, tr: &pb.TimeRange{
@@ -244,8 +245,8 @@ func (b *BQExporter) populateVerdictsInRange(tv *bqpb.TestVariantRow, vs []verdi
 	tv.Verdicts = vsInRange
 }
 
-func zeroFlakyStatistics() *pb.FlakeStatistics {
-	return &pb.FlakeStatistics{
+func zeroFlakyStatistics() *atvpb.FlakeStatistics {
+	return &atvpb.FlakeStatistics{
 		FlakyVerdictCount:     0,
 		TotalVerdictCount:     0,
 		FlakyVerdictRate:      float32(0),
@@ -267,7 +268,7 @@ func (b *BQExporter) populateFlakeStatistics(tv *bqpb.TestVariantRow, res *resul
 		tv.FlakeStatistics = zeroFlakyStatistics()
 		return
 	}
-	tv.FlakeStatistics = &pb.FlakeStatistics{
+	tv.FlakeStatistics = &atvpb.FlakeStatistics{
 		FlakyVerdictCount:     res.FlakyVerdictCount.Int64,
 		TotalVerdictCount:     res.TotalVerdictCount.Int64,
 		FlakyVerdictRate:      float32(res.FlakyVerdictCount.Int64) / float32(res.TotalVerdictCount.Int64),
@@ -305,7 +306,7 @@ func (b *BQExporter) populateFlakeStatisticsByVerdicts(tv *bqpb.TestVariantRow, 
 		return
 	}
 
-	tv.FlakeStatistics = &pb.FlakeStatistics{
+	tv.FlakeStatistics = &atvpb.FlakeStatistics{
 		FlakyVerdictCount:     int64(flakyVerdicts),
 		TotalVerdictCount:     int64(totalVerdicts),
 		FlakyVerdictRate:      float32(flakyVerdicts) / float32(totalVerdicts),
@@ -338,8 +339,8 @@ func (b *BQExporter) generateTestVariantRows(ctx context.Context, row *spanner.R
 	var vs []*result
 	var statusUpdateTime spanner.NullTime
 	var tmd spanutil.Compressed
-	var status pb.AnalyzedTestVariantStatus
-	var previousStatuses []pb.AnalyzedTestVariantStatus
+	var status atvpb.Status
+	var previousStatuses []atvpb.Status
 	var previousUpdateTimes []time.Time
 	if err := bf.FromSpanner(
 		row,

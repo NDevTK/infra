@@ -21,7 +21,7 @@ import (
 	"infra/appengine/weetbix/internal/clustering"
 	"infra/appengine/weetbix/internal/clustering/rules"
 	"infra/appengine/weetbix/internal/config/compiledcfg"
-	configpb "infra/appengine/weetbix/internal/config/proto"
+	configpb "infra/appengine/weetbix/proto/config"
 	pb "infra/appengine/weetbix/proto/v1"
 )
 

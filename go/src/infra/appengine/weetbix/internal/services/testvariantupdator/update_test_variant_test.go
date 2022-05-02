@@ -19,11 +19,11 @@ import (
 	"infra/appengine/weetbix/internal"
 	"infra/appengine/weetbix/internal/analyzedtestvariants"
 	"infra/appengine/weetbix/internal/config"
-	configpb "infra/appengine/weetbix/internal/config/proto"
 	"infra/appengine/weetbix/internal/tasks/taskspb"
 	"infra/appengine/weetbix/internal/testutil"
 	"infra/appengine/weetbix/internal/testutil/insert"
-	pb "infra/appengine/weetbix/proto/v1"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
+	configpb "infra/appengine/weetbix/proto/config"
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/common/clock"
@@ -67,11 +67,11 @@ func TestCheckTask(t *testing.T) {
 		vh := "varianthash"
 		now := clock.Now(ctx)
 		ms := []*spanner.Mutation{
-			insert.AnalyzedTestVariant(realm, tID, vh, pb.AnalyzedTestVariantStatus_CONSISTENTLY_EXPECTED,
+			insert.AnalyzedTestVariant(realm, tID, vh, atvpb.Status_CONSISTENTLY_EXPECTED,
 				map[string]interface{}{
 					"NextUpdateTaskEnqueueTime": now,
 				}),
-			insert.AnalyzedTestVariant(realm, "anothertest", vh, pb.AnalyzedTestVariantStatus_CONSISTENTLY_EXPECTED, nil),
+			insert.AnalyzedTestVariant(realm, "anothertest", vh, atvpb.Status_CONSISTENTLY_EXPECTED, nil),
 		}
 		testutil.MustApply(ctx, ms...)
 
@@ -131,20 +131,20 @@ func TestUpdateTestVariantStatus(t *testing.T) {
 		now := clock.Now(ctx).UTC()
 		tID1 := "ninja://test1"
 		tID2 := "ninja://test2"
-		statuses := []pb.AnalyzedTestVariantStatus{
-			pb.AnalyzedTestVariantStatus_FLAKY,
-			pb.AnalyzedTestVariantStatus_CONSISTENTLY_UNEXPECTED,
+		statuses := []atvpb.Status{
+			atvpb.Status_FLAKY,
+			atvpb.Status_CONSISTENTLY_UNEXPECTED,
 		}
 		times := []time.Time{
 			now.Add(-24 * time.Hour),
 			now.Add(-240 * time.Hour),
 		}
 		ms := []*spanner.Mutation{
-			insert.AnalyzedTestVariant(realm, tID1, vh, pb.AnalyzedTestVariantStatus_CONSISTENTLY_EXPECTED, map[string]interface{}{
+			insert.AnalyzedTestVariant(realm, tID1, vh, atvpb.Status_CONSISTENTLY_EXPECTED, map[string]interface{}{
 				"NextUpdateTaskEnqueueTime": now,
 				"StatusUpdateTime":          now,
 			}),
-			insert.AnalyzedTestVariant(realm, tID2, vh, pb.AnalyzedTestVariantStatus_CONSISTENTLY_EXPECTED, map[string]interface{}{
+			insert.AnalyzedTestVariant(realm, tID2, vh, atvpb.Status_CONSISTENTLY_EXPECTED, map[string]interface{}{
 				"NextUpdateTaskEnqueueTime": now,
 				"StatusUpdateTime":          now,
 				"PreviousStatuses":          statuses,
@@ -155,7 +155,7 @@ func TestUpdateTestVariantStatus(t *testing.T) {
 		}
 		testutil.MustApply(ctx, ms...)
 
-		test := func(tID string, pStatuses []pb.AnalyzedTestVariantStatus, pUpdateTimes []time.Time, i int) {
+		test := func(tID string, pStatuses []atvpb.Status, pUpdateTimes []time.Time, i int) {
 			statusHistory, enqTime, err := analyzedtestvariants.ReadStatusHistory(span.Single(ctx), spanner.Key{realm, tID, vh})
 			So(err, ShouldBeNil)
 			statusUpdateTime := statusHistory.StatusUpdateTime
@@ -174,15 +174,15 @@ func TestUpdateTestVariantStatus(t *testing.T) {
 			// Read the test variant to confirm the updates.
 			statusHistory, enqTime, err = analyzedtestvariants.ReadStatusHistory(span.Single(ctx), spanner.Key{realm, tID, vh})
 			So(err, ShouldBeNil)
-			So(statusHistory.Status, ShouldEqual, pb.AnalyzedTestVariantStatus_FLAKY)
-			So(statusHistory.PreviousStatuses, ShouldResemble, append([]pb.AnalyzedTestVariantStatus{pb.AnalyzedTestVariantStatus_CONSISTENTLY_EXPECTED}, pStatuses...))
+			So(statusHistory.Status, ShouldEqual, atvpb.Status_FLAKY)
+			So(statusHistory.PreviousStatuses, ShouldResemble, append([]atvpb.Status{atvpb.Status_CONSISTENTLY_EXPECTED}, pStatuses...))
 			So(statusHistory.PreviousStatusUpdateTimes, ShouldResemble, append([]time.Time{statusUpdateTime}, pUpdateTimes...))
 
 			nextTask := skdr.Tasks().Payloads()[i].(*taskspb.UpdateTestVariant)
 			So(pbutil.MustTimestamp(nextTask.EnqueueTime), ShouldEqual, enqTime.Time)
 		}
 
-		test(tID1, []pb.AnalyzedTestVariantStatus{}, []time.Time{}, 0)
+		test(tID1, []atvpb.Status{}, []time.Time{}, 0)
 		test(tID2, statuses, times, 1)
 	})
 }

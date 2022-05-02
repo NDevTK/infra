@@ -8,7 +8,7 @@ package config
 import (
 	"context"
 
-	configpb "infra/appengine/weetbix/internal/config/proto"
+	configpb "infra/appengine/weetbix/proto/config"
 
 	"google.golang.org/protobuf/proto"
 

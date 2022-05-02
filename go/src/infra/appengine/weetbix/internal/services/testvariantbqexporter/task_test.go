@@ -16,9 +16,10 @@ import (
 	"go.chromium.org/luci/server/tq"
 
 	"infra/appengine/weetbix/internal/config"
-	configpb "infra/appengine/weetbix/internal/config/proto"
 	"infra/appengine/weetbix/internal/tasks/taskspb"
 	"infra/appengine/weetbix/internal/testutil"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
+	configpb "infra/appengine/weetbix/proto/config"
 	pb "infra/appengine/weetbix/proto/v1"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -37,8 +38,8 @@ func TestSchedule(t *testing.T) {
 		cloudProject := "cloudProject"
 		dataset := "dataset"
 		table := "table"
-		predicate := &pb.AnalyzedTestVariantPredicate{
-			Status: pb.AnalyzedTestVariantStatus_FLAKY,
+		predicate := &atvpb.Predicate{
+			Status: atvpb.Status_FLAKY,
 		}
 		now := clock.Now(ctx)
 		timeRange := &pb.TimeRange{

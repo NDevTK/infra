@@ -12,6 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
 	pb "infra/appengine/weetbix/proto/v1"
 )
 
@@ -105,8 +106,8 @@ func ValidateEnum(value int32, validValues map[int32]string) error {
 
 // ValidateAnalyzedTestVariantStatus returns a non-nil error if s is invalid
 // for a test variant.
-func ValidateAnalyzedTestVariantStatus(s pb.AnalyzedTestVariantStatus) error {
-	if err := ValidateEnum(int32(s), pb.AnalyzedTestVariantStatus_name); err != nil {
+func ValidateAnalyzedTestVariantStatus(s atvpb.Status) error {
+	if err := ValidateEnum(int32(s), atvpb.Status_name); err != nil {
 		return err
 	}
 	return nil
@@ -114,7 +115,7 @@ func ValidateAnalyzedTestVariantStatus(s pb.AnalyzedTestVariantStatus) error {
 
 // ValidateAnalyzedTestVariantPredicate returns a non-nil error if p is
 // determined to be invalid.
-func ValidateAnalyzedTestVariantPredicate(p *pb.AnalyzedTestVariantPredicate) error {
+func ValidateAnalyzedTestVariantPredicate(p *atvpb.Predicate) error {
 	if err := validateRegexp(p.GetTestIdRegexp()); err != nil {
 		return errors.Annotate(err, "test_id_regexp").Err()
 	}
@@ -125,7 +126,7 @@ func ValidateAnalyzedTestVariantPredicate(p *pb.AnalyzedTestVariantPredicate) er
 		}
 	}
 
-	if p.GetStatus() == pb.AnalyzedTestVariantStatus_STATUS_UNSPECIFIED {
+	if p.GetStatus() == atvpb.Status_STATUS_UNSPECIFIED {
 		return nil
 	}
 	if err := ValidateAnalyzedTestVariantStatus(p.Status); err != nil {

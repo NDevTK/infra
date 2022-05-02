@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/luci/gae/impl/memory"
 
 	"infra/appengine/weetbix/internal/config"
-	configpb "infra/appengine/weetbix/internal/config/proto"
+	configpb "infra/appengine/weetbix/proto/config"
 
 	. "github.com/smartystreets/goconvey/convey"
 )

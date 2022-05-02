@@ -10,7 +10,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/server/auth/realms"
 
-	configpb "infra/appengine/weetbix/internal/config/proto"
+	configpb "infra/appengine/weetbix/proto/config"
 )
 
 // RealmNotExistsErr is returned if no configuration could be found

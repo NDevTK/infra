@@ -20,6 +20,7 @@ import (
 	"go.chromium.org/luci/server/caching"
 
 	"infra/appengine/weetbix/internal/bqutil"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
 	pb "infra/appengine/weetbix/proto/v1"
 )
 
@@ -39,7 +40,7 @@ type Options struct {
 	CloudProject string
 	Dataset      string
 	Table        string
-	Predicate    *pb.AnalyzedTestVariantPredicate
+	Predicate    *atvpb.Predicate
 	TimeRange    *pb.TimeRange
 }
 
@@ -58,7 +59,7 @@ type BQExporter struct {
 
 func CreateBQExporter(options *Options) *BQExporter {
 	if options.Predicate == nil {
-		options.Predicate = &pb.AnalyzedTestVariantPredicate{}
+		options.Predicate = &atvpb.Predicate{}
 	}
 	return &BQExporter{
 		options:    options,

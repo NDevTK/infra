@@ -33,8 +33,8 @@ import (
 	"infra/appengine/weetbix/internal/clustering/runs"
 	"infra/appengine/weetbix/internal/config"
 	"infra/appengine/weetbix/internal/config/compiledcfg"
-	configpb "infra/appengine/weetbix/internal/config/proto"
 	"infra/appengine/weetbix/internal/testutil"
+	configpb "infra/appengine/weetbix/proto/config"
 	pb "infra/appengine/weetbix/proto/v1"
 )
 

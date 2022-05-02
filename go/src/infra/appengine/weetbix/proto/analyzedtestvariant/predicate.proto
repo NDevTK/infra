@@ -1,0 +1,25 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package weetbix.analyzedtestvariant;
+
+import "infra/appengine/weetbix/proto/analyzedtestvariant/analyzed_test_variant.proto";
+import "infra/appengine/weetbix/proto/v1/predicate.proto";
+
+option go_package = "infra/appengine/weetbix/proto/analyzedtestvariant;atvpb";
+
+// Represents a function AnalyzedTestVariant -> bool.
+message Predicate {
+  // A test variant must have a test id matching this regular expression
+  // entirely, i.e. the expression is implicitly wrapped with ^ and $.
+  string test_id_regexp = 1;
+
+  // A test variant must have a variant satisfying this predicate.
+  weetbix.v1.VariantPredicate variant = 2;
+
+  // A test variant must have this status.
+  Status status = 3;
+}

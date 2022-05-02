@@ -19,11 +19,12 @@ import (
 
 	"infra/appengine/weetbix/internal/analyzedtestvariants"
 	"infra/appengine/weetbix/internal/config"
-	configpb "infra/appengine/weetbix/internal/config/proto"
 	"infra/appengine/weetbix/internal/services/testvariantupdator"
 	spanutil "infra/appengine/weetbix/internal/span"
 	"infra/appengine/weetbix/internal/tasks/taskspb"
 	"infra/appengine/weetbix/pbutil"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
+	configpb "infra/appengine/weetbix/proto/config"
 	pb "infra/appengine/weetbix/proto/v1"
 )
 
@@ -76,8 +77,8 @@ func createOrUpdateAnalyzedTestVariants(ctx context.Context, realm, builder stri
 
 	ks := testVariantKeySet(realm, tvs)
 	_, err = span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
-		found := make(map[testVariantKey]*pb.AnalyzedTestVariant)
-		err := analyzedtestvariants.ReadStatusAndTags(ctx, ks, func(atv *pb.AnalyzedTestVariant) error {
+		found := make(map[testVariantKey]*atvpb.AnalyzedTestVariant)
+		err := analyzedtestvariants.ReadStatusAndTags(ctx, ks, func(atv *atvpb.AnalyzedTestVariant) error {
 			k := testVariantKey{atv.TestId, atv.VariantHash}
 			found[k] = atv
 			return nil
@@ -132,7 +133,7 @@ func createOrUpdateAnalyzedTestVariants(ctx context.Context, realm, builder stri
 				}
 				if ns != atv.Status {
 					vals["Status"] = int64(ns)
-					if atv.Status == pb.AnalyzedTestVariantStatus_CONSISTENTLY_EXPECTED || atv.Status == pb.AnalyzedTestVariantStatus_NO_NEW_RESULTS {
+					if atv.Status == atvpb.Status_CONSISTENTLY_EXPECTED || atv.Status == atvpb.Status_NO_NEW_RESULTS {
 						// The test variant starts to have unexpected failures again, need
 						// to start updating its status.
 						now := clock.Now(ctx)
@@ -208,7 +209,7 @@ func insertRow(ctx context.Context, realm, builder string, tv *rdbpb.TestVariant
 	return spanutil.InsertMap("AnalyzedTestVariants", row), now, nil
 }
 
-func derivedStatus(tvStatus rdbpb.TestVariantStatus) (pb.AnalyzedTestVariantStatus, error) {
+func derivedStatus(tvStatus rdbpb.TestVariantStatus) (atvpb.Status, error) {
 	switch {
 	case tvStatus == rdbpb.TestVariantStatus_FLAKY:
 		// The new test variant has flaky results in a build, the analyzed test
@@ -216,35 +217,35 @@ func derivedStatus(tvStatus rdbpb.TestVariantStatus) (pb.AnalyzedTestVariantStat
 		// Note that this is only true if Weetbix knows the the ingested test
 		// results are from builds contribute to CL submissions. Which is true for
 		// Chromium, the only project Weetbix supports now.
-		return pb.AnalyzedTestVariantStatus_FLAKY, nil
+		return atvpb.Status_FLAKY, nil
 	case tvStatus == rdbpb.TestVariantStatus_UNEXPECTED || tvStatus == rdbpb.TestVariantStatus_EXONERATED:
-		return pb.AnalyzedTestVariantStatus_HAS_UNEXPECTED_RESULTS, nil
+		return atvpb.Status_HAS_UNEXPECTED_RESULTS, nil
 	default:
-		return pb.AnalyzedTestVariantStatus_STATUS_UNSPECIFIED, fmt.Errorf("unsupported test variant status: %s", tvStatus.String())
+		return atvpb.Status_STATUS_UNSPECIFIED, fmt.Errorf("unsupported test variant status: %s", tvStatus.String())
 	}
 }
 
 // Get the updated AnalyzedTestVariant status based on the ResultDB test variant
 // status.
-func updatedStatus(derived, old pb.AnalyzedTestVariantStatus) (pb.AnalyzedTestVariantStatus, error) {
+func updatedStatus(derived, old atvpb.Status) (atvpb.Status, error) {
 	switch {
 	case old == derived:
 		return old, nil
-	case old == pb.AnalyzedTestVariantStatus_FLAKY:
+	case old == atvpb.Status_FLAKY:
 		// If the AnalyzedTestVariant is already Flaky, its status does not change here.
 		return old, nil
-	case derived == pb.AnalyzedTestVariantStatus_FLAKY:
+	case derived == atvpb.Status_FLAKY:
 		// Any flaky occurrence will make an AnalyzedTestVariant become flaky.
 		return derived, nil
-	case old == pb.AnalyzedTestVariantStatus_CONSISTENTLY_UNEXPECTED:
+	case old == atvpb.Status_CONSISTENTLY_UNEXPECTED:
 		// All results of the ResultDB test variant are unexpected, so AnalyzedTestVariant
 		// does need to change status.
 		return old, nil
-	case old == pb.AnalyzedTestVariantStatus_CONSISTENTLY_EXPECTED || old == pb.AnalyzedTestVariantStatus_NO_NEW_RESULTS:
+	case old == atvpb.Status_CONSISTENTLY_EXPECTED || old == atvpb.Status_NO_NEW_RESULTS:
 		// New failures are found, AnalyzedTestVariant needs to change status.
 		return derived, nil
 	default:
-		return pb.AnalyzedTestVariantStatus_STATUS_UNSPECIFIED, fmt.Errorf("unsupported updated Status")
+		return atvpb.Status_STATUS_UNSPECIFIED, fmt.Errorf("unsupported updated Status")
 	}
 }
 

@@ -4,9 +4,9 @@
 
 syntax = "proto3";
 
-package weetbix.v1;
+package weetbix.config;
 
-option go_package = "infra/appengine/weetbix/internal/config/proto;configpb";
+option go_package = "infra/appengine/weetbix/proto/config;configpb";
 
 // Config is the service-wide configuration data for Weetbix.
 message Config {

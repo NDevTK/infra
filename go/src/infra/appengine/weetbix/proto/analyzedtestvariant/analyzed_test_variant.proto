@@ -4,15 +4,15 @@
 
 syntax = "proto3";
 
-package weetbix.v1;
+package weetbix.analyzedtestvariant;
 
 import "google/api/field_behavior.proto";
 import "infra/appengine/weetbix/proto/v1/common.proto";
 
-option go_package = "infra/appengine/weetbix/proto/v1;weetbixpb";
+option go_package = "infra/appengine/weetbix/proto/analyzedtestvariant;atvpb";
 
-// Status of a test variant.
-enum AnalyzedTestVariantStatus {
+// Status of an analyzed test variant.
+enum Status {
 
   // Status was not specified.
   // Not to be used in actual test variants; serves as a default value for an unset field.
@@ -48,41 +48,6 @@ enum AnalyzedTestVariantStatus {
   // It's likely that this test variant has been disabled or removed.
   NO_NEW_RESULTS = 40;
 
-}
-
-// Information about a test.
-//
-// As of Oct 2021, it's an exact copy of luci.resultdb.v1.TestMetadata, but
-// we'd like to keep a local definition of the proto to keep the possibility that
-// we need to diverge down the track.
-message TestMetadata {
-  // The original test name.
-  string name = 1;
-
-  // Where the test is defined, e.g. the file name.
-  // location.repo MUST be specified.
-  TestLocation location = 2;
-}
-
-// Location of the test definition.
-message TestLocation {
-  // Gitiles URL as the identifier for a repo.
-  // Format for Gitiles URL: https://<host>/<project>
-  // For example "https://chromium.googlesource.com/chromium/src"
-  // Must not end with ".git".
-  // SHOULD be specified.
-  string repo = 1;
-
-  // Name of the file where the test is defined.
-  // For files in a repository, must start with "//"
-  // Example: "//components/payments/core/payment_request_data_util_unittest.cc"
-  // Max length: 512.
-  // MUST not use backslashes.
-  // Required.
-  string file_name = 2;
-
-  // One-based line number where the test is defined.
-  int32 line = 3;
 }
 
 // Flake statistics of a test variant.
@@ -123,21 +88,21 @@ message AnalyzedTestVariant {
 
   // Description of one specific way of running the test,
   // e.g. a specific bucket, builder and a test suite.
-  Variant variant = 5;
+  weetbix.v1.Variant variant = 5;
 
   // Information about the test at the time of its execution.
-  TestMetadata test_metadata = 6;
+  weetbix.v1.TestMetadata test_metadata = 6;
 
   // Metadata for the test variant.
   // See luci.resultdb.v1.Tags for details.
-  repeated StringPair tags = 7;
+  repeated weetbix.v1.StringPair tags = 7;
 
   // A range of time. Flake statistics are calculated using test results
   // within that range.
-  TimeRange time_range = 8;
+  weetbix.v1.TimeRange time_range = 8;
 
   // Status of the test valiant.
-  AnalyzedTestVariantStatus status = 9;
+  Status status = 9;
 
   // Flakiness statistics of the test variant.
   FlakeStatistics flake_statistics = 10;

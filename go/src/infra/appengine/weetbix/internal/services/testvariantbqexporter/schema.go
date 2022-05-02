@@ -12,6 +12,7 @@ import (
 	desc "github.com/golang/protobuf/protoc-gen-go/descriptor"
 
 	"infra/appengine/weetbix/internal/bqutil"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
 	bqpb "infra/appengine/weetbix/proto/bq"
 	pb "infra/appengine/weetbix/proto/v1"
 )
@@ -44,7 +45,7 @@ func init() {
 
 func generateRowSchema() (schema bigquery.Schema, err error) {
 	fd, _ := descriptor.MessageDescriptorProto(&bqpb.TestVariantRow{})
-	fdfs, _ := descriptor.MessageDescriptorProto(&pb.FlakeStatistics{})
+	fdfs, _ := descriptor.MessageDescriptorProto(&atvpb.FlakeStatistics{})
 	fdsp, _ := descriptor.MessageDescriptorProto(&pb.StringPair{})
 	fdtmd, _ := descriptor.MessageDescriptorProto(&pb.TestMetadata{})
 	fdtr, _ := descriptor.MessageDescriptorProto(&pb.TimeRange{})

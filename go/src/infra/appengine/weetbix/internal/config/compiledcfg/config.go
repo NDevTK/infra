@@ -16,7 +16,7 @@ import (
 
 	"infra/appengine/weetbix/internal/clustering/algorithms/testname/rules"
 	"infra/appengine/weetbix/internal/config"
-	configpb "infra/appengine/weetbix/internal/config/proto"
+	configpb "infra/appengine/weetbix/proto/config"
 )
 
 // TODO(crbug.com/1243174). Instrument the size of this cache so that we

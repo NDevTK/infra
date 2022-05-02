@@ -15,6 +15,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/appengine/weetbix/pbutil"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
 	pb "infra/appengine/weetbix/proto/v1"
 
 	. "go.chromium.org/luci/common/testing/assertions"
@@ -50,8 +51,8 @@ func TestTypeConversion(t *testing.T) {
 		)
 	})
 
-	Convey(`pb.AnalyzedTestVariantStatus`, t, func() {
-		test(pb.AnalyzedTestVariantStatus_STATUS_UNSPECIFIED, int64(0))
+	Convey(`atvpb.Status`, t, func() {
+		test(atvpb.Status_STATUS_UNSPECIFIED, int64(0))
 	})
 
 	Convey(`*pb.Variant`, t, func() {
@@ -89,7 +90,7 @@ func TestTypeConversion(t *testing.T) {
 
 	Convey(`Map`, t, func() {
 		var varIntA, varIntB int64
-		var varState pb.AnalyzedTestVariantStatus
+		var varState atvpb.Status
 
 		row, err := spanner.NewRow([]string{"a", "b", "c"}, []interface{}{int64(42), int64(56), int64(0)})
 		So(err, ShouldBeNil)
@@ -97,7 +98,7 @@ func TestTypeConversion(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(varIntA, ShouldEqual, 42)
 		So(varIntB, ShouldEqual, 56)
-		So(varState, ShouldEqual, pb.AnalyzedTestVariantStatus_STATUS_UNSPECIFIED)
+		So(varState, ShouldEqual, atvpb.Status_STATUS_UNSPECIFIED)
 
 		// ToSpanner
 		spValues := ToSpannerMap(map[string]interface{}{
@@ -109,7 +110,7 @@ func TestTypeConversion(t *testing.T) {
 	})
 
 	Convey(`proto.Message`, t, func() {
-		msg := &pb.FlakeStatistics{
+		msg := &atvpb.FlakeStatistics{
 			FlakyVerdictRate: 0.5,
 		}
 		expected, err := proto.Marshal(msg)
@@ -120,24 +121,24 @@ func TestTypeConversion(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey(`success`, func() {
-			expectedPtr := &pb.FlakeStatistics{}
+			expectedPtr := &atvpb.FlakeStatistics{}
 			err = b.FromSpanner(row, expectedPtr)
 			So(err, ShouldBeNil)
 			So(expectedPtr, ShouldResembleProto, msg)
 		})
 
 		Convey(`Passing nil pointer to fromSpanner`, func() {
-			var expectedPtr *pb.FlakeStatistics
+			var expectedPtr *atvpb.FlakeStatistics
 			err = b.FromSpanner(row, expectedPtr)
 			So(err, ShouldErrLike, "nil pointer encountered")
 		})
 	})
 
-	Convey(`[]pb.AnalyzedTestVariantStatus`, t, func() {
+	Convey(`[]atvpb.Status`, t, func() {
 		test(
-			[]pb.AnalyzedTestVariantStatus{
-				pb.AnalyzedTestVariantStatus_FLAKY,
-				pb.AnalyzedTestVariantStatus_STATUS_UNSPECIFIED,
+			[]atvpb.Status{
+				atvpb.Status_FLAKY,
+				atvpb.Status_STATUS_UNSPECIFIED,
 			},
 			[]int64{int64(10), int64(0)},
 		)

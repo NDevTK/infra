@@ -13,7 +13,7 @@ import (
 
 	"infra/appengine/weetbix/internal/bugs"
 	"infra/appengine/weetbix/internal/clustering"
-	configpb "infra/appengine/weetbix/internal/config/proto"
+	configpb "infra/appengine/weetbix/proto/config"
 	mpb "infra/monorailv2/api/v3/api_proto"
 )
 

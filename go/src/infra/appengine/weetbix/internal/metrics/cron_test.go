@@ -13,9 +13,9 @@ import (
 
 	"infra/appengine/weetbix/internal/clustering/rules"
 	"infra/appengine/weetbix/internal/config"
-	configpb "infra/appengine/weetbix/internal/config/proto"
 	"infra/appengine/weetbix/internal/ingestion/control"
 	"infra/appengine/weetbix/internal/testutil"
+	configpb "infra/appengine/weetbix/proto/config"
 )
 
 func TestGlobalMetrics(t *testing.T) {

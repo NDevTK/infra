@@ -19,9 +19,10 @@ import (
 
 	adminpb "infra/appengine/weetbix/internal/admin/proto"
 	"infra/appengine/weetbix/internal/config"
-	configpb "infra/appengine/weetbix/internal/config/proto"
 	"infra/appengine/weetbix/internal/services/testvariantbqexporter"
 	"infra/appengine/weetbix/internal/tasks/taskspb"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
+	configpb "infra/appengine/weetbix/proto/config"
 	pb "infra/appengine/weetbix/proto/v1"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -47,8 +48,8 @@ func createProjectsConfig() map[string]*configpb.ProjectConfig {
 									Dataset:      "dataset",
 									Table:        "table",
 								},
-								Predicate: &pb.AnalyzedTestVariantPredicate{
-									Status: pb.AnalyzedTestVariantStatus_FLAKY,
+								Predicate: &atvpb.Predicate{
+									Status: atvpb.Status_FLAKY,
 								},
 							},
 						},
@@ -286,8 +287,8 @@ func TestExportTestVariants(t *testing.T) {
 				CloudProject: cloudProject,
 				Dataset:      dataset,
 				Table:        table,
-				Predicate: &pb.AnalyzedTestVariantPredicate{
-					Status: pb.AnalyzedTestVariantStatus_FLAKY,
+				Predicate: &atvpb.Predicate{
+					Status: atvpb.Status_FLAKY,
 				},
 				TimeRange: &pb.TimeRange{
 					Earliest: timestamppb.New(start),
@@ -299,8 +300,8 @@ func TestExportTestVariants(t *testing.T) {
 				CloudProject: cloudProject,
 				Dataset:      dataset,
 				Table:        table,
-				Predicate: &pb.AnalyzedTestVariantPredicate{
-					Status: pb.AnalyzedTestVariantStatus_FLAKY,
+				Predicate: &atvpb.Predicate{
+					Status: atvpb.Status_FLAKY,
 				},
 				TimeRange: &pb.TimeRange{
 					Earliest: timestamppb.New(start.Add(time.Hour)),

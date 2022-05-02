@@ -4,7 +4,7 @@
 
 package algorithms
 
-import configpb "infra/appengine/weetbix/internal/config/proto"
+import configpb "infra/appengine/weetbix/proto/config"
 
 // TestClusteringConfig returns standard clustering configuration
 // that can be used for testing.

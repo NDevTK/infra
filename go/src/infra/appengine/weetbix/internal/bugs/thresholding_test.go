@@ -11,7 +11,7 @@ import (
 	. "go.chromium.org/luci/common/testing/assertions"
 	"google.golang.org/protobuf/proto"
 
-	configpb "infra/appengine/weetbix/internal/config/proto"
+	configpb "infra/appengine/weetbix/proto/config"
 )
 
 func TestThresholding(t *testing.T) {

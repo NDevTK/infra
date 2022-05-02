@@ -23,11 +23,11 @@ import (
 
 	"infra/appengine/weetbix/internal/analyzedtestvariants"
 	"infra/appengine/weetbix/internal/config"
-	configpb "infra/appengine/weetbix/internal/config/proto"
 	spanutil "infra/appengine/weetbix/internal/span"
 	"infra/appengine/weetbix/internal/tasks/taskspb"
 	"infra/appengine/weetbix/internal/verdicts"
-	pb "infra/appengine/weetbix/proto/v1"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
+	configpb "infra/appengine/weetbix/proto/config"
 )
 
 const (
@@ -135,7 +135,7 @@ func updateTestVariant(ctx context.Context, task *taskspb.UpdateTestVariant) err
 // updateTestVariantStatus updates the Status and StatusUpdateTime of the
 // AnalyzedTestVariants row if the provided status is different from the one
 // in the row.
-func updateTestVariantStatus(ctx context.Context, task *taskspb.UpdateTestVariant, newStatus pb.AnalyzedTestVariantStatus) error {
+func updateTestVariantStatus(ctx context.Context, task *taskspb.UpdateTestVariant, newStatus atvpb.Status) error {
 	tvKey := task.TestVariantKey
 	_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
 		// Get the old status, and check the token once again.
@@ -154,7 +154,7 @@ func updateTestVariantStatus(ctx context.Context, task *taskspb.UpdateTestVarian
 
 		oldStatus := statusHistory.Status
 		if oldStatus == newStatus {
-			if newStatus == pb.AnalyzedTestVariantStatus_CONSISTENTLY_EXPECTED || newStatus == pb.AnalyzedTestVariantStatus_NO_NEW_RESULTS {
+			if newStatus == atvpb.Status_CONSISTENTLY_EXPECTED || newStatus == atvpb.Status_NO_NEW_RESULTS {
 				// This should never happen. But it doesn't have a huge negative impact,
 				// so just log an error and return immediately.
 				logging.Errorf(ctx, "UpdateTestVariant task runs for a test variant without any new unexpected failures: %s/%s/%s", tvKey.Realm, tvKey.TestId, tvKey.VariantHash)
@@ -165,7 +165,7 @@ func updateTestVariantStatus(ctx context.Context, task *taskspb.UpdateTestVarian
 			vals["Status"] = newStatus
 
 			if statusHistory.PreviousStatuses == nil {
-				vals["PreviousStatuses"] = []pb.AnalyzedTestVariantStatus{oldStatus}
+				vals["PreviousStatuses"] = []atvpb.Status{oldStatus}
 				vals["PreviousStatusUpdateTimes"] = []time.Time{statusHistory.StatusUpdateTime}
 			} else {
 				// "Prepend" the old status and update time so the slices are ordered
@@ -173,12 +173,12 @@ func updateTestVariantStatus(ctx context.Context, task *taskspb.UpdateTestVarian
 				// Currently all of the status update records are kept, because we don't
 				// expect to update each test variant's status frequently.
 				// In the future we could consider to remove the old records.
-				vals["PreviousStatuses"] = append([]pb.AnalyzedTestVariantStatus{oldStatus}, statusHistory.PreviousStatuses...)
+				vals["PreviousStatuses"] = append([]atvpb.Status{oldStatus}, statusHistory.PreviousStatuses...)
 				vals["PreviousStatusUpdateTimes"] = append([]time.Time{statusHistory.StatusUpdateTime}, statusHistory.PreviousStatusUpdateTimes...)
 			}
 
 			vals["StatusUpdateTime"] = spanner.CommitTimestamp
-			if newStatus != pb.AnalyzedTestVariantStatus_CONSISTENTLY_EXPECTED && newStatus != pb.AnalyzedTestVariantStatus_NO_NEW_RESULTS {
+			if newStatus != atvpb.Status_CONSISTENTLY_EXPECTED && newStatus != atvpb.Status_NO_NEW_RESULTS {
 				// Only schedule the next UpdateTestVariant task if the test variant
 				// still has unexpected failures.
 				vals["NextUpdateTaskEnqueueTime"] = now

@@ -4,12 +4,12 @@
 
 syntax = "proto3";
 
-package weetbix.v1;
+package weetbix.config;
 
 import "google/protobuf/duration.proto";
-import "infra/appengine/weetbix/proto/v1/predicate.proto";
+import "infra/appengine/weetbix/proto/analyzedtestvariant/predicate.proto";
 
-option go_package = "infra/appengine/weetbix/internal/config/proto;configpb";
+option go_package = "infra/appengine/weetbix/proto/config;configpb";
 
 // Configurations for BigQuery export.
 message BigQueryExport {
@@ -28,7 +28,7 @@ message BigQueryExport {
 
   // Use predicate to query test variants that should be exported to
   // BigQuery table.
-  weetbix.v1.AnalyzedTestVariantPredicate predicate = 2;
+  weetbix.analyzedtestvariant.Predicate predicate = 2;
 }
 
 // Configurations for UpdateTestVariant task.

@@ -12,7 +12,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/appengine/weetbix/internal/config"
-	configpb "infra/appengine/weetbix/internal/config/proto"
+	configpb "infra/appengine/weetbix/proto/config"
 	pb "infra/appengine/weetbix/proto/v1"
 )
 

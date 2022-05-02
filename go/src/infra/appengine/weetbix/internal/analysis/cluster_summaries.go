@@ -17,7 +17,7 @@ import (
 	"infra/appengine/weetbix/internal/bqutil"
 	"infra/appengine/weetbix/internal/clustering"
 	"infra/appengine/weetbix/internal/clustering/algorithms/rulesalgorithm"
-	configpb "infra/appengine/weetbix/internal/config/proto"
+	configpb "infra/appengine/weetbix/proto/config"
 )
 
 // ProjectNotExistsErr is returned if the dataset for the given project

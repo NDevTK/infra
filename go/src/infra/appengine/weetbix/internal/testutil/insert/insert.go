@@ -12,7 +12,7 @@ import (
 
 	"infra/appengine/weetbix/internal"
 	"infra/appengine/weetbix/internal/span"
-	pb "infra/appengine/weetbix/proto/v1"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
 )
 
 func updateDict(dest, source map[string]interface{}) {
@@ -22,7 +22,7 @@ func updateDict(dest, source map[string]interface{}) {
 }
 
 // AnalyzedTestVariant returns a spanner mutation that inserts an analyzed test variant.
-func AnalyzedTestVariant(realm, tId, vHash string, status pb.AnalyzedTestVariantStatus, extraValues map[string]interface{}) *spanner.Mutation {
+func AnalyzedTestVariant(realm, tId, vHash string, status atvpb.Status, extraValues map[string]interface{}) *spanner.Mutation {
 	values := map[string]interface{}{
 		"Realm":            realm,
 		"TestId":           tId,

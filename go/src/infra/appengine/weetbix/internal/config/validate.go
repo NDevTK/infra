@@ -13,8 +13,8 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 
 	"infra/appengine/weetbix/internal/clustering/algorithms/testname/rules"
-	configpb "infra/appengine/weetbix/internal/config/proto"
 	"infra/appengine/weetbix/pbutil"
+	configpb "infra/appengine/weetbix/proto/config"
 )
 
 const maxHysteresisPercent = 1000

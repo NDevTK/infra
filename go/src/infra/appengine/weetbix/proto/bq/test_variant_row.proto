@@ -7,7 +7,7 @@ syntax = "proto3";
 package weetbix.bq;
 
 import "google/protobuf/timestamp.proto";
-import "infra/appengine/weetbix/proto/v1/analyzed_test_variant.proto";
+import "infra/appengine/weetbix/proto/analyzedtestvariant/analyzed_test_variant.proto";
 import "infra/appengine/weetbix/proto/v1/common.proto";
 
 option go_package = "infra/appengine/weetbix/proto/bq;weetbixpb";
@@ -60,11 +60,11 @@ message TestVariantRow {
   weetbix.v1.TimeRange time_range = 8;
 
   // Status of the test variant.
-  // String representation of weetbix.v1.AnalyzedTestVariantStatus.
+  // String representation of weetbix.analyzedtestvariant.Status.
   string status = 9;
 
   // Flakiness statistics of the test variant.
-  weetbix.v1.FlakeStatistics flake_statistics = 10;
+  weetbix.analyzedtestvariant.FlakeStatistics flake_statistics = 10;
 
   // Verdicts of the test variant during the time range.
   repeated Verdict verdicts = 11;

@@ -40,12 +40,12 @@ import (
 	"infra/appengine/weetbix/internal/clustering/state"
 	"infra/appengine/weetbix/internal/config"
 	"infra/appengine/weetbix/internal/config/compiledcfg"
-	configpb "infra/appengine/weetbix/internal/config/proto"
 	spanutil "infra/appengine/weetbix/internal/span"
 	"infra/appengine/weetbix/internal/tasks/taskspb"
 	"infra/appengine/weetbix/internal/testutil"
 	"infra/appengine/weetbix/pbutil"
 	bqpb "infra/appengine/weetbix/proto/bq"
+	configpb "infra/appengine/weetbix/proto/config"
 	pb "infra/appengine/weetbix/proto/v1"
 )
 

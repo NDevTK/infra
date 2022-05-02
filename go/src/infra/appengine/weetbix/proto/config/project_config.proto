@@ -4,14 +4,14 @@
 
 syntax = "proto3";
 
-package weetbix.v1;
+package weetbix.config;
 
 import "google/protobuf/timestamp.proto";
 
-import "infra/appengine/weetbix/internal/config/proto/test_variant_analysis_config.proto";
+import "infra/appengine/weetbix/proto/config/test_variant_analysis_config.proto";
 
 
-option go_package = "infra/appengine/weetbix/internal/config/proto;configpb";
+option go_package = "infra/appengine/weetbix/proto/config;configpb";
 
 // ProjectConfig is the project-specific configuration data for Weetbix.
 message ProjectConfig {

@@ -19,7 +19,7 @@ import (
 	"infra/appengine/weetbix/internal/analyzedtestvariants"
 	"infra/appengine/weetbix/internal/resultdb"
 	"infra/appengine/weetbix/internal/tasks/taskspb"
-	pb "infra/appengine/weetbix/proto/v1"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
 )
 
 const (
@@ -91,7 +91,7 @@ func queryInterestingTestVariants(ctx context.Context, realm, builder string, ba
 	defer cancel()
 
 	tvis := make([]*rdbpb.BatchGetTestVariantsRequest_TestVariantIdentifier, 0, maxBatchSize)
-	f := func(tv *pb.AnalyzedTestVariant) error {
+	f := func(tv *atvpb.AnalyzedTestVariant) error {
 		tvis = append(tvis, &rdbpb.BatchGetTestVariantsRequest_TestVariantIdentifier{
 			TestId:      tv.TestId,
 			VariantHash: tv.VariantHash,

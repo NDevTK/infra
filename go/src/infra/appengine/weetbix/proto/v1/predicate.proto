@@ -6,7 +6,6 @@ syntax = "proto3";
 
 package weetbix.v1;
 
-import "infra/appengine/weetbix/proto/v1/analyzed_test_variant.proto";
 import "infra/appengine/weetbix/proto/v1/common.proto";
 
 option go_package = "infra/appengine/weetbix/proto/v1;weetbixpb";
@@ -20,17 +19,4 @@ message VariantPredicate {
     // A variant's key-value pairs must contain those in this one.
     Variant contains = 2;
   }
-}
-
-// Represents a function AnalyzedTestVariant -> bool.
-message AnalyzedTestVariantPredicate {
-  // A test variant must have a test id matching this regular expression
-  // entirely, i.e. the expression is implicitly wrapped with ^ and $.
-  string test_id_regexp = 1;
-
-  // A test variant must have a variant satisfying this predicate.
-  VariantPredicate variant = 2;
-
-  // A test variant must have this status.
-  AnalyzedTestVariantStatus status = 3;
 }

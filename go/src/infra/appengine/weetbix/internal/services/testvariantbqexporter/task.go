@@ -21,6 +21,7 @@ import (
 	"infra/appengine/weetbix/internal/config"
 	"infra/appengine/weetbix/internal/tasks/taskspb"
 	"infra/appengine/weetbix/pbutil"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
 	pb "infra/appengine/weetbix/proto/v1"
 )
 
@@ -55,7 +56,7 @@ func RegisterTaskClass() {
 }
 
 // Schedule enqueues a task to export AnalyzedTestVariant rows to BigQuery.
-func Schedule(ctx context.Context, realm, cloudProject, dataset, table string, predicate *pb.AnalyzedTestVariantPredicate, timeRange *pb.TimeRange) error {
+func Schedule(ctx context.Context, realm, cloudProject, dataset, table string, predicate *atvpb.Predicate, timeRange *pb.TimeRange) error {
 	earliest, err := pbutil.AsTime(timeRange.Earliest)
 	if err != nil {
 		return err

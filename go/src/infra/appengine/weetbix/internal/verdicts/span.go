@@ -16,7 +16,7 @@ import (
 	"infra/appengine/weetbix/internal"
 	spanutil "infra/appengine/weetbix/internal/span"
 	"infra/appengine/weetbix/internal/tasks/taskspb"
-	pb "infra/appengine/weetbix/proto/v1"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
 )
 
 func statusCalculationDuration(du *durationpb.Duration) int {
@@ -28,7 +28,7 @@ func statusCalculationDuration(du *durationpb.Duration) int {
 //
 // Currently the time range is the past one day, but should be configurable.
 // TODO(crbug.com/1259374): Use the value in configurations.
-func ComputeTestVariantStatusFromVerdicts(ctx context.Context, tvKey *taskspb.TestVariantKey, du *durationpb.Duration) (pb.AnalyzedTestVariantStatus, error) {
+func ComputeTestVariantStatusFromVerdicts(ctx context.Context, tvKey *taskspb.TestVariantKey, du *durationpb.Duration) (atvpb.Status, error) {
 	st := spanner.NewStatement(`
 		SELECT Status
 		FROM Verdicts@{FORCE_INDEX=VerdictsByTestVariantAndIngestionTime, spanner_emulator.disable_query_null_filtered_index_check=true}
@@ -56,11 +56,11 @@ func ComputeTestVariantStatusFromVerdicts(ctx context.Context, tvKey *taskspb.Te
 			break
 		}
 		if err != nil {
-			return pb.AnalyzedTestVariantStatus_STATUS_UNSPECIFIED, err
+			return atvpb.Status_STATUS_UNSPECIFIED, err
 		}
 		var verdictStatus internal.VerdictStatus
 		if err = b.FromSpanner(row, &verdictStatus); err != nil {
-			return pb.AnalyzedTestVariantStatus_STATUS_UNSPECIFIED, err
+			return atvpb.Status_STATUS_UNSPECIFIED, err
 		}
 
 		totalCount++
@@ -69,7 +69,7 @@ func ComputeTestVariantStatusFromVerdicts(ctx context.Context, tvKey *taskspb.Te
 			// Any flaky verdict means the test variant is flaky.
 			// Return status right away.
 			itr.Stop()
-			return pb.AnalyzedTestVariantStatus_FLAKY, nil
+			return atvpb.Status_FLAKY, nil
 		case internal.VerdictStatus_UNEXPECTED:
 			unexpectedCount++
 		case internal.VerdictStatus_EXPECTED:
@@ -81,16 +81,16 @@ func ComputeTestVariantStatusFromVerdicts(ctx context.Context, tvKey *taskspb.Te
 	return computeTestVariantStatus(totalCount, unexpectedCount), nil
 }
 
-func computeTestVariantStatus(total, unexpected int) pb.AnalyzedTestVariantStatus {
+func computeTestVariantStatus(total, unexpected int) atvpb.Status {
 	switch {
 	case total == 0:
 		// No new results of the test variant.
-		return pb.AnalyzedTestVariantStatus_NO_NEW_RESULTS
+		return atvpb.Status_NO_NEW_RESULTS
 	case unexpected == 0:
-		return pb.AnalyzedTestVariantStatus_CONSISTENTLY_EXPECTED
+		return atvpb.Status_CONSISTENTLY_EXPECTED
 	case unexpected == total:
-		return pb.AnalyzedTestVariantStatus_CONSISTENTLY_UNEXPECTED
+		return atvpb.Status_CONSISTENTLY_UNEXPECTED
 	default:
-		return pb.AnalyzedTestVariantStatus_HAS_UNEXPECTED_RESULTS
+		return atvpb.Status_HAS_UNEXPECTED_RESULTS
 	}
 }

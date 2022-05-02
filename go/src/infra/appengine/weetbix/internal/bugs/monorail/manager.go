@@ -14,7 +14,7 @@ import (
 	"google.golang.org/protobuf/encoding/prototext"
 
 	"infra/appengine/weetbix/internal/bugs"
-	configpb "infra/appengine/weetbix/internal/config/proto"
+	configpb "infra/appengine/weetbix/proto/config"
 	mpb "infra/monorailv2/api/v3/api_proto"
 )
 

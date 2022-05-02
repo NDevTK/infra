@@ -14,16 +14,16 @@ import (
 	"go.chromium.org/luci/server/span"
 
 	spanutil "infra/appengine/weetbix/internal/span"
-	pb "infra/appengine/weetbix/proto/v1"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
 )
 
 // ReadStatusAndTags reads AnalyzedTestVariant rows by keys.
-func ReadStatusAndTags(ctx context.Context, ks spanner.KeySet, f func(*pb.AnalyzedTestVariant) error) error {
+func ReadStatusAndTags(ctx context.Context, ks spanner.KeySet, f func(*atvpb.AnalyzedTestVariant) error) error {
 	fields := []string{"Realm", "TestId", "VariantHash", "Status", "Tags"}
 	var b spanutil.Buffer
 	return span.Read(ctx, "AnalyzedTestVariants", ks, fields).Do(
 		func(row *spanner.Row) error {
-			tv := &pb.AnalyzedTestVariant{}
+			tv := &atvpb.AnalyzedTestVariant{}
 			if err := b.FromSpanner(row, &tv.Realm, &tv.TestId, &tv.VariantHash, &tv.Status, &tv.Tags); err != nil {
 				return err
 			}
@@ -34,9 +34,9 @@ func ReadStatusAndTags(ctx context.Context, ks spanner.KeySet, f func(*pb.Analyz
 
 // StatusHistory contains all the information related to a test variant's status changes.
 type StatusHistory struct {
-	Status                    pb.AnalyzedTestVariantStatus
+	Status                    atvpb.Status
 	StatusUpdateTime          time.Time
-	PreviousStatuses          []pb.AnalyzedTestVariantStatus
+	PreviousStatuses          []atvpb.Status
 	PreviousStatusUpdateTimes []time.Time
 }
 
@@ -76,7 +76,7 @@ func ReadNextUpdateTaskEnqueueTime(ctx context.Context, k spanner.Key) (spanner.
 
 // QueryTestVariantsByBuilder queries AnalyzedTestVariants with unexpected
 // results on the given builder.
-func QueryTestVariantsByBuilder(ctx context.Context, realm, builder string, f func(*pb.AnalyzedTestVariant) error) error {
+func QueryTestVariantsByBuilder(ctx context.Context, realm, builder string, f func(*atvpb.AnalyzedTestVariant) error) error {
 	st := spanner.NewStatement(`
 		SELECT TestId, VariantHash
 		FROM AnalyzedTestVariants@{FORCE_INDEX=AnalyzedTestVariantsByBuilderAndStatus, spanner_emulator.disable_query_null_filtered_index_check=true}
@@ -88,13 +88,13 @@ func QueryTestVariantsByBuilder(ctx context.Context, realm, builder string, f fu
 	st.Params = map[string]interface{}{
 		"realm":    realm,
 		"builder":  builder,
-		"statuses": []int{int(pb.AnalyzedTestVariantStatus_FLAKY), int(pb.AnalyzedTestVariantStatus_CONSISTENTLY_UNEXPECTED), int(pb.AnalyzedTestVariantStatus_HAS_UNEXPECTED_RESULTS)},
+		"statuses": []int{int(atvpb.Status_FLAKY), int(atvpb.Status_CONSISTENTLY_UNEXPECTED), int(atvpb.Status_HAS_UNEXPECTED_RESULTS)},
 	}
 
 	var b spanutil.Buffer
 	return span.Query(ctx, st).Do(
 		func(row *spanner.Row) error {
-			tv := &pb.AnalyzedTestVariant{}
+			tv := &atvpb.AnalyzedTestVariant{}
 			if err := b.FromSpanner(row, &tv.TestId, &tv.VariantHash); err != nil {
 				return err
 			}

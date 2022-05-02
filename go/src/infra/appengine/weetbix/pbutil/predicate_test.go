@@ -7,6 +7,7 @@ package pbutil
 import (
 	"testing"
 
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
 	pb "infra/appengine/weetbix/proto/v1"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -16,13 +17,13 @@ import (
 func TestValidateAnalyzedTestVariantPredicate(t *testing.T) {
 	Convey(`TestValidateAnalyzedTestVariantPredicate`, t, func() {
 		Convey(`Empty`, func() {
-			err := ValidateAnalyzedTestVariantPredicate(&pb.AnalyzedTestVariantPredicate{})
+			err := ValidateAnalyzedTestVariantPredicate(&atvpb.Predicate{})
 			So(err, ShouldBeNil)
 		})
 
 		Convey(`TestID`, func() {
 			validate := func(TestIdRegexp string) error {
-				return ValidateAnalyzedTestVariantPredicate(&pb.AnalyzedTestVariantPredicate{
+				return ValidateAnalyzedTestVariantPredicate(&atvpb.Predicate{
 					TestIdRegexp: TestIdRegexp,
 				})
 			}
@@ -51,7 +52,7 @@ func TestValidateAnalyzedTestVariantPredicate(t *testing.T) {
 			invalidVariant := Variant("", "")
 
 			validate := func(p *pb.VariantPredicate) error {
-				return ValidateAnalyzedTestVariantPredicate(&pb.AnalyzedTestVariantPredicate{
+				return ValidateAnalyzedTestVariantPredicate(&atvpb.Predicate{
 					Variant: p,
 				})
 			}
@@ -93,21 +94,21 @@ func TestValidateAnalyzedTestVariantPredicate(t *testing.T) {
 		})
 
 		Convey(`Status`, func() {
-			validate := func(s pb.AnalyzedTestVariantStatus) error {
-				return ValidateAnalyzedTestVariantPredicate(&pb.AnalyzedTestVariantPredicate{
+			validate := func(s atvpb.Status) error {
+				return ValidateAnalyzedTestVariantPredicate(&atvpb.Predicate{
 					Status: s,
 				})
 			}
 			Convey(`unspecified`, func() {
-				err := validate(pb.AnalyzedTestVariantStatus_STATUS_UNSPECIFIED)
+				err := validate(atvpb.Status_STATUS_UNSPECIFIED)
 				So(err, ShouldBeNil)
 			})
 			Convey(`invalid`, func() {
-				err := validate(pb.AnalyzedTestVariantStatus(100))
+				err := validate(atvpb.Status(100))
 				So(err, ShouldErrLike, `status: invalid value 100`)
 			})
 			Convey(`valid`, func() {
-				err := validate(pb.AnalyzedTestVariantStatus_FLAKY)
+				err := validate(atvpb.Status_FLAKY)
 				So(err, ShouldBeNil)
 			})
 		})

@@ -18,7 +18,7 @@ import (
 	"infra/appengine/weetbix/internal/tasks/taskspb"
 	"infra/appengine/weetbix/internal/testutil"
 	"infra/appengine/weetbix/internal/testutil/insert"
-	pb "infra/appengine/weetbix/proto/v1"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -28,7 +28,7 @@ func TestComputeTestVariantStatusFromVerdicts(t *testing.T) {
 		ctx := testutil.SpannerTestContext(t)
 
 		realm := "chromium:ci"
-		status := pb.AnalyzedTestVariantStatus_FLAKY
+		status := atvpb.Status_FLAKY
 		vh := "varianthash"
 
 		// Insert parent AnalyzedTestVariants.
@@ -41,7 +41,7 @@ func TestComputeTestVariantStatusFromVerdicts(t *testing.T) {
 		}
 		testutil.MustApply(ctx, ms...)
 
-		test := func(tID string, expStatus pb.AnalyzedTestVariantStatus) {
+		test := func(tID string, expStatus atvpb.Status) {
 			ctx, cancel := span.ReadOnlyTransaction(ctx)
 			defer cancel()
 
@@ -65,7 +65,7 @@ func TestComputeTestVariantStatusFromVerdicts(t *testing.T) {
 			}
 			testutil.MustApply(ctx, ms...)
 
-			test(tID, pb.AnalyzedTestVariantStatus_FLAKY)
+			test(tID, atvpb.Status_FLAKY)
 		})
 
 		Convey(`no_new_results`, func() {
@@ -74,7 +74,7 @@ func TestComputeTestVariantStatusFromVerdicts(t *testing.T) {
 				insert.Verdict(realm, tID, vh, "build-0", internal.VerdictStatus_EXPECTED, clock.Now(ctx).UTC().Add(-25*time.Hour), nil),
 			}
 			testutil.MustApply(ctx, ms...)
-			test(tID, pb.AnalyzedTestVariantStatus_NO_NEW_RESULTS)
+			test(tID, atvpb.Status_NO_NEW_RESULTS)
 		})
 
 		Convey(`consistently_unexpected`, func() {
@@ -85,7 +85,7 @@ func TestComputeTestVariantStatusFromVerdicts(t *testing.T) {
 				insert.Verdict(realm, tID, vh, "build-2", internal.VerdictStatus_UNEXPECTED, clock.Now(ctx).UTC().Add(-2*time.Hour), nil),
 			}
 			testutil.MustApply(ctx, ms...)
-			test(tID, pb.AnalyzedTestVariantStatus_CONSISTENTLY_UNEXPECTED)
+			test(tID, atvpb.Status_CONSISTENTLY_UNEXPECTED)
 		})
 
 		Convey(`consistently_expected`, func() {
@@ -95,7 +95,7 @@ func TestComputeTestVariantStatusFromVerdicts(t *testing.T) {
 				insert.Verdict(realm, tID, vh, "build-1", internal.VerdictStatus_EXPECTED, clock.Now(ctx).UTC().Add(-2*time.Hour), nil),
 			}
 			testutil.MustApply(ctx, ms...)
-			test(tID, pb.AnalyzedTestVariantStatus_CONSISTENTLY_EXPECTED)
+			test(tID, atvpb.Status_CONSISTENTLY_EXPECTED)
 		})
 
 		Convey(`has_unexpected_results`, func() {
@@ -105,7 +105,7 @@ func TestComputeTestVariantStatusFromVerdicts(t *testing.T) {
 				insert.Verdict(realm, tID, vh, "build-1", internal.VerdictStatus_UNEXPECTED, clock.Now(ctx).UTC().Add(-2*time.Hour), nil),
 			}
 			testutil.MustApply(ctx, ms...)
-			test(tID, pb.AnalyzedTestVariantStatus_HAS_UNEXPECTED_RESULTS)
+			test(tID, atvpb.Status_HAS_UNEXPECTED_RESULTS)
 		})
 	})
 }

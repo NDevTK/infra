@@ -12,7 +12,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/span"
 
-	pb "infra/appengine/weetbix/proto/v1"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
 )
 
 func purge(ctx context.Context) (int64, error) {
@@ -22,7 +22,7 @@ func purge(ctx context.Context) (int64, error) {
 		AND StatusUpdateTime < TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 31 DAY)
 	`)
 	st.Params = map[string]interface{}{
-		"statuses": []int{int(pb.AnalyzedTestVariantStatus_NO_NEW_RESULTS), int(pb.AnalyzedTestVariantStatus_CONSISTENTLY_EXPECTED)},
+		"statuses": []int{int(atvpb.Status_NO_NEW_RESULTS), int(atvpb.Status_CONSISTENTLY_EXPECTED)},
 	}
 	return span.PartitionedUpdate(ctx, st)
 }

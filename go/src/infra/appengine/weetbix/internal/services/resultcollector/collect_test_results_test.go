@@ -22,7 +22,7 @@ import (
 	"infra/appengine/weetbix/internal/testutil"
 	"infra/appengine/weetbix/internal/testutil/insert"
 	"infra/appengine/weetbix/pbutil"
-	pb "infra/appengine/weetbix/proto/v1"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/common/clock/testclock"
@@ -79,13 +79,13 @@ func TestSaveVerdicts(t *testing.T) {
 		}
 		// Prepare some analyzed test variants to query.
 		ms := []*spanner.Mutation{
-			insert.AnalyzedTestVariant(realm, "ninja://test_known_flake", vh, pb.AnalyzedTestVariantStatus_FLAKY, builderField),
-			insert.AnalyzedTestVariant(realm, "ninja://test_has_unexpected", vh, pb.AnalyzedTestVariantStatus_HAS_UNEXPECTED_RESULTS, builderField),
-			insert.AnalyzedTestVariant(realm, "ninja://test_consistent_failure", vh, pb.AnalyzedTestVariantStatus_CONSISTENTLY_UNEXPECTED, builderField),
+			insert.AnalyzedTestVariant(realm, "ninja://test_known_flake", vh, atvpb.Status_FLAKY, builderField),
+			insert.AnalyzedTestVariant(realm, "ninja://test_has_unexpected", vh, atvpb.Status_HAS_UNEXPECTED_RESULTS, builderField),
+			insert.AnalyzedTestVariant(realm, "ninja://test_consistent_failure", vh, atvpb.Status_CONSISTENTLY_UNEXPECTED, builderField),
 			// Stale test variant has new failure.
-			insert.AnalyzedTestVariant(realm, "ninja://test_no_new_results", vh, pb.AnalyzedTestVariantStatus_NO_NEW_RESULTS, builderField),
+			insert.AnalyzedTestVariant(realm, "ninja://test_no_new_results", vh, atvpb.Status_NO_NEW_RESULTS, builderField),
 			// Flaky test variant on another builder.
-			insert.AnalyzedTestVariant(realm, "ninja://test_known_flake", "another_hash", pb.AnalyzedTestVariantStatus_FLAKY, map[string]interface{}{
+			insert.AnalyzedTestVariant(realm, "ninja://test_known_flake", "another_hash", atvpb.Status_FLAKY, map[string]interface{}{
 				"Builder": "another_builder",
 			}),
 		}

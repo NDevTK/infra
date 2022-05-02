@@ -33,7 +33,6 @@ import (
 	"infra/appengine/weetbix/internal/clustering/chunkstore"
 	"infra/appengine/weetbix/internal/clustering/ingestion"
 	"infra/appengine/weetbix/internal/config"
-	configpb "infra/appengine/weetbix/internal/config/proto"
 	ctrlpb "infra/appengine/weetbix/internal/ingestion/control/proto"
 	"infra/appengine/weetbix/internal/resultdb"
 	"infra/appengine/weetbix/internal/services/resultcollector"
@@ -43,6 +42,8 @@ import (
 	"infra/appengine/weetbix/internal/testutil"
 	"infra/appengine/weetbix/internal/testutil/insert"
 	"infra/appengine/weetbix/pbutil"
+	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
+	configpb "infra/appengine/weetbix/proto/config"
 	pb "infra/appengine/weetbix/proto/v1"
 )
 
@@ -216,15 +217,15 @@ func TestIngestTestResults(t *testing.T) {
 			// Prepare some existing analyzed test variants to update.
 			ms := []*spanner.Mutation{
 				// Known flake's status should remain unchanged.
-				insert.AnalyzedTestVariant(realm, "ninja://test_known_flake", "hash", pb.AnalyzedTestVariantStatus_FLAKY, map[string]interface{}{
+				insert.AnalyzedTestVariant(realm, "ninja://test_known_flake", "hash", atvpb.Status_FLAKY, map[string]interface{}{
 					"Tags": pbutil.StringPairs("test_name", "test_known_flake", "monorail_component", "Monorail>OldComponent"),
 				}),
 				// Non-flake test variant's status will change when see a flaky occurrence.
-				insert.AnalyzedTestVariant(realm, "ninja://test_has_unexpected", "hash", pb.AnalyzedTestVariantStatus_HAS_UNEXPECTED_RESULTS, nil),
+				insert.AnalyzedTestVariant(realm, "ninja://test_has_unexpected", "hash", atvpb.Status_HAS_UNEXPECTED_RESULTS, nil),
 				// Consistently failed test variant.
-				insert.AnalyzedTestVariant(realm, "ninja://test_consistent_failure", "hash", pb.AnalyzedTestVariantStatus_CONSISTENTLY_UNEXPECTED, nil),
+				insert.AnalyzedTestVariant(realm, "ninja://test_consistent_failure", "hash", atvpb.Status_CONSISTENTLY_UNEXPECTED, nil),
 				// Stale test variant has new failure.
-				insert.AnalyzedTestVariant(realm, "ninja://test_no_new_results", "hash", pb.AnalyzedTestVariantStatus_NO_NEW_RESULTS, nil),
+				insert.AnalyzedTestVariant(realm, "ninja://test_no_new_results", "hash", atvpb.Status_NO_NEW_RESULTS, nil),
 			}
 			testutil.MustApply(ctx, ms...)
 
@@ -243,21 +244,21 @@ func TestIngestTestResults(t *testing.T) {
 			ctx, cancel := span.ReadOnlyTransaction(ctx)
 			defer cancel()
 
-			exp := map[string]pb.AnalyzedTestVariantStatus{
-				"ninja://test_new_failure":        pb.AnalyzedTestVariantStatus_HAS_UNEXPECTED_RESULTS,
-				"ninja://test_known_flake":        pb.AnalyzedTestVariantStatus_FLAKY,
-				"ninja://test_consistent_failure": pb.AnalyzedTestVariantStatus_CONSISTENTLY_UNEXPECTED,
-				"ninja://test_no_new_results":     pb.AnalyzedTestVariantStatus_HAS_UNEXPECTED_RESULTS,
-				"ninja://test_new_flake":          pb.AnalyzedTestVariantStatus_FLAKY,
-				"ninja://test_has_unexpected":     pb.AnalyzedTestVariantStatus_FLAKY,
+			exp := map[string]atvpb.Status{
+				"ninja://test_new_failure":        atvpb.Status_HAS_UNEXPECTED_RESULTS,
+				"ninja://test_known_flake":        atvpb.Status_FLAKY,
+				"ninja://test_consistent_failure": atvpb.Status_CONSISTENTLY_UNEXPECTED,
+				"ninja://test_no_new_results":     atvpb.Status_HAS_UNEXPECTED_RESULTS,
+				"ninja://test_new_flake":          atvpb.Status_FLAKY,
+				"ninja://test_has_unexpected":     atvpb.Status_FLAKY,
 			}
-			act := make(map[string]pb.AnalyzedTestVariantStatus)
-			expProtos := map[string]*pb.AnalyzedTestVariant{
+			act := make(map[string]atvpb.Status)
+			expProtos := map[string]*atvpb.AnalyzedTestVariant{
 				"ninja://test_new_failure": {
 					Realm:        realm,
 					TestId:       "ninja://test_new_failure",
 					VariantHash:  "hash",
-					Status:       pb.AnalyzedTestVariantStatus_HAS_UNEXPECTED_RESULTS,
+					Status:       atvpb.Status_HAS_UNEXPECTED_RESULTS,
 					Variant:      pbutil.VariantFromResultDB(sampleVar),
 					Tags:         pbutil.StringPairs("monorail_component", "Monorail>Component"),
 					TestMetadata: pbutil.TestMetadataFromResultDB(sampleTmd),
@@ -266,18 +267,18 @@ func TestIngestTestResults(t *testing.T) {
 					Realm:       realm,
 					TestId:      "ninja://test_known_flake",
 					VariantHash: "hash",
-					Status:      pb.AnalyzedTestVariantStatus_FLAKY,
+					Status:      atvpb.Status_FLAKY,
 					Tags:        pbutil.StringPairs("monorail_component", "Monorail>Component", "os", "Mac", "test_name", "test_known_flake"),
 				},
 			}
 
 			var testIDsWithNextTask []string
 			fields := []string{"Realm", "TestId", "VariantHash", "Status", "Variant", "Tags", "TestMetadata", "NextUpdateTaskEnqueueTime"}
-			actProtos := make(map[string]*pb.AnalyzedTestVariant, len(expProtos))
+			actProtos := make(map[string]*atvpb.AnalyzedTestVariant, len(expProtos))
 			var b spanutil.Buffer
 			err = span.Read(ctx, "AnalyzedTestVariants", spanner.AllKeys(), fields).Do(
 				func(row *spanner.Row) error {
-					tv := &pb.AnalyzedTestVariant{}
+					tv := &atvpb.AnalyzedTestVariant{}
 					var tmd spanutil.Compressed
 					var enqTime spanner.NullTime
 					err = b.FromSpanner(row, &tv.Realm, &tv.TestId, &tv.VariantHash, &tv.Status, &tv.Variant, &tv.Tags, &tmd, &enqTime)

@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/appengine/weetbix/internal/clustering/rules/lang"
-	configpb "infra/appengine/weetbix/internal/config/proto"
+	configpb "infra/appengine/weetbix/proto/config"
 )
 
 // likeRewriter escapes usages of '\', '%' and '_', so that

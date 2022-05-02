@@ -6,7 +6,7 @@ package monorail
 
 import (
 	"infra/appengine/weetbix/internal/bugs"
-	configpb "infra/appengine/weetbix/internal/config/proto"
+	configpb "infra/appengine/weetbix/proto/config"
 	mpb "infra/monorailv2/api/v3/api_proto"
 
 	"github.com/golang/protobuf/proto"

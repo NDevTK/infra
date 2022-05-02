@@ -21,9 +21,9 @@ import (
 
 	adminpb "infra/appengine/weetbix/internal/admin/proto"
 	"infra/appengine/weetbix/internal/config"
-	configpb "infra/appengine/weetbix/internal/config/proto"
 	"infra/appengine/weetbix/internal/services/testvariantbqexporter"
 	"infra/appengine/weetbix/pbutil"
+	configpb "infra/appengine/weetbix/proto/config"
 	pb "infra/appengine/weetbix/proto/v1"
 )
 
