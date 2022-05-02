@@ -135,6 +135,7 @@ func (c *leaseRun) innerRun(a subcommands.Application, env subcommands.Env) erro
 		c.printer.WriteTextStderr("%s\n", dutInfoAsBashVariables(leaseInfo.DUT))
 	}
 	c.printer.WriteJSONStdout(&leaseInfo)
+	c.printer.WriteTextStdout("Visit http://go/chromeos-lab-duts-ssh for up-to-date docs on SSHing to a leased DUT")
 	return nil
 }
 
