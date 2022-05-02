@@ -191,7 +191,8 @@ chromium_genfiles("lnx", "codesearch-gen-chromium-linux")
 chromium_genfiles(
     "mac",
     "codesearch-gen-chromium-mac",
-    os = "Mac-10.15",
+    os = "Mac-11",
+    cpu_cores = "4",
 )
 chromium_genfiles(
     "win",
