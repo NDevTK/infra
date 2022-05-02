@@ -1507,6 +1507,7 @@ SPECS.update({
         Universal('isort', '4.3.4', pyversions=['py2']),
         Universal('isort', '4.3.4', pyversions=['py3']),
         Universal('isort', '5.8.0', pyversions=['py3']),
+        Universal('isort', '5.10.1', pyversions=['py3']),
         Universal('json5', '0.6.0'),
         Universal('jsonlines', '1.2.0'),
         Universal('jsonschema', '3.2.0'),  # py2 + py3

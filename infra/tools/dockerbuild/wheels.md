@@ -3682,6 +3682,18 @@ wheel: <
 
 * *universal*
 
+### 5.10.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/isort-py3"
+  version: "version:5.10.1"
+>
+```
+
+
+* *universal*
+
 ### 5.8.0
 
 ```protobuf
