@@ -1,0 +1,14 @@
+name: infra/poros
+extends: ../base.yaml
+
+inputsdir: ../../../go/src/infra/appengine/poros
+
+build:
+  # This builds the frontend code, updating ${inputsdir}/frontend/build.
+  - run: ['make', 'release']
+    cwd: ${inputsdir}
+
+  # This packages all Go code, including the frontend code from
+  # static
+  - go_gae_bundle: ${inputsdir}/app.yaml
+    dest: ${contextdir}/poros
