@@ -8,6 +8,7 @@ import (
 	"context"
 	"net/http"
 
+	"go.chromium.org/luci/auth/identity"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/config/server/cfgmodule"
 	"go.chromium.org/luci/gae/service/datastore"
@@ -19,7 +20,7 @@ import (
 	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/secrets"
 
-	"go.chromium.org/luci/auth/identity"
+	_ "go.chromium.org/luci/server/encryptedcookies/session/datastore"
 	"go.chromium.org/luci/server/router"
 	"go.chromium.org/luci/server/templates"
 
@@ -29,7 +30,7 @@ import (
 
 // authGroup is the name of the LUCI Auth group that controls whether the user
 // should have access to Poros.
-const authGroup = "project-celab-committers"
+const authGroup = "project-poros-access"
 
 func init() {
 	// TODO (crbug.com/1242998): Remove when this becomes the default (~Jan 2022).
@@ -44,10 +45,6 @@ func prepareTemplates(opts *server.Options) *templates.Bundle {
 		DebugMode: func(context.Context) bool { return !opts.Prod },
 		DefaultArgs: func(ctx context.Context, e *templates.Extra) (templates.Args, error) {
 			logoutURL, err := auth.LogoutURL(ctx, e.Request.URL.RequestURI())
-			if err != nil {
-				return nil, err
-			}
-
 			if err != nil {
 				return nil, err
 			}
@@ -116,7 +113,6 @@ func main() {
 		handlers := handlers.NewHandlers(srv.Options.Prod)
 		handlers.RegisterRoutes(srv.Routes, mw)
 
-		srv.Routes.Static("/static", mw, http.Dir("./static"))
 		// Anything that is not found, serve app html and let the client side router handle it.
 		srv.Routes.NotFound(mw, handlers.IndexPage)
 
