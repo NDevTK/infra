@@ -12,7 +12,7 @@ clean:
 	cd frontend && rm -f src/build/*
 
 release:
-	cd frontend && npm ci && npm run build
+	cd frontend && npm ci && npm run build-prod
 
 test:
 	go test -race -count 10 -failfast ./...
