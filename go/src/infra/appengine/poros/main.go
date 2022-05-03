@@ -113,6 +113,8 @@ func main() {
 		handlers := handlers.NewHandlers(srv.Options.Prod)
 		handlers.RegisterRoutes(srv.Routes, mw)
 
+		srv.Routes.Static("/static/", mw, http.Dir("./static"))
+
 		// Anything that is not found, serve app html and let the client side router handle it.
 		srv.Routes.NotFound(mw, handlers.IndexPage)
 
