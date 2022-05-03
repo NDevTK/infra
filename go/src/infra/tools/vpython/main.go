@@ -69,6 +69,16 @@ var defaultConfig = application.Config{
 		Name:    "infra/3pp/tools/virtualenv",
 		Version: "version:2@16.7.10.chromium.7",
 	},
+	PythonPackages: map[string]vpython.Spec_Package{
+		"2.7": {
+			Name:    "infra/3pp/tools/cpython/${platform}",
+			Version: "version:2@2.7.18.chromium.39",
+		},
+		"3.8": {
+			Name:    "infra/3pp/tools/cpython3/${platform}",
+			Version: "version:2@3.8.10.chromium.24",
+		},
+	},
 	PruneThreshold:          7 * 24 * time.Hour, // One week.
 	MaxPrunesPerSweep:       3,
 	DefaultVerificationTags: verificationScenarios,
