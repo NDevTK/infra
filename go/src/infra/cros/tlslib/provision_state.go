@@ -7,6 +7,7 @@ package tlslib
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/url"
@@ -222,6 +223,35 @@ func (p *provisionState) verifyKernelState(ctx context.Context) error {
 				}
 				// Otherwise retry after a delay until timeout.
 				log.Printf("verifyKernelState: waiting for active kernel to be marked successful")
+			}
+			time.Sleep(2 * time.Second)
+		}
+	}
+}
+
+// Reason for waiting for UI to stabilize is because certain FW updates occur
+// prior to the "ui" job starting and reboots can occur.
+func (p *provisionState) waitForUIToStabilize(ctx context.Context, addr string) error {
+	for {
+		select {
+		case <-ctx.Done():
+			return errors.New("waitForUIToStabilize: timeout reached")
+		default:
+			disconnect, err := p.connect(ctx, addr)
+			if err != nil {
+				return fmt.Errorf("waitForUIToStabilize: the UI did not come up, %w", err)
+			}
+			defer disconnect()
+			// "system-services" will handle both "ui" and non-"ui" supported overlays.
+			status, err := runCmdOutput(p.c, "status system-services")
+			if err != nil {
+				return fmt.Errorf("waitForUIToStabilize: could not get UI status, %w", err)
+			}
+			if !strings.Contains(status, "start/running") {
+				log.Printf("waitForUIToStabilize: UI has not stabilized yet")
+			} else {
+				log.Printf("waitForUIToStabilize: UI is running")
+				return nil
 			}
 			time.Sleep(2 * time.Second)
 		}

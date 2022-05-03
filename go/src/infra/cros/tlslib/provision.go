@@ -123,19 +123,32 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 			return
 		}
 
-		// Shorten the time waiting for reboot to complete booting into the new OS.
-		rebootWaitCtx, cancel := context.WithTimeout(ctx, 300*time.Second)
+		// Wait for DUT to come up after provisioning the OS.
+		// Can continue as soon as a connection can be established.
+		rebootWaitCtx, cancel := context.WithTimeout(ctx, 120*time.Second)
 		defer cancel()
-
 		disconnect, err = p.connect(rebootWaitCtx, addr)
 		if err != nil {
 			setError(newOperationError(
 				codes.Aborted,
-				fmt.Sprintf("provision: failed to connect to DUT after OS provision, DUT might be rolling back, %s", err),
+				fmt.Sprintf("provision: failed to wait for DUT to come up after provisioning the OS, %s", err),
 				tls.ProvisionDutResponse_REASON_PROVISIONING_FAILED.String()))
 			return
 		}
 		defer disconnect()
+		log.Printf("DUT came up after provisioning the OS.")
+
+		// Shorten the time waiting for reboot to complete booting into the new OS.
+		// Follow through subsequent reboots until "ui" job is running.
+		uiStabilizeCtx, cancel := context.WithTimeout(ctx, 360*time.Second)
+		defer cancel()
+		if err := p.waitForUIToStabilize(uiStabilizeCtx, addr); err != nil {
+			setError(newOperationError(
+				codes.Aborted,
+				fmt.Sprintf("provision: failed to wait for UI to stabilize, %s", err),
+				tls.ProvisionDutResponse_REASON_PROVISIONING_FAILED.String()))
+			return
+		}
 		log.Printf("provision: time to provision OS took %v", time.Since(t))
 
 		// To be safe, wait for kernel to be "sticky" right after installing the new partitions and booting into it.
