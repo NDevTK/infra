@@ -15,6 +15,7 @@ import (
 	"infra/cros/dutstate"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/tlw"
 )
 
 // hasDutNameActionExec verifies that DUT provides name.
@@ -212,6 +213,15 @@ func setDutStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// hasCr50PhaseExec verifies whether the Cr50 firmware is present on
+// the DUT.
+func hasCr50PhaseExec(ctx context.Context, info *execs.ExecInfo) error {
+	if d := info.RunArgs.DUT; d == nil || d.Cr50Phase == "" || d.Cr50Phase == tlw.Cr50PhaseUnspecified {
+		return errors.Reason("has Cr50 phase: Cr50 firmware phase could not be determined").Err()
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("dut_servo_host_present", servoHostPresentExec)
 	execs.Register("dut_has_name", hasDutNameActionExec)
@@ -228,4 +238,5 @@ func init() {
 	execs.Register("dut_has_hwid", hasDutHwidExec)
 	execs.Register("dut_has_serial_number", hasDutSerialNumberExec)
 	execs.Register("dut_set_state", setDutStateExec)
+	execs.Register("dut_has_cr50", hasCr50PhaseExec)
 }

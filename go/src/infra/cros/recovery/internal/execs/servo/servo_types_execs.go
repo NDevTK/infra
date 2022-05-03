@@ -18,7 +18,7 @@ import (
 )
 
 // servoVerifyV3Exec verifies whether the servo attached to the servo
-// host if of type V3.
+// host is of type V3.
 func servoVerifyV3Exec(ctx context.Context, info *execs.ExecInfo) error {
 	// We first check that the servo host is not a labstation. The
 	// "-servo" suffix will exist only when the setup is for type V3,
@@ -43,7 +43,7 @@ func servoVerifyV3Exec(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 // servoVerifyV4Exec verifies whether the servo attached to the servo
-// host if of type V4.
+// host is of type V4.
 func servoVerifyV4Exec(ctx context.Context, info *execs.ExecInfo) error {
 	sType, err := WrappedServoType(ctx, info)
 	if err != nil {
@@ -58,7 +58,7 @@ func servoVerifyV4Exec(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 // servoVerifyServoMicroExec verifies whether the servo attached to
-// the servo host if of type servo micro.
+// the servo host is of type servo micro.
 func servoVerifyServoMicroExec(ctx context.Context, info *execs.ExecInfo) error {
 	sType, err := WrappedServoType(ctx, info)
 	if err != nil {
@@ -102,7 +102,7 @@ func servoVerifyDualSetupExec(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 // servoVerifyServoCCDExec verifies whether the servo attached to
-// the servo host if of type servo ccd.
+// the servo host is of type servo ccd.
 func servoVerifyServoCCDExec(ctx context.Context, info *execs.ExecInfo) error {
 	sType, err := WrappedServoType(ctx, info)
 	if err != nil {

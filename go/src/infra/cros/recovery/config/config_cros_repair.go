@@ -731,6 +731,9 @@ func crosRepairActions() map[string]*Action {
 			AllowFailAfterRecovery: true,
 		},
 		"cros_is_cr50_firmware_exist": {
+			Conditions: []string{
+				"DUT has Cr50 phase label",
+			},
 			Docs: []string{
 				"Checks if the cr 50 firmware exists on the DUT by running the gsctool version command.",
 			},
@@ -738,6 +741,12 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"gsctool -a -f",
 			},
+		},
+		"DUT has Cr50 phase label": {
+			Docs: []string{
+				"Check if the DUT has Cr50.",
+			},
+			ExecName: "dut_has_cr50",
 		},
 		"device_sku": {
 			Docs: []string{
