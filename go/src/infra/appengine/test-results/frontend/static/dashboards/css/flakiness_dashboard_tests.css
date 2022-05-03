@@ -72,12 +72,7 @@
     text-decoration: underline;
     cursor: pointer;
 }
-.table-header-content,
 .table-header-content * {
-    display: -webkit-box;
-}
-.table-header-content * {
-    -webkit-box-flex: 1;
     cursor: pointer;
 }
 .results-container {
@@ -171,8 +166,12 @@ below and should be kept in sync. See: crbug.com/397886.
     background-color: #fff;
     color: #bbb;
 }
+.SLOW{
+    background: #407eff;
+    color: #fff;
+}
 .SKIP {
-    background-color: lightgray;
+    background-color: #8dddff;
 }
 .CRASH {
     background-color: #c90;
@@ -187,7 +186,8 @@ below and should be kept in sync. See: crbug.com/397886.
     background-color: #e98080;
 }
 .MISSING {
-    background-color: #8a7700;
+    background-color: #7d5e01;
+    color: #fff;
 }
 .IMAGETEXT {
     background-color: #96f;

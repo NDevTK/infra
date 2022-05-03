@@ -542,25 +542,25 @@ function htmlForPopupForBuild(builderKey, index, opt_testName)
 {
     var html = '';
     var builder = builders.builderFromKey(builderKey);
-
-    var time = g_resultsByBuilder[builder.key()].secondsSinceEpoch[index];
+    var results = g_resultsByBuilder[builder.key()];
+    var time = result.secondsSinceEpoch[index];
     if (time) {
         var date = new Date(time * 1000);
         html += date.toLocaleDateString() + ' ' +
                 date.toLocaleTimeString(undefined, {timeZoneName: 'short'});
     }
 
-    var buildNumber = g_resultsByBuilder[builder.key()].buildNumbers[index];
+    var buildNumber = results.buildNumbers[index];
     var master = builder.master();
     var buildBasePath = master.logPath(builder.builderName, buildNumber);
 
     html += '<ul><li>' + linkHTMLToOpenWindow(buildBasePath, 'Build log') + '</li>';
 
-    var chromiumLink = ui.html.chromiumRevisionLink(g_resultsByBuilder[builder.key()], index);
+    var chromiumLink = ui.html.chromiumRevisionLink(results, index);
     if (chromiumLink)
         html += '<li>Chromium: ' + chromiumLink + '</li>';
 
-    var chromeRevision = g_resultsByBuilder[builder.key()].chromeRevision[index];
+    var chromeRevision = results.chromeRevision[index];
     if (chromeRevision && g_history.isLayoutTestResults()) {
         var layoutTestResultsLink = TEST_RESULTS_BASE_PATH + builder.builderNameForPath() +
             '/' + buildNumber + '/' + g_history.crossDashboardState.testType +
@@ -771,7 +771,7 @@ function tableHeaders(opt_getAll)
     if (g_history.isLayoutTestResults() || opt_getAll)
         headers.push('bugs', 'expectations');
 
-    headers.push('slowest run', 'flakiness (numbers are runtimes in seconds)');
+    headers.push('slowest run', 'flakiness (runtimes in seconds, newest to oldest revisions)');
     return headers;
 }
 
