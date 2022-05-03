@@ -313,7 +313,7 @@ func TestManager(t *testing.T) {
 					expectedComment := "Because:\n" +
 						"- Test Results Failed (1-day) < 45, and\n" +
 						"- Test Results Failed (3-day) < 272, and\n" +
-						"- Test Results Failed (7-day) < 636\n" +
+						"- Test Results Failed (7-day) < 1\n" +
 						"Weetbix is marking the issue verified."
 					So(f.Issues[0].Comments, ShouldHaveLength, 3)
 					So(f.Issues[0].Comments[2].Content, ShouldEqual, expectedComment)

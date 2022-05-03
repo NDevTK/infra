@@ -5,11 +5,11 @@
 package monorail
 
 import (
+	"github.com/golang/protobuf/proto"
+
 	"infra/appengine/weetbix/internal/bugs"
 	configpb "infra/appengine/weetbix/proto/config"
 	mpb "infra/monorailv2/api/v3/api_proto"
-
-	"github.com/golang/protobuf/proto"
 )
 
 // ChromiumTestPriorityField is the resource name of the priority field
@@ -75,7 +75,7 @@ func ChromiumTestConfig() *configpb.MonorailProject {
 					TestResultsFailed: &configpb.MetricThreshold{
 						OneDay:   proto.Int64(50),
 						ThreeDay: proto.Int64(300),
-						SevenDay: proto.Int64(700),
+						SevenDay: proto.Int64(1), // Set to 1 so that we check hysteresis never rounds down to 0 and prevents bugs from closing.
 					},
 				},
 			},

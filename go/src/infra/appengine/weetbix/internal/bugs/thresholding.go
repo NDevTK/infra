@@ -16,6 +16,8 @@ import (
 // i.e. inflationPercent of +100 would result in a threshold that is 200% the
 // original threshold being used, inflationPercent of -100 would result in a
 // threshold that is 50% of the original.
+// To avoid unintended effects such as 1 being inflated down to 0, inflation
+// can never make a zero number non-zero or a non-zero number zero.
 func InflateThreshold(t *configpb.ImpactThreshold, inflationPercent int64) *configpb.ImpactThreshold {
 	return &configpb.ImpactThreshold{
 		PresubmitRunsFailed: inflateMetricThreshold(t.PresubmitRunsFailed, inflationPercent),
@@ -42,12 +44,22 @@ func inflateSingleThreshold(threshold *int64, inflationPercent int64) *int64 {
 		return nil
 	}
 	thresholdValue := *threshold
+	if thresholdValue == 0 {
+		// Explicitly never change a zero value.
+		return &thresholdValue
+	}
 	if inflationPercent >= 0 {
 		// I.E. +100% doubles the threshold.
 		thresholdValue = (thresholdValue * (100 + inflationPercent)) / 100
 	} else {
 		// I.E. -100% halves the threshold.
 		thresholdValue = (thresholdValue * 100) / (100 + -inflationPercent)
+	}
+	// If the result is zero, set it to 1 instead to avoid things like
+	// bug closing thresholds being rounded down to zero failures, and thus
+	// bugs never being closed.
+	if thresholdValue == 0 {
+		thresholdValue = 1
 	}
 	return &thresholdValue
 }

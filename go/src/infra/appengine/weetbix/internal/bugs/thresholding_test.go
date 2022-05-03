@@ -226,4 +226,16 @@ func TestThresholding(t *testing.T) {
 			})
 		})
 	})
+	Convey("Zero value not inflated", t, func() {
+		input := int64(0)
+		output := inflateSingleThreshold(&input, 200)
+		So(output, ShouldNotBeNil)
+		So(*output, ShouldEqual, 0)
+	})
+	Convey("Non-zero value should not be inflated to zero", t, func() {
+		input := int64(1)
+		output := inflateSingleThreshold(&input, -200)
+		So(output, ShouldNotBeNil)
+		So(*output, ShouldNotEqual, 0)
+	})
 }
