@@ -21,7 +21,7 @@ const (
 	interrupted = "interrupted"
 )
 
-// callNullaryFuncWithTimeout synchronously calls a unary function with a timeout.
+// callFuncWithTimeout synchronously calls a unary function with a timeout.
 // It returns whatever error was produced by the unary function in question, or a dedicated error
 // if the deadline was exceeded.
 // The status unambiguously indicates whether the function ran to completion or not.
