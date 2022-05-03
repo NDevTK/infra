@@ -13,6 +13,7 @@ Name:
 Owning group:
 Short description:
 
+Note: these requests are now handled by Chrome Ops Security team. So please update the component to "Infra>Security".
 
 === Create a root CIPD prefix ===
 Prefix:
