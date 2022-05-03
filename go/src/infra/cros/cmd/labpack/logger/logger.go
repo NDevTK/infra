@@ -22,7 +22,7 @@ import (
 
 const (
 	// DefaultFormat is optional formatting which can be used for logger.
-	DefaultFormat = `[%{level:.1s}%{time:2006-01-02T15:04:05:00} %{shortfile:20s}] %{message}`
+	DefaultFormat = `%{time:2006-01-02T15:04:05:00} %{level:-5s}| %{shortfile:25s}| %{message}`
 )
 
 // Logger is interface for logger with closing.
@@ -46,6 +46,9 @@ type loggerImpl struct {
 
 // Create custom logger config with custom formatter.
 func NewLogger(ctx context.Context, callDepth int, logDir string, stdLevel logging.Level, format string, createFiles bool) (_ context.Context, _ Logger, rErr error) {
+	if format == "" {
+		return ctx, nil, errors.Reason("create logger: format not specified").Err()
+	}
 	l := &loggerImpl{
 		logDir:    logDir,
 		callDepth: callDepth,
@@ -68,7 +71,11 @@ func NewLogger(ctx context.Context, callDepth int, logDir string, stdLevel loggi
 			return ctx, l, errors.Annotate(err, "create logger").Err()
 		}
 	}
-	ctx = gologger.StdConfig.Use(ctx)
+	stdConfig := gologger.LoggerConfig{
+		Out:    os.Stderr,
+		Format: l.format,
+	}
+	ctx = stdConfig.Use(ctx)
 	ctx = logging.SetLevel(ctx, stdLevel)
 	ctx = teelogger.UseFiltered(ctx, filtereds...)
 	l.log = logging.Get(ctx)
