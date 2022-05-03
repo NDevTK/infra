@@ -87,13 +87,15 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 		}
 	}
 	for _, lse := range lses {
-		if lseInSUnitMap[lse.GetName()] {
+		name := lse.GetName()
+		if lseInSUnitMap[name] {
 			continue
 		}
-		if len(lse.GetMachines()) < 0 {
-			continue
+		machines := lse.GetMachines()
+		if n := len(machines); n != 1 {
+			return errors.Reason("report ufs inventory cron handler: %d machines %v associated with %q", n, machines, name).Err()
 		}
-		machine, ok := idTomachineMap[lse.GetMachines()[0]]
+		machine, ok := idTomachineMap[machines[0]]
 		if !ok {
 			continue
 		}
