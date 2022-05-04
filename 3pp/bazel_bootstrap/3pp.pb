@@ -9,6 +9,8 @@ create {
     script { name: "fetch.py" }
     unpack_archive: false
     cpe_base_address: "cpe:/a:google:bazel"
+    # TODO(mohrr) Remove patch_version after one build with this patch_version.
+    patch_version: "x"
   }
 
   build {}
