@@ -28,6 +28,49 @@ from google.appengine.api import users
 
 _ZERO = datetime.timedelta(0)
 
+
+class MethodNotSupportedError(NotImplementedError):
+  """An exception class for indicating that the method is not supported.
+
+  Used by GatherPageData and ProcessFormData in Servlet.
+  """
+  pass
+
+
+class _ContextDebugItem(object):
+  """Wrapper class to generate on-screen debugging output."""
+
+  def __init__(self, key, val):
+    """Store the key and generate a string for the value."""
+    self.key = key
+    if isinstance(val, list):
+      nested_debug_strs = [self.StringRep(v) for v in val]
+      self.val = '[%s]' % ', '.join(nested_debug_strs)
+    else:
+      self.val = self.StringRep(val)
+
+  def StringRep(self, val):
+    """Make a useful string representation of the given value."""
+    try:
+      return val.DebugString()
+    except Exception:
+      try:
+        return str(val.__dict__)
+      except Exception:
+        return repr(val)
+
+
+class ContextDebugCollection(object):
+  """Attach a title to a dictionary for exporting as a table of debug info."""
+
+  def __init__(self, title, collection):
+    self.title = title
+    self.collection = [
+        _ContextDebugItem(key, collection[key])
+        for key in sorted(collection.keys())
+    ]
+
+
 class _UTCTimeZone(datetime.tzinfo):
   """UTC"""
 

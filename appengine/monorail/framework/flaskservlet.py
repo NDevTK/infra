@@ -49,16 +49,6 @@ NONCE_LENGTH = 32
 if not settings.unit_test_mode:
   import MySQLdb
 
-
-class MethodNotSupportedError(NotImplementedError):
-  """An exception class for indicating that the method is not supported.
-
-  Used by GatherPageData and ProcessFormData to indicate that GET and POST,
-  respectively, are not supported methods on the given Servlet.
-  """
-  pass
-
-
 class FlaskServlet(object):
   """Base class for all Monorail flask servlets.
 
@@ -265,7 +255,7 @@ class FlaskServlet(object):
       with self.mr.profiler.Phase('rendering template'):
         self._RenderResponse(page_data)
 
-    except (MethodNotSupportedError, NotImplementedError) as e:
+    except (servlet_helpers.MethodNotSupportedError, NotImplementedError) as e:
       # Instead of these pages throwing 500s display the 404 message and log.
       # The motivation of this is to minimize 500s on the site to keep alerts
       # meaningful during fuzzing. For more context see
@@ -346,7 +336,7 @@ class FlaskServlet(object):
   def GatherPageData(self, mr):
     """Return a dict of page-specific ezt data."""
     return {}
-    # raise MethodNotSupportedError()
+    # raise servlet_helpers.MethodNotSupportedError()
 
   def GatherBaseData(self, mr, nonce):
     """Return a dict of info used on almost all pages."""
@@ -652,8 +642,7 @@ class FlaskServlet(object):
   def GatherDebugData(self, mr, page_data):
     """Return debugging info for display at the very bottom of the page."""
     if mr.debug_enabled:
-      # TODO: (crbug.com/monorail/10873)
-      # debug = [_ContextDebugCollection('Page data', page_data)]
+      debug = [servlet_helpers.ContextDebugCollection('Page data', page_data)]
       debug = [('none', 'recorded')]
       return {
           'dbg': 'on',

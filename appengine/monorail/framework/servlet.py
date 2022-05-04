@@ -90,17 +90,6 @@ trace_service = None
 #         'cloudtrace', 'v1', credentials=credentials)
 #   except Exception as e:
 #     logging.warning('could not get trace service: %s', e)
-
-
-class MethodNotSupportedError(NotImplementedError):
-  """An exception class for indicating that the method is not supported.
-
-  Used by GatherPageData and ProcessFormData to indicate that GET and POST,
-  respectively, are not supported methods on the given Servlet.
-  """
-  pass
-
-
 class Servlet(webapp2.RequestHandler):
   """Base class for all Monorail servlets.
 
@@ -355,7 +344,7 @@ class Servlet(webapp2.RequestHandler):
       with self.mr.profiler.Phase('rendering template'):
         self._RenderResponse(page_data)
 
-    except (MethodNotSupportedError, NotImplementedError) as e:
+    except (servlet_helpers.MethodNotSupportedError, NotImplementedError) as e:
       # Instead of these pages throwing 500s display the 404 message and log.
       # The motivation of this is to minimize 500s on the site to keep alerts
       # meaningful during fuzzing. For more context see
@@ -437,7 +426,7 @@ class Servlet(webapp2.RequestHandler):
     Returns:
       String URL to redirect the user to, or None if response was already sent.
     """
-    raise MethodNotSupportedError()
+    raise servlet_helpers.MethodNotSupportedError()
 
   def post(self, **kwargs):
     """Parse the request, check base perms, and call form-specific code."""
@@ -869,7 +858,7 @@ class Servlet(webapp2.RequestHandler):
 
   def GatherPageData(self, mr):
     """Return a dict of page-specific ezt data."""
-    raise MethodNotSupportedError()
+    raise servlet_helpers.MethodNotSupportedError()
 
   # pylint: disable=unused-argument
   def GatherHelpData(self, mr, page_data):
@@ -910,7 +899,7 @@ class Servlet(webapp2.RequestHandler):
   def GatherDebugData(self, mr, page_data):
     """Return debugging info for display at the very bottom of the page."""
     if mr.debug_enabled:
-      debug = [_ContextDebugCollection('Page data', page_data)]
+      debug = [servlet_helpers.ContextDebugCollection('Page data', page_data)]
       return {
           'dbg': 'on',
           'debug': debug,
@@ -966,35 +955,3 @@ def _CalcProjectAlert(project):
     project_alert = 'Project is archived: read-only by members only.'
 
   return project_alert
-
-
-class _ContextDebugItem(object):
-  """Wrapper class to generate on-screen debugging output."""
-
-  def __init__(self, key, val):
-    """Store the key and generate a string for the value."""
-    self.key = key
-    if isinstance(val, list):
-      nested_debug_strs = [self.StringRep(v) for v in val]
-      self.val = '[%s]' % ', '.join(nested_debug_strs)
-    else:
-      self.val = self.StringRep(val)
-
-  def StringRep(self, val):
-    """Make a useful string representation of the given value."""
-    try:
-      return val.DebugString()
-    except Exception:
-      try:
-        return str(val.__dict__)
-      except Exception:
-        return repr(val)
-
-
-class _ContextDebugCollection(object):
-  """Attach a title to a dictionary for exporting as a table of debug info."""
-
-  def __init__(self, title, collection):
-    self.title = title
-    self.collection = [_ContextDebugItem(key, collection[key])
-                       for key in sorted(collection.keys())]
