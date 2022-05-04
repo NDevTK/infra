@@ -397,6 +397,36 @@ func TestRouteRepairTask(t *testing.T) {
 			hasErr:        false,
 		},
 		{
+			name: "DUT rollout is match by state",
+			in: &config.Paris{
+				DutRepair: &config.RolloutConfig{
+					Enable:          true,
+					OptinAllDuts:    true,
+					RolloutPermille: 1000,
+				},
+			},
+			botID:         "foo-host4",
+			expectedState: "needs_repair",
+			pools:         []string{"some-pool"},
+			randFloat:     1,
+			out:           paris,
+			hasErr:        false,
+		},
+		{
+			name: "DUT rollout is not match by state",
+			in: &config.Paris{
+				DutRepair: &config.RolloutConfig{
+					Enable: true,
+				},
+			},
+			botID:         "foo-host4",
+			expectedState: "repair_failed",
+			pools:         []string{"some-pool"},
+			randFloat:     1,
+			out:           legacy,
+			hasErr:        false,
+		},
+		{
 			name: "DUT rollout is blocked",
 			in: &config.Paris{
 				DutRepair: &config.RolloutConfig{

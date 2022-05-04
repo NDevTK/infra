@@ -109,28 +109,27 @@ func RouteRepairTask(ctx context.Context, botID string, expectedState string, po
 	}
 	var out string
 	var r reason
+	isLabstation := heuristics.LooksLikeLabstation(botID)
+	var rolloutConfig *config.RolloutConfig
 	switch {
-	case heuristics.LooksLikeLabstation(botID):
-		out, r = routeRepairTaskImpl(
-			ctx,
-			config.Get(ctx).GetParis().GetLabstationRepair(),
-			&dutRoutingInfo{
-				labstation: heuristics.LooksLikeLabstation(botID),
-				pools:      pools,
-			},
-			randFloat,
-		)
-	default:
-		out, r = routeRepairTaskImpl(
-			ctx,
-			config.Get(ctx).GetParis().GetDutRepair(),
-			&dutRoutingInfo{
-				labstation: heuristics.LooksLikeLabstation(botID),
-				pools:      pools,
-			},
-			randFloat,
-		)
+	case isLabstation:
+		rolloutConfig = config.Get(ctx).GetParis().GetLabstationRepair()
+	case "needs_repair" == expectedState:
+		rolloutConfig = config.Get(ctx).GetParis().GetDutRepair()
+	case "repair_failed" == expectedState:
+		rolloutConfig = config.Get(ctx).GetParis().GetDutRepairOnRepairFailed()
+	case "needs_manual_repair" == expectedState:
+		rolloutConfig = config.Get(ctx).GetParis().GetDutRepairOnNeedsManualRepair()
 	}
+	out, r = routeRepairTaskImpl(
+		ctx,
+		rolloutConfig,
+		&dutRoutingInfo{
+			labstation: isLabstation,
+			pools:      pools,
+		},
+		randFloat,
+	)
 	reason, ok := reasonMessageMap[r]
 	if !ok {
 		logging.Infof(ctx, "Unrecognized reason %d", int64(r))

@@ -301,7 +301,16 @@ message Paris {
   reserved 1, 2, 3, 4;
   reserved "enable_labstation_recovery", "optin_all_labstations", "optin_labstation_pool", "labstation_recovery_permille";
   // DUT_repair controls the repair task for DUTs.
+  // For expected state needs_repair.
   RolloutConfig dut_repair = 5;
+
+  // DUT_repair controls the repair task for DUTs.
+  // For expected state repair_failed.
+  RolloutConfig dut_repair_on_repair_failed = 9;
+
+  // DUT_repair controls the repair task for DUTs.
+  // For expected state needs_manual_repair.
+  RolloutConfig dut_repair_on_needs_manual_repair = 10;
 
   // DUT_verify controls the verify task for DUTs.
   RolloutConfig dut_verify = 6;
