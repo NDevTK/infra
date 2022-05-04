@@ -11,7 +11,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	comp_servo "infra/cros/recovery/internal/components/servo"
+	"infra/cros/recovery/internal/components/servo"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
@@ -127,9 +127,9 @@ func mainDeviceIsGSCExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "main devices is gsc").Err()
 	}
 	switch md {
-	case comp_servo.CCD_CR50:
+	case servo.CCD_CR50:
 		fallthrough
-	case comp_servo.CCD_GSC:
+	case servo.CCD_GSC:
 		info.NewLogger().Debugf("Found main device: %q", md)
 		return nil
 	default:
@@ -144,11 +144,11 @@ func servoTypeRegexMatchExec(ctx context.Context, info *execs.ExecInfo) error {
 	if regex == "" {
 		return errors.Reason("servo-type regex match: regex is empty").Err()
 	}
-	servoType, err := GetServoType(ctx, info.NewServod())
+	servoType, err := servo.GetServoType(ctx, info.NewServod())
 	if err != nil {
 		return errors.Annotate(err, "servo-type regex match").Err()
 	}
-	m, err := regexp.MatchString(regex, servoType)
+	m, err := regexp.MatchString(regex, servoType.String())
 	if err != nil {
 		return errors.Annotate(err, "servo-type regex match").Err()
 	}

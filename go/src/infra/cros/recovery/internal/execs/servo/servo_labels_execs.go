@@ -9,17 +9,18 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/components/servo"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 )
 
 // updateServoTypeLabelExec updates DUT's servo type to the correct servo type string.
 func updateServoTypeLabelExec(ctx context.Context, info *execs.ExecInfo) error {
-	servoType, err := GetServoType(ctx, info.NewServod())
+	servoType, err := servo.GetServoType(ctx, info.NewServod())
 	if err != nil {
 		return errors.Annotate(err, "update servo type label").Err()
 	}
-	info.RunArgs.DUT.ServoHost.Servo.Type = servoType
+	info.RunArgs.DUT.ServoHost.Servo.Type = servoType.String()
 	log.Infof(ctx, "Set DUT's servo type to be: %s", servoType)
 	return nil
 }

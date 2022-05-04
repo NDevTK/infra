@@ -57,18 +57,6 @@ func GetUSBDrivePathOnDut(ctx context.Context, run components.Runner, s componen
 	return "", errors.Reason("get usb drive path on dut: did not find any USB Drive connected to the DUT as we checked that DUT is up").Err()
 }
 
-// GetServoType finds and returns the servo type of the DUT's servo.
-func GetServoType(ctx context.Context, servod components.Servod) (string, error) {
-	servoType, err := servodGetString(ctx, servod, "servo_type")
-	if err != nil {
-		return "", errors.Annotate(err, "get servo type").Err()
-	}
-	if servoType == "" {
-		return "", errors.Reason("get servo type: servo type is empty").Err()
-	}
-	return servoType, nil
-}
-
 // MainServoDevice returns the main servo device.
 //
 // For example, if the servo_type value returned by servod is
@@ -83,11 +71,11 @@ func GetServoType(ctx context.Context, servod components.Servod) (string, error)
 // servo_type: "servo_v4_with_ccd_cr50", returned value: "ccd_cr50"
 // servo_type: "servo_v4_with_servo_micro_and_ccd_cr50", returned value: "servo_micro"
 func MainServoDevice(ctx context.Context, servod components.Servod) (string, error) {
-	servoType, err := GetServoType(ctx, servod)
+	servoType, err := servo.GetServoType(ctx, servod)
 	if err != nil {
 		return "", errors.Annotate(err, "main servo device").Err()
 	}
-	s, err := mainServoDeviceHelper(servoType)
+	s, err := mainServoDeviceHelper(servoType.String())
 	if err != nil {
 		return "", errors.Annotate(err, "main servo device").Err()
 	}
@@ -123,16 +111,16 @@ func IsContainerizedServoHost(ctx context.Context, servoHost *tlw.ServoHost) boo
 // control. If that does not work, it looks up the dut information for
 // the servo host.
 func WrappedServoType(ctx context.Context, info *execs.ExecInfo) (*servo.ServoType, error) {
-	servoType, err := GetServoType(ctx, info.NewServod())
+	servoType, err := servo.GetServoType(ctx, info.NewServod())
 	if err != nil {
 		log.Debugf(ctx, "Wrapped Servo Type: Could not read the servo type from servod.")
 		if info.RunArgs.DUT != nil && info.RunArgs.DUT.ServoHost != nil && info.RunArgs.DUT.ServoHost.Servo != nil && info.RunArgs.DUT.ServoHost.Servo.Type != "" {
-			servoType = info.RunArgs.DUT.ServoHost.Servo.Type
+			servoType = servo.NewServoType(info.RunArgs.DUT.ServoHost.Servo.Type)
 		} else {
 			return nil, errors.Reason("wrapped servo type: could not determine the servo type from servod control as well DUT Info.").Err()
 		}
 	}
-	return servo.NewServoType(servoType), nil
+	return servoType, nil
 }
 
 // ResetUsbkeyAuthorized resets usb-key detected under labstation.

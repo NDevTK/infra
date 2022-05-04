@@ -4,7 +4,14 @@
 
 package servo
 
-import "strings"
+import (
+	"context"
+	"strings"
+
+	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/recovery/internal/components"
+)
 
 const (
 	// Servo components/types used by system.
@@ -104,4 +111,17 @@ func (s *ServoType) IsMultipleServos() bool {
 // String provide ability to use ToString functionality.
 func (s *ServoType) String() string {
 	return s.str
+}
+
+// GetServoType finds and returns the servo type of the DUT's servo.
+func GetServoType(ctx context.Context, servod components.Servod) (*ServoType, error) {
+	res, err := servod.Get(ctx, "servo_type")
+	if err != nil {
+		return nil, errors.Annotate(err, "get servo type").Err()
+	}
+	servoType := res.GetString_()
+	if servoType == "" {
+		return nil, errors.Reason("get servo type: servo type is empty").Err()
+	}
+	return NewServoType(servoType), nil
 }
