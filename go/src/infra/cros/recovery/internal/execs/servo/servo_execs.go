@@ -103,9 +103,11 @@ func servodInitActionExec(ctx context.Context, info *execs.ExecInfo) error {
 		}
 	}
 	info.NewLogger().Debugf("Servod options: %s", o)
+	am := info.GetActionArgs(ctx)
 	req := &tlw.InitServodRequest{
 		Resource: info.RunArgs.DUT.Name,
 		Options:  o,
+		NoServod: am.AsBool(ctx, "no_servod", false),
 	}
 	if err := info.RunArgs.Access.InitServod(ctx, req); err != nil {
 		return errors.Annotate(err, "init servod").Err()

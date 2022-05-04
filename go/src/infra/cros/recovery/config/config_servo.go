@@ -112,7 +112,6 @@ func servoRepairPlan() *Plan {
 				AllowFailAfterRecovery: true,
 			},
 			"servo_host_servod_start": {
-				Conditions: []string{"is_not_container"},
 				RecoveryActions: []string{
 					"servo_host_servod_stop",
 					"servo_power_delivery_repair",
@@ -137,6 +136,18 @@ func servoRepairPlan() *Plan {
 					"servo_host_servod_stop",
 				},
 				ExecName:    "servo_host_servod_init",
+				ExecTimeout: &durationpb.Duration{Seconds: 360},
+			},
+			"Stop servod daemon on servo-host": {
+				Docs: []string{
+					"Make sure servod daemon is not running on servo-host.",
+					"If container then run without daemon.",
+					"If daemon is running it will be stopped.",
+				},
+				ExecName: "servo_host_servod_init",
+				ExecExtraArgs: []string{
+					"no_servod:true",
+				},
 				ExecTimeout: &durationpb.Duration{Seconds: 360},
 			},
 			"Servod port specified": {
@@ -739,15 +750,14 @@ func servoRepairPlan() *Plan {
 			},
 			"servo_fw_update": {
 				Docs: []string{
-					"Try to update in  normal ways 3 times",
-					"if fail allow run force update",
+					"Try to update in  normal ways 3 times, if fail allow run force update.",
 				},
 				Conditions: []string{
 					"Is not servo_v3",
 				},
 				Dependencies: []string{
 					"Set state:SERVO_UPDATER_ISSUE",
-					"servo_host_servod_stop",
+					"Stop servod daemon on servo-host",
 				},
 				ExecExtraArgs: []string{
 					"try_attempt_count:3",
