@@ -318,7 +318,7 @@ class Servlet(webapp2.RequestHandler):
       csp_supports_report_sample = (
         (browser == 'Chrome' and browser_major_version >= 59) or
         (browser == 'Opera' and browser_major_version >= 46))
-      version_base = _VersionBaseURL(self.mr.request)
+      version_base = servlet_helpers.VersionBaseURL(self.mr.request)
       self.response.headers.add(csp_header,
            ("default-src %(scheme)s ; "
             "script-src"
@@ -374,7 +374,7 @@ class Servlet(webapp2.RequestHandler):
       logging.warning('mr.perms is %s', self.mr.perms)
       if not self.mr.auth.user_id:
         # If not logged in, let them log in
-        url = _SafeCreateLoginURL(self.mr)
+        url = servlet_helpers.SafeCreateLoginURL(self.mr)
         self.redirect(url, abort=True)
       else:
         # Display the missing permissions template.
@@ -653,10 +653,10 @@ class Servlet(webapp2.RequestHandler):
     offer_saved_queries_subtab = (
         viewing_self or mr.auth.user_pb and mr.auth.user_pb.is_site_admin)
 
-    login_url = _SafeCreateLoginURL(mr)
-    logout_url = _SafeCreateLogoutURL(mr)
+    login_url = servlet_helpers.SafeCreateLoginURL(mr)
+    logout_url = servlet_helpers.SafeCreateLogoutURL(mr)
     logout_url_goto_home = users.create_logout_url('/')
-    version_base = _VersionBaseURL(mr.request)
+    version_base = servlet_helpers.VersionBaseURL(mr.request)
 
     base_data = {
         # EZT does not have constants for True and False, so we pass them in.
@@ -697,7 +697,7 @@ class Servlet(webapp2.RequestHandler):
         'project':
             project_view,
         'project_is_restricted':
-            ezt.boolean(_ProjectIsRestricted(mr)),
+            ezt.boolean(servlet_helpers.ProjectIsRestricted(mr)),
         'offer_contributor_list':
             ezt.boolean(permissions.CanViewContributorList(mr, mr.project)),
         'logged_in_user':
@@ -784,10 +784,13 @@ class Servlet(webapp2.RequestHandler):
             mr.num,
         'groupby':
             mr.group_by_spec,
-        'q_field_size': (min(
-            framework_constants.MAX_ARTIFACT_SEARCH_FIELD_SIZE,
-            max(framework_constants.MIN_ARTIFACT_SEARCH_FIELD_SIZE,
-                len(mr.query) + framework_constants.AUTOSIZE_STEP))),
+        'q_field_size':
+            (
+                min(
+                    framework_constants.MAX_ARTIFACT_SEARCH_FIELD_SIZE,
+                    max(
+                        framework_constants.MIN_ARTIFACT_SEARCH_FIELD_SIZE,
+                        len(mr.query) + framework_constants.AUTOSIZE_STEP))),
         'mode':
             None,  # Display mode, e.g., grid mode.
         'ajah':
@@ -995,53 +998,3 @@ class _ContextDebugCollection(object):
     self.title = title
     self.collection = [_ContextDebugItem(key, collection[key])
                        for key in sorted(collection.keys())]
-
-
-def _ProjectIsRestricted(mr):
-  """Return True if the mr has a 'private' project."""
-  return (mr.project and
-          mr.project.access != project_pb2.ProjectAccess.ANYONE)
-
-
-def _SafeCreateLoginURL(mr, continue_url=None):
-  """Make a login URL w/ a detailed continue URL, otherwise use a short one."""
-  continue_url = continue_url or mr.current_page_url
-  try:
-    url = users.create_login_url(continue_url)
-  except users.RedirectTooLongError:
-    if mr.project_name:
-      url = users.create_login_url('/p/%s' % mr.project_name)
-    else:
-      url = users.create_login_url('/')
-
-  # Give the user a choice of existing accounts in their session
-  # or the option to add an account, even if they are currently
-  # signed in to exactly one account.
-  if mr.auth.user_id:
-    # Notice: this makes assuptions about the output of users.create_login_url,
-    # which can change at any time. See https://crbug.com/monorail/3352.
-    url = url.replace('/ServiceLogin', '/AccountChooser', 1)
-  return url
-
-
-def _SafeCreateLogoutURL(mr):
-  """Make a logout URL w/ a detailed continue URL, otherwise use a short one."""
-  try:
-    return users.create_logout_url(mr.current_page_url)
-  except users.RedirectTooLongError:
-    if mr.project_name:
-      return users.create_logout_url('/p/%s' % mr.project_name)
-    else:
-      return users.create_logout_url('/')
-
-
-def _VersionBaseURL(request):
-  """Return a version-specific URL that we use to load static assets."""
-  if settings.local_mode:
-    version_base = '%s://%s' % (request.scheme, request.host)
-  else:
-    version_base = '%s://%s-dot-%s' % (
-      request.scheme, modules.get_current_version_name(),
-      app_identity.get_default_version_hostname())
-
-  return version_base

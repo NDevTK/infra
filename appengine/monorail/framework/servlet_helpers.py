@@ -8,6 +8,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import settings
 import calendar
 import datetime
 import logging
@@ -19,17 +20,26 @@ from framework import permissions
 from framework import template_helpers
 from framework import urls
 from framework import xsrf
+from proto import project_pb2
+
+from google.appengine.api import app_identity
+from google.appengine.api import modules
+from google.appengine.api import users
 
 _ZERO = datetime.timedelta(0)
 
 class _UTCTimeZone(datetime.tzinfo):
-    """UTC"""
-    def utcoffset(self, _dt):
-        return _ZERO
-    def tzname(self, _dt):
-        return "UTC"
-    def dst(self, _dt):
-        return _ZERO
+  """UTC"""
+
+  def utcoffset(self, _dt):
+    return _ZERO
+
+  def tzname(self, _dt):
+    return "UTC"
+
+  def dst(self, _dt):
+    return _ZERO
+
 
 _UTC = _UTCTimeZone()
 
@@ -148,3 +158,52 @@ def IssueListURL(mr, config, query_string=None):
     if config and config.member_default_query:
       url += '?q=' + urllib.quote_plus(config.member_default_query)
   return url
+
+
+def ProjectIsRestricted(mr):
+  """Return True if the mr has a 'private' project."""
+  return (mr.project and mr.project.access != project_pb2.ProjectAccess.ANYONE)
+
+
+def SafeCreateLoginURL(mr, continue_url=None):
+  """Make a login URL w/ a detailed continue URL, otherwise use a short one."""
+  continue_url = continue_url or mr.current_page_url
+  try:
+    url = users.create_login_url(continue_url)
+  except users.RedirectTooLongError:
+    if mr.project_name:
+      url = users.create_login_url('/p/%s' % mr.project_name)
+    else:
+      url = users.create_login_url('/')
+
+  # Give the user a choice of existing accounts in their session
+  # or the option to add an account, even if they are currently
+  # signed in to exactly one account.
+  if mr.auth.user_id:
+    # Notice: this makes assuptions about the output of users.create_login_url,
+    # which can change at any time. See https://crbug.com/monorail/3352.
+    url = url.replace('/ServiceLogin', '/AccountChooser', 1)
+  return url
+
+
+def SafeCreateLogoutURL(mr):
+  """Make a logout URL w/ a detailed continue URL, otherwise use a short one."""
+  try:
+    return users.create_logout_url(mr.current_page_url)
+  except users.RedirectTooLongError:
+    if mr.project_name:
+      return users.create_logout_url('/p/%s' % mr.project_name)
+    else:
+      return users.create_logout_url('/')
+
+
+def VersionBaseURL(request):
+  """Return a version-specific URL that we use to load static assets."""
+  if settings.local_mode:
+    version_base = '%s://%s' % (request.scheme, request.host)
+  else:
+    version_base = '%s://%s-dot-%s' % (
+        request.scheme, modules.get_current_version_name(),
+        app_identity.get_default_version_hostname())
+
+  return version_base

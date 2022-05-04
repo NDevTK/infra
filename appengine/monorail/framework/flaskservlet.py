@@ -221,7 +221,7 @@ class FlaskServlet(object):
       csp_supports_report_sample = (
           (browser == 'Chrome' and browser_major_version >= 59) or
           (browser == 'Opera' and browser_major_version >= 46))
-      version_base = _VersionBaseURL(self.mr.request)
+      version_base = servlet_helpers.VersionBaseURL(self.mr.request)
       self.response.headers.add(
           csp_header,
           (
@@ -284,7 +284,7 @@ class FlaskServlet(object):
       logging.warning('mr.perms is %s', self.mr.perms)
       if not self.mr.auth.user_id:
         # If not logged in, let them log in
-        url = _SafeCreateLoginURL(self.mr)
+        url = servlet_helpers.SafeCreateLoginURL(self.mr)
         flask.redirect(url, code=307)
       else:
         # Display the missing permissions template.
@@ -406,13 +406,10 @@ class FlaskServlet(object):
     offer_saved_queries_subtab = (
         viewing_self or mr.auth.user_pb and mr.auth.user_pb.is_site_admin)
 
-    # TODO: (crbug.com/monorail/10871)
-    # login_url = _SafeCreateLoginURL(mr)
-    # logout_url = _SafeCreateLogoutURL(mr)
-    login_url = '/'
-    logout_url = '/'
+    login_url = servlet_helpers.SafeCreateLoginURL(mr)
+    logout_url = servlet_helpers.SafeCreateLogoutURL(mr)
     logout_url_goto_home = users.create_logout_url('/')
-    version_base = _VersionBaseURL(mr.request)
+    version_base = servlet_helpers.VersionBaseURL(mr.request)
 
     base_data = {
         # EZT does not have constants for True and False, so we pass them in.
@@ -453,7 +450,7 @@ class FlaskServlet(object):
         'project':
             project_view,
         'project_is_restricted':
-            ezt.boolean(_ProjectIsRestricted(mr)),
+            ezt.boolean(servlet_helpers.ProjectIsRestricted(mr)),
         'offer_contributor_list':
             ezt.boolean(permissions.CanViewContributorList(mr, mr.project)),
         'logged_in_user':
@@ -674,41 +671,3 @@ class FlaskServlet(object):
           'dbg': 'off',
           'debug': [('none', 'recorded')],
       }
-
-
-def _ProjectIsRestricted(mr):
-  """Return True if the mr has a 'private' project."""
-  return (mr.project and mr.project.access != project_pb2.ProjectAccess.ANYONE)
-
-
-def _VersionBaseURL(request):
-  """Return a version-specific URL that we use to load static assets."""
-  if settings.local_mode:
-    version_base = '%s://%s' % (request.scheme, request.host)
-  else:
-    version_base = '%s://%s-dot-%s' % (
-        request.scheme, modules.get_current_version_name(),
-        app_identity.get_default_version_hostname())
-
-  return version_base
-
-
-def _SafeCreateLoginURL(mr, continue_url=None):
-  """Make a login URL w/ a detailed continue URL, otherwise use a short one."""
-  continue_url = continue_url or mr.current_page_url
-  try:
-    url = users.create_login_url(continue_url)
-  except users.RedirectTooLongError:
-    if mr.project_name:
-      url = users.create_login_url('/p/%s' % mr.project_name)
-    else:
-      url = users.create_login_url('/')
-
-  # Give the user a choice of existing accounts in their session
-  # or the option to add an account, even if they are currently
-  # signed in to exactly one account.
-  if mr.auth.user_id:
-    # Notice: this makes assumptions about the output of users.create_login_url,
-    # which can change at any time. See https://crbug.com/monorail/3352.
-    url = url.replace('/ServiceLogin', '/AccountChooser', 1)
-  return url

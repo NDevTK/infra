@@ -17,7 +17,7 @@ from google.appengine.ext import testbed
 
 import webapp2
 
-from framework import framework_constants
+from framework import framework_constants, servlet_helpers
 from framework import servlet
 from framework import xsrf
 from proto import project_pb2
@@ -441,10 +441,10 @@ class ProjectIsRestrictedTest(unittest.TestCase):
 
     proj.access = project_pb2.ProjectAccess.ANYONE
     proj.state = project_pb2.ProjectState.LIVE
-    self.assertFalse(servlet._ProjectIsRestricted(mr))
+    self.assertFalse(servlet_helpers.ProjectIsRestricted(mr))
 
     proj.state = project_pb2.ProjectState.ARCHIVED
-    self.assertFalse(servlet._ProjectIsRestricted(mr))
+    self.assertFalse(servlet_helpers.ProjectIsRestricted(mr))
 
   def testRestrictedProject(self):
     proj = project_pb2.Project()
@@ -453,14 +453,15 @@ class ProjectIsRestrictedTest(unittest.TestCase):
 
     proj.state = project_pb2.ProjectState.LIVE
     proj.access = project_pb2.ProjectAccess.MEMBERS_ONLY
-    self.assertTrue(servlet._ProjectIsRestricted(mr))
+    self.assertTrue(servlet_helpers.ProjectIsRestricted(mr))
+
 
 class VersionBaseTest(unittest.TestCase):
 
   @mock.patch('settings.local_mode', True)
   def testLocalhost(self):
     request = webapp2.Request.blank('/', base_url='http://localhost:8080')
-    actual = servlet._VersionBaseURL(request)
+    actual = servlet_helpers.VersionBaseURL(request)
     expected = 'http://localhost:8080'
     self.assertEqual(expected, actual)
 
@@ -469,6 +470,6 @@ class VersionBaseTest(unittest.TestCase):
   def testProd(self, mock_gdvh):
     mock_gdvh.return_value = 'monorail-prod.appspot.com'
     request = webapp2.Request.blank('/', base_url='https://bugs.chromium.org')
-    actual = servlet._VersionBaseURL(request)
+    actual = servlet_helpers.VersionBaseURL(request)
     expected = 'https://test-dot-monorail-prod.appspot.com'
     self.assertEqual(expected, actual)

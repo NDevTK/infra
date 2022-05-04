@@ -163,3 +163,33 @@ class IssueListURLTest(unittest.TestCase):
 
     url = servlet_helpers.IssueListURL(mr, self.config, query_string='q=Pri=1')
     self.assertEqual('/p/proj/issues/list?q=Pri=1', url)
+
+
+class ProjectIsRestrictedTest(unittest.TestCase):
+
+  def setUp(self):
+    self.project = project_pb2.Project()
+    self.project.project_name = 'proj'
+    self.config = tracker_pb2.ProjectIssueConfig()
+    self.testbed = testbed.Testbed()
+    self.testbed.activate()
+    self.testbed.init_user_stub()
+    self.testbed.init_memcache_stub()
+    self.testbed.init_datastore_v3_stub()
+
+  def tearDown(self):
+    self.testbed.deactivate()
+
+  def testProjectIsRestricted(self):
+    self.project.access = project_pb2.ProjectAccess.MEMBERS_ONLY
+    _request, mr = testing_helpers.GetRequestObjects(
+        path='/p/proj/issues/detail?id=123&q=term', project=self.project)
+    isRestrict = servlet_helpers.ProjectIsRestricted(mr)
+    self.assertTrue(isRestrict)
+
+  def testProjectIsNotRestricted(self):
+    self.project.access = project_pb2.ProjectAccess.ANYONE
+    _request, mr = testing_helpers.GetRequestObjects(
+        path='/p/proj/issues/detail?id=123&q=term', project=self.project)
+    isRestrict = servlet_helpers.ProjectIsRestricted(mr)
+    self.assertFalse(isRestrict)
