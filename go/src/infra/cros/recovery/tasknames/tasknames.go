@@ -10,6 +10,8 @@ package tasknames
 type TaskName string
 
 const (
+	// Audit is used to run audit tasks.
+	Audit TaskName = "audit"
 	// Task used to run auto recovery/repair flow in the lab.
 	Recovery TaskName = "recovery"
 	// Task used to prepare device to be used in the lab.
