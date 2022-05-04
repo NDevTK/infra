@@ -78,6 +78,9 @@ func isVersionOutdated(ctx context.Context, runner execs.Runner, device *tlw.Ser
 	if cVersion == "" {
 		return true
 	}
+	if channel == "" {
+		channel = "stable"
+	}
 	lVersion := latestVersionFromUpdater(ctx, runner, channel, device.Type)
 	log.Debugf(ctx, "Is Version Outdated: latest version is %q", lVersion)
 	// In LABPACK, if lVersion is empty, we raise an
