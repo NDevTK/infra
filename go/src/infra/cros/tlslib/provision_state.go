@@ -239,15 +239,14 @@ func (p *provisionState) waitForUIToStabilize(ctx context.Context, addr string) 
 		default:
 			disconnect, err := p.connect(ctx, addr)
 			if err != nil {
-				return fmt.Errorf("waitForUIToStabilize: the UI did not come up, %w", err)
+				return fmt.Errorf("waitForUIToStabilize: the DUT did not come up, %w", err)
 			}
 			defer disconnect()
 			// "system-services" will handle both "ui" and non-"ui" supported overlays.
 			status, err := runCmdOutput(p.c, "status system-services")
 			if err != nil {
-				return fmt.Errorf("waitForUIToStabilize: could not get UI status, %w", err)
-			}
-			if !strings.Contains(status, "start/running") {
+				log.Printf("waitForUIToStabilize: could not get UI status, %s", err)
+			} else if !strings.Contains(status, "start/running") {
 				log.Printf("waitForUIToStabilize: UI has not stabilized yet")
 			} else {
 				log.Printf("waitForUIToStabilize: UI is running")
