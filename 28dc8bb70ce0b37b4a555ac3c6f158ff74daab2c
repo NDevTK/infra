@@ -16,6 +16,23 @@
       "message": "Thanks Rob!",
       "revId": "28dc8bb70ce0b37b4a555ac3c6f158ff74daab2c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d005c8f7_2ec958ee",
+        "filename": "3pp/bazel_bootstrap/3pp.pb",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-05-04T23:03:49Z",
+      "side": 1,
+      "message": "Typically we just leave the patch_version in place. What is your thinking re: removing it?\n\nAlso we typically use a numeric patch_version for easier tracking if multiple patches are needed. \"chromium.N\" (N\u003d1,2,3,...) is the usual pattern.",
+      "revId": "28dc8bb70ce0b37b4a555ac3c6f158ff74daab2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
