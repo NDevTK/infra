@@ -54,7 +54,7 @@ func servoRepairPlan() *Plan {
 			"Set state:SERVOD_PROXY_ISSUE",
 			"Initialize DUT part for servo",
 			"Set state:CR50_CONSOLE_MISSING",
-			"servo_cr50_console",
+			"Verify cr50 console",
 			"Set state:CCD_TESTLAB_ISSUE",
 			"cr50_testlab",
 			"Set state:SERVOD_PROXY_ISSUE",
@@ -436,18 +436,20 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "sample_fail",
 			},
-			"Main device is GSC chip": {
+			"Servo main device is GSC chip": {
+				Docs: []string{
+					"Verify that main device is c2d2/cr50/GSC",
+				},
 				Dependencies: []string{
 					"is_servo_v4",
-					"is_servo_type_ccd",
 				},
 				ExecName: "servo_main_device_is_gcs",
 			},
-			"servo_cr50_console": {
+			"Verify cr50 console": {
 				Docs: []string{"Create new action to check that servotype has ccd_cr50, and set that as a condition for this action."},
 				Conditions: []string{
 					"Is not servo_v3",
-					"Main device is GSC chip",
+					"Servo main device is GSC chip",
 				},
 				Dependencies: []string{
 					"Initialize DUT part for servo",
@@ -472,10 +474,11 @@ func servoRepairPlan() *Plan {
 			"cr50_testlab": {
 				Docs: []string{
 					"Verify that testlab flag is enabled in GSC chip.",
+					"Expect that cr50/GSC will required to set cr50 testlab is enabled.",
 				},
 				Conditions: []string{
 					"Is not servo_v3",
-					"Main device is GSC chip",
+					"Servo main device is GSC chip",
 				},
 				ExecName: "servo_check_servod_control",
 				ExecExtraArgs: []string{
@@ -489,11 +492,11 @@ func servoRepairPlan() *Plan {
 			},
 			"Open gsc testlab": {
 				Docs: []string{
-					"If servo uses cr50/gsc to control the DUT, open testlab will allowed to work (cr50_reboot, cold_reset, warm_reset)",
+					"If servo uses c2d2/cr50/gsc to control the DUT, open testlab will allowed to work (cr50_reboot, cold_reset, warm_reset)",
 				},
 				Conditions: []string{
 					"Is not servo_v3",
-					"Main device is GSC chip",
+					"Servo main device is GSC chip",
 				},
 				ExecExtraArgs: []string{
 					"command:cr50_testlab",

@@ -1011,7 +1011,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Servo main device is GSC chip": {
 			Docs: []string{
-				"Verify that main device is cr50/GSC",
+				"Verify that main device is c2d2/cr50/GSC",
 			},
 			Dependencies: []string{
 				"dut_servo_host_present",

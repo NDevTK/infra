@@ -127,6 +127,8 @@ func mainDeviceIsGSCExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "main devices is gsc").Err()
 	}
 	switch md {
+	case servo.C2D2:
+		fallthrough
 	case servo.CCD_CR50:
 		fallthrough
 	case servo.CCD_GSC:
