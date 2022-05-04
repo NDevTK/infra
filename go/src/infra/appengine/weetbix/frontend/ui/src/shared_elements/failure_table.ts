@@ -481,11 +481,11 @@ const rejectedTestRunIdsExtractor = (impactFilter: ImpactFilter): FeatureExtract
 const rejectedIngestedInvocationIdsExtractor = (impactFilter: ImpactFilter): FeatureExtractor => {
     return f => {
         const values: Set<string> = new Set();
-        if (f.exonerationStatus == 'WEETBIX' && 
+        if (isExoneratedByOccuranceElsewhere(f.exonerationStatus) &&
                 !(impactFilter.ignoreWeetbixExoneration || impactFilter.ignoreAllExoneration)) {
             return values;
         }
-        if ((f.exonerationStatus == 'EXPLICIT' || f.exonerationStatus == 'IMPLICIT') && 
+        if ((f.exonerationStatus != 'NOT_EXONERATED' && !isExoneratedByOccuranceElsewhere(f.exonerationStatus)) &&
                 !impactFilter.ignoreAllExoneration) {
             return values;
         }
@@ -499,19 +499,19 @@ const rejectedIngestedInvocationIdsExtractor = (impactFilter: ImpactFilter): Fea
             values.add(f.ingestedInvocationId);
         }
         return values;
-    }
-}
+    };
+};
 
 // Returns an extractor that returns the identity of the CL that was rejected by this failure, if any.
 // The impact filter is taken into account in determining if the CL was rejected by this failure.
 const rejectedPresubmitRunIdsExtractor = (impactFilter: ImpactFilter): FeatureExtractor => {
     return f => {
         const values: Set<string> = new Set();
-        if (f.exonerationStatus == 'WEETBIX' && 
+        if (isExoneratedByOccuranceElsewhere(f.exonerationStatus) &&
                 !(impactFilter.ignoreWeetbixExoneration || impactFilter.ignoreAllExoneration)) {
             return values;
         }
-        if ((f.exonerationStatus == 'EXPLICIT' || f.exonerationStatus == 'IMPLICIT') && 
+        if ((f.exonerationStatus != 'NOT_EXONERATED' && !isExoneratedByOccuranceElsewhere(f.exonerationStatus)) &&
                 !impactFilter.ignoreAllExoneration) {
             return values;
         }
@@ -525,8 +525,16 @@ const rejectedPresubmitRunIdsExtractor = (impactFilter: ImpactFilter): FeatureEx
             values.add(f.presubmitRunCl.host + '/' + f.presubmitRunCl.change.toFixed(0));
         }
         return values;
-    }
-}
+    };
+};
+
+// Returns whether the failure was exonerated because it occurs on other
+// CLs or on mainline. These are exoneration types that appear only in CQ.
+const isExoneratedByOccuranceElsewhere = (status: ExonerationStatus | null): boolean => {
+    return status == 'WEETBIX' || // Deprecated. Can be removed from June 2022.
+            status == 'OCCURS_ON_OTHER_CLS' ||
+            status == 'OCCURS_ON_MAINLINE';
+};
 
 // Sorts child failure groups at each node of the tree by the given metric.
 const sortFailureGroups = (groups: FailureGroup[], metric: MetricName, ascending: boolean) => {
@@ -565,19 +573,43 @@ export const exportedForTesting = {
     treeDistinctCounts: treeDistinctValues,
 }
 
-// Test result was no exonerated.
-type ExonerationStatus = 'NOT_EXONERATED' 
-    // Test result was not recorded as exonerated, but the build
-    // result was not FAILURE (e.g. SUCCESS, CANCELED, INFRA_FAILURE
-    // instead), so the test result was not responsible for making
-    // the build fail.
-    | 'IMPLICIT' 
-    // Test result was recorded as exonerated
-    // for a reason other than Weetbix (or FindIt).
-    | 'EXPLICIT' 
-    // Test result was recorded as exonerated
+type ExonerationStatus =
+      // The test was not exonerated.
+    'NOT_EXONERATED'
+    // Despite having an unexpected result, and no exoneration recorded
+    // in ResultDB, the build did not end in the state "failed"
+    // (e.g. the status was succeeded, cancelled or infra failure).
+    // The test result is implicitly exonerated.
+    | 'IMPLICIT'
+    // DEPRECATED. The test was marked exonerated in ResultDB, for a reason
+    // other than Weetbix or FindIt failure analysis.
+    | 'EXPLICIT'
+    // DEPRECATED. Test result was recorded as exonerated
     // based on Weetbix (or FindIt) data.
-    | 'WEETBIX';
+    | 'WEETBIX'
+    // Similar unexpected results were observed in presubmit run(s) for other,
+    // unrelated CL(s). (This is suggestive of the issue being present
+    // on mainline but is not confirmed as there are possible confounding
+    // factors, like how tests are run on CLs vs how tests are run on
+    // mainline branches.)
+    // Applies to unexpected results in presubmit/CQ runs only.
+    | 'OCCURS_ON_OTHER_CLS'
+    // Similar unexpected results were observed on a mainline branch
+    // (i.e. against a build without unsubmitted changes applied).
+    // (For avoidance of doubt, this includes both flakily and
+    // deterministically occurring unexpected results.)
+    // Applies to unexpected results in presubmit/CQ runs only.
+    | 'OCCURS_ON_MAINLINE'
+    // The tests are not critical to the test subject (e.g. CL) passing.
+    // This could be because more data is being collected to determine if
+    // the tests are stable enough to be made critical (as is often the
+    // case for experimental test suites).
+    | 'NOT_CRITICAL'
+    // The test result was an unexpected pass.
+    | 'UNEXPECTED_PASS'
+    // The test was marked exonerated in ResultDB, but a machine-understandable
+    // reason for the exoneration is not available.
+    | 'OTHER_EXPLICIT';
 
 // ClusterFailure is the data returned by the server for each failure.
 export interface ClusterFailure {

@@ -929,10 +929,10 @@ type ClustersClient interface {
 	// Identifies the cluster(s) for one or more test failure(s).
 	//
 	// This RPC returns the clusters of each test result, using
-	// to current suggested cluster algorithms, configured failure
+	// current suggested cluster algorithms, configured failure
 	// association rules, and ingested project configuration with
 	// a bounded staleness of up to one minute. (Returned clusters
-	// may be based on project configuration data and configured failure
+	// may be based on project configuration and configured failure
 	// association rules that is up to one minute out-of-date).
 	//
 	// As at April 2022, the implementation does not use stale
@@ -1020,10 +1020,10 @@ type ClustersServer interface {
 	// Identifies the cluster(s) for one or more test failure(s).
 	//
 	// This RPC returns the clusters of each test result, using
-	// to current suggested cluster algorithms, configured failure
+	// current suggested cluster algorithms, configured failure
 	// association rules, and ingested project configuration with
 	// a bounded staleness of up to one minute. (Returned clusters
-	// may be based on project configuration data and configured failure
+	// may be based on project configuration and configured failure
 	// association rules that is up to one minute out-of-date).
 	//
 	// As at April 2022, the implementation does not use stale

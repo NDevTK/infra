@@ -128,6 +128,24 @@ message ClusterId {
 // exonerated. Exonerated means the failure was ignored and did not
 // have further impact, in terms of causing the build to fail or
 // rejecting the CL being tested in a presubmit run.
+//
+// If multiple reasons for exoneration exist, they are applied in
+// the following order (later values take precedence over earlier values):
+//
+// IMPLICIT
+// OCCURS_ON_OTHER_CLS
+// OCCURS_ON_MAINLINE
+// NOT_CRITICAL
+// EXONERATED_GENERIC
+//
+// This ordering is so that an impact filter "before CQ exoneration"
+// can re-include failures with status OCCURS_ON_MAINLINE and
+// OCCURS_ON_OTHER_CLS without including failures also exonerated
+// for other reasons.
+//
+// The implementation assumes higher values have higher precedence,
+// so if inserting new values, please ensure an appropriate value is used.
+// Gaps have been left in the enumeration for this reason.
 enum ExonerationStatus {
   // A test failure must not have this status.
   EXONERATION_STATUS_UNSPECIFIED = 0;
@@ -135,12 +153,14 @@ enum ExonerationStatus {
   // The test was not exonerated.
   NOT_EXONERATED = 1;
 
-  // The unexpected failure was discounted despite
-  // having an unexpected result and no exoneration recorded
-  // in Result DB. For example, because the build passed or
-  // was cancelled.
+  // Despite having an unexpected result, and no exoneration recorded
+  // in ResultDB, the build did not end in the state "failed"
+  // (e.g. the build status was succeeded, was cancelled or had an
+  // infra failure).
+  // The test result is implicitly exonerated.
   IMPLICIT = 2;
 
+  // DEPRECATED. Use one of the other definitions.
   // The test was marked exonerated in ResultDB, for a reason
   // other than Weetbix or FindIt failure analysis.
   // If a test is exonerated in ResultDB for both reasons
@@ -148,6 +168,7 @@ enum ExonerationStatus {
   // this status takes precedence.
   EXPLICIT = 3;
 
+  // DEPRECATED. Use OCCURS_ON_OTHER_CLS instead.
   // The test was exonerated based on Weetbix cluster analysis.
   // This status is only set if Weetbix is the only explicit
   // reason(s) given for the exoneration in ResultDB.
@@ -169,6 +190,32 @@ enum ExonerationStatus {
   // the same as exonerations caused by Weetbix, to ensure Weetbix
   // behaves as if FindIt no longer exists.
   WEETBIX = 4;
+
+  // Similar unexpected results were observed in presubmit run(s) for other,
+  // unrelated CL(s). (This is suggestive of the issue being present
+  // on mainline but is not confirmed as there are possible confounding
+  // factors, like how tests are run on CLs vs how tests are run on
+  // mainline branches.)
+  // Applies to unexpected results in presubmit/CQ runs only.
+  OCCURS_ON_OTHER_CLS = 10;
+
+  // Similar unexpected results were observed on a mainline branch
+  // (i.e. against a build without unsubmitted changes applied).
+  // (For avoidance of doubt, this includes both flakily and
+  // deterministically occurring unexpected results.)
+  // Applies to unexpected results in presubmit/CQ runs only.
+  OCCURS_ON_MAINLINE = 20;
+
+  // The tests are not critical to the test subject (e.g. CL) passing.
+  // This could be because more data is being collected to determine if
+  // the tests are stable enough to be made critical (as is often the
+  // case for experimental test suites).
+  NOT_CRITICAL = 30;
+
+  // The test was marked exonerated in ResultDB, but a machine-understandable
+  // reason for the exoneration is not available or cannot be expressed
+  // in terms of a current enumeration value.
+  OTHER_EXPLICIT = 100;
 }
 
 // Information about a test.

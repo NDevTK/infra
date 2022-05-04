@@ -62,26 +62,20 @@ func failuresFromTestVariants(opts Options, tvs []*rdbpb.TestVariant) []*cpb.Fai
 				continue
 			}
 
-			hasWeetbixExonerations := false
-			hasOtherExonerations := false
-			for _, e := range tv.Exonerations {
-				if weetbixExonerationReason.MatchString(e.ExplanationHtml) {
-					hasWeetbixExonerations = true
-				} else {
-					hasOtherExonerations = true
-				}
-			}
-
-			var exoneration pb.ExonerationStatus
-			switch {
-			case hasOtherExonerations:
-				exoneration = pb.ExonerationStatus_EXPLICIT
-			case hasWeetbixExonerations:
-				exoneration = pb.ExonerationStatus_WEETBIX
-			case !hasPass && opts.ImplicitlyExonerateBlockingFailures:
+			exoneration := pb.ExonerationStatus_NOT_EXONERATED
+			if !hasPass && opts.ImplicitlyExonerateBlockingFailures {
 				exoneration = pb.ExonerationStatus_IMPLICIT
-			default:
-				exoneration = pb.ExonerationStatus_NOT_EXONERATED
+			}
+			for _, e := range tv.Exonerations {
+				alternativeExoneration := exonerationStatus(e)
+				// Take the status with the highest precedence. Exonerated
+				// takes precedence over not exonerated and implicit,
+				// and different forms of exoneration take precedence over
+				// each other as defined by the ordering of the exoneration
+				// status enumeration.
+				if alternativeExoneration > exoneration {
+					exoneration = alternativeExoneration
+				}
 			}
 
 			failure := failureFromResult(tv, tr.Result, opts, exoneration, testRun)
@@ -97,6 +91,28 @@ func failuresFromTestVariants(opts Options, tvs []*rdbpb.TestVariant) []*cpb.Fai
 		}
 	}
 	return failures
+}
+
+func exonerationStatus(e *rdbpb.TestExoneration) pb.ExonerationStatus {
+	switch e.Reason {
+	case rdbpb.ExonerationReason_EXONERATION_REASON_UNSPECIFIED:
+		// For exonerations that do not specify a machine-readable
+		// reason, try to understand the human-readable text.
+		// Once reasons are set on all (Batch)CreateTestExoneration calls,
+		// this will be no longer needed.
+		if weetbixExonerationReason.MatchString(e.ExplanationHtml) {
+			return pb.ExonerationStatus_OCCURS_ON_OTHER_CLS
+		}
+		return pb.ExonerationStatus_OTHER_EXPLICIT
+	case rdbpb.ExonerationReason_NOT_CRITICAL:
+		return pb.ExonerationStatus_NOT_CRITICAL
+	case rdbpb.ExonerationReason_OCCURS_ON_MAINLINE:
+		return pb.ExonerationStatus_OCCURS_ON_MAINLINE
+	case rdbpb.ExonerationReason_OCCURS_ON_OTHER_CLS:
+		return pb.ExonerationStatus_OCCURS_ON_OTHER_CLS
+	default:
+		return pb.ExonerationStatus_OTHER_EXPLICIT
+	}
 }
 
 // testRunRe extracts the test run from the ResultDB test result name. This is

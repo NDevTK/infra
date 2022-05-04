@@ -420,7 +420,8 @@ type ClusterFailure struct {
 	PartitionTime     bigquery.NullTimestamp `json:"partitionTime"`
 	// ExonerationStatus defines the type of exoneration applied to the
 	// test result.
-	// One of NOT_EXONERATED, IMPLICIT, EXPLICIT or WEETBIX.
+	// One of NOT_EXONERATED, IMPLICIT, EXPLICIT, WEETBIX, OCCURS_ON_OTHER_CLS,
+	// OCCURS_ON_MAINLINE, NOT_CRITICAL, UNEXPECTED_PASS, OTHER_EXPLICIT.
 	ExonerationStatus           bigquery.NullString   `json:"exonerationStatus"`
 	IngestedInvocationID        bigquery.NullString   `json:"ingestedInvocationId"`
 	IsIngestedInvocationBlocked bigquery.NullBool     `json:"isIngestedInvocationBlocked"`

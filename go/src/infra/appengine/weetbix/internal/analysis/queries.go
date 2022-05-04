@@ -59,7 +59,10 @@ const clusterSummariesAnalysis = `
 	  r.is_included,
 	  r.is_included_with_high_priority,
 	  NOT (r.exoneration_status = 'NOT_EXONERATED') as is_exonerated,
-	  NOT (r.exoneration_status = 'NOT_EXONERATED' OR r.exoneration_status = 'WEETBIX') as is_exonerated_pre_weetbix, 
+	  NOT (r.exoneration_status = 'NOT_EXONERATED' OR
+		  r.exoneration_status = 'WEETBIX' OR
+		  r.exoneration_status = 'OCCURS_ON_MAINLINE' OR
+		  r.exoneration_status = 'OCCURS_ON_OTHER_CLS') as is_exonerated_pre_weetbix,
 	  r.test_id,
 	  r.failure_reason,
 	  r.test_run_id,

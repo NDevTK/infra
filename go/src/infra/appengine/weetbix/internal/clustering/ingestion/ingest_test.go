@@ -213,7 +213,7 @@ func TestIngest(t *testing.T) {
 				testIngestion(tvs, expectedCFs)
 				So(len(chunkStore.Contents), ShouldEqual, 1)
 			})
-			Convey(`Failure with Weetbix exoneration`, func() {
+			Convey(`Failure with legacy exoneration due to FindIt/Weetbix`, func() {
 				tv.Exonerations = []*rdbpb.TestExoneration{
 					{
 						Name:            fmt.Sprintf("invocations/testrun-mytestrun/tests/test-name-%v/exonerations/exon-1", uniqifier),
@@ -234,7 +234,26 @@ func TestIngest(t *testing.T) {
 				}
 
 				for _, cf := range expectedCFs {
-					cf.ExonerationStatus = pb.ExonerationStatus_WEETBIX
+					cf.ExonerationStatus = pb.ExonerationStatus_OCCURS_ON_OTHER_CLS
+				}
+
+				testIngestion(tvs, expectedCFs)
+				So(len(chunkStore.Contents), ShouldEqual, 1)
+			})
+			Convey(`Failure with other legacy exoneration`, func() {
+				tv.Exonerations = []*rdbpb.TestExoneration{
+					{
+						Name:            fmt.Sprintf("invocations/testrun-mytestrun/tests/test-name-%v/exonerations/exon-1", uniqifier),
+						TestId:          tv.TestId,
+						Variant:         proto.Clone(tv.Variant).(*rdbpb.Variant),
+						VariantHash:     "hash",
+						ExonerationId:   "exon-1",
+						ExplanationHtml: "<p>Some other description</p>",
+					},
+				}
+
+				for _, cf := range expectedCFs {
+					cf.ExonerationStatus = pb.ExonerationStatus_OTHER_EXPLICIT
 				}
 
 				testIngestion(tvs, expectedCFs)
@@ -248,12 +267,13 @@ func TestIngest(t *testing.T) {
 						Variant:         proto.Clone(tv.Variant).(*rdbpb.Variant),
 						VariantHash:     "hash",
 						ExonerationId:   "exon-1",
-						ExplanationHtml: "<p>Test failed when tried without patchset</p>",
+						ExplanationHtml: "<p>Some description</p>",
+						Reason:          rdbpb.ExonerationReason_OCCURS_ON_MAINLINE,
 					},
 				}
 
 				for _, cf := range expectedCFs {
-					cf.ExonerationStatus = pb.ExonerationStatus_EXPLICIT
+					cf.ExonerationStatus = pb.ExonerationStatus_OCCURS_ON_MAINLINE
 				}
 
 				testIngestion(tvs, expectedCFs)
