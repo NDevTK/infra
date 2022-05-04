@@ -70,6 +70,14 @@ type TaskInfo struct {
 	TaskURL string
 }
 
+// GetID gets an ID and returns "" by default.
+func (t *TaskInfo) GetID() string {
+	if t == nil {
+		return ""
+	}
+	return t.ID
+}
+
 // NewTaskCreator creates and initialize the TaskCreator.
 func NewTaskCreator(ctx context.Context, authFlags *authcli.Flags, swarmingService string) (*TaskCreator, error) {
 	a, err := cmdlib.NewAuthenticator(ctx, authFlags)
