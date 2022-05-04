@@ -31,21 +31,25 @@ enum TestVerdictStatus {
 }
 
 message TestVerdict {
-  // The ID of the top-level invocation that the test verdict belongs to when
-  // ingested.
-  string invocation_id = 1;
+  // Unique identifier of the test.
+  // This has the same value as luci.resultdb.v1.TestResult.test_id.
+  string test_id = 1;
 
   // The hash of the variant.
   string variant_hash = 2;
 
+  // The ID of the top-level invocation that the test verdict belongs to when
+  // ingested.
+  string invocation_id = 3;
+
   // The status of the test verdict.
-  TestVerdictStatus status = 3;
+  TestVerdictStatus status = 4;
 
   // Start time of the presubmit run (for results that are part of a presubmit
   // run) or start time of the buildbucket build (otherwise).
-  google.protobuf.Timestamp partition_time = 4;
+  google.protobuf.Timestamp partition_time = 5;
 
   // The average duration of the PASSED test results included in the test
   // verdict.
-  google.protobuf.Duration passed_avg_duration = 5;
+  google.protobuf.Duration passed_avg_duration = 6;
 }
