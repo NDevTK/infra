@@ -113,7 +113,7 @@ func (s *servod) start(ctx context.Context, pool *sshpool.Pool) error {
 	}
 	// Use servodtool to check whether the servod is started.
 	log.Debugf(ctx, "Start servod: use servodtool to check and wait the servod on labstation device to be fully started.")
-	if r := ssh.Run(ctx, pool, s.host, fmt.Sprintf("servodtool instance wait-for-active -p %d", s.port)); r.ExitCode != 0 {
+	if r := ssh.Run(ctx, pool, s.host, fmt.Sprintf("servodtool instance wait-for-active -p %d --timeout 60", s.port)); r.ExitCode != 0 {
 		return errors.Reason("start servod: servodtool check: %s", r.Stderr).Err()
 	}
 	return nil
