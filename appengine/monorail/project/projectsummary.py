@@ -16,8 +16,6 @@ from framework import servlet
 from project import project_helpers
 from project import project_views
 
-from third_party import markdown
-
 
 class ProjectSummary(servlet.Servlet):
   """Page to show brief project description and process documentation."""
@@ -35,15 +33,14 @@ class ProjectSummary(servlet.Servlet):
 
     page_data = {
         'admin_tab_mode': self.PROCESS_TAB_SUMMARY,
-        'formatted_project_description':
-            markdown.Markdown(mr.project.description),
+        'formatted_project_description': mr.project.description,
         'access_level': project_views.ProjectAccessView(mr.project.access),
         'num_stars': num_stars,
         'plural': plural,
         'home_page': mr.project.home_page,
         'docs_url': mr.project.docs_url,
         'source_url': mr.project.source_url,
-        }
+    }
 
     return page_data
 

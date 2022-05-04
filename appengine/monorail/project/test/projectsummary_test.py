@@ -36,8 +36,7 @@ class ProjectSummaryTest(unittest.TestCase):
   def testGatherPageData(self):
     mr = testing_helpers.MakeMonorailRequest(project=self.project)
     page_data = self.servlet.GatherPageData(mr)
-    self.assertEqual(
-        '<p>desc</p>', page_data['formatted_project_description'])
+    self.assertEqual('desc', page_data['formatted_project_description'])
     self.assertEqual(
         int(project_pb2.ProjectAccess.ANYONE), page_data['access_level'].key)
     self.assertEqual(0, page_data['num_stars'])
