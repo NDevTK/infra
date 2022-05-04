@@ -250,20 +250,27 @@ func (c *tlwClient) InitServod(ctx context.Context, req *tlw.InitServodRequest) 
 		return errors.Reason("init servod %q: servo is not found", req.Resource).Err()
 	}
 	if isServodContainer(dut) {
-		err := c.startServodContainer(ctx, dut, req.Options)
+		err := c.prepareServodContainer(ctx, dut, req.Options, !req.GetNoServod())
 		return errors.Annotate(err, "init servod %q", req.Resource).Err()
 	}
-	s, err := c.servodPool.Get(
-		localproxy.BuildAddr(dut.ServoHost.Name),
-		int32(dut.ServoHost.ServodPort),
-		func() ([]string, error) {
-			return servod.GenerateParams(req.Options), nil
-		})
-	if err != nil {
-		return errors.Annotate(err, "init servod %q", req.Resource).Err()
-	}
-	if err := s.Prepare(ctx, c.sshPool); err != nil {
-		return errors.Annotate(err, "init servod %q", req.Resource).Err()
+	if req.GetNoServod() {
+		s, err := c.servodPool.Get(
+			localproxy.BuildAddr(dut.ServoHost.Name),
+			int32(dut.ServoHost.ServodPort),
+			func() ([]string, error) {
+				return servod.GenerateParams(req.Options), nil
+			})
+		if err != nil {
+			return errors.Annotate(err, "init servod %q", req.Resource).Err()
+		}
+		if err := s.Prepare(ctx, c.sshPool); err != nil {
+			return errors.Annotate(err, "init servod %q", req.Resource).Err()
+		}
+	} else {
+		// Just try to stop servod if it is running.
+		if err := c.stopServodOnHardwareHost(ctx, dut); err != nil {
+			log.Debugf(ctx, "(Not critical) Fail to stop servod as requested to prepare servo-host without servod daemon: %s", err)
+		}
 	}
 	return nil
 }
@@ -299,8 +306,8 @@ func createServodContainerArgs(detached bool, envVar, cmd []string) *docker.Cont
 	}
 }
 
-// startServodContainer start servod container if required.
-func (c *tlwClient) startServodContainer(ctx context.Context, dut *tlw.Dut, o *tlw.ServodOptions) error {
+// prepareServodContainer prepares servod container and start servod if required.
+func (c *tlwClient) prepareServodContainer(ctx context.Context, dut *tlw.Dut, o *tlw.ServodOptions, startServod bool) error {
 	containerName := servoContainerName(dut)
 	d, err := c.dockerClient(ctx)
 	if err != nil {
@@ -311,30 +318,60 @@ func (c *tlwClient) startServodContainer(ctx context.Context, dut *tlw.Dut, o *t
 	if up, err := d.IsUp(ctx, containerName); err != nil {
 		return errors.Annotate(err, "start servod container").Err()
 	} else if up {
-		log.Debugf(ctx, "Servod container %s is already up!", containerName)
-		return nil
+		// Wait 2 second to detect servod as docker already running is expected to have it or not.
+		waitTime := 2
+		isUpErr := dockerVerifyServodDaemonIsUp(ctx, d, containerName, o.ServodPort, waitTime)
+		needStopContainer := false
+		if startServod && isUpErr != nil {
+			// Container running without servod daemon. We need to stop it and start one with servod.
+			needStopContainer = true
+		} else if !startServod && isUpErr == nil {
+			// Container running with servod daemon. We need to stop it and start one without servod.
+			needStopContainer = true
+		}
+		if needStopContainer {
+			d.Remove(ctx, containerName, true)
+			log.Debugf(ctx, "Stopped container %q as running with incorrect service.", containerName)
+		} else {
+			log.Debugf(ctx, "Servod container %s is already up!", containerName)
+			return nil
+		}
 	}
 	envVar := servod.GenerateParams(o)
-	containerArgs := createServodContainerArgs(true, envVar, []string{"bash", "/start_servod.sh"})
+	var containerStartArgs []string
+	if startServod {
+		containerStartArgs = []string{"bash", "/start_servod.sh"}
+	} else {
+		containerStartArgs = []string{"tail", "-f", "/dev/null"}
+	}
+	containerArgs := createServodContainerArgs(true, envVar, containerStartArgs)
 	res, err := d.Start(ctx, containerName, containerArgs, time.Hour)
 	if err != nil {
 		return errors.Annotate(err, "start servod container").Err()
 	}
 	log.Debugf(ctx, "Container started with id:%s\n with errout: %s", res.Stdout, res.Stderr)
-	// Wait 3 seconds as sometimes container is not fully initialized and fail
-	// when start ing working with servod or tooling.
-	// TODO(otabek): Move to servod-container wrapper.
-	time.Sleep(3 * time.Second)
-	// Waiting to finish servod initialization.
-	eReq := &docker.ExecRequest{
-		Timeout: 2 * time.Minute,
-		Cmd:     []string{"servodtool", "instance", "wait-for-active", "-p", fmt.Sprintf("%d", o.ServodPort)},
-	}
-	if _, err := d.Exec(ctx, containerName, eReq); err != nil {
-		return errors.Annotate(err, "start servod container").Err()
+	if startServod {
+		// Wait 3 seconds as sometimes container is not fully initialized and fail
+		// when start ing working with servod or tooling.
+		// TODO(otabek): Move to servod-container wrapper.
+		time.Sleep(3 * time.Second)
+		// Waiting to finish servod initialization.
+		if err := dockerVerifyServodDaemonIsUp(ctx, d, containerName, o.ServodPort, 60); err != nil {
+			return errors.Annotate(err, "start servod container").Err()
+		}
 	}
 	log.Debugf(ctx, "Servod container %s started and up!", containerName)
 	return nil
+}
+
+// dockerVerifyServodDaemonIsUp verifies servod is running on servod daemon is up in container.
+func dockerVerifyServodDaemonIsUp(ctx context.Context, dc docker.Client, containerName string, servodPort int32, waitTime int) error {
+	eReq := &docker.ExecRequest{
+		Timeout: 2 * time.Minute,
+		Cmd:     []string{"servodtool", "instance", "wait-for-active", "-p", fmt.Sprintf("%d", servodPort), "--timeout", fmt.Sprintf("%d", waitTime)},
+	}
+	_, err := dc.Exec(ctx, containerName, eReq)
+	return errors.Annotate(err, "docker verify servod daemon is up").Err()
 }
 
 // defaultDockerNetwork provides network in which docker need to run.
@@ -364,7 +401,14 @@ func (c *tlwClient) StopServod(ctx context.Context, resourceName string) error {
 			return errors.Annotate(err, "stop servod %q", resourceName).Err()
 		}
 	}
-	// TODO: Move options to stop request.
+	if err := c.stopServodOnHardwareHost(ctx, dut); err != nil {
+		return errors.Annotate(err, "stop servod %q", resourceName).Err()
+	}
+	return nil
+}
+
+// stopServodOnHardwareHost stops servod on labstation and servo_v3.
+func (c *tlwClient) stopServodOnHardwareHost(ctx context.Context, dut *tlw.Dut) error {
 	o := &tlw.ServodOptions{
 		ServodPort: int32(dut.ServoHost.ServodPort),
 	}
@@ -375,10 +419,10 @@ func (c *tlwClient) StopServod(ctx context.Context, resourceName string) error {
 			return servod.GenerateParams(o), nil
 		})
 	if err != nil {
-		return errors.Annotate(err, "stop servod %q", resourceName).Err()
+		return errors.Annotate(err, "stop servod on hardware host").Err()
 	}
 	if err := s.Stop(ctx, c.sshPool); err != nil {
-		return errors.Annotate(err, "stop servod %q", resourceName).Err()
+		return errors.Annotate(err, "stop servod on hardware host").Err()
 	}
 	return nil
 }
