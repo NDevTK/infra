@@ -27,6 +27,12 @@ import (
 	"infra/cros/recovery/tlw"
 )
 
+const (
+	// Specify if we want to print the DUT info to the logs.
+	// In some cases DUT info is too big and to avoid noise in the log you can block it.
+	logDutInfo = true
+)
+
 // Run runs the recovery tasks against the provided unit.
 // Process includes:
 //   - Verification of input data.
@@ -266,10 +272,6 @@ func defaultConfiguration(tn tasknames.TaskName, ds tlw.DUTSetupType) (*config.C
 		return nil, errors.Reason("TaskName: %q is not supported..", tn).Err()
 	}
 }
-
-// Specify if we want to print the DUt info to the logs.
-// In some cases DUT info is too big and to avoid noise in the log you can block it.
-const logDutInfo = true
 
 // readInventory reads single resource info from inventory.
 func readInventory(ctx context.Context, resource string, args *RunArgs) (dut *tlw.Dut, err error) {

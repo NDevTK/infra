@@ -179,7 +179,7 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 	}
 	conditionName, err := r.runActionConditions(ctx, actionName)
 	if err != nil {
-		log.Infof(ctx, "Action %q: one of conditions %q failed, skipping...", actionName, conditionName)
+		log.Infof(ctx, "Action %q: skipping, one of conditions %q failed", actionName, conditionName)
 		log.Debugf(ctx, "Action %q: conditions fail with %s", actionName, err)
 		// Return nil error so we can continue execution of next actions...
 		return nil
