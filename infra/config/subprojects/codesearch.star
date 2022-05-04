@@ -81,11 +81,15 @@ def builder(
     # config in mb_config.pyl.
     properties = properties or {}
     properties[builder_group_property_name] = "chromium.infra.codesearch"
+    enable_ats = True
+    if os and os.lower().startswith("mac"):
+        # goma does not support arbitrary toolchains for mac.
+        enable_ats = False
 
     properties["$build/goma"] = {
         "server_host": "goma.chromium.org",
         "rpc_extra_params": "?prod",
-        "enable_ats": True,  # True for Linux/Win only. Must set to false on Mac.
+        "enable_ats": enable_ats,
     }
 
     luci.builder(

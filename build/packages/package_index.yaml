@@ -3,6 +3,7 @@ description: package_index creates kythe index packs for codesearch.
 platforms:
   - linux-amd64
   - windows-amd64
+  - mac-amd64
 go_packages:
   - infra/cmd/package_index
 root: ../../go/bin
