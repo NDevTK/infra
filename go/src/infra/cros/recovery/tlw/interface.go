@@ -107,12 +107,6 @@ const (
 	ServodMethodHwInit ServodMethod = "hwinit"
 )
 
-// InitServodRequest represents data to initiate servod daemon on servo-host.
-type InitServodRequest struct {
-	Resource string
-	Options  *ServodOptions
-}
-
 // CallServodRequest represents data to run command on servod.
 type CallServodRequest struct {
 	Resource string

@@ -159,6 +159,17 @@ message DUTAudio {
   LoopbackState loopback_state = 4;
 }
 
+// InitServodRequest represents data to initiate servod daemon on servo-host.
+message InitServodRequest {
+  // Resource name of device.
+  string resource = 1;
+  // ServodOptions options to provide options for servod daemon.
+	ServodOptions options = 2;
+  // Prepare servo-host without servod service.
+  bool no_servod = 3;
+}
+
+
 // ServodOption represents options to start servod.
 message ServodOptions {
   // Board of DUT connected to servod.
