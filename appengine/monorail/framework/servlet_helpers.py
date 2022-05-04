@@ -13,7 +13,9 @@ import calendar
 import datetime
 import logging
 import urllib
+import time
 
+from framework import framework_constants
 from framework import framework_bizobj
 from framework import framework_helpers
 from framework import permissions
@@ -250,3 +252,27 @@ def VersionBaseURL(request):
         app_identity.get_default_version_hostname())
 
   return version_base
+
+
+def CalcProjectAlert(project):
+  """Return a string to be shown as red text explaining the project state."""
+
+  project_alert = None
+
+  if project.read_only_reason:
+    project_alert = 'READ-ONLY: %s.' % project.read_only_reason
+  if project.moved_to:
+    project_alert = 'This project has moved to: %s.' % project.moved_to
+  elif project.delete_time:
+    delay_seconds = project.delete_time - time.time()
+    delay_days = delay_seconds // framework_constants.SECS_PER_DAY
+    if delay_days <= 0:
+      project_alert = 'Scheduled for deletion today.'
+    else:
+      days_word = 'day' if delay_days == 1 else 'days'
+      project_alert = (
+          'Scheduled for deletion in %d %s.' % (delay_days, days_word))
+  elif project.state == project_pb2.ProjectState.ARCHIVED:
+    project_alert = 'Project is archived: read-only by members only.'
+
+  return project_alert

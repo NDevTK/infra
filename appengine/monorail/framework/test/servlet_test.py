@@ -227,23 +227,23 @@ class ServletTest(unittest.TestCase):
     project = fake.Project(
         project_name='alerttest', state=project_pb2.ProjectState.LIVE)
 
-    project_alert = servlet._CalcProjectAlert(project)
+    project_alert = servlet_helpers.CalcProjectAlert(project)
     self.assertEqual(project_alert, None)
 
     project.state = project_pb2.ProjectState.ARCHIVED
-    project_alert = servlet._CalcProjectAlert(project)
+    project_alert = servlet_helpers.CalcProjectAlert(project)
     self.assertEqual(
         project_alert,
         'Project is archived: read-only by members only.')
 
     delete_time = int(time.time() + framework_constants.SECS_PER_DAY * 1.5)
     project.delete_time = delete_time
-    project_alert = servlet._CalcProjectAlert(project)
+    project_alert = servlet_helpers.CalcProjectAlert(project)
     self.assertEqual(project_alert, 'Scheduled for deletion in 1 day.')
 
     delete_time = int(time.time() + framework_constants.SECS_PER_DAY * 2.5)
     project.delete_time = delete_time
-    project_alert = servlet._CalcProjectAlert(project)
+    project_alert = servlet_helpers.CalcProjectAlert(project)
     self.assertEqual(project_alert, 'Scheduled for deletion in 2 days.')
 
   def testCheckForMovedProject_NoRedirect(self):

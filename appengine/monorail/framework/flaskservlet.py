@@ -349,8 +349,7 @@ class FlaskServlet(object):
     project_thumbnail_url = ''
     if project:
       project_summary = project.summary
-      # TODO: (crbug.com/monorail/10870)
-      # project_alert = _CalcProjectAlert(project)
+      project_alert = servlet_helpers.CalcProjectAlert(project)
       project_read_only = project.read_only_reason
       project_home_page = project.home_page
       project_thumbnail_url = tracker_views.LogoView(project).thumbnail_url

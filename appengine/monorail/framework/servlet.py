@@ -596,7 +596,7 @@ class Servlet(webapp2.RequestHandler):
     project_thumbnail_url = ''
     if project:
       project_summary = project.summary
-      project_alert = _CalcProjectAlert(project)
+      project_alert = servlet_helpers.CalcProjectAlert(project)
       project_read_only = project.read_only_reason
       project_home_page = project.home_page
       project_thumbnail_url = tracker_views.LogoView(project).thumbnail_url
@@ -931,27 +931,3 @@ class Servlet(webapp2.RequestHandler):
           now - framework_constants.VISIT_RESOLUTION):
         user_pb.last_visit_timestamp = now
         self.services.user.UpdateUser(mr.cnxn, user_pb.user_id, user_pb)
-
-
-def _CalcProjectAlert(project):
-  """Return a string to be shown as red text explaning the project state."""
-
-  project_alert = None
-
-  if project.read_only_reason:
-    project_alert = 'READ-ONLY: %s.' % project.read_only_reason
-  if project.moved_to:
-    project_alert = 'This project has moved to: %s.' % project.moved_to
-  elif project.delete_time:
-    delay_seconds = project.delete_time - time.time()
-    delay_days = delay_seconds // framework_constants.SECS_PER_DAY
-    if delay_days <= 0:
-      project_alert = 'Scheduled for deletion today.'
-    else:
-      days_word = 'day' if delay_days == 1 else 'days'
-      project_alert = (
-          'Scheduled for deletion in %d %s.' % (delay_days, days_word))
-  elif project.state == project_pb2.ProjectState.ARCHIVED:
-    project_alert = 'Project is archived: read-only by members only.'
-
-  return project_alert
