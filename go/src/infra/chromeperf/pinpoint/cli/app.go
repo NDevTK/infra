@@ -37,6 +37,7 @@ func application(p Param) *cli.Application {
 			cmdWaitJob(p),
 			cmdCancelJob(p),
 			cmdConfig(p),
+			cmdDiff(p),
 			subcommands.CmdHelp,
 		},
 	}
