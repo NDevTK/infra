@@ -23,18 +23,6 @@ import (
 
 type inventoryCounter map[bucket]int
 
-// TODO(guocb): Remove below metric after the migration to scheduling unit
-// metric.
-var inventoryMetric = metric.NewInt(
-	"chromeos/skylab/inventory/dut_count",
-	"The number of DUTs in a given bucket",
-	nil,
-	field.String("board"),
-	field.String("model"),
-	field.String("pool"),
-	field.String("environment"),
-)
-
 // suMetric is the metric name for scheduling unit count.
 var suMetric = metric.NewInt(
 	"chromeos/skylab/inventory/scheduling_unit_count",
@@ -110,7 +98,6 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 func (c inventoryCounter) Report(ctx context.Context) {
 	for b, count := range c {
 		//logging.Infof(ctx, "bucket: %s, number: %d", b.String(), count)
-		inventoryMetric.Set(ctx, int64(count), b.board, b.model, b.pool, b.environment)
 		suMetric.Set(ctx, int64(count), b.board, b.model, b.pool, b.environment, b.zone)
 	}
 }
