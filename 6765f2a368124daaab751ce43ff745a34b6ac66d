@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bc96deda_934a393c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-05-05T23:35:17Z",
+      "side": 1,
+      "message": "serv usb-drive require servo present",
+      "revId": "6765f2a368124daaab751ce43ff745a34b6ac66d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
