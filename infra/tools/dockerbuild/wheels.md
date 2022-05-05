@@ -7306,6 +7306,20 @@ wheel: <
 * *manylinux-x64*
 * *manylinux-x64-ucs2*
 
+## **tabulate-py3**
+
+### 0.8.9
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/tabulate-py3"
+  version: "version:0.8.9"
+>
+```
+
+
+* *universal*
+
 ## **tempora**
 
 ### 1.11

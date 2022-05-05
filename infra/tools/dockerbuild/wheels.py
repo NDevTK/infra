@@ -1659,6 +1659,7 @@ SPECS.update({
         Universal('sniffio', '1.2.0', pyversions=['py3']),
         Universal('sortedcontainers', '2.4.0', pyversions=['py3']),
         Universal('soupsieve', '1.9.5'),
+        Universal('tabulate', '0.8.9', pyversions=['py3']),
         Universal('tempora', '1.11'),
         Universal('tensorboard', '2.5.0', pyversions=['py3']),
         Universal('tensorboard', '2.6.0', pyversions=['py3']),
