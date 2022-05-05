@@ -1187,6 +1187,7 @@ func crosRepairActions() map[string]*Action {
 				"sink-mode if required.",
 			},
 			Conditions: []string{
+				"dut_servo_host_present",
 				"Pools required to be in Secure mode",
 			},
 			Dependencies: []string{
