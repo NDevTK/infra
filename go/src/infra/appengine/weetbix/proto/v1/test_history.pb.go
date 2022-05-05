@@ -1010,7 +1010,7 @@ type TestHistoryClient interface {
 	// Accepts a test variant predicate to filter the verdicts.
 	Query(ctx context.Context, in *QueryTestHistoryRequest, opts ...grpc.CallOption) (*QueryTestHistoryResponse, error)
 	// Retrieves a summary of test verdicts for a given test ID in a given project
-	// and in a given range of dates.
+	// and in a given range of times.
 	// Accepts a test variant predicate to filter the verdicts.
 	QueryStats(ctx context.Context, in *QueryTestHistoryStatsRequest, opts ...grpc.CallOption) (*QueryTestHistoryStatsResponse, error)
 	// Reterives variants for a given test ID in a given project that were
@@ -1094,7 +1094,7 @@ type TestHistoryServer interface {
 	// Accepts a test variant predicate to filter the verdicts.
 	Query(context.Context, *QueryTestHistoryRequest) (*QueryTestHistoryResponse, error)
 	// Retrieves a summary of test verdicts for a given test ID in a given project
-	// and in a given range of dates.
+	// and in a given range of times.
 	// Accepts a test variant predicate to filter the verdicts.
 	QueryStats(context.Context, *QueryTestHistoryStatsRequest) (*QueryTestHistoryStatsResponse, error)
 	// Reterives variants for a given test ID in a given project that were

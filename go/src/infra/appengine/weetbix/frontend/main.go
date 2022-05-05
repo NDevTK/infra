@@ -162,6 +162,7 @@ func main() {
 		weetbixpb.RegisterRulesServer(srv.PRPC, rpc.NewRulesSever())
 		weetbixpb.RegisterProjectsServer(srv.PRPC, rpc.NewProjectsServer())
 		weetbixpb.RegisterInitDataGeneratorServer(srv.PRPC, rpc.NewInitDataGeneratorServer())
+		weetbixpb.RegisterTestHistoryServer(srv.PRPC, rpc.NewTestHistoryServer())
 		adminpb.RegisterAdminServer(srv.PRPC, admin.CreateServer())
 
 		// GAE crons.

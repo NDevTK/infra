@@ -24,7 +24,7 @@ service TestHistory {
     QueryTestHistoryResponse) {};
 
   // Retrieves a summary of test verdicts for a given test ID in a given project
-  // and in a given range of dates.
+  // and in a given range of times.
   // Accepts a test variant predicate to filter the verdicts.
   rpc QueryStats(QueryTestHistoryStatsRequest) returns (
     QueryTestHistoryStatsResponse) {};
