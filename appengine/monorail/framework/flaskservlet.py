@@ -327,8 +327,7 @@ class FlaskServlet(object):
 
       self._DoCommonRequestProcessing(self.request, mr)
 
-      # TODO: (crbug.com/monorail/10860)
-      # self._MaybeRedirectToBrandedDomain(self.request, mr.project_name)
+      self._MaybeRedirectToBrandedDomain(self.request, mr.project_name)
 
       page_data = self.GatherBaseData(mr, nonce)
 
@@ -703,6 +702,25 @@ class FlaskServlet(object):
         include_project=False,
         copy_params=False,
         project=mr.project_name)
+    self.redirect(url, abort=True)
+
+  def _MaybeRedirectToBrandedDomain(self, request, project_name):
+    """If we are live and the project should be branded, check request host."""
+    if request.values.get('redir'):
+      return  # Avoid any chance of a redirect loop.
+    if not project_name:
+      return
+    needed_domain = framework_helpers.GetNeededDomain(
+        project_name, request.host)
+    if not needed_domain:
+      return
+
+    url = 'https://%s%s' % (needed_domain, request.full_path)
+    if '?' in url:
+      url += '&redir=1'
+    else:
+      url += '?redir=1'
+    logging.info('branding redirect to url %r', url)
     self.redirect(url, abort=True)
 
   def redirect(self, url, abort=False):
