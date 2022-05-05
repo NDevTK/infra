@@ -345,9 +345,15 @@ message RolloutConfig {
   // Optin_dut_pool controls on a per-bool basis.
   repeated string optin_dut_pool = 3;
 
+  // rollout_permille is deprecated in favor of prod_permille.
+  //
   // Rollout_permille is the probability (multiplied by 1000) that we use the new flow for a DUT if
   // we are permitted to repair the device in question by the other settings in the config file.
-  int32 rollout_permille = 4;
+  int32 rollout_permille = 4 [deprecated=true];
+
+  // prod_permille is the probability (multiplied by 1000) that we use the new flow for a DUT if
+  // we are permitted to repair the device in question by the other settings in the config file.
+  int32 prod_permille = 6;
 
   // The UFS_error_policy controls what happens if we encounter a UFS error at the beginning of launching a task.
   // The valid values are:

@@ -105,9 +105,9 @@ func TestRouteRepairTaskImplDUT(t *testing.T) {
 		{
 			name: "good DUT is NOT blocked",
 			in: &config.RolloutConfig{
-				Enable:          true,
-				OptinAllDuts:    true,
-				RolloutPermille: 1000,
+				Enable:       true,
+				OptinAllDuts: true,
+				ProdPermille: 1000,
 			},
 			randFloat: 0.5,
 			pools:     []string{"pool"},
@@ -182,9 +182,9 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 		{
 			name: "do use labstation",
 			in: &config.RolloutConfig{
-				Enable:          true,
-				OptinAllDuts:    true,
-				RolloutPermille: 1000,
+				Enable:       true,
+				OptinAllDuts: true,
+				ProdPermille: 1000,
 			},
 			randFloat: 0.5,
 			pools:     []string{"some pool"},
@@ -216,9 +216,9 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 		{
 			name: "all labstations are opted in",
 			in: &config.RolloutConfig{
-				Enable:          true,
-				RolloutPermille: 501,
-				OptinAllDuts:    true,
+				Enable:       true,
+				ProdPermille: 501,
+				OptinAllDuts: true,
 			},
 			pools:     []string{"some-pool"},
 			randFloat: 0.5,
@@ -228,9 +228,9 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 		{
 			name: "use permille even when all labstations are opted in",
 			in: &config.RolloutConfig{
-				Enable:          true,
-				RolloutPermille: 499,
-				OptinAllDuts:    true,
+				Enable:       true,
+				ProdPermille: 499,
+				OptinAllDuts: true,
 			},
 			pools:     []string{"some-pool"},
 			randFloat: 0.5,
@@ -240,9 +240,9 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 		{
 			name: "use labstation sometimes - good",
 			in: &config.RolloutConfig{
-				Enable:          true,
-				RolloutPermille: 501,
-				OptinAllDuts:    false,
+				Enable:       true,
+				ProdPermille: 501,
+				OptinAllDuts: false,
 			},
 			pools:     []string{"some-pool"},
 			randFloat: 0.5,
@@ -252,8 +252,8 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 		{
 			name: "use labstation sometimes - near miss",
 			in: &config.RolloutConfig{
-				Enable:          true,
-				RolloutPermille: 499,
+				Enable:       true,
+				ProdPermille: 499,
 			},
 			pools:     []string{"some-pool"},
 			randFloat: 0.5,
@@ -263,10 +263,10 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 		{
 			name: "good pool",
 			in: &config.RolloutConfig{
-				Enable:          true,
-				RolloutPermille: 500,
-				OptinAllDuts:    false,
-				OptinDutPool:    []string{"paris"},
+				Enable:       true,
+				ProdPermille: 500,
+				OptinAllDuts: false,
+				OptinDutPool: []string{"paris"},
 			},
 			pools:     []string{"paris"},
 			randFloat: 0.5,
@@ -276,10 +276,10 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 		{
 			name: "bad pool",
 			in: &config.RolloutConfig{
-				Enable:          true,
-				RolloutPermille: 500,
-				OptinAllDuts:    false,
-				OptinDutPool:    []string{"paris"},
+				Enable:       true,
+				ProdPermille: 500,
+				OptinAllDuts: false,
+				OptinDutPool: []string{"paris"},
 			},
 			pools:     []string{"NOT PARIS"},
 			randFloat: 0.5,
@@ -289,10 +289,10 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 		{
 			name: "ignore UFS error",
 			in: &config.RolloutConfig{
-				Enable:          true,
-				RolloutPermille: 500,
-				OptinAllDuts:    true,
-				UfsErrorPolicy:  "lax",
+				Enable:         true,
+				ProdPermille:   500,
+				OptinAllDuts:   true,
+				UfsErrorPolicy: "lax",
 			},
 			randFloat: 0.5,
 			out:       paris,
@@ -301,10 +301,10 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 		{
 			name: "don't ignore UFS error if we're above the threshold",
 			in: &config.RolloutConfig{
-				Enable:          true,
-				RolloutPermille: 498,
-				OptinAllDuts:    true,
-				UfsErrorPolicy:  "lax",
+				Enable:         true,
+				ProdPermille:   498,
+				OptinAllDuts:   true,
+				UfsErrorPolicy: "lax",
 			},
 			randFloat: 0.5,
 			out:       legacy,
@@ -370,9 +370,9 @@ func TestRouteRepairTask(t *testing.T) {
 			name: "paris labstation",
 			in: &config.Paris{
 				LabstationRepair: &config.RolloutConfig{
-					Enable:          true,
-					OptinAllDuts:    true,
-					RolloutPermille: 1000,
+					Enable:       true,
+					OptinAllDuts: true,
+					ProdPermille: 1000,
 				},
 			},
 			botID:         "foo-labstation1",
@@ -400,9 +400,9 @@ func TestRouteRepairTask(t *testing.T) {
 			name: "DUT rollout is match by state",
 			in: &config.Paris{
 				DutRepair: &config.RolloutConfig{
-					Enable:          true,
-					OptinAllDuts:    true,
-					RolloutPermille: 1000,
+					Enable:       true,
+					OptinAllDuts: true,
+					ProdPermille: 1000,
 				},
 			},
 			botID:         "foo-host4",
@@ -486,9 +486,9 @@ func TestRouteRepairTaskProbability(t *testing.T) {
 	ctx := context.Background()
 
 	rolloutCfg := &config.RolloutConfig{
-		Enable:          true,
-		OptinAllDuts:    true,
-		RolloutPermille: 1,
+		Enable:       true,
+		OptinAllDuts: true,
+		ProdPermille: 1,
 	}
 
 	tally := 0

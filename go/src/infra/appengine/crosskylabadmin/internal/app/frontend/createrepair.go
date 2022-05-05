@@ -203,7 +203,7 @@ func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dut
 			return legacy, malformedPolicy
 		}
 	}
-	threshold := r.GetRolloutPermille()
+	threshold := r.GetProdPermille()
 	myValue := math.Round(1000.0 * randFloat)
 	// If the threshold is zero, let's reject all possible values of myValue.
 	// This way a threshold of zero actually means 0.0% instead of 0.1%.
