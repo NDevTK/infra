@@ -867,7 +867,11 @@ func crosRepairActions() map[string]*Action {
 				" GBB flags and disable booting into dev-mode. Then it reboots",
 				" the DUT.",
 			},
-			Conditions: []string{"Pools required to be in Secure mode"},
+			Conditions: []string{
+				//TODO(b:231640496): flex board unpingable after switching to secure-mode.
+				"is_not_flex_board",
+				"Pools required to be in Secure mode",
+			},
 			Dependencies: []string{
 				"Reset GBB flags by host",
 				"cros_switch_to_secure_mode",
