@@ -7715,6 +7715,20 @@ wheel: <
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
 
+## **typed-ast-py3**
+
+### 1.5.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/typed-ast-py3"
+  version: "version:1.5.3"
+>
+```
+
+
+* *universal*
+
 ## **typing-py2**
 
 ### 3.6.4

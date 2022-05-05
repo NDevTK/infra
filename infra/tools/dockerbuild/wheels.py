@@ -1679,6 +1679,7 @@ SPECS.update({
         Universal('toml', '0.10.1', pyversions=['py3']),
         Universal('trio', '0.20.0', pyversions=['py3']),
         Universal('trio-websocket', '0.9.2', pyversions=['py3']),
+        Universal('typed-ast', '1.5.3', pyversions=['py3']),
         Universal('typing', '3.6.4', pyversions=['py2']),
         Universal('typing-extensions', '3.7.4.3', pyversions=['py3']),
         Universal('typing-extensions', '4.0.1', pyversions=['py3']),
