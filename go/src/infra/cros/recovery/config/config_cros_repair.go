@@ -637,9 +637,8 @@ func crosRepairActions() map[string]*Action {
 			},
 			RecoveryActions: []string{
 				"Switch to secure-mode and reboot",
-				"Install OS in recovery mode by booting from servo USB-drive",
-				"Quick provision OS",
 				"Repair by powerwash",
+				"Install OS in recovery mode by booting from servo USB-drive",
 			},
 			ExecName: "cros_is_file_system_writable",
 		},
