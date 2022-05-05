@@ -35,12 +35,13 @@ type TastResults struct {
 //
 // Fields not used by Test Results are omitted.
 type TastCase struct {
-	Name       string      `json:"name"`
-	OutDir     string      `json:"outDir"`
-	SkipReason string      `json:"skipReason"`
-	Errors     []TastError `json:"errors"`
-	Start      time.Time   `json:"start"`
-	End        time.Time   `json:"end"`
+	Name        string           `json:"name"`
+	OutDir      string           `json:"outDir"`
+	SkipReason  string           `json:"skipReason"`
+	Errors      []TastError      `json:"errors"`
+	Start       time.Time        `json:"start"`
+	End         time.Time        `json:"end"`
+	SearchFlags []*pb.StringPair `json:"searchFlags,omitempty"`
 }
 
 type TastError struct {
@@ -78,6 +79,7 @@ func (r *TastResults) ToProtos(ctx context.Context, processArtifacts func(string
 			Expected:     status == pb.TestStatus_SKIP || status == pb.TestStatus_PASS,
 			Status:       status,
 			TestMetadata: &pb.TestMetadata{Name: c.Name},
+			Tags:         append([]*pb.StringPair{}, c.SearchFlags...),
 		}
 		if status == pb.TestStatus_SKIP {
 			tr.SummaryHtml = "<text-artifact artifact-id=\"Skip Reason\" />"

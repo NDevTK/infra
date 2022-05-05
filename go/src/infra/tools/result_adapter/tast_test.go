@@ -43,7 +43,7 @@ func genJSONLine(m map[string]string) string {
 	}
 	jsonStr := ""
 	for k, v := range base {
-		if k == "errors" {
+		if k == "errors" || k == "searchFlags" {
 			jsonStr += fmt.Sprintf("\"%s\":%s,", k, v)
 			continue
 		}
@@ -59,17 +59,19 @@ func TestTastConversions(t *testing.T) {
 		r := &TastResults{}
 		Convey(`Basic`, func() {
 			jsonLine := genJSONLine(map[string]string{
-				"skipReason": "dummy skipped",
+				"skipReason":  "dummy skipped",
+				"searchFlags": `[{"key":"testKey", "value":"testValue"}]`,
 			})
 			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
 			So(err, ShouldBeNil)
 			So(r.Cases[0], ShouldResemble, TastCase{
-				Name:       "lacros.Basic",
-				OutDir:     "/usr/local/autotest/results/lxc_job_folder/tast/results/tests/lacros.Basic",
-				SkipReason: "dummy skipped",
-				Errors:     nil,
-				Start:      parseTime("2021-07-26T18:53:33.983328614Z"),
-				End:        parseTime("2021-07-26T18:53:34.983328614Z"),
+				Name:        "lacros.Basic",
+				OutDir:      "/usr/local/autotest/results/lxc_job_folder/tast/results/tests/lacros.Basic",
+				SkipReason:  "dummy skipped",
+				Errors:      nil,
+				Start:       parseTime("2021-07-26T18:53:33.983328614Z"),
+				End:         parseTime("2021-07-26T18:53:34.983328614Z"),
+				SearchFlags: []*pb.StringPair{{Key: "testKey", Value: "testValue"}},
 			})
 		})
 		Convey(`Errors`, func() {
@@ -90,7 +92,9 @@ func TestTastConversions(t *testing.T) {
 	Convey(`ToProtos works`, t, func() {
 		ctx := context.Background()
 		Convey(`Basic`, func() {
-			jsonLine := genJSONLine(map[string]string{})
+			jsonLine := genJSONLine(map[string]string{
+				"searchFlags": `[{"key":"testKey", "value":"testValue"}]`,
+			})
 			r := &TastResults{
 				BaseDir: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test",
 			}
@@ -111,6 +115,7 @@ func TestTastConversions(t *testing.T) {
 				},
 				StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 				Duration:  &duration.Duration{Seconds: 1},
+				Tags:      []*pb.StringPair{{Key: "testKey", Value: "testValue"}},
 			})
 		})
 		Convey(`Skipped`, func() {
