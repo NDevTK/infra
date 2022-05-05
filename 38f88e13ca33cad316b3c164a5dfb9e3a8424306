@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "777c9931_0572c50c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1518687
+      },
+      "writtenOn": "2022-05-05T22:06:30Z",
+      "side": 1,
+      "message": "\u003e \"configurtion\" is a possible misspelling of \"configuration\".\n\nPlease fix.",
+      "parentUuid": "fc6b4d64_61425a09",
+      "range": {
+        "startLine": 10,
+        "startChar": 19,
+        "endLine": 10,
+        "endChar": 31
+      },
+      "revId": "38f88e13ca33cad316b3c164a5dfb9e3a8424306",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
