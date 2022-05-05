@@ -28,6 +28,10 @@ service Asset {
 
   // Lists all Assets.
   rpc List(ListAssetsRequest) returns (ListAssetsResponse);
+
+  // Get AssetConfiguration
+  rpc GetAssetConfiguration(GetAssetConfigurationRequest)
+      returns (GetAssetConfigurationResponse);
 }
 // Request to create a single asset in AssetServ
 message CreateAssetRequest {
@@ -78,4 +82,14 @@ message ListAssetsResponse {
   // A page token that can be passed into future requests to get the next page.
   // Empty if there is no next page.
   string next_page_token = 2;
+}
+// request for get the asset configuration by asset id
+message GetAssetConfigurationRequest {
+  // The unique identifier of the asset to retrieve.
+  string asset_id = 1;
+}
+
+message GetAssetConfigurationResponse {
+  // The configuration for the asset.
+  string config = 1;
 }
