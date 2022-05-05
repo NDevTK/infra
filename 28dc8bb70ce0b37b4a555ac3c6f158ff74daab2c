@@ -69,6 +69,24 @@
       "parentUuid": "9784c7e6_fa10cde9",
       "revId": "28dc8bb70ce0b37b4a555ac3c6f158ff74daab2c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3371ade7_46e674fa",
+        "filename": "3pp/bazel_bootstrap/3pp.pb",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1356118
+      },
+      "writtenOn": "2022-05-05T00:42:02Z",
+      "side": 1,
+      "message": "Ok that seems reasonable.",
+      "parentUuid": "2f3fd881_c393099d",
+      "revId": "28dc8bb70ce0b37b4a555ac3c6f158ff74daab2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
