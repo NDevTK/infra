@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f67709eb_a7eba7d9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-05-05T23:59:10Z",
+      "side": 1,
+      "message": "disable secure-mode for flex board till the unpingable issue is resolved",
+      "revId": "05004ada12d81911d1b7f5ee6ab123f3b2e1397c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
