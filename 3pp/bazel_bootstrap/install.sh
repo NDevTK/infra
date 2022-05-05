@@ -10,3 +10,4 @@ set -o pipefail
 PREFIX="$1"
 
 cp raw_source_0 "${PREFIX}/bazel"
+chmod a+x "${PREFIX}/bazel"

@@ -9,6 +9,7 @@ create {
     script { name: "fetch.py" }
     unpack_archive: false
     cpe_base_address: "cpe:/a:google:bazel"
+    patch_version: "1"
   }
 
   build {}
