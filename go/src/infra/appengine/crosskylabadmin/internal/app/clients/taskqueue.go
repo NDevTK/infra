@@ -23,6 +23,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 
 	"infra/appengine/crosskylabadmin/internal/tq"
+	"infra/libs/skylab/common/heuristics"
 )
 
 const repairBotsQueue = "repair-bots"
@@ -47,6 +48,10 @@ func PushAuditDUTs(ctx context.Context, botIDs, actions []string, taskname strin
 	actionsStr := strings.Join(actions, "-")
 	tasks := make([]*tq.Task, 0, len(botIDs))
 	for _, id := range botIDs {
+		if heuristics.LooksLikeSatlabDevice(id) {
+			logging.Infof(ctx, fmt.Sprintf("Skipping audit for satlab device %q", id))
+			continue
+		}
 		tasks = append(tasks, crosAuditTask(id, taskname, actionsCSV, actionsStr))
 	}
 	return pushDUTs(ctx, auditBotsQueue, tasks)
