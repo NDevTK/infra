@@ -33,6 +33,24 @@
       "message": "Typically we just leave the patch_version in place. What is your thinking re: removing it?\n\nAlso we typically use a numeric patch_version for easier tracking if multiple patches are needed. \"chromium.N\" (N\u003d1,2,3,...) is the usual pattern.",
       "revId": "28dc8bb70ce0b37b4a555ac3c6f158ff74daab2c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9784c7e6_fa10cde9",
+        "filename": "3pp/bazel_bootstrap/3pp.pb",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1356118
+      },
+      "writtenOn": "2022-05-05T00:09:23Z",
+      "side": 1,
+      "message": "I can just do a number. I was only adding the patch to trigger a new package, and wouldn\u0027t need that to stick around for the next version. Dropping the TODO, but I don\u0027t see a reason to keep it around either.",
+      "parentUuid": "d005c8f7_2ec958ee",
+      "revId": "28dc8bb70ce0b37b4a555ac3c6f158ff74daab2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
