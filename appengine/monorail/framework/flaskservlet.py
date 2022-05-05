@@ -16,6 +16,7 @@ Summary of page classes:
 """
 
 import gc
+from werkzeug.exceptions import HTTPException
 import os
 import httplib
 import logging
@@ -25,11 +26,12 @@ from businesslogic import work_env
 import ezt
 from features import features_bizobj, hotlist_views
 import flask
+from project import project_constants
 from proto import project_pb2
 from search import query2ast
 
 import settings
-from framework import alerts, exceptions, framework_helpers
+from framework import alerts, exceptions, framework_helpers, urls
 from framework import framework_views, servlet_helpers
 from framework import framework_constants
 from framework import monorailrequest
@@ -275,7 +277,7 @@ class FlaskServlet(object):
       if not self.mr.auth.user_id:
         # If not logged in, let them log in
         url = servlet_helpers.SafeCreateLoginURL(self.mr)
-        flask.redirect(url, code=307)
+        self.redirect(url, abort=True)
       else:
         # Display the missing permissions template.
         page_data = {
@@ -311,13 +313,19 @@ class FlaskServlet(object):
 
     return page_data
 
+  def _DoCommonRequestProcessing(self, request, mr):
+    """Do common processing dependent on having the user and project pbs."""
+    with mr.profiler.Phase('basic processing'):
+      self._CheckForMovedProject(mr, request)
+      # TODO: (crbug.com/monorail/10878)
+      # self.AssertBasePermission(mr)
+
   # pylint: disable=unused-argument
   def _DoPageProcessing(self, mr, nonce):
     """Do user lookups and gather page-specific ezt data."""
     with mr.profiler.Phase('common request data'):
 
-      # TODO: (crbug.com/monorail/10861)
-      # self._DoCommonRequestProcessing(self.request, mr)
+      self._DoCommonRequestProcessing(self.request, mr)
 
       # TODO: (crbug.com/monorail/10860)
       # self._MaybeRedirectToBrandedDomain(self.request, mr.project_name)
@@ -659,3 +667,47 @@ class FlaskServlet(object):
           'dbg': 'off',
           'debug': [('none', 'recorded')],
       }
+
+  def _CheckForMovedProject(self, mr, request):
+    """If the project moved, redirect there or to an informational page."""
+    if not mr.project:
+      return  # We are on a site-wide or user page.
+    if not mr.project.moved_to:
+      return  # This project has not moved.
+    admin_url = '/p/%s%s' % (mr.project_name, urls.ADMIN_META)
+    if request.path.startswith(admin_url):
+      return  # It moved, but we are near the page that can un-move it.
+
+    logging.info(
+        'project %s has moved: %s', mr.project.project_name,
+        mr.project.moved_to)
+
+    moved_to = mr.project.moved_to
+    if project_constants.RE_PROJECT_NAME.match(moved_to):
+      # Use the redir query parameter to avoid redirect loops.
+      if mr.redir is None:
+        url = framework_helpers.FormatMovedProjectURL(mr, moved_to)
+        if '?' in url:
+          url += '&redir=1'
+        else:
+          url += '?redir=1'
+        logging.info('trusted move to a new project on our site')
+        self.redirect(url, abort=True)
+
+    logging.info('not a trusted move, will display link to user to click')
+    # Attach the project name as a url param instead of generating a /p/
+    # link to the destination project.
+    url = framework_helpers.FormatAbsoluteURL(
+        mr,
+        urls.PROJECT_MOVED,
+        include_project=False,
+        copy_params=False,
+        project=mr.project_name)
+    self.redirect(url, abort=True)
+
+  def redirect(self, url, abort=False):
+    if abort:
+      flask.redirect(url, code=302)
+      flask.abort(302)
+    else:
+      flask.redirect(url)

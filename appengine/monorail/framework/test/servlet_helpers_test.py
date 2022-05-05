@@ -9,6 +9,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 import unittest
+import settings
 
 from google.appengine.ext import testbed
 
@@ -74,6 +75,16 @@ class AssertBasePermissionTest(unittest.TestCase):
     self.assertRaises(
         permissions.PermissionException,
         servlet_helpers.AssertBasePermission, mr)
+
+  def testPermForProject(self):
+    project = project_pb2.Project()
+    project.project_name = 'proj'
+    project.access = project_pb2.ProjectAccess.MEMBERS_ONLY
+    _, mr = testing_helpers.GetRequestObjects(path='/p/proj/', project=project)
+    mr.auth.user_pb.email = settings.borg_service_account
+    project_perm = servlet_helpers.CheckPermForProject(
+        mr, permissions.CREATE_GROUP, project)
+    self.assertTrue(project_perm)
 
 
 FORM_URL = 'http://example.com/issues/form.php'
@@ -164,7 +175,6 @@ class IssueListURLTest(unittest.TestCase):
     url = servlet_helpers.IssueListURL(mr, self.config, query_string='q=Pri=1')
     self.assertEqual('/p/proj/issues/list?q=Pri=1', url)
 
-
 class ProjectIsRestrictedTest(unittest.TestCase):
 
   def setUp(self):
@@ -193,3 +203,31 @@ class ProjectIsRestrictedTest(unittest.TestCase):
         path='/p/proj/issues/detail?id=123&q=term', project=self.project)
     isRestrict = servlet_helpers.ProjectIsRestricted(mr)
     self.assertFalse(isRestrict)
+
+
+class ComputerCreateUrl(unittest.TestCase):
+
+  def setUp(self):
+    self.project = project_pb2.Project()
+    self.project.project_name = 'proj'
+    self.config = tracker_pb2.ProjectIssueConfig()
+    self.testbed = testbed.Testbed()
+    self.testbed.activate()
+    self.testbed.init_user_stub()
+    self.testbed.init_memcache_stub()
+    self.testbed.init_datastore_v3_stub()
+
+  def tearDown(self):
+    self.testbed.deactivate()
+
+  def testCreateLoginUrl(self):
+    _, mr = testing_helpers.GetRequestObjects(
+        path='/p/proj/issues/detail?id=123&q=term', project=self.project)
+    url = servlet_helpers.SafeCreateLoginURL(mr, '/continue')
+    self.assertIn('/continue', url)
+
+  def testCreateLogoutUrl(self):
+    _, mr = testing_helpers.GetRequestObjects(
+        path='/p/proj/issues/detail?id=123&q=term', project=self.project)
+    url = servlet_helpers.SafeCreateLogoutURL(mr)
+    self.assertIn('/Logout', url)
