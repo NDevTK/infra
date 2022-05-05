@@ -29,5 +29,5 @@ echo "Extracting shellcheck binary..."
 tar -I 'zstd -f' -xf "${ARCHIVE}" --wildcards \
 	--transform='s|.*/|bin/shellcheck/|' \
 	./usr/bin/shellcheck \
-	./usr/share/doc/*/LICENSE.bz2
+	./usr/share/doc/*/LICENSE.*
 chmod a+rX,a-w ./bin/shellcheck/*
