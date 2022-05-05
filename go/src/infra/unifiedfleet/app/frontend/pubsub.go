@@ -64,7 +64,6 @@ func HaRTPushHandler(routerContext *router.Context) {
 	failed := response.GetFailedAssetTags()
 	logging.Debugf(ctx, "Failed[%v]: %v", len(failed), failed)
 	logging.Debugf(ctx, "Success reported for %v assets", len(response.GetAssets()))
-	return
 }
 
 // updateAssetInfoHelper updates both asset and machine with the provided asset info.

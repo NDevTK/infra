@@ -752,7 +752,6 @@ func processUpdateMachineLSEDUTMask(oldDut, newDut *chromeosLab.DeviceUnderTest,
 			oldDut.GetPeripherals().CameraboxInfo = nil
 		}
 	}
-	return
 }
 
 // processUpdateMachineLSEServoMask returns servo with new updated params from the mask.
