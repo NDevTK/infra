@@ -236,7 +236,7 @@ func LabstationRepairConfig() *Configuration {
 						ExecName: "sample_pass",
 						Dependencies: []string{
 							"cros_update_hwid_to_inventory",
-							"cros_update_serial_number_inventory",
+							"Read serial number from labstation",
 						},
 					},
 					"Sysrq reboot": {
@@ -263,6 +263,10 @@ func LabstationRepairConfig() *Configuration {
 							"cros_filesystem_io_not_blocked",
 						},
 						ExecName: "sample_fail",
+					},
+					"Read serial number from labstation": {
+						ExecName:               "cros_update_serial_number_inventory",
+						AllowFailAfterRecovery: true,
 					},
 				},
 			},
