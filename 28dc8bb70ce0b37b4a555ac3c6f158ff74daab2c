@@ -51,6 +51,24 @@
       "parentUuid": "d005c8f7_2ec958ee",
       "revId": "28dc8bb70ce0b37b4a555ac3c6f158ff74daab2c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2f3fd881_c393099d",
+        "filename": "3pp/bazel_bootstrap/3pp.pb",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2022-05-05T00:23:22Z",
+      "side": 1,
+      "message": "The reason that we typically keep the patch_version is so that the checked-in 3pp spec matches the latest package that was built. It seems confusing if these don\u0027t match -- a person reading it might expect the unpatched package version to have the \u0027+x\u0027 fix.",
+      "parentUuid": "9784c7e6_fa10cde9",
+      "revId": "28dc8bb70ce0b37b4a555ac3c6f158ff74daab2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
