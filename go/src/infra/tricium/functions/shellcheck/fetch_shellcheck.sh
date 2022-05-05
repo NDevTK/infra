@@ -26,7 +26,7 @@ echo
 
 echo "Extracting shellcheck binary..."
 # NOTE: Transforms tar paths into bin/shellcheck/.
-tar --bzip2 -xf "${ARCHIVE}" --wildcards \
+tar -I 'zstd -f' -xf "${ARCHIVE}" --wildcards \
 	--transform='s|.*/|bin/shellcheck/|' \
 	./usr/bin/shellcheck \
 	./usr/share/doc/*/LICENSE.bz2
