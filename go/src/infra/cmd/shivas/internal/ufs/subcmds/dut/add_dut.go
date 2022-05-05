@@ -268,15 +268,18 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 		c.updateDeployActions()
 	}
 
-	// Update the UFS database if enabled.
+	// Created client to update UFS when required.
+	var ic ufsAPI.FleetClient
 	if !c.ignoreUFS {
-		ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
+		ic = ufsAPI.NewFleetPRPCClient(&prpc.Client{
 			C:       hc,
 			Host:    e.UnifiedFleetService,
 			Options: site.DefaultPRPCOptions,
 		})
-
-		for _, param := range dutParams {
+	}
+	for _, param := range dutParams {
+		if !c.ignoreUFS {
+			// Update the UFS database if enabled.
 			if len(param.DUT.GetMachines()) == 0 {
 				fmt.Printf("Failed to add DUT %s to UFS. It is not linked to any Asset(Machine).\n", param.DUT.GetName())
 				continue
@@ -286,28 +289,21 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 				// skip deployment
 				continue
 			}
-			if c.paris {
-				utils.ScheduleDeployTask(ctx, bc, e, param.DUT.GetName(), sessionTag)
-			} else {
-				c.deployDutToSwarming(ctx, tc, param.DUT)
-			}
 		}
-		if len(dutParams) > 1 {
-			fmt.Fprintf(a.GetOut(), "\nBatch tasks URL: %s\n\n", tc.SessionTasksURL())
-		}
-		return nil
-	}
-
-	// Run the deployment task
-	for _, param := range dutParams {
 		if c.paris {
 			utils.ScheduleDeployTask(ctx, bc, e, param.DUT.GetName(), sessionTag)
 		} else {
 			c.deployDutToSwarming(ctx, tc, param.DUT)
 		}
 	}
-	if c.paris {
-		utils.PrintTasksBatchLink(a.GetOut(), e.SwarmingService, sessionTag)
+	if len(dutParams) > 1 {
+		var link string
+		if c.paris {
+			link = utils.TasksBatchLink(e.SwarmingService, sessionTag)
+		} else {
+			link = tc.SessionTasksURL()
+		}
+		fmt.Fprintf(a.GetOut(), "\nBatch tasks URL: %s\n\n", link)
 	}
 	return nil
 }
