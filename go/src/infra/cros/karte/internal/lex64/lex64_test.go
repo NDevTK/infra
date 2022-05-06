@@ -156,10 +156,7 @@ func TestWeakPreservationOfComparisonOrder(t *testing.T) {
 		}
 		// output will be -1 if and only if a comparison was reversed.
 		output := cmpBytes(a, b) * strings.Compare(a1, b1)
-		if output == -1 {
-			return false
-		}
-		return true
+		return output >= 0
 	}
 	if err := quick.Check(tester, nil); err != nil {
 		t.Errorf("unexpected error: %s", err)
