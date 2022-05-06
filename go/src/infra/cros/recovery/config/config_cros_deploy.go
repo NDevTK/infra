@@ -88,6 +88,9 @@ func deployActions() map[string]*Action {
 			Docs: []string{
 				"Verify that FW on the DUT has dev keys.",
 			},
+			Conditions: []string{
+				"is_not_flex_board",
+			},
 			Dependencies: []string{
 				"Device is SSHable",
 			},
