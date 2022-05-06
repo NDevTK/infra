@@ -43,32 +43,40 @@ func TestHandleBuild(t *testing.T) {
 					Status:    bbv1.StatusCompleted,
 					CreatedTs: bbv1.FormatTimestamp(t),
 				}
-				r := &http.Request{Body: makeBBReq(buildExp, "bb-hostname")}
 
-				project, processed, err := bbPubSubHandlerImpl(ctx, r)
-				So(err, ShouldBeNil)
-				So(processed, ShouldBeTrue)
-				So(project, ShouldEqual, "buildproject")
-
-				So(len(skdr.Tasks().Payloads()), ShouldEqual, 1)
-				task := skdr.Tasks().Payloads()[0].(*taskspb.IngestTestResults)
-				So(task, ShouldResembleProto, &taskspb.IngestTestResults{
-					PartitionTime: timestamppb.New(t),
-					Build: &controlpb.BuildResult{
-						Host:         "bb-hostname",
-						Id:           87654321,
-						CreationTime: timestamppb.New(t),
-						Project:      "buildproject",
-					},
-				})
-
-				Convey(`Repeated processing does not lead to further ingestion tasks`, func() {
+				test := func() {
 					r := &http.Request{Body: makeBBReq(buildExp, "bb-hostname")}
 					project, processed, err := bbPubSubHandlerImpl(ctx, r)
 					So(err, ShouldBeNil)
 					So(processed, ShouldBeTrue)
 					So(project, ShouldEqual, "buildproject")
+
 					So(len(skdr.Tasks().Payloads()), ShouldEqual, 1)
+					task := skdr.Tasks().Payloads()[0].(*taskspb.IngestTestResults)
+					So(task, ShouldResembleProto, &taskspb.IngestTestResults{
+						PartitionTime: timestamppb.New(t),
+						Build: &controlpb.BuildResult{
+							Host:         "bb-hostname",
+							Id:           87654321,
+							CreationTime: timestamppb.New(t),
+							Project:      "buildproject",
+						},
+					})
+
+				}
+				Convey(`Standard CI Build`, func() {
+					test()
+
+					// Test repeated processing does not lead to further
+					// ingestion tasks.
+					test()
+				})
+				Convey(`Unusual CI Build`, func() {
+					// v8 project had some buildbucket-triggered builds
+					// with both the user_agent:cq and user_agent:recipe tags.
+					// These should be treated as CI builds.
+					buildExp.Tags = []string{"user_agent:cq", "user_agent:recipe"}
+					test()
 				})
 			})
 

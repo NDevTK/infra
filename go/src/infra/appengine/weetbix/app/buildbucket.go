@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"regexp"
+	"strings"
 
 	bbv1 "go.chromium.org/luci/common/api/buildbucket/buildbucket/v1"
 	"go.chromium.org/luci/common/errors"
@@ -21,8 +22,11 @@ import (
 )
 
 const (
-	// cqTag is the tag appended to builds started by LUCI CV.
-	cqTag = "user_agent:cq"
+	// userAgentTagKey is the key of the user agent tag.
+	userAgentTagKey = "user_agent"
+	// userAgentCQ is the value of the user agent tag, for builds started
+	// by LUCI CV.
+	userAgentCQ = "cq"
 )
 
 var (
@@ -115,12 +119,8 @@ func processBBMessage(ctx context.Context, message *buildBucketMessage) (process
 		return false, nil
 	}
 
-	isPresubmit := false
-	for _, tag := range message.Build.Tags {
-		if tag == cqTag {
-			isPresubmit = true
-		}
-	}
+	userAgents := extractTagValues(message.Build.Tags, userAgentTagKey)
+	isPresubmit := len(userAgents) == 1 && userAgents[0] == userAgentCQ
 
 	project := message.Build.Project
 	id := buildID(message.Hostname, message.Build.Id)
@@ -135,4 +135,19 @@ func processBBMessage(ctx context.Context, message *buildBucketMessage) (process
 		return false, errors.Annotate(err, "joining build result").Err()
 	}
 	return true, nil
+}
+
+func extractTagValues(tags []string, key string) []string {
+	var values []string
+	for _, tag := range tags {
+		tagParts := strings.SplitN(tag, ":", 2)
+		if len(tagParts) < 2 {
+			// Invalid tag.
+			continue
+		}
+		if tagParts[0] == key {
+			values = append(values, tagParts[1])
+		}
+	}
+	return values
 }
