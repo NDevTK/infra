@@ -16,6 +16,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
+	"go.chromium.org/luci/common/tsmon/field"
+	"go.chromium.org/luci/common/tsmon/metric"
 	"google.golang.org/api/option"
 
 	"infra/cros/cmd/caching-backend/nginx-access-log-metrics/internal/bquploader"
@@ -82,6 +84,7 @@ func innerMain() error {
 			if r := parseLine(tailer.Text()); r != nil {
 				r.hostname = hostname
 				uploader.QueueRecord(r)
+				reportToMonarch(r)
 			}
 		}
 	}()
@@ -215,4 +218,29 @@ func (i *record) Save() (row map[string]bigquery.Value, insertID string, err err
 	insertID = fmt.Sprintf("%v", row)
 
 	return row, insertID, nil
+}
+
+// recordMetric is a tsmon metric for the parsed log.
+var recordMetric = metric.NewCounter("chromeos/caching_backend/nginx/response_bytes_sent",
+	"response of caching backend",
+	nil,
+	field.String("hostname"),
+	field.String("http_method"),
+	field.String("rpc"),
+	field.Int("status"),
+	field.String("cache"),
+	field.Bool("full_download"),
+)
+
+// reportToMonarch reports the parsed log line data to Monarch.
+func reportToMonarch(i *record) {
+	// Extract the rpc part from the path (e.g. "/rpc/path/to/file").
+	rpc := "unknown"
+	if s := strings.SplitN(i.path, "/", 3); len(s) > 2 {
+		rpc = s[1]
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	recordMetric.Add(ctx, int64(i.bodyBytesSent), i.hostname, i.httpMethod, rpc, i.status, i.cacheStatus, i.expectedSize == i.bodyBytesSent)
 }
