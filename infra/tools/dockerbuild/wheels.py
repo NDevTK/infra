@@ -699,13 +699,12 @@ SPECS.update({
         SourceOrPrebuilt(
             'opencv_python',
             '4.5.3.56',
-            default=False,  # TODO(crbug/1323039): Re-enable
             build_deps=BuildDependencies(
                 remote=[
-                    'setuptools<45',
-                    'wheel',
-                    'scikit-build',
-                    'cmake',
+                    'setuptools==44.1.1',
+                    'wheel==0.37.1',
+                    'scikit-build==0.13.1',
+                    'cmake==3.22.4',
                 ],
                 local=[
                     _NUMPY_DEPENDENCY,
