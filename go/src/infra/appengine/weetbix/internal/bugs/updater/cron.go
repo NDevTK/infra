@@ -6,10 +6,12 @@ package updater
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/sync/parallel"
 	"go.chromium.org/luci/common/tsmon"
 	"go.chromium.org/luci/common/tsmon/field"
 	"go.chromium.org/luci/common/tsmon/metric"
@@ -61,6 +63,10 @@ func init() {
 	}, statusGauge, durationGauge)
 }
 
+// workerCount is the number of workers to use to update
+// analysis and bugs for different LUCI Projects concurrently.
+const workerCount = 8
+
 // UpdateAnalysisAndBugs updates BigQuery analysis, and then updates bugs
 // to reflect this analysis.
 // Simulate, if true, avoids any changes being applied to monorail and logs
@@ -75,15 +81,18 @@ func UpdateAnalysisAndBugs(ctx context.Context, monorailHost, gcpProject string,
 		return err
 	}
 
-	statusByProject := make(map[string]string)
+	statusByProject := &sync.Map{}
 	for project := range projectCfg {
 		// Until each project succeeds, report "failure".
-		statusByProject[project] = "failure"
+		statusByProject.Store(project, "failure")
 	}
 	defer func() {
-		for project, status := range statusByProject {
+		statusByProject.Range(func(key, value interface{}) bool {
+			project := key.(string)
+			status := value.(string)
 			statusGauge.Set(ctx, status, project)
-		}
+			return true // continue iteration
+		})
 	}()
 
 	mc, err := monorail.NewClient(ctx, monorailHost)
@@ -106,42 +115,46 @@ func UpdateAnalysisAndBugs(ctx context.Context, monorailHost, gcpProject string,
 		return errors.Annotate(err, "querying projects with dataset").Err()
 	}
 
-	var errs []error
-	// In future, the 10 minute GAE request limit may mean we need to
-	// parallelise these tasks or fan them out as separate tasks.
-	for project := range projectCfg {
-		start := time.Now()
-		if _, ok := projectsWithDataset[project]; !ok {
-			// Dataset not provisioned for project.
-			continue
-		}
+	taskGenerator := func(c chan<- func() error) {
+		for project := range projectCfg {
+			if _, ok := projectsWithDataset[project]; !ok {
+				// Dataset not provisioned for project.
+				continue
+			}
 
-		opts := updateOptions{
-			appID:              gcpProject,
-			project:            project,
-			analysisClient:     ac,
-			monorailClient:     mc,
-			simulateBugUpdates: simulate,
-			enableBugUpdates:   enable,
-			maxBugsFiledPerRun: 1,
+			opts := updateOptions{
+				appID:              gcpProject,
+				project:            project,
+				analysisClient:     ac,
+				monorailClient:     mc,
+				simulateBugUpdates: simulate,
+				enableBugUpdates:   enable,
+				maxBugsFiledPerRun: 1,
+			}
+			c <- func() error {
+				// Isolate other projects from bug update errors
+				// in one project.
+				start := time.Now()
+				err := updateAnalysisAndBugsForProject(ctx, opts)
+				if err != nil {
+					err = errors.Annotate(err, "in project %v", project).Err()
+					logging.Errorf(ctx, "Updating analysis and bugs: %s", err)
+				} else {
+					statusByProject.Store(project, "success")
+				}
+				elapsed := time.Since(start)
+				durationGauge.Set(ctx, elapsed.Seconds(), project)
+
+				// Let the cron job succeed even if one of the projects
+				// is failing. Cron job should only fail if something
+				// catastrophic happens (e.g. such that metrics may
+				// fail to be reported).
+				return nil
+			}
 		}
-		// Isolate other projects from bug update errors
-		// in one project.
-		err := updateAnalysisAndBugsForProject(ctx, opts)
-		if err != nil {
-			err = errors.Annotate(err, "in project %v", project).Err()
-			logging.Errorf(ctx, "Updating analysis and bugs: %s", err)
-			errs = append(errs, err)
-		} else {
-			statusByProject[project] = "success"
-		}
-		elapsed := time.Since(start)
-		durationGauge.Set(ctx, elapsed.Seconds(), project)
 	}
-	if len(errs) > 0 {
-		return errors.NewMultiError(errs...)
-	}
-	return nil
+
+	return parallel.WorkPool(workerCount, taskGenerator)
 }
 
 type updateOptions struct {
