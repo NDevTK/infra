@@ -119,6 +119,7 @@ func UpdateAnalysisAndBugs(ctx context.Context, monorailHost, gcpProject string,
 		for project := range projectCfg {
 			if _, ok := projectsWithDataset[project]; !ok {
 				// Dataset not provisioned for project.
+				statusByProject.Store(project, "disabled")
 				continue
 			}
 
