@@ -1135,6 +1135,7 @@ func crosRepairActions() map[string]*Action {
 				"Try to recover AC detection through servod's ec control",
 			},
 			Conditions: []string{
+				"dut_servo_host_present",
 				"cros_is_battery_expected",
 			},
 			ExecExtraArgs: []string{
