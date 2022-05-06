@@ -47,7 +47,7 @@ func Encode(src []byte, padding bool) (string, error) {
 	if err := encoder.Close(); err != nil {
 		return "", err
 	}
-	return string(buf.Bytes()), nil
+	return buf.String(), nil
 }
 
 // Decode takes a lexicographic base64 string and converts it to an array of bytes.
