@@ -6,7 +6,7 @@
 
 This is derived from  servlet.py
 This base class provides handler methods that conveniently drive
-the process of parsing the request, checking base permissions,
+the process of parsing the request, checking base permisssion,
 gathering common page information, gathering page-specific information,
 and adding on-page debugging information (when appropriate).
 Subclasses can simply implement the page-specific logic.
@@ -16,7 +16,6 @@ Summary of page classes:
 """
 
 import gc
-from werkzeug.exceptions import HTTPException
 import os
 import httplib
 import logging
@@ -317,8 +316,7 @@ class FlaskServlet(object):
     """Do common processing dependent on having the user and project pbs."""
     with mr.profiler.Phase('basic processing'):
       self._CheckForMovedProject(mr, request)
-      # TODO: (crbug.com/monorail/10878)
-      # self.AssertBasePermission(mr)
+      self.AssertBasePermission(mr)
 
   # pylint: disable=unused-argument
   def _DoPageProcessing(self, mr, nonce):
@@ -722,6 +720,54 @@ class FlaskServlet(object):
       url += '?redir=1'
     logging.info('branding redirect to url %r', url)
     self.redirect(url, abort=True)
+
+  def AssertBasePermission(self, mr):
+    """Make sure that the logged in user has permission to view this page.
+
+    Subclasses should call super, then check additional permissions
+    and raise a PermissionException if the user is not authorized to
+    do something.
+
+    Args:
+      mr: commonly used info parsed from the request.
+
+    Raises:
+      PermissionException: If the user does not have permisssion to view
+        the current page.
+    """
+    servlet_helpers.AssertBasePermission(mr)
+
+  def CheckPerm(self, mr, perm, art=None, granted_perms=None):
+    """Return True if the user can use the requested permission."""
+    return servlet_helpers.CheckPerm(
+        mr, perm, art=art, granted_perms=granted_perms)
+
+  def MakePagePerms(self, mr, art, *perm_list, **kwargs):
+    """Make an EZTItem with a set of permissions needed in a given template.
+
+    Args:
+      mr: commonly used info parsed from the request.
+      art: a project artifact, such as an issue.
+      *perm_list: any number of permission names that are referenced
+          in the EZT template.
+      **kwargs: dictionary that may include 'granted_perms' list of permissions
+          granted to the current user specifically on the current page.
+
+    Returns:
+      An EZTItem with one attribute for each permission and the value
+      of each attribute being an ezt.boolean().  True if the user
+      is permitted to do that action on the given artifact, or
+      False if not.
+    """
+    granted_perms = kwargs.get('granted_perms')
+    page_perms = template_helpers.EZTItem()
+    for perm in perm_list:
+      setattr(
+          page_perms, perm,
+          ezt.boolean(
+              self.CheckPerm(mr, perm, art=art, granted_perms=granted_perms)))
+
+    return page_perms
 
   def redirect(self, url, abort=False):
     if abort:

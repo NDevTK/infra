@@ -377,12 +377,6 @@ class Servlet(webapp2.RequestHandler):
         self._missing_permissions_template.WriteResponse(
             self.response, page_data, content_type=self.content_type)
 
-  def SetCacheHeaders(self, response):
-    """Set headers to allow the response to be cached."""
-    headers = framework_helpers.StaticCacheHeaders()
-    for name, value in headers:
-      response.headers[name] = value
-
   def GetTemplate(self, _page_data):
     """Get the template to use for writing the http response.
 
