@@ -6,7 +6,6 @@ package app
 
 import (
 	"context"
-	"crypto/sha256"
 	"fmt"
 
 	"go.chromium.org/luci/common/errors"
@@ -224,11 +223,10 @@ func JoinPresubmitResult(ctx context.Context, presubmitResultByBuildID map[strin
 	return nil
 }
 
-// createTaskIfNeeded creates a test-result-ingestion task if all necessary
-// data for the ingestion is available. It also has a 64/256 chance to create a
-// test-verdict-ingestion task.
-// Returns true if the test-result-ingestion task is created.
-func createTasksIfNeeded(ctx context.Context, e *control.Entry) (itrTaskCreated bool) {
+// createTaskIfNeeded creates a test-result-ingestion task and a test-verdict
+// -ingestion task if all necessary data for the ingestion is available.
+// Returns true if the tasks are created.
+func createTasksIfNeeded(ctx context.Context, e *control.Entry) bool {
 	if e.BuildResult == nil || (e.IsPresubmit && e.PresubmitResult == nil) {
 		return false
 	}
@@ -253,17 +251,12 @@ func createTasksIfNeeded(ctx context.Context, e *control.Entry) (itrTaskCreated 
 	itrTask = proto.Clone(itrTask).(*taskspb.IngestTestResults)
 	resultingester.Schedule(ctx, itrTask)
 
-	// Only ingest 64/256 test verdicts to limit the amount the verdicts we ingest
-	// during development phase.
-	if sha256.Sum256([]byte(e.BuildID))[0] >= 64 {
-		return true
-	}
-
 	itvTask := &taskspb.IngestTestVerdicts{
 		PartitionTime: itrTask.PartitionTime,
 		Build:         itrTask.Build,
 		PresubmitRun:  itrTask.PresubmitRun,
 	}
 	testverdictingester.Schedule(ctx, itvTask)
+
 	return true
 }
