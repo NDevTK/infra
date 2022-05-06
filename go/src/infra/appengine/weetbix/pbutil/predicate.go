@@ -96,6 +96,21 @@ func ValidateVariantPredicate(p *pb.VariantPredicate) error {
 	}
 }
 
+// ValidateTestVerdictPredicate returns a non-nil error if p is determined to be
+// invalid.
+func ValidateTestVerdictPredicate(predicate *pb.TestVerdictPredicate) error {
+	if predicate == nil {
+		return Unspecified
+	}
+
+	if predicate.GetVariantPredicate() != nil {
+		if err := ValidateVariantPredicate(predicate.GetVariantPredicate()); err != nil {
+			return err
+		}
+	}
+	return ValidateEnum(int32(predicate.GetSubmittedFilter()), pb.SubmittedFilter_name)
+}
+
 // ValidateEnum returns a non-nil error if the value is not among valid values.
 func ValidateEnum(value int32, validValues map[int32]string) error {
 	if _, ok := validValues[value]; !ok {

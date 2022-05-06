@@ -6,14 +6,25 @@ package testverdicts
 
 import (
 	"context"
+	"text/template"
 	"time"
 
 	"cloud.google.com/go/spanner"
+	"google.golang.org/protobuf/types/known/durationpb"
 
+	"go.chromium.org/luci/common/clock"
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/server/span"
 
+	"infra/appengine/weetbix/internal/pagination"
 	spanutil "infra/appengine/weetbix/internal/span"
+	"infra/appengine/weetbix/pbutil"
 	pb "infra/appengine/weetbix/proto/v1"
+)
+
+const (
+	testVerdictTTL      = 90 * 24 * time.Hour
+	pageTokenTimeFormat = time.RFC3339Nano
 )
 
 // IngestedInvocation represents a row in the IngestedInvocations table.
@@ -123,6 +134,139 @@ func ReadTestVerdicts(ctx context.Context, keys spanner.KeySet, fn func(tv *Test
 		})
 }
 
+// parseReadTestHistoryPageToken parses the positions from the page token.
+func parseReadTestHistoryPageToken(pageToken string) (beforeTime time.Time, afterHash, afterInvID string, err error) {
+	tokens, err := pagination.ParseToken(pageToken)
+	if err != nil {
+		return time.Time{}, "", "", err
+	}
+
+	if len(tokens) != 3 {
+		return time.Time{}, "", "", pagination.InvalidToken(errors.Reason("expected 3 components, got %d", len(tokens)).Err())
+	}
+
+	beforeTimeStr, afterHash, afterInvID := tokens[0], tokens[1], tokens[2]
+	beforeTime, err = time.Parse(pageTokenTimeFormat, beforeTimeStr)
+	if err != nil {
+		return time.Time{}, "", "", pagination.InvalidToken(errors.Reason("invalid timestamp").Err())
+	}
+
+	return beforeTime, afterHash, afterInvID, nil
+}
+
+// ReadTestHistoryOptions specifies options for ReadTestHistory().
+type ReadTestHistoryOptions struct {
+	SubRealms        []string
+	VariantPredicate *pb.VariantPredicate
+	SubmittedFilter  pb.SubmittedFilter
+	TimeRange        *pb.TimeRange
+	PageSize         int
+	PageToken        string
+}
+
+// ReadTestHistory reads verdicts from the spanner database.
+func ReadTestHistory(ctx context.Context, project, testId string, opt ReadTestHistoryOptions) (verdicts []*pb.TestVerdict, nextPageToken string, err error) {
+	now := clock.Now(ctx)
+
+	afterTime := now.Add(-testVerdictTTL)
+	if opt.TimeRange.GetEarliest() != nil {
+		afterTime = opt.TimeRange.GetEarliest().AsTime()
+	}
+
+	beforeTime, afterHash, afterInvID := now, "", ""
+	if opt.TimeRange.GetLatest() != nil {
+		beforeTime = opt.TimeRange.GetLatest().AsTime()
+	}
+	if opt.PageToken != "" {
+		beforeTime, afterHash, afterInvID, err = parseReadTestHistoryPageToken(opt.PageToken)
+		if err != nil {
+			return nil, "", err
+		}
+	}
+
+	params := map[string]interface{}{
+		"project":   project,
+		"testId":    testId,
+		"subRealms": opt.SubRealms,
+		"afterTime": afterTime,
+
+		// If the filter is unspecified, this param will be ignored during the
+		// statement generation step.
+		"hasUnsubmittedChanges": opt.SubmittedFilter == pb.SubmittedFilter_ONLY_UNSUBMITTED,
+
+		// Control pagination.
+		"limit":             opt.PageSize,
+		"beforeTime":        beforeTime,
+		"afterVariantHash":  afterHash,
+		"afterInvocationID": afterInvID,
+
+		// Status enum variants.
+		"unexpected":          int(pb.TestVerdictStatus_UNEXPECTED),
+		"unexpectedlySkipped": int(pb.TestVerdictStatus_UNEXPECTEDLY_SKIPPED),
+		"flaky":               int(pb.TestVerdictStatus_FLAKY),
+		"exonerated":          int(pb.TestVerdictStatus_EXONERATED),
+		"expected":            int(pb.TestVerdictStatus_EXPECTED),
+	}
+
+	switch p := opt.VariantPredicate.GetPredicate().(type) {
+	case *pb.VariantPredicate_Equals:
+		params["variantHash"] = pbutil.VariantHash(p.Equals)
+	case *pb.VariantPredicate_Contains:
+		if len(p.Contains.Def) > 0 {
+			params["variantKVs"] = pbutil.VariantToStrings(p.Contains)
+		}
+	case nil:
+		// No filter.
+	default:
+		panic(errors.Reason("unexpected variant predicate %q", opt.VariantPredicate).Err())
+	}
+
+	stmt, err := spanutil.GenerateStatement(testHistoryQueryTmpl, map[string]interface{}{
+		"submittedFilterSpecified": opt.SubmittedFilter != pb.SubmittedFilter_SUBMITTED_FILTER_UNSPECIFIED,
+		"params":                   params,
+	})
+	if err != nil {
+		return nil, "", err
+	}
+	stmt.Params = params
+
+	var b spanutil.Buffer
+	verdicts = make([]*pb.TestVerdict, 0, opt.PageSize)
+	err = span.Query(ctx, stmt).Do(func(row *spanner.Row) error {
+		tv := &pb.TestVerdict{
+			TestId: testId,
+		}
+		var status int64
+		var passedAvgDurationUsec spanner.NullInt64
+		err := b.FromSpanner(
+			row,
+			&tv.InvocationId,
+			&tv.VariantHash,
+			&status,
+			&tv.PartitionTime,
+			&passedAvgDurationUsec,
+		)
+		if err != nil {
+			return err
+		}
+		tv.Status = pb.TestVerdictStatus(status)
+		if passedAvgDurationUsec.Valid {
+			tv.PassedAvgDuration = durationpb.New(time.Microsecond * time.Duration(passedAvgDurationUsec.Int64))
+		}
+		verdicts = append(verdicts, tv)
+		return nil
+	})
+	if err != nil {
+		return nil, "", err
+	}
+
+	if opt.PageSize != 0 && len(verdicts) == opt.PageSize {
+		lastTV := verdicts[len(verdicts)-1]
+		nextPageToken = pagination.Token(lastTV.PartitionTime.AsTime().Format(pageTokenTimeFormat), lastTV.VariantHash, lastTV.InvocationId)
+	}
+	return verdicts, nextPageToken, nil
+}
+
 // SaveUnverified saves the test verdict into the TestVerdicts table without
 // verifying it.
 // Must be called in spanner RW transactional context.
@@ -200,3 +344,57 @@ func (tvr *TestVariantRealm) SaveUnverified(ctx context.Context) {
 	}
 	span.BufferWrite(ctx, spanner.InsertOrUpdateMap("TestVariantRealms", spanutil.ToSpannerMap(row)))
 }
+
+var testHistoryQueryTmpl = template.Must(template.New("testHistorySQL").Parse(`
+	SELECT
+		IngestedInvocationId,
+		VariantHash,
+		CASE
+			WHEN IsExonerated THEN @exonerated
+			WHEN UnexpectedCount = 0 THEN @expected
+			WHEN SkippedCount = UnexpectedCount AND ExpectedCount = 0 THEN @unexpectedlySkipped
+			WHEN ExpectedCount = 0 THEN @unexpected
+			ELSE @flaky
+		END TvStatus,
+		PartitionTime,
+		PassedAvgDurationUsec
+	FROM TestVerdicts
+	WHERE
+		Project = @project
+		AND TestId = @testId
+		AND PartitionTime > @afterTime
+		{{if .params.subRealms}}
+			AND SubRealm IN UNNEST(@subRealms)
+		{{end}}
+		{{if .params.variantHash}}
+			AND VariantHash = @variantHash
+		{{end}}
+		{{if .params.variantKVs}}
+			AND VariantHash IN (
+				SELECT DISTINCT VariantHash
+				FROM TestVariantRealms
+				WHERE
+					Project = @project
+					AND TestId = @testId
+					{{if .params.subRealms}}
+						AND SubRealm IN UNNEST(@subRealms)
+					{{end}}
+					AND (SELECT LOGICAL_AND(kv IN UNNEST(Variant)) FROM UNNEST(@variantKVs) kv)
+			)
+		{{end}}
+		{{if .submittedFilterSpecified}}
+			AND HasUnsubmittedChanges = @hasUnsubmittedChanges
+		{{end}}
+		AND	(
+			PartitionTime < @beforeTime
+				OR (PartitionTime = @beforeTime AND VariantHash > @afterVariantHash)
+				OR (PartitionTime = @beforeTime AND VariantHash = @afterVariantHash AND IngestedInvocationId > @afterInvocationID)
+		)
+	ORDER BY
+		PartitionTime DESC,
+		VariantHash ASC,
+		IngestedInvocationId ASC
+	{{if .params.limit}}
+		LIMIT @limit
+	{{end}}
+`))

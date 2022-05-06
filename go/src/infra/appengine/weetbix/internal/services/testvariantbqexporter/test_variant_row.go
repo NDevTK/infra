@@ -5,7 +5,6 @@
 package testvariantbqexporter
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"net/url"
@@ -38,16 +37,6 @@ import (
 
 func testVariantName(realm, testID, variantHash string) string {
 	return fmt.Sprintf("realms/%s/tests/%s/variants/%s", realm, url.PathEscape(testID), variantHash)
-}
-
-// generateStatement generates a spanner statement from a text template.
-func generateStatement(tmpl *template.Template, input interface{}) (spanner.Statement, error) {
-	sql := &bytes.Buffer{}
-	err := tmpl.Execute(sql, input)
-	if err != nil {
-		return spanner.Statement{}, err
-	}
-	return spanner.NewStatement(sql.String()), nil
 }
 
 func (b *BQExporter) populateQueryParameters() (inputs, params map[string]interface{}, err error) {
@@ -399,7 +388,7 @@ func (b *BQExporter) query(ctx context.Context, f func(*bqpb.TestVariantRow) err
 	if err != nil {
 		return err
 	}
-	st, err := generateStatement(testVariantRowsTmpl, inputs)
+	st, err := spanutil.GenerateStatement(testVariantRowsTmpl, inputs)
 	if err != nil {
 		return err
 	}
