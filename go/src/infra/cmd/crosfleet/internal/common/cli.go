@@ -9,6 +9,7 @@ import (
 	"flag"
 	"fmt"
 	"infra/cmd/crosfleet/internal/site"
+	"io"
 	"os"
 	"time"
 
@@ -43,53 +44,64 @@ func WriteCrosfleetUIPromptStderr(args []string) {
 
 // CLIPrinter handles all command line output.
 type CLIPrinter struct {
-	json bool
+	json   bool
+	silent bool
 }
 
 // Register parses the -json flag.
 func (p *CLIPrinter) Register(fl *flag.FlagSet) {
 	fl.BoolVar(&p.json, "json", false, "Format output as JSON.")
-}
-
-// RegisterFromSubcmdArgs parses the -json flag directly from a list of args
-// intended for a subcommand. This function is used to read the -json flag at
-// the outer command level, e.g. dutcmd and runcmd.
-func (p *CLIPrinter) RegisterFromSubcmdArgs(args []string) {
-	for _, arg := range args {
-		if arg == "-json" {
-			p.json = true
-			break
-		}
-	}
+	fl.BoolVar(&p.silent, "silent", false, "Don't print any output from command.")
 }
 
 // WriteTextStdout writes the given human-readable output string (followed by
 // a line break) to Stdout, as long as the CLI command was NOT passed the -json
 // flag. If -json WAS passed, the function does nothing.
 func (p *CLIPrinter) WriteTextStdout(output string, outputArgs ...interface{}) {
-	if p.json {
+	if p.json || p.silent {
 		return
 	}
-	fmt.Fprintf(os.Stdout, output+"\n", outputArgs...)
+	fmt.Fprintf(p.GetOut(), output+"\n", outputArgs...)
 }
 
 // WriteTextStderr writes the given human-readable output string (followed by
 // a line break) to Stderr, as long as the CLI command was NOT passed the -json
 // flag. If -json WAS passed, the function does nothing.
 func (p *CLIPrinter) WriteTextStderr(output string, outputArgs ...interface{}) {
-	if p.json {
+	if p.json || p.silent {
 		return
 	}
-	fmt.Fprintf(os.Stderr, output+"\n", outputArgs...)
+	fmt.Fprintf(p.GetErr(), output+"\n", outputArgs...)
 }
 
 // WriteJSONStdout writes the given proto message as JSON (followed by a line
 // break) to Stdout, as long as the CLI command WAS passed the -json flag. If
 // -json was NOT passed, the function does nothing.
 func (p *CLIPrinter) WriteJSONStdout(output proto.Message) {
-	if p.json {
-		fmt.Fprintf(os.Stdout, "%s\n", protoJSON(output))
+	if p.silent {
+		return
 	}
+	if p.json {
+		fmt.Fprintf(p.GetOut(), "%s\n", protoJSON(output))
+	}
+}
+
+// GetErr exposes the Stderr writer used by the CLI printer, returning nil if
+// the -silent flag was passed.
+func (p *CLIPrinter) GetErr() io.Writer {
+	if p.silent {
+		return nil
+	}
+	return os.Stderr
+}
+
+// GetOut exposes the Stdout writer used by the CLI printer, returning nil if
+// the -silent flag was passed.
+func (p *CLIPrinter) GetOut() io.Writer {
+	if p.silent {
+		return nil
+	}
+	return os.Stdout
 }
 
 // protoJSON returns the given proto message as pretty-printed JSON.
