@@ -337,6 +337,44 @@ class FlaskServlet(object):
 
     return page_data
 
+  def _DoFormProcessing(self, request, mr):
+    """Do user lookups and handle form data."""
+    self._DoCommonRequestProcessing(request, mr)
+
+    if self.CHECK_SECURITY_TOKEN:
+      try:
+        xsrf.ValidateToken(
+            request.values.get('token'), mr.auth.user_id, request.path)
+      except xsrf.TokenIncorrect as err:
+        if self.ALLOW_XHR:
+          xsrf.ValidateToken(
+              request.values.get('token'), mr.auth.user_id, 'xhr')
+        else:
+          raise err
+
+    redirect_url = self.ProcessFormData(mr, request.values)
+
+    # Most forms redirect the user to a new URL on success.  If no
+    # redirect_url was returned, the form handler must have already
+    # sent a response.  E.g., bounced the user back to the form with
+    # invalid form fields highlighted.
+    if redirect_url:
+      self.redirect(redirect_url, abort=True)
+    else:
+      assert self.response.response
+
+  def ProcessFormData(self, mr, post_data):
+    """Handle form data and redirect appropriately.
+
+    Args:
+      mr: commonly used info parsed from the request.
+      post_data: HTML form data from the request.
+
+    Returns:
+      String URL to redirect the user to, or None if response was already sent.
+    """
+    raise servlet_helpers.MethodNotSupportedError()
+
   # pylint: disable=unused-argument
   def GatherPageData(self, mr):
     """Return a dict of page-specific ezt data."""
