@@ -34,6 +34,10 @@ func servoRepairPlan() *Plan {
 			"servo_fw_need_update",
 			"Set state:SERVO_HOST_ISSUE",
 			"servo_host_servod_start",
+			"Set state:SERVOD_ISSUE",
+			"Verify that servod started and respond to dut-control",
+			"Set state:SERVO_HOST_ISSUE",
+			"Read servo serial by servod harness",
 			"Set state:DUT_NOT_CONNECTED",
 			"servo_dut_detected",
 			"Set state:COLD_RESET_PIN_ISSUE",
@@ -47,10 +51,6 @@ func servoRepairPlan() *Plan {
 			"dut_controller_missing_fault_off",
 			"Set state:TOPOLOGY_ISSUE",
 			"servo_topology",
-			"Set state:SERVO_HOST_ISSUE",
-			"servod_get_serialname",
-			"Set state:SERVOD_ISSUE",
-			"servo_servod_echo_host",
 			"Set state:SERVOD_PROXY_ISSUE",
 			"Initialize DUT part for servo",
 			"Set state:CR50_CONSOLE_MISSING",
@@ -317,7 +317,7 @@ func servoRepairPlan() *Plan {
 					"servo_fw_update",
 				},
 			},
-			"servod_get_serialname": {
+			"Read servo serial by servod harness": {
 				Docs:     []string{"run command from xmlrpc"},
 				ExecName: "servod_echo",
 				RecoveryActions: []string{
@@ -598,7 +598,7 @@ func servoRepairPlan() *Plan {
 					"dut_has_cros_ec",
 				},
 				Dependencies: []string{
-					"servo_servod_echo_host",
+					"Read servo serial by servod harness",
 				},
 				ExecName: "servo_check_servod_control",
 				ExecExtraArgs: []string{
@@ -627,7 +627,7 @@ func servoRepairPlan() *Plan {
 					"Verify if DUT has ChromeOS firmware for EC",
 				},
 				Dependencies: []string{
-					"servo_servod_echo_host",
+					"Read servo serial by servod harness",
 				},
 				ExecExtraArgs: []string{
 					"command:supports_cros_ec_communication",
@@ -893,8 +893,9 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "servo_check_servod_control",
 			},
-			"servo_servod_echo_host": {
+			"Verify that servod started and respond to dut-control": {
 				Docs:        []string{"Uses a servod control to check whether the servod daemon is responsive."},
+				ExecName:    "servo_servod_echo_host",
 				ExecTimeout: &durationpb.Duration{Seconds: 30},
 				RecoveryActions: []string{
 					"servo_host_servod_stop",
