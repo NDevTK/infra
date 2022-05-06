@@ -78,7 +78,7 @@ var DefaultAuthOptions = auth.Options{
 }
 
 // VersionNumber is the service version number for the crosfleet tool.
-const VersionNumber = 3
+const VersionNumber = 4
 
 // DefaultPRPCOptions is used for PRPC clients.  If it is nil, the
 // default value is used.  See prpc.Options for details.

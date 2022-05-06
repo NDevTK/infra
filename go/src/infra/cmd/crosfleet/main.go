@@ -44,6 +44,13 @@ Full documentation http://go/crosfleet-cli`,
 	},
 }
 
+func updateThenRun() int {
+	// Try to update crosfleet, but don't block users from running their
+	// commands if the update fails for some transient reason.
+	_ = subcommands.Run(application, []string{"update", "-silent"})
+	return subcommands.Run(application, nil)
+}
+
 func main() {
-	os.Exit(subcommands.Run(application, nil))
+	os.Exit(updateThenRun())
 }
