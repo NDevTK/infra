@@ -417,6 +417,9 @@ func crosRepairActions() map[string]*Action {
 				"recovery action if the GSC tool is not functional on ",
 				"the DUT.",
 			},
+			Conditions: []string{
+				"is_not_flex_board",
+			},
 			RecoveryActions: []string{
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Quick provision OS",
