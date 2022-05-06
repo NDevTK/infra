@@ -326,7 +326,8 @@ export class MrApp extends connectStore(LitElement) {
     const username = email.replace(GOOGLE_EMAIL_SUFFIX, '');
 
     // Context: b/229758140
-    window.fetch(`https://buganizer.corp.google.com/action/yes?monorail=yes&username=${username}`);
+    window.fetch(`https://buganizer.corp.google.com/action/yes?monorail=yes&username=${username}`,
+      {mode: 'no-cors'});
   }
 
   /**
