@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c8f6452a_065676ca",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2022-05-06T00:55:36Z",
+      "side": 1,
+      "message": "skip cros_gsctool for flex boards since they dont have cr50",
+      "revId": "aa96fa19d76cd1b0b75270eb19c34d9c13510b29",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
