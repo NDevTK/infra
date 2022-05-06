@@ -1,14 +1,46 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/indent */
 // Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-import { LitElement, html, customElement, property, css, state, TemplateResult } from 'lit-element';
-import { styleMap } from 'lit-html/directives/style-map';
-import { DateTime } from 'luxon';
 import '@material/mwc-button';
 import '@material/mwc-icon';
-import "@material/mwc-list/mwc-list-item";
+import '@material/mwc-list/mwc-list-item';
 import '@material/mwc-select';
+
+import {
+    css,
+    customElement,
+    html,
+    LitElement,
+    property,
+    state,
+    TemplateResult
+} from 'lit-element';
+import { styleMap } from 'lit-html/directives/style-map';
+import { DateTime } from 'luxon';
+
+import { getFailures } from '../services/failures';
+import {
+    ClusterFailure,
+    countAndSortFailures,
+    defaultFailureFilter,
+    defaultImpactFilter,
+    FailureFilter,
+    FailureFilters,
+    FailureGroup,
+    VariantGroup,
+    groupAndCountFailures,
+    ImpactFilter,
+    ImpactFilters,
+    MetricName,
+    sortFailureGroups
+} from '../tools/failures_tools';
+import {
+    clLink,
+    clName,
+    failureLink
+} from '../tools/urlHandling/links';
 
 // Indent of each level of grouping in the table in pixels.
 const levelIndent = 10;
@@ -17,13 +49,13 @@ const levelIndent = 10;
 @customElement('failure-table')
 export class FailureTable extends LitElement {
     @property()
-    project: string = '';
+    project = '';
 
     @property()
-    clusterAlgorithm: string = '';
+    clusterAlgorithm = '';
 
     @property()
-    clusterID: string = '';
+    clusterID = '';
 
     @state()
     failures: ClusterFailure[] | undefined;
@@ -32,85 +64,42 @@ export class FailureTable extends LitElement {
     groups: FailureGroup[] = [];
 
     @state()
-    variants: FailureVariant[] = [];
+    variants: VariantGroup[] = [];
 
     @state()
-    failureFilter: FailureFilter = failureFilters[0];
+    failureFilter: FailureFilter = defaultFailureFilter;
 
     @state()
-    impactFilter: ImpactFilter = impactFilters[1];
+    impactFilter: ImpactFilter = defaultImpactFilter;
 
     @property()
     sortMetric: MetricName = 'latestFailureTime';
 
     @property({ type: Boolean })
-    ascending: boolean = false;
+    ascending = false;
 
     connectedCallback() {
-        super.connectedCallback()
+        super.connectedCallback();
 
-        fetch(`/api/projects/${encodeURIComponent(this.project)}/clusters/${encodeURIComponent(this.clusterAlgorithm)}/${encodeURIComponent(this.clusterID)}/failures`)
-            .then(r => r.json())
+        getFailures(this.project, this.clusterAlgorithm, this.clusterID)
             .then((failures: ClusterFailure[]) => {
-                this.failures = failures
-                this.countDistictVariantValues();
+                this.failures = failures;
                 this.groupCountAndSortFailures();
             });
     }
 
-    countDistictVariantValues() {
-        if (!this.failures) {
-            return;
-        }
-        this.variants = [];
-        this.failures.forEach(f => {
-            f.variant.forEach(v => {
-                if (!v.key) {
-                    return;
-                }
-                const variant = this.variants.filter(e => e.key === v.key)?.[0];
-                if (!variant) {
-                    this.variants.push({ key: v.key, values: [v.value || ''], isSelected: false });
-                } else {
-                    if (variant.values.indexOf(v.value || '') === -1) {
-                        variant.values.push(v.value || '');
-                    }
-                }
-            });
-        });
-    }
-
     groupCountAndSortFailures() {
-        if (this.failures) {
-            let failures = this.failures;
-            if (this.failureFilter == 'Presubmit Failures') {
-                failures = failures.filter(f => f.presubmitRunId);
-            } else if (this.failureFilter == 'Postsubmit Failures') {
-                failures = failures.filter(f => !f.presubmitRunId);
-            }
-            this.groups = groupFailures(failures, f => {
-                const variantValues = this.variants.filter(v => v.isSelected)
-                    .map(v => f.variant.filter(fv => fv.key === v.key)?.[0]?.value || '');
-                return [...variantValues, f.testId || ''];
-            });
+        if(this.failures) {
+            this.groups = groupAndCountFailures(this.failures, this.variants, this.failureFilter);
         }
-        this.countAndSortFailures();
-    }
-
-    countAndSortFailures() {
-        this.groups.forEach(group => {
-            treeDistinctValues(group, failureIdsExtractor(), (g, values) => g.failures = values.size);
-            treeDistinctValues(group, rejectedTestRunIdsExtractor(this.impactFilter), (g, values) => g.testRunFailures = values.size);
-            treeDistinctValues(group, rejectedIngestedInvocationIdsExtractor(this.impactFilter), (g, values) => g.invocationFailures = values.size);
-            treeDistinctValues(group, rejectedPresubmitRunIdsExtractor(this.impactFilter), (g, values) => g.presubmitRejects = values.size);
-        });
+        this.groups = countAndSortFailures(this.groups, this.impactFilter);
         this.sortFailures();
     }
 
     sortFailures() {
-        sortFailureGroups(this.groups, this.sortMetric, this.ascending);
+        this.groups = sortFailureGroups(this.groups, this.sortMetric, this.ascending);
         this.requestUpdate();
-    }
+    };
 
     toggleSort(metric: MetricName) {
         if (metric === this.sortMetric) {
@@ -126,20 +115,20 @@ export class FailureTable extends LitElement {
         const item = this.shadowRoot!.querySelector('#impact-filter [selected]');
         if (item) {
             const selected = item.getAttribute('value');
-            this.impactFilter = impactFilters.filter(f => f.name == selected)?.[0] || impactFilters[1];
+            this.impactFilter = ImpactFilters.filter(filter => filter.name == selected)?.[0] || ImpactFilters[1];
         }
-        this.countAndSortFailures();
+        this.groups = countAndSortFailures(this.groups, this.impactFilter);
     }
 
     onFailureFilterChanged() {
         const item = this.shadowRoot!.querySelector('#failure-filter [selected]');
         if (item) {
-            this.failureFilter = (item.getAttribute('value') as FailureFilter) || failureFilters[0];
+            this.failureFilter = (item.getAttribute('value') as FailureFilter) || FailureFilters[0];
         }
         this.groupCountAndSortFailures();
     }
 
-    toggleVariant(variant: FailureVariant) {
+    toggleVariant(variant: VariantGroup) {
         const index = this.variants.indexOf(variant);
         this.variants.splice(index, 1);
         variant.isSelected = !variant.isSelected;
@@ -160,69 +149,55 @@ export class FailureTable extends LitElement {
         }
         const ungroupedVariants = (failure: ClusterFailure) => {
             return unselectedVariants.map(key => failure.variant.filter(v => v.key == key)?.[0]).filter(v => v);
-        }
-        const failureLink = (failure: ClusterFailure) => {
-            const query = `ID:${failure.testId} `
-            if (failure.ingestedInvocationId?.startsWith('build-')) {
-                return `https://ci.chromium.org/ui/b/${failure.ingestedInvocationId.replace('build-', '')}/test-results?q=${encodeURIComponent(query)}`;
-            }
-            return `https://ci.chromium.org/ui/inv/${failure.ingestedInvocationId}/test-results?q=${encodeURIComponent(query)}`;
-        }
-        const clLink = (cl: Changelist) => {
-            return `https://${cl.host}/c/${cl.change}/${cl.patchset}`;
-        }
-        const clName = (cl: Changelist) => {
-            const host = cl.host.replace("-review.googlesource.com", "")
-            return `${host}/${cl.change}/${cl.patchset}`;
-        }
+        };
         const indentStyle = (level: number) => {
             return styleMap({ paddingLeft: (levelIndent * level) + 'px' });
-        }
+        };
         const groupRow = (group: FailureGroup): TemplateResult => {
             return html`
             <tr>
                 ${group.failure ?
-                    html`<td style=${indentStyle(group.level)}>
+        html`<td style=${indentStyle(group.level)}>
                         <a href=${failureLink(group.failure)} target="_blank">${group.failure.ingestedInvocationId}</a>
                         ${group.failure.presubmitRunCl ? html`(<a href=${clLink(group.failure.presubmitRunCl)}>${clName(group.failure.presubmitRunCl)}</a>)` : html``}
                         <span class="variant-info">${ungroupedVariants(group.failure).map(v => `${v.key}: ${v.value}`).join(', ')}</span>
                     </td>` :
-                    html`<td class="group" style=${indentStyle(group.level)} @click=${() => this.toggleExpand(group)}>
+        html`<td class="group" style=${indentStyle(group.level)} @click=${() => this.toggleExpand(group)}>
                         <mwc-icon>${group.isExpanded ? 'keyboard_arrow_down' : 'keyboard_arrow_right'}</mwc-icon>
                         ${group.name || 'none'}
                     </td>`}
                 <td class="number">
                     ${group.failure ?
-                    (group.failure.presubmitRunId ?
-                        html`<a class="presubmit-link" href="https://luci-change-verifier.appspot.com/ui/run/${group.failure.presubmitRunId.id}" target="_blank">${group.presubmitRejects}</a>` :
-                        '-')
-                    : group.presubmitRejects}
+        (group.failure.presubmitRunId ?
+            html`<a class="presubmit-link" href="https://luci-change-verifier.appspot.com/ui/run/${group.failure.presubmitRunId.id}" target="_blank">${group.presubmitRejects}</a>` :
+            '-')
+        : group.presubmitRejects}
                 </td>
                 <td class="number">${group.invocationFailures}</td>
                 <td class="number">${group.testRunFailures}</td>
                 <td class="number">${group.failures}</td>
-                <td>${group.latestFailureTime.toRelative()}</td>
+                <td>${DateTime.fromISO(group.latestFailureTime).toRelative()}</td>
             </tr>
-            ${group.isExpanded ? group.children.map(child => groupRow(child)) : null}`
-        }
-        const groupByButton = (variant: FailureVariant) => {
+            ${group.isExpanded ? group.children.map(child => groupRow(child)) : null}`;
+        };
+        const groupByButton = (variant: VariantGroup) => {
             return html`
                 <mwc-button
                     label=${`${variant.key} (${variant.values.length})`}
                     ?unelevated=${variant.isSelected}
                     ?outlined=${!variant.isSelected}
                     @click=${() => this.toggleVariant(variant)}></mwc-button>`;
-        }
+        };
         return html`
             <div class="controls">
                 <div class="select-offset">
                     <mwc-select id="failure-filter" outlined label="Failure Type" @change=${() => this.onFailureFilterChanged()}>
-                        ${failureFilters.map((filter) => html`<mwc-list-item ?selected=${filter == this.failureFilter} value="${filter}">${filter}</mwc-list-item>`)}
+                        ${FailureFilters.map((filter) => html`<mwc-list-item ?selected=${filter == this.failureFilter} value="${filter}">${filter}</mwc-list-item>`)}
                     </mwc-select>
                 </div>
                 <div class="select-offset">
                     <mwc-select id="impact-filter" outlined label="Impact" @change=${() => this.onImpactFilterChanged()}>
-                        ${impactFilters.map((filter) => html`<mwc-list-item ?selected=${filter == this.impactFilter} value="${filter.name}">${filter.name}</mwc-list-item>`)}
+                        ${ImpactFilters.map((filter) => html`<mwc-list-item ?selected=${filter == this.impactFilter} value="${filter.name}">${filter.name}</mwc-list-item>`)}
                     </mwc-select>
                 </div>
                 <div>
@@ -319,355 +294,4 @@ export class FailureTable extends LitElement {
             font-size: var(--font-size-small);
         }
     `];
-}
-
-// ImpactFilter represents what kind of impact should be counted or ignored in
-// calculating impact for failures.
-export interface ImpactFilter {
-    name: string;
-    ignoreWeetbixExoneration: boolean;
-    ignoreAllExoneration: boolean;
-    ignoreIngestedInvocationBlocked: boolean;
-    ignoreTestRunBlocked: boolean;
-}
-export const impactFilters: ImpactFilter[] = [
-    {
-        name: 'Actual Impact',
-        ignoreWeetbixExoneration: false,
-        ignoreAllExoneration: false,
-        ignoreIngestedInvocationBlocked: false,
-        ignoreTestRunBlocked: false,
-    }, {
-        name: 'Without Weetbix Exoneration',
-        ignoreWeetbixExoneration: true,
-        ignoreAllExoneration: false,
-        ignoreIngestedInvocationBlocked: false,
-        ignoreTestRunBlocked: false,
-    }, {
-        name: 'Without All Exoneration',
-        ignoreWeetbixExoneration: true,
-        ignoreAllExoneration: true,
-        ignoreIngestedInvocationBlocked: false,
-        ignoreTestRunBlocked: false,
-    }, {
-        name: 'Without Retrying Test Runs',
-        ignoreWeetbixExoneration: true,
-        ignoreAllExoneration: true,
-        ignoreIngestedInvocationBlocked: true,
-        ignoreTestRunBlocked: false,
-    }, {
-        name: 'Without Any Retries',
-        ignoreWeetbixExoneration: true,
-        ignoreAllExoneration: true,
-        ignoreIngestedInvocationBlocked: true,
-        ignoreTestRunBlocked: true,
-    }
-];
-
-const failureFilters = ['All Failures', 'Presubmit Failures', 'Postsubmit Failures'] as const;
-type FailureFilter = typeof failureFilters[number];
-
-// group a number of failures into a tree of failure groups.
-// grouper is a function that returns a list of keys, one corresponding to each level of the grouping tree.
-// impactFilter controls how metric counts are aggregated from failures into parent groups (see treeCounts and rejected... functions).
-const groupFailures = (failures: ClusterFailure[], grouper: (f: ClusterFailure) => string[]): FailureGroup[] => {
-    const topGroups: FailureGroup[] = [];
-    failures.forEach(f => {
-        const keys = grouper(f);
-        let groups = topGroups;
-        let failureTime = DateTime.fromISO(f.partitionTime || '');
-        let level = 0;
-        for (const key of keys) {
-            const group = getOrCreateGroup(groups, key, failureTime);
-            group.level = level;
-            level += 1;
-            groups = group.children;
-        }
-        const failureGroup = newGroup('', failureTime);
-        failureGroup.failure = f;
-        failureGroup.level = level;
-        groups.push(failureGroup);
-    });
-    return topGroups;
-}
-
-// Create a new group.
-const newGroup = (name: string, failureTime: DateTime): FailureGroup => {
-    return {
-        name: name,
-        failures: 0,
-        invocationFailures: 0,
-        testRunFailures: 0,
-        presubmitRejects: 0,
-        children: [],
-        isExpanded: false,
-        latestFailureTime: failureTime,
-        level: 0
-    };
-}
-
-// Find a group by name in the given list of groups, create a new one and insert it if it is not found.
-// failureTime is only used when creating a new group.
-const getOrCreateGroup = (groups: FailureGroup[], name: string, failureTime: DateTime): FailureGroup => {
-    let group = groups.filter(g => g.name == name)?.[0];
-    if (group) {
-        return group;
-    }
-    group = newGroup(name, failureTime);
-    groups.push(group);
-    return group;
-}
-
-// Returns the distinct values returned by featureExtractor for all children of the group.
-// If featureExtractor returns undefined, the failure will be ignored.
-// The distinct values for each group in the tree are also reported to `visitor` as the tree is traversed.
-// A typical `visitor` function will store the count of distinct values in a property of the group.
-const treeDistinctValues = (group: FailureGroup,
-    featureExtractor: FeatureExtractor,
-    visitor: (group: FailureGroup, distinctValues: Set<string>) => void): Set<string> => {
-    const values: Set<string> = new Set();
-    if (group.failure) {
-        for (const value of featureExtractor(group.failure)) {
-            values.add(value);
-        }
-    } else {
-        for (const child of group.children) {
-            for (let value of treeDistinctValues(child, featureExtractor, visitor)) {
-                values.add(value);
-            }
-        }
-    }
-    visitor(group, values);
-    return values;
-}
-
-// A FeatureExtractor returns a string representing some feature of a ClusterFailure.
-// Returns undefined if there is no such feature for this failure.
-type FeatureExtractor = (failure: ClusterFailure) => Set<string>;
-
-// failureIdExtractor returns an extractor that returns a unique failure id for each failure.
-// As failures don't actually have ids, it just returns an incrementing integer.
-const failureIdsExtractor = (): FeatureExtractor => {
-    let unique = 0;
-    return f => {
-        const values: Set<string> = new Set();
-        for (let i = 0; i < f.count; i++) {
-            unique += 1;
-            values.add('' + unique);
-        }
-        return values;
-    }
-}
-
-// Returns an extractor that returns the id of the test run that was rejected by this failure, if any.
-// The impact filter is taken into account in determining if the run was rejected by this failure.
-const rejectedTestRunIdsExtractor = (impactFilter: ImpactFilter): FeatureExtractor => {
-    return f => {
-        const values: Set<string> = new Set();
-        if (!impactFilter.ignoreTestRunBlocked && !f.isTestRunBlocked) {
-            return values;
-        }
-        for (const testRunId of f.testRunIds) {
-            if (testRunId) {
-                values.add(testRunId);
-            }
-        }
-        return values;
-    }
-}
-
-// Returns an extractor that returns the id of the ingested invocation that was rejected by this failure, if any.
-// The impact filter is taken into account in determining if the invocation was rejected by this failure.
-const rejectedIngestedInvocationIdsExtractor = (impactFilter: ImpactFilter): FeatureExtractor => {
-    return f => {
-        const values: Set<string> = new Set();
-        if (isExoneratedByOccuranceElsewhere(f.exonerationStatus) &&
-                !(impactFilter.ignoreWeetbixExoneration || impactFilter.ignoreAllExoneration)) {
-            return values;
-        }
-        if ((f.exonerationStatus != 'NOT_EXONERATED' && !isExoneratedByOccuranceElsewhere(f.exonerationStatus)) &&
-                !impactFilter.ignoreAllExoneration) {
-            return values;
-        }
-        if (!f.isIngestedInvocationBlocked && !impactFilter.ignoreIngestedInvocationBlocked) {
-            return values;
-        }
-        if (!impactFilter.ignoreTestRunBlocked && !f.isTestRunBlocked) {
-            return values;
-        }
-        if (f.ingestedInvocationId) {
-            values.add(f.ingestedInvocationId);
-        }
-        return values;
-    };
-};
-
-// Returns an extractor that returns the identity of the CL that was rejected by this failure, if any.
-// The impact filter is taken into account in determining if the CL was rejected by this failure.
-const rejectedPresubmitRunIdsExtractor = (impactFilter: ImpactFilter): FeatureExtractor => {
-    return f => {
-        const values: Set<string> = new Set();
-        if (isExoneratedByOccuranceElsewhere(f.exonerationStatus) &&
-                !(impactFilter.ignoreWeetbixExoneration || impactFilter.ignoreAllExoneration)) {
-            return values;
-        }
-        if ((f.exonerationStatus != 'NOT_EXONERATED' && !isExoneratedByOccuranceElsewhere(f.exonerationStatus)) &&
-                !impactFilter.ignoreAllExoneration) {
-            return values;
-        }
-        if (!f.isIngestedInvocationBlocked && !impactFilter.ignoreIngestedInvocationBlocked) {
-            return values;
-        }
-        if (!impactFilter.ignoreTestRunBlocked && !f.isTestRunBlocked) {
-            return values;
-        }
-        if (f.presubmitRunCl && f.presubmitRunOwner == 'user') {
-            values.add(f.presubmitRunCl.host + '/' + f.presubmitRunCl.change.toFixed(0));
-        }
-        return values;
-    };
-};
-
-// Returns whether the failure was exonerated because it occurs on other
-// CLs or on mainline. These are exoneration types that appear only in CQ.
-const isExoneratedByOccuranceElsewhere = (status: ExonerationStatus | null): boolean => {
-    return status == 'WEETBIX' || // Deprecated. Can be removed from June 2022.
-            status == 'OCCURS_ON_OTHER_CLS' ||
-            status == 'OCCURS_ON_MAINLINE';
-};
-
-// Sorts child failure groups at each node of the tree by the given metric.
-const sortFailureGroups = (groups: FailureGroup[], metric: MetricName, ascending: boolean) => {
-    const getMetric = (group: FailureGroup): number => {
-        switch (metric) {
-            case 'failures':
-                return group.failures;
-            case 'presubmitRejects':
-                return group.presubmitRejects;
-            case 'invocationFailures':
-                return group.invocationFailures;
-            case 'testRunFailures':
-                return group.testRunFailures;
-            case 'latestFailureTime':
-                return group.latestFailureTime.toSeconds();
-            default:
-                throw new Error('unknown metric: ' + metric);
-        }
-    }
-    groups.sort((a, b) => ascending ? (getMetric(a) - getMetric(b)) : (getMetric(b) - getMetric(a)));;
-    for (const group of groups) {
-        if (group.children) {
-            sortFailureGroups(group.children, metric, ascending);
-        }
-    }
-}
-
-// The failure grouping code is complex, so export the parts for unit testing.
-export const exportedForTesting = {
-    groupFailures,
-    impactFilters,
-    rejectedIngestedInvocationIdsExtractor,
-    rejectedPresubmitRunIdsExtractor,
-    rejectedTestRunIdsExtractor,
-    sortFailureGroups,
-    treeDistinctCounts: treeDistinctValues,
-}
-
-type ExonerationStatus =
-      // The test was not exonerated.
-    'NOT_EXONERATED'
-    // Despite having an unexpected result, and no exoneration recorded
-    // in ResultDB, the build did not end in the state "failed"
-    // (e.g. the status was succeeded, cancelled or infra failure).
-    // The test result is implicitly exonerated.
-    | 'IMPLICIT'
-    // DEPRECATED. The test was marked exonerated in ResultDB, for a reason
-    // other than Weetbix or FindIt failure analysis.
-    | 'EXPLICIT'
-    // DEPRECATED. Test result was recorded as exonerated
-    // based on Weetbix (or FindIt) data.
-    | 'WEETBIX'
-    // Similar unexpected results were observed in presubmit run(s) for other,
-    // unrelated CL(s). (This is suggestive of the issue being present
-    // on mainline but is not confirmed as there are possible confounding
-    // factors, like how tests are run on CLs vs how tests are run on
-    // mainline branches.)
-    // Applies to unexpected results in presubmit/CQ runs only.
-    | 'OCCURS_ON_OTHER_CLS'
-    // Similar unexpected results were observed on a mainline branch
-    // (i.e. against a build without unsubmitted changes applied).
-    // (For avoidance of doubt, this includes both flakily and
-    // deterministically occurring unexpected results.)
-    // Applies to unexpected results in presubmit/CQ runs only.
-    | 'OCCURS_ON_MAINLINE'
-    // The tests are not critical to the test subject (e.g. CL) passing.
-    // This could be because more data is being collected to determine if
-    // the tests are stable enough to be made critical (as is often the
-    // case for experimental test suites).
-    | 'NOT_CRITICAL'
-    // The test result was an unexpected pass.
-    | 'UNEXPECTED_PASS'
-    // The test was marked exonerated in ResultDB, but a machine-understandable
-    // reason for the exoneration is not available.
-    | 'OTHER_EXPLICIT';
-
-// ClusterFailure is the data returned by the server for each failure.
-export interface ClusterFailure {
-    realm: string | null;
-    testId: string | null;
-    variant: Variant[];
-    presubmitRunCl: Changelist | null;
-    presubmitRunId: PresubmitRunId | null;
-    presubmitRunOwner: string | null;
-    partitionTime: string | null;
-    exonerationStatus: ExonerationStatus | null;
-    ingestedInvocationId: string | null;
-    isIngestedInvocationBlocked: boolean | null;
-    testRunIds: Array<string | null>;
-    isTestRunBlocked: boolean | null;
-    count: number;
-}
-
-// Key/Value Variant pairs for failures.
-interface Variant {
-    key: string | null;
-    value: string | null;
-}
-
-// Presubmit Run Ids of failures returned from the server.
-interface PresubmitRunId {
-    system: string | null;
-    id: string | null;
-}
-
-// Changelist represents a gerrit patchset.
-interface Changelist {
-    host: string;
-    change: number;
-    patchset: number;
-}
-
-// Metrics that can be used for sorting FailureGroups.
-// Each value is a property of FailureGroup.
-type MetricName = 'presubmitRejects' | 'invocationFailures' | 'testRunFailures' | 'failures' | 'latestFailureTime';
-
-// FailureGroups are nodes in the failure tree hierarchy.
-export interface FailureGroup {
-    name: string;
-    presubmitRejects: number;
-    invocationFailures: number;
-    testRunFailures: number;
-    failures: number;
-    latestFailureTime: DateTime;
-    level: number;
-    children: FailureGroup[];
-    isExpanded: boolean;
-    failure?: ClusterFailure;
-}
-
-// FailureVariant represents variant keys that appear on at least one failure.
-interface FailureVariant {
-    key: string;
-    values: string[];
-    isSelected: boolean;
 }

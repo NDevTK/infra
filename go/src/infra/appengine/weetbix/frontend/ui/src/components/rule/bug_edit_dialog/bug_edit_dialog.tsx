@@ -29,7 +29,6 @@ interface Props {
     setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-
 const BugEditDialog = ({
     open,
     setOpen,
@@ -97,7 +96,6 @@ const BugEditDialog = ({
         };
         mutateRule.mutate(request);
     };
-
 
     if (isLoading) {
         return <LinearProgress />;

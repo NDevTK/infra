@@ -6,12 +6,13 @@ import React from 'react';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
 
+import Container from '@mui/material/Container';
 import LinearProgress from '@mui/material/LinearProgress';
 import Paper from '@mui/material/Paper';
 
-import Container from '@mui/material/Container';
 import { getCluster } from '../../services/cluster';
 import ErrorAlert from '../error_alert/error_alert';
+import FailuresTable from '../failures_table/failures_table';
 import ImpactTable from '../impact_table/impact_table';
 
 const ImpactSection = () => {
@@ -20,7 +21,7 @@ const ImpactSection = () => {
     if(!currentAlgorithm) {
         currentAlgorithm = 'rules-v2';
     }
-    const { isLoading, isError, data: cluster, error } = useQuery(['cluster'], () => {
+    const { isLoading, isError, data: cluster, error } = useQuery(['cluster', `${currentAlgorithm}:${id}`], () => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return getCluster(project!, currentAlgorithm!, id!);
     });
@@ -43,7 +44,15 @@ const ImpactSection = () => {
                 <h2>Impact</h2>
                 <ImpactTable cluster={cluster}></ImpactTable>
                 <h2>Recent Failures</h2>
-                <failure-table project={project} clusterAlgorithm={currentAlgorithm} clusterID={id}></failure-table>
+                {
+                    (id && project) && (
+                        <FailuresTable
+                            clusterAlgorithm={currentAlgorithm}
+                            clusterId={id}
+                            project={project}
+                        />
+                    )
+                }
             </Container>
         </Paper>
     );

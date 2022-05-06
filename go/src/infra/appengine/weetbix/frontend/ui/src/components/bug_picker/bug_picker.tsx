@@ -54,7 +54,6 @@ enum BugSystems {
     BUGANIZER = 'buganizer',
 }
 
-
 /**
  * This method works around the fact that Select
  * components compare strings for reference.

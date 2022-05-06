@@ -13,6 +13,7 @@ import { screen } from '@testing-library/react';
 import { renderWithRouterAndClient } from '../../../testing_tools/libs/mock_router';
 import { mockFetchAuthState } from '../../../testing_tools/mocks/authstate_mock';
 import { createMockBug } from '../../../testing_tools/mocks/bug_mock';
+import { createMockDoneProgress } from '../../../testing_tools/mocks/progress_mock';
 import { mockFetchProjectConfig } from '../../../testing_tools/mocks/project_config_mock';
 import { createDefaultMockRule } from '../../../testing_tools/mocks/rule_mock';
 import RuleTopPanel from './rule_top_panel';
@@ -22,6 +23,7 @@ describe('Test RuleTopPanel component', () => {
         mockFetchProjectConfig();
         mockFetchAuthState();
         const mockRule = createDefaultMockRule();
+        fetchMock.get('/api/projects/chromium/reclusteringProgress', createMockDoneProgress());
         fetchMock.post('https://api-dot-crbug.com/prpc/monorail.v3.Issues/GetIssue', {
             headers: {
                 'X-Prpc-Grpc-Code': '0'

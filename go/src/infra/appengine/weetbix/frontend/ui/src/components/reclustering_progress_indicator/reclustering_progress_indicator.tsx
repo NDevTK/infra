@@ -108,6 +108,7 @@ const ReclusteringProgressIndicator = ({
 
     const handleRefreshAnalysis = () => {
         queryClient.invalidateQueries('cluster');
+        queryClient.invalidateQueries('clusterFailures');
         setShow(false);
     };
 

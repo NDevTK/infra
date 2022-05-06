@@ -25,7 +25,7 @@ import { render, RenderResult } from '@testing-library/react';
  * @return The render result.
  */
 export const renderWithRouter = (
-    
+
     ui: React.ReactElement<any, string | React.JSXElementConstructor<any>>,
     route = '/'
 ): RenderResult => {
@@ -39,7 +39,7 @@ export const renderWithRouter = (
  *
  * @param ui The UI component to render.
  * @param route The route that the current component is at, defaults to '/'.
- * @param routeDefinition The definition of the current route, 
+ * @param routeDefinition The definition of the current route,
  *                        useful for getting route params.
  * @return The render result.
  */
@@ -51,12 +51,12 @@ export const renderWithRouterAndClient = (
 
     const wrapper: FC = ({ children }) => {
         return (
-            <Router>
+            <Router >
                 <Routes>
                     <Route
                         path={routeDefinition ? routeDefinition : route}
                         element={children}
-                        />
+                    />
                 </Routes>
             </Router>
         );

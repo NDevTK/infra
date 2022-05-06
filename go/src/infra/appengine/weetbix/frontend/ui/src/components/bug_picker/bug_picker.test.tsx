@@ -16,7 +16,7 @@ import BugPicker from './bug_picker';
 
 describe('Test BugPicker component', () => {
     beforeEach(() => {
-        fetchMock.get('/api/projects/chromium/config',createMockProjectConfig());
+        fetchMock.get('/api/projects/chromium/config', createMockProjectConfig());
     });
 
     afterEach(() => {
@@ -27,8 +27,8 @@ describe('Test BugPicker component', () => {
     it('given a bug and a project, should display select and a text box for writing the bug id', async () => {
         renderWithRouterAndClient(
             <BugPicker
-                bugId='chromium/123456'
-                bugSystem='monorail'
+                bugId="chromium/123456"
+                bugSystem="monorail"
                 handleBugSystemChanged={identityFunction}
                 handleBugIdChanged={identityFunction}
             />, '/p/chromium', '/p/:project');
@@ -40,8 +40,8 @@ describe('Test BugPicker component', () => {
     it('given a buganizer bug, should select the bug system correctly', async() => {
         renderWithRouterAndClient(
             <BugPicker
-                bugId='123456'
-                bugSystem='buganizer'
+                bugId="123456"
+                bugSystem="buganizer"
                 handleBugSystemChanged={identityFunction}
                 handleBugIdChanged={identityFunction}
             />, '/p/chromium', '/p/:project');
