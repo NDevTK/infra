@@ -49,8 +49,15 @@ func crosRepairActions() map[string]*Action {
 				"dut_has_model_name",
 			},
 			RecoveryActions: []string{
+				"Power cycle DUT by RPM",
+				"cros_servo_power_reset_repair",
+				"cros_servo_cr50_reboot_repair",
+				"Trigger kernel panic to reset the whole board and try ssh to DUT",
+				"Update FW from fw-image by servo and reboot",
 				"Restore AC detection by EC console",
-				"Update FW from fw-image by servo",
+				"Install OS in recovery mode by booting from servo USB-drive",
+				"Reset power using servo if booted from USB",
+				"Update firmware from USB-Drive and when booted in recovery mode",
 			},
 			ExecName: "cros_ping",
 			ExecTimeout: &durationpb.Duration{
@@ -936,6 +943,20 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_pass",
 		},
+		"Reset power using servo if booted from USB": {
+			Docs: []string{
+				"This action will reboot the DUT using servo if device ",
+				"is not booted after off/on performed as part of ",
+				"re-imaging the device from USB device.",
+			},
+			Conditions: []string{
+				"dut_servo_host_present",
+			},
+			Dependencies: []string{
+				"cros_servo_power_reset_repair",
+			},
+			ExecName: "sample_pass",
+		},
 		"Wait DUT to be SSHable after reset": {
 			Docs: []string{
 				"Try to wait device to be sshable after the device being rebooted.",
@@ -1364,6 +1385,22 @@ func crosRepairActions() map[string]*Action {
 			ExecTimeout: &durationpb.Duration{
 				Seconds: 6000,
 			},
+		},
+		"Update FW from fw-image by servo and reboot": {
+			Docs: []string{
+				"This action will repair the firmware on the DUT, and ",
+				"then reboot and wait for the DUT to again become ",
+				"available. This action exists to wrap these component ",
+				"actions into a single repair action.",
+			},
+			Conditions: []string{
+				"dut_servo_host_present",
+			},
+			Dependencies: []string{
+				"Update FW from fw-image by servo",
+				"cros_servo_power_reset_repair",
+			},
+			ExecName: "sample_pass",
 		},
 		"Update FW from fw-image by servo and set GBB to 0x18": {
 			Docs: []string{
