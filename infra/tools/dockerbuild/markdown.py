@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import distutils.version
 import os
 
 from . import util
@@ -99,7 +100,8 @@ contact Chrome Operations:
           pyversion=pyversion,
       ))
 
-      for version, (whl, plats) in sorted(versions.items()):
+      for version, (whl, plats) in sorted(
+          versions.items(), key=lambda x: distutils.version.LooseVersion(x[0])):
         package = whl.cipd_package(templated=True)
 
         # Build an italic list of supported platforms.
