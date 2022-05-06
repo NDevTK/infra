@@ -253,7 +253,7 @@ func (c *tlwClient) InitServod(ctx context.Context, req *tlw.InitServodRequest) 
 		err := c.prepareServodContainer(ctx, dut, req.Options, !req.GetNoServod())
 		return errors.Annotate(err, "init servod %q", req.Resource).Err()
 	}
-	if req.GetNoServod() {
+	if !req.GetNoServod() {
 		s, err := c.servodPool.Get(
 			localproxy.BuildAddr(dut.ServoHost.Name),
 			int32(dut.ServoHost.ServodPort),
