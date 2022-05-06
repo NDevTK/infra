@@ -143,7 +143,7 @@ func setDutPeripherals(labels *inventory.SchedulableLabels, d *chromeosLab.Perip
 		for _, wifiFeature := range wifi.GetFeatures() {
 			if wifiFeature != chromeosLab.Wifi_UNKNOWN {
 				v1Feature := inventory.Peripherals_WifiFeature(inventory.Peripherals_WifiFeature_value[wifiFeature.String()])
-				if uniqFeatures[v1Feature] == false {
+				if !uniqFeatures[v1Feature] {
 					uniqFeatures[v1Feature] = true
 					p.PeripheralWifiFeatures = append(p.PeripheralWifiFeatures, v1Feature)
 				}
@@ -154,7 +154,7 @@ func setDutPeripherals(labels *inventory.SchedulableLabels, d *chromeosLab.Perip
 			for _, routerFeature := range wifiRouter.GetFeatures() {
 				if routerFeature != chromeosLab.WifiRouter_UNKNOWN {
 					v1Feature := inventory.Peripherals_WifiFeature(inventory.Peripherals_WifiFeature_value[routerFeature.String()])
-					if uniqFeatures[v1Feature] == false {
+					if !uniqFeatures[v1Feature] {
 						uniqFeatures[v1Feature] = true
 						p.PeripheralWifiFeatures = append(p.PeripheralWifiFeatures, v1Feature)
 					}
