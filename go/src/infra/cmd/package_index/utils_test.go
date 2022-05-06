@@ -256,24 +256,69 @@ func TestSetVname(t *testing.T) {
 			}, ShouldPanic)
 		})
 
-		Convey("Filepath has special corpus", func() {
-			p := "third_party/depot_tools/win_toolchain/rest/of/path"
-			setVnameForFile(&vnameProto, p, defaultCorpus)
+		Reset(func() {
+			*projectFlag = "chromium"
+		})
 
-			Convey("Should modify vnameProto with special/external settings", func() {
-				So(vnameProto.Path, ShouldEqual, "rest/of/path")
-				So(vnameProto.Root, ShouldEqual, "third_party/depot_tools/win_toolchain")
+		Convey("With Chromium", func() {
+			*projectFlag = "chromium"
+
+			Convey("Filepath has special corpus", func() {
+				p := "third_party/depot_tools/win_toolchain/rest/of/path"
+				setVnameForFile(&vnameProto, p, defaultCorpus)
+
+				Convey("Should modify vnameProto with special/external settings", func() {
+					So(vnameProto.Path, ShouldEqual, "rest/of/path")
+					So(vnameProto.Root, ShouldEqual, "third_party/depot_tools/win_toolchain")
+				})
+			})
+
+			Convey("Filepath has no special corpus with src prefix", func() {
+				p := "src/build/rest/of/path"
+				setVnameForFile(&vnameProto, p, defaultCorpus)
+
+				Convey("Should strip src prefix", func() {
+					So(vnameProto.Path, ShouldEqual, "build/rest/of/path")
+					So(vnameProto.Root, ShouldEqual, vnameProtoRoot)
+					So(vnameProto.Corpus, ShouldEqual, defaultCorpus)
+				})
+			})
+
+			Convey("Filepath has no special corpus without src prefix", func() {
+				p := "foo/build/rest/of/path"
+				setVnameForFile(&vnameProto, p, defaultCorpus)
+
+				Convey("Should not modify path", func() {
+					So(vnameProto.Path, ShouldEqual, p)
+					So(vnameProto.Root, ShouldEqual, vnameProtoRoot)
+					So(vnameProto.Corpus, ShouldEqual, defaultCorpus)
+				})
 			})
 		})
 
-		Convey("Filepath has no special corpus", func() {
-			p := "src/build/rest/of/path"
-			setVnameForFile(&vnameProto, p, defaultCorpus)
+		Convey("With ChromiumOS", func() {
+			*projectFlag = "chromiumos"
 
-			Convey("Should vnameProto with default settings", func() {
-				So(vnameProto.Path, ShouldEqual, "build/rest/of/path")
-				So(vnameProto.Root, ShouldEqual, vnameProtoRoot)
-				So(vnameProto.Corpus, ShouldEqual, defaultCorpus)
+			Convey("Filepath has no special corpus with src prefix", func() {
+				p := "src/build/rest/of/path"
+				setVnameForFile(&vnameProto, p, defaultCorpus)
+
+				Convey("Should not modify path", func() {
+					So(vnameProto.Path, ShouldEqual, p)
+					So(vnameProto.Root, ShouldEqual, vnameProtoRoot)
+					So(vnameProto.Corpus, ShouldEqual, defaultCorpus)
+				})
+			})
+
+			Convey("Filepath has no special corpus without src prefix", func() {
+				p := "foo/build/rest/of/path"
+				setVnameForFile(&vnameProto, p, defaultCorpus)
+
+				Convey("Should not modify path", func() {
+					So(vnameProto.Path, ShouldEqual, p)
+					So(vnameProto.Root, ShouldEqual, vnameProtoRoot)
+					So(vnameProto.Corpus, ShouldEqual, defaultCorpus)
+				})
 			})
 		})
 	})
