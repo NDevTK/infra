@@ -699,6 +699,7 @@ SPECS.update({
         SourceOrPrebuilt(
             'opencv_python',
             '4.5.3.56',
+            default=False,  # TODO(crbug/1323039): Re-enable
             build_deps=BuildDependencies(
                 remote=[
                     'setuptools<45',
