@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/site"
 )
 
@@ -32,6 +33,7 @@ This is just a thin wrapper around CIPD.`,
 	CommandRun: func() subcommands.CommandRun {
 		c := &updateRun{}
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
+		c.printer.Register(&c.Flags)
 		return c
 	},
 }
@@ -39,17 +41,18 @@ This is just a thin wrapper around CIPD.`,
 type updateRun struct {
 	subcommands.CommandRunBase
 	authFlags authcli.Flags
+	printer   common.CLIPrinter
 }
 
-func (c *updateRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
-	if err := c.innerRun(a, args, env); err != nil {
-		fmt.Fprintf(a.GetErr(), "%s: %s\n", a.GetName(), err)
+func (c *updateRun) Run(a subcommands.Application, _ []string, _ subcommands.Env) int {
+	if err := c.innerRun(a); err != nil {
+		c.printer.WriteTextStderr("%s: %s\n", a.GetName(), err)
 		return 1
 	}
 	return 0
 }
 
-func (c *updateRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
+func (c *updateRun) innerRun(a subcommands.Application) error {
 	d, err := executableDir()
 	if err != nil {
 		return err
@@ -59,11 +62,11 @@ func (c *updateRun) innerRun(a subcommands.Application, args []string, env subco
 		return err
 	}
 
-	if err := cipdEnsureLatest(a, root); err != nil {
+	if err := cipdEnsureLatest(a, root, &c.printer); err != nil {
 		return err
 	}
-	fmt.Fprintf(a.GetErr(), "%s: You may need to run crosfleet login again after the update\n", a.GetName())
-	fmt.Fprintf(a.GetErr(), "%s: Run crosfleet whoami to check login status\n", a.GetName())
+	c.printer.WriteTextStderr("%s: You may need to run crosfleet login again after the update", a.GetName())
+	c.printer.WriteTextStderr("%s: Run crosfleet whoami to check login status", a.GetName())
 	return nil
 }
 
@@ -106,27 +109,27 @@ func isCIPDRootDir(dir string) bool {
 //
 // cipdEnsureLatest assumes that the directory exists and that the [[dir]]/.cipd directory
 // exists.
-func cipdEnsureLatest(a subcommands.Application, dir string) error {
+func cipdEnsureLatest(a subcommands.Application, dir string, printer *common.CLIPrinter) error {
 	// We create two runnable command objects that update the cipd directory.
 	// One runs as the current user and the other always runs as root.
 	// If the command that runs as the current user fails, then we try the second command.
 	asSelf := exec.Command("cipd", "ensure", "-root", dir, "-ensure-file", "-")
 	asSelf.Stdin = strings.NewReader(crosfleetLatest)
-	asSelf.Stdout = a.GetOut()
-	asSelf.Stderr = a.GetErr()
+	asSelf.Stdout = printer.GetOut()
+	asSelf.Stderr = printer.GetErr()
 	// Windows does not support sudo
 	pathvar := fmt.Sprintf("PATH=%s", os.Getenv("PATH"))
 	asRootUnix := exec.Command("sudo", "/usr/bin/env", pathvar, "cipd", "ensure", "-root", dir, "-ensure-file", "-")
 	asRootUnix.Stdin = strings.NewReader(crosfleetLatest)
-	asRootUnix.Stdout = a.GetOut()
-	asRootUnix.Stderr = a.GetErr()
+	asRootUnix.Stdout = printer.GetOut()
+	asRootUnix.Stderr = printer.GetErr()
 
 	if err := asSelf.Run(); err == nil {
 		return nil
 	}
 
 	// We unconditionally run `sudo` on all OS's, however, we expect it to fail on Windows.
-	fmt.Fprintf(a.GetErr(), "Retrying as root. Updating crosfleet through cipd.\n")
+	printer.WriteTextStderr("Retrying as root. Updating crosfleet through cipd.\n")
 	if err := asRootUnix.Run(); err != nil {
 		return fmt.Errorf("updating cipd as root: %s", err)
 	}
