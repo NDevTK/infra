@@ -572,7 +572,7 @@ func processUpdateMachineLSEUpdateMask(ctx context.Context, oldMachineLse, newMa
 				oldMachineLse.ResourceState = newMachineLse.GetResourceState()
 			}
 		case "tags":
-			if tags := newMachineLse.GetTags(); tags != nil && len(tags) > 0 {
+			if tags := newMachineLse.GetTags(); len(tags) > 0 {
 				// Regular tag updates append to the existing tags.
 				oldMachineLse.Tags = mergeTags(oldMachineLse.GetTags(), newMachineLse.GetTags())
 			} else {

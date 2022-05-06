@@ -232,7 +232,7 @@ func processUpdateLabstationMask(ctx context.Context, oldMachineLSE, newMachineL
 				oldMachineLSE.ResourceState = newMachineLSE.GetResourceState()
 			}
 		case "tags":
-			if tags := newMachineLSE.GetTags(); tags != nil && len(tags) > 0 {
+			if tags := newMachineLSE.GetTags(); len(tags) > 0 {
 				// Regular tag updates append to the existing tags.
 				oldMachineLSE.Tags = mergeTags(oldMachineLSE.GetTags(), newMachineLSE.GetTags())
 			} else {
