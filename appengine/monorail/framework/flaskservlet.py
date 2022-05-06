@@ -248,7 +248,7 @@ class FlaskServlet(object):
       # add the function to get data and render page
       page_data.update(self._GatherFlagData(self.mr))
 
-      # # Page-specific work happens in this call.
+      # Page-specific work happens in this call.
       page_data.update(self._DoPageProcessing(self.mr, nonce))
 
       self._AddHelpDebugPageData(page_data)
@@ -290,8 +290,14 @@ class FlaskServlet(object):
             self.response, page_data, content_type=self.content_type)
 
   def post(self):
-    #TODO: implement basic data processing
     logging.info('process post request')
+    try:
+      # Page-specific work happens in this call.
+      self._DoFormProcessing(self.request, self.mr)
+
+    except permissions.PermissionException as e:
+      logging.warning('Trapped permission-related exception "%s".', e)
+      self.response.status_code = httplib.BAD_REQUEST
 
   def _RenderResponse(self, page_data):
     logging.info('rendering response len(page_data) is %r', len(page_data))
@@ -378,8 +384,7 @@ class FlaskServlet(object):
   # pylint: disable=unused-argument
   def GatherPageData(self, mr):
     """Return a dict of page-specific ezt data."""
-    return {}
-    # raise servlet_helpers.MethodNotSupportedError()
+    raise servlet_helpers.MethodNotSupportedError()
 
   def GatherBaseData(self, mr, nonce):
     """Return a dict of info used on almost all pages."""
