@@ -16,6 +16,23 @@
       "message": "ec control require servo present",
       "revId": "e62629b9c0d17a052adc70730b4eeb28031dd38c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "73729b32_d653f3af",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1139,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-05-06T01:07:53Z",
+      "side": 1,
+      "message": "This adds the condition for all boards. What are the implications of adding this dependency for non-flex boards?",
+      "revId": "e62629b9c0d17a052adc70730b4eeb28031dd38c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
