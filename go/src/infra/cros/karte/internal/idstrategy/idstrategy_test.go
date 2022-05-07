@@ -92,6 +92,7 @@ func TestForgingKeyWithWrongTypeShouldFail(t *testing.T) {
 	ctx := context.Background()
 	ctx = Use(ctx, oldStrategy)
 	forgedKey := "strategy key"
+	//lint:ignore SA1029 we're explicitly testing that forged keys fail.
 	ctx = context.WithValue(ctx, forgedKey, newStrategy)
 
 	expected := oldStrategy
