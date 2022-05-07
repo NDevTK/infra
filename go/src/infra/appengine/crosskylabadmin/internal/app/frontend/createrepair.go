@@ -92,6 +92,25 @@ func normalizeErrorPolicy(policy string) (ufsErrorPolicy, error) {
 	return "", fmt.Errorf("unrecognized policy: %q", policy)
 }
 
+// getRolloutConfig gets the applicable rolloutConfig.
+func getRolloutConfig(ctx context.Context, isLabstation bool, expectedState string) (*config.RolloutConfig, error) {
+	if isLabstation {
+		return config.Get(ctx).GetParis().GetLabstationRepair(), nil
+	}
+	if expectedState == "" {
+		return nil, errors.Reason("get rollout config: expectedState cannot be empty").Err()
+	}
+	switch expectedState {
+	case "ready", "needs_repair":
+		return config.Get(ctx).GetParis().GetDutRepair(), nil
+	case "repair_failed":
+		return config.Get(ctx).GetParis().GetDutRepairOnRepairFailed(), nil
+	case "needs_manual_repair":
+		return config.Get(ctx).GetParis().GetDutRepairOnNeedsManualRepair(), nil
+	}
+	return nil, errors.Reason("get rollout config: expected state %q is not recognized", expectedState).Err()
+}
+
 // RouteRepairTask routes a repair task for a given bot.
 //
 // The possible return values are:
@@ -107,21 +126,12 @@ func RouteRepairTask(ctx context.Context, botID string, expectedState string, po
 	if !(0.0 <= randFloat && randFloat <= 1.0) {
 		return "", fmt.Errorf("Route repair task: randfloat %f is not in [0, 1]", randFloat)
 	}
-	var out string
-	var r reason
 	isLabstation := heuristics.LooksLikeLabstation(botID)
-	var rolloutConfig *config.RolloutConfig
-	switch {
-	case isLabstation:
-		rolloutConfig = config.Get(ctx).GetParis().GetLabstationRepair()
-	case "needs_repair" == expectedState:
-		rolloutConfig = config.Get(ctx).GetParis().GetDutRepair()
-	case "repair_failed" == expectedState:
-		rolloutConfig = config.Get(ctx).GetParis().GetDutRepairOnRepairFailed()
-	case "needs_manual_repair" == expectedState:
-		rolloutConfig = config.Get(ctx).GetParis().GetDutRepairOnNeedsManualRepair()
+	rolloutConfig, err := getRolloutConfig(ctx, isLabstation, expectedState)
+	if err != nil {
+		return "", errors.Annotate(err, "route repair task").Err()
 	}
-	out, r = routeRepairTaskImpl(
+	out, r := routeRepairTaskImpl(
 		ctx,
 		rolloutConfig,
 		&dutRoutingInfo{

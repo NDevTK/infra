@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"infra/appengine/crosskylabadmin/internal/app/config"
 )
@@ -465,6 +466,34 @@ func TestRouteRepairTask(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+// TestGetRolloutConfigSmokeTest tests that getting the config
+// for labstations when given a nonsense expected state yields the
+// labstation config.
+func TestGetRolloutConfigSmokeTest(t *testing.T) {
+	t.Parallel()
+	rolloutCfg := &config.RolloutConfig{
+		Enable:       true,
+		OptinAllDuts: true,
+		ProdPermille: 1,
+	}
+	ctx := context.Background()
+	ctx = config.Use(
+		ctx,
+		&config.Config{
+			Paris: &config.Paris{
+				LabstationRepair: rolloutCfg,
+			},
+		},
+	)
+	cfg, err := getRolloutConfig(ctx, true, "f9a33cf4-02d7-4255-b7c9-aef2f169d4e1")
+	if diff := cmp.Diff(cfg, rolloutCfg, protocmp.Transform()); diff != "" {
+		t.Errorf("config should not be nil")
+	}
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
 	}
 }
 
