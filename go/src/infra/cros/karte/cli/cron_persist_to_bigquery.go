@@ -54,6 +54,9 @@ func (c *cronPersistToBigqueryRun) innerRun(ctx context.Context, a subcommands.A
 		return errors.Reason("persist action range does not take positional args").Err()
 	}
 	authOptions, err := c.authFlags.Options()
+	if err != nil {
+		return errors.Annotate(err, "persist action range").Err()
+	}
 	kClient, err := client.NewCronClient(ctx, client.DevConfig(authOptions))
 	if err != nil {
 		return errors.Annotate(err, "persist action range").Err()
@@ -64,5 +67,8 @@ func (c *cronPersistToBigqueryRun) innerRun(ctx context.Context, a subcommands.A
 	req := &kartepb.PersistToBigqueryRequest{}
 	marshalIndent.Marshal(a.GetErr(), req)
 	res, err := kClient.PersistToBigquery(ctx, req)
+	if err != nil {
+		return errors.Annotate(err, "persist action range").Err()
+	}
 	return errors.Annotate(marshalIndent.Marshal(a.GetErr(), res), "marshal JSON").Err()
 }
