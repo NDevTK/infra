@@ -95,6 +95,9 @@ func (c *createActionRun) innerRun(ctx context.Context, a subcommands.Applicatio
 		return errors.Annotate(err, "create action").Err()
 	}
 	kClient, err := client.NewClient(ctx, client.DevConfig(authOptions))
+	if err != nil {
+		return errors.Annotate(err, "create action").Err()
+	}
 	// TODO(gregorynisbet): Factor this into a separate function.
 	action := &kartepb.Action{}
 	action.Kind = c.kind
