@@ -57,6 +57,9 @@ func (c *exampleCreateUpdateActionRun) innerRun(ctx context.Context, a subcomman
 		return errors.Annotate(err, "create action").Err()
 	}
 	kClient, err := client.NewClient(ctx, client.DevConfig(authOptions))
+	if err != nil {
+		return errors.Annotate(err, "create action").Err()
+	}
 	action := &kartepb.Action{
 		Kind:       "d1375f6a-9a0a-41d5-91ff-6763dbb774cf",
 		FailReason: "c13d7fe6-ba1d-4d8f-9292-a320b4519587",
