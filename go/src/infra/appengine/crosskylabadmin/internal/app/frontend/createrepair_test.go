@@ -435,11 +435,25 @@ func TestRouteRepairTask(t *testing.T) {
 				},
 			},
 			botID:         "foo-host4",
-			expectedState: "ready",
+			expectedState: "needs_repair",
 			pools:         []string{"some-pool"},
 			randFloat:     1,
 			out:           legacy,
 			hasErr:        false,
+		},
+		{
+			name: "Scheduling task on ready DUT is an error",
+			in: &config.Paris{
+				DutRepair: &config.RolloutConfig{
+					Enable: false,
+				},
+			},
+			botID:         "foo-host4",
+			expectedState: "ready",
+			pools:         []string{"some-pool"},
+			randFloat:     1,
+			out:           "",
+			hasErr:        true,
 		},
 	}
 

@@ -101,7 +101,9 @@ func getRolloutConfig(ctx context.Context, isLabstation bool, expectedState stri
 		return nil, errors.Reason("get rollout config: expectedState cannot be empty").Err()
 	}
 	switch expectedState {
-	case "ready", "needs_repair":
+	case "ready":
+		return nil, errors.Reason("get rollout config: refusing to schedule repair task on ready dut").Err()
+	case "needs_repair":
 		return config.Get(ctx).GetParis().GetDutRepair(), nil
 	case "repair_failed":
 		return config.Get(ctx).GetParis().GetDutRepairOnRepairFailed(), nil
