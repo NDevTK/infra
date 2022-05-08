@@ -808,6 +808,18 @@ wheel: <
 
 * *universal*
 
+### 2.5.6
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/astroid-py3"
+  version: "version:2.5.6"
+>
+```
+
+
+* *universal*
+
 ### 2.6.6
 
 ```protobuf
@@ -5261,6 +5273,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/pipenv-py3"
   version: "version:2018.11.26"
+>
+```
+
+
+* *universal*
+
+## **platformdirs-py3**
+
+### 2.5.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/platformdirs-py3"
+  version: "version:2.5.2"
 >
 ```
 
