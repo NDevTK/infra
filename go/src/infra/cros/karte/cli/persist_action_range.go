@@ -59,6 +59,9 @@ func (c *persistActionRangeRun) innerRun(ctx context.Context, a subcommands.Appl
 		return errors.Reason("persist action range does not take positional args").Err()
 	}
 	authOptions, err := c.authFlags.Options()
+	if err != nil {
+		return errors.Annotate(err, "persist action range").Err()
+	}
 	kClient, err := client.NewClient(ctx, client.DevConfig(authOptions))
 	if err != nil {
 		return errors.Annotate(err, "persist action range").Err()
@@ -76,5 +79,8 @@ func (c *persistActionRangeRun) innerRun(ctx context.Context, a subcommands.Appl
 	}
 	marshalIndent.Marshal(a.GetErr(), req)
 	res, err := kClient.PersistActionRange(ctx, req)
+	if err != nil {
+		return errors.Annotate(err, "persist action range").Err()
+	}
 	return errors.Annotate(marshalIndent.Marshal(a.GetErr(), res), "marshal JSON").Err()
 }

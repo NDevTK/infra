@@ -67,6 +67,9 @@ func (c *persistSingleActionRun) innerRun(ctx context.Context, a subcommands.App
 	res, err := kClient.PersistAction(ctx, &kartepb.PersistActionRequest{
 		ActionId: args[0],
 	})
+	if err != nil {
+		return errors.Annotate(err, "persist single action").Err()
+	}
 	marshalIndent := jsonpb.Marshaler{
 		Indent: "  ",
 	}
