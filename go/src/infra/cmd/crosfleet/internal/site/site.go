@@ -47,7 +47,7 @@ var Prod = Environment{
 
 // Dev is the environment for dev.
 var Dev = Environment{
-	SwarmingService: "https://chromium-swarm-dev.appspot.com/",
+	SwarmingService: "https://chromeos-swarming.appspot.com/",
 	UFSService:      "staging.ufs.api.cr.dev",
 
 	BuildbucketService: "cr-buildbucket.appspot.com",
