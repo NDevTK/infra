@@ -14,6 +14,7 @@ PYTHON_VERSION_COMPATIBILITY = 'PY3'
 
 DEPS = [
     'recipe_engine/buildbucket',
+    'recipe_engine/bcid_reporter',
     'recipe_engine/cipd',
     'recipe_engine/file',
     'recipe_engine/path',
@@ -22,7 +23,6 @@ DEPS = [
     'recipe_engine/step',
     'depot_tools/git',
     'depot_tools/tryserver',
-    'infra/snoopy',
     'support_3pp',
 ]
 
@@ -81,7 +81,7 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
   # If reporting to Snoopy is enabled, try to report built package.
   if 'security.snoopy' in api.buildbucket.build.input.experiments:
     try:
-      api.snoopy.report_stage("start")
+      api.bcid_reporter.report_stage("start")
     except Exception:  # pragma: no cover
       api.step.active_result.presentation.status = api.step.FAILURE
   if api.tryserver.is_tryserver:
@@ -167,7 +167,7 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
     # If reporting to Snoopy is enabled, try to report built package.
     if 'security.snoopy' in api.buildbucket.build.input.experiments:
       try:
-        api.snoopy.report_stage("upload-complete")
+        api.bcid_reporter.report_stage("upload-complete")
       except Exception:  # pragma: no cover
         api.step.active_result.presentation.status = api.step.FAILURE
 

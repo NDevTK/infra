@@ -5,10 +5,9 @@
 PYTHON_VERSION_COMPATIBILITY = "PY3"
 
 DEPS = [
-  'infra/snoopy',
-
   'recipe_engine/archive',
   'recipe_engine/buildbucket',
+  'recipe_engine/bcid_reporter',
   'recipe_engine/cipd',
   'recipe_engine/context',
   'recipe_engine/file',

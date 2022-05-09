@@ -2576,9 +2576,9 @@
       "cipd",
       "ensure",
       "-root",
-      "[START_DIR]/snoopy",
+      "[START_DIR]/reporter",
       "-ensure-file",
-      "infra/tools/security/snoopy_broker/${platform} git_revision:b9ef7550e6d98b92df6f6778baeacbdbb9b2b29e",
+      "infra/tools/security/provenance_broker/${platform} git_revision:85c2329aae7547b83c1c4908a05b5f093f3f93f5",
       "-max-threads",
       "0",
       "-json-output",
@@ -2612,8 +2612,8 @@
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-git_revision:b9e\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/security/snoopy_broker/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-git_revision:85c\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/security/provenance_broker/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -2623,7 +2623,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/snoopy/snoopy_broker",
+      "[START_DIR]/reporter/snoopy_broker",
       "-report-cipd",
       "-digest",
       "deadbeef",
@@ -3338,7 +3338,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/snoopy/snoopy_broker",
+      "[START_DIR]/reporter/snoopy_broker",
       "-report-cipd",
       "-digest",
       "deadbeef",
@@ -4265,7 +4265,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/snoopy/snoopy_broker",
+      "[START_DIR]/reporter/snoopy_broker",
       "-report-cipd",
       "-digest",
       "deadbeef",
@@ -5192,7 +5192,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/snoopy/snoopy_broker",
+      "[START_DIR]/reporter/snoopy_broker",
       "-report-cipd",
       "-digest",
       "deadbeef",
@@ -5901,7 +5901,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/snoopy/snoopy_broker",
+      "[START_DIR]/reporter/snoopy_broker",
       "-report-cipd",
       "-digest",
       "deadbeef",
@@ -6809,7 +6809,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/snoopy/snoopy_broker",
+      "[START_DIR]/reporter/snoopy_broker",
       "-report-cipd",
       "-digest",
       "deadbeef",
@@ -7734,7 +7734,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/snoopy/snoopy_broker",
+      "[START_DIR]/reporter/snoopy_broker",
       "-report-cipd",
       "-digest",
       "deadbeef",
@@ -8733,7 +8733,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/snoopy/snoopy_broker",
+      "[START_DIR]/reporter/snoopy_broker",
       "-report-cipd",
       "-digest",
       "deadbeef",
@@ -9736,7 +9736,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/snoopy/snoopy_broker",
+      "[START_DIR]/reporter/snoopy_broker",
       "-report-cipd",
       "-digest",
       "deadbeef",
@@ -11669,7 +11669,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/snoopy/snoopy_broker",
+      "[START_DIR]/reporter/snoopy_broker",
       "-report-cipd",
       "-digest",
       "deadbeef",
@@ -13425,7 +13425,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/snoopy/snoopy_broker",
+      "[START_DIR]/reporter/snoopy_broker",
       "-report-cipd",
       "-digest",
       "deadbeef",
@@ -14672,7 +14672,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/snoopy/snoopy_broker",
+      "[START_DIR]/reporter/snoopy_broker",
       "-report-cipd",
       "-digest",
       "deadbeef",
@@ -15760,7 +15760,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/snoopy/snoopy_broker",
+      "[START_DIR]/reporter/snoopy_broker",
       "-report-cipd",
       "-digest",
       "deadbeef",
@@ -17096,7 +17096,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/snoopy/snoopy_broker",
+      "[START_DIR]/reporter/snoopy_broker",
       "-report-cipd",
       "-digest",
       "deadbeef",
@@ -18385,7 +18385,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/snoopy/snoopy_broker",
+      "[START_DIR]/reporter/snoopy_broker",
       "-report-cipd",
       "-digest",
       "deadbeef",
