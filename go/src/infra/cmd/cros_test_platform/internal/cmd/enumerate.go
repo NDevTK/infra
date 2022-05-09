@@ -159,7 +159,7 @@ func matchesUserErrorPatterns(err error) bool {
 
 func validateEnumeration(ts []*steps.EnumerationResponse_AutotestInvocation) ([]*steps.EnumerationResponse_AutotestInvocation, errors.MultiError) {
 	if len(ts) == 0 {
-		return ts, errors.NewMultiError(errors.Reason("empty enumeration").Err())
+		return ts, errors.NewMultiError(errors.Reason("No test found in control files for provided suite.").Err())
 	}
 
 	vts := make([]*steps.EnumerationResponse_AutotestInvocation, 0, len(ts))
