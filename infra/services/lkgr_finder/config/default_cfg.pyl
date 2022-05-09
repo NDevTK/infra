@@ -2,6 +2,6 @@
   'status_url': 'https://chromium-status.appspot.com',
   'password_file': 'workdir/.status_password',
   'allowed_gap': 150,
-  'allowed_lag': 2,
+  'allowed_lag': 9,  # hours (up to 10x during low commit volume periods)
   'update_recipients': None,
 }

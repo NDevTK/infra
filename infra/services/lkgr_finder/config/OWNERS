@@ -1,4 +1,1 @@
-per-file chromium_cfg.pyl=machenbach@chromium.org
-per-file chromium_cfg.pyl=tmrts@chromium.org
-per-file v8_cfg.pyl=machenbach@chromium.org
-per-file v8_cfg.pyl=tmrts@chromium.org
+file:v8/v8:main:/INFRA_OWNERS
