@@ -1691,6 +1691,8 @@ SPECS.update({
         Universal('tf-agents', '0.7.1', pyversions=['py3']),
         Universal('tf-agents', '0.11.0', pyversions=['py3']),
         Universal('toml', '0.10.1', pyversions=['py3']),
+        Universal('tomli', '1.1.0', pyversions=['py3']),
+        Universal('tomli', '2.0.1', pyversions=['py3']),
         Universal('trio', '0.20.0', pyversions=['py3']),
         Universal('trio-websocket', '0.9.2', pyversions=['py3']),
         Universal('typing', '3.6.4', pyversions=['py2']),

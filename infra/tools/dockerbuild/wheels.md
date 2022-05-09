@@ -7842,6 +7842,32 @@ wheel: <
 
 * *universal*
 
+## **tomli-py3**
+
+### 1.1.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/tomli-py3"
+  version: "version:1.1.0"
+>
+```
+
+
+* *universal*
+
+### 2.0.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/tomli-py3"
+  version: "version:2.0.1"
+>
+```
+
+
+* *universal*
+
 ## **trio-py3**
 
 ### 0.20.0
