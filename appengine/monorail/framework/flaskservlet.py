@@ -60,6 +60,34 @@ class FlaskServlet(object):
   """
   _MAIN_TAB_MODE = None  # Normally overridden in subclasses to be one of these:
 
+  MAIN_TAB_ISSUES = 't2'
+  IN_TAB_PEOPLE = 't3'
+  MAIN_TAB_PROCESS = 't4'
+  MAIN_TAB_UPDATES = 't5'
+  MAIN_TAB_ADMIN = 't6'
+  PROCESS_TAB_SUMMARY = 'st1'
+  PROCESS_TAB_STATUSES = 'st3'
+  PROCESS_TAB_LABELS = 'st4'
+  PROCESS_TAB_RULES = 'st5'
+  PROCESS_TAB_TEMPLATES = 'st6'
+  PROCESS_TAB_COMPONENTS = 'st7'
+  PROCESS_TAB_VIEWS = 'st8'
+  ADMIN_TAB_META = 'st1'
+  ADMIN_TAB_ADVANCED = 'st9'
+  HOTLIST_TAB_ISSUES = 'ht2'
+  HOTLIST_TAB_PEOPLE = 'ht3'
+  HOTLIST_TAB_DETAILS = 'ht4'
+
+  # Most forms require a security token, however if a form is really
+  # just redirecting to a search GET request without writing any data,
+  # subclass can override this to allow anonymous use.
+  CHECK_SECURITY_TOKEN = True
+
+  # Some pages might be posted to by clients outside of Monorail.
+  # ie: The issue entry page, by the issue filing wizard. In these cases,
+  # we can allow an xhr-scoped XSRF token to be used to post to the page.
+  ALLOW_XHR = False
+
   # This value should not typically be overridden.
   _TEMPLATE_PATH = framework_constants.TEMPLATE_PATH
 
@@ -159,7 +187,9 @@ class FlaskServlet(object):
 
     except permissions.BannedUserException as e:
       logging.warning('The user has been banned')
-      #TODO: reidrect to userbanned page
+      url = framework_helpers.FormatAbsoluteURL(
+          self.mr, urls.BANNED, include_project=False, copy_params=False)
+      self.redirect(url, abort=True)
 
     except ratelimiter.RateLimitExceeded as e:
       logging.info('RateLimitExceeded Exception %s', e)
@@ -339,7 +369,7 @@ class FlaskServlet(object):
       page_data.update(self.GatherPageData(mr))
       page_data.update(mr.form_overrides)
       template_helpers.ExpandLabels(page_data)
-      # self._RecordVisitTime(mr)
+      self._RecordVisitTime(mr)
 
     return page_data
 
@@ -380,6 +410,15 @@ class FlaskServlet(object):
       String URL to redirect the user to, or None if response was already sent.
     """
     raise servlet_helpers.MethodNotSupportedError()
+
+  def _FormHandlerURL(self, path):
+    """Return the form handler for the main form on a page."""
+    if path.endswith('/'):
+      return path + 'edit.do'
+    elif path.endswith('.do'):
+      return path  # This happens as part of PleaseCorrect().
+    else:
+      return path + '.do'
 
   # pylint: disable=unused-argument
   def GatherPageData(self, mr):
@@ -637,8 +676,7 @@ class FlaskServlet(object):
         mr.auth.user_id, xsrf.XHR_SERVLET_PATH)
     # Always add other anti-xsrf tokens when the user is logged in.
     if mr.auth.user_id:
-      # TODO: (crbug.com/monorail/10871)
-      # form_token_path = self._FormHandlerURL(mr.request.path)
+      form_token_path = self._FormHandlerURL(mr.request.path)
       form_token_path = '/'
       base_data['form_token'] = xsrf.GenerateToken(
           mr.auth.user_id, form_token_path)
@@ -818,3 +856,18 @@ class FlaskServlet(object):
       flask.abort(302)
     else:
       flask.redirect(url)
+
+  def PleaseCorrect(self, mr, **echo_data):
+    """Show the same form again so that the user can correct their input."""
+    mr.PrepareForReentry(echo_data)
+    self.get()
+
+  def _RecordVisitTime(self, mr, now=None):
+    """Record the signed in user's last visit time, if possible."""
+    now = now or int(time.time())
+    if not settings.read_only and mr.auth.user_id:
+      user_pb = mr.auth.user_pb
+      if (user_pb.last_visit_timestamp <
+          now - framework_constants.VISIT_RESOLUTION):
+        user_pb.last_visit_timestamp = now
+        self.services.user.UpdateUser(mr.cnxn, user_pb.user_id, user_pb)
