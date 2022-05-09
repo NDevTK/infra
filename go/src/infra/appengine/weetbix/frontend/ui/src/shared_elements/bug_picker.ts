@@ -49,6 +49,7 @@ export class BugPicker extends LitElement {
             // Default the bug tracking system.
             this.setSystemMonorail();
         }
+        this.requestUpdate();
     }
 
     render() {
