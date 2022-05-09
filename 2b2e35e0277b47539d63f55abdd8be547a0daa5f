@@ -52,6 +52,24 @@
       "parentUuid": "a4f4bdd2_4c9a399e",
       "revId": "2b2e35e0277b47539d63f55abdd8be547a0daa5f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "10425b48_7e223d62",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/cmd/enumerate.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1355298
+      },
+      "writtenOn": "2022-05-09T16:50:15Z",
+      "side": 1,
+      "message": "Yeah hadn\u0027t seen the followup CL. Thanks!",
+      "parentUuid": "a1e8dd45_c9be57c8",
+      "revId": "2b2e35e0277b47539d63f55abdd8be547a0daa5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
