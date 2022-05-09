@@ -119,10 +119,25 @@ def builder(
         short_name = short_name,
     )
 
-def chromium_genfiles(short_name, name, os = None, cpu_cores = None):
+def chromium_genfiles(short_name, name, recipe_properties, os = None, cpu_cores = None):
+    """A builder for generating kzips for chromium/src.
+
+      In recipe_properties, you can specify the following parameters:
+      - compile_targets: the compile targets.
+      - platform: The platform for which the code is compiled.
+      - experimental: Whether to mark Kythe uploads as experimental.
+      - sync_generated_files: Whether to sync generated files into a git repo.
+      - corpus: Kythe corpus to specify in the kzip.
+      - build_config: Kythe build config to specify in the kzip.
+      - gen_repo_branch: Which branch in the generated files repo to sync to.
+      - gen_repo_out_dir: Which directory under src/out to write gen files to.
+    """
     builder(
         name = name,
         executable = build.recipe("chromium_codesearch"),
+        properties = {
+            "recipe_properties": recipe_properties,
+        },
         builder_group_property_name = "builder_group",
         os = os,
         cpu_cores = cpu_cores,
@@ -187,20 +202,140 @@ builder(
     schedule = "0 */4 * * *",
 )
 
-chromium_genfiles("and", "codesearch-gen-chromium-android")
-chromium_genfiles("cro", "codesearch-gen-chromium-chromiumos")
-chromium_genfiles("fch", "codesearch-gen-chromium-fuchsia")
-chromium_genfiles("lcr", "codesearch-gen-chromium-lacros")
-chromium_genfiles("lnx", "codesearch-gen-chromium-linux")
 chromium_genfiles(
-    "mac",
-    "codesearch-gen-chromium-mac",
+    short_name = "and",
+    name = "codesearch-gen-chromium-android",
+    recipe_properties = {
+        "compile_targets": ["all"],
+        "platform": "android",
+        "sync_generated_files": True,
+        "gen_repo_branch": "main",
+        # Generated files will end up in out/android-Debug/gen.
+        "gen_repo_out_dir": "android-Debug",
+        "corpus": "chromium.googlesource.com/chromium/src",
+        "build_config": "android",
+    },
+)
+
+chromium_genfiles(
+    short_name = "cro",
+    name = "codesearch-gen-chromium-chromiumos",
+    recipe_properties = {
+        # TODO(crbug.com/1323934): Get the below compile targets from the
+        # chromium_tests recipe module.
+        # The below compile targets were used by the "Linux ChromiumOS Full"
+        # builder on (2016-12-16).
+        "compile_targets": [
+            "base_unittests",
+            "browser_tests",
+            "chromeos_unittests",
+            "components_unittests",
+            "compositor_unittests",
+            "content_browsertests",
+            "content_unittests",
+            "crypto_unittests",
+            "dbus_unittests",
+            "device_unittests",
+            "gcm_unit_tests",
+            "google_apis_unittests",
+            "gpu_unittests",
+            "interactive_ui_tests",
+            "ipc_tests",
+            "media_unittests",
+            "message_center_unittests",
+            "nacl_loader_unittests",
+            "net_unittests",
+            "ppapi_unittests",
+            "printing_unittests",
+            "remoting_unittests",
+            "sandbox_linux_unittests",
+            "sql_unittests",
+            "ui_base_unittests",
+            "unit_tests",
+            "url_unittests",
+            "views_unittests",
+        ],
+        "platform": "chromeos",
+        "sync_generated_files": True,
+        "gen_repo_branch": "main",
+        # Generated files will end up in out/chromeos-Debug/gen.
+        "gen_repo_out_dir": "chromeos-Debug",
+        "corpus": "chromium.googlesource.com/chromium/src",
+        "build_config": "chromeos",
+    },
+)
+
+chromium_genfiles(
+    short_name = "fch",
+    name = "codesearch-gen-chromium-fuchsia",
+    recipe_properties = {
+        "compile_targets": ["all"],
+        "platform": "fuchsia",
+        "sync_generated_files": True,
+        "gen_repo_branch": "main",
+        # Generated files will end up in out/fuchsia-Debug/gen.
+        "gen_repo_out_dir": "fuchsia-Debug",
+        "corpus": "chromium.googlesource.com/chromium/src",
+        "build_config": "fuchsia",
+    },
+)
+
+chromium_genfiles(
+    short_name = "lcr",
+    name = "codesearch-gen-chromium-lacros",
+    recipe_properties = {
+        "compile_targets": ["all"],
+        "platform": "lacros",
+        "sync_generated_files": True,
+        "gen_repo_branch": "main",
+        "corpus": "chromium.googlesource.com/chromium/src",
+        "build_config": "lacros",
+    },
+)
+
+chromium_genfiles(
+    short_name = "lnx",
+    name = "codesearch-gen-chromium-linux",
+    recipe_properties = {
+        "compile_targets": ["all"],
+        "platform": "linux",
+        "sync_generated_files": True,
+        "gen_repo_branch": "main",
+        "corpus": "chromium.googlesource.com/chromium/src",
+        "build_config": "linux",
+    },
+)
+
+chromium_genfiles(
+    short_name = "mac",
+    name = "codesearch-gen-chromium-mac",
+    recipe_properties = {
+        "compile_targets": ["all"],
+        "platform": "mac",
+        "sync_generated_files": True,
+        # Generated files will end up in out/mac-Debug/gen.
+        "gen_repo_out_dir": "mac-Debug",
+        "gen_repo_branch": "main",
+        "corpus": "chromium.googlesource.com/chromium/src",
+        "build_config": "mac",
+    },
     os = "Mac-11",
     cpu_cores = "4",
 )
+
 chromium_genfiles(
-    "win",
-    "codesearch-gen-chromium-win",
+    short_name = "win",
+    name = "codesearch-gen-chromium-win",
+    recipe_properties = {
+        "compile_targets": ["all"],
+        "platform": "win",
+        "sync_generated_files": True,
+        "gen_repo_branch": "main",
+        # Generated files will end up in out/win-Debug/gen.
+        "gen_repo_out_dir": "win-Debug",
+        "corpus": "chromium.googlesource.com/chromium/src",
+        "build_config": "win",
+    },
     os = "Windows-10",
     cpu_cores = "32",
 )
