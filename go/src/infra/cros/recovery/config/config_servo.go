@@ -113,7 +113,7 @@ func servoRepairPlan() *Plan {
 			},
 			"servo_host_servod_start": {
 				RecoveryActions: []string{
-					"servo_host_servod_stop",
+					"Stop servod",
 					"servo_power_delivery_repair",
 					"servo_fake_disconnect_dut_repair",
 					"servo_servod_cc_toggle_repair",
@@ -121,9 +121,14 @@ func servoRepairPlan() *Plan {
 				ExecName:    "servo_host_servod_init",
 				ExecTimeout: &durationpb.Duration{Seconds: 120},
 			},
-			"servo_host_servod_stop": {
-				Docs:       []string{"Stop the servod."},
-				RunControl: RunControl_ALWAYS_RUN,
+			"Stop servod": {
+				Docs: []string{
+					"Stop the servod daemon.",
+					"Allowed to fail as can be run when servod is not running.",
+				},
+				ExecName:               "servo_host_servod_stop",
+				RunControl:             RunControl_ALWAYS_RUN,
+				AllowFailAfterRecovery: true,
 			},
 			"Initialize docker container": {
 				Docs: []string{
@@ -133,7 +138,7 @@ func servoRepairPlan() *Plan {
 					"is_container",
 				},
 				RecoveryActions: []string{
-					"servo_host_servod_stop",
+					"Stop servod",
 				},
 				ExecName:    "servo_host_servod_init",
 				ExecTimeout: &durationpb.Duration{Seconds: 360},
@@ -244,7 +249,7 @@ func servoRepairPlan() *Plan {
 					"persist_topology:true",
 				},
 				RecoveryActions: []string{
-					"servo_host_servod_stop",
+					"Stop servod",
 					"servo_power_cycle_repair",
 					"servo_power_delivery_repair",
 					"servo_fake_disconnect_dut_repair",
@@ -267,7 +272,7 @@ func servoRepairPlan() *Plan {
 					"persist_topology:true",
 				},
 				RecoveryActions: []string{
-					"servo_host_servod_stop",
+					"Stop servod",
 					"servo_power_cycle_repair",
 					"servo_power_delivery_repair",
 					"servo_fake_disconnect_dut_repair",
@@ -321,7 +326,7 @@ func servoRepairPlan() *Plan {
 				Docs:     []string{"run command from xmlrpc"},
 				ExecName: "servod_echo",
 				RecoveryActions: []string{
-					"servo_host_servod_stop",
+					"Stop servod",
 					"servo_power_cycle_repair",
 					"servo_power_delivery_repair",
 					"servo_fake_disconnect_dut_repair",
@@ -395,7 +400,7 @@ func servoRepairPlan() *Plan {
 					"servo_is_sbu_voltage_issue",
 				},
 				RecoveryActions: []string{
-					"servo_host_servod_stop",
+					"Stop servod",
 					"servo_power_cycle_repair",
 					"servo_power_delivery_repair",
 					"servo_fake_disconnect_dut_repair",
@@ -431,7 +436,7 @@ func servoRepairPlan() *Plan {
 					"servo_is_sbu_voltage_issue",
 				},
 				RecoveryActions: []string{
-					"servo_host_servod_stop",
+					"Stop servod",
 					"servo_power_cycle_repair",
 				},
 				ExecName: "sample_fail",
@@ -459,7 +464,7 @@ func servoRepairPlan() *Plan {
 					"any_one:true",
 				},
 				RecoveryActions: []string{
-					"servo_host_servod_stop",
+					"Stop servod",
 					"servo_power_cycle_repair",
 					"servo_power_delivery_repair",
 					"servo_fake_disconnect_dut_repair",
@@ -541,7 +546,7 @@ func servoRepairPlan() *Plan {
 					"expected_string_value:release",
 				},
 				RecoveryActions: []string{
-					"servo_host_servod_stop",
+					"Stop servod",
 					"servo_power_delivery_repair",
 					"servo_fake_disconnect_dut_repair",
 					"servo_servod_cc_toggle_repair",
@@ -555,7 +560,7 @@ func servoRepairPlan() *Plan {
 					"Is servo_v4(p1) with type-a connector",
 				},
 				RecoveryActions: []string{
-					"servo_host_servod_stop",
+					"Stop servod",
 					"servo_power_delivery_repair",
 					"servo_fake_disconnect_dut_repair",
 					"servo_servod_cc_toggle_repair",
@@ -581,7 +586,7 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "servo_low_ppdut5",
 				RecoveryActions: []string{
-					"servo_host_servod_stop",
+					"Stop servod",
 					"servo_power_delivery_repair",
 					"servo_servod_cc_toggle_repair",
 					"servo_reboot_ec_on_dut",
@@ -748,7 +753,7 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "servod_set_main_device",
 				RecoveryActions: []string{
-					"servo_host_servod_stop",
+					"Stop servod",
 				},
 			},
 			"servo_fw_update": {
@@ -778,8 +783,11 @@ func servoRepairPlan() *Plan {
 					"is_servo_micro",
 					"is_time_to_update_servo_micro_fw",
 				},
-				Dependencies: []string{"servo_micro_fw_update"},
-				ExecName:     "servo_host_servod_stop",
+				Dependencies: []string{
+					"servo_micro_fw_update",
+					"Stop servod",
+				},
+				ExecName: "sample_pass",
 			},
 			"servo_micro_fw_update": {
 				Docs: []string{
@@ -832,7 +840,7 @@ func servoRepairPlan() *Plan {
 					"expected_string_value:off",
 				},
 				RecoveryActions: []string{
-					"servo_host_servod_stop",
+					"Stop servod",
 					"servo_power_delivery_repair",
 					"servo_fake_disconnect_dut_repair",
 					"servo_servod_cc_toggle_repair",
@@ -853,7 +861,7 @@ func servoRepairPlan() *Plan {
 					"expected_string_value:off",
 				},
 				RecoveryActions: []string{
-					"servo_host_servod_stop",
+					"Stop servod",
 					"servo_power_delivery_repair",
 					"servo_servod_cc_toggle_repair",
 					"servo_reboot_ec_on_dut",
@@ -882,7 +890,7 @@ func servoRepairPlan() *Plan {
 					"expected_string_value:off",
 				},
 				RecoveryActions: []string{
-					"servo_host_servod_stop",
+					"Stop servod",
 					"servo_power_delivery_repair",
 					"servo_fake_disconnect_dut_repair",
 					"servo_servod_cc_toggle_repair",
@@ -898,7 +906,7 @@ func servoRepairPlan() *Plan {
 				ExecName:    "servo_servod_echo_host",
 				ExecTimeout: &durationpb.Duration{Seconds: 30},
 				RecoveryActions: []string{
-					"servo_host_servod_stop",
+					"Stop servod",
 					"servo_power_delivery_repair",
 					"servo_fake_disconnect_dut_repair",
 					"servo_servod_cc_toggle_repair",
@@ -951,10 +959,12 @@ func servoRepairPlan() *Plan {
 					"Toggle the servod command servo_pd_role only once. And then stop the servod afterwards.",
 					"TODO: Add dependency for servo initialize.",
 				},
-				Dependencies: []string{"servo_pd_toggle_once"},
-				ExecTimeout:  &durationpb.Duration{Seconds: 120},
-				RunControl:   RunControl_ALWAYS_RUN,
-				ExecName:     "servo_host_servod_stop",
+				Dependencies: []string{
+					"servo_pd_toggle_once",
+					"Stop servod",
+				},
+				RunControl: RunControl_ALWAYS_RUN,
+				ExecName:   "sample_pass",
 			},
 			"servo_pd_toggle_once": {
 				Docs: []string{
@@ -974,10 +984,10 @@ func servoRepairPlan() *Plan {
 				},
 				Dependencies: []string{
 					"servo_pd_toggle_five_times",
+					"Stop servod",
 				},
-				ExecName:    "servo_host_servod_stop",
-				ExecTimeout: &durationpb.Duration{Seconds: 600},
-				RunControl:  RunControl_ALWAYS_RUN,
+				ExecName:   "sample_pass",
+				RunControl: RunControl_ALWAYS_RUN,
 			},
 			"servo_pd_toggle_five_times": {
 				Docs: []string{
@@ -1137,11 +1147,13 @@ func servoRepairPlan() *Plan {
 				RunControl: RunControl_ALWAYS_RUN,
 			},
 			"servo_fake_disconnect_dut_repair": {
-				Docs:         []string{"Try to repair servod by mimic reconnection of servo."},
-				Dependencies: []string{"servo_fake_disconnect_dut"},
-				ExecTimeout:  &durationpb.Duration{Seconds: 600},
-				RunControl:   RunControl_ALWAYS_RUN,
-				ExecName:     "servo_host_servod_stop",
+				Docs: []string{"Try to repair servod by mimic reconnection of servo."},
+				Dependencies: []string{
+					"servo_fake_disconnect_dut",
+					"Stop servod",
+				},
+				RunControl: RunControl_ALWAYS_RUN,
+				ExecName:   "sample_pass",
 			},
 			"servo_fake_disconnect_dut": {
 				Conditions: []string{
@@ -1154,11 +1166,15 @@ func servoRepairPlan() *Plan {
 				},
 			},
 			"servo_servod_cc_toggle_repair": {
-				Docs:         []string{"Try to repair servod by toggling cc."},
-				Dependencies: []string{"servo_servod_cc_toggle"},
-				ExecTimeout:  &durationpb.Duration{Seconds: 600},
-				RunControl:   RunControl_ALWAYS_RUN,
-				ExecName:     "servo_host_servod_stop",
+				Docs: []string{
+					"Try to repair servod by toggling cc.",
+				},
+				Dependencies: []string{
+					"servo_servod_cc_toggle",
+					"Stop servod",
+				},
+				RunControl: RunControl_ALWAYS_RUN,
+				ExecName:   "sample_pass",
 			},
 			"servo_servod_cc_toggle": {
 				Conditions: []string{"is_servo_type_ccd"},
@@ -1193,16 +1209,19 @@ func servoRepairPlan() *Plan {
 				RunControl: RunControl_ALWAYS_RUN,
 			},
 			"reflash_cr_50_fw_on_dut": {
-				Docs: []string{"Try to reflash cr50 firmware and reboot AP from DUT side to wake it up."},
+				Docs: []string{
+					"Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.",
+				},
 				Conditions: []string{
 					"is_servo_type_ccd",
 					"cros_is_time_to_reflash_cr50_fw",
 				},
 				Dependencies: []string{
 					"cros_reflash_cr50_fw",
+					"Stop servod",
 				},
 				RunControl: RunControl_ALWAYS_RUN,
-				ExecName:   "servo_host_servod_stop",
+				ExecName:   "sample_pass",
 			},
 			"cros_reflash_cr50_fw": {
 				Docs: []string{
@@ -1238,11 +1257,18 @@ func servoRepairPlan() *Plan {
 				ExecName: "metrics_found_at_last_time",
 			},
 			"reset_ec_on_dut": {
-				Docs:         []string{"Try to reset EC from DUT side to wake CR50 up. And then restart the servod."},
-				Conditions:   []string{"is_servo_type_ccd"},
-				Dependencies: []string{"cros_reset_ec"},
-				RunControl:   RunControl_ALWAYS_RUN,
-				ExecName:     "servo_host_servod_stop",
+				Docs: []string{
+					"Try to reset EC from DUT side to wake CR50 up. And then restart the servod.",
+				},
+				Conditions: []string{
+					"is_servo_type_ccd",
+				},
+				Dependencies: []string{
+					"cros_reset_ec",
+					"Stop servod",
+				},
+				RunControl: RunControl_ALWAYS_RUN,
+				ExecName:   "sample_pass",
 			},
 			"cros_reset_ec": {
 				Docs:          []string{"Try to wake up the device as it will trigger recovering ec, cr50, and other fw."},
