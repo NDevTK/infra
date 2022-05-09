@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -36,6 +37,7 @@ type TastResults struct {
 // Fields not used by Test Results are omitted.
 type TastCase struct {
 	Name        string           `json:"name"`
+	Contacts    []string         `json:"contacts"`
 	OutDir      string           `json:"outDir"`
 	SkipReason  string           `json:"skipReason"`
 	Errors      []TastError      `json:"errors"`
@@ -78,9 +80,15 @@ func (r *TastResults) ToProtos(ctx context.Context, processArtifacts func(string
 			TestId:       c.Name,
 			Expected:     status == pb.TestStatus_SKIP || status == pb.TestStatus_PASS,
 			Status:       status,
+			Tags:         []*pb.StringPair{},
 			TestMetadata: &pb.TestMetadata{Name: c.Name},
-			Tags:         append([]*pb.StringPair{}, c.SearchFlags...),
 		}
+
+		// Add Tags to test results.
+		contacts := strings.Join(c.Contacts[:], ",")
+		tr.Tags = append(tr.Tags, pbutil.StringPair("contacts", contacts))
+		tr.Tags = append(tr.Tags, c.SearchFlags...)
+
 		if status == pb.TestStatus_SKIP {
 			tr.SummaryHtml = "<text-artifact artifact-id=\"Skip Reason\" />"
 			tr.Artifacts = map[string]*sinkpb.Artifact{

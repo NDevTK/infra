@@ -14,6 +14,7 @@ import (
 	"github.com/golang/protobuf/ptypes/duration"
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -32,18 +33,19 @@ func mockCollect(s string) (map[string]string, error) {
 
 func genJSONLine(m map[string]string) string {
 	base := map[string]string{
-		"name":   "lacros.Basic",
-		"bundle": "cros",
-		"start":  "2021-07-26T18:53:33.983328614Z",
-		"end":    "2021-07-26T18:53:34.983328614Z",
-		"outDir": "/usr/local/autotest/results/lxc_job_folder/tast/results/tests/lacros.Basic",
+		"name":     "lacros.Basic",
+		"contacts": `["user1@google.com", "user2@google.com"]`,
+		"bundle":   "cros",
+		"start":    "2021-07-26T18:53:33.983328614Z",
+		"end":      "2021-07-26T18:53:34.983328614Z",
+		"outDir":   "/usr/local/autotest/results/lxc_job_folder/tast/results/tests/lacros.Basic",
 	}
 	for k, v := range m {
 		base[k] = v
 	}
 	jsonStr := ""
 	for k, v := range base {
-		if k == "errors" || k == "searchFlags" {
+		if k == "errors" || k == "searchFlags" || k == "contacts" {
 			jsonStr += fmt.Sprintf("\"%s\":%s,", k, v)
 			continue
 		}
@@ -66,6 +68,7 @@ func TestTastConversions(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(r.Cases[0], ShouldResemble, TastCase{
 				Name:        "lacros.Basic",
+				Contacts:    []string{"user1@google.com", "user2@google.com"},
 				OutDir:      "/usr/local/autotest/results/lxc_job_folder/tast/results/tests/lacros.Basic",
 				SkipReason:  "dummy skipped",
 				Errors:      nil,
@@ -110,12 +113,13 @@ func TestTastConversions(t *testing.T) {
 						Body: &sinkpb.Artifact_FilePath{FilePath: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test/tast/results/tests/lacros.Basic/foo"},
 					},
 				},
+				Tags: []*pb.StringPair{pbutil.StringPair("contacts", "user1@google.com,user2@google.com"),
+					pbutil.StringPair("testKey", "testValue")},
 				TestMetadata: &pb.TestMetadata{
 					Name: "lacros.Basic",
 				},
 				StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 				Duration:  &duration.Duration{Seconds: 1},
-				Tags:      []*pb.StringPair{{Key: "testKey", Value: "testValue"}},
 			})
 		})
 		Convey(`Skipped`, func() {
@@ -142,6 +146,7 @@ func TestTastConversions(t *testing.T) {
 						ContentType: "text/plain",
 					},
 				},
+				Tags: []*pb.StringPair{pbutil.StringPair("contacts", "user1@google.com,user2@google.com")},
 				TestMetadata: &pb.TestMetadata{
 					Name: "lacros.Basic",
 				},
@@ -174,6 +179,7 @@ func TestTastConversions(t *testing.T) {
 						ContentType: "text/plain",
 					},
 				},
+				Tags: []*pb.StringPair{pbutil.StringPair("contacts", "user1@google.com,user2@google.com")},
 				TestMetadata: &pb.TestMetadata{
 					Name: "lacros.Basic",
 				},
