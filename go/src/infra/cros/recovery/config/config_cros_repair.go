@@ -671,9 +671,9 @@ func crosRepairActions() map[string]*Action {
 				"Device is SSHable",
 			},
 			RecoveryActions: []string{
-				"Install OS in recovery mode by booting from servo USB-drive",
-				"Quick provision OS",
+				"servo_power_state_reset",
 				"Repair by powerwash",
+				"Install OS in recovery mode by booting from servo USB-drive",
 			},
 			ExecName: "cros_has_critical_kernel_error",
 		},
