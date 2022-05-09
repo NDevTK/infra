@@ -1422,6 +1422,7 @@ SPECS.update({
         Universal('decorator', '4.4.2', pyversions=['py3']),
         Universal('decorator', '5.0.7', pyversions=['py3']),
         Universal('decorator', '5.0.9', pyversions=['py3']),
+        Universal('dill', '0.3.4', pyversions=['py3']),
         Universal('docker', '2.7.0'),
         Universal('docker', '5.0.0'),
         Universal('docker-pycreds', '0.2.1'),
