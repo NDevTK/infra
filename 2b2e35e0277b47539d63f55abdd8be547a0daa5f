@@ -16,6 +16,24 @@
       "message": "Does this print the suite name or is that still a mystery?",
       "revId": "2b2e35e0277b47539d63f55abdd8be547a0daa5f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "571981b1_b76e5aac",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/cmd/enumerate.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1438503
+      },
+      "writtenOn": "2022-05-09T16:46:14Z",
+      "side": 1,
+      "message": "+1 it would be sweet to print the test/suite name that resulted in empty enumeration.",
+      "parentUuid": "a4f4bdd2_4c9a399e",
+      "revId": "2b2e35e0277b47539d63f55abdd8be547a0daa5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
