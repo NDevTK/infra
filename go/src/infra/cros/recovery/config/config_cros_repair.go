@@ -97,6 +97,16 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_pass",
 		},
+		"cros_audit_storage_smart": {
+			Docs: []string{
+				"Audit the smart storage device for non-satlab ",
+				"setups. Ref: http://b/230671867",
+			},
+			Conditions: []string{
+				"Not Satlab device",
+			},
+			ExecName: "cros_audit_storage_smart",
+		},
 		"device_system_info": {
 			Conditions: []string{
 				"is_not_flex_board",
