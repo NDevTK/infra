@@ -103,7 +103,7 @@ func doRunningStep(ctx context.Context, c *testCmd, ac *api.Client) (err error) 
 }
 
 func doGatheringSubstep(ctx context.Context, c autotest.Config, ac *api.Client, t *atutil.HostTest, r *atutil.Result) {
-	ctx, span := trace.StartSpan(ctx, "Gather")
+	_, span := trace.StartSpan(ctx, "Gather")
 	defer span.End()
 	s := ac.Step("Gather")
 	defer s.Close()
@@ -130,7 +130,7 @@ func collectCrashinfo(c autotest.Config, hosts []string, resultsDir string) erro
 }
 
 func doParsingStep(ctx context.Context, c *testCmd, ac *api.Client) (err error) {
-	ctx, span := trace.StartSpan(ctx, "Parse")
+	_, span := trace.StartSpan(ctx, "Parse")
 	defer span.End()
 	event.Send(event.Parsing)
 	var d string
