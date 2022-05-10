@@ -232,22 +232,12 @@ type Dut struct {
 	// RPMOutlet of the DUT setup.
 	RPMOutlet *RPMOutlet
 	// ProvisionedInfo tells provisioned info for the DUT.
-	ProvisionedInfo *DUTProvisionedInfo
+	ProvisionedInfo *ProvisionedInfo
 	// Extra attrubes of the DUT.
 	// Used to provide any other mapping data which can be used for custom actions.
 	// All values has to be converted to string.
 	// Example: pools, force_flashing, restrictions and special abilities.
 	ExtraAttributes map[string][]string
-}
-
-// DUTProvisionedInfo holds info about provisioned info for the DUT.
-type DUTProvisionedInfo struct {
-	// CrosVersion tells which ChromeOS version is on the DUT.
-	// Example: board-release/R90-13816.47.0
-	CrosVersion string
-	// JobRepoURL provide path to download client code to the DUT.
-	// Example: http://{cache_server}:8082/download/{gs_path}
-	JobRepoURL string
 }
 
 // StorageType describes which type or storage used on the DUT.

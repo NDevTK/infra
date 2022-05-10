@@ -29,7 +29,7 @@ func updateProvisionedCrosVersionExec(ctx context.Context, info *execs.ExecInfo)
 	}
 	log.Debugf(ctx, "ChromeOS version on the dut: %s.", version)
 	if info.RunArgs.DUT.ProvisionedInfo == nil {
-		info.RunArgs.DUT.ProvisionedInfo = &tlw.DUTProvisionedInfo{}
+		info.RunArgs.DUT.ProvisionedInfo = &tlw.ProvisionedInfo{}
 	}
 	info.RunArgs.DUT.ProvisionedInfo.CrosVersion = version
 	return nil
@@ -37,7 +37,7 @@ func updateProvisionedCrosVersionExec(ctx context.Context, info *execs.ExecInfo)
 
 // updateJobRepoURLExec updates job repo URL for the DUT for provisoned info.
 func updateJobRepoURLExec(ctx context.Context, info *execs.ExecInfo) error {
-	version := info.RunArgs.DUT.ProvisionedInfo.CrosVersion
+	version := info.RunArgs.DUT.ProvisionedInfo.GetCrosVersion()
 	if version == "" {
 		return errors.Reason("update job repo url: provisioned version not found").Err()
 	}
@@ -47,7 +47,7 @@ func updateJobRepoURLExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "update job repo url").Err()
 	}
 	log.Debugf(ctx, "New job repo URL: %s.", jobRepoURL)
-	info.RunArgs.DUT.ProvisionedInfo.JobRepoURL = jobRepoURL
+	info.RunArgs.DUT.ProvisionedInfo.JobRepoUrl = jobRepoURL
 	return nil
 }
 
