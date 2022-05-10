@@ -8,6 +8,7 @@ import (
 	"context"
 	fakegerrit "infra/chromium/bootstrapper/fakes/gerrit"
 	fakegitiles "infra/chromium/bootstrapper/fakes/gitiles"
+	"infra/chromium/bootstrapper/gclient"
 	"infra/chromium/bootstrapper/gerrit"
 	"infra/chromium/bootstrapper/gitiles"
 	"infra/chromium/util"
@@ -36,10 +37,15 @@ func TestGetBootstrapConfig(t *testing.T) {
 			Refs:      map[string]string{},
 			Revisions: map[string]*fakegitiles.Revision{},
 		}
+		dependencyGitiles := &fakegitiles.Project{
+			Refs:      map[string]string{},
+			Revisions: map[string]*fakegitiles.Revision{},
+		}
 		ctx = gitiles.UseGitilesClientFactory(ctx, fakegitiles.Factory(map[string]*fakegitiles.Host{
 			"chromium.googlesource.com": {
 				Projects: map[string]*fakegitiles.Project{
-					"top/level": topLevelGitiles,
+					"top/level":  topLevelGitiles,
+					"dependency": dependencyGitiles,
 				},
 			},
 		}))
@@ -47,10 +53,14 @@ func TestGetBootstrapConfig(t *testing.T) {
 		topLevelGerrit := &fakegerrit.Project{
 			Changes: map[int64]*fakegerrit.Change{},
 		}
+		dependencyGerrit := &fakegerrit.Project{
+			Changes: map[int64]*fakegerrit.Change{},
+		}
 		ctx = gerrit.UseGerritClientFactory(ctx, fakegerrit.Factory(map[string]*fakegerrit.Host{
 			"chromium-review.googlesource.com": {
 				Projects: map[string]*fakegerrit.Project{
-					"top/level": topLevelGerrit,
+					"top/level":  topLevelGerrit,
+					"dependency": dependencyGerrit,
 				},
 			},
 		}))
@@ -73,7 +83,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 			}
 		}`)
 
-		bootstrapper := NewBuildBootstrapper(gitiles.NewClient(ctx), gerrit.NewClient(ctx))
+		bootstrapper := NewBuildBootstrapper(gitiles.NewClient(ctx), gerrit.NewClient(ctx), gclient.NewClientForTesting)
 
 		Convey("fails", func() {
 
@@ -156,7 +166,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 				properties, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-				So(err, ShouldErrLike, "failed to get diff for infra/config/fake-bucket/fake-builder/properties.textpb")
+				So(err, ShouldErrLike, "failed to get diff")
 				So(properties, ShouldBeNil)
 			})
 
@@ -419,6 +429,513 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 			})
 
+			Convey("for dependency project", func() {
+
+				setBootstrapPropertiesProperties(build, `{
+					"dependency_project": {
+						"top_level_repo": {
+							"host": "chromium.googlesource.com",
+							"project": "top/level"
+						},
+						"top_level_ref": "refs/heads/top-level",
+						"config_repo": {
+							"host": "chromium.googlesource.com",
+							"project": "dependency"
+						},
+						"config_repo_path": "config/repo/path"
+					},
+					"properties_file": "infra/config/fake-bucket/fake-builder/properties.textpb"
+				}`)
+
+				Convey("returns config with properties from ref pinned by top level ref when no commit or change for either project", func() {
+					topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
+					topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"DEPS": strPtr(`deps = {
+								'config/repo/path': 'https://chromium.googlesource.com/dependency.git@refs/heads/dependency',
+							}`),
+						},
+					}
+					dependencyGitiles.Refs["refs/heads/dependency"] = "dependency-dependency-head"
+					dependencyGitiles.Revisions["dependency-dependency-head"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+								"test_property": "dependency-head-value"
+							}`),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldBeNil)
+					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "dependency",
+						"ref": "refs/heads/dependency",
+						"id": "dependency-dependency-head"
+					}`)
+					So(config.additionalCommits, ShouldHaveLength, 1)
+					So(config.additionalCommits[0].GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "top/level",
+						"ref": "refs/heads/top-level",
+						"id": "top-level-top-level-head"
+					}`)
+					So(config.change, ShouldBeNil)
+					So(config.builderProperties, ShouldResembleProtoJSON, `{
+						"test_property": "dependency-head-value"
+					}`)
+				})
+
+				Convey("returns config with properties from revision pinned by top level ref when no commit or change for either project", func() {
+					topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
+					topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"DEPS": strPtr(`deps = {
+								'config/repo/path': 'https://chromium.googlesource.com/dependency.git@dependency-revision',
+							}`),
+						},
+					}
+					dependencyGitiles.Revisions["dependency-revision"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+								"test_property": "dependency-revision-value"
+							}`),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldBeNil)
+					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "dependency",
+						"id": "dependency-revision"
+					}`)
+					So(config.additionalCommits, ShouldHaveLength, 1)
+					So(config.additionalCommits[0].GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "top/level",
+						"ref": "refs/heads/top-level",
+						"id": "top-level-top-level-head"
+					}`)
+					So(config.change, ShouldBeNil)
+					So(config.builderProperties, ShouldResembleProtoJSON, `{
+						"test_property": "dependency-revision-value"
+					}`)
+				})
+
+				Convey("returns config with properties from commit ref when commit for dependency project without ID", func() {
+					build.Input.GitilesCommit = &buildbucketpb.GitilesCommit{
+						Host:    "chromium.googlesource.com",
+						Project: "dependency",
+						Ref:     "refs/heads/some-branch",
+					}
+					dependencyGitiles.Refs["refs/heads/some-branch"] = "dependency-some-branch-head"
+					dependencyGitiles.Revisions["dependency-some-branch-head"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+								"test_property": "some-branch-head-value"
+							}`),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldBeNil)
+					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "dependency",
+						"ref": "refs/heads/some-branch",
+						"id": "dependency-some-branch-head"
+					}`)
+					So(config.change, ShouldBeNil)
+					So(config.builderProperties, ShouldResembleProtoJSON, `{
+						"test_property": "some-branch-head-value"
+					}`)
+				})
+
+				Convey("returns config with properties from commit revision when commit for dependency project with ID", func() {
+					build.Input.GitilesCommit = &buildbucketpb.GitilesCommit{
+						Host:    "chromium.googlesource.com",
+						Project: "dependency",
+						Ref:     "refs/heads/some-branch",
+						Id:      "dependency-some-branch-revision",
+					}
+					dependencyGitiles.Revisions["dependency-some-branch-revision"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+								"test_property": "some-branch-revision-value"
+							}`),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldBeNil)
+					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "dependency",
+						"ref": "refs/heads/some-branch",
+						"id": "dependency-some-branch-revision"
+					}`)
+					So(config.change, ShouldBeNil)
+					So(config.builderProperties, ShouldResembleProtoJSON, `{
+						"test_property": "some-branch-revision-value"
+					}`)
+				})
+
+				Convey("returns config with properties from revision pinned by commit ref when commit for top level project without ID", func() {
+					build.Input.GitilesCommit = &buildbucketpb.GitilesCommit{
+						Host:    "chromium.googlesource.com",
+						Project: "top/level",
+						Ref:     "refs/heads/some-branch",
+					}
+					topLevelGitiles.Refs["refs/heads/some-branch"] = "top-level-some-branch-head"
+					topLevelGitiles.Revisions["top-level-some-branch-head"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"DEPS": strPtr(`deps = {
+								'config/repo/path': 'https://chromium.googlesource.com/dependency.git@dependency-revision',
+							}`),
+						},
+					}
+					dependencyGitiles.Revisions["dependency-revision"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+								"test_property": "dependency-revision-value"
+							}`),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldBeNil)
+					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "dependency",
+						"id": "dependency-revision"
+					}`)
+					So(config.additionalCommits, ShouldHaveLength, 1)
+					So(config.additionalCommits[0].GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "top/level",
+						"ref": "refs/heads/some-branch",
+						"id": "top-level-some-branch-head"
+					}`)
+					So(config.change, ShouldBeNil)
+					So(config.builderProperties, ShouldResembleProtoJSON, `{
+						"test_property": "dependency-revision-value"
+					}`)
+				})
+
+				Convey("returns config with properties from revision pinned by commit ref when commit for top level project with ID", func() {
+					build.Input.GitilesCommit = &buildbucketpb.GitilesCommit{
+						Host:    "chromium.googlesource.com",
+						Project: "top/level",
+						Ref:     "refs/heads/some-branch",
+						Id:      "top-level-some-branch-revision",
+					}
+					topLevelGitiles.Revisions["top-level-some-branch-revision"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"DEPS": strPtr(`deps = {
+								'config/repo/path': 'https://chromium.googlesource.com/dependency.git@dependency-revision',
+							}`),
+						},
+					}
+					dependencyGitiles.Revisions["dependency-revision"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+								"test_property": "dependency-revision-value"
+							}`),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldBeNil)
+					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "dependency",
+						"id": "dependency-revision"
+					}`)
+					So(config.additionalCommits, ShouldHaveLength, 1)
+					So(config.additionalCommits[0].GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "top/level",
+						"ref": "refs/heads/some-branch",
+						"id": "top-level-some-branch-revision"
+					}`)
+					So(config.change, ShouldBeNil)
+					So(config.builderProperties, ShouldResembleProtoJSON, `{
+						"test_property": "dependency-revision-value"
+					}`)
+				})
+
+				Convey("returns config with properties from target ref and patch applied when change for dependency project", func() {
+					build.Input.GerritChanges = append(build.Input.GerritChanges, &buildbucketpb.GerritChange{
+						Host:     "chromium-review.googlesource.com",
+						Project:  "dependency",
+						Change:   2345,
+						Patchset: 1,
+					})
+					dependencyGerrit.Changes[2345] = &fakegerrit.Change{
+						Ref: "refs/heads/some-branch",
+						Patchsets: map[int32]*fakegerrit.Patchset{
+							1: {
+								Revision: "cl-revision",
+							},
+						},
+					}
+					dependencyGitiles.Refs["refs/heads/some-branch"] = "dependency-some-branch-head"
+					dependencyGitiles.Revisions["dependency-some-branch-head"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+								"test_property": "some-branch-head-value",
+								"test_property2": "some-branch-head-value2",
+								"test_property3": "some-branch-head-value3",
+								"test_property4": "some-branch-head-value4",
+								"test_property5": "some-branch-head-value5"
+							}`),
+						},
+					}
+					dependencyGitiles.Revisions["cl-base"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+								"test_property": "some-branch-head-value",
+								"test_property2": "some-branch-head-value2",
+								"test_property3": "some-branch-head-value3",
+								"test_property4": "some-branch-head-value4",
+								"test_property5": "some-branch-head-old-value5"
+							}`),
+						},
+					}
+					dependencyGitiles.Revisions["cl-revision"] = &fakegitiles.Revision{
+						Parent: "cl-base",
+						Files: map[string]*string{
+							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+								"test_property": "some-branch-head-new-value",
+								"test_property2": "some-branch-head-value2",
+								"test_property3": "some-branch-head-value3",
+								"test_property4": "some-branch-head-value4",
+								"test_property5": "some-branch-head-old-value5"
+							}`),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldBeNil)
+					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "dependency",
+						"ref": "refs/heads/some-branch",
+						"id": "dependency-some-branch-head"
+					}`)
+					So(config.change.GerritChange, ShouldResembleProtoJSON, `{
+						"host": "chromium-review.googlesource.com",
+						"project": "dependency",
+						"change": 2345,
+						"patchset": 1
+					}`)
+					So(config.builderProperties, ShouldResembleProtoJSON, `{
+						"test_property": "some-branch-head-new-value",
+						"test_property2": "some-branch-head-value2",
+						"test_property3": "some-branch-head-value3",
+						"test_property4": "some-branch-head-value4",
+						"test_property5": "some-branch-head-value5"
+					}`)
+					So(config.skipAnalysisReasons, ShouldResemble, []string{
+						"properties file infra/config/fake-bucket/fake-builder/properties.textpb is affected by CL",
+					})
+				})
+
+				Convey("returns config with properties from patched pinned revision when change for top level project that changes pin", func() {
+					build.Input.GerritChanges = append(build.Input.GerritChanges, &buildbucketpb.GerritChange{
+						Host:     "chromium-review.googlesource.com",
+						Project:  "top/level",
+						Change:   2345,
+						Patchset: 1,
+					})
+					topLevelGerrit.Changes[2345] = &fakegerrit.Change{
+						Ref: "refs/heads/some-branch",
+						Patchsets: map[int32]*fakegerrit.Patchset{
+							1: {
+								Revision: "cl-revision",
+							},
+						},
+					}
+					topLevelGitiles.Refs["refs/heads/some-branch"] = "top-level-some-branch-head"
+					topLevelGitiles.Revisions["top-level-some-branch-head"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"DEPS": strPtr(`deps = {
+								'config/repo/path': 'https://chromium.googlesource.com/dependency.git@old-dependency-revision',
+								'foo': 'https://chromium.googlesource.com/foo.git@foo-revision',
+								'bar': 'https://chromium.googlesource.com/foo.git@bar-revision',
+								'baz': 'https://chromium.googlesource.com/foo.git@baz-revision',
+								'other/repo/path': 'https://chromium.googlesource.com/other.git@new-other-revision',
+							}`),
+						},
+					}
+					topLevelGitiles.Revisions["cl-base"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"DEPS": strPtr(`deps = {
+								'config/repo/path': 'https://chromium.googlesource.com/dependency.git@old-dependency-revision',
+								'foo': 'https://chromium.googlesource.com/foo.git@foo-revision',
+								'bar': 'https://chromium.googlesource.com/foo.git@bar-revision',
+								'baz': 'https://chromium.googlesource.com/foo.git@baz-revision',
+								'other/repo/path': 'https://chromium.googlesource.com/other.git@old-other-revision',
+							}`),
+						},
+					}
+					topLevelGitiles.Revisions["cl-revision"] = &fakegitiles.Revision{
+						Parent: "cl-base",
+						Files: map[string]*string{
+							"DEPS": strPtr(`deps = {
+								'config/repo/path': 'https://chromium.googlesource.com/dependency.git@new-dependency-revision',
+								'foo': 'https://chromium.googlesource.com/foo.git@foo-revision',
+								'bar': 'https://chromium.googlesource.com/foo.git@bar-revision',
+								'baz': 'https://chromium.googlesource.com/foo.git@baz-revision',
+								'other/repo/path': 'https://chromium.googlesource.com/other.git@old-other-revision',
+							}`),
+						},
+					}
+					dependencyGitiles.Revisions["old-dependency-revision"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+								"test_property": "old-dependency-revision-value"
+							}`),
+						},
+					}
+					dependencyGitiles.Revisions["new-dependency-revision"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+								"test_property": "new-dependency-revision-value"
+							}`),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldBeNil)
+					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "dependency",
+						"id": "new-dependency-revision"
+					}`)
+					So(config.additionalCommits, ShouldHaveLength, 1)
+					So(config.additionalCommits[0].GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "top/level",
+						"ref": "refs/heads/some-branch",
+						"id": "top-level-some-branch-head"
+					}`)
+					So(config.change, ShouldBeNil)
+					So(config.builderProperties, ShouldResembleProtoJSON, `{
+						"test_property": "new-dependency-revision-value"
+					}`)
+					So(config.skipAnalysisReasons, ShouldResemble, []string{
+						"properties file infra/config/fake-bucket/fake-builder/properties.textpb is affected by CL (via DEPS change)",
+					})
+				})
+
+				Convey("returns config with properties from patched pinned revision when change for top level project that does not change properties file", func() {
+					build.Input.GerritChanges = append(build.Input.GerritChanges, &buildbucketpb.GerritChange{
+						Host:     "chromium-review.googlesource.com",
+						Project:  "top/level",
+						Change:   2345,
+						Patchset: 1,
+					})
+					topLevelGerrit.Changes[2345] = &fakegerrit.Change{
+						Ref: "refs/heads/some-branch",
+						Patchsets: map[int32]*fakegerrit.Patchset{
+							1: {
+								Revision: "cl-revision",
+							},
+						},
+					}
+					topLevelGitiles.Refs["refs/heads/some-branch"] = "top-level-some-branch-head"
+					topLevelGitiles.Revisions["top-level-some-branch-head"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"DEPS": strPtr(`deps = {
+								'config/repo/path': 'https://chromium.googlesource.com/dependency.git@old-dependency-revision',
+								'foo': 'https://chromium.googlesource.com/foo.git@foo-revision',
+								'bar': 'https://chromium.googlesource.com/foo.git@bar-revision',
+								'baz': 'https://chromium.googlesource.com/foo.git@baz-revision',
+								'other/repo/path': 'https://chromium.googlesource.com/other.git@new-other-revision',
+							}`),
+						},
+					}
+					topLevelGitiles.Revisions["cl-base"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"DEPS": strPtr(`deps = {
+								'config/repo/path': 'https://chromium.googlesource.com/dependency.git@old-dependency-revision',
+								'foo': 'https://chromium.googlesource.com/foo.git@foo-revision',
+								'bar': 'https://chromium.googlesource.com/foo.git@bar-revision',
+								'baz': 'https://chromium.googlesource.com/foo.git@baz-revision',
+								'other/repo/path': 'https://chromium.googlesource.com/other.git@old-other-revision',
+							}`),
+						},
+					}
+					topLevelGitiles.Revisions["cl-revision"] = &fakegitiles.Revision{
+						Parent: "cl-base",
+						Files: map[string]*string{
+							"DEPS": strPtr(`deps = {
+								'config/repo/path': 'https://chromium.googlesource.com/dependency.git@new-dependency-revision',
+								'foo': 'https://chromium.googlesource.com/foo.git@foo-revision',
+								'bar': 'https://chromium.googlesource.com/foo.git@bar-revision',
+								'baz': 'https://chromium.googlesource.com/foo.git@baz-revision',
+								'other/repo/path': 'https://chromium.googlesource.com/other.git@old-other-revision',
+							}`),
+						},
+					}
+					dependencyGitiles.Revisions["old-dependency-revision"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+								"test_property": "dependency-value"
+							}`),
+						},
+					}
+					dependencyGitiles.Revisions["new-dependency-revision"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+								"test_property": "dependency-value"
+							}`),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldBeNil)
+					So(config.commit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "dependency",
+						"id": "new-dependency-revision"
+					}`)
+					So(config.additionalCommits, ShouldHaveLength, 1)
+					So(config.additionalCommits[0].GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "top/level",
+						"ref": "refs/heads/some-branch",
+						"id": "top-level-some-branch-head"
+					}`)
+					So(config.change, ShouldBeNil)
+					So(config.builderProperties, ShouldResembleProtoJSON, `{
+						"test_property": "dependency-value"
+					}`)
+					So(config.skipAnalysisReasons, ShouldBeEmpty)
+				})
+
+			})
+
 			Convey("for properties-optional bootstrapping", func() {
 				inputOpts := InputOptions{PropertiesOptional: true}
 				delete(build.Input.Properties.Fields, "$bootstrap/properties")
@@ -462,6 +979,14 @@ func TestUpdateBuild(t *testing.T) {
 					"skip-analysis-reason1",
 					"skip-analysis-reason2",
 				},
+				additionalCommits: []*gitilesCommit{
+					{&buildbucketpb.GitilesCommit{
+						Host:    "fake-host2",
+						Project: "fake-project2",
+						Ref:     "fake-ref2",
+						Id:      "fake-revision2",
+					}},
+				},
 			}
 			exe := &BootstrappedExe{
 				Source: &BootstrappedExe_Cipd{
@@ -503,6 +1028,12 @@ func TestUpdateBuild(t *testing.T) {
 									"project": "fake-project",
 									"ref": "fake-ref",
 									"id": "fake-revision"
+								},
+								{
+									"host": "fake-host2",
+									"project": "fake-project2",
+									"ref": "fake-ref2",
+									"id": "fake-revision2"
 								}
 							],
 							"exe": {

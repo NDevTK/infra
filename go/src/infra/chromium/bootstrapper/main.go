@@ -19,6 +19,7 @@ import (
 	"infra/chromium/bootstrapper/bootstrap"
 	"infra/chromium/bootstrapper/cas"
 	"infra/chromium/bootstrapper/cipd"
+	"infra/chromium/bootstrapper/gclient"
 	"infra/chromium/bootstrapper/gerrit"
 	"infra/chromium/bootstrapper/gitiles"
 
@@ -86,6 +87,12 @@ func performBootstrap(ctx context.Context, input io.Reader, opts options) ([]str
 	var recipeInput []byte
 	var cmd []string
 
+	logging.Infof(ctx, "creating CIPD client")
+	cipdClient, err := cipd.NewClient(ctx, opts.cipdRoot)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	// Introduce a new block to shadow the ctx variable so that the outer
 	// value can't be used accidentally
 	{
@@ -95,12 +102,6 @@ func performBootstrap(ctx context.Context, input io.Reader, opts options) ([]str
 
 		// Get the arguments for the command
 		group.Go(func() error {
-			logging.Infof(ctx, "creating CIPD client")
-			cipdClient, err := cipd.NewClient(ctx, opts.cipdRoot)
-			if err != nil {
-				return err
-			}
-
 			bootstrapper := bootstrap.NewExeBootstrapper(cipdClient, cas.NewClient(ctx, opts.cipdRoot))
 
 			logging.Infof(ctx, "determining bootstrapped executable")
@@ -125,7 +126,10 @@ func performBootstrap(ctx context.Context, input io.Reader, opts options) ([]str
 
 		// Get the input for the command
 		group.Go(func() error {
-			bootstrapper := bootstrap.NewBuildBootstrapper(gitiles.NewClient(ctx), gerrit.NewClient(ctx))
+			gclientGetter := func() (*gclient.Client, error) {
+				return gclient.NewClient(ctx, cipdClient)
+			}
+			bootstrapper := bootstrap.NewBuildBootstrapper(gitiles.NewClient(ctx), gerrit.NewClient(ctx), gclientGetter)
 
 			logging.Infof(ctx, "getting bootstrapped config")
 			config, err := bootstrapper.GetBootstrapConfig(ctx, bootstrapInput)
