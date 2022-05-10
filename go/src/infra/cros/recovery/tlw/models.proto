@@ -342,3 +342,20 @@ message ProvisionedInfo {
   // Example: http://{cache_server}:8082/download/{gs_path}
   string job_repo_url = 2;
 }
+
+// Storage holds info about internal storage of the DUT.
+message Storage {
+  // State of the component.
+  HardwareState state = 1;
+  // Type describes which type or storage used on the DUT.
+  enum Type {
+    TYPE_UNSPECIFIED = 0;
+    SSD = 1;
+    HDD = 2;
+    MMC = 3;
+    NVME = 4;
+    UFS = 5;
+  }
+  // Type of storage used on device.
+  Type type = 2;
+}
