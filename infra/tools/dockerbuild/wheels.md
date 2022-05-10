@@ -8357,6 +8357,20 @@ wheel: <
 
 * *universal*
 
+## **yapf-py3**
+
+### 0.32.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/yapf-py3"
+  version: "version:0.32.0"
+>
+```
+
+
+* *universal*
+
 ## **zipp**
 
 ### 1.2.0
