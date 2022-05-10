@@ -211,6 +211,9 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_is_tpm_in_good_status",
 		},
 		"tools_checks": {
+			Conditions: []string{
+				"is_not_flex_board",
+			},
 			Dependencies: []string{
 				"cros_gsctool",
 			},
