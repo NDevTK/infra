@@ -125,24 +125,24 @@ func servodStopActionExec(ctx context.Context, info *execs.ExecInfo) error {
 func servoDetectUSBKeyExec(ctx context.Context, info *execs.ExecInfo) error {
 	servoUsbPath, err := servodGetString(ctx, info.NewServod(), "image_usbkey_dev")
 	if err != nil {
-		info.RunArgs.DUT.ServoHost.UsbkeyState = tlw.HardwareStateNotDetected
+		info.RunArgs.DUT.ServoHost.UsbkeyState = tlw.HardwareState_HARDWARE_NOT_DETECTED
 		return errors.Annotate(err, "servo detect usb key exec: could not obtain usb path on servo: %q", err).Err()
 	} else if servoUsbPath == "" {
-		info.RunArgs.DUT.ServoHost.UsbkeyState = tlw.HardwareStateNotDetected
+		info.RunArgs.DUT.ServoHost.UsbkeyState = tlw.HardwareState_HARDWARE_NOT_DETECTED
 		return errors.Reason("servo detect usb key exec: the path to usb drive is empty").Err()
 	}
 	log.Debugf(ctx, "Servo Detect USB-Key Exec: USB-key path: %s.", servoUsbPath)
 	run := info.NewRunner(info.RunArgs.DUT.ServoHost.Name)
 	if _, err := run(ctx, time.Minute, fmt.Sprintf("fdisk -l %s", servoUsbPath)); err != nil {
-		info.RunArgs.DUT.ServoHost.UsbkeyState = tlw.HardwareStateNotDetected
+		info.RunArgs.DUT.ServoHost.UsbkeyState = tlw.HardwareState_HARDWARE_NOT_DETECTED
 		return errors.Annotate(err, "servo detect usb key exec: could not determine whether %q is a valid usb path", servoUsbPath).Err()
 	}
-	if info.RunArgs.DUT.ServoHost.UsbkeyState == tlw.HardwareStateNeedReplacement {
+	if info.RunArgs.DUT.ServoHost.UsbkeyState == tlw.HardwareState_HARDWARE_NEED_REPLACEMENT {
 		// This device has been marked for replacement. A further
 		// audit action is required to correct this.
 		log.Debugf(ctx, "Servo Detect USB-Key Exec: device marked for replacement.")
 	} else {
-		info.RunArgs.DUT.ServoHost.UsbkeyState = tlw.HardwareStateNormal
+		info.RunArgs.DUT.ServoHost.UsbkeyState = tlw.HardwareState_HARDWARE_NORMAL
 	}
 	return nil
 }
@@ -158,15 +158,15 @@ func runCheckOnHost(ctx context.Context, run execs.Runner, usbPath string, timeo
 	case err == nil:
 		// TODO(vkjoshi@): recheck if this is required, or does stderr need to be examined.
 		if len(out) > 0 {
-			return tlw.HardwareStateNeedReplacement, nil
+			return tlw.HardwareState_HARDWARE_NEED_REPLACEMENT, nil
 		}
-		return tlw.HardwareStateNormal, nil
+		return tlw.HardwareState_HARDWARE_NORMAL, nil
 	case execs.SSHErrorLinuxTimeout.In(err): // 124 timeout
 		fallthrough
 	case execs.SSHErrorCLINotFound.In(err): // 127 badblocks
-		return "", errors.Annotate(err, "run check on host: could not successfully complete check").Err()
+		return tlw.HardwareState_HARDWARE_UNSPECIFIED, errors.Annotate(err, "run check on host: could not successfully complete check").Err()
 	default:
-		return tlw.HardwareStateNeedReplacement, nil
+		return tlw.HardwareState_HARDWARE_NEED_REPLACEMENT, nil
 	}
 }
 
@@ -204,12 +204,12 @@ func servoAuditUSBKeyExec(ctx context.Context, info *execs.ExecInfo) error {
 			// occurred while determining USB path, in case something
 			// changed between execution of dependency, and this
 			// operation.
-			info.RunArgs.DUT.ServoHost.UsbkeyState = tlw.HardwareStateNotDetected
+			info.RunArgs.DUT.ServoHost.UsbkeyState = tlw.HardwareState_HARDWARE_NOT_DETECTED
 			return errors.Annotate(err, "servo audit usb key exec: could not obtain usb path on servo: %q", err).Err()
 		}
 		servoUsbPath = strings.TrimSpace(servoUsbPath)
 		if servoUsbPath == "" {
-			info.RunArgs.DUT.ServoHost.UsbkeyState = tlw.HardwareStateNotDetected
+			info.RunArgs.DUT.ServoHost.UsbkeyState = tlw.HardwareState_HARDWARE_NOT_DETECTED
 			log.Debugf(ctx, "Servo Audit USB-Key Exec: cannot continue audit because the path to USB-Drive is empty")
 			return errors.Reason("servo audit usb key exec: the path to usb drive is empty").Err()
 		}
@@ -565,12 +565,12 @@ func servoValidateBatteryChargingExec(ctx context.Context, info *execs.ExecInfo)
 	log.Debugf(ctx, "Servo Validate Battery Charging Exec: battery capacity is %d", batteryCapacity)
 	hardwareState := battery.DetermineHardwareStatus(ctx, float64(lastFullCharge), float64(batteryCapacity))
 	log.Infof(ctx, "Battery hardware state: %s", hardwareState)
-	if hardwareState == tlw.HardwareStateUnspecified {
+	if hardwareState == tlw.HardwareState_HARDWARE_UNSPECIFIED {
 		return errors.Reason("audit battery: dut battery did not detected or state cannot extracted").Err()
 	}
-	if hardwareState == tlw.HardwareStateNeedReplacement {
+	if hardwareState == tlw.HardwareState_HARDWARE_NEED_REPLACEMENT {
 		log.Infof(ctx, "Detected issue with storage on the DUT.")
-		info.RunArgs.DUT.Battery.State = tlw.HardwareStateNeedReplacement
+		info.RunArgs.DUT.Battery.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
 	}
 	return nil
 }

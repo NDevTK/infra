@@ -26,6 +26,69 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// HardwareState describes the state of hardware components.
+type HardwareState int32
+
+const (
+	// keep for all unspecified state by default.
+	HardwareState_HARDWARE_UNSPECIFIED HardwareState = 0
+	// Hardware is in good shape and pass all verifiers.
+	HardwareState_HARDWARE_NORMAL HardwareState = 1
+	// Hardware is still good but some not critical verifiers did not pass or
+	// provided border values. (used for DUT storage when usage reached 98%)
+	HardwareState_HARDWARE_ACCEPTABLE HardwareState = 2
+	// Hardware is broken or bad (did not pass verifiers).
+	HardwareState_HARDWARE_NEED_REPLACEMENT HardwareState = 3
+	// Hardware is not detected to run verifiers.
+	// (used for USB-drive when it expected but not detected on the device)
+	HardwareState_HARDWARE_NOT_DETECTED HardwareState = 4
+)
+
+// Enum value maps for HardwareState.
+var (
+	HardwareState_name = map[int32]string{
+		0: "HARDWARE_UNSPECIFIED",
+		1: "HARDWARE_NORMAL",
+		2: "HARDWARE_ACCEPTABLE",
+		3: "HARDWARE_NEED_REPLACEMENT",
+		4: "HARDWARE_NOT_DETECTED",
+	}
+	HardwareState_value = map[string]int32{
+		"HARDWARE_UNSPECIFIED":      0,
+		"HARDWARE_NORMAL":           1,
+		"HARDWARE_ACCEPTABLE":       2,
+		"HARDWARE_NEED_REPLACEMENT": 3,
+		"HARDWARE_NOT_DETECTED":     4,
+	}
+)
+
+func (x HardwareState) Enum() *HardwareState {
+	p := new(HardwareState)
+	*p = x
+	return p
+}
+
+func (x HardwareState) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (HardwareState) Descriptor() protoreflect.EnumDescriptor {
+	return file_infra_cros_recovery_tlw_models_proto_enumTypes[0].Descriptor()
+}
+
+func (HardwareState) Type() protoreflect.EnumType {
+	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[0]
+}
+
+func (x HardwareState) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use HardwareState.Descriptor instead.
+func (HardwareState) EnumDescriptor() ([]byte, []int) {
+	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{0}
+}
+
 // Action represents action expecting to perform on power supplier.
 type RunRPMActionRequest_Action int32
 
@@ -66,11 +129,11 @@ func (x RunRPMActionRequest_Action) String() string {
 }
 
 func (RunRPMActionRequest_Action) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[0].Descriptor()
+	return file_infra_cros_recovery_tlw_models_proto_enumTypes[1].Descriptor()
 }
 
 func (RunRPMActionRequest_Action) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[0]
+	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[1]
 }
 
 func (x RunRPMActionRequest_Action) Number() protoreflect.EnumNumber {
@@ -124,11 +187,11 @@ func (x RPMOutlet_State) String() string {
 }
 
 func (RPMOutlet_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[1].Descriptor()
+	return file_infra_cros_recovery_tlw_models_proto_enumTypes[2].Descriptor()
 }
 
 func (RPMOutlet_State) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[1]
+	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[2]
 }
 
 func (x RPMOutlet_State) Number() protoreflect.EnumNumber {
@@ -174,11 +237,11 @@ func (x WifiRouterHost_State) String() string {
 }
 
 func (WifiRouterHost_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[2].Descriptor()
+	return file_infra_cros_recovery_tlw_models_proto_enumTypes[3].Descriptor()
 }
 
 func (WifiRouterHost_State) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[2]
+	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[3]
 }
 
 func (x WifiRouterHost_State) Number() protoreflect.EnumNumber {
@@ -226,11 +289,11 @@ func (x VersionRequest_VersionType) String() string {
 }
 
 func (VersionRequest_VersionType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[3].Descriptor()
+	return file_infra_cros_recovery_tlw_models_proto_enumTypes[4].Descriptor()
 }
 
 func (VersionRequest_VersionType) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[3]
+	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[4]
 }
 
 func (x VersionRequest_VersionType) Number() protoreflect.EnumNumber {
@@ -274,11 +337,11 @@ func (x DUTAudio_LoopbackState) String() string {
 }
 
 func (DUTAudio_LoopbackState) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[4].Descriptor()
+	return file_infra_cros_recovery_tlw_models_proto_enumTypes[5].Descriptor()
 }
 
 func (DUTAudio_LoopbackState) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[4]
+	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[5]
 }
 
 func (x DUTAudio_LoopbackState) Number() protoreflect.EnumNumber {
@@ -1473,10 +1536,19 @@ var file_infra_cros_recovery_tlw_models_proto_rawDesc = []byte{
 	0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x73, 0x79, 0x73, 0x66, 0x73, 0x5f, 0x70, 0x61, 0x74, 0x68, 0x18,
 	0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x73, 0x79, 0x73, 0x66, 0x73, 0x50, 0x61, 0x74, 0x68,
 	0x12, 0x1d, 0x0a, 0x0a, 0x66, 0x77, 0x5f, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x06,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x66, 0x77, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x42,
-	0x1d, 0x5a, 0x1b, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x72, 0x65,
-	0x63, 0x6f, 0x76, 0x65, 0x72, 0x79, 0x2f, 0x74, 0x6c, 0x77, 0x3b, 0x74, 0x6c, 0x77, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x66, 0x77, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x2a,
+	0x91, 0x01, 0x0a, 0x0d, 0x48, 0x61, 0x72, 0x64, 0x77, 0x61, 0x72, 0x65, 0x53, 0x74, 0x61, 0x74,
+	0x65, 0x12, 0x18, 0x0a, 0x14, 0x48, 0x41, 0x52, 0x44, 0x57, 0x41, 0x52, 0x45, 0x5f, 0x55, 0x4e,
+	0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x13, 0x0a, 0x0f, 0x48,
+	0x41, 0x52, 0x44, 0x57, 0x41, 0x52, 0x45, 0x5f, 0x4e, 0x4f, 0x52, 0x4d, 0x41, 0x4c, 0x10, 0x01,
+	0x12, 0x17, 0x0a, 0x13, 0x48, 0x41, 0x52, 0x44, 0x57, 0x41, 0x52, 0x45, 0x5f, 0x41, 0x43, 0x43,
+	0x45, 0x50, 0x54, 0x41, 0x42, 0x4c, 0x45, 0x10, 0x02, 0x12, 0x1d, 0x0a, 0x19, 0x48, 0x41, 0x52,
+	0x44, 0x57, 0x41, 0x52, 0x45, 0x5f, 0x4e, 0x45, 0x45, 0x44, 0x5f, 0x52, 0x45, 0x50, 0x4c, 0x41,
+	0x43, 0x45, 0x4d, 0x45, 0x4e, 0x54, 0x10, 0x03, 0x12, 0x19, 0x0a, 0x15, 0x48, 0x41, 0x52, 0x44,
+	0x57, 0x41, 0x52, 0x45, 0x5f, 0x4e, 0x4f, 0x54, 0x5f, 0x44, 0x45, 0x54, 0x45, 0x43, 0x54, 0x45,
+	0x44, 0x10, 0x04, 0x42, 0x1d, 0x5a, 0x1b, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f,
+	0x73, 0x2f, 0x72, 0x65, 0x63, 0x6f, 0x76, 0x65, 0x72, 0x79, 0x2f, 0x74, 0x6c, 0x77, 0x3b, 0x74,
+	0x6c, 0x77, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1491,46 +1563,47 @@ func file_infra_cros_recovery_tlw_models_proto_rawDescGZIP() []byte {
 	return file_infra_cros_recovery_tlw_models_proto_rawDescData
 }
 
-var file_infra_cros_recovery_tlw_models_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
+var file_infra_cros_recovery_tlw_models_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
 var file_infra_cros_recovery_tlw_models_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_infra_cros_recovery_tlw_models_proto_goTypes = []interface{}{
-	(RunRPMActionRequest_Action)(0),   // 0: chromeos.recovery.RunRPMActionRequest.Action
-	(RPMOutlet_State)(0),              // 1: chromeos.recovery.RPMOutlet.State
-	(WifiRouterHost_State)(0),         // 2: chromeos.recovery.WifiRouterHost.State
-	(VersionRequest_VersionType)(0),   // 3: chromeos.recovery.VersionRequest.VersionType
-	(DUTAudio_LoopbackState)(0),       // 4: chromeos.recovery.DUTAudio.LoopbackState
-	(*RunRequest)(nil),                // 5: chromeos.recovery.RunRequest
-	(*ProvisionRequest)(nil),          // 6: chromeos.recovery.ProvisionRequest
-	(*CallBluetoothPeerRequest)(nil),  // 7: chromeos.recovery.CallBluetoothPeerRequest
-	(*CallBluetoothPeerResponse)(nil), // 8: chromeos.recovery.CallBluetoothPeerResponse
-	(*RunRPMActionRequest)(nil),       // 9: chromeos.recovery.RunRPMActionRequest
-	(*RPMOutlet)(nil),                 // 10: chromeos.recovery.RPMOutlet
-	(*WifiRouterHost)(nil),            // 11: chromeos.recovery.WifiRouterHost
-	(*VersionRequest)(nil),            // 12: chromeos.recovery.VersionRequest
-	(*VersionResponse)(nil),           // 13: chromeos.recovery.VersionResponse
-	(*DUTAudio)(nil),                  // 14: chromeos.recovery.DUTAudio
-	(*InitServodRequest)(nil),         // 15: chromeos.recovery.InitServodRequest
-	(*ServodOptions)(nil),             // 16: chromeos.recovery.ServodOptions
-	(*ServoTopology)(nil),             // 17: chromeos.recovery.ServoTopology
-	(*ServoTopologyItem)(nil),         // 18: chromeos.recovery.ServoTopologyItem
-	nil,                               // 19: chromeos.recovery.VersionResponse.ValueEntry
-	(*durationpb.Duration)(nil),       // 20: google.protobuf.Duration
-	(*xmlrpc.Value)(nil),              // 21: chromiumos.config.api.test.xmlrpc.Value
+	(HardwareState)(0),                // 0: chromeos.recovery.HardwareState
+	(RunRPMActionRequest_Action)(0),   // 1: chromeos.recovery.RunRPMActionRequest.Action
+	(RPMOutlet_State)(0),              // 2: chromeos.recovery.RPMOutlet.State
+	(WifiRouterHost_State)(0),         // 3: chromeos.recovery.WifiRouterHost.State
+	(VersionRequest_VersionType)(0),   // 4: chromeos.recovery.VersionRequest.VersionType
+	(DUTAudio_LoopbackState)(0),       // 5: chromeos.recovery.DUTAudio.LoopbackState
+	(*RunRequest)(nil),                // 6: chromeos.recovery.RunRequest
+	(*ProvisionRequest)(nil),          // 7: chromeos.recovery.ProvisionRequest
+	(*CallBluetoothPeerRequest)(nil),  // 8: chromeos.recovery.CallBluetoothPeerRequest
+	(*CallBluetoothPeerResponse)(nil), // 9: chromeos.recovery.CallBluetoothPeerResponse
+	(*RunRPMActionRequest)(nil),       // 10: chromeos.recovery.RunRPMActionRequest
+	(*RPMOutlet)(nil),                 // 11: chromeos.recovery.RPMOutlet
+	(*WifiRouterHost)(nil),            // 12: chromeos.recovery.WifiRouterHost
+	(*VersionRequest)(nil),            // 13: chromeos.recovery.VersionRequest
+	(*VersionResponse)(nil),           // 14: chromeos.recovery.VersionResponse
+	(*DUTAudio)(nil),                  // 15: chromeos.recovery.DUTAudio
+	(*InitServodRequest)(nil),         // 16: chromeos.recovery.InitServodRequest
+	(*ServodOptions)(nil),             // 17: chromeos.recovery.ServodOptions
+	(*ServoTopology)(nil),             // 18: chromeos.recovery.ServoTopology
+	(*ServoTopologyItem)(nil),         // 19: chromeos.recovery.ServoTopologyItem
+	nil,                               // 20: chromeos.recovery.VersionResponse.ValueEntry
+	(*durationpb.Duration)(nil),       // 21: google.protobuf.Duration
+	(*xmlrpc.Value)(nil),              // 22: chromiumos.config.api.test.xmlrpc.Value
 }
 var file_infra_cros_recovery_tlw_models_proto_depIdxs = []int32{
-	20, // 0: chromeos.recovery.RunRequest.timeout:type_name -> google.protobuf.Duration
-	21, // 1: chromeos.recovery.CallBluetoothPeerRequest.args:type_name -> chromiumos.config.api.test.xmlrpc.Value
-	21, // 2: chromeos.recovery.CallBluetoothPeerResponse.value:type_name -> chromiumos.config.api.test.xmlrpc.Value
-	0,  // 3: chromeos.recovery.RunRPMActionRequest.action:type_name -> chromeos.recovery.RunRPMActionRequest.Action
-	1,  // 4: chromeos.recovery.RPMOutlet.state:type_name -> chromeos.recovery.RPMOutlet.State
-	2,  // 5: chromeos.recovery.WifiRouterHost.state:type_name -> chromeos.recovery.WifiRouterHost.State
-	10, // 6: chromeos.recovery.WifiRouterHost.RPMOutlet:type_name -> chromeos.recovery.RPMOutlet
-	3,  // 7: chromeos.recovery.VersionRequest.type:type_name -> chromeos.recovery.VersionRequest.VersionType
-	19, // 8: chromeos.recovery.VersionResponse.value:type_name -> chromeos.recovery.VersionResponse.ValueEntry
-	4,  // 9: chromeos.recovery.DUTAudio.loopback_state:type_name -> chromeos.recovery.DUTAudio.LoopbackState
-	16, // 10: chromeos.recovery.InitServodRequest.options:type_name -> chromeos.recovery.ServodOptions
-	18, // 11: chromeos.recovery.ServoTopology.root:type_name -> chromeos.recovery.ServoTopologyItem
-	18, // 12: chromeos.recovery.ServoTopology.children:type_name -> chromeos.recovery.ServoTopologyItem
+	21, // 0: chromeos.recovery.RunRequest.timeout:type_name -> google.protobuf.Duration
+	22, // 1: chromeos.recovery.CallBluetoothPeerRequest.args:type_name -> chromiumos.config.api.test.xmlrpc.Value
+	22, // 2: chromeos.recovery.CallBluetoothPeerResponse.value:type_name -> chromiumos.config.api.test.xmlrpc.Value
+	1,  // 3: chromeos.recovery.RunRPMActionRequest.action:type_name -> chromeos.recovery.RunRPMActionRequest.Action
+	2,  // 4: chromeos.recovery.RPMOutlet.state:type_name -> chromeos.recovery.RPMOutlet.State
+	3,  // 5: chromeos.recovery.WifiRouterHost.state:type_name -> chromeos.recovery.WifiRouterHost.State
+	11, // 6: chromeos.recovery.WifiRouterHost.RPMOutlet:type_name -> chromeos.recovery.RPMOutlet
+	4,  // 7: chromeos.recovery.VersionRequest.type:type_name -> chromeos.recovery.VersionRequest.VersionType
+	20, // 8: chromeos.recovery.VersionResponse.value:type_name -> chromeos.recovery.VersionResponse.ValueEntry
+	5,  // 9: chromeos.recovery.DUTAudio.loopback_state:type_name -> chromeos.recovery.DUTAudio.LoopbackState
+	17, // 10: chromeos.recovery.InitServodRequest.options:type_name -> chromeos.recovery.ServodOptions
+	19, // 11: chromeos.recovery.ServoTopology.root:type_name -> chromeos.recovery.ServoTopologyItem
+	19, // 12: chromeos.recovery.ServoTopology.children:type_name -> chromeos.recovery.ServoTopologyItem
 	13, // [13:13] is the sub-list for method output_type
 	13, // [13:13] is the sub-list for method input_type
 	13, // [13:13] is the sub-list for extension type_name
@@ -1718,7 +1791,7 @@ func file_infra_cros_recovery_tlw_models_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_infra_cros_recovery_tlw_models_proto_rawDesc,
-			NumEnums:      5,
+			NumEnums:      6,
 			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   0,

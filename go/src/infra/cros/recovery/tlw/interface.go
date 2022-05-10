@@ -250,23 +250,6 @@ type DUTProvisionedInfo struct {
 	JobRepoURL string
 }
 
-// HardwareState describes the state of hardware components.
-type HardwareState string
-
-const (
-	// Keep for all unknown state by default.
-	HardwareStateUnspecified HardwareState = "UNSPECIFIED"
-	// Hardware is in good shape and pass all verifiers.
-	HardwareStateNormal HardwareState = "NORMAL"
-	// Hardware is still good but close to became bad.
-	// Example: DUT storage when usage reached 98% usage limit.
-	HardwareStateAcceptable HardwareState = "ACCEPTABLE"
-	// Hardware is broken, bad or reached limit when it has to be replaced.
-	HardwareStateNeedReplacement HardwareState = "NEED_REPLACEMENT"
-	// Hardware expected to be present but not detected.
-	HardwareStateNotDetected HardwareState = "NOT_DETECTED"
-)
-
 // StorageType describes which type or storage used on the DUT.
 type StorageType string
 

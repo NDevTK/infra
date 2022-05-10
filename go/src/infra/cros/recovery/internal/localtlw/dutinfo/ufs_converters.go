@@ -13,17 +13,17 @@ import (
 // TODO(otabek@): Use bidirectional maps when will be available.
 
 var hardwareStates = map[ufslab.HardwareState]tlw.HardwareState{
-	ufslab.HardwareState_HARDWARE_NORMAL:           tlw.HardwareStateNormal,
-	ufslab.HardwareState_HARDWARE_ACCEPTABLE:       tlw.HardwareStateAcceptable,
-	ufslab.HardwareState_HARDWARE_NEED_REPLACEMENT: tlw.HardwareStateNeedReplacement,
-	ufslab.HardwareState_HARDWARE_NOT_DETECTED:     tlw.HardwareStateNotDetected,
+	ufslab.HardwareState_HARDWARE_NORMAL:           tlw.HardwareState_HARDWARE_NORMAL,
+	ufslab.HardwareState_HARDWARE_ACCEPTABLE:       tlw.HardwareState_HARDWARE_ACCEPTABLE,
+	ufslab.HardwareState_HARDWARE_NEED_REPLACEMENT: tlw.HardwareState_HARDWARE_NEED_REPLACEMENT,
+	ufslab.HardwareState_HARDWARE_NOT_DETECTED:     tlw.HardwareState_HARDWARE_NOT_DETECTED,
 }
 
 func convertHardwareState(s ufslab.HardwareState) tlw.HardwareState {
 	if ns, ok := hardwareStates[s]; ok {
 		return ns
 	}
-	return tlw.HardwareStateUnspecified
+	return tlw.HardwareState_HARDWARE_UNSPECIFIED
 }
 
 func convertHardwareStateToUFS(s tlw.HardwareState) ufslab.HardwareState {

@@ -102,20 +102,20 @@ const (
 func DetermineHardwareStatus(ctx context.Context, fullChargeCapacity float64, fullChargeCapacityDesigned float64) tlw.HardwareState {
 	if fullChargeCapacity == 0 {
 		log.Debugf(ctx, "charge_full is 0. Skip update battery_state!")
-		return tlw.HardwareStateUnspecified
+		return tlw.HardwareState_HARDWARE_UNSPECIFIED
 	}
 	if fullChargeCapacityDesigned == 0 {
 		log.Debugf(ctx, "charge_full_design is 0. Skip update battery_state!")
-		return tlw.HardwareStateUnspecified
+		return tlw.HardwareState_HARDWARE_UNSPECIFIED
 	}
 	capacity := (100 * fullChargeCapacity) / fullChargeCapacityDesigned
 	log.Infof(ctx, "battery capacity: %.2f%%", capacity)
 	switch {
 	case capacity >= auditCapacityNormalLevel:
-		return tlw.HardwareStateNormal
+		return tlw.HardwareState_HARDWARE_NORMAL
 	case capacity >= auditCapacityAcceptableLevel:
-		return tlw.HardwareStateAcceptable
+		return tlw.HardwareState_HARDWARE_ACCEPTABLE
 	default:
-		return tlw.HardwareStateNeedReplacement
+		return tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
 	}
 }

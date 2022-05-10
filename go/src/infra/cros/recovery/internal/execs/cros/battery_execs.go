@@ -21,17 +21,17 @@ func auditBatteryExec(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
 	b, err := battery.ReadBatteryInfo(ctx, r)
 	if err != nil {
-		info.RunArgs.DUT.Battery.State = tlw.HardwareStateUnspecified
+		info.RunArgs.DUT.Battery.State = tlw.HardwareState_HARDWARE_UNSPECIFIED
 		return errors.Annotate(err, "audit battery: dut battery state cannot extracted").Err()
 	}
 	hardwareState := battery.DetermineHardwareStatus(ctx, b.FullChargeCapacity, b.FullChargeCapacityDesigned)
 	log.Infof(ctx, "Battery hardware state: %s", hardwareState)
-	if hardwareState == tlw.HardwareStateUnspecified {
+	if hardwareState == tlw.HardwareState_HARDWARE_UNSPECIFIED {
 		return errors.Reason("audit battery: dut battery did not detected or state cannot extracted").Err()
 	}
-	if hardwareState == tlw.HardwareStateNeedReplacement {
+	if hardwareState == tlw.HardwareState_HARDWARE_NEED_REPLACEMENT {
 		log.Infof(ctx, "Detected issue with storage on the DUT.")
-		info.RunArgs.DUT.Battery.State = tlw.HardwareStateNeedReplacement
+		info.RunArgs.DUT.Battery.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
 	}
 	return nil
 }

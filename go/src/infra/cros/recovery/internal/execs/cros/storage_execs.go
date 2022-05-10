@@ -25,10 +25,10 @@ const (
 
 // storageStateMap maps state from storageState type to tlw.HardwareState type
 var storageStateMap = map[storage.StorageState]tlw.HardwareState{
-	storage.StorageStateNormal:    tlw.HardwareStateNormal,
-	storage.StorageStateWarning:   tlw.HardwareStateAcceptable,
-	storage.StorageStateCritical:  tlw.HardwareStateNeedReplacement,
-	storage.StorageStateUndefined: tlw.HardwareStateUnspecified,
+	storage.StorageStateNormal:    tlw.HardwareState_HARDWARE_NORMAL,
+	storage.StorageStateWarning:   tlw.HardwareState_HARDWARE_ACCEPTABLE,
+	storage.StorageStateCritical:  tlw.HardwareState_HARDWARE_NEED_REPLACEMENT,
+	storage.StorageStateUndefined: tlw.HardwareState_HARDWARE_UNSPECIFIED,
 }
 
 // auditStorageSMARTExec confirms that it is able to audi smartStorage info and mark the dut if it needs replacement.
@@ -48,12 +48,12 @@ func auditStorageSMARTExec(ctx context.Context, info *execs.ExecInfo) error {
 	if !ok {
 		return errors.Reason("audit storage smart: cannot find corresponding hardware state match in the map").Err()
 	}
-	if convertedHardwareState == tlw.HardwareStateUnspecified {
+	if convertedHardwareState == tlw.HardwareState_HARDWARE_UNSPECIFIED {
 		return errors.Reason("audit storage smart: DUT storage did not detected or state cannot extracted").Err()
 	}
-	if convertedHardwareState == tlw.HardwareStateNeedReplacement {
+	if convertedHardwareState == tlw.HardwareState_HARDWARE_NEED_REPLACEMENT {
 		log.Debugf(ctx, "Detected issue with storage on the DUT")
-		info.RunArgs.DUT.Storage.State = tlw.HardwareStateNeedReplacement
+		info.RunArgs.DUT.Storage.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
 		return errors.Reason("audit storage smart: hardware state need replacement").Err()
 	}
 	return nil

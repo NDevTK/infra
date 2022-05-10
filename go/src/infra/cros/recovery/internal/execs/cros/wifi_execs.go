@@ -29,25 +29,25 @@ func auditWiFiExec(ctx context.Context, info *execs.ExecInfo) error {
 	_, err := r(ctx, time.Minute, wifiDetectCmd)
 	if err == nil {
 		// successfully detected
-		info.RunArgs.DUT.Wifi.State = tlw.HardwareStateNormal
-		log.Infof(ctx, "set wifi state to be: %s", tlw.HardwareStateNormal)
+		info.RunArgs.DUT.Wifi.State = tlw.HardwareState_HARDWARE_NORMAL
+		log.Infof(ctx, "set wifi state to be: %s", tlw.HardwareState_HARDWARE_NORMAL)
 		return nil
 	}
 	if execs.SSHErrorInternal.In(err) || execs.SSHErrorCLINotFound.In(err) {
-		info.RunArgs.DUT.Wifi.State = tlw.HardwareStateUnspecified
+		info.RunArgs.DUT.Wifi.State = tlw.HardwareState_HARDWARE_UNSPECIFIED
 		return errors.Annotate(err, "audit wifi").Err()
 	}
 	if info.RunArgs.DUT.Wifi.ChipName != "" {
 		// If wifi chip is not detected, but was expected by setup info then we
 		// set needs_replacement as it is probably a hardware issue.
-		info.RunArgs.DUT.Wifi.State = tlw.HardwareStateNeedReplacement
-		log.Infof(ctx, "set wifi state to be: %s", tlw.HardwareStateNeedReplacement)
+		info.RunArgs.DUT.Wifi.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
+		log.Infof(ctx, "set wifi state to be: %s", tlw.HardwareState_HARDWARE_NEED_REPLACEMENT)
 		return errors.Annotate(err, "audit wifi").Err()
 	}
 	// the wifi state cannot be determined due to cmd failed
 	// therefore, set it to HardwareStateNotDetected
-	info.RunArgs.DUT.Wifi.State = tlw.HardwareStateNotDetected
-	log.Infof(ctx, "set wifi state to be: %s", tlw.HardwareStateNotDetected)
+	info.RunArgs.DUT.Wifi.State = tlw.HardwareState_HARDWARE_NOT_DETECTED
+	log.Infof(ctx, "set wifi state to be: %s", tlw.HardwareState_HARDWARE_NOT_DETECTED)
 	return errors.Annotate(err, "audit wifi").Err()
 }
 
