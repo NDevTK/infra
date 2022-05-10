@@ -1,0 +1,67 @@
+{
+  "devices": [
+    {
+      "launch_date": "2031-06-01",
+      "boards": [
+        {
+          "public_codename": "abcd",
+          "is_active": true,
+          "hwid_match": "^xyz .*",
+          "reference_group": "xyz"
+        },
+        {
+          "public_codename": "pqrs",
+          "is_active": true,
+          "hwid_match": "^lmn .*",
+          "reference_group": "lmn"
+        }
+      ],
+      "partner_code_name": "",
+      "architecture": "X86_64",
+      "platform": "ABC-N"
+    },
+    {
+      "public_codename": "ijk",
+      "marketing_codename": "",
+      "hwid_match": "",
+      "loem": false,
+      "oem": "Google Chrome OS",
+      "eol_date": "2030-06-01",
+      "eol_date_official": false,
+      "reference_board": {
+        "public_codename": "blah",
+        "is_active": true,
+        "hwid_match": ".*",
+        "reference_group": "blah"
+      },
+      "boards": [
+        {
+          "public_codename": "blahblah",
+          "is_active": true,
+          "hwid_match": ".*",
+          "reference_group": "blahblah",
+          "models": [
+            {
+              "name": "blahblah",
+              "hwid_match": ""
+            }
+          ]
+        },
+        {
+          "public_codename": "blahblah2",
+          "is_active": true,
+          "hwid_match": "^BLAH .*",
+          "reference_group": "",
+          "models": [
+            {
+              "name": "blahblah2",
+              "hwid_match": ""
+            }
+          ]
+        }
+      ],
+      "partner_code_name": "",
+      "is_follower_device": false
+    }
+    ]
+  }
