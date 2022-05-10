@@ -377,34 +377,6 @@ type ServoHost struct {
 	ContainerName string
 }
 
-// ServoTopology describes servo devices used to provide servo functionality.
-type ServoTopology struct {
-	Root     *ServoTopologyItem
-	Children []*ServoTopologyItem
-}
-
-// ServoTopologyItem describes details of one servo device.
-type ServoTopologyItem struct {
-	// type provides the type of servo device. Keeping as String to avoid issue with introduce new type.
-	Type string
-	// sysfs_product provides the product name of the device recorded in File System.
-	SysfsProduct string
-	// serial provides the serial number of the device.
-	Serial string
-	// usb_hub_port provides the port connection to the device.
-	// e.g. '1-6.2.2' where
-	//   '1-6'  - port on the labstation
-	//   '2'    - port on smart-hub connected to the labstation
-	//   '2'    - port on servo hub (part of servo_v4 or servo_v4.1) connected to the smart-hub
-	// The same path will look '1-6.2' if connected servo_v4 directly to the labstation.
-	UsbHubPort string
-
-	// This is the complete path on the file system for the servo device.
-	SysfsPath string
-	// This is the version of servo device.
-	FwVersion string
-}
-
 // ServoState describes the state of setup/communication issue related to servo functionality provided by servo.
 type ServoState string
 

@@ -164,26 +164,57 @@ message InitServodRequest {
   // Resource name of device.
   string resource = 1;
   // ServodOptions options to provide options for servod daemon.
-	ServodOptions options = 2;
+  ServodOptions options = 2;
   // Prepare servo-host without servod service.
   bool no_servod = 3;
 }
 
-
 // ServodOption represents options to start servod.
 message ServodOptions {
   // Board of DUT connected to servod.
-	string dut_board = 1;
+  string dut_board = 1;
   // Model of DUT connected to servod.
-	string dut_model = 2;
+  string dut_model = 2;
   // Port assigned to servod.
-	int32 servod_port = 3;
+  int32 servod_port = 3;
   // Servo board serial.
-	string servo_serial = 4;
+  string servo_serial = 4;
   // Specified dual setup for servod.
-	bool servo_dual = 5;
+  bool servo_dual = 5;
   // Specified if need apply CR50 config.
-	bool use_cr50_config = 6;
+  bool use_cr50_config = 6;
   // Use recovery mode when start servod.
-	bool recovery_mode = 7;
+  bool recovery_mode = 7;
+}
+
+// ServoTopology describes servo devices used to provide servo functionality.
+message ServoTopology {
+  ServoTopologyItem root = 1;
+  repeated ServoTopologyItem children = 2;
+}
+
+// ServoTopologyItem describes details of one servo device.
+message ServoTopologyItem {
+  // type provides the type of servo device. Keeping as String to avoid issue
+  // with introduce new type.
+  string type = 1;
+  // sysfs_product provides the product name of the device recorded in File
+  // System.
+  string sysfs_product = 2;
+  // serial provides the serial number of the device.
+  string serial = 3;
+  // usb_hub_port provides the port connection to the device.
+  // e.g. '1-6.2.2' where
+  //   '1-6'  - port on the labstation
+  //   '2'    - port on smart-hub connected to the labstation
+  //   '2'    - port on servo hub (part of servo_v4 or servo_v4.1) connected to
+  //   the smart-hub
+  // The same path will look '1-6.2' if connected servo_v4 directly to the
+  // labstation.
+  string usb_hub_port = 4;
+
+  // This is the complete path on the file system for the servo device.
+  string sysfs_path = 5;
+  // This is the version of servo device.
+  string fw_version = 6;
 }
