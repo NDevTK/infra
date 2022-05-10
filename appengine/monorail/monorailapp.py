@@ -45,9 +45,25 @@ for rule in flask_route_excessive_active:
   flaskapp_excessive_activity.add_url_rule(
       rule[0], view_func=rule[1], methods=rule[2])
 
+# user_setting
+flaskapp_user_setting = Flask(__name__)
+flask_route_excessive_active = flaskRegist.RegisterUserSetting(services)
+for rule in flask_route_excessive_active:
+  flaskapp_user_setting.add_url_rule(
+      rule[0], view_func=rule[1], methods=rule[2])
+
+# user_setting_post
+flaskapp_user_setting_post = Flask(__name__)
+flask_route_excessive_active = flaskRegist.RegisterUserSettingPost(services)
+for rule in flask_route_excessive_active:
+  flaskapp_user_setting_post.add_url_rule(
+      rule[0], view_func=rule[1], methods=rule[2])
+
 app = dispatcher.DispatcherMiddleware(
     app, {
         urls.EXCESSIVE_ACTIVITY: flaskapp_excessive_activity,
+        urls.USER_SETTINGS: flaskapp_user_setting,
+        '/hosting/settings.do': flaskapp_user_setting_post,
     })
 
 endpoints = endpoints_webapp2.api_server(
