@@ -295,12 +295,15 @@ var canBranchTestManifestRemote = Manifest{
 		// Remote has name but no alias. Remote is a branchable remote, but specific
 		// project is not branchable.
 		{Path: "buzz/", Name: "buzz", RemoteName: "weave"},
+		// ti50 projects should be branchable.
+		{Path: "src/platform/ti50", Name: "ti50/common/ti50", RemoteName: "cros-internal"},
 	},
 	Remotes: []Remote{
 		{Name: "cros"},
 		{Name: "cros1", Alias: "cros"},
 		{Name: "cros2", Alias: "github"},
 		{Name: "weave"},
+		{Name: "cros-internal"},
 	},
 }
 
@@ -330,6 +333,8 @@ func TestProjectBranchMode_remote(t *testing.T) {
 	// Remote has name but no alias. Remote is a branchable remote, but specific
 	// project is not branchable.
 	assertBranchModesEqual(t, manifest.ProjectBranchMode(manifest.Projects[3]), Pinned)
+	// ti50 projects should be branchable.
+	assertBranchModesEqual(t, manifest.ProjectBranchMode(manifest.Projects[5]), Create)
 }
 
 func TestMergeManifests(t *testing.T) {
