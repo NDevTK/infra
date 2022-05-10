@@ -1718,6 +1718,7 @@ func updateRecoveryLabData(ctx context.Context, hostname string, resourceState u
 				if err = editRecoveryPeripheralServo(peri.GetServo(), labData); err != nil {
 					return err
 				}
+				peri.Servo.UsbDrive = labData.GetServoUsbDrive()
 				// Wifi cannot be nil for valid DUT
 				if peri.GetWifi() == nil {
 					peri.Wifi = &chromeosLab.Wifi{}

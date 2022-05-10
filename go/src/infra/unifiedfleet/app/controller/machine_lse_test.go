@@ -9,11 +9,13 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	labApi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
@@ -1627,6 +1629,11 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 					Type: "v3",
 				},
 			}
+			usbDrive := &labApi.UsbDrive{
+				Serial:        "usb-drive serial",
+				Manufacturer:  "usb-drive-make",
+				FirstSeenTime: timestamppb.Now(),
+			}
 			err = updateRecoveryLabData(ctx, "machinelse-labdata-2", ufspb.State_STATE_REPAIR_FAILED, &ufsAPI.UpdateDeviceRecoveryDataRequest_LabData{
 				SmartUsbhub:   true,
 				ServoType:     "fake-type",
@@ -1641,6 +1648,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 						State:    chromeosLab.PeripheralState_WORKING,
 					},
 				},
+				ServoUsbDrive: usbDrive,
 			})
 			So(err, ShouldBeNil)
 			req, err = inventory.GetMachineLSE(ctx, "machinelse-labdata-2")
@@ -1655,6 +1663,8 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			So(peri.GetWifi().GetWifiRouters()[0].GetState(), ShouldEqual, chromeosLab.PeripheralState_WORKING)
 			So(peri.GetWifi().GetWifiRouters()[1].GetHostname(), ShouldEqual, "machine-labdata-2-router")
 			So(peri.GetWifi().GetWifiRouters()[1].GetState(), ShouldEqual, chromeosLab.PeripheralState_WORKING)
+			So(peri.Servo.GetUsbDrive().GetSerial(), ShouldEqual, "usb-drive serial")
+			So(peri.Servo.GetUsbDrive().GetManufacturer(), ShouldEqual, "usb-drive-make")
 		})
 		Convey("Update a OS machine lse - empty servo topology, add multiple wifi routers", func() {
 			machineLSE2 := mockDutMachineLSE("machinelse-labdata-3")
