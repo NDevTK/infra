@@ -28,6 +28,7 @@ import "infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/servo.proto";
 import "infra/unifiedfleet/api/v1/models/machine_lse_deployment.proto";
 import "infra/unifiedfleet/api/v1/models/scheduling_unit.proto";
+import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/usb_drive.proto";
 
 service Fleet {
   // CreateChromePlatform creates a new chromePlatform.
@@ -1820,6 +1821,8 @@ message UpdateDeviceRecoveryDataRequest {
     string servo_component = 4;
     repeated WifiRouter wifi_routers = 5;
     repeated BluetoothPeer blueooth_peers = 6;
+    // ServoUsbDrive contains details of the servo's plugged USB drive.
+    chromiumos.test.lab.api.UsbDrive servo_usb_drive = 7;
   }
 
   // Used for updating back essential configs from repair/deploy task.
