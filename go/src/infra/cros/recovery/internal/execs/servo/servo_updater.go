@@ -58,7 +58,7 @@ var (
 )
 
 // Checks whether the servo update is required for the passed servo device.
-func needsUpdate(ctx context.Context, runner execs.Runner, device *tlw.ServoTopologyItem, channel tlw.ServoFirmwareChannel) bool {
+func needsUpdate(ctx context.Context, runner execs.Runner, device *tlw.ServoTopologyItem, channel tlw.ServoFwChannel) bool {
 	if !updatableServoNames[device.Type] {
 		log.Debugf(ctx, "Needs Update: servo type %q cannot be updated", device.Type)
 		return false
@@ -72,14 +72,15 @@ func needsUpdate(ctx context.Context, runner execs.Runner, device *tlw.ServoTopo
 }
 
 // Checks whether the servo version is outdated for the passed servo device.
-func isVersionOutdated(ctx context.Context, runner execs.Runner, device *tlw.ServoTopologyItem, channel tlw.ServoFirmwareChannel) bool {
+func isVersionOutdated(ctx context.Context, runner execs.Runner, device *tlw.ServoTopologyItem, fwChannel tlw.ServoFwChannel) bool {
 	cVersion := device.FwVersion
 	log.Debugf(ctx, "Is Version Outdated: current version is %q", cVersion)
 	if cVersion == "" {
 		return true
 	}
-	if channel == "" {
-		channel = "stable"
+	channel := "stable"
+	if fwChannel != tlw.ServoFwChannel_FW_UNSPECIFIED {
+		channel = strings.ToLower(fwChannel.String())
 	}
 	lVersion := latestVersionFromUpdater(ctx, runner, channel, device.Type)
 	log.Debugf(ctx, "Is Version Outdated: latest version is %q", lVersion)
@@ -95,8 +96,8 @@ func isVersionOutdated(ctx context.Context, runner execs.Runner, device *tlw.Ser
 }
 
 // Get latest available version from the servo_updater command.
-func latestVersionFromUpdater(ctx context.Context, runner execs.Runner, channel tlw.ServoFirmwareChannel, board string) string {
-	result, err := runner(ctx, time.Minute, fmt.Sprintf(latestVersionCMD, board, strings.ToLower(string(channel))))
+func latestVersionFromUpdater(ctx context.Context, runner execs.Runner, channel string, board string) string {
+	result, err := runner(ctx, time.Minute, fmt.Sprintf(latestVersionCMD, board, channel))
 	// An example result is "firmware: servo_v4_v2.4.58-c37246f9c". We
 	// need to parse-out the string after ":" here, because that is
 	// the firmware version value we are looking for.
@@ -133,7 +134,7 @@ func KillActiveUpdaterProcesses(ctx context.Context, r execs.Runner, timeout tim
 }
 
 // createServoDeviceFwUpdateCmd returns the specific servo device update command that is unique to different type of the servo board(device).
-func createServoDeviceFwUpdateCmd(useContainer bool, device *tlw.ServoTopologyItem, forceUpdate bool, channel tlw.ServoFirmwareChannel) string {
+func createServoDeviceFwUpdateCmd(useContainer bool, device *tlw.ServoTopologyItem, forceUpdate bool, channel tlw.ServoFwChannel) string {
 	var cmd string
 	if useContainer {
 		cmd = fwUpdateForContainerCmd
@@ -148,7 +149,7 @@ func createServoDeviceFwUpdateCmd(useContainer bool, device *tlw.ServoTopologyIt
 }
 
 // updateServoDeviceFW is the detailed execution of the process of updating one particular servo board(device).
-func updateServoDeviceFW(ctx context.Context, r execs.Runner, useContainer bool, device *tlw.ServoTopologyItem, forceUpdate bool, ignoreVersion bool, channel tlw.ServoFirmwareChannel) error {
+func updateServoDeviceFW(ctx context.Context, r execs.Runner, useContainer bool, device *tlw.ServoTopologyItem, forceUpdate bool, ignoreVersion bool, channel tlw.ServoFwChannel) error {
 	if !ignoreVersion {
 		if needsUpdate(ctx, r, device, channel) {
 			log.Debugf(ctx, "This servo %q: still need update", device.Type)
@@ -220,7 +221,7 @@ type FwUpdaterRequest struct {
 	// Whether the current DUT's ServoHost is using container servod.
 	UseContainer bool
 	// Firmware channel of the servo for the current DUT.
-	FirmwareChannel tlw.ServoFirmwareChannel
+	FirmwareChannel tlw.ServoFwChannel
 	// Count of attempts to update servo firmware.
 	TryAttemptCount int
 	// Try force update again if the first fw update attempt failed.

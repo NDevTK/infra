@@ -695,7 +695,7 @@ func servoUpdateServoFirmwareExec(ctx context.Context, info *execs.ExecInfo) (er
 		}
 	}
 	if len(failDevices) != 0 {
-		info.RunArgs.DUT.ServoHost.State = tlw.ServoStateNeedReplacement
+		info.RunArgs.DUT.ServoHost.State = tlw.ServoHost_NEED_REPLACEMENT
 		return errors.Reason("servo update servo firmware: %d servo devices fails the update process", len(failDevices)).Err()
 	}
 	return nil

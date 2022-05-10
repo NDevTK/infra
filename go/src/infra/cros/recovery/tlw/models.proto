@@ -234,3 +234,101 @@ enum HardwareState {
   // (used for USB-drive when it expected but not detected on the device)
   HARDWARE_NOT_DETECTED = 4;
 }
+
+// Servo Firmware Channel describes the firmware expected to have on servos.
+enum ServoFwChannel {
+  FW_UNSPECIFIED = 0;
+  // Servo firmware from Stable channel.
+  FW_STABLE = 1;
+  // The previous Servo firmware from Stable channel.
+  FW_PREV = 2;
+  // Servo firmware from Dev channel.
+  FW_DEV = 3;
+  // Servo firmware from Alpha channel.
+  FW_ALPHA = 4;
+}
+
+// ServoHost holds info about host to manage servod services and verify
+// connected servo devices. Example: labstation, servo-host container.
+message ServoHost {
+  // Name is the resource name.
+  string Name = 1;
+  // State of the servo.
+  enum State {
+    STATE_UNSPECIFIED = 0;
+    // Device and software on it is working as expected.
+    WORKING = 1;
+    // Configuration for device is not provided.
+    MISSING_CONFIG = 2;
+    // Configuration contains incorrect information.
+    WRONG_CONFIG = 3;
+    // Device is not connected/plugged.
+    NOT_CONNECTED = 4;
+    // Device is not reachable over ssh.
+    NO_SSH = 5;
+    // Device is broken or not working as expected. the state used if no
+    // specified state for the issue.
+    BROKEN = 6;
+    // Device cannot be repaired or required manual attention to fix/replace it.
+    NEED_REPLACEMENT = 7;
+    // Cr50 console missing or unresponsive.
+    CR50_CONSOLE_MISSING = 8;
+    // Servod daemon cannot start on servo-host because cr50 testlab not
+    // enabled.
+    CCD_TESTLAB_ISSUE = 9;
+    // Servod daemon cannot start on servo-host.
+    SERVOD_ISSUE = 10;
+    // Device lid is not open.
+    LID_OPEN_FAILED = 11;
+    // The ribbon cable between servo and DUT is broken or not connected.
+    BAD_RIBBON_CABLE = 12;
+    // The EC on the DUT has issue.
+    EC_BROKEN = 13;
+    // Servo is not connected to the DUT.
+    DUT_NOT_CONNECTED = 14;
+    // Some component in servo-topology missed or not detected.
+    TOPOLOGY_ISSUE = 15;
+    // SBU voltage issues effect CR50 detection.
+    SBU_LOW_VOLTAGE = 16;
+    // CR50 SBU voltage detected but device was not enumerated.
+    CR50_NOT_ENUMERATED = 17;
+    // Servo serial mismatch, when servo not detected and another serial
+    // detected on previous used port.
+    SERVO_SERIAL_MISMATCH = 18;
+    // Issue to connect to servod by XMLRPC proxy.
+    SERVOD_PROXY_ISSUE = 19;
+    // Issue related to servo-host. Timeout to start servod or issue with
+    // detecting devices.
+    SERVO_HOST_ISSUE = 20;
+    // Issue related to servo_updater on the servo-host.
+    SERVO_UPDATER_ISSUE = 21;
+    // Issue related to power button pin on the servo host.
+    SERVOD_DUT_CONTROLLER_MISSING = 22;
+    // Issue related to cold reset pin on the DUT.
+    COLD_RESET_PIN_ISSUE = 23;
+    // Issue related to warm reset pin on the DUT.
+    WARM_RESET_PIN_ISSUE = 24;
+    // Issue related to power button pin on the DUT.
+    POWER_BUTTON_PIN_ISSUE = 25;
+  }
+  State state = 2;
+  // Serial number of the root servo device.
+  string serial_number = 3;
+  // Channel of firmware used on servo devices.
+  ServoFwChannel firmware_channel = 4;
+  // Self representation of servo-setup by servod.
+  // Example: servo_v4_with_servo_micro, servo_v4_with_ccd_cr50.
+  string servod_type = 5;
+  // State of the USB-key connected to the servo.
+  HardwareState usbkey_state = 6;
+  // Port user on the host to run servod daemon. Expected value between 9900
+  // and 9999.
+  int32 servod_port = 7;
+  // Smart USB-hub is present on setup.
+  bool smart_usbhub_present = 8;
+  // Servo Topology of servo devices.
+  ServoTopology servo_topology = 9;
+  // Name of the servod container if the servo uses a
+  // servod-container.
+  string container_name = 10;
+}

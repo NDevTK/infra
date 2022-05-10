@@ -256,7 +256,7 @@ func (c *tlwClient) InitServod(ctx context.Context, req *tlw.InitServodRequest) 
 	if !req.GetNoServod() {
 		s, err := c.servodPool.Get(
 			localproxy.BuildAddr(dut.ServoHost.Name),
-			int32(dut.ServoHost.ServodPort),
+			dut.ServoHost.ServodPort,
 			func() ([]string, error) {
 				return servod.GenerateParams(req.Options), nil
 			})
@@ -410,7 +410,7 @@ func (c *tlwClient) StopServod(ctx context.Context, resourceName string) error {
 // stopServodOnHardwareHost stops servod on labstation and servo_v3.
 func (c *tlwClient) stopServodOnHardwareHost(ctx context.Context, dut *tlw.Dut) error {
 	o := &tlw.ServodOptions{
-		ServodPort: int32(dut.ServoHost.ServodPort),
+		ServodPort: dut.ServoHost.ServodPort,
 	}
 	s, err := c.servodPool.Get(
 		localproxy.BuildAddr(dut.ServoHost.Name),
@@ -458,7 +458,7 @@ func (c *tlwClient) CallServod(ctx context.Context, req *tlw.CallServodRequest) 
 		if err != nil {
 			return fail(err)
 		}
-		rpc := tlw_xmlrpc.New(addr, dut.ServoHost.ServodPort)
+		rpc := tlw_xmlrpc.New(addr, int(dut.ServoHost.ServodPort))
 		if val, err := servod.Call(ctx, rpc, req.Timeout, req.Method, req.Args); err != nil {
 			return fail(err)
 		} else {
@@ -471,7 +471,7 @@ func (c *tlwClient) CallServod(ctx context.Context, req *tlw.CallServodRequest) 
 		// For labstation using port forward by ssh.
 		s, err := c.servodPool.Get(
 			localproxy.BuildAddr(dut.ServoHost.Name),
-			int32(dut.ServoHost.ServodPort), nil)
+			dut.ServoHost.ServodPort, nil)
 		if err != nil {
 			return fail(err)
 		}

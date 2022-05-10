@@ -89,6 +89,66 @@ func (HardwareState) EnumDescriptor() ([]byte, []int) {
 	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{0}
 }
 
+// Servo Firmware Channel describes the firmware expected to have on servos.
+type ServoFwChannel int32
+
+const (
+	ServoFwChannel_FW_UNSPECIFIED ServoFwChannel = 0
+	// Servo firmware from Stable channel.
+	ServoFwChannel_FW_STABLE ServoFwChannel = 1
+	// The previous Servo firmware from Stable channel.
+	ServoFwChannel_FW_PREV ServoFwChannel = 2
+	// Servo firmware from Dev channel.
+	ServoFwChannel_FW_DEV ServoFwChannel = 3
+	// Servo firmware from Alpha channel.
+	ServoFwChannel_FW_ALPHA ServoFwChannel = 4
+)
+
+// Enum value maps for ServoFwChannel.
+var (
+	ServoFwChannel_name = map[int32]string{
+		0: "FW_UNSPECIFIED",
+		1: "FW_STABLE",
+		2: "FW_PREV",
+		3: "FW_DEV",
+		4: "FW_ALPHA",
+	}
+	ServoFwChannel_value = map[string]int32{
+		"FW_UNSPECIFIED": 0,
+		"FW_STABLE":      1,
+		"FW_PREV":        2,
+		"FW_DEV":         3,
+		"FW_ALPHA":       4,
+	}
+)
+
+func (x ServoFwChannel) Enum() *ServoFwChannel {
+	p := new(ServoFwChannel)
+	*p = x
+	return p
+}
+
+func (x ServoFwChannel) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ServoFwChannel) Descriptor() protoreflect.EnumDescriptor {
+	return file_infra_cros_recovery_tlw_models_proto_enumTypes[1].Descriptor()
+}
+
+func (ServoFwChannel) Type() protoreflect.EnumType {
+	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[1]
+}
+
+func (x ServoFwChannel) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ServoFwChannel.Descriptor instead.
+func (ServoFwChannel) EnumDescriptor() ([]byte, []int) {
+	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{1}
+}
+
 // Action represents action expecting to perform on power supplier.
 type RunRPMActionRequest_Action int32
 
@@ -129,11 +189,11 @@ func (x RunRPMActionRequest_Action) String() string {
 }
 
 func (RunRPMActionRequest_Action) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[1].Descriptor()
+	return file_infra_cros_recovery_tlw_models_proto_enumTypes[2].Descriptor()
 }
 
 func (RunRPMActionRequest_Action) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[1]
+	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[2]
 }
 
 func (x RunRPMActionRequest_Action) Number() protoreflect.EnumNumber {
@@ -187,11 +247,11 @@ func (x RPMOutlet_State) String() string {
 }
 
 func (RPMOutlet_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[2].Descriptor()
+	return file_infra_cros_recovery_tlw_models_proto_enumTypes[3].Descriptor()
 }
 
 func (RPMOutlet_State) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[2]
+	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[3]
 }
 
 func (x RPMOutlet_State) Number() protoreflect.EnumNumber {
@@ -237,11 +297,11 @@ func (x WifiRouterHost_State) String() string {
 }
 
 func (WifiRouterHost_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[3].Descriptor()
+	return file_infra_cros_recovery_tlw_models_proto_enumTypes[4].Descriptor()
 }
 
 func (WifiRouterHost_State) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[3]
+	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[4]
 }
 
 func (x WifiRouterHost_State) Number() protoreflect.EnumNumber {
@@ -289,11 +349,11 @@ func (x VersionRequest_VersionType) String() string {
 }
 
 func (VersionRequest_VersionType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[4].Descriptor()
+	return file_infra_cros_recovery_tlw_models_proto_enumTypes[5].Descriptor()
 }
 
 func (VersionRequest_VersionType) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[4]
+	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[5]
 }
 
 func (x VersionRequest_VersionType) Number() protoreflect.EnumNumber {
@@ -337,11 +397,11 @@ func (x DUTAudio_LoopbackState) String() string {
 }
 
 func (DUTAudio_LoopbackState) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[5].Descriptor()
+	return file_infra_cros_recovery_tlw_models_proto_enumTypes[6].Descriptor()
 }
 
 func (DUTAudio_LoopbackState) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[5]
+	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[6]
 }
 
 func (x DUTAudio_LoopbackState) Number() protoreflect.EnumNumber {
@@ -351,6 +411,154 @@ func (x DUTAudio_LoopbackState) Number() protoreflect.EnumNumber {
 // Deprecated: Use DUTAudio_LoopbackState.Descriptor instead.
 func (DUTAudio_LoopbackState) EnumDescriptor() ([]byte, []int) {
 	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{9, 0}
+}
+
+// State of the servo.
+type ServoHost_State int32
+
+const (
+	ServoHost_STATE_UNSPECIFIED ServoHost_State = 0
+	// Device and software on it is working as expected.
+	ServoHost_WORKING ServoHost_State = 1
+	// Configuration for device is not provided.
+	ServoHost_MISSING_CONFIG ServoHost_State = 2
+	// Configuration contains incorrect information.
+	ServoHost_WRONG_CONFIG ServoHost_State = 3
+	// Device is not connected/plugged.
+	ServoHost_NOT_CONNECTED ServoHost_State = 4
+	// Device is not reachable over ssh.
+	ServoHost_NO_SSH ServoHost_State = 5
+	// Device is broken or not working as expected. the state used if no
+	// specified state for the issue.
+	ServoHost_BROKEN ServoHost_State = 6
+	// Device cannot be repaired or required manual attention to fix/replace it.
+	ServoHost_NEED_REPLACEMENT ServoHost_State = 7
+	// Cr50 console missing or unresponsive.
+	ServoHost_CR50_CONSOLE_MISSING ServoHost_State = 8
+	// Servod daemon cannot start on servo-host because cr50 testlab not
+	// enabled.
+	ServoHost_CCD_TESTLAB_ISSUE ServoHost_State = 9
+	// Servod daemon cannot start on servo-host.
+	ServoHost_SERVOD_ISSUE ServoHost_State = 10
+	// Device lid is not open.
+	ServoHost_LID_OPEN_FAILED ServoHost_State = 11
+	// The ribbon cable between servo and DUT is broken or not connected.
+	ServoHost_BAD_RIBBON_CABLE ServoHost_State = 12
+	// The EC on the DUT has issue.
+	ServoHost_EC_BROKEN ServoHost_State = 13
+	// Servo is not connected to the DUT.
+	ServoHost_DUT_NOT_CONNECTED ServoHost_State = 14
+	// Some component in servo-topology missed or not detected.
+	ServoHost_TOPOLOGY_ISSUE ServoHost_State = 15
+	// SBU voltage issues effect CR50 detection.
+	ServoHost_SBU_LOW_VOLTAGE ServoHost_State = 16
+	// CR50 SBU voltage detected but device was not enumerated.
+	ServoHost_CR50_NOT_ENUMERATED ServoHost_State = 17
+	// Servo serial mismatch, when servo not detected and another serial
+	// detected on previous used port.
+	ServoHost_SERVO_SERIAL_MISMATCH ServoHost_State = 18
+	// Issue to connect to servod by XMLRPC proxy.
+	ServoHost_SERVOD_PROXY_ISSUE ServoHost_State = 19
+	// Issue related to servo-host. Timeout to start servod or issue with
+	// detecting devices.
+	ServoHost_SERVO_HOST_ISSUE ServoHost_State = 20
+	// Issue related to servo_updater on the servo-host.
+	ServoHost_SERVO_UPDATER_ISSUE ServoHost_State = 21
+	// Issue related to power button pin on the servo host.
+	ServoHost_SERVOD_DUT_CONTROLLER_MISSING ServoHost_State = 22
+	// Issue related to cold reset pin on the DUT.
+	ServoHost_COLD_RESET_PIN_ISSUE ServoHost_State = 23
+	// Issue related to warm reset pin on the DUT.
+	ServoHost_WARM_RESET_PIN_ISSUE ServoHost_State = 24
+	// Issue related to power button pin on the DUT.
+	ServoHost_POWER_BUTTON_PIN_ISSUE ServoHost_State = 25
+)
+
+// Enum value maps for ServoHost_State.
+var (
+	ServoHost_State_name = map[int32]string{
+		0:  "STATE_UNSPECIFIED",
+		1:  "WORKING",
+		2:  "MISSING_CONFIG",
+		3:  "WRONG_CONFIG",
+		4:  "NOT_CONNECTED",
+		5:  "NO_SSH",
+		6:  "BROKEN",
+		7:  "NEED_REPLACEMENT",
+		8:  "CR50_CONSOLE_MISSING",
+		9:  "CCD_TESTLAB_ISSUE",
+		10: "SERVOD_ISSUE",
+		11: "LID_OPEN_FAILED",
+		12: "BAD_RIBBON_CABLE",
+		13: "EC_BROKEN",
+		14: "DUT_NOT_CONNECTED",
+		15: "TOPOLOGY_ISSUE",
+		16: "SBU_LOW_VOLTAGE",
+		17: "CR50_NOT_ENUMERATED",
+		18: "SERVO_SERIAL_MISMATCH",
+		19: "SERVOD_PROXY_ISSUE",
+		20: "SERVO_HOST_ISSUE",
+		21: "SERVO_UPDATER_ISSUE",
+		22: "SERVOD_DUT_CONTROLLER_MISSING",
+		23: "COLD_RESET_PIN_ISSUE",
+		24: "WARM_RESET_PIN_ISSUE",
+		25: "POWER_BUTTON_PIN_ISSUE",
+	}
+	ServoHost_State_value = map[string]int32{
+		"STATE_UNSPECIFIED":             0,
+		"WORKING":                       1,
+		"MISSING_CONFIG":                2,
+		"WRONG_CONFIG":                  3,
+		"NOT_CONNECTED":                 4,
+		"NO_SSH":                        5,
+		"BROKEN":                        6,
+		"NEED_REPLACEMENT":              7,
+		"CR50_CONSOLE_MISSING":          8,
+		"CCD_TESTLAB_ISSUE":             9,
+		"SERVOD_ISSUE":                  10,
+		"LID_OPEN_FAILED":               11,
+		"BAD_RIBBON_CABLE":              12,
+		"EC_BROKEN":                     13,
+		"DUT_NOT_CONNECTED":             14,
+		"TOPOLOGY_ISSUE":                15,
+		"SBU_LOW_VOLTAGE":               16,
+		"CR50_NOT_ENUMERATED":           17,
+		"SERVO_SERIAL_MISMATCH":         18,
+		"SERVOD_PROXY_ISSUE":            19,
+		"SERVO_HOST_ISSUE":              20,
+		"SERVO_UPDATER_ISSUE":           21,
+		"SERVOD_DUT_CONTROLLER_MISSING": 22,
+		"COLD_RESET_PIN_ISSUE":          23,
+		"WARM_RESET_PIN_ISSUE":          24,
+		"POWER_BUTTON_PIN_ISSUE":        25,
+	}
+)
+
+func (x ServoHost_State) Enum() *ServoHost_State {
+	p := new(ServoHost_State)
+	*p = x
+	return p
+}
+
+func (x ServoHost_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ServoHost_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_infra_cros_recovery_tlw_models_proto_enumTypes[7].Descriptor()
+}
+
+func (ServoHost_State) Type() protoreflect.EnumType {
+	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[7]
+}
+
+func (x ServoHost_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ServoHost_State.Descriptor instead.
+func (ServoHost_State) EnumDescriptor() ([]byte, []int) {
+	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{14, 0}
 }
 
 // RunRequest represents result of executed command.
@@ -1365,6 +1573,139 @@ func (x *ServoTopologyItem) GetFwVersion() string {
 	return ""
 }
 
+// ServoHost holds info about host to manage servod services and verify
+// connected servo devices. Example: labstation, servo-host container.
+type ServoHost struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Name is the resource name.
+	Name  string          `protobuf:"bytes,1,opt,name=Name,proto3" json:"Name,omitempty"`
+	State ServoHost_State `protobuf:"varint,2,opt,name=state,proto3,enum=chromeos.recovery.ServoHost_State" json:"state,omitempty"`
+	// Serial number of the root servo device.
+	SerialNumber string `protobuf:"bytes,3,opt,name=serial_number,json=serialNumber,proto3" json:"serial_number,omitempty"`
+	// Channel of firmware used on servo devices.
+	FirmwareChannel ServoFwChannel `protobuf:"varint,4,opt,name=firmware_channel,json=firmwareChannel,proto3,enum=chromeos.recovery.ServoFwChannel" json:"firmware_channel,omitempty"`
+	// Self representation of servo-setup by servod.
+	// Example: servo_v4_with_servo_micro, servo_v4_with_ccd_cr50.
+	ServodType string `protobuf:"bytes,5,opt,name=servod_type,json=servodType,proto3" json:"servod_type,omitempty"`
+	// State of the USB-key connected to the servo.
+	UsbkeyState HardwareState `protobuf:"varint,6,opt,name=usbkey_state,json=usbkeyState,proto3,enum=chromeos.recovery.HardwareState" json:"usbkey_state,omitempty"`
+	// Port user on the host to run servod daemon. Expected value between 9900
+	// and 9999.
+	ServodPort int32 `protobuf:"varint,7,opt,name=servod_port,json=servodPort,proto3" json:"servod_port,omitempty"`
+	// Smart USB-hub is present on setup.
+	SmartUsbhubPresent bool `protobuf:"varint,8,opt,name=smart_usbhub_present,json=smartUsbhubPresent,proto3" json:"smart_usbhub_present,omitempty"`
+	// Servo Topology of servo devices.
+	ServoTopology *ServoTopology `protobuf:"bytes,9,opt,name=servo_topology,json=servoTopology,proto3" json:"servo_topology,omitempty"`
+	// Name of the servod container if the servo uses a
+	// servod-container.
+	ContainerName string `protobuf:"bytes,10,opt,name=container_name,json=containerName,proto3" json:"container_name,omitempty"`
+}
+
+func (x *ServoHost) Reset() {
+	*x = ServoHost{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[14]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ServoHost) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServoHost) ProtoMessage() {}
+
+func (x *ServoHost) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[14]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ServoHost.ProtoReflect.Descriptor instead.
+func (*ServoHost) Descriptor() ([]byte, []int) {
+	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *ServoHost) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ServoHost) GetState() ServoHost_State {
+	if x != nil {
+		return x.State
+	}
+	return ServoHost_STATE_UNSPECIFIED
+}
+
+func (x *ServoHost) GetSerialNumber() string {
+	if x != nil {
+		return x.SerialNumber
+	}
+	return ""
+}
+
+func (x *ServoHost) GetFirmwareChannel() ServoFwChannel {
+	if x != nil {
+		return x.FirmwareChannel
+	}
+	return ServoFwChannel_FW_UNSPECIFIED
+}
+
+func (x *ServoHost) GetServodType() string {
+	if x != nil {
+		return x.ServodType
+	}
+	return ""
+}
+
+func (x *ServoHost) GetUsbkeyState() HardwareState {
+	if x != nil {
+		return x.UsbkeyState
+	}
+	return HardwareState_HARDWARE_UNSPECIFIED
+}
+
+func (x *ServoHost) GetServodPort() int32 {
+	if x != nil {
+		return x.ServodPort
+	}
+	return 0
+}
+
+func (x *ServoHost) GetSmartUsbhubPresent() bool {
+	if x != nil {
+		return x.SmartUsbhubPresent
+	}
+	return false
+}
+
+func (x *ServoHost) GetServoTopology() *ServoTopology {
+	if x != nil {
+		return x.ServoTopology
+	}
+	return nil
+}
+
+func (x *ServoHost) GetContainerName() string {
+	if x != nil {
+		return x.ContainerName
+	}
+	return ""
+}
+
 var File_infra_cros_recovery_tlw_models_proto protoreflect.FileDescriptor
 
 var file_infra_cros_recovery_tlw_models_proto_rawDesc = []byte{
@@ -1536,19 +1877,92 @@ var file_infra_cros_recovery_tlw_models_proto_rawDesc = []byte{
 	0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x73, 0x79, 0x73, 0x66, 0x73, 0x5f, 0x70, 0x61, 0x74, 0x68, 0x18,
 	0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x73, 0x79, 0x73, 0x66, 0x73, 0x50, 0x61, 0x74, 0x68,
 	0x12, 0x1d, 0x0a, 0x0a, 0x66, 0x77, 0x5f, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x06,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x66, 0x77, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x2a,
-	0x91, 0x01, 0x0a, 0x0d, 0x48, 0x61, 0x72, 0x64, 0x77, 0x61, 0x72, 0x65, 0x53, 0x74, 0x61, 0x74,
-	0x65, 0x12, 0x18, 0x0a, 0x14, 0x48, 0x41, 0x52, 0x44, 0x57, 0x41, 0x52, 0x45, 0x5f, 0x55, 0x4e,
-	0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x13, 0x0a, 0x0f, 0x48,
-	0x41, 0x52, 0x44, 0x57, 0x41, 0x52, 0x45, 0x5f, 0x4e, 0x4f, 0x52, 0x4d, 0x41, 0x4c, 0x10, 0x01,
-	0x12, 0x17, 0x0a, 0x13, 0x48, 0x41, 0x52, 0x44, 0x57, 0x41, 0x52, 0x45, 0x5f, 0x41, 0x43, 0x43,
-	0x45, 0x50, 0x54, 0x41, 0x42, 0x4c, 0x45, 0x10, 0x02, 0x12, 0x1d, 0x0a, 0x19, 0x48, 0x41, 0x52,
-	0x44, 0x57, 0x41, 0x52, 0x45, 0x5f, 0x4e, 0x45, 0x45, 0x44, 0x5f, 0x52, 0x45, 0x50, 0x4c, 0x41,
-	0x43, 0x45, 0x4d, 0x45, 0x4e, 0x54, 0x10, 0x03, 0x12, 0x19, 0x0a, 0x15, 0x48, 0x41, 0x52, 0x44,
-	0x57, 0x41, 0x52, 0x45, 0x5f, 0x4e, 0x4f, 0x54, 0x5f, 0x44, 0x45, 0x54, 0x45, 0x43, 0x54, 0x45,
-	0x44, 0x10, 0x04, 0x42, 0x1d, 0x5a, 0x1b, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f,
-	0x73, 0x2f, 0x72, 0x65, 0x63, 0x6f, 0x76, 0x65, 0x72, 0x79, 0x2f, 0x74, 0x6c, 0x77, 0x3b, 0x74,
-	0x6c, 0x77, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x66, 0x77, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x22,
+	0xb5, 0x08, 0x0a, 0x09, 0x53, 0x65, 0x72, 0x76, 0x6f, 0x48, 0x6f, 0x73, 0x74, 0x12, 0x12, 0x0a,
+	0x04, 0x4e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x4e, 0x61, 0x6d,
+	0x65, 0x12, 0x38, 0x0a, 0x05, 0x73, 0x74, 0x61, 0x74, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e,
+	0x32, 0x22, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2e, 0x72, 0x65, 0x63, 0x6f,
+	0x76, 0x65, 0x72, 0x79, 0x2e, 0x53, 0x65, 0x72, 0x76, 0x6f, 0x48, 0x6f, 0x73, 0x74, 0x2e, 0x53,
+	0x74, 0x61, 0x74, 0x65, 0x52, 0x05, 0x73, 0x74, 0x61, 0x74, 0x65, 0x12, 0x23, 0x0a, 0x0d, 0x73,
+	0x65, 0x72, 0x69, 0x61, 0x6c, 0x5f, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x0c, 0x73, 0x65, 0x72, 0x69, 0x61, 0x6c, 0x4e, 0x75, 0x6d, 0x62, 0x65, 0x72,
+	0x12, 0x4c, 0x0a, 0x10, 0x66, 0x69, 0x72, 0x6d, 0x77, 0x61, 0x72, 0x65, 0x5f, 0x63, 0x68, 0x61,
+	0x6e, 0x6e, 0x65, 0x6c, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x21, 0x2e, 0x63, 0x68, 0x72,
+	0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2e, 0x72, 0x65, 0x63, 0x6f, 0x76, 0x65, 0x72, 0x79, 0x2e, 0x53,
+	0x65, 0x72, 0x76, 0x6f, 0x46, 0x77, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x52, 0x0f, 0x66,
+	0x69, 0x72, 0x6d, 0x77, 0x61, 0x72, 0x65, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x12, 0x1f,
+	0x0a, 0x0b, 0x73, 0x65, 0x72, 0x76, 0x6f, 0x64, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x05, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x0a, 0x73, 0x65, 0x72, 0x76, 0x6f, 0x64, 0x54, 0x79, 0x70, 0x65, 0x12,
+	0x43, 0x0a, 0x0c, 0x75, 0x73, 0x62, 0x6b, 0x65, 0x79, 0x5f, 0x73, 0x74, 0x61, 0x74, 0x65, 0x18,
+	0x06, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x20, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73,
+	0x2e, 0x72, 0x65, 0x63, 0x6f, 0x76, 0x65, 0x72, 0x79, 0x2e, 0x48, 0x61, 0x72, 0x64, 0x77, 0x61,
+	0x72, 0x65, 0x53, 0x74, 0x61, 0x74, 0x65, 0x52, 0x0b, 0x75, 0x73, 0x62, 0x6b, 0x65, 0x79, 0x53,
+	0x74, 0x61, 0x74, 0x65, 0x12, 0x1f, 0x0a, 0x0b, 0x73, 0x65, 0x72, 0x76, 0x6f, 0x64, 0x5f, 0x70,
+	0x6f, 0x72, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0a, 0x73, 0x65, 0x72, 0x76, 0x6f,
+	0x64, 0x50, 0x6f, 0x72, 0x74, 0x12, 0x30, 0x0a, 0x14, 0x73, 0x6d, 0x61, 0x72, 0x74, 0x5f, 0x75,
+	0x73, 0x62, 0x68, 0x75, 0x62, 0x5f, 0x70, 0x72, 0x65, 0x73, 0x65, 0x6e, 0x74, 0x18, 0x08, 0x20,
+	0x01, 0x28, 0x08, 0x52, 0x12, 0x73, 0x6d, 0x61, 0x72, 0x74, 0x55, 0x73, 0x62, 0x68, 0x75, 0x62,
+	0x50, 0x72, 0x65, 0x73, 0x65, 0x6e, 0x74, 0x12, 0x47, 0x0a, 0x0e, 0x73, 0x65, 0x72, 0x76, 0x6f,
+	0x5f, 0x74, 0x6f, 0x70, 0x6f, 0x6c, 0x6f, 0x67, 0x79, 0x18, 0x09, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x20, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2e, 0x72, 0x65, 0x63, 0x6f, 0x76,
+	0x65, 0x72, 0x79, 0x2e, 0x53, 0x65, 0x72, 0x76, 0x6f, 0x54, 0x6f, 0x70, 0x6f, 0x6c, 0x6f, 0x67,
+	0x79, 0x52, 0x0d, 0x73, 0x65, 0x72, 0x76, 0x6f, 0x54, 0x6f, 0x70, 0x6f, 0x6c, 0x6f, 0x67, 0x79,
+	0x12, 0x25, 0x0a, 0x0e, 0x63, 0x6f, 0x6e, 0x74, 0x61, 0x69, 0x6e, 0x65, 0x72, 0x5f, 0x6e, 0x61,
+	0x6d, 0x65, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x63, 0x6f, 0x6e, 0x74, 0x61, 0x69,
+	0x6e, 0x65, 0x72, 0x4e, 0x61, 0x6d, 0x65, 0x22, 0xbd, 0x04, 0x0a, 0x05, 0x53, 0x74, 0x61, 0x74,
+	0x65, 0x12, 0x15, 0x0a, 0x11, 0x53, 0x54, 0x41, 0x54, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45,
+	0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x0b, 0x0a, 0x07, 0x57, 0x4f, 0x52, 0x4b,
+	0x49, 0x4e, 0x47, 0x10, 0x01, 0x12, 0x12, 0x0a, 0x0e, 0x4d, 0x49, 0x53, 0x53, 0x49, 0x4e, 0x47,
+	0x5f, 0x43, 0x4f, 0x4e, 0x46, 0x49, 0x47, 0x10, 0x02, 0x12, 0x10, 0x0a, 0x0c, 0x57, 0x52, 0x4f,
+	0x4e, 0x47, 0x5f, 0x43, 0x4f, 0x4e, 0x46, 0x49, 0x47, 0x10, 0x03, 0x12, 0x11, 0x0a, 0x0d, 0x4e,
+	0x4f, 0x54, 0x5f, 0x43, 0x4f, 0x4e, 0x4e, 0x45, 0x43, 0x54, 0x45, 0x44, 0x10, 0x04, 0x12, 0x0a,
+	0x0a, 0x06, 0x4e, 0x4f, 0x5f, 0x53, 0x53, 0x48, 0x10, 0x05, 0x12, 0x0a, 0x0a, 0x06, 0x42, 0x52,
+	0x4f, 0x4b, 0x45, 0x4e, 0x10, 0x06, 0x12, 0x14, 0x0a, 0x10, 0x4e, 0x45, 0x45, 0x44, 0x5f, 0x52,
+	0x45, 0x50, 0x4c, 0x41, 0x43, 0x45, 0x4d, 0x45, 0x4e, 0x54, 0x10, 0x07, 0x12, 0x18, 0x0a, 0x14,
+	0x43, 0x52, 0x35, 0x30, 0x5f, 0x43, 0x4f, 0x4e, 0x53, 0x4f, 0x4c, 0x45, 0x5f, 0x4d, 0x49, 0x53,
+	0x53, 0x49, 0x4e, 0x47, 0x10, 0x08, 0x12, 0x15, 0x0a, 0x11, 0x43, 0x43, 0x44, 0x5f, 0x54, 0x45,
+	0x53, 0x54, 0x4c, 0x41, 0x42, 0x5f, 0x49, 0x53, 0x53, 0x55, 0x45, 0x10, 0x09, 0x12, 0x10, 0x0a,
+	0x0c, 0x53, 0x45, 0x52, 0x56, 0x4f, 0x44, 0x5f, 0x49, 0x53, 0x53, 0x55, 0x45, 0x10, 0x0a, 0x12,
+	0x13, 0x0a, 0x0f, 0x4c, 0x49, 0x44, 0x5f, 0x4f, 0x50, 0x45, 0x4e, 0x5f, 0x46, 0x41, 0x49, 0x4c,
+	0x45, 0x44, 0x10, 0x0b, 0x12, 0x14, 0x0a, 0x10, 0x42, 0x41, 0x44, 0x5f, 0x52, 0x49, 0x42, 0x42,
+	0x4f, 0x4e, 0x5f, 0x43, 0x41, 0x42, 0x4c, 0x45, 0x10, 0x0c, 0x12, 0x0d, 0x0a, 0x09, 0x45, 0x43,
+	0x5f, 0x42, 0x52, 0x4f, 0x4b, 0x45, 0x4e, 0x10, 0x0d, 0x12, 0x15, 0x0a, 0x11, 0x44, 0x55, 0x54,
+	0x5f, 0x4e, 0x4f, 0x54, 0x5f, 0x43, 0x4f, 0x4e, 0x4e, 0x45, 0x43, 0x54, 0x45, 0x44, 0x10, 0x0e,
+	0x12, 0x12, 0x0a, 0x0e, 0x54, 0x4f, 0x50, 0x4f, 0x4c, 0x4f, 0x47, 0x59, 0x5f, 0x49, 0x53, 0x53,
+	0x55, 0x45, 0x10, 0x0f, 0x12, 0x13, 0x0a, 0x0f, 0x53, 0x42, 0x55, 0x5f, 0x4c, 0x4f, 0x57, 0x5f,
+	0x56, 0x4f, 0x4c, 0x54, 0x41, 0x47, 0x45, 0x10, 0x10, 0x12, 0x17, 0x0a, 0x13, 0x43, 0x52, 0x35,
+	0x30, 0x5f, 0x4e, 0x4f, 0x54, 0x5f, 0x45, 0x4e, 0x55, 0x4d, 0x45, 0x52, 0x41, 0x54, 0x45, 0x44,
+	0x10, 0x11, 0x12, 0x19, 0x0a, 0x15, 0x53, 0x45, 0x52, 0x56, 0x4f, 0x5f, 0x53, 0x45, 0x52, 0x49,
+	0x41, 0x4c, 0x5f, 0x4d, 0x49, 0x53, 0x4d, 0x41, 0x54, 0x43, 0x48, 0x10, 0x12, 0x12, 0x16, 0x0a,
+	0x12, 0x53, 0x45, 0x52, 0x56, 0x4f, 0x44, 0x5f, 0x50, 0x52, 0x4f, 0x58, 0x59, 0x5f, 0x49, 0x53,
+	0x53, 0x55, 0x45, 0x10, 0x13, 0x12, 0x14, 0x0a, 0x10, 0x53, 0x45, 0x52, 0x56, 0x4f, 0x5f, 0x48,
+	0x4f, 0x53, 0x54, 0x5f, 0x49, 0x53, 0x53, 0x55, 0x45, 0x10, 0x14, 0x12, 0x17, 0x0a, 0x13, 0x53,
+	0x45, 0x52, 0x56, 0x4f, 0x5f, 0x55, 0x50, 0x44, 0x41, 0x54, 0x45, 0x52, 0x5f, 0x49, 0x53, 0x53,
+	0x55, 0x45, 0x10, 0x15, 0x12, 0x21, 0x0a, 0x1d, 0x53, 0x45, 0x52, 0x56, 0x4f, 0x44, 0x5f, 0x44,
+	0x55, 0x54, 0x5f, 0x43, 0x4f, 0x4e, 0x54, 0x52, 0x4f, 0x4c, 0x4c, 0x45, 0x52, 0x5f, 0x4d, 0x49,
+	0x53, 0x53, 0x49, 0x4e, 0x47, 0x10, 0x16, 0x12, 0x18, 0x0a, 0x14, 0x43, 0x4f, 0x4c, 0x44, 0x5f,
+	0x52, 0x45, 0x53, 0x45, 0x54, 0x5f, 0x50, 0x49, 0x4e, 0x5f, 0x49, 0x53, 0x53, 0x55, 0x45, 0x10,
+	0x17, 0x12, 0x18, 0x0a, 0x14, 0x57, 0x41, 0x52, 0x4d, 0x5f, 0x52, 0x45, 0x53, 0x45, 0x54, 0x5f,
+	0x50, 0x49, 0x4e, 0x5f, 0x49, 0x53, 0x53, 0x55, 0x45, 0x10, 0x18, 0x12, 0x1a, 0x0a, 0x16, 0x50,
+	0x4f, 0x57, 0x45, 0x52, 0x5f, 0x42, 0x55, 0x54, 0x54, 0x4f, 0x4e, 0x5f, 0x50, 0x49, 0x4e, 0x5f,
+	0x49, 0x53, 0x53, 0x55, 0x45, 0x10, 0x19, 0x2a, 0x91, 0x01, 0x0a, 0x0d, 0x48, 0x61, 0x72, 0x64,
+	0x77, 0x61, 0x72, 0x65, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x18, 0x0a, 0x14, 0x48, 0x41, 0x52,
+	0x44, 0x57, 0x41, 0x52, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45,
+	0x44, 0x10, 0x00, 0x12, 0x13, 0x0a, 0x0f, 0x48, 0x41, 0x52, 0x44, 0x57, 0x41, 0x52, 0x45, 0x5f,
+	0x4e, 0x4f, 0x52, 0x4d, 0x41, 0x4c, 0x10, 0x01, 0x12, 0x17, 0x0a, 0x13, 0x48, 0x41, 0x52, 0x44,
+	0x57, 0x41, 0x52, 0x45, 0x5f, 0x41, 0x43, 0x43, 0x45, 0x50, 0x54, 0x41, 0x42, 0x4c, 0x45, 0x10,
+	0x02, 0x12, 0x1d, 0x0a, 0x19, 0x48, 0x41, 0x52, 0x44, 0x57, 0x41, 0x52, 0x45, 0x5f, 0x4e, 0x45,
+	0x45, 0x44, 0x5f, 0x52, 0x45, 0x50, 0x4c, 0x41, 0x43, 0x45, 0x4d, 0x45, 0x4e, 0x54, 0x10, 0x03,
+	0x12, 0x19, 0x0a, 0x15, 0x48, 0x41, 0x52, 0x44, 0x57, 0x41, 0x52, 0x45, 0x5f, 0x4e, 0x4f, 0x54,
+	0x5f, 0x44, 0x45, 0x54, 0x45, 0x43, 0x54, 0x45, 0x44, 0x10, 0x04, 0x2a, 0x5a, 0x0a, 0x0e, 0x53,
+	0x65, 0x72, 0x76, 0x6f, 0x46, 0x77, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x12, 0x12, 0x0a,
+	0x0e, 0x46, 0x57, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10,
+	0x00, 0x12, 0x0d, 0x0a, 0x09, 0x46, 0x57, 0x5f, 0x53, 0x54, 0x41, 0x42, 0x4c, 0x45, 0x10, 0x01,
+	0x12, 0x0b, 0x0a, 0x07, 0x46, 0x57, 0x5f, 0x50, 0x52, 0x45, 0x56, 0x10, 0x02, 0x12, 0x0a, 0x0a,
+	0x06, 0x46, 0x57, 0x5f, 0x44, 0x45, 0x56, 0x10, 0x03, 0x12, 0x0c, 0x0a, 0x08, 0x46, 0x57, 0x5f,
+	0x41, 0x4c, 0x50, 0x48, 0x41, 0x10, 0x04, 0x42, 0x1d, 0x5a, 0x1b, 0x69, 0x6e, 0x66, 0x72, 0x61,
+	0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x72, 0x65, 0x63, 0x6f, 0x76, 0x65, 0x72, 0x79, 0x2f, 0x74,
+	0x6c, 0x77, 0x3b, 0x74, 0x6c, 0x77, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1563,52 +1977,59 @@ func file_infra_cros_recovery_tlw_models_proto_rawDescGZIP() []byte {
 	return file_infra_cros_recovery_tlw_models_proto_rawDescData
 }
 
-var file_infra_cros_recovery_tlw_models_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_infra_cros_recovery_tlw_models_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_infra_cros_recovery_tlw_models_proto_enumTypes = make([]protoimpl.EnumInfo, 8)
+var file_infra_cros_recovery_tlw_models_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_infra_cros_recovery_tlw_models_proto_goTypes = []interface{}{
 	(HardwareState)(0),                // 0: chromeos.recovery.HardwareState
-	(RunRPMActionRequest_Action)(0),   // 1: chromeos.recovery.RunRPMActionRequest.Action
-	(RPMOutlet_State)(0),              // 2: chromeos.recovery.RPMOutlet.State
-	(WifiRouterHost_State)(0),         // 3: chromeos.recovery.WifiRouterHost.State
-	(VersionRequest_VersionType)(0),   // 4: chromeos.recovery.VersionRequest.VersionType
-	(DUTAudio_LoopbackState)(0),       // 5: chromeos.recovery.DUTAudio.LoopbackState
-	(*RunRequest)(nil),                // 6: chromeos.recovery.RunRequest
-	(*ProvisionRequest)(nil),          // 7: chromeos.recovery.ProvisionRequest
-	(*CallBluetoothPeerRequest)(nil),  // 8: chromeos.recovery.CallBluetoothPeerRequest
-	(*CallBluetoothPeerResponse)(nil), // 9: chromeos.recovery.CallBluetoothPeerResponse
-	(*RunRPMActionRequest)(nil),       // 10: chromeos.recovery.RunRPMActionRequest
-	(*RPMOutlet)(nil),                 // 11: chromeos.recovery.RPMOutlet
-	(*WifiRouterHost)(nil),            // 12: chromeos.recovery.WifiRouterHost
-	(*VersionRequest)(nil),            // 13: chromeos.recovery.VersionRequest
-	(*VersionResponse)(nil),           // 14: chromeos.recovery.VersionResponse
-	(*DUTAudio)(nil),                  // 15: chromeos.recovery.DUTAudio
-	(*InitServodRequest)(nil),         // 16: chromeos.recovery.InitServodRequest
-	(*ServodOptions)(nil),             // 17: chromeos.recovery.ServodOptions
-	(*ServoTopology)(nil),             // 18: chromeos.recovery.ServoTopology
-	(*ServoTopologyItem)(nil),         // 19: chromeos.recovery.ServoTopologyItem
-	nil,                               // 20: chromeos.recovery.VersionResponse.ValueEntry
-	(*durationpb.Duration)(nil),       // 21: google.protobuf.Duration
-	(*xmlrpc.Value)(nil),              // 22: chromiumos.config.api.test.xmlrpc.Value
+	(ServoFwChannel)(0),               // 1: chromeos.recovery.ServoFwChannel
+	(RunRPMActionRequest_Action)(0),   // 2: chromeos.recovery.RunRPMActionRequest.Action
+	(RPMOutlet_State)(0),              // 3: chromeos.recovery.RPMOutlet.State
+	(WifiRouterHost_State)(0),         // 4: chromeos.recovery.WifiRouterHost.State
+	(VersionRequest_VersionType)(0),   // 5: chromeos.recovery.VersionRequest.VersionType
+	(DUTAudio_LoopbackState)(0),       // 6: chromeos.recovery.DUTAudio.LoopbackState
+	(ServoHost_State)(0),              // 7: chromeos.recovery.ServoHost.State
+	(*RunRequest)(nil),                // 8: chromeos.recovery.RunRequest
+	(*ProvisionRequest)(nil),          // 9: chromeos.recovery.ProvisionRequest
+	(*CallBluetoothPeerRequest)(nil),  // 10: chromeos.recovery.CallBluetoothPeerRequest
+	(*CallBluetoothPeerResponse)(nil), // 11: chromeos.recovery.CallBluetoothPeerResponse
+	(*RunRPMActionRequest)(nil),       // 12: chromeos.recovery.RunRPMActionRequest
+	(*RPMOutlet)(nil),                 // 13: chromeos.recovery.RPMOutlet
+	(*WifiRouterHost)(nil),            // 14: chromeos.recovery.WifiRouterHost
+	(*VersionRequest)(nil),            // 15: chromeos.recovery.VersionRequest
+	(*VersionResponse)(nil),           // 16: chromeos.recovery.VersionResponse
+	(*DUTAudio)(nil),                  // 17: chromeos.recovery.DUTAudio
+	(*InitServodRequest)(nil),         // 18: chromeos.recovery.InitServodRequest
+	(*ServodOptions)(nil),             // 19: chromeos.recovery.ServodOptions
+	(*ServoTopology)(nil),             // 20: chromeos.recovery.ServoTopology
+	(*ServoTopologyItem)(nil),         // 21: chromeos.recovery.ServoTopologyItem
+	(*ServoHost)(nil),                 // 22: chromeos.recovery.ServoHost
+	nil,                               // 23: chromeos.recovery.VersionResponse.ValueEntry
+	(*durationpb.Duration)(nil),       // 24: google.protobuf.Duration
+	(*xmlrpc.Value)(nil),              // 25: chromiumos.config.api.test.xmlrpc.Value
 }
 var file_infra_cros_recovery_tlw_models_proto_depIdxs = []int32{
-	21, // 0: chromeos.recovery.RunRequest.timeout:type_name -> google.protobuf.Duration
-	22, // 1: chromeos.recovery.CallBluetoothPeerRequest.args:type_name -> chromiumos.config.api.test.xmlrpc.Value
-	22, // 2: chromeos.recovery.CallBluetoothPeerResponse.value:type_name -> chromiumos.config.api.test.xmlrpc.Value
-	1,  // 3: chromeos.recovery.RunRPMActionRequest.action:type_name -> chromeos.recovery.RunRPMActionRequest.Action
-	2,  // 4: chromeos.recovery.RPMOutlet.state:type_name -> chromeos.recovery.RPMOutlet.State
-	3,  // 5: chromeos.recovery.WifiRouterHost.state:type_name -> chromeos.recovery.WifiRouterHost.State
-	11, // 6: chromeos.recovery.WifiRouterHost.RPMOutlet:type_name -> chromeos.recovery.RPMOutlet
-	4,  // 7: chromeos.recovery.VersionRequest.type:type_name -> chromeos.recovery.VersionRequest.VersionType
-	20, // 8: chromeos.recovery.VersionResponse.value:type_name -> chromeos.recovery.VersionResponse.ValueEntry
-	5,  // 9: chromeos.recovery.DUTAudio.loopback_state:type_name -> chromeos.recovery.DUTAudio.LoopbackState
-	17, // 10: chromeos.recovery.InitServodRequest.options:type_name -> chromeos.recovery.ServodOptions
-	19, // 11: chromeos.recovery.ServoTopology.root:type_name -> chromeos.recovery.ServoTopologyItem
-	19, // 12: chromeos.recovery.ServoTopology.children:type_name -> chromeos.recovery.ServoTopologyItem
-	13, // [13:13] is the sub-list for method output_type
-	13, // [13:13] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	24, // 0: chromeos.recovery.RunRequest.timeout:type_name -> google.protobuf.Duration
+	25, // 1: chromeos.recovery.CallBluetoothPeerRequest.args:type_name -> chromiumos.config.api.test.xmlrpc.Value
+	25, // 2: chromeos.recovery.CallBluetoothPeerResponse.value:type_name -> chromiumos.config.api.test.xmlrpc.Value
+	2,  // 3: chromeos.recovery.RunRPMActionRequest.action:type_name -> chromeos.recovery.RunRPMActionRequest.Action
+	3,  // 4: chromeos.recovery.RPMOutlet.state:type_name -> chromeos.recovery.RPMOutlet.State
+	4,  // 5: chromeos.recovery.WifiRouterHost.state:type_name -> chromeos.recovery.WifiRouterHost.State
+	13, // 6: chromeos.recovery.WifiRouterHost.RPMOutlet:type_name -> chromeos.recovery.RPMOutlet
+	5,  // 7: chromeos.recovery.VersionRequest.type:type_name -> chromeos.recovery.VersionRequest.VersionType
+	23, // 8: chromeos.recovery.VersionResponse.value:type_name -> chromeos.recovery.VersionResponse.ValueEntry
+	6,  // 9: chromeos.recovery.DUTAudio.loopback_state:type_name -> chromeos.recovery.DUTAudio.LoopbackState
+	19, // 10: chromeos.recovery.InitServodRequest.options:type_name -> chromeos.recovery.ServodOptions
+	21, // 11: chromeos.recovery.ServoTopology.root:type_name -> chromeos.recovery.ServoTopologyItem
+	21, // 12: chromeos.recovery.ServoTopology.children:type_name -> chromeos.recovery.ServoTopologyItem
+	7,  // 13: chromeos.recovery.ServoHost.state:type_name -> chromeos.recovery.ServoHost.State
+	1,  // 14: chromeos.recovery.ServoHost.firmware_channel:type_name -> chromeos.recovery.ServoFwChannel
+	0,  // 15: chromeos.recovery.ServoHost.usbkey_state:type_name -> chromeos.recovery.HardwareState
+	20, // 16: chromeos.recovery.ServoHost.servo_topology:type_name -> chromeos.recovery.ServoTopology
+	17, // [17:17] is the sub-list for method output_type
+	17, // [17:17] is the sub-list for method input_type
+	17, // [17:17] is the sub-list for extension type_name
+	17, // [17:17] is the sub-list for extension extendee
+	0,  // [0:17] is the sub-list for field type_name
 }
 
 func init() { file_infra_cros_recovery_tlw_models_proto_init() }
@@ -1785,14 +2206,26 @@ func file_infra_cros_recovery_tlw_models_proto_init() {
 				return nil
 			}
 		}
+		file_infra_cros_recovery_tlw_models_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ServoHost); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_infra_cros_recovery_tlw_models_proto_rawDesc,
-			NumEnums:      6,
-			NumMessages:   15,
+			NumEnums:      8,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
