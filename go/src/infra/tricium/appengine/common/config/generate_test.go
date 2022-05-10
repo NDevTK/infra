@@ -172,6 +172,7 @@ func TestCreateWorker(t *testing.T) {
 			if wi == nil {
 				fail("Incorrect worker type")
 			}
+			//lint:ignore SA5011 fail will stop the test
 			So(wi.Recipe.Project, ShouldEqual, "chromium")
 		})
 	})
