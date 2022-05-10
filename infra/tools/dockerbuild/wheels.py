@@ -967,6 +967,12 @@ SPECS.update({
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
+            'typed-ast',
+            '1.5.3',
+            packaged=(),
+            pyversions=['py3'],
+        ),
+        SourceOrPrebuilt(
             'wrapt',
             '1.10.11',
             packaged=(),

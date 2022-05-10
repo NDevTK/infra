@@ -7925,6 +7925,24 @@ wheel: <
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
 
+### 1.5.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/typed-ast/${vpython_platform}"
+  version: "version:1.5.3"
+>
+```
+
+
+* *linux-arm64-py3*
+* *mac-arm64-cp38*
+* *mac-x64-cp38*
+* *manylinux-x64-py3*
+* *manylinux-x64-py3.9*
+* *windows-x64-py3*
+* *windows-x86-py3*
+
 ## **typing-py2**
 
 ### 3.6.4
