@@ -9,6 +9,7 @@ from framework import excessiveactivity
 import settings
 
 from project import project_constants
+from sitewide import usersettings
 
 
 class ServletRegistry(object):
@@ -52,6 +53,19 @@ class ServletRegistry(object):
   def RegisterExcesiveActivity(self, service):
     return [
         (
-            '/', excessiveactivity.ExcessiveActivity(services=service).handler,
+            '/',
+            excessiveactivity.ExcessiveActivity(services=service).get_handler,
             ['GET'])
+    ]
+
+  def RegisterUserSetting(self, service):
+    return [
+        ('/', usersettings.UserSettings(services=service).get_handler, ['GET'])
+    ]
+
+  def RegisterUserSettingPost(self, service):
+    return [
+        (
+            '/', usersettings.UserSettings(services=service).post_handler,
+            ['POST'])
     ]
