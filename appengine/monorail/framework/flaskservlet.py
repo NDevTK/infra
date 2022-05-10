@@ -118,7 +118,7 @@ class FlaskServlet(object):
     """Do common stuff then dispatch the request to get() or put() methods."""
     self.response = flask.make_response()
     handler_start_time = time.time()
-    logging.info('\n\n\nRequest handler: %r', self)
+    logging.info('\n\n\n Flask Request handler: %r', self)
 
     #TODO: add the ts_mon.NonCumulativeDistributionMetric
     # count0, count1, count2 = gc.get_count()

@@ -5,6 +5,7 @@
 """This file sets up all the urls for monorail pages."""
 
 import logging
+from framework import excessiveactivity
 import settings
 
 from project import project_constants
@@ -47,3 +48,10 @@ class ServletRegistry(object):
   def Register(self):
     """Register all the monorail request handlers."""
     return self.routes
+
+  def RegisterExcesiveActivity(self, service):
+    return [
+        (
+            '/', excessiveactivity.ExcessiveActivity(services=service).handler,
+            ['GET'])
+    ]

@@ -14,13 +14,16 @@ from __future__ import absolute_import
 
 import logging
 import webapp2
+from flask import Flask
+from werkzeug.middleware import dispatcher
 
 from components import endpoints_webapp2
 
 import gae_ts_mon
 
+import flaskregisterpages
 import registerpages
-from framework import sorting
+from framework import sorting, urls
 from services import api_svc_v1
 from services import service_manager
 
@@ -32,6 +35,20 @@ app_routes = registry.Register(services)
 app = webapp2.WSGIApplication(
     app_routes, config={'services': services})
 gae_ts_mon.initialize(app)
+
+flaskRegist = flaskregisterpages.ServletRegistry()
+
+# excessive_activity
+flaskapp_excessive_activity = Flask(__name__)
+flask_route_excessive_active = flaskRegist.RegisterExcesiveActivity(services)
+for rule in flask_route_excessive_active:
+  flaskapp_excessive_activity.add_url_rule(
+      rule[0], view_func=rule[1], methods=rule[2])
+
+app = dispatcher.DispatcherMiddleware(
+    app, {
+        urls.EXCESSIVE_ACTIVITY: flaskapp_excessive_activity,
+    })
 
 endpoints = endpoints_webapp2.api_server(
     [api_svc_v1.MonorailApi, api_svc_v1.ClientConfigApi])
