@@ -18,7 +18,7 @@ import (
 var setServoStateExecTestCases = []struct {
 	testName           string
 	actionArgs         []string
-	expectedServoState tlw.ServoState
+	expectedServoState tlw.ServoHost_State
 	servoHost          *tlw.ServoHost
 	expectedErr        error
 }{
@@ -27,9 +27,9 @@ var setServoStateExecTestCases = []struct {
 		[]string{
 			"state:SBU_LOW_VOLTAGE",
 		},
-		tlw.ServoStateSBULowVoltage,
+		tlw.ServoHost_SBU_LOW_VOLTAGE,
 		&tlw.ServoHost{
-			State: tlw.ServoStateUnspecified,
+			State: tlw.ServoHost_STATE_UNSPECIFIED,
 		},
 		nil,
 	},
@@ -38,9 +38,9 @@ var setServoStateExecTestCases = []struct {
 		[]string{
 			"test:SBU_LOW_VOLTAGE",
 		},
-		tlw.ServoStateUnspecified,
+		tlw.ServoHost_STATE_UNSPECIFIED,
 		&tlw.ServoHost{
-			State: tlw.ServoStateUnspecified,
+			State: tlw.ServoHost_STATE_UNSPECIFIED,
 		},
 		errors.Reason("set servo state: state is not provided").Err(),
 	},
@@ -49,9 +49,9 @@ var setServoStateExecTestCases = []struct {
 		[]string{
 			"state:",
 		},
-		tlw.ServoStateUnspecified,
+		tlw.ServoHost_STATE_UNSPECIFIED,
 		&tlw.ServoHost{
-			State: tlw.ServoStateUnspecified,
+			State: tlw.ServoHost_STATE_UNSPECIFIED,
 		},
 		errors.Reason("set servo state: state is not provided").Err(),
 	},
@@ -60,9 +60,9 @@ var setServoStateExecTestCases = []struct {
 		[]string{
 			"state:sbu_LOW_VOLTAGE",
 		},
-		tlw.ServoStateSBULowVoltage,
+		tlw.ServoHost_SBU_LOW_VOLTAGE,
 		&tlw.ServoHost{
-			State: tlw.ServoStateUnspecified,
+			State: tlw.ServoHost_STATE_UNSPECIFIED,
 		},
 		nil,
 	},
@@ -71,7 +71,7 @@ var setServoStateExecTestCases = []struct {
 		[]string{
 			"state:sbu_LOW_VOLTAGE",
 		},
-		tlw.ServoStateSBULowVoltage,
+		tlw.ServoHost_SBU_LOW_VOLTAGE,
 		nil,
 		errors.Reason("set servo state: servo is not supported").Err(),
 	},

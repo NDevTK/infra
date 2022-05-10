@@ -93,7 +93,7 @@ func getServosStartTime(ctx context.Context, logRoot string, servodPort int, run
 func regServoLogsStartPointExec(ctx context.Context, info *execs.ExecInfo) error {
 	logRoot := info.GetLogRoot()
 	servod := info.NewServod()
-	run := info.NewRunner(info.RunArgs.DUT.ServoHost.Name)
+	run := info.NewRunner(info.RunArgs.DUT.ServoHost.GetName())
 	log := info.NewLogger()
 	f := filepath.Join(logRoot, servodStarLogTimeFile)
 	if _, err := os.Stat(f); !base_error.Is(err, os.ErrNotExist) {
@@ -110,7 +110,7 @@ func regServoLogsStartPointExec(ctx context.Context, info *execs.ExecInfo) error
 
 // collectServodLogsExec collects servod logs from servo-host.
 func collectServodLogsExec(ctx context.Context, info *execs.ExecInfo) error {
-	resource := info.RunArgs.DUT.ServoHost.Name
+	resource := info.RunArgs.DUT.ServoHost.GetName()
 	run := info.NewRunner(resource)
 	log := info.NewLogger()
 	logRoot := info.GetLogRoot()

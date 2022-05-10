@@ -243,7 +243,7 @@ func createServoHost(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.ServoHost 
 	return &tlw.ServoHost{
 		Name:               p.GetServo().GetServoHostname(),
 		UsbkeyState:        convertHardwareState(ds.GetServoUsbState()),
-		ServodPort:         int(p.GetServo().GetServoPort()),
+		ServodPort:         p.GetServo().GetServoPort(),
 		State:              convertServoState(ds.GetServo()),
 		SerialNumber:       p.GetServo().GetServoSerial(),
 		FirmwareChannel:    convertFirmwareChannel(p.GetServo().GetServoFwChannel()),

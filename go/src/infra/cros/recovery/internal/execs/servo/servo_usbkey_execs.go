@@ -24,7 +24,7 @@ func servoUSBHasCROSStableImageExec(ctx context.Context, info *execs.ExecInfo) e
 	if expectedImage == "" {
 		return errors.Reason("servo usb-key has cros stable image: stable image is not specified").Err()
 	}
-	run := info.NewRunner(info.RunArgs.DUT.ServoHost.Name)
+	run := info.NewRunner(info.RunArgs.DUT.ServoHost.GetName())
 	servod := info.NewServod()
 	logger := info.NewLogger()
 	usbPath, err := servo.USBDrivePath(ctx, false, run, servod, logger)

@@ -58,7 +58,7 @@ func removeAllRebootRequestsExec(ctx context.Context, info *execs.ExecInfo) erro
 
 // removeRebootRequestExec removes reboot flag file request.
 func removeRebootRequestExec(ctx context.Context, info *execs.ExecInfo) error {
-	run := info.NewRunner(info.RunArgs.DUT.ServoHost.Name)
+	run := info.NewRunner(info.RunArgs.DUT.ServoHost.GetName())
 	if _, err := run(ctx, time.Minute, fmt.Sprintf(rebootRequestRemoveSingleGlob, info.RunArgs.DUT.ServoHost.ServodPort)); err != nil {
 		// Print finish result as we ignore any errors.
 		log.Debugf(ctx, "Remove the reboot request: %s", err)

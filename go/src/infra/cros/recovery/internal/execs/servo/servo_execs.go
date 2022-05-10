@@ -132,7 +132,7 @@ func servoDetectUSBKeyExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Reason("servo detect usb key exec: the path to usb drive is empty").Err()
 	}
 	log.Debugf(ctx, "Servo Detect USB-Key Exec: USB-key path: %s.", servoUsbPath)
-	run := info.NewRunner(info.RunArgs.DUT.ServoHost.Name)
+	run := info.NewRunner(info.RunArgs.DUT.ServoHost.GetName())
 	if _, err := run(ctx, time.Minute, fmt.Sprintf("fdisk -l %s", servoUsbPath)); err != nil {
 		info.RunArgs.DUT.ServoHost.UsbkeyState = tlw.HardwareState_HARDWARE_NOT_DETECTED
 		return errors.Annotate(err, "servo detect usb key exec: could not determine whether %q is a valid usb path", servoUsbPath).Err()
@@ -213,10 +213,10 @@ func servoAuditUSBKeyExec(ctx context.Context, info *execs.ExecInfo) error {
 			log.Debugf(ctx, "Servo Audit USB-Key Exec: cannot continue audit because the path to USB-Drive is empty")
 			return errors.Reason("servo audit usb key exec: the path to usb drive is empty").Err()
 		}
-		state, err := runCheckOnHost(ctx, info.NewRunner(info.RunArgs.DUT.ServoHost.Name), servoUsbPath, 2*time.Hour)
+		state, err := runCheckOnHost(ctx, info.NewRunner(info.RunArgs.DUT.ServoHost.GetName()), servoUsbPath, 2*time.Hour)
 		if err != nil {
 			log.Debugf(ctx, "Servo Audit USB-Key Exec: error %q during audit of USB-Drive", err)
-			return errors.Annotate(err, "servo audit usb key: could not check usb path %q on servo-host %q", servoUsbPath, info.RunArgs.DUT.ServoHost.Name).Err()
+			return errors.Annotate(err, "servo audit usb key: could not check usb path %q on servo-host %q", servoUsbPath, info.RunArgs.DUT.ServoHost.GetName()).Err()
 		}
 		info.RunArgs.DUT.ServoHost.UsbkeyState = state
 	}
@@ -226,7 +226,7 @@ func servoAuditUSBKeyExec(ctx context.Context, info *execs.ExecInfo) error {
 // Verify that the root servo is enumerated/present on the host.
 // To force re-read topology please specify `update_topology:true`.
 func isRootServoPresentExec(ctx context.Context, info *execs.ExecInfo) error {
-	runner := info.NewRunner(info.RunArgs.DUT.ServoHost.Name)
+	runner := info.NewRunner(info.RunArgs.DUT.ServoHost.GetName())
 	am := info.GetActionArgs(ctx)
 	if am.AsBool(ctx, "update_topology", false) {
 		servoTopology, err := topology.RetrieveServoTopology(ctx, runner, info.RunArgs.DUT.ServoHost.SerialNumber)
@@ -249,7 +249,7 @@ func isRootServoPresentExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // Verify that the root servo is enumerated/present on the host.
 func servoTopologyUpdateExec(ctx context.Context, info *execs.ExecInfo) error {
-	runner := info.NewRunner(info.RunArgs.DUT.ServoHost.Name)
+	runner := info.NewRunner(info.RunArgs.DUT.ServoHost.GetName())
 	servoTopology, err := topology.RetrieveServoTopology(ctx, runner, info.RunArgs.DUT.ServoHost.SerialNumber)
 	if err != nil {
 		return errors.Annotate(err, "servo topology update exec").Err()
@@ -297,7 +297,7 @@ func servoTopologyUpdateExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // Verify that servod is responsive
 func servoServodEchoHostExec(ctx context.Context, info *execs.ExecInfo) error {
-	runner := info.NewRunner(info.RunArgs.DUT.ServoHost.Name)
+	runner := info.NewRunner(info.RunArgs.DUT.ServoHost.GetName())
 	v, err := runner(ctx, time.Minute, fmt.Sprintf(servodHostCheckupCmd, info.RunArgs.DUT.ServoHost.ServodPort))
 	if err != nil {
 		return errors.Annotate(err, "servo servod echo host exec: servod is not responsive for dut-control commands").Err()
@@ -308,7 +308,7 @@ func servoServodEchoHostExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // Verify that the servo firmware is up-to-date.
 func servoFirmwareNeedsUpdateExec(ctx context.Context, info *execs.ExecInfo) error {
-	runner := info.NewRunner(info.RunArgs.DUT.ServoHost.Name)
+	runner := info.NewRunner(info.RunArgs.DUT.ServoHost.GetName())
 	// The servo topology check should have already been done in an
 	// action. The topology determined at that time would have been
 	// saved in this data structure if the 'updateServo' argument was
@@ -647,7 +647,7 @@ func servoUpdateServoFirmwareExec(ctx context.Context, info *execs.ExecInfo) (er
 			}
 		}()
 	}
-	run := info.NewRunner(info.RunArgs.DUT.ServoHost.Name)
+	run := info.NewRunner(info.RunArgs.DUT.ServoHost.GetName())
 	if forceUpdate {
 		// If requested to update with force then first attempt will be with force
 		// and there no second attempt.
@@ -695,7 +695,7 @@ func servoUpdateServoFirmwareExec(ctx context.Context, info *execs.ExecInfo) (er
 		}
 	}
 	if len(failDevices) != 0 {
-		info.RunArgs.DUT.ServoHost.State = tlw.ServoStateNeedReplacement
+		info.RunArgs.DUT.ServoHost.State = tlw.ServoHost_NEED_REPLACEMENT
 		return errors.Reason("servo update servo firmware: %d servo devices fails the update process", len(failDevices)).Err()
 	}
 	return nil
