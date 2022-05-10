@@ -25,6 +25,7 @@ var chanSize = 1000
 var numRoutines = 32
 
 var (
+	projectFlag       = flag.String("project", "chromium", "Project this kzip should be generated for. This should be set to 'chromium' or 'chromiumos'. Defaults to 'chromium'.")
 	outputFlag        = flag.String("path_to_archive_output", "", "Path to index pack archive to be generated.")
 	compDbFlag        = flag.String("path_to_compdb", "", "Path to the compilation database.")
 	gnFlag            = flag.String("path_to_gn_targets", "", "Path to the gn targets json file.")
@@ -39,35 +40,40 @@ var (
 
 // validateFlags checks that the required flags are present.
 func validateFlags(ctx context.Context) {
-	missing := false
+	flagErr := false
+
+	if *projectFlag != "chromium" && *projectFlag != "chromiumos" {
+		logging.Errorf(ctx, "project not supported. 'chromium' and 'chromiumos' are the only supported projects.")
+		flagErr = true
+	}
 
 	if *outputFlag == "" {
 		logging.Errorf(ctx, "path_to_archive_output flag required.")
-		missing = true
+		flagErr = true
 	}
 
 	if *compDbFlag == "" {
 		logging.Errorf(ctx, "path_to_compdb flag required.")
-		missing = true
+		flagErr = true
 	}
 
 	if *gnFlag == "" {
 		logging.Errorf(ctx, "path_to_gn_targets flag required.")
-		missing = true
+		flagErr = true
 	}
 
 	if *corpusFlag == "" {
 		logging.Errorf(ctx, "corpus flag required.")
-		missing = true
+		flagErr = true
 	}
 
 	if *checkoutFlag == "" {
 		logging.Errorf(ctx, "checkout_dir flag required.")
-		missing = true
+		flagErr = true
 	}
 
-	if missing {
-		panic("missing flags")
+	if flagErr {
+		panic("Flags are missing or not supported")
 	}
 }
 
