@@ -38,6 +38,8 @@ func RackRegistration(ctx context.Context, rack *ufspb.Rack) (*ufspb.Rack, error
 		if err := validateRackRegistration(ctx, rack); err != nil {
 			return err
 		}
+		// Format the input
+		rack.Name = strings.ToLower(rack.Name)
 
 		// Create switches
 		if switches != nil {
@@ -631,6 +633,8 @@ func validateRackRegistration(ctx context.Context, rack *ufspb.Rack) error {
 	}
 	// Aggregate resources to check if rack already exists
 	resourcesAlreadyExists = append(resourcesAlreadyExists, GetRackResource(rack.Name))
+	// Also validate the corresponding smaller case of rack name
+	resourcesAlreadyExists = append(resourcesAlreadyExists, GetRackResource(strings.ToLower(rack.Name)))
 
 	for _, s := range switches {
 		// Aggregate resources to check if switch already exists

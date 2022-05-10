@@ -6,6 +6,7 @@ package frontend
 
 import (
 	"context"
+	"strings"
 
 	empty "github.com/golang/protobuf/ptypes/empty"
 	"go.chromium.org/luci/common/errors"
@@ -253,9 +254,15 @@ func (fs *FleetServerImpl) GetRack(ctx context.Context, req *ufsAPI.GetRackReque
 		return nil, err
 	}
 	name := util.RemovePrefix(req.Name)
-	rack, err := controller.GetRack(ctx, name)
+	var rack *ufspb.Rack
+	rack, err = controller.GetRack(ctx, name)
 	if err != nil {
-		return nil, err
+		if strings.ToLower(name) != name {
+			rack, err = controller.GetRack(ctx, strings.ToLower(name))
+		}
+		if err != nil {
+			return nil, err
+		}
 	}
 	// https://aip.dev/122 - as per AIP guideline
 	rack.Name = util.AddPrefix(util.RackCollection, rack.Name)

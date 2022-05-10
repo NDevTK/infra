@@ -686,10 +686,15 @@ func TestGetRack(t *testing.T) {
 			So(err, ShouldBeNil)
 			rack1.Name = util.AddPrefix(util.RackCollection, "rack-1")
 
-			req := &ufsAPI.GetRackRequest{
+			resp, err := tf.Fleet.GetRack(tf.C, &ufsAPI.GetRackRequest{
 				Name: util.AddPrefix(util.RackCollection, "rack-1"),
-			}
-			resp, err := tf.Fleet.GetRack(tf.C, req)
+			})
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, rack1)
+
+			resp, err = tf.Fleet.GetRack(tf.C, &ufsAPI.GetRackRequest{
+				Name: util.AddPrefix(util.RackCollection, "RACK-1"),
+			})
 			So(err, ShouldBeNil)
 			So(resp, ShouldResembleProto, rack1)
 		})

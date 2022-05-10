@@ -57,6 +57,11 @@ func TestRackRegistration(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(msgs, ShouldHaveLength, 1)
 			So(msgs[0].Delete, ShouldBeFalse)
+
+			rack.Name = "RACK-1"
+			resp, err = RackRegistration(ctx, rack)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "already exists in the system")
 		})
 
 		Convey("Create new rack with nil browser/chromeos rack", func() {
