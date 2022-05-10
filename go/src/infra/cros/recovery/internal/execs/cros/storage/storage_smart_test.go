@@ -17,7 +17,7 @@ import (
 var storageSMARTFieldValueTests = []struct {
 	testName      string
 	rawOutput     string
-	expectedType  tlw.StorageType
+	expectedType  tlw.Storage_Type
 	expectedState StorageState
 }{
 	{
@@ -26,7 +26,7 @@ var storageSMARTFieldValueTests = []struct {
 		xxxxxx
 		xxxxxx
 		`,
-		tlw.StorageTypeUnspecified,
+		tlw.Storage_TYPE_UNSPECIFIED,
 		StorageStateUndefined,
 	},
 	{
@@ -36,7 +36,7 @@ var storageSMARTFieldValueTests = []struct {
 		SATA Version is: SATA 3.1, 6.0 Gb/s (current: 6.0 Gb/s)
 		xxxxxx
 		`,
-		tlw.StorageTypeSSD,
+		tlw.Storage_SSD,
 		StorageStateNormal,
 	},
 	{
@@ -47,7 +47,7 @@ var storageSMARTFieldValueTests = []struct {
 		184 End-to-End_Error   PO--CK   001   001   097    NOW  135
 		xxxxxx
 		`,
-		tlw.StorageTypeSSD,
+		tlw.Storage_SSD,
 		StorageStateCritical,
 	},
 	{
@@ -58,7 +58,7 @@ var storageSMARTFieldValueTests = []struct {
 		7 Reallocated_Sector_Ct   PO--CK   101   001   097
 		xxxxxx
 		`,
-		tlw.StorageTypeSSD,
+		tlw.Storage_SSD,
 		StorageStateWarning,
 	},
 	{
@@ -70,7 +70,7 @@ var storageSMARTFieldValueTests = []struct {
 		DEVICE_LIFE_TIME_EST_TYP_A: 0x01
 		xxxxxx
 		`,
-		tlw.StorageTypeMMC,
+		tlw.Storage_MMC,
 		StorageStateCritical,
 	},
 	{
@@ -82,7 +82,7 @@ var storageSMARTFieldValueTests = []struct {
 		DEVICE_LIFE_TIME_EST_TYP_A: 0x01
 		xxxxxx
 		`,
-		tlw.StorageTypeMMC,
+		tlw.Storage_MMC,
 		StorageStateWarning,
 	},
 	{
@@ -94,7 +94,7 @@ var storageSMARTFieldValueTests = []struct {
 		DEVICE_LIFE_TIME_EST_TYP_A: 0x01
 		xxxxxx
 		`,
-		tlw.StorageTypeMMC,
+		tlw.Storage_MMC,
 		StorageStateNormal,
 	},
 	{
@@ -105,7 +105,7 @@ var storageSMARTFieldValueTests = []struct {
 		Percentage Used:         100%
 		xxxxxx
 		`,
-		tlw.StorageTypeNVME,
+		tlw.Storage_NVME,
 		StorageStateWarning,
 	},
 	{
@@ -116,7 +116,7 @@ var storageSMARTFieldValueTests = []struct {
 		Percentage Used:         90%
 		xxxxxx
 		`,
-		tlw.StorageTypeNVME,
+		tlw.Storage_NVME,
 		StorageStateNormal,
 	},
 }
@@ -155,8 +155,8 @@ func TestExtractStorageType(t *testing.T) {
 		if err != nil {
 			t.Errorf("Expected no error")
 		}
-		if typeOfStorage != tlw.StorageTypeSSD {
-			t.Errorf("Expected storage type: %q, got: %q", tlw.StorageTypeSSD, typeOfStorage)
+		if typeOfStorage != tlw.Storage_SSD {
+			t.Errorf("Expected storage type: %q, got: %q", tlw.Storage_SSD, typeOfStorage)
 		}
 	})
 	Convey("MMC Type, no error", t, func() {
@@ -169,8 +169,8 @@ func TestExtractStorageType(t *testing.T) {
 		if err != nil {
 			t.Errorf("Expected no error")
 		}
-		if typeOfStorage != tlw.StorageTypeMMC {
-			t.Errorf("Expected storage type: %q, got: %q", tlw.StorageTypeMMC, typeOfStorage)
+		if typeOfStorage != tlw.Storage_MMC {
+			t.Errorf("Expected storage type: %q, got: %q", tlw.Storage_MMC, typeOfStorage)
 		}
 	})
 	Convey("NVME Type, no error", t, func() {
@@ -183,8 +183,8 @@ func TestExtractStorageType(t *testing.T) {
 		if err != nil {
 			t.Errorf("Expected no error")
 		}
-		if typeOfStorage != tlw.StorageTypeNVME {
-			t.Errorf("Expected storage type: %q, got: %q", tlw.StorageTypeNVME, typeOfStorage)
+		if typeOfStorage != tlw.Storage_NVME {
+			t.Errorf("Expected storage type: %q, got: %q", tlw.Storage_NVME, typeOfStorage)
 		}
 	})
 	Convey("Undefined Type, no error", t, func() {
@@ -195,8 +195,8 @@ func TestExtractStorageType(t *testing.T) {
 		if err != nil {
 			t.Errorf("Expected no error")
 		}
-		if typeOfStorage != tlw.StorageTypeUnspecified {
-			t.Errorf("Expected storage type: %q, got: %q", tlw.StorageTypeUnspecified, typeOfStorage)
+		if typeOfStorage != tlw.Storage_TYPE_UNSPECIFIED {
+			t.Errorf("Expected storage type: %q, got: %q", tlw.Storage_TYPE_UNSPECIFIED, typeOfStorage)
 		}
 	})
 }

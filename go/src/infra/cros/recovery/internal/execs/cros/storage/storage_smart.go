@@ -36,7 +36,7 @@ const (
 // supported storageType : MMC, NVME, SSD
 // supported storageState: storageStateUndefined, storageStateNomral, storageStateWarning, storageStateCritical
 type storageSMART struct {
-	StorageType  tlw.StorageType
+	StorageType  tlw.Storage_Type
 	StorageState StorageState
 }
 
@@ -52,22 +52,22 @@ func ParseSMARTInfo(ctx context.Context, rawOutput string) (*storageSMART, error
 
 type storageStateFunc func(context.Context, []string) (StorageState, error)
 
-var typeToStateFuncMap map[tlw.StorageType]storageStateFunc = map[tlw.StorageType]storageStateFunc{
-	tlw.StorageTypeSSD:  detectSSDState,
-	tlw.StorageTypeMMC:  detectMMCState,
-	tlw.StorageTypeNVME: detectNVMEState,
+var typeToStateFuncMap map[tlw.Storage_Type]storageStateFunc = map[tlw.Storage_Type]storageStateFunc{
+	tlw.Storage_SSD:  detectSSDState,
+	tlw.Storage_MMC:  detectMMCState,
+	tlw.Storage_NVME: detectNVMEState,
 }
 
 // storageSMARTFieldValue takes the raw output from the command line and return the field value of the storageSMART struct.
-func storageSMARTFieldValue(ctx context.Context, rawOutput string) (tlw.StorageType, StorageState, error) {
+func storageSMARTFieldValue(ctx context.Context, rawOutput string) (tlw.Storage_Type, StorageState, error) {
 	rawOutput = strings.TrimSpace(rawOutput)
 	if rawOutput == "" {
-		return tlw.StorageTypeUnspecified, StorageStateUndefined, errors.Reason("storageSMART field value: storage info is empty").Err()
+		return tlw.Storage_TYPE_UNSPECIFIED, StorageStateUndefined, errors.Reason("storageSMART field value: storage info is empty").Err()
 	}
 	storageInfoSlice := strings.Split(rawOutput, "\n")
 	storageType, err := extractStorageType(ctx, storageInfoSlice)
 	if err != nil {
-		return tlw.StorageTypeUnspecified, StorageStateUndefined, errors.Annotate(err, "storageSMART field value").Err()
+		return tlw.Storage_TYPE_UNSPECIFIED, StorageStateUndefined, errors.Annotate(err, "storageSMART field value").Err()
 	}
 	funcToCall, typeInMap := typeToStateFuncMap[storageType]
 	if !typeInMap {
@@ -91,24 +91,24 @@ const (
 
 // extractStorageType extracts the storage type information from storageInfoSlice.
 // return error if the regular expression cannot compile.
-func extractStorageType(ctx context.Context, storageInfoSlice []string) (tlw.StorageType, error) {
+func extractStorageType(ctx context.Context, storageInfoSlice []string) (tlw.Storage_Type, error) {
 	log.Debugf(ctx, "Extracting storage type")
 	ssdTypeRegexp, err := regexp.Compile(ssdTypeStorageGlob)
 	if err != nil {
-		return tlw.StorageTypeUnspecified, errors.Annotate(err, "extract storage type").Err()
+		return tlw.Storage_TYPE_UNSPECIFIED, errors.Annotate(err, "extract storage type").Err()
 	}
 	mmcTypeRegexp, err := regexp.Compile(mmcTypeStorageGlob)
 	if err != nil {
-		return tlw.StorageTypeUnspecified, errors.Annotate(err, "extract storage type").Err()
+		return tlw.Storage_TYPE_UNSPECIFIED, errors.Annotate(err, "extract storage type").Err()
 	}
 	nvmeTypeRegexp, err := regexp.Compile(nvmeTypeStorageGlob)
 	if err != nil {
-		return tlw.StorageTypeUnspecified, errors.Annotate(err, "extract storage type").Err()
+		return tlw.Storage_TYPE_UNSPECIFIED, errors.Annotate(err, "extract storage type").Err()
 	}
 	for _, line := range storageInfoSlice {
 		// check if storage type is SSD
 		if ssdTypeRegexp.MatchString(line) {
-			return tlw.StorageTypeSSD, nil
+			return tlw.Storage_SSD, nil
 		}
 		// check if storage type is MMC
 		mMMC, err := regexpSubmatchToMap(mmcTypeRegexp, line)
@@ -117,14 +117,14 @@ func extractStorageType(ctx context.Context, storageInfoSlice []string) (tlw.Sto
 			if version, ok := mMMC["version"]; ok {
 				log.Infof(ctx, "Found eMMC device, version: %s", version)
 			}
-			return tlw.StorageTypeMMC, nil
+			return tlw.Storage_MMC, nil
 		}
 		// check if storage type is nvme
 		if nvmeTypeRegexp.MatchString(line) {
-			return tlw.StorageTypeNVME, nil
+			return tlw.Storage_NVME, nil
 		}
 	}
-	return tlw.StorageTypeUnspecified, nil
+	return tlw.Storage_TYPE_UNSPECIFIED, nil
 }
 
 const (
