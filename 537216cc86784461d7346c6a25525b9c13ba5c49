@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e5eacd8b_8cccdb31",
+        "filename": "go/src/infra/cros/karte/internal/frontend/datastore.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2022-05-10T22:15:08Z",
+      "side": 1,
+      "message": "nit: please convert to switch",
+      "range": {
+        "startLine": 235,
+        "startChar": 1,
+        "endLine": 243,
+        "endChar": 2
+      },
+      "revId": "537216cc86784461d7346c6a25525b9c13ba5c49",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
