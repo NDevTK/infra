@@ -11,7 +11,9 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 
+	ufspb "infra/unifiedfleet/api/v1/models"
 	api "infra/unifiedfleet/api/v1/rpc"
+	"infra/unifiedfleet/app/model/configuration"
 )
 
 func TestIsValidPublicChromiumTest(t *testing.T) {
@@ -169,4 +171,89 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 			So(err.Error(), ShouldContainSubstring, "Image cannot be empty")
 		})
 	})
+}
+
+func TestImportPublicBoardsAndModels(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	Convey("Import Public Boards and Models", t, func() {
+		Convey("Happy Path", func() {
+			mockDevice := mockDevicesLaunched()
+			err := ImportPublicBoardsAndModels(ctx, mockDevice)
+			So(err, ShouldBeNil)
+		})
+		Convey("Happy Path Check DataStore", func() {
+			mockDevice := mockDevicesLaunched()
+			err := ImportPublicBoardsAndModels(ctx, mockDevice)
+			entity, err := configuration.GetPublicBoardModelData(ctx, mockDevice.Devices[0].Boards[0].PublicCodename)
+			So(err, ShouldBeNil)
+			So(entity.Board, ShouldEqual, mockDevice.Devices[0].Boards[0].PublicCodename)
+			So(entity.Models, ShouldResemble, getModelNamesFromMockBoard(mockDevice.Devices[0].Boards[0]))
+		})
+		Convey("Empty Input", func() {
+			mockDevice := &ufspb.GoldenEyeDevices{}
+			err := ImportPublicBoardsAndModels(ctx, mockDevice)
+			entity, err := configuration.GetPublicBoardModelData(ctx, "test")
+			So(err, ShouldNotBeNil)
+			So(entity, ShouldBeNil)
+		})
+		Convey("Unlaunched Devices", func() {
+			mockDevice := mockDevicesUnlaunched()
+			err := ImportPublicBoardsAndModels(ctx, mockDevice)
+			So(err, ShouldBeNil)
+		})
+		Convey("Unlaunched Devices not saved to DataStore", func() {
+			mockDevice := mockDevicesUnlaunched()
+			err := ImportPublicBoardsAndModels(ctx, mockDevice)
+			So(err, ShouldBeNil)
+			entity, err := configuration.GetPublicBoardModelData(ctx, mockDevice.Devices[0].Boards[0].PublicCodename)
+			So(err, ShouldNotBeNil)
+			So(entity, ShouldBeNil)
+		})
+	})
+}
+
+func mockDevicesLaunched() *ufspb.GoldenEyeDevices {
+	return &ufspb.GoldenEyeDevices{
+		Devices: []*ufspb.GoldenEyeDevice{
+			{
+				LaunchDate: "2022-05-01",
+				Boards: []*ufspb.Board{
+					{
+						PublicCodename: "board1",
+						Models: []*ufspb.Model{
+							{Name: "model1"},
+							{Name: "model2"},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func mockDevicesUnlaunched() *ufspb.GoldenEyeDevices {
+	return &ufspb.GoldenEyeDevices{
+		Devices: []*ufspb.GoldenEyeDevice{
+			{
+				LaunchDate: "2023-05-01",
+				Boards: []*ufspb.Board{
+					{
+						PublicCodename: "boardNew",
+						Models: []*ufspb.Model{
+							{Name: "modelNew1"},
+							{Name: "modelNew2"},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func getModelNamesFromMockBoard(board *ufspb.Board) (models []string) {
+	for _, model := range board.Models {
+		models = append(models, model.Name)
+	}
+	return models
 }

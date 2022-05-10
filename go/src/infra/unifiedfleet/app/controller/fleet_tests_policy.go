@@ -7,19 +7,24 @@ package controller
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/auth"
 	"google.golang.org/grpc/codes"
-
-	api "infra/unifiedfleet/api/v1/rpc"
-
 	grpcStatus "google.golang.org/grpc/status"
+
+	ufspb "infra/unifiedfleet/api/v1/models"
+	api "infra/unifiedfleet/api/v1/rpc"
+	"infra/unifiedfleet/app/model/configuration"
 )
 
 const (
 	// LUCI Auth group which is used to verify if a service account has permissions to run public Chromium tests in ChromeOS lab
 	PublicUsersToChromeOSAuthGroup = "public-chromium-in-chromeos-builders"
+
+	// Date Format to parse launch date for Device info read from DLM
+	DateFormat = "2006-01-02"
 )
 
 // InvalidBoardError is the error raised when a private board is specified for a public test
@@ -102,6 +107,32 @@ func IsValidTest(ctx context.Context, req *api.CheckFleetTestsPolicyRequest) err
 		return &InvalidImageError{Image: req.Image}
 	}
 
+	return nil
+}
+
+func ImportPublicBoardsAndModels(ctx context.Context, goldenEyeDevices *ufspb.GoldenEyeDevices) error {
+	for _, device := range goldenEyeDevices.Devices {
+		if device.LaunchDate == "" {
+			continue
+		}
+		launchDate, err := time.Parse(DateFormat, device.LaunchDate)
+		if err != nil {
+			// Ignore and process the rest of the data
+			logging.Infof(ctx, "Failed to parse Launch Date from Golden Eye Device data %s", device.LaunchDate)
+			continue
+		}
+		if launchDate.Before(time.Now()) {
+			// Already launched board and model, can be added to allowed list
+			for _, board := range device.Boards {
+				logging.Infof(ctx, "Launched Board from Golden Eye Device data %s", board.PublicCodename)
+				var modelNames []string
+				for _, model := range board.Models {
+					modelNames = append(modelNames, model.Name)
+				}
+				configuration.AddPublicBoardModelData(ctx, board.PublicCodename, modelNames)
+			}
+		}
+	}
 	return nil
 }
 
