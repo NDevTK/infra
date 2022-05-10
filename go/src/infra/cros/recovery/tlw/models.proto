@@ -359,3 +359,19 @@ message Storage {
   // Type of storage used on device.
   Type type = 2;
 }
+
+// Chameleon holds info about chameleon device.
+message Chameleon {
+  // Name is the resource name.
+  string name = 1;
+  // State describes the state of chameleon device.
+  enum State {
+    STATE_UNSPECIFIED = 0;
+    // Device and software on it is working as expected.
+    WORKING = 1;
+    // Device is broken or not working as expected.
+    BROKEN = 2;
+  }
+  // State of the device.
+  State state = 2;
+}

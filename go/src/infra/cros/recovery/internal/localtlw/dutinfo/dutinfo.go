@@ -254,8 +254,8 @@ func createServoHost(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.ServoHost 
 	}
 }
 
-func createChameleonHost(dutName string, ds *ufslab.DutState) *tlw.ChameleonHost {
-	return &tlw.ChameleonHost{
+func createChameleonHost(dutName string, ds *ufslab.DutState) *tlw.Chameleon {
+	return &tlw.Chameleon{
 		Name:  fmt.Sprintf("%s-chameleon", dutName),
 		State: convertChameleonState(ds.GetChameleon()),
 	}

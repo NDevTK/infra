@@ -106,16 +106,16 @@ func convertServoState(s ufslab.PeripheralState) tlw.ServoHost_State {
 	return tlw.ServoHost_STATE_UNSPECIFIED
 }
 
-var chameleonStates = map[ufslab.PeripheralState]tlw.ChameleonState{
-	ufslab.PeripheralState_WORKING: tlw.ChameleonStateWorking,
-	ufslab.PeripheralState_BROKEN:  tlw.ChameleonStateBroken,
+var chameleonStates = map[ufslab.PeripheralState]tlw.Chameleon_State{
+	ufslab.PeripheralState_WORKING: tlw.Chameleon_WORKING,
+	ufslab.PeripheralState_BROKEN:  tlw.Chameleon_BROKEN,
 }
 
-func convertChameleonState(s ufslab.PeripheralState) tlw.ChameleonState {
+func convertChameleonState(s ufslab.PeripheralState) tlw.Chameleon_State {
 	if ns, ok := chameleonStates[s]; ok {
 		return ns
 	}
-	return tlw.ChameleonStateUnspecified
+	return tlw.Chameleon_STATE_UNSPECIFIED
 }
 
 var bluetoothPeerStates = map[ufslab.PeripheralState]tlw.BluetoothPeerState{

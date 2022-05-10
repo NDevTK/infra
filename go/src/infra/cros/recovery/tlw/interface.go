@@ -222,7 +222,7 @@ type Dut struct {
 	// ServoHost of the DUT setup.
 	ServoHost *ServoHost
 	// Chameleon device of the DUT setup.
-	ChameleonHost *ChameleonHost
+	ChameleonHost *Chameleon
 	// BluetoothPeer info of DUT setup.
 	BluetoothPeerHosts []*BluetoothPeerHost
 	// Array of Wifi Router peripheral devices
@@ -260,25 +260,6 @@ type DUTBluetooth struct {
 type DUTBattery struct {
 	// State of the component.
 	State HardwareState
-}
-
-// ChameleonState describes the state of chameleon device.
-type ChameleonState string
-
-const (
-	ChameleonStateUnspecified ChameleonState = "UNSPECIFIED"
-	// Device and software on it is working as expected.
-	ChameleonStateWorking ChameleonState = "WORKING"
-	// Device is broken or not working as expected.
-	ChameleonStateBroken ChameleonState = "BROKEN"
-)
-
-// ChameleonHost holds info about chameleon device.
-type ChameleonHost struct {
-	// Name is the resource name.
-	Name string
-	// State of the device.
-	State ChameleonState
 }
 
 // BluetoothPeerState describes the state of bluetooth peer device.

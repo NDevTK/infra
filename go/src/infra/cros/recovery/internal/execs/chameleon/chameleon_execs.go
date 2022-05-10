@@ -13,13 +13,13 @@ import (
 
 // setStateBrokenExec sets state as BROKEN.
 func setStateBrokenExec(ctx context.Context, info *execs.ExecInfo) error {
-	info.RunArgs.DUT.ChameleonHost.State = tlw.ChameleonStateBroken
+	info.RunArgs.DUT.ChameleonHost.State = tlw.Chameleon_BROKEN
 	return nil
 }
 
 // setStateWorkingExec sets state as WORKING.
 func setStateWorkingExec(ctx context.Context, info *execs.ExecInfo) error {
-	info.RunArgs.DUT.ChameleonHost.State = tlw.ChameleonStateWorking
+	info.RunArgs.DUT.ChameleonHost.State = tlw.Chameleon_WORKING
 	return nil
 }
 
