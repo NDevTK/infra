@@ -5,4 +5,4 @@
 // Package ufspb contains the fleet service API.
 package ufspb
 
-//go:generate cproto
+//go:generate cproto -proto-path ../../../../..

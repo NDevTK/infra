@@ -5,4 +5,4 @@
 // Package apibq contains the bigquery service API.
 package apibq
 
-//go:generate cproto
+//go:generate cproto -proto-path ../../../../../..
