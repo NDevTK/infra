@@ -16,6 +16,24 @@
       "message": "LGTM % comment\n\nis tracking token in instance is expected for BQ?",
       "revId": "307937b9f4fcca4234f9660e8dee2c2549c58d8c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "96af35f3_a739be22",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-05-10T22:17:43Z",
+      "side": 1,
+      "message": "This isn\u0027t a bigquery feature. I\u0027m adding explicit stop and err poison pill tokens to address a bug in `cron-persist-to-bigquery`.\n\nI\u0027m adding UUIDs so that these keys definitely don\u0027t conflict with anything.",
+      "parentUuid": "a7ea9b37_f1fe6409",
+      "revId": "307937b9f4fcca4234f9660e8dee2c2549c58d8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
