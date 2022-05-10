@@ -10,6 +10,7 @@ import (
 	"math"
 	"time"
 
+	cloudBQ "cloud.google.com/go/bigquery"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
 	"google.golang.org/grpc/codes"
@@ -79,7 +80,7 @@ func (e *ActionEntity) ConvertToAction() *kartepb.Action {
 }
 
 // ConvertToBQAction converts a datastore action entity to a bigquery proto.
-func (e *ActionEntity) ConvertToBQAction() *kbqpb.Action {
+func (e *ActionEntity) ConvertToBQAction() cloudBQ.ValueSaver {
 	if e == nil {
 		return nil
 	}

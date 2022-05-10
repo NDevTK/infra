@@ -10,7 +10,6 @@ import (
 
 	cloudBQ "cloud.google.com/go/bigquery"
 	"github.com/golang/protobuf/jsonpb"
-	luciBQ "go.chromium.org/luci/common/bq"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
@@ -141,11 +140,7 @@ func (k *karteFrontend) PersistAction(ctx context.Context, req *kartepb.PersistA
 		logging.Errorf(ctx, "Cannot retrieve action: %s", err)
 		return nil, errors.Annotate(err, "persist action").Err()
 	}
-	rawBqRecord := ent.ConvertToBQAction()
-	var bqRecord cloudBQ.ValueSaver = &luciBQ.Row{
-		Message: rawBqRecord,
-	}
-
+	bqRecord := ent.ConvertToBQAction()
 	logging.Infof(ctx, "beginning to insert record to bigquery")
 	tbl := client.Dataset("entities").Table("actions")
 	inserter := tbl.Inserter()
