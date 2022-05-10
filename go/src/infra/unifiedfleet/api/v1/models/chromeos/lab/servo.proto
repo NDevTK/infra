@@ -8,7 +8,9 @@ package unifiedfleet.api.v1.models.chromeos.lab;
 
 option go_package = "infra/unifiedfleet/api/v1/models/chromeos/lab;ufspb";
 
-// NEXT TAG: 12
+import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/usb_drive.proto";
+
+// NEXT TAG: 13
 message Servo {
   reserved 6;
   // Servo-specific configs
@@ -25,6 +27,8 @@ message Servo {
   repeated string servo_component = 11;
   // b/190538710 optional docker container name if servod is running in docker
   string docker_container_name = 10;
+  // UsbDrive contains details of the servo's plugged USB drive.
+  chromiumos.test.lab.api.UsbDrive usb_drive = 12;
 }
 
 // Servo Setup Type describes the capabilities of servos.
