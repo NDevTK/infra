@@ -17,7 +17,7 @@ func crosDeployPlan() *Plan {
 			"Clean up",
 			"Servo has USB-key with require image",
 			"Device is pingable before deploy",
-			"DUT has expected OS",
+			"DUT is on test channel OS",
 			"DUT has expected dev firmware",
 			"Switch to secure-mode and reboot",
 			"Deployment checks",
@@ -66,7 +66,7 @@ func deployActions() map[string]*Action {
 				"Power cycle DUT by RPM and wait",
 			},
 		},
-		"DUT has expected OS": {
+		"DUT is on test channel OS": {
 			Docs: []string{
 				"Verify that device has OS version from test channel, if not then install it.",
 			},

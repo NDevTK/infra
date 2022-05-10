@@ -1346,6 +1346,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify that device was not booted from USB-drive.",
 			},
 			Conditions: []string{
+				"is_not_flex_board",
 				"Device booted from USB-drive",
 			},
 			RecoveryActions: []string{
