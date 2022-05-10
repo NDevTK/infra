@@ -24,10 +24,10 @@ type store struct {
 }
 
 // ReadProvisionInfo takes in the dut name and find the file that existed on the drone about the dut's
-// provision information (cros version and job repo url) and then returns a tlw.DUTProvisionedInfo that
+// provision information (cros version and job repo url) and then returns a tlw.ProvisionedInfo that
 // contains these two fields.
-func ReadProvisionInfo(ctx context.Context, dutHostname string) (*tlw.DUTProvisionedInfo, error) {
-	pi := &tlw.DUTProvisionedInfo{}
+func ReadProvisionInfo(ctx context.Context, dutHostname string) (*tlw.ProvisionedInfo, error) {
+	pi := &tlw.ProvisionedInfo{}
 	s, err := readStore(dutHostname)
 	if err != nil {
 		return pi, errors.Annotate(err, "read provision info").Err()
@@ -41,7 +41,7 @@ func ReadProvisionInfo(ctx context.Context, dutHostname string) (*tlw.DUTProvisi
 	if !ok {
 		log.Debugf(ctx, "local dut info file does not have provisional information of job_repo_url.")
 	}
-	pi.JobRepoURL = jobRepoURL
+	pi.JobRepoUrl = jobRepoURL
 	return pi, nil
 }
 
@@ -58,8 +58,8 @@ func UpdateProvisionInfo(ctx context.Context, dut *tlw.Dut) error {
 	if dut.ProvisionedInfo.CrosVersion != "" {
 		s.LocalDUTState.ProvisionableLabels[CrosVersionKey] = dut.ProvisionedInfo.CrosVersion
 	}
-	if dut.ProvisionedInfo.JobRepoURL != "" {
-		s.LocalDUTState.ProvisionableAttributes[JobRepoURLKey] = dut.ProvisionedInfo.JobRepoURL
+	if dut.ProvisionedInfo.JobRepoUrl != "" {
+		s.LocalDUTState.ProvisionableAttributes[JobRepoURLKey] = dut.ProvisionedInfo.JobRepoUrl
 	}
 	return errors.Annotate(s.writeStore(), "update provision info").Err()
 }

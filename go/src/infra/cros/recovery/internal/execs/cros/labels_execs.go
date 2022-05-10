@@ -48,7 +48,7 @@ func matchCrosVersionToInvExec(ctx context.Context, info *execs.ExecInfo) error 
 // matchJobRepoURLVersionToInvExec confirms the label/inventory's job_repo_url field contains cros-version on the DUT.
 // if job_repo url is empty, then skipping this check.
 func matchJobRepoURLVersionToInvExec(ctx context.Context, info *execs.ExecInfo) error {
-	jobRepoUrlFromInv := info.RunArgs.DUT.ProvisionedInfo.JobRepoURL
+	jobRepoUrlFromInv := info.RunArgs.DUT.ProvisionedInfo.JobRepoUrl
 	if jobRepoUrlFromInv == "" {
 		log.Infof(ctx, "job repo url is empty, skipping check")
 		return nil

@@ -332,3 +332,13 @@ message ServoHost {
   // servod-container.
   string container_name = 10;
 }
+
+// ProvisionedInfo holds info about provisioned info for the DUT.
+message ProvisionedInfo {
+  // CrosVersion tells which ChromeOS version is on the DUT.
+  // Example: board-release/R90-13816.47.0
+  string cros_version = 1;
+  // JobRepoUrl provide path to download client code to the DUT.
+  // Example: http://{cache_server}:8082/download/{gs_path}
+  string job_repo_url = 2;
+}

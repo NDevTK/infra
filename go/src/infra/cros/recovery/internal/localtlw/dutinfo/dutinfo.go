@@ -73,7 +73,7 @@ func ConvertAttachedDeviceToTlw(data *ufsAPI.AttachedDeviceData) (dut *tlw.Dut, 
 			// Attached device does not have pools. Need read from Scheduling unit.
 			// tlw.ExtraAttributePools: pools,
 		},
-		ProvisionedInfo: &tlw.DUTProvisionedInfo{},
+		ProvisionedInfo: &tlw.ProvisionedInfo{},
 	}, nil
 }
 
@@ -151,7 +151,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
 		},
-		ProvisionedInfo: &tlw.DUTProvisionedInfo{},
+		ProvisionedInfo: &tlw.ProvisionedInfo{},
 	}
 	if audio := p.GetAudio(); audio != nil {
 		d.Audio.InBox = audio.AudioBox
@@ -218,7 +218,7 @@ func adaptUfsLabstationToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: l.GetPools(),
 		},
-		ProvisionedInfo: &tlw.DUTProvisionedInfo{},
+		ProvisionedInfo: &tlw.ProvisionedInfo{},
 	}
 	return d, nil
 }
