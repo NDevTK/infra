@@ -263,7 +263,8 @@ var (
 	// branchable.
 	branchableProjects = map[string]*regexp.Regexp{
 		externalRemote: regexp.MustCompile("(chromiumos|aosp)/(.+)"),
-		internalRemote: regexp.MustCompile("chromeos/(.+)"),
+		// Want to branch ti50 projects as well, b/232024518 for context.
+		internalRemote: regexp.MustCompile("(chromeos|ti50)/(.+)"),
 	}
 
 	manifestAttrBranchingCreate = "create"
