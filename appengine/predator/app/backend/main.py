@@ -17,7 +17,9 @@ from gae_libs.pipeline_wrapper import pipeline_handlers
 
 # For appengine pipeline running on backend modules.
 pipeline_backend_application = pipeline_handlers._APP
-gae_ts_mon.initialize(pipeline_backend_application)
+# TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
+# service account and change to gae_ts_mon.initialize_prod()
+gae_ts_mon.initialize_adhoc(pipeline_backend_application)
 
 
 backend_handler_mappings = [
@@ -33,4 +35,6 @@ backend_handler_mappings = [
      update_repo_to_dep_path.UpdateRepoToDepPath),
 ]
 backend_app = webapp2.WSGIApplication(backend_handler_mappings, debug=False)
-gae_ts_mon.initialize(backend_app)
+# TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
+# service account and change to gae_ts_mon.initialize_prod()
+gae_ts_mon.initialize_adhoc(backend_app)

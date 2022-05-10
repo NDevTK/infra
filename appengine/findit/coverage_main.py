@@ -24,7 +24,9 @@ gerrit_filter_coverage_worker_handler_mappings = [
 gerrit_filter_coverage_worker_application = webapp2.WSGIApplication(
     gerrit_filter_coverage_worker_handler_mappings, debug=False)
 if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize(gerrit_filter_coverage_worker_application)
+  # TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
+  # service account and change to gae_ts_mon.initialize_prod()
+  gae_ts_mon.initialize_adhoc(gerrit_filter_coverage_worker_application)
 
 # Referenced coverage worker module.
 referenced_coverage_worker_handler_mappings = [
@@ -34,7 +36,9 @@ referenced_coverage_worker_handler_mappings = [
 referenced_coverage_worker_application = webapp2.WSGIApplication(
     referenced_coverage_worker_handler_mappings, debug=False)
 if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize(referenced_coverage_worker_application)
+  # TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
+  # service account and change to gae_ts_mon.initialize_prod()
+  gae_ts_mon.initialize_adhoc(referenced_coverage_worker_application)
 
 
 # "code-coverage-backend" module.
@@ -58,7 +62,9 @@ code_coverage_backend_handler_mappings = [
 code_coverage_backend_web_application = webapp2.WSGIApplication(
     code_coverage_backend_handler_mappings, debug=False)
 if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize(code_coverage_backend_web_application)
+  # TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
+  # service account and change to gae_ts_mon.initialize_prod()
+  gae_ts_mon.initialize_adhoc(code_coverage_backend_web_application)
 
 # "code-coverage-frontend" module.
 code_coverage_frontend_handler_mappings = [
@@ -75,4 +81,6 @@ code_coverage_frontend_handler_mappings = [
 code_coverage_frontend_web_application = webapp2.WSGIApplication(
     code_coverage_frontend_handler_mappings, debug=False)
 if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize(code_coverage_frontend_web_application)
+  # TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
+  # service account and change to gae_ts_mon.initialize_prod()
+  gae_ts_mon.initialize_adhoc(code_coverage_frontend_web_application)

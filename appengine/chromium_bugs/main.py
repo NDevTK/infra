@@ -296,4 +296,7 @@ application = webapp2.WSGIApplication(
      ('/wizard.html', MainHandler),
      ('/wizard.do', MainHandler)],
     debug=True)
-gae_ts_mon.initialize(application)
+
+# TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
+# service account and change to gae_ts_mon.initialize_prod()
+gae_ts_mon.initialize_adhoc(application)

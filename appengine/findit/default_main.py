@@ -34,12 +34,16 @@ default_web_pages_handler_mappings = [
 default_web_application = webapp2.WSGIApplication(
     default_web_pages_handler_mappings, debug=False)
 if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize(default_web_application)
+  # TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
+  # service account and change to gae_ts_mon.initialize_prod()
+  gae_ts_mon.initialize_adhoc(default_web_application)
 
 # Cloud Endpoint apis in the default module.
 api_application = endpoints_webapp2.api_server([FindItApi])
 if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize(api_application)
+  # TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
+  # service account and change to gae_ts_mon.initialize_prod()
+  gae_ts_mon.initialize_adhoc(api_application)
 
 # App Engine pipeline status pages in the default module.
 # TODO(stgao): Move this to frontend module.
@@ -52,4 +56,6 @@ pipeline_status_handler_mappings = [
 pipeline_status_application = webapp2.WSGIApplication(
     pipeline_status_handler_mappings, debug=False)
 if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize(pipeline_status_application)
+  # TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
+  # service account and change to gae_ts_mon.initialize_prod()
+  gae_ts_mon.initialize_adhoc(pipeline_status_application)

@@ -19,4 +19,6 @@ findit_backend_handler_mappings = [
 findit_backend_web_application = webapp2.WSGIApplication(
     findit_backend_handler_mappings, debug=False)
 if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize(findit_backend_web_application)
+  # TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
+  # service account and change to gae_ts_mon.initialize_prod()
+  gae_ts_mon.initialize_adhoc(findit_backend_web_application)

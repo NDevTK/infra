@@ -51,5 +51,7 @@ class RemoteScreenshotLoader(ScreenshotLoader):
 
 
 gae_app = webapp2.WSGIApplication(routes_list, debug=True)
-gae_ts_mon.initialize(gae_app)
+# TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
+# service account and change to gae_ts_mon.initialize_prod()
+gae_ts_mon.initialize_adhoc(gae_app)
 gae_app.config['screenshot_loader'] = RemoteScreenshotLoader()

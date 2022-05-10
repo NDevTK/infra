@@ -33,7 +33,6 @@ class InitializeTest(test_case.TestCase):
     self.mock_state.metrics = copy.copy(interface.state.metrics)
     mock.patch('infra_libs.ts_mon.common.interface.state',
         new=self.mock_state).start()
-
     mock.patch('infra_libs.ts_mon.common.monitors.HttpsMonitor',
                autospec=True).start()
     self.app = webapp2.WSGIApplication()
@@ -115,6 +114,30 @@ class InitializeTest(test_case.TestCase):
   def test_internal_callback(self):
     # Smoke test.
     config._internal_callback()
+
+  def test_initialize_delegates_service_account(self):
+    os.environ['SERVER_SOFTWARE'] = 'Production'  # != 'Development'
+    config.initialize(self.app, is_local_unittest=False)
+    args, _ = monitors.HttpsMonitor.call_args
+    self.assertTrue(
+        isinstance(args[1], monitors.DelegateServiceAccountCredentials))
+    self.assertEqual(args[1].service_account_email,
+                     shared.PRODXMON_SERVICE_ACCOUNT_EMAIL)
+
+  def test_initialize_adhoc_delegates_service_account(self):
+    os.environ['SERVER_SOFTWARE'] = 'Production'  # != 'Development'
+    config.initialize_adhoc(self.app, is_local_unittest=False)
+    args, _ = monitors.HttpsMonitor.call_args
+    self.assertTrue(
+        isinstance(args[1], monitors.DelegateServiceAccountCredentials))
+    self.assertEqual(args[1].service_account_email,
+                     shared.PRODXMON_SERVICE_ACCOUNT_EMAIL)
+
+  def test_initialize_prod_uses_default_account(self):
+    os.environ['SERVER_SOFTWARE'] = 'Production'  # != 'Development'
+    config.initialize_prod(self.app, is_local_unittest=False)
+    args, _ = monitors.HttpsMonitor.call_args
+    self.assertTrue(isinstance(args[1], monitors.AppengineCredentials))
 
 
 class InstrumentWSGIApplicationTest(test_case.TestCase):

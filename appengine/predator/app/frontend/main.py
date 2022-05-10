@@ -30,7 +30,9 @@ pipeline_status_handler_mappings = [
 ]
 pipeline_status_application = webapp2.WSGIApplication(
     pipeline_status_handler_mappings, debug=False)
-gae_ts_mon.initialize(pipeline_status_application)
+# TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
+# service account and change to gae_ts_mon.initialize_prod()
+gae_ts_mon.initialize_adhoc(pipeline_status_application)
 
 
 frontend_web_pages_handler_mappings = [
@@ -63,4 +65,6 @@ frontend_web_pages_handler_mappings = [
 ]
 frontend_app = webapp2.WSGIApplication(
     frontend_web_pages_handler_mappings, debug=False)
-gae_ts_mon.initialize(frontend_app)
+# TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
+# service account and change to gae_ts_mon.initialize_prod()
+gae_ts_mon.initialize_adhoc(frontend_app)
