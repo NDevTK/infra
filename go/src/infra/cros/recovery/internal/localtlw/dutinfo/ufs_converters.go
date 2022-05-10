@@ -49,21 +49,19 @@ func convertFirmwareChannel(s ufslab.ServoFwChannel) tlw.ServoFwChannel {
 	return tlw.ServoFwChannel_FW_STABLE
 }
 
-func convertStorageType(t ufsdevice.Config_Storage) tlw.StorageType {
-	switch t {
-	case ufsdevice.Config_STORAGE_SSD:
-		return tlw.StorageTypeSSD
-	case ufsdevice.Config_STORAGE_HDD:
-		return tlw.StorageTypeHDD
-	case ufsdevice.Config_STORAGE_MMC:
-		return tlw.StorageTypeMMC
-	case ufsdevice.Config_STORAGE_NVME:
-		return tlw.StorageTypeNVME
-	case ufsdevice.Config_STORAGE_UFS:
-		return tlw.StorageTypeUFS
-	default:
-		return tlw.StorageTypeUnspecified
+var storageTypes = map[ufsdevice.Config_Storage]tlw.Storage_Type{
+	ufsdevice.Config_STORAGE_SSD:  tlw.Storage_SSD,
+	ufsdevice.Config_STORAGE_HDD:  tlw.Storage_HDD,
+	ufsdevice.Config_STORAGE_MMC:  tlw.Storage_MMC,
+	ufsdevice.Config_STORAGE_NVME: tlw.Storage_NVME,
+	ufsdevice.Config_STORAGE_UFS:  tlw.Storage_UFS,
+}
+
+func convertStorageType(t ufsdevice.Config_Storage) tlw.Storage_Type {
+	if v, ok := storageTypes[t]; ok {
+		return v
 	}
+	return tlw.Storage_TYPE_UNSPECIFIED
 }
 
 func convertAudioLoopbackState(s ufslab.PeripheralState) tlw.DUTAudio_LoopbackState {
