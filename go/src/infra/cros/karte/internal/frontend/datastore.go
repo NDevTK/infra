@@ -223,14 +223,28 @@ func maxVersion(a string, b string) string {
 	return a
 }
 
+// errToken indicates that the query is in the error state and we cannot proceed.
+const errToken = "ERR 39c4bb59-2008-49c1-973c-36954c60b92c cb441ab0-4ed1-4c13-969e-dfe9f4be9588"
+
+// stopToken indicates that we've reached the end of the input.
+const stopToken = "STOP 39c4bb59-2008-49c1-973c-36954c60b92c 6035406e-c3e0-4db7-937c-ba6a41010694"
+
 // Next takes a batch size and returns the next batch of action entities from a query.
 func (q *ActionEntitiesQuery) Next(ctx context.Context, batchSize int32) ([]*ActionEntity, ActionQueryAncillaryData, error) {
 	var d ActionQueryAncillaryData
+	if q == nil {
+		return nil, d, errors.Reason("next: action entities query cannot be nil").Err()
+	}
+	if q.Token == errToken {
+		return nil, d, errors.Reason("next: query is in error state").Err()
+	}
+	if q.Token == stopToken {
+		return nil, d, errors.Reason("next: query is stopped").Err()
+	}
 	if batchSize == 0 {
 		batchSize = defaultBatchSize
 		logging.Debugf(ctx, "applied default batch size %d\n", defaultBatchSize)
 	}
-	var nextToken string
 	// A rootedQuery is rooted at the position implied by the pagination token.
 	rootedQuery := q.Query
 	if q.Token != "" {
@@ -257,15 +271,16 @@ func (q *ActionEntitiesQuery) Next(ctx context.Context, batchSize int32) ([]*Act
 			if err != nil {
 				return errors.Annotate(err, "next action entity (entities: %d)", len(entities)).Err()
 			}
-			nextToken = tok.String()
+			q.Token = tok.String()
+			return nil
 		}
+		q.Token = stopToken
 		return nil
 	})
 	logging.Infof(ctx, "Version range for batch %v", d)
 	if err != nil {
 		return nil, d, errors.Annotate(err, "next action entity: after running query").Err()
 	}
-	q.Token = nextToken
 	return entities, d, nil
 }
 

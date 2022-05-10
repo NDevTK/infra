@@ -301,10 +301,7 @@ func TestReadActionEntitiesFromDatastoreOneAtAtime(t *testing.T) {
 		if len(es) != 1 {
 			t.Errorf("unexpected entities: %v", es)
 		}
-		// Even though there are no further entities to extract,
-		// we haven't observed the end of the query yet and therefore
-		// should not see an end token.
-		if q.Token != "" {
+		if q.Token != stopToken {
 			t.Errorf("unexpected token: %q", q.Token)
 		}
 	}
