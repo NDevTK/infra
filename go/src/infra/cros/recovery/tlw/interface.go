@@ -210,7 +210,7 @@ type Dut struct {
 
 	// Physical parts of DUT.
 	// Internal storage info.
-	Storage *DUTStorage
+	Storage *Storage
 	// Battery info.
 	Battery *DUTBattery
 	// Wifi info.
@@ -238,26 +238,6 @@ type Dut struct {
 	// All values has to be converted to string.
 	// Example: pools, force_flashing, restrictions and special abilities.
 	ExtraAttributes map[string][]string
-}
-
-// StorageType describes which type or storage used on the DUT.
-type StorageType string
-
-const (
-	StorageTypeUnspecified StorageType = "UNSPECIFIED"
-	StorageTypeSSD         StorageType = "SSD"
-	StorageTypeHDD         StorageType = "HDD"
-	StorageTypeMMC         StorageType = "MMC"
-	StorageTypeNVME        StorageType = "NVME"
-	StorageTypeUFS         StorageType = "UFS"
-)
-
-// DUTStorage holds info about internal storage of the DUT.
-type DUTStorage struct {
-	// State of the component.
-	State HardwareState
-	// Type of storage used on device.
-	Type StorageType
 }
 
 // DUTWifi holds info about internal wifi of the DUT.

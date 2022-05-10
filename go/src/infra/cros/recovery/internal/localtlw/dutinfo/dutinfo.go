@@ -261,8 +261,8 @@ func createChameleonHost(dutName string, ds *ufslab.DutState) *tlw.ChameleonHost
 	}
 }
 
-func createDUTStorage(dc *ufsdevice.Config, ds *ufslab.DutState) *tlw.DUTStorage {
-	return &tlw.DUTStorage{
+func createDUTStorage(dc *ufsdevice.Config, ds *ufslab.DutState) *tlw.Storage {
+	return &tlw.Storage{
 		Type:  convertStorageType(dc.GetStorage()),
 		State: convertHardwareState(ds.GetStorageState()),
 	}
