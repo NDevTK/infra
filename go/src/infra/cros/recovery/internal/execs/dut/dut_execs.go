@@ -128,8 +128,8 @@ func dutCheckBoardExec(ctx context.Context, info *execs.ExecInfo) error {
 // servoVerifySerialNumberExec verifies that the servo host attached
 // to the DUT has a serial number configured.
 func servoVerifySerialNumberExec(ctx context.Context, info *execs.ExecInfo) error {
-	if d := info.RunArgs.DUT; d != nil && d.ServoHost != nil && d.ServoHost.Servo != nil && d.ServoHost.Servo.SerialNumber != "" {
-		log.Debugf(ctx, "Servo Verify Serial Number : %q", d.ServoHost.Servo.SerialNumber)
+	if d := info.RunArgs.DUT; d != nil && d.ServoHost != nil && d.ServoHost.SerialNumber != "" {
+		log.Debugf(ctx, "Servo Verify Serial Number : %q", d.ServoHost.SerialNumber)
 		return nil
 	}
 	return errors.Reason("servo verify serial number: serial number is not available").Err()

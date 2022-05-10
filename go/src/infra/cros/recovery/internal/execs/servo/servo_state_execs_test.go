@@ -29,9 +29,7 @@ var setServoStateExecTestCases = []struct {
 		},
 		tlw.ServoStateSBULowVoltage,
 		&tlw.ServoHost{
-			Servo: &tlw.Servo{
-				State: tlw.ServoStateUnspecified,
-			},
+			State: tlw.ServoStateUnspecified,
 		},
 		nil,
 	},
@@ -42,9 +40,7 @@ var setServoStateExecTestCases = []struct {
 		},
 		tlw.ServoStateUnspecified,
 		&tlw.ServoHost{
-			Servo: &tlw.Servo{
-				State: tlw.ServoStateUnspecified,
-			},
+			State: tlw.ServoStateUnspecified,
 		},
 		errors.Reason("set servo state: state is not provided").Err(),
 	},
@@ -55,9 +51,7 @@ var setServoStateExecTestCases = []struct {
 		},
 		tlw.ServoStateUnspecified,
 		&tlw.ServoHost{
-			Servo: &tlw.Servo{
-				State: tlw.ServoStateUnspecified,
-			},
+			State: tlw.ServoStateUnspecified,
 		},
 		errors.Reason("set servo state: state is not provided").Err(),
 	},
@@ -68,9 +62,7 @@ var setServoStateExecTestCases = []struct {
 		},
 		tlw.ServoStateSBULowVoltage,
 		&tlw.ServoHost{
-			Servo: &tlw.Servo{
-				State: tlw.ServoStateUnspecified,
-			},
+			State: tlw.ServoStateUnspecified,
 		},
 		nil,
 	},
@@ -109,7 +101,7 @@ func TestSetServoStateExec(t *testing.T) {
 				t.Errorf("Expected error %q, but got %q", tt.expectedErr, actualErr)
 			}
 			if tt.servoHost != nil {
-				actualServoState := tt.servoHost.Servo.State
+				actualServoState := tt.servoHost.State
 				if actualServoState != tt.expectedServoState {
 					t.Errorf("Expected servo state %q, but got %q", tt.expectedServoState, actualServoState)
 				}

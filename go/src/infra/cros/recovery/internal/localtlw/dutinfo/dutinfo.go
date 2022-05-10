@@ -241,15 +241,13 @@ func createServoHost(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.ServoHost 
 		return nil
 	}
 	return &tlw.ServoHost{
-		Name:        p.GetServo().GetServoHostname(),
-		UsbkeyState: convertHardwareState(ds.GetServoUsbState()),
-		ServodPort:  int(p.GetServo().GetServoPort()),
-		Servo: &tlw.Servo{
-			State:           convertServoState(ds.GetServo()),
-			SerialNumber:    p.GetServo().GetServoSerial(),
-			FirmwareChannel: convertFirmwareChannel(p.GetServo().GetServoFwChannel()),
-			Type:            p.GetServo().GetServoType(),
-		},
+		Name:               p.GetServo().GetServoHostname(),
+		UsbkeyState:        convertHardwareState(ds.GetServoUsbState()),
+		ServodPort:         int(p.GetServo().GetServoPort()),
+		State:              convertServoState(ds.GetServo()),
+		SerialNumber:       p.GetServo().GetServoSerial(),
+		FirmwareChannel:    convertFirmwareChannel(p.GetServo().GetServoFwChannel()),
+		ServodType:         p.GetServo().GetServoType(),
 		SmartUsbhubPresent: p.GetSmartUsbhub(),
 		ServoTopology:      convertServoTopologyFromUFS(p.GetServo().GetServoTopology()),
 		ContainerName:      p.GetServo().GetDockerContainerName(),
@@ -333,7 +331,7 @@ func getUFSLabDataFromSpecs(dutID string, dut *tlw.Dut) *ufsAPI.UpdateDeviceReco
 		WifiRouters: []*ufsAPI.UpdateDeviceRecoveryDataRequest_WifiRouter{},
 	}
 	if sh := dut.ServoHost; sh != nil {
-		labData.ServoType = sh.Servo.Type
+		labData.ServoType = sh.ServodType
 		labData.SmartUsbhub = sh.SmartUsbhubPresent
 		labData.ServoTopology = convertServoTopologyToUFS(sh.ServoTopology)
 	}
@@ -373,7 +371,7 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 	// Update states for present components.
 	if sh := dut.ServoHost; sh != nil {
 		for us, ls := range servoStates {
-			if ls == sh.Servo.State {
+			if ls == sh.State {
 				state.Servo = us
 			}
 		}

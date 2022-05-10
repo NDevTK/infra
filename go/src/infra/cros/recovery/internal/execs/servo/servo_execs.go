@@ -74,7 +74,7 @@ func servodInitActionExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Reason("init servod: DUT is not specified").Err()
 	}
 	sh := d.ServoHost
-	if sh == nil || sh.Servo == nil {
+	if sh == nil {
 		return errors.Reason("init servod: servo-host or servo is not specified").Err()
 	}
 	o := &tlw.ServodOptions{
@@ -82,7 +82,7 @@ func servodInitActionExec(ctx context.Context, info *execs.ExecInfo) error {
 		DutBoard:      d.Board,
 		DutModel:      d.Model,
 		ServodPort:    int32(sh.ServodPort),
-		ServoSerial:   sh.Servo.SerialNumber,
+		ServoSerial:   sh.SerialNumber,
 		ServoDual:     false,
 		UseCr50Config: false,
 	}
@@ -229,13 +229,13 @@ func isRootServoPresentExec(ctx context.Context, info *execs.ExecInfo) error {
 	runner := info.NewRunner(info.RunArgs.DUT.ServoHost.Name)
 	am := info.GetActionArgs(ctx)
 	if am.AsBool(ctx, "update_topology", false) {
-		servoTopology, err := topology.RetrieveServoTopology(ctx, runner, info.RunArgs.DUT.ServoHost.Servo.SerialNumber)
+		servoTopology, err := topology.RetrieveServoTopology(ctx, runner, info.RunArgs.DUT.ServoHost.SerialNumber)
 		if err != nil {
 			return errors.Annotate(err, "is root servo present exec").Err()
 		}
 		info.RunArgs.DUT.ServoHost.ServoTopology = servoTopology
 	}
-	rootServo, err := topology.GetRootServo(ctx, runner, info.RunArgs.DUT.ServoHost.Servo.SerialNumber)
+	rootServo, err := topology.GetRootServo(ctx, runner, info.RunArgs.DUT.ServoHost.SerialNumber)
 	if err != nil {
 		return errors.Annotate(err, "is root servo present exec").Err()
 	}
@@ -250,7 +250,7 @@ func isRootServoPresentExec(ctx context.Context, info *execs.ExecInfo) error {
 // Verify that the root servo is enumerated/present on the host.
 func servoTopologyUpdateExec(ctx context.Context, info *execs.ExecInfo) error {
 	runner := info.NewRunner(info.RunArgs.DUT.ServoHost.Name)
-	servoTopology, err := topology.RetrieveServoTopology(ctx, runner, info.RunArgs.DUT.ServoHost.Servo.SerialNumber)
+	servoTopology, err := topology.RetrieveServoTopology(ctx, runner, info.RunArgs.DUT.ServoHost.SerialNumber)
 	if err != nil {
 		return errors.Annotate(err, "servo topology update exec").Err()
 	}
@@ -323,7 +323,7 @@ func servoFirmwareNeedsUpdateExec(ctx context.Context, info *execs.ExecInfo) err
 		// persisted because the updateServo parameter was not set in
 		// that action. In this case we do not have any choice but to
 		// re-compute the topology.
-		devices, err = topology.ListOfDevices(ctx, runner, info.RunArgs.DUT.ServoHost.Servo.SerialNumber)
+		devices, err = topology.ListOfDevices(ctx, runner, info.RunArgs.DUT.ServoHost.SerialNumber)
 		if err != nil {
 			errors.Annotate(err, "servo firmware needs update exec").Err()
 		}
@@ -332,7 +332,7 @@ func servoFirmwareNeedsUpdateExec(ctx context.Context, info *execs.ExecInfo) err
 	for _, d := range devices {
 		if topology.IsItemGood(ctx, d) {
 			log.Debugf(ctx, "Servo Firmware Needs Update Exec: device type (d.Type) :%q.", d.Type)
-			if needsUpdate(ctx, runner, d, info.RunArgs.DUT.ServoHost.Servo.FirmwareChannel) {
+			if needsUpdate(ctx, runner, d, info.RunArgs.DUT.ServoHost.FirmwareChannel) {
 				log.Debugf(ctx, "Servo Firmware Needs Update Exec: needs update is true")
 				return errors.Reason("servo firmware needs update exec: servo needs update").Err()
 			}
@@ -656,7 +656,7 @@ func servoUpdateServoFirmwareExec(ctx context.Context, info *execs.ExecInfo) (er
 	}
 	req := FwUpdaterRequest{
 		UseContainer:            IsContainerizedServoHost(ctx, info.RunArgs.DUT.ServoHost),
-		FirmwareChannel:         info.RunArgs.DUT.ServoHost.Servo.FirmwareChannel,
+		FirmwareChannel:         info.RunArgs.DUT.ServoHost.FirmwareChannel,
 		TryAttemptCount:         tryAttemptCount,
 		TryForceUpdateAfterFail: tryForceUpdateAfterFail,
 		ForceUpdate:             forceUpdate,
@@ -695,7 +695,7 @@ func servoUpdateServoFirmwareExec(ctx context.Context, info *execs.ExecInfo) (er
 		}
 	}
 	if len(failDevices) != 0 {
-		info.RunArgs.DUT.ServoHost.Servo.State = tlw.ServoStateNeedReplacement
+		info.RunArgs.DUT.ServoHost.State = tlw.ServoStateNeedReplacement
 		return errors.Reason("servo update servo firmware: %d servo devices fails the update process", len(failDevices)).Err()
 	}
 	return nil
@@ -838,7 +838,7 @@ func servoPowerCycleRootServoExec(ctx context.Context, info *execs.ExecInfo) err
 	run := info.DefaultRunner()
 	var smartUsbhubPresent = false
 	defer func() { info.RunArgs.DUT.ServoHost.SmartUsbhubPresent = smartUsbhubPresent }()
-	servoSerial := info.RunArgs.DUT.ServoHost.Servo.SerialNumber
+	servoSerial := info.RunArgs.DUT.ServoHost.SerialNumber
 	// Get the usb devnum before the reset.
 	preResetDevnum, err := topology.GetServoUsbDevnum(ctx, run, servoSerial)
 	if err != nil {
@@ -857,7 +857,7 @@ func servoPowerCycleRootServoExec(ctx context.Context, info *execs.ExecInfo) err
 	log.Debugf(ctx, "Wait %v for servo to come back from reset.", waitTimeout)
 	time.Sleep(waitTimeout)
 	// Reset authorized flag fror servo-hub for servo v4p1 only.
-	if ResetUsbkeyAuthorized(ctx, run, servoSerial, info.RunArgs.DUT.ServoHost.Servo.Type) != nil {
+	if ResetUsbkeyAuthorized(ctx, run, servoSerial, info.RunArgs.DUT.ServoHost.ServodType) != nil {
 		return errors.Annotate(err, "servo power cycle root servo").Err()
 	}
 	// Get the usb devnum after the reset.

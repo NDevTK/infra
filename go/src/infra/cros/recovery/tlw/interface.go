@@ -363,10 +363,17 @@ const (
 type ServoHost struct {
 	// Name is the resource name.
 	Name string
+	// State of the servo.
+	State ServoState
+	// Serial number of the root servo device.
+	SerialNumber string
+	// Channel of firmware used on servo devices.
+	FirmwareChannel ServoFirmwareChannel
+	// Self representation of servo-setup by servod.
+	// Example: servo_v4_with_servo_micro, servo_v4_with_ccd_cr50.
+	ServodType string
 	// State of the USB-key connected to the servo.
 	UsbkeyState HardwareState
-	// Servo device specified for this DUT.
-	Servo *Servo
 	// Port user on the host to run servod daemon. Expected value between 9900 and 9999.
 	ServodPort int
 	// Smart USB-hub is present on setup.
@@ -448,16 +455,3 @@ const (
 	// Servo firmware from Alpha channel.
 	ServoFirmwareChannelAlpha ServoFirmwareChannel = "alpha"
 )
-
-// Servo holds info about servo functionality.
-type Servo struct {
-	// State of the servo.
-	State ServoState
-	// Serial number of the root servo device.
-	SerialNumber string
-	// Channel of firmware used on servo devices.
-	FirmwareChannel ServoFirmwareChannel
-	// Self representation of servo-setup by servod.
-	// Example: servo_v4_with_servo_micro, servo_v4_with_ccd_cr50.
-	Type string
-}

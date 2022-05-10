@@ -20,7 +20,7 @@ func updateServoTypeLabelExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err != nil {
 		return errors.Annotate(err, "update servo type label").Err()
 	}
-	info.RunArgs.DUT.ServoHost.Servo.Type = servoType.String()
+	info.RunArgs.DUT.ServoHost.ServodType = servoType.String()
 	log.Infof(ctx, "Set DUT's servo type to be: %s", servoType)
 	return nil
 }

@@ -28,11 +28,11 @@ func setServoStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 	// Verify if servo is supported.
 	// If servo is not supported the report failure.
-	if d := info.RunArgs.DUT; d == nil || d.ServoHost == nil || d.ServoHost.Servo == nil {
+	if d := info.RunArgs.DUT; d == nil || d.ServoHost == nil {
 		return errors.Reason("set servo state: servo is not supported").Err()
 	}
-	log.Debugf(ctx, "Previous servo state: %s", info.RunArgs.DUT.ServoHost.Servo.State)
-	info.RunArgs.DUT.ServoHost.Servo.State = tlw.ServoState(newState)
+	log.Debugf(ctx, "Previous servo state: %s", info.RunArgs.DUT.ServoHost.State)
+	info.RunArgs.DUT.ServoHost.State = tlw.ServoState(newState)
 	log.Infof(ctx, "Set servo state to be: %s", newState)
 	return nil
 }
@@ -47,9 +47,9 @@ func matchStateExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Reason("match state: the servo state string is empty").Err()
 	}
 	// Update after DUT migrated to proto representation.
-	if d := info.RunArgs.DUT; d != nil && d.ServoHost != nil {
-		if sh := d.ServoHost; sh != nil && sh.Servo != nil {
-			currentState := strings.ToLower(string(sh.Servo.State))
+	if d := info.RunArgs.DUT; d != nil {
+		if sh := d.ServoHost; sh != nil {
+			currentState := strings.ToLower(string(sh.State))
 			if currentState != expectedState {
 				return errors.Reason("match state: servo state mismatch: expected: %q, but got %q", expectedState, currentState).Err()
 			}
