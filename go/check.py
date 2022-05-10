@@ -132,7 +132,9 @@ def main(args):
 
 
 TOOL_FUNC = {
-  "govet": mk_checker("go", "vet"),
+  # TODO(gregorynisbet): tricium copies around proto messages.
+  # Disable copylock analysis for now.
+  "govet": mk_checker("go", "vet", "-copylocks=false"),
   "gofmt": gofmt_main,
 }
 
