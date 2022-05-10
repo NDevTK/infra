@@ -16,8 +16,10 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
+	"go.chromium.org/luci/common/tsmon"
 	"go.chromium.org/luci/common/tsmon/field"
 	"go.chromium.org/luci/common/tsmon/metric"
+	"go.chromium.org/luci/common/tsmon/target"
 	"google.golang.org/api/option"
 
 	"infra/cros/cmd/caching-backend/nginx-access-log-metrics/internal/bquploader"
@@ -72,6 +74,9 @@ func innerMain() error {
 		return err
 	}
 	defer uploader.Close()
+
+	setupTsMon(ctx)
+	defer shutdownTsMon()
 
 	tailer, err := filetailer.New(*inputLogFile)
 	if err != nil {
@@ -218,6 +223,31 @@ func (i *record) Save() (row map[string]bigquery.Value, insertID string, err err
 	insertID = fmt.Sprintf("%v", row)
 
 	return row, insertID, nil
+}
+
+// setupTsMon set up tsmon.
+func setupTsMon(ctx context.Context) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	fl := tsmon.NewFlags()
+	fl.Flush = tsmon.FlushAuto
+	fl.Target.SetDefaultsFromHostname()
+	fl.Target.TargetType = target.TaskType
+	fl.Target.TaskServiceName = "caching_backend"
+	fl.Target.TaskJobName = "nginx"
+
+	if err := tsmon.InitializeFromFlags(ctx, &fl); err != nil {
+		log.Printf("Skipping tsmon setup: %s", err)
+	}
+}
+
+// shutdownTsMon shuts down tsmon.
+func shutdownTsMon() {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	log.Printf("Shutting down tsmon...")
+	tsmon.Shutdown(ctx)
 }
 
 // recordMetric is a tsmon metric for the parsed log.
