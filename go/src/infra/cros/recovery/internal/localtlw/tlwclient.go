@@ -246,7 +246,7 @@ func (c *tlwClient) InitServod(ctx context.Context, req *tlw.InitServodRequest) 
 	if err != nil {
 		return errors.Annotate(err, "init servod %q", req.Resource).Err()
 	}
-	if dut.ServoHost == nil || dut.ServoHost.Name == "" {
+	if dut.ServoHost == nil || dut.ServoHost.GetName() == "" {
 		return errors.Reason("init servod %q: servo is not found", req.Resource).Err()
 	}
 	if isServodContainer(dut) {
@@ -255,8 +255,8 @@ func (c *tlwClient) InitServod(ctx context.Context, req *tlw.InitServodRequest) 
 	}
 	if !req.GetNoServod() {
 		s, err := c.servodPool.Get(
-			localproxy.BuildAddr(dut.ServoHost.Name),
-			int32(dut.ServoHost.ServodPort),
+			localproxy.BuildAddr(dut.ServoHost.GetName()),
+			dut.ServoHost.GetServodPort(),
 			func() ([]string, error) {
 				return servod.GenerateParams(req.Options), nil
 			})
@@ -390,7 +390,7 @@ func (c *tlwClient) StopServod(ctx context.Context, resourceName string) error {
 	if err != nil {
 		return errors.Annotate(err, "stop servod %q", resourceName).Err()
 	}
-	if dut.ServoHost == nil || dut.ServoHost.Name == "" {
+	if dut.ServoHost == nil || dut.ServoHost.GetName() == "" {
 		return errors.Reason("stop servod %q: servo is not found", resourceName).Err()
 	}
 	if isServodContainer(dut) {
@@ -410,10 +410,10 @@ func (c *tlwClient) StopServod(ctx context.Context, resourceName string) error {
 // stopServodOnHardwareHost stops servod on labstation and servo_v3.
 func (c *tlwClient) stopServodOnHardwareHost(ctx context.Context, dut *tlw.Dut) error {
 	o := &tlw.ServodOptions{
-		ServodPort: int32(dut.ServoHost.ServodPort),
+		ServodPort: dut.ServoHost.GetServodPort(),
 	}
 	s, err := c.servodPool.Get(
-		localproxy.BuildAddr(dut.ServoHost.Name),
+		localproxy.BuildAddr(dut.ServoHost.GetName()),
 		o.ServodPort,
 		func() ([]string, error) {
 			return servod.GenerateParams(o), nil
@@ -445,7 +445,7 @@ func (c *tlwClient) CallServod(ctx context.Context, req *tlw.CallServodRequest) 
 	if err != nil {
 		return fail(err)
 	}
-	if dut.ServoHost == nil || dut.ServoHost.Name == "" {
+	if dut.ServoHost == nil || dut.ServoHost.GetName() == "" {
 		return fail(errors.Reason("call servod %q: servo not found", req.Resource).Err())
 	}
 	// For container connect to the container as it running on the same host.
@@ -458,7 +458,7 @@ func (c *tlwClient) CallServod(ctx context.Context, req *tlw.CallServodRequest) 
 		if err != nil {
 			return fail(err)
 		}
-		rpc := tlw_xmlrpc.New(addr, dut.ServoHost.ServodPort)
+		rpc := tlw_xmlrpc.New(addr, int(dut.ServoHost.GetServodPort()))
 		if val, err := servod.Call(ctx, rpc, req.Timeout, req.Method, req.Args); err != nil {
 			return fail(err)
 		} else {
@@ -470,8 +470,8 @@ func (c *tlwClient) CallServod(ctx context.Context, req *tlw.CallServodRequest) 
 	} else {
 		// For labstation using port forward by ssh.
 		s, err := c.servodPool.Get(
-			localproxy.BuildAddr(dut.ServoHost.Name),
-			int32(dut.ServoHost.ServodPort), nil)
+			localproxy.BuildAddr(dut.ServoHost.GetName()),
+			dut.ServoHost.GetServodPort(), nil)
 		if err != nil {
 			return fail(err)
 		}
@@ -766,9 +766,9 @@ func (c *tlwClient) cacheDevice(dut *tlw.Dut) {
 	c.devices[name] = dut
 	c.hostToParents[name] = name
 	c.hostTypes[dut.Name] = hostTypeCros
-	if dut.ServoHost != nil && dut.ServoHost.Name != "" {
-		c.hostTypes[dut.ServoHost.Name] = hostTypeServo
-		c.hostToParents[dut.ServoHost.Name] = name
+	if dut.ServoHost != nil && dut.ServoHost.GetName() != "" {
+		c.hostTypes[dut.ServoHost.GetName()] = hostTypeServo
+		c.hostToParents[dut.ServoHost.GetName()] = name
 	}
 	for _, bt := range dut.BluetoothPeerHosts {
 		if bt.Name != "" {
@@ -797,9 +797,9 @@ func (c *tlwClient) unCacheDevice(dut *tlw.Dut) {
 	name := dut.Name
 	delete(c.hostToParents, name)
 	delete(c.hostTypes, name)
-	if dut.ServoHost != nil && dut.ServoHost.Name != "" {
-		delete(c.hostTypes, dut.ServoHost.Name)
-		delete(c.hostToParents, dut.ServoHost.Name)
+	if dut.ServoHost != nil && dut.ServoHost.GetName() != "" {
+		delete(c.hostTypes, dut.ServoHost.GetName())
+		delete(c.hostToParents, dut.ServoHost.GetName())
 	}
 	for _, bt := range dut.BluetoothPeerHosts {
 		if bt.Name != "" {

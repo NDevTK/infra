@@ -18,7 +18,7 @@ import (
 func servoHostIsLabstationExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
 	expected := argsMap.AsString(ctx, "board", "labstation")
-	run := info.NewRunner(info.RunArgs.DUT.ServoHost.Name)
+	run := info.NewRunner(info.RunArgs.DUT.ServoHost.GetName())
 	log := info.NewLogger()
 	board, err := cros.ReleaseBoard(ctx, run, log)
 	if err != nil {

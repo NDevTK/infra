@@ -24,7 +24,7 @@ func servoVerifyV3Exec(ctx context.Context, info *execs.ExecInfo) error {
 	// "-servo" suffix will exist only when the setup is for type V3,
 	// (i.e. there is no labstation present).
 	servoSuffix := "-servo"
-	if !strings.Contains(info.RunArgs.DUT.ServoHost.Name, servoSuffix) {
+	if !strings.Contains(info.RunArgs.DUT.ServoHost.GetName(), servoSuffix) {
 		return errors.Reason("servo verify v3: servo hostname does not carry suffix %q, this is not V3.", servoSuffix).Err()
 	}
 	// We further verify that the version detected for servo indeed

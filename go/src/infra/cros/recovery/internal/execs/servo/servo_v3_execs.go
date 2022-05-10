@@ -18,7 +18,7 @@ import (
 
 // Verify that the root of servo is enumerated/present on servo_v3 host.
 func isServoV3RootPresentExec(ctx context.Context, info *execs.ExecInfo) error {
-	run := info.NewRunner(info.RunArgs.DUT.ServoHost.Name)
+	run := info.NewRunner(info.RunArgs.DUT.ServoHost.GetName())
 	log := info.NewLogger()
 	am := info.GetActionArgs(ctx)
 	vidPidList := am.AsStringSlice(ctx, "vids_pids", []string{"18d1:5004", "0403:6014"})

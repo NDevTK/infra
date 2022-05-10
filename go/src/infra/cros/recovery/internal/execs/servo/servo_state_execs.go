@@ -32,9 +32,12 @@ func setServoStateExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Reason("set servo state: servo is not supported").Err()
 	}
 	log.Debugf(ctx, "Previous servo state: %s", info.RunArgs.DUT.ServoHost.State)
-	info.RunArgs.DUT.ServoHost.State = tlw.ServoState(newState)
-	log.Infof(ctx, "Set servo state to be: %s", newState)
-	return nil
+	if v, ok := tlw.ServoHost_State_value[newState]; ok {
+		info.RunArgs.DUT.ServoHost.State = tlw.ServoHost_State(v)
+		log.Infof(ctx, "Set servo state to be: %s", newState)
+		return nil
+	}
+	return errors.Reason("set servo state: state is %q not found", newState).Err()
 }
 
 // matchStateExec confirms the servo state is the same as the passed in argument from the configuration.

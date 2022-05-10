@@ -35,18 +35,18 @@ func convertHardwareStateToUFS(s tlw.HardwareState) ufslab.HardwareState {
 	return ufslab.HardwareState_HARDWARE_UNKNOWN
 }
 
-var firmwareChannels = map[ufslab.ServoFwChannel]tlw.ServoFirmwareChannel{
-	ufslab.ServoFwChannel_SERVO_FW_STABLE: tlw.ServoFirmwareChannelStable,
-	ufslab.ServoFwChannel_SERVO_FW_ALPHA:  tlw.ServoFirmwareChannelAlpha,
-	ufslab.ServoFwChannel_SERVO_FW_DEV:    tlw.ServoFirmwareChannelDev,
-	ufslab.ServoFwChannel_SERVO_FW_PREV:   tlw.ServoFirmwareChannelPrev,
+var firmwareChannels = map[ufslab.ServoFwChannel]tlw.ServoFwChannel{
+	ufslab.ServoFwChannel_SERVO_FW_STABLE: tlw.ServoFwChannel_FW_STABLE,
+	ufslab.ServoFwChannel_SERVO_FW_ALPHA:  tlw.ServoFwChannel_FW_ALPHA,
+	ufslab.ServoFwChannel_SERVO_FW_DEV:    tlw.ServoFwChannel_FW_DEV,
+	ufslab.ServoFwChannel_SERVO_FW_PREV:   tlw.ServoFwChannel_FW_PREV,
 }
 
-func convertFirmwareChannel(s ufslab.ServoFwChannel) tlw.ServoFirmwareChannel {
+func convertFirmwareChannel(s ufslab.ServoFwChannel) tlw.ServoFwChannel {
 	if ns, ok := firmwareChannels[s]; ok {
 		return ns
 	}
-	return tlw.ServoFirmwareChannelStable
+	return tlw.ServoFwChannel_FW_STABLE
 }
 
 func convertStorageType(t ufsdevice.Config_Storage) tlw.StorageType {
@@ -73,39 +73,39 @@ func convertAudioLoopbackState(s ufslab.PeripheralState) tlw.DUTAudio_LoopbackSt
 	return tlw.DUTAudio_LOOPBACK_UNSPECIFIED
 }
 
-var servoStates = map[ufslab.PeripheralState]tlw.ServoState{
-	ufslab.PeripheralState_WORKING:                       tlw.ServoStateWorking,
-	ufslab.PeripheralState_MISSING_CONFIG:                tlw.ServoStateMissingConfig,
-	ufslab.PeripheralState_WRONG_CONFIG:                  tlw.ServoStateWrongConfig,
-	ufslab.PeripheralState_NOT_CONNECTED:                 tlw.ServoStateNotConnected,
-	ufslab.PeripheralState_NO_SSH:                        tlw.ServoStateNoSSH,
-	ufslab.PeripheralState_BROKEN:                        tlw.ServoStateBroken,
-	ufslab.PeripheralState_NEED_REPLACEMENT:              tlw.ServoStateNeedReplacement,
-	ufslab.PeripheralState_CR50_CONSOLE_MISSING:          tlw.ServoStateCr50ConsoleMissing,
-	ufslab.PeripheralState_CCD_TESTLAB_ISSUE:             tlw.ServoStateCCDTestlabIssue,
-	ufslab.PeripheralState_SERVOD_ISSUE:                  tlw.ServoStateServodIssue,
-	ufslab.PeripheralState_LID_OPEN_FAILED:               tlw.ServoStateLidOpenIssue,
-	ufslab.PeripheralState_BAD_RIBBON_CABLE:              tlw.ServoStateBadRibbonCable,
-	ufslab.PeripheralState_EC_BROKEN:                     tlw.ServoStateECBroken,
-	ufslab.PeripheralState_DUT_NOT_CONNECTED:             tlw.ServoStateDUTNotConnected,
-	ufslab.PeripheralState_TOPOLOGY_ISSUE:                tlw.ServoStateTopologyIssue,
-	ufslab.PeripheralState_SBU_LOW_VOLTAGE:               tlw.ServoStateSBULowVoltage,
-	ufslab.PeripheralState_CR50_NOT_ENUMERATED:           tlw.ServoStateCr50NotEnumerated,
-	ufslab.PeripheralState_SERVO_SERIAL_MISMATCH:         tlw.ServoStateServoSerialMismatch,
-	ufslab.PeripheralState_SERVOD_PROXY_ISSUE:            tlw.ServoStateServodProxyIssue,
-	ufslab.PeripheralState_SERVO_HOST_ISSUE:              tlw.ServoStateServoHostIssue,
-	ufslab.PeripheralState_SERVO_UPDATER_ISSUE:           tlw.ServoStateServoUpdaterIssue,
-	ufslab.PeripheralState_SERVOD_DUT_CONTROLLER_MISSING: tlw.ServoStateServodDutControllerMissing,
-	ufslab.PeripheralState_COLD_RESET_PIN_ISSUE:          tlw.ServoStateColdResetPinIssue,
-	ufslab.PeripheralState_WARM_RESET_PIN_ISSUE:          tlw.ServoStateWarmResetPinIssue,
-	ufslab.PeripheralState_POWER_BUTTON_PIN_ISSUE:        tlw.ServoStatePowerButtonPinIssue,
+var servoStates = map[ufslab.PeripheralState]tlw.ServoHost_State{
+	ufslab.PeripheralState_WORKING:                       tlw.ServoHost_WORKING,
+	ufslab.PeripheralState_MISSING_CONFIG:                tlw.ServoHost_MISSING_CONFIG,
+	ufslab.PeripheralState_WRONG_CONFIG:                  tlw.ServoHost_WRONG_CONFIG,
+	ufslab.PeripheralState_NOT_CONNECTED:                 tlw.ServoHost_NOT_CONNECTED,
+	ufslab.PeripheralState_NO_SSH:                        tlw.ServoHost_NO_SSH,
+	ufslab.PeripheralState_BROKEN:                        tlw.ServoHost_BROKEN,
+	ufslab.PeripheralState_NEED_REPLACEMENT:              tlw.ServoHost_NEED_REPLACEMENT,
+	ufslab.PeripheralState_CR50_CONSOLE_MISSING:          tlw.ServoHost_CR50_CONSOLE_MISSING,
+	ufslab.PeripheralState_CCD_TESTLAB_ISSUE:             tlw.ServoHost_CCD_TESTLAB_ISSUE,
+	ufslab.PeripheralState_SERVOD_ISSUE:                  tlw.ServoHost_SERVOD_ISSUE,
+	ufslab.PeripheralState_LID_OPEN_FAILED:               tlw.ServoHost_LID_OPEN_FAILED,
+	ufslab.PeripheralState_BAD_RIBBON_CABLE:              tlw.ServoHost_BAD_RIBBON_CABLE,
+	ufslab.PeripheralState_EC_BROKEN:                     tlw.ServoHost_EC_BROKEN,
+	ufslab.PeripheralState_DUT_NOT_CONNECTED:             tlw.ServoHost_DUT_NOT_CONNECTED,
+	ufslab.PeripheralState_TOPOLOGY_ISSUE:                tlw.ServoHost_TOPOLOGY_ISSUE,
+	ufslab.PeripheralState_SBU_LOW_VOLTAGE:               tlw.ServoHost_SBU_LOW_VOLTAGE,
+	ufslab.PeripheralState_CR50_NOT_ENUMERATED:           tlw.ServoHost_CR50_NOT_ENUMERATED,
+	ufslab.PeripheralState_SERVO_SERIAL_MISMATCH:         tlw.ServoHost_SERVO_SERIAL_MISMATCH,
+	ufslab.PeripheralState_SERVOD_PROXY_ISSUE:            tlw.ServoHost_SERVOD_PROXY_ISSUE,
+	ufslab.PeripheralState_SERVO_HOST_ISSUE:              tlw.ServoHost_SERVO_HOST_ISSUE,
+	ufslab.PeripheralState_SERVO_UPDATER_ISSUE:           tlw.ServoHost_SERVO_UPDATER_ISSUE,
+	ufslab.PeripheralState_SERVOD_DUT_CONTROLLER_MISSING: tlw.ServoHost_SERVOD_DUT_CONTROLLER_MISSING,
+	ufslab.PeripheralState_COLD_RESET_PIN_ISSUE:          tlw.ServoHost_COLD_RESET_PIN_ISSUE,
+	ufslab.PeripheralState_WARM_RESET_PIN_ISSUE:          tlw.ServoHost_WARM_RESET_PIN_ISSUE,
+	ufslab.PeripheralState_POWER_BUTTON_PIN_ISSUE:        tlw.ServoHost_POWER_BUTTON_PIN_ISSUE,
 }
 
-func convertServoState(s ufslab.PeripheralState) tlw.ServoState {
+func convertServoState(s ufslab.PeripheralState) tlw.ServoHost_State {
 	if ns, ok := servoStates[s]; ok {
 		return ns
 	}
-	return tlw.ServoStateUnspecified
+	return tlw.ServoHost_STATE_UNSPECIFIED
 }
 
 var chameleonStates = map[ufslab.PeripheralState]tlw.ChameleonState{

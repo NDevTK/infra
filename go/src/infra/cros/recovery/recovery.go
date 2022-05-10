@@ -467,7 +467,7 @@ func collectResourcesForPlan(planName string, dut *tlw.Dut) []string {
 		}
 	case config.PlanServo:
 		if dut.ServoHost != nil {
-			return []string{dut.ServoHost.Name}
+			return []string{dut.ServoHost.GetName()}
 		}
 	case config.PlanBluetoothPeer:
 		var resources []string

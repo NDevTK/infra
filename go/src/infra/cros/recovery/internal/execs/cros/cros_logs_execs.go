@@ -49,7 +49,7 @@ func dmesgExec(ctx context.Context, info *execs.ExecInfo) error {
 // For now implementation support only servo-host.
 // TODO: Extend support to collect logs from any host.
 func copyFileToLogExec(ctx context.Context, info *execs.ExecInfo) error {
-	resource := info.RunArgs.DUT.ServoHost.Name
+	resource := info.RunArgs.DUT.ServoHost.GetName()
 	run := info.NewRunner(resource)
 	log := info.NewLogger()
 	logRoot := info.GetLogRoot()
