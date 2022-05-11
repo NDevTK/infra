@@ -22,12 +22,15 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/buildbucket"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	swarmingapi "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
+	"go.chromium.org/luci/lucictx"
 	"google.golang.org/genproto/protobuf/field_mask"
+	"google.golang.org/grpc/metadata"
 
 	"infra/libs/skylab/request"
 	"infra/libs/skylab/swarming"
@@ -204,6 +207,20 @@ func (c *clientImpl) LaunchTask(ctx context.Context, args *request.Args) (TaskRe
 	if err != nil {
 		return "", errors.Annotate(err, "launch task for %s", args.TestRunnerRequest.GetTest().GetAutotest().GetName()).Err()
 	}
+
+	// Check if there's a parent build for the task to be launched.
+	// If a ScheduleBuildToken can be found in the Buildbucket section of LUCI_CONTEXT,
+	// it will be the token for the parent build.
+	// Attaching the token to the ScheduleBuild request will enable Buildbucket to
+	// track the parent/child build relationship between the build with the token
+	// and this new build.
+	bbCtx := lucictx.GetBuildbucket(ctx)
+	if bbCtx != nil {
+		if bbCtx.GetScheduleBuildToken() != "" {
+			ctx = metadata.NewOutgoingContext(ctx, metadata.Pairs(buildbucket.BuildbucketTokenHeader, bbCtx.ScheduleBuildToken))
+		}
+	}
+
 	resp, err := c.bbClient.ScheduleBuild(ctx, req)
 	if err != nil {
 		return "", errors.Annotate(err, "launch task for %s", args.TestRunnerRequest.GetTest().GetAutotest().GetName()).Err()

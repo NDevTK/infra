@@ -18,12 +18,15 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"go.chromium.org/luci/buildbucket"
 	buildbucket_pb "go.chromium.org/luci/buildbucket/proto"
 	swarming_api "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/memlogger"
+	"go.chromium.org/luci/lucictx"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 
 	"infra/cmd/cros_test_platform/internal/execution/types"
 	"infra/libs/skylab/inventory"
@@ -154,6 +157,34 @@ func TestLaunchRequest(t *testing.T) {
 					"https://ci.chromium.org/p/foo-project/builders/foo-bucket/foo-builder-name/b42")
 			})
 		})
+	})
+	Convey("When a child task is launched", t, func() {
+		tf, cleanup := newTestFixture(t)
+		defer cleanup()
+
+		setBuilder(tf.skylab, "foo-project", "foo-bucket", "foo-builder-name")
+		args := newArgs()
+		addTestName(args, "foo-test")
+
+		tf.bb.EXPECT().ScheduleBuild(
+			gomock.Any(),
+			gomock.Any(),
+		).Do(
+			func(ctx context.Context, r *buildbucket_pb.ScheduleBuildRequest, opts ...grpc.CallOption) {
+				//Confirm that the parent's buildbucket-token is attached.
+				md, _ := metadata.FromOutgoingContext(ctx)
+				buildToks := md.Get(buildbucket.BuildbucketTokenHeader)
+				So(len(buildToks), ShouldEqual, 1)
+				So(buildToks[0], ShouldEqual, "parent-token")
+			},
+		).Return(&buildbucket_pb.Build{Id: 42}, nil)
+		tf.ctx = lucictx.SetBuildbucket(tf.ctx, &lucictx.Buildbucket{
+			Hostname:           "host",
+			ScheduleBuildToken: "parent-token",
+		})
+
+		_, err := tf.skylab.LaunchTask(tf.ctx, args)
+		So(err, ShouldBeNil)
 	})
 }
 
