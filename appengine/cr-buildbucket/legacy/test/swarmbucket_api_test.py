@@ -133,7 +133,6 @@ class SwarmbucketApiTest(testing.EndpointsTestCase):
         experiment=dict(
             experiments=[
                 dict(name=experiments.BBAGENT_DOWNLOAD_CIPD, default_value=100),
-                dict(name=experiments.BBAGENT_GET_BUILD),
                 dict(name=experiments.CANARY),
                 dict(name=experiments.NON_PROD),
                 dict(name=experiments.USE_BBAGENT),

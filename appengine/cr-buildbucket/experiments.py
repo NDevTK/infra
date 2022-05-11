@@ -5,7 +5,6 @@
 import re
 
 # Names of active well-known experiments
-BBAGENT_GET_BUILD = 'luci.buildbucket.bbagent_getbuild'
 BBAGENT_DOWNLOAD_CIPD = 'luci.buildbucket.agent.cipd_installation'
 CANARY = 'luci.buildbucket.canary_software'
 NON_PROD = 'luci.non_production'

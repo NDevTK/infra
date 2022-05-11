@@ -282,27 +282,9 @@ class TaskDefTest(BaseTest):
     self.assertEqual(slices[0]['expiration_secs'], '120')
 
   def test_compute_bbagent(self):
-    build = self._test_build()
-    proto = copy.deepcopy(build.proto)
-    build.tags_to_protos(proto.tags)
-    bbagentargs = swarming._cli_encode_proto(
-        launcher_pb2.BBAgentArgs(
-            payload_path=swarming._KITCHEN_CHECKOUT,
-            cache_dir=swarming._CACHE_DIR,
-            known_public_gerrit_hosts=self.settings.known_public_gerrit_hosts,
-            build=proto,
-        )
-    )
-    self.assertEqual(
-        swarming._compute_bbagent(build, self.settings, fake_build=False),
-        [u'bbagent${EXECUTABLE_SUFFIX}', bbagentargs],
-    )
-
-  def test_compute_bbagent_get_build(self):
     build = self._test_build(
         infra=dict(buildbucket=dict(hostname='cr-buildbucket.example.com'),)
     )
-    build.experiments.append('+%s' % (experiments.BBAGENT_GET_BUILD,))
     self.assertEqual(
         swarming._compute_bbagent(build, self.settings, fake_build=False),
         [
@@ -311,11 +293,10 @@ class TaskDefTest(BaseTest):
         ],
     )
 
-  def test_compute_bbagent_get_build_fake(self):
+  def test_compute_bbagent_fake(self):
     build = self._test_build(
         infra=dict(buildbucket=dict(hostname='cr-buildbucket.example.com'),)
     )
-    build.experiments.append('+%s' % (experiments.BBAGENT_GET_BUILD,))
     proto = copy.deepcopy(build.proto)
     build.tags_to_protos(proto.tags)
     bbagentargs = swarming._cli_encode_proto(
@@ -589,8 +570,7 @@ class TaskDefTest(BaseTest):
         'execution_timeout_secs': '3600',
         'grace_period_secs': '225',
         'command': [
-            'bbagent${EXECUTABLE_SUFFIX}',
-            swarming._cli_encode_proto(expected_args),
+            'bbagent${EXECUTABLE_SUFFIX}', '-host', '', '-build-id', '1'
         ],
         'dimensions': [
             {'key': 'cores', 'value': '8'},
@@ -668,27 +648,6 @@ class TaskDefTest(BaseTest):
     self.assertEqual(
         build.proto.infra.swarming.task_service_account, 'robot@example.com'
     )
-
-    # Now check that the blob on the cli is actually reasonable.
-    cli_blob = actual['task_slices'][0]['properties']['command'][1]
-    # No newlines, no padding
-    self.assertNotIn('\n', cli_blob)
-    self.assertNotIn('=', cli_blob)
-    # Restore padding, so python can decode it.
-    #   l % 4 == 0 -> no padding       (ex "aGkh")
-    #   l % 4 == 1 -> =                (ex "aGk=")
-    #   l % 4 == 2 -> ==               (ex "aA==")
-    #   l % 4 == 3 -> <invalid state>  (cannot happen in well-formed base64)
-    remainder = len(cli_blob) % 4
-    if remainder:  # pragma: no cover
-      padding = '=' * (4 - remainder)
-      self.assertLessEqual(len(padding), 2)  # should be '', '=', or '=='
-    else:  # pragma: no cover
-      padding = ''
-
-    args = launcher_pb2.BBAgentArgs()
-    args.ParseFromString((cli_blob + padding).decode('base64').decode('zlib'))
-    self.assertEqual(args, expected_args)
 
     self.assertNotIn('buildbucket', build.proto.input.properties)
     self.assertNotIn('$recipe_engine/buildbucket', build.proto.input.properties)

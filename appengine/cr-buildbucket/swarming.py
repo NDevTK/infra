@@ -456,7 +456,7 @@ def _cli_encode_proto(message):
 
 def _compute_bbagent(build, settings, fake_build):
   """Returns the command for bbagent."""
-  if build.bbagent_getbuild and not fake_build:
+  if not fake_build:
     logging.info('using bbagent getbuild mode for %d', build.proto.id)
     return [
         u'bbagent${EXECUTABLE_SUFFIX}',
