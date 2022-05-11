@@ -6,14 +6,13 @@ import { useQuery } from 'react-query';
 import { getRulesService } from '../services/rules';
 
 const useFetchRule = (ruleId: string | undefined, project: string | undefined) => {
+  const rulesService = getRulesService();
 
-    const rulesService = getRulesService();
-
-    return useQuery(['rule', ruleId], async () => await rulesService.get(
-        {
-            name: `projects/${project}/rules/${ruleId}`,
-        }
-    ));
+  return useQuery(['rule', ruleId], async () => await rulesService.get(
+      {
+        name: `projects/${project}/rules/${ruleId}`,
+      },
+  ));
 };
 
 export default useFetchRule;

@@ -5,23 +5,23 @@
 import { AuthorizedPrpcClient } from '../clients/authorized_client';
 
 export const getProjectsService = () => {
-    const client = new AuthorizedPrpcClient();
-    return new ProjectService(client);
+  const client = new AuthorizedPrpcClient();
+  return new ProjectService(client);
 };
 
 // A service to handle projects related gRPC requests.
 export class ProjectService {
-    private static SERVICE = 'weetbix.v1.Projects';
+  private static SERVICE = 'weetbix.v1.Projects';
 
-    client: AuthorizedPrpcClient;
+  client: AuthorizedPrpcClient;
 
-    constructor(client: AuthorizedPrpcClient) {
-        this.client = client;
-    }
+  constructor(client: AuthorizedPrpcClient) {
+    this.client = client;
+  }
 
-    async list(request: ListProjectsRequest): Promise<ListProjectsResponse> {
-        return this.client.call(ProjectService.SERVICE, 'List', request);
-    }
+  async list(request: ListProjectsRequest): Promise<ListProjectsResponse> {
+    return this.client.call(ProjectService.SERVICE, 'List', request);
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

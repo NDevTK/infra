@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import React from 'react';
-
 import Grid from '@mui/material/Grid';
 import LinearProgress from '@mui/material/LinearProgress';
 
@@ -20,53 +18,50 @@ interface Props {
 }
 
 const RuleTopPanel = ({ project, ruleId }: Props) => {
-    const { isLoading, isError, data: rule, error } = useFetchRule(ruleId, project);
+  const { isLoading, isError, data: rule, error } = useFetchRule(ruleId, project);
 
-    if (isLoading) {
-        return <LinearProgress />;
-    }
+  if (isLoading) {
+    return <LinearProgress />;
+  }
 
-    if (isError) {
-        return (
-            <ErrorAlert
-                errorText={`An error occured while fetching the rule: ${error}`}
-                errorTitle="Failed to load rule"
-                showError
-            />
-        );
-    }
-
+  if (isError) {
     return (
-        <>
-            {rule &&
-                <Grid container columnSpacing={2}>
-                    <Grid item xs={12}>
-                        <ReclusteringProgressIndicator
-                            hasRule={true}
-                            project={project}
-                            rulePredicateLastUpdated={rule.predicateLastUpdateTime}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TimestampInfoBar
-                            createUsername={rule.createUser}
-                            createTime={rule.createTime}
-                            updateUsername={rule.lastUpdateUser}
-                            updateTime={rule.lastUpdateTime}
-                        />
-                    </Grid>
-                    <Grid container item xs={12} columnSpacing={2}>
-                        <Grid item xs={12} lg={8} display="grid">
-                            <RuleInfo project={project} rule={rule} />
-                        </Grid>
-                        <Grid item xs={12} lg={4} display="grid">
-                            <BugInfo rule={rule} />
-                        </Grid>
-                    </Grid>
-                </Grid>
-            }
-        </>
+      <ErrorAlert
+        errorText={`An error occured while fetching the rule: ${error}`}
+        errorTitle="Failed to load rule"
+        showError/>
     );
+  }
+
+  return (
+    <>
+      {rule &&
+          <Grid container columnSpacing={2}>
+            <Grid item xs={12}>
+              <ReclusteringProgressIndicator
+                hasRule={true}
+                project={project}
+                rulePredicateLastUpdated={rule.predicateLastUpdateTime}/>
+            </Grid>
+            <Grid item xs={12}>
+              <TimestampInfoBar
+                createUsername={rule.createUser}
+                createTime={rule.createTime}
+                updateUsername={rule.lastUpdateUser}
+                updateTime={rule.lastUpdateTime}/>
+            </Grid>
+            <Grid container item xs={12} columnSpacing={2}>
+              <Grid item xs={12} lg={8} display="grid">
+                <RuleInfo project={project} rule={rule} />
+              </Grid>
+              <Grid item xs={12} lg={4} display="grid">
+                <BugInfo rule={rule} />
+              </Grid>
+            </Grid>
+          </Grid>
+      }
+    </>
+  );
 };
 
 export default RuleTopPanel;

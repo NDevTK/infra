@@ -5,17 +5,17 @@
 import fetchMock from 'fetch-mock-jest';
 
 export const createMockAuthState = () => {
-    return {
-        'identity': 'user:user@example.com',
-        'email': 'user@example.com',
-        'picture': '',
-        'accessToken': 'token_text_access',
-        'accessTokenExpiry': 1648105586,
-        'idToken': 'token_text',
-        'idTokenExpiry': 1648105586
-    };
+  return {
+    'identity': 'user:user@example.com',
+    'email': 'user@example.com',
+    'picture': '',
+    'accessToken': 'token_text_access',
+    'accessTokenExpiry': 1648105586,
+    'idToken': 'token_text',
+    'idTokenExpiry': 1648105586,
+  };
 };
 
 export const mockFetchAuthState = () => {
-    fetchMock.get('/api/authState', createMockAuthState());
+  fetchMock.get('/api/authState', createMockAuthState());
 };

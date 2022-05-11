@@ -9,11 +9,12 @@ declare global {
 }
 
 export function getIssuesService() : IssuesService {
-    const useIDToken = true;
-    if (!window.monorailHostname)
-        throw new Error('monorail hostname not set');
-    const client = new AuthorizedPrpcClient('api-dot-' + window.monorailHostname, useIDToken);
-    return new IssuesService(client);
+  const useIDToken = true;
+  if (!window.monorailHostname) {
+    throw new Error('monorail hostname not set');
+  }
+  const client = new AuthorizedPrpcClient('api-dot-' + window.monorailHostname, useIDToken);
+  return new IssuesService(client);
 }
 
 /**
@@ -22,17 +23,17 @@ export function getIssuesService() : IssuesService {
  * import { GrpcError } from '@chopsui/prpc-client';
  */
 export class IssuesService {
-    private static SERVICE = 'monorail.v3.Issues';
+  private static SERVICE = 'monorail.v3.Issues';
 
-    client: AuthorizedPrpcClient;
+  client: AuthorizedPrpcClient;
 
-    constructor(client: AuthorizedPrpcClient) {
-        this.client = client;
-    }
+  constructor(client: AuthorizedPrpcClient) {
+    this.client = client;
+  }
 
-    async getIssue(request: GetIssueRequest) : Promise<Issue> {
-        return this.client.call(IssuesService.SERVICE, 'GetIssue', request, {});
-    }
+  async getIssue(request: GetIssueRequest) : Promise<Issue> {
+    return this.client.call(IssuesService.SERVICE, 'GetIssue', request, {});
+  }
 }
 
 export interface GetIssueRequest {

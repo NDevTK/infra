@@ -7,14 +7,14 @@ import dayjs from 'dayjs';
 import { Issue } from '../../services/monorail';
 
 export const createMockBug = (): Issue => {
-    return {
-        name: 'bug for rule',
-        summary: 'a bug for a rule',
-        status: {
-            status: 'accepted',
-            derivation: '',
-        },
-        reporter: 'user@example.com',
-        modifyTime: dayjs().toISOString(),
-    };
+  return {
+    name: 'bug for rule',
+    summary: 'a bug for a rule',
+    status: {
+      status: 'accepted',
+      derivation: '',
+    },
+    reporter: 'user@example.com',
+    modifyTime: dayjs().toISOString(),
+  };
 };

@@ -13,12 +13,12 @@ import './src/views/clusters/cluster/elements/impact_table';
 
 import React from 'react';
 import {
-    QueryClient,
-    QueryClientProvider
+  QueryClient,
+  QueryClientProvider,
 } from 'react-query';
 import {
-    Route,
-    Routes
+  Route,
+  Routes,
 } from 'react-router-dom';
 
 import BaseLayout from './src/layouts/base';
@@ -35,40 +35,40 @@ import FeedbackSnackbar from './src/components/error_snackbar/feedback_snackbar'
 
 const queryClient = new QueryClient(
     {
-        defaultOptions: {
-            queries: {
-                refetchOnWindowFocus: false,
-            },
+      defaultOptions: {
+        queries: {
+          refetchOnWindowFocus: false,
         },
-    }
+      },
+    },
 );
 
 const App = () => {
-    return (
-        <SnackbarContextWrapper>
-            <QueryClientProvider client={queryClient}>
-                <Routes>
-                    <Route path='/' element={<BaseLayout />}>
-                        <Route index element={<HomePageWrapper />} />
-                        <Route path='b/:bugTracker/:id' element={<BugPageWrapper />} />
-                        <Route path='p/:project'>
-                            <Route path='rules'>
-                                <Route path='new' element={<NewRulePageWrapper />} />
-                                <Route path=':id' element={<Rule />} />
-                            </Route>
-                            <Route path='clusters'>
-                                <Route index element={<ClusterTableWrapper />} />
-                                <Route path=':algorithm/:id' element={<ClusterPageWrapper />} />
-                            </Route>
-                            <Route path='bugs' element={<BugsTableWrapper />} />
-                        </Route>
-                        <Route path='*' element={<NotFoundPage />} />
-                    </Route>
-                </Routes>
-            </QueryClientProvider>
-            <FeedbackSnackbar />
-        </SnackbarContextWrapper>
-    );
+  return (
+    <SnackbarContextWrapper>
+      <QueryClientProvider client={queryClient}>
+        <Routes>
+          <Route path='/' element={<BaseLayout />}>
+            <Route index element={<HomePageWrapper />} />
+            <Route path='b/:bugTracker/:id' element={<BugPageWrapper />} />
+            <Route path='p/:project'>
+              <Route path='rules'>
+                <Route path='new' element={<NewRulePageWrapper />} />
+                <Route path=':id' element={<Rule />} />
+              </Route>
+              <Route path='clusters'>
+                <Route index element={<ClusterTableWrapper />} />
+                <Route path=':algorithm/:id' element={<ClusterPageWrapper />} />
+              </Route>
+              <Route path='bugs' element={<BugsTableWrapper />} />
+            </Route>
+            <Route path='*' element={<NotFoundPage />} />
+          </Route>
+        </Routes>
+      </QueryClientProvider>
+      <FeedbackSnackbar />
+    </SnackbarContextWrapper>
+  );
 };
 
 export default App;

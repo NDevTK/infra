@@ -4,24 +4,25 @@
 
 let authState : AuthState | null = null;
 
+// eslint-disable-next-line valid-jsdoc
 /**
  * obtainAuthState obtains a current auth state, for interacting
  * with pRPC APIs.
- * @returns the current auth state.
+ * @return the current auth state.
  */
 export async function obtainAuthState(): Promise<AuthState> {
-    if (authState != null &&
+  if (authState != null &&
             authState.accessTokenExpiry * 1000 > (Date.now() + 5000) &&
             authState.idTokenExpiry * 1000 > (Date.now() + 5000)) {
-        // Auth state is still has >=5 seconds of validity for
-        // both tokens.
-        return authState;
-    }
-
-    // Refresh the auth state.
-    const response = await queryAuthState();
-    authState = response;
+    // Auth state is still has >=5 seconds of validity for
+    // both tokens.
     return authState;
+  }
+
+  // Refresh the auth state.
+  const response = await queryAuthState();
+  authState = response;
+  return authState;
 }
 
 export interface AuthState {
@@ -37,9 +38,9 @@ export interface AuthState {
 }
 
 export async function queryAuthState(): Promise<AuthState> {
-    const res = await fetch('/api/authState');
-    if (!res.ok) {
-        throw new Error('failed to get authState:\n' + (await res.text()));
-    }
-    return res.json();
+  const res = await fetch('/api/authState');
+  if (!res.ok) {
+    throw new Error('failed to get authState:\n' + (await res.text()));
+  }
+  return res.json();
 }

@@ -4,18 +4,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import React, { FC } from 'react';
+import { FC } from 'react';
 import {
-    QueryClient,
-    QueryClientProvider
+  QueryClient,
+  QueryClientProvider,
 } from 'react-query';
 import {
-    BrowserRouter as Router,
-    Route,
-    Routes
+  BrowserRouter as Router,
+  Route,
+  Routes,
 } from 'react-router-dom';
 
-import { render, RenderResult } from '@testing-library/react';
+import {
+  render,
+  RenderResult,
+} from '@testing-library/react';
 
 /**
  * Renders a component wrapped with a mock Router.
@@ -27,11 +30,11 @@ import { render, RenderResult } from '@testing-library/react';
 export const renderWithRouter = (
 
     ui: React.ReactElement<any, string | React.JSXElementConstructor<any>>,
-    route = '/'
+    route = '/',
 ): RenderResult => {
-    window.history.pushState({}, 'Test page', route);
+  window.history.pushState({}, 'Test page', route);
 
-    return render(ui, { wrapper: Router });
+  return render(ui, { wrapper: Router });
 };
 
 /**
@@ -46,32 +49,30 @@ export const renderWithRouter = (
 export const renderWithRouterAndClient = (
     ui: React.ReactElement,
     route = '/',
-    routeDefinition = ''
+    routeDefinition = '',
 ) => {
-
-    const wrapper: FC = ({ children }) => {
-        return (
-            <Router >
-                <Routes>
-                    <Route
-                        path={routeDefinition ? routeDefinition : route}
-                        element={children}
-                    />
-                </Routes>
-            </Router>
-        );
-    };
-    window.history.pushState({}, 'Test page', route);
-    const client = new QueryClient({
-        defaultOptions: {
-            queries: {
-                retry: false,
-            },
-        },
-    });
-    return render(
-        <QueryClientProvider client={client}>{ui}</QueryClientProvider>,
-        {
-            wrapper
-        });
+  const wrapper: FC = ({ children }) => {
+    return (
+      <Router >
+        <Routes>
+          <Route
+            path={routeDefinition ? routeDefinition : route}
+            element={children}/>
+        </Routes>
+      </Router>
+    );
+  };
+  window.history.pushState({}, 'Test page', route);
+  const client = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+  return render(
+      <QueryClientProvider client={client}>{ui}</QueryClientProvider>,
+      {
+        wrapper,
+      });
 };

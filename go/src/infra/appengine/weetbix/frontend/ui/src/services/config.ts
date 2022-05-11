@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 export async function readProjectConfig(project: string): Promise<ProjectConfig> {
-    const response = await fetch(`/api/projects/${encodeURIComponent(project)}/config`);
-    return await response.json();
+  const response = await fetch(`/api/projects/${encodeURIComponent(project)}/config`);
+  return await response.json();
 }
 
 export interface ProjectConfig {

@@ -4,24 +4,21 @@
 
 import '@testing-library/jest-dom';
 
-import React from 'react';
-
 import {
-    render,
-    screen
+  render,
+  screen,
 } from '@testing-library/react';
 
 import ErrorAlert from './error_alert';
 
 describe('Test ErrorAlert component', () => {
-    it('given a title and text, then should display them.', async () => {
-        render(<ErrorAlert
-            errorTitle="Test error title"
-            errorText="Test error text"
-            showError={true}
-        />);
-        await screen.findByText('Test error title');
-        expect(screen.getByText('Test error title')).toBeInTheDocument();
-        expect(screen.getByText('Test error text')).toBeInTheDocument();
-    });
+  it('given a title and text, then should display them.', async () => {
+    render(<ErrorAlert
+      errorTitle="Test error title"
+      errorText="Test error text"
+      showError={true}/>);
+    await screen.findByText('Test error title');
+    expect(screen.getByText('Test error title')).toBeInTheDocument();
+    expect(screen.getByText('Test error text')).toBeInTheDocument();
+  });
 });

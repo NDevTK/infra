@@ -8,8 +8,8 @@ import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 dayjs.extend(isSameOrAfter);
 
 export const fetchProgress = async (project: string): Promise<ReclusteringProgress> => {
-    const response = await fetch(`/api/projects/${encodeURIComponent(project)}/reclusteringProgress`);
-    return await response.json();
+  const response = await fetch(`/api/projects/${encodeURIComponent(project)}/reclusteringProgress`);
+  return await response.json();
 };
 
 // ReclusteringTarget captures the rules and algorithms a re-clustering run
@@ -43,24 +43,24 @@ export interface ReclusteringProgress {
 export const progressNotYetStarted = -1;
 export const noProgressToShow = -2;
 
-export const  progressToLatestAlgorithms = (progress: ReclusteringProgress): number => {
-    return progressTo(progress, (target: ReclusteringTarget) => {
-        return target.algorithmsVersion >= progress.latestAlgorithmsVersion;
-    });
+export const progressToLatestAlgorithms = (progress: ReclusteringProgress): number => {
+  return progressTo(progress, (target: ReclusteringTarget) => {
+    return target.algorithmsVersion >= progress.latestAlgorithmsVersion;
+  });
 };
 
 export const progressToLatestConfig = (progress: ReclusteringProgress): number => {
-    const targetConfigVersion = dayjs(progress.latestConfigVersion);
-    return progressTo(progress, (target: ReclusteringTarget) => {
-        return dayjs(target.configVersion).isSameOrAfter(targetConfigVersion);
-    });
+  const targetConfigVersion = dayjs(progress.latestConfigVersion);
+  return progressTo(progress, (target: ReclusteringTarget) => {
+    return dayjs(target.configVersion).isSameOrAfter(targetConfigVersion);
+  });
 };
 
 export const progressToRulesVersion = (progress: ReclusteringProgress, rulesVersion: string): number => {
-    const ruleDate = dayjs(rulesVersion);
-    return progressTo(progress, (target: ReclusteringTarget) => {
-        return dayjs(target.rulesVersion).isSameOrAfter(ruleDate);
-    });
+  const ruleDate = dayjs(rulesVersion);
+  return progressTo(progress, (target: ReclusteringTarget) => {
+    return dayjs(target.rulesVersion).isSameOrAfter(ruleDate);
+  });
 };
 
 // progressTo returns the progress to completing a re-clustering run
@@ -68,14 +68,14 @@ export const progressToRulesVersion = (progress: ReclusteringProgress, rulesVers
 // If re-clustering has started, the returned value is value from 0 to
 // 1000. If the run is pending, the value -1 is returned.
 const progressTo = (progress: ReclusteringProgress, predicate: (target: ReclusteringTarget) => boolean): number => {
-    if (predicate(progress.last)) {
-        // Completed
-        return 1000;
-    }
-    if (predicate(progress.next)) {
-        return progress.progressPerMille;
-    }
-    // Run not yet started (e.g. because we are still finishing a previous
-    // re-clustering).
-    return progressNotYetStarted;
+  if (predicate(progress.last)) {
+    // Completed
+    return 1000;
+  }
+  if (predicate(progress.next)) {
+    return progress.progressPerMille;
+  }
+  // Run not yet started (e.g. because we are still finishing a previous
+  // re-clustering).
+  return progressNotYetStarted;
 };

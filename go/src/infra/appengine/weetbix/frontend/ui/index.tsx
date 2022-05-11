@@ -18,6 +18,6 @@ dayjs.extend(localizedFormat);
 
 ReactDOM.render(
     <BrowserRouter>
-        <App />
+      <App />
     </BrowserRouter>
     , document.getElementById('app-root'));

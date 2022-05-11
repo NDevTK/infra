@@ -12,82 +12,82 @@ import { nanoid } from 'nanoid';
  * @return {VariantGroup[]} A list of distinct variants.
  */
 export const countDistictVariantValues = (failures: ClusterFailure[]): VariantGroup[] => {
-    if (!failures) {
-        return [];
-    }
-    const variantGroups: VariantGroup[] = [];
-    failures.forEach(failure => {
-        failure.variant.forEach(v => {
-            if (!v.key) {
-                return;
-            }
-            const variant = variantGroups.filter(e => e.key === v.key)?.[0];
-            if (!variant) {
-                variantGroups.push({ key: v.key, values: [v.value || ''], isSelected: false });
-            } else {
-                if (variant.values.indexOf(v.value || '') === -1) {
-                    variant.values.push(v.value || '');
-                }
-            }
-        });
+  if (!failures) {
+    return [];
+  }
+  const variantGroups: VariantGroup[] = [];
+  failures.forEach((failure) => {
+    failure.variant.forEach((v) => {
+      if (!v.key) {
+        return;
+      }
+      const variant = variantGroups.filter((e) => e.key === v.key)?.[0];
+      if (!variant) {
+        variantGroups.push({ key: v.key, values: [v.value || ''], isSelected: false });
+      } else {
+        if (variant.values.indexOf(v.value || '') === -1) {
+          variant.values.push(v.value || '');
+        }
+      }
     });
-    return variantGroups;
+  });
+  return variantGroups;
 };
 
 // group a number of failures into a tree of failure groups.
 // grouper is a function that returns a list of keys, one corresponding to each level of the grouping tree.
 // impactFilter controls how metric counts are aggregated from failures into parent groups (see treeCounts and rejected... functions).
 export const groupFailures = (failures: ClusterFailure[], grouper: (f: ClusterFailure) => string[]): FailureGroup[] => {
-    const topGroups: FailureGroup[] = [];
-    failures.forEach(f => {
-        const keys = grouper(f);
-        let groups = topGroups;
-        const failureTime = dayjs(f.partitionTime);
-        let level = 0;
-        for (const key of keys) {
-            const group = getOrCreateGroup(
-                groups, key, failureTime.toISOString()
-            );
-            group.level = level;
-            level += 1;
-            groups = group.children;
-        }
-        const failureGroup = newGroup('', failureTime.toISOString());
-        failureGroup.failure = f;
-        failureGroup.level = level;
-        groups.push(failureGroup);
-    });
-    return topGroups;
+  const topGroups: FailureGroup[] = [];
+  failures.forEach((f) => {
+    const keys = grouper(f);
+    let groups = topGroups;
+    const failureTime = dayjs(f.partitionTime);
+    let level = 0;
+    for (const key of keys) {
+      const group = getOrCreateGroup(
+          groups, key, failureTime.toISOString(),
+      );
+      group.level = level;
+      level += 1;
+      groups = group.children;
+    }
+    const failureGroup = newGroup('', failureTime.toISOString());
+    failureGroup.failure = f;
+    failureGroup.level = level;
+    groups.push(failureGroup);
+  });
+  return topGroups;
 };
 
 // Create a new group.
 export const newGroup = (name: string, failureTime: string): FailureGroup => {
-    return {
-        id: name || nanoid(),
-        name: name,
-        failures: 0,
-        invocationFailures: 0,
-        testRunFailures: 0,
-        presubmitRejects: 0,
-        children: [],
-        isExpanded: false,
-        latestFailureTime: failureTime,
-        level: 0
-    };
+  return {
+    id: name || nanoid(),
+    name: name,
+    failures: 0,
+    invocationFailures: 0,
+    testRunFailures: 0,
+    presubmitRejects: 0,
+    children: [],
+    isExpanded: false,
+    latestFailureTime: failureTime,
+    level: 0,
+  };
 };
 
 // Find a group by name in the given list of groups, create a new one and insert it if it is not found.
 // failureTime is only used when creating a new group.
 export const getOrCreateGroup = (
-    groups: FailureGroup[], name: string, failureTime: string
+    groups: FailureGroup[], name: string, failureTime: string,
 ): FailureGroup => {
-    let group = groups.filter(g => g.name == name)?.[0];
-    if (group) {
-        return group;
-    }
-    group = newGroup(name, failureTime);
-    groups.push(group);
+  let group = groups.filter((g) => g.name == name)?.[0];
+  if (group) {
     return group;
+  }
+  group = newGroup(name, failureTime);
+  groups.push(group);
+  return group;
 };
 
 // Returns the distinct values returned by featureExtractor for all children of the group.
@@ -97,24 +97,24 @@ export const getOrCreateGroup = (
 export const treeDistinctValues = (
     group: FailureGroup,
     featureExtractor: FeatureExtractor,
-    visitor: (group: FailureGroup, distinctValues: Set<string>) => void
+    visitor: (group: FailureGroup, distinctValues: Set<string>) => void,
 ): Set<string> => {
-    const values: Set<string> = new Set();
-    if (group.failure) {
-        for (const value of featureExtractor(group.failure)) {
-            values.add(value);
-        }
-    } else {
-        for (const child of group.children) {
-            for (const value of treeDistinctValues(
-                child, featureExtractor, visitor
-            )) {
-                values.add(value);
-            }
-        }
+  const values: Set<string> = new Set();
+  if (group.failure) {
+    for (const value of featureExtractor(group.failure)) {
+      values.add(value);
     }
-    visitor(group, values);
-    return values;
+  } else {
+    for (const child of group.children) {
+      for (const value of treeDistinctValues(
+          child, featureExtractor, visitor,
+      )) {
+        values.add(value);
+      }
+    }
+  }
+  visitor(group, values);
+  return values;
 };
 
 // A FeatureExtractor returns a string representing some feature of a ClusterFailure.
@@ -124,38 +124,38 @@ export type FeatureExtractor = (failure: ClusterFailure) => Set<string>;
 // failureIdExtractor returns an extractor that returns a unique failure id for each failure.
 // As failures don't actually have ids, it just returns an incrementing integer.
 export const failureIdsExtractor = (): FeatureExtractor => {
-    let unique = 0;
-    return f => {
-        const values: Set<string> = new Set();
-        for (let i = 0; i < f.count; i++) {
-            unique += 1;
-            values.add('' + unique);
-        }
-        return values;
-    };
+  let unique = 0;
+  return (f) => {
+    const values: Set<string> = new Set();
+    for (let i = 0; i < f.count; i++) {
+      unique += 1;
+      values.add('' + unique);
+    }
+    return values;
+  };
 };
 
 // Returns an extractor that returns the id of the test run that was rejected by this failure, if any.
 // The impact filter is taken into account in determining if the run was rejected by this failure.
 export const rejectedTestRunIdsExtractor = (impactFilter: ImpactFilter): FeatureExtractor => {
-    return f => {
-        const values: Set<string> = new Set();
-        if (!impactFilter.ignoreTestRunBlocked && !f.isTestRunBlocked) {
-            return values;
-        }
-        for (const testRunId of f.testRunIds) {
-            if (testRunId) {
-                values.add(testRunId);
-            }
-        }
-        return values;
-    };
+  return (f) => {
+    const values: Set<string> = new Set();
+    if (!impactFilter.ignoreTestRunBlocked && !f.isTestRunBlocked) {
+      return values;
+    }
+    for (const testRunId of f.testRunIds) {
+      if (testRunId) {
+        values.add(testRunId);
+      }
+    }
+    return values;
+  };
 };
 
 // Returns whether the failure was exonerated because it occurs on other
 // CLs or on mainline. These are exoneration types that appear only in CQ.
 const isExoneratedByOccuranceElsewhere = (status: ExonerationStatus | null): boolean => {
-    return status == 'WEETBIX' || // Deprecated. Can be removed from June 2022.
+  return status == 'WEETBIX' || // Deprecated. Can be removed from June 2022.
             status == 'OCCURS_ON_OTHER_CLS' ||
             status == 'OCCURS_ON_MAINLINE';
 };
@@ -163,86 +163,86 @@ const isExoneratedByOccuranceElsewhere = (status: ExonerationStatus | null): boo
 // Returns an extractor that returns the id of the ingested invocation that was rejected by this failure, if any.
 // The impact filter is taken into account in determining if the invocation was rejected by this failure.
 export const rejectedIngestedInvocationIdsExtractor = (impactFilter: ImpactFilter): FeatureExtractor => {
-    return failure => {
-        const values: Set<string> = new Set();
-        if (isExoneratedByOccuranceElsewhere(failure.exonerationStatus) &&
+  return (failure) => {
+    const values: Set<string> = new Set();
+    if (isExoneratedByOccuranceElsewhere(failure.exonerationStatus) &&
                 !(impactFilter.ignoreWeetbixExoneration || impactFilter.ignoreAllExoneration)) {
-            return values;
-        }
-        if (failure.exonerationStatus != 'NOT_EXONERATED'
-        && !isExoneratedByOccuranceElsewhere(failure.exonerationStatus)
-         &&  !impactFilter.ignoreAllExoneration) {
-            return values;
-        }
-        if (!failure.isIngestedInvocationBlocked && !impactFilter.ignoreIngestedInvocationBlocked) {
-            return values;
-        }
-        if (!impactFilter.ignoreTestRunBlocked && !failure.isTestRunBlocked) {
-            return values;
-        }
-        if (failure.ingestedInvocationId) {
-            values.add(failure.ingestedInvocationId);
-        }
-        return values;
-    };
+      return values;
+    }
+    if (failure.exonerationStatus != 'NOT_EXONERATED' &&
+        !isExoneratedByOccuranceElsewhere(failure.exonerationStatus) &&
+         !impactFilter.ignoreAllExoneration) {
+      return values;
+    }
+    if (!failure.isIngestedInvocationBlocked && !impactFilter.ignoreIngestedInvocationBlocked) {
+      return values;
+    }
+    if (!impactFilter.ignoreTestRunBlocked && !failure.isTestRunBlocked) {
+      return values;
+    }
+    if (failure.ingestedInvocationId) {
+      values.add(failure.ingestedInvocationId);
+    }
+    return values;
+  };
 };
 
 // Returns an extractor that returns the identity of the CL that was rejected by this failure, if any.
 // The impact filter is taken into account in determining if the CL was rejected by this failure.
 export const rejectedPresubmitRunIdsExtractor = (impactFilter: ImpactFilter): FeatureExtractor => {
-    return failure => {
-        const values: Set<string> = new Set();
-        if (isExoneratedByOccuranceElsewhere(failure.exonerationStatus) &&
+  return (failure) => {
+    const values: Set<string> = new Set();
+    if (isExoneratedByOccuranceElsewhere(failure.exonerationStatus) &&
                 !(impactFilter.ignoreWeetbixExoneration || impactFilter.ignoreAllExoneration)) {
-            return values;
-        }
-        if ((failure.exonerationStatus != 'NOT_EXONERATED' && !isExoneratedByOccuranceElsewhere(failure.exonerationStatus)) &&
+      return values;
+    }
+    if ((failure.exonerationStatus != 'NOT_EXONERATED' && !isExoneratedByOccuranceElsewhere(failure.exonerationStatus)) &&
                         !impactFilter.ignoreAllExoneration) {
-            return values;
-        }
-        if (!failure.isIngestedInvocationBlocked && !impactFilter.ignoreIngestedInvocationBlocked) {
-            return values;
-        }
-        if (!impactFilter.ignoreTestRunBlocked && !failure.isTestRunBlocked) {
-            return values;
-        }
-        if (failure.presubmitRunCl && failure.presubmitRunOwner == 'user') {
-            values.add(failure.presubmitRunCl.host + '/' + failure.presubmitRunCl.change.toFixed(0));
-        }
-        return values;
-    };
+      return values;
+    }
+    if (!failure.isIngestedInvocationBlocked && !impactFilter.ignoreIngestedInvocationBlocked) {
+      return values;
+    }
+    if (!impactFilter.ignoreTestRunBlocked && !failure.isTestRunBlocked) {
+      return values;
+    }
+    if (failure.presubmitRunCl && failure.presubmitRunOwner == 'user') {
+      values.add(failure.presubmitRunCl.host + '/' + failure.presubmitRunCl.change.toFixed(0));
+    }
+    return values;
+  };
 };
 
 // Sorts child failure groups at each node of the tree by the given metric.
 export const sortFailureGroups = (
     groups: FailureGroup[],
     metric: MetricName,
-    ascending: boolean
+    ascending: boolean,
 ): FailureGroup[] => {
-    const cloneGroups = [...groups];
-    const getMetric = (group: FailureGroup): number => {
-        switch (metric) {
-            case 'failures':
-                return group.failures;
-            case 'presubmitRejects':
-                return group.presubmitRejects;
-            case 'invocationFailures':
-                return group.invocationFailures;
-            case 'testRunFailures':
-                return group.testRunFailures;
-            case 'latestFailureTime':
-                return dayjs(group.latestFailureTime).unix();
-            default:
-                throw new Error('unknown metric: ' + metric);
-        }
-    };
-    cloneGroups.sort((a, b) => ascending ? (getMetric(a) - getMetric(b)) : (getMetric(b) - getMetric(a)));
-    for (const group of cloneGroups) {
-        if (group.children.length > 0) {
-            group.children = sortFailureGroups(group.children, metric, ascending);
-        }
+  const cloneGroups = [...groups];
+  const getMetric = (group: FailureGroup): number => {
+    switch (metric) {
+      case 'failures':
+        return group.failures;
+      case 'presubmitRejects':
+        return group.presubmitRejects;
+      case 'invocationFailures':
+        return group.invocationFailures;
+      case 'testRunFailures':
+        return group.testRunFailures;
+      case 'latestFailureTime':
+        return dayjs(group.latestFailureTime).unix();
+      default:
+        throw new Error('unknown metric: ' + metric);
     }
-    return cloneGroups;
+  };
+  cloneGroups.sort((a, b) => ascending ? (getMetric(a) - getMetric(b)) : (getMetric(b) - getMetric(a)));
+  for (const group of cloneGroups) {
+    if (group.children.length > 0) {
+      group.children = sortFailureGroups(group.children, metric, ascending);
+    }
+  }
+  return cloneGroups;
 };
 
 /**
@@ -256,42 +256,42 @@ export const sortFailureGroups = (
 export const groupAndCountFailures = (
     failures: ClusterFailure[],
     variantGroups: VariantGroup[],
-    failureFilter: FailureFilter
+    failureFilter: FailureFilter,
 ): FailureGroup[] => {
-    if (failures) {
-        let currentFailures = failures;
-        if (failureFilter == 'Presubmit Failures') {
-            currentFailures = failures.filter(f => f.presubmitRunId);
-        } else if (failureFilter == 'Postsubmit Failures') {
-            currentFailures = failures.filter(f => !f.presubmitRunId);
-        }
-        const groups = groupFailures(currentFailures, failure => {
-            const variantValues = variantGroups.filter(v => v.isSelected)
-                .map(v => failure.variant.filter(fv => fv.key === v.key)?.[0]?.value || '');
-            return [...variantValues, failure.testId || ''];
-        });
-        return groups;
+  if (failures) {
+    let currentFailures = failures;
+    if (failureFilter == 'Presubmit Failures') {
+      currentFailures = failures.filter((f) => f.presubmitRunId);
+    } else if (failureFilter == 'Postsubmit Failures') {
+      currentFailures = failures.filter((f) => !f.presubmitRunId);
     }
-    return [];
+    const groups = groupFailures(currentFailures, (failure) => {
+      const variantValues = variantGroups.filter((v) => v.isSelected)
+          .map((v) => failure.variant.filter((fv) => fv.key === v.key)?.[0]?.value || '');
+      return [...variantValues, failure.testId || ''];
+    });
+    return groups;
+  }
+  return [];
 };
 
 export const countAndSortFailures = (groups: FailureGroup[], impactFilter: ImpactFilter): FailureGroup[] => {
-    const groupsClone = [...groups];
-    groupsClone.forEach(group => {
-        treeDistinctValues(
-            group, failureIdsExtractor(), (g, values) => g.failures = values.size
-        );
-        treeDistinctValues(
-            group, rejectedTestRunIdsExtractor(impactFilter), (g, values) => g.testRunFailures = values.size
-        );
-        treeDistinctValues(
-            group, rejectedIngestedInvocationIdsExtractor(impactFilter), (g, values) => g.invocationFailures = values.size
-        );
-        treeDistinctValues(
-            group, rejectedPresubmitRunIdsExtractor(impactFilter), (g, values) => g.presubmitRejects = values.size
-        );
-    });
-    return groupsClone;
+  const groupsClone = [...groups];
+  groupsClone.forEach((group) => {
+    treeDistinctValues(
+        group, failureIdsExtractor(), (g, values) => g.failures = values.size,
+    );
+    treeDistinctValues(
+        group, rejectedTestRunIdsExtractor(impactFilter), (g, values) => g.testRunFailures = values.size,
+    );
+    treeDistinctValues(
+        group, rejectedIngestedInvocationIdsExtractor(impactFilter), (g, values) => g.invocationFailures = values.size,
+    );
+    treeDistinctValues(
+        group, rejectedPresubmitRunIdsExtractor(impactFilter), (g, values) => g.presubmitRejects = values.size,
+    );
+  });
+  return groupsClone;
 };
 
 // ImpactFilter represents what kind of impact should be counted or ignored in
@@ -304,37 +304,37 @@ export interface ImpactFilter {
     ignoreTestRunBlocked: boolean;
 }
 export const ImpactFilters: ImpactFilter[] = [
-    {
-        name: 'Actual Impact',
-        ignoreWeetbixExoneration: false,
-        ignoreAllExoneration: false,
-        ignoreIngestedInvocationBlocked: false,
-        ignoreTestRunBlocked: false,
-    }, {
-        name: 'Without Weetbix Exoneration',
-        ignoreWeetbixExoneration: true,
-        ignoreAllExoneration: false,
-        ignoreIngestedInvocationBlocked: false,
-        ignoreTestRunBlocked: false,
-    }, {
-        name: 'Without All Exoneration',
-        ignoreWeetbixExoneration: true,
-        ignoreAllExoneration: true,
-        ignoreIngestedInvocationBlocked: false,
-        ignoreTestRunBlocked: false,
-    }, {
-        name: 'Without Retrying Test Runs',
-        ignoreWeetbixExoneration: true,
-        ignoreAllExoneration: true,
-        ignoreIngestedInvocationBlocked: true,
-        ignoreTestRunBlocked: false,
-    }, {
-        name: 'Without Any Retries',
-        ignoreWeetbixExoneration: true,
-        ignoreAllExoneration: true,
-        ignoreIngestedInvocationBlocked: true,
-        ignoreTestRunBlocked: true,
-    }
+  {
+    name: 'Actual Impact',
+    ignoreWeetbixExoneration: false,
+    ignoreAllExoneration: false,
+    ignoreIngestedInvocationBlocked: false,
+    ignoreTestRunBlocked: false,
+  }, {
+    name: 'Without Weetbix Exoneration',
+    ignoreWeetbixExoneration: true,
+    ignoreAllExoneration: false,
+    ignoreIngestedInvocationBlocked: false,
+    ignoreTestRunBlocked: false,
+  }, {
+    name: 'Without All Exoneration',
+    ignoreWeetbixExoneration: true,
+    ignoreAllExoneration: true,
+    ignoreIngestedInvocationBlocked: false,
+    ignoreTestRunBlocked: false,
+  }, {
+    name: 'Without Retrying Test Runs',
+    ignoreWeetbixExoneration: true,
+    ignoreAllExoneration: true,
+    ignoreIngestedInvocationBlocked: true,
+    ignoreTestRunBlocked: false,
+  }, {
+    name: 'Without Any Retries',
+    ignoreWeetbixExoneration: true,
+    ignoreAllExoneration: true,
+    ignoreIngestedInvocationBlocked: true,
+    ignoreTestRunBlocked: true,
+  },
 ];
 
 export const defaultImpactFilter: ImpactFilter = ImpactFilters[1];

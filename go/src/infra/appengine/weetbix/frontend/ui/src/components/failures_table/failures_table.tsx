@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import React, {
-    useEffect,
-    useState
+import {
+  useEffect,
+  useState,
 } from 'react';
 import { useQuery } from 'react-query';
 import {
-    useUpdateEffect
+  useUpdateEffect,
 } from 'react-use';
 
 import CircularProgress from '@mui/material/CircularProgress';
@@ -19,19 +19,19 @@ import TableBody from '@mui/material/TableBody';
 
 import { getFailures } from '../../services/failures';
 import {
-    countAndSortFailures,
-    countDistictVariantValues,
-    defaultFailureFilter,
-    defaultImpactFilter,
-    FailureFilter,
-    FailureFilters,
-    FailureGroup,
-    VariantGroup,
-    groupAndCountFailures,
-    ImpactFilter,
-    ImpactFilters,
-    MetricName,
-    sortFailureGroups
+  countAndSortFailures,
+  countDistictVariantValues,
+  defaultFailureFilter,
+  defaultImpactFilter,
+  FailureFilter,
+  FailureFilters,
+  FailureGroup,
+  VariantGroup,
+  groupAndCountFailures,
+  ImpactFilter,
+  ImpactFilters,
+  MetricName,
+  sortFailureGroups,
 } from '../../tools/failures_tools';
 import ErrorAlert from '../error_alert/error_alert';
 import FailuresTableFilter from './failures_table_filter/failures_table_filter';
@@ -45,142 +45,137 @@ interface Props {
 }
 
 const FailuresTable = ({
-    project,
-    clusterAlgorithm,
-    clusterId
+  project,
+  clusterAlgorithm,
+  clusterId,
 }: Props) => {
+  const [groups, setGroups] = useState<FailureGroup[]>([]);
+  const [variantGroups, setVariantGroups] = useState<VariantGroup[]>([]);
 
-    const [groups, setGroups] = useState<FailureGroup[]>([]);
-    const [variantGroups, setVariantGroups] = useState<VariantGroup[]>([]);
+  const [failureFilter, setFailureFilter] = useState<FailureFilter>(defaultFailureFilter);
+  const [impactFilter, setImpactFilter] = useState<ImpactFilter>(defaultImpactFilter);
+  const [selectedVariantGroups, setSelectedVariantGroups] = useState<string[]>([]);
 
-    const [failureFilter, setFailureFilter] = useState<FailureFilter>(defaultFailureFilter);
-    const [impactFilter, setImpactFilter] = useState<ImpactFilter>(defaultImpactFilter);
-    const [selectedVariantGroups, setSelectedVariantGroups] = useState<string[]>([]);
+  const [sortMetric, setCurrentSortMetric] = useState<MetricName>('latestFailureTime');
+  const [isAscending, setIsAscending] = useState(false);
 
-    const [sortMetric, setCurrentSortMetric] = useState<MetricName>('latestFailureTime');
-    const [isAscending, setIsAscending] = useState(false);
+  const {
+    isLoading,
+    isError,
+    data: failures,
+    error,
+  } = useQuery(
+      ['clusterFailures', `${clusterAlgorithm}:${clusterId}`],
+      () => getFailures(project, clusterAlgorithm, clusterId),
+  );
 
-    const {
-        isLoading,
-        isError,
-        data: failures,
-        error
-    } = useQuery(
-        ['clusterFailures', `${clusterAlgorithm}:${clusterId}`],
-        () => getFailures(project, clusterAlgorithm, clusterId)
-    );
-
-    useEffect( () => {
-        if(failures) {
-            setVariantGroups(countDistictVariantValues(failures));
-        }
-    }, [failures]);
-
-    useUpdateEffect(() => {
-        setGroups(sortFailureGroups(groups, sortMetric, isAscending));
-    }, [sortMetric, isAscending]);
-
-    useUpdateEffect(() => {
-        setGroups(countAndSortFailures(groups, impactFilter));
-    }, [impactFilter]);
-
-    useUpdateEffect(() => {
-        groupCountAndSortFailures();
-    }, [failureFilter]);
-
-    useUpdateEffect(() => {
-        groupCountAndSortFailures();
-    }, [variantGroups]);
-
-    useUpdateEffect(() => {
-        const variantGroupsClone = [...variantGroups];
-        variantGroupsClone.forEach((variantGroup) => {
-            variantGroup.isSelected = selectedVariantGroups.includes(variantGroup.key);
-        });
-        setVariantGroups(variantGroupsClone);
-    }, [selectedVariantGroups]);
-
-    const groupCountAndSortFailures = () => {
-        if(failures) {
-            let updatedGroups = groupAndCountFailures(failures, variantGroups, failureFilter);
-            updatedGroups = countAndSortFailures(updatedGroups, impactFilter);
-            setGroups(sortFailureGroups(updatedGroups, sortMetric, isAscending));
-        }
-    };
-
-    const onImpactFilterChanged = (event: SelectChangeEvent) => {
-        setImpactFilter(ImpactFilters.filter(filter => filter.name === event.target.value)?.[0] || ImpactFilters[1]);
-    };
-
-    const onFailureFilterChanged = (event: SelectChangeEvent) => {
-        setFailureFilter((event.target.value as FailureFilter) || FailureFilters[0]);
-    };
-
-    const handleVariantsChange = (event: SelectChangeEvent<typeof selectedVariantGroups>) => {
-        const value = event.target.value;
-        setSelectedVariantGroups(typeof value === 'string' ? value.split(',') : value);
-    };
-
-    const toggleSort = (metric: MetricName) => {
-        if (metric === sortMetric) {
-            setIsAscending(!isAscending);
-        } else {
-            setCurrentSortMetric(metric);
-            setIsAscending(false);
-        }
-    };
-
-    if(isLoading) {
-        return (
-            <Grid container item alignItems="center" justifyContent="center">
-                <CircularProgress />
-            </Grid>
-        );
+  useEffect( () => {
+    if (failures) {
+      setVariantGroups(countDistictVariantValues(failures));
     }
+  }, [failures]);
 
-    if(isError || !failures) {
-        return (
-            <ErrorAlert
-                errorTitle="Failed to load failures"
-                errorText={`Loading cluster failures failed due to: ${error}`}
-                showError
-            />
-        );
+  useUpdateEffect(() => {
+    setGroups(sortFailureGroups(groups, sortMetric, isAscending));
+  }, [sortMetric, isAscending]);
+
+  useUpdateEffect(() => {
+    setGroups(countAndSortFailures(groups, impactFilter));
+  }, [impactFilter]);
+
+  useUpdateEffect(() => {
+    groupCountAndSortFailures();
+  }, [failureFilter]);
+
+  useUpdateEffect(() => {
+    groupCountAndSortFailures();
+  }, [variantGroups]);
+
+  useUpdateEffect(() => {
+    const variantGroupsClone = [...variantGroups];
+    variantGroupsClone.forEach((variantGroup) => {
+      variantGroup.isSelected = selectedVariantGroups.includes(variantGroup.key);
+    });
+    setVariantGroups(variantGroupsClone);
+  }, [selectedVariantGroups]);
+
+  const groupCountAndSortFailures = () => {
+    if (failures) {
+      let updatedGroups = groupAndCountFailures(failures, variantGroups, failureFilter);
+      updatedGroups = countAndSortFailures(updatedGroups, impactFilter);
+      setGroups(sortFailureGroups(updatedGroups, sortMetric, isAscending));
     }
+  };
 
+  const onImpactFilterChanged = (event: SelectChangeEvent) => {
+    setImpactFilter(ImpactFilters.filter((filter) => filter.name === event.target.value)?.[0] || ImpactFilters[1]);
+  };
+
+  const onFailureFilterChanged = (event: SelectChangeEvent) => {
+    setFailureFilter((event.target.value as FailureFilter) || FailureFilters[0]);
+  };
+
+  const handleVariantsChange = (event: SelectChangeEvent<typeof selectedVariantGroups>) => {
+    const value = event.target.value;
+    setSelectedVariantGroups(typeof value === 'string' ? value.split(',') : value);
+  };
+
+  const toggleSort = (metric: MetricName) => {
+    if (metric === sortMetric) {
+      setIsAscending(!isAscending);
+    } else {
+      setCurrentSortMetric(metric);
+      setIsAscending(false);
+    }
+  };
+
+  if (isLoading) {
     return (
-        <Grid container columnGap={2} rowGap={2}>
-            <FailuresTableFilter
-                failureFilter={failureFilter}
-                onFailureFilterChanged={onFailureFilterChanged}
-                impactFilter={impactFilter}
-                onImpactFilterChanged={onImpactFilterChanged}
-                variantGroups={variantGroups}
-                selectedVariantGroups={selectedVariantGroups}
-                handleVariantGroupsChange={handleVariantsChange}
-            />
-            <Grid item xs={12}>
-                <Table size="small">
-                    <FailuresTableHead
-                        toggleSort={toggleSort}
-                        sortMetric={sortMetric}
-                        isAscending={isAscending}
-                    />
-                    <TableBody>
-                        {
-                            groups.map((group) => (
-                                <FailuresTableGroup
-                                    key={group.id}
-                                    group={group}
-                                    variantGroups={variantGroups}
-                                />
-                            ))
-                        }
-                    </TableBody>
-                </Table>
-            </Grid>
-        </Grid>
+      <Grid container item alignItems="center" justifyContent="center">
+        <CircularProgress />
+      </Grid>
     );
+  }
+
+  if (isError || !failures) {
+    return (
+      <ErrorAlert
+        errorTitle="Failed to load failures"
+        errorText={`Loading cluster failures failed due to: ${error}`}
+        showError/>
+    );
+  }
+
+  return (
+    <Grid container columnGap={2} rowGap={2}>
+      <FailuresTableFilter
+        failureFilter={failureFilter}
+        onFailureFilterChanged={onFailureFilterChanged}
+        impactFilter={impactFilter}
+        onImpactFilterChanged={onImpactFilterChanged}
+        variantGroups={variantGroups}
+        selectedVariantGroups={selectedVariantGroups}
+        handleVariantGroupsChange={handleVariantsChange}/>
+      <Grid item xs={12}>
+        <Table size="small">
+          <FailuresTableHead
+            toggleSort={toggleSort}
+            sortMetric={sortMetric}
+            isAscending={isAscending}/>
+          <TableBody>
+            {
+              groups.map((group) => (
+                <FailuresTableGroup
+                  key={group.id}
+                  group={group}
+                  variantGroups={variantGroups}/>
+              ))
+            }
+          </TableBody>
+        </Table>
+      </Grid>
+    </Grid>
+  );
 };
 
 export default FailuresTable;

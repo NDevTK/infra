@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import React, {
-    createContext,
-    Dispatch,
-    SetStateAction,
-    useState
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useState,
 } from 'react';
 
 import { AlertColor } from '@mui/material/Alert';
@@ -23,27 +23,27 @@ export interface SnackbarContextData {
 }
 
 export const snackContextDefaultState: Snack = {
-    open: false,
-    message: '',
-    severity: 'success',
+  open: false,
+  message: '',
+  severity: 'success',
 };
 
 
 export const SnackbarContext = createContext<SnackbarContextData>({
-    snack: snackContextDefaultState,
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    setSnack: () => {}
+  snack: snackContextDefaultState,
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  setSnack: () => {},
 });
 
 interface Props {
     children: React.ReactNode;
-};
+}
 
 export const SnackbarContextWrapper = ({ children }: Props) => {
-    const [snack, setSnack] = useState<Snack>(snackContextDefaultState);
-    return (
-        <SnackbarContext.Provider value={{ snack, setSnack }}>
-            {children}
-        </SnackbarContext.Provider>
-    );
+  const [snack, setSnack] = useState<Snack>(snackContextDefaultState);
+  return (
+    <SnackbarContext.Provider value={{ snack, setSnack }}>
+      {children}
+    </SnackbarContext.Provider>
+  );
 };

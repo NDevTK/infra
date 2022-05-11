@@ -6,7 +6,6 @@ import '@testing-library/jest-dom';
 import 'node-fetch';
 
 import fetchMock from 'fetch-mock-jest';
-import React from 'react';
 
 import { screen } from '@testing-library/react';
 
@@ -19,35 +18,34 @@ import { createDefaultMockRule } from '../../../testing_tools/mocks/rule_mock';
 import RuleTopPanel from './rule_top_panel';
 
 describe('Test RuleTopPanel component', () => {
-    it('given a rule, should display rule and bug details', async () => {
-        mockFetchProjectConfig();
-        mockFetchAuthState();
-        const mockRule = createDefaultMockRule();
-        fetchMock.get('/api/projects/chromium/reclusteringProgress', createMockDoneProgress());
-        fetchMock.post('https://api-dot-crbug.com/prpc/monorail.v3.Issues/GetIssue', {
-            headers: {
-                'X-Prpc-Grpc-Code': '0'
-            },
-            body: ')]}\'' + JSON.stringify(createMockBug())
-        });
-        fetchMock.post('http://localhost/prpc/weetbix.v1.Rules/Get', {
-            headers: {
-                'X-Prpc-Grpc-Code': '0'
-            },
-            body: ')]}\''+JSON.stringify(mockRule)
-        });
-
-        renderWithRouterAndClient(
-            <RuleTopPanel
-                project="chromium"
-                ruleId='12345'
-            />,
-            '/p/chromium/rules/12345',
-            '/p/:project/rules/:id'
-        );
-        await screen.findByText('Rule Details');
-
-        expect(screen.getByText('Rule Details')).toBeInTheDocument();
-        expect(screen.getByText('Associated Bug')).toBeInTheDocument();
+  it('given a rule, should display rule and bug details', async () => {
+    mockFetchProjectConfig();
+    mockFetchAuthState();
+    const mockRule = createDefaultMockRule();
+    fetchMock.get('/api/projects/chromium/reclusteringProgress', createMockDoneProgress());
+    fetchMock.post('https://api-dot-crbug.com/prpc/monorail.v3.Issues/GetIssue', {
+      headers: {
+        'X-Prpc-Grpc-Code': '0',
+      },
+      body: ')]}\'' + JSON.stringify(createMockBug()),
     });
+    fetchMock.post('http://localhost/prpc/weetbix.v1.Rules/Get', {
+      headers: {
+        'X-Prpc-Grpc-Code': '0',
+      },
+      body: ')]}\''+JSON.stringify(mockRule),
+    });
+
+    renderWithRouterAndClient(
+        <RuleTopPanel
+          project="chromium"
+          ruleId='12345'/>,
+        '/p/chromium/rules/12345',
+        '/p/:project/rules/:id',
+    );
+    await screen.findByText('Rule Details');
+
+    expect(screen.getByText('Rule Details')).toBeInTheDocument();
+    expect(screen.getByText('Associated Bug')).toBeInTheDocument();
+  });
 });

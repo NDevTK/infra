@@ -4,57 +4,53 @@
 
 // eslint-disable-next-line no-undef
 module.exports = {
-    'env': {
-        'browser': true,
-        'es2021': true,
+  'env': {
+    'browser': true,
+    'es2021': true,
+  },
+  'extends': [
+    'eslint:recommended',
+    'plugin:react/recommended',
+    'plugin:react-hooks/recommended',
+    'prettier',
+    'google',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:jest/recommended',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
+    'plugin:jsx-a11y/recommended',
+  ],
+  'settings': {
+    'react': {
+      'version': 'detect',
     },
-    'extends': [
-        'eslint:recommended',
-        'plugin:react/recommended',
-        'google',
-        'plugin:@typescript-eslint/recommended',
-        'prettier',
-        'plugin:jest/recommended',
-        'plugin:import/recommended',
-        'plugin:import/typescript'
-    ],
-    'settings': {
-        'react': {
-            'version': 'detect'
-        }
+  },
+  'parser': '@typescript-eslint/parser',
+  'parserOptions': {
+    'ecmaFeatures': {
+      'jsx': true,
     },
-    'parser': '@typescript-eslint/parser',
-    'parserOptions': {
-        'ecmaFeatures': {
-            'jsx': true,
-        },
-        'ecmaVersion': 'latest',
-        'sourceType': 'module',
-    },
-    'plugins': [
-        'react',
-        '@typescript-eslint',
-        'prettier',
-        'jest',
-    ],
-    'rules': {
-        'quotes': ['error','single'],
-        'indent': 'off',
-        '@typescript-eslint/indent': ['error'],
-        'react/jsx-indent': [
-            2,
-            4,
-            {
-                checkAttributes: true,
-                indentLogicalExpressions: true
-            }
-        ],
-        'react/jsx-indent-props': ['error'],
-        'semi': ['error', 'always'],
-        'object-curly-spacing': ['error', 'always', { 'objectsInObjects': true }],
-        'require-jsdoc': 0,
-        'import/order': ['error'],
-        'no-trailing-spaces': 'error',
-        'no-console': ['error', { allow: ['error'] }]
-    },
+    'ecmaVersion': 'latest',
+    'sourceType': 'module',
+  },
+  'plugins': [
+    'react',
+    '@typescript-eslint',
+    'prettier',
+    'jest',
+    'jsx-a11y',
+  ],
+  'rules': {
+    'quotes': ['error', 'single'],
+    'semi': ['error', 'always'],
+    'object-curly-spacing': ['error', 'always', { 'objectsInObjects': true }],
+    'require-jsdoc': 0,
+    'import/order': ['error'],
+    'no-trailing-spaces': 'error',
+    'no-console': ['error', { allow: ['error'] }],
+    'eol-last': ['error', 'always'],
+    'react/jsx-uses-react': 'off',
+    'react/react-in-jsx-scope': 'off',
+    'max-len': 'off',
+  },
 };

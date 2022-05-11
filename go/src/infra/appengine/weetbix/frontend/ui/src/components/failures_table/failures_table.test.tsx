@@ -5,197 +5,188 @@
 import '@testing-library/jest-dom';
 
 import fetchMock from 'fetch-mock-jest';
-import React from 'react';
 
 import {
-    fireEvent,
-    screen
+  fireEvent,
+  screen,
 } from '@testing-library/react';
 
 import { renderWithRouterAndClient } from '../../testing_tools/libs/mock_router';
 import {
-    createDefaultMockFailures,
-    newMockFailure
+  createDefaultMockFailures,
+  newMockFailure,
 } from '../../testing_tools/mocks/failures_mock';
 import { FailureFilters } from '../../tools/failures_tools';
 import FailuresTable from './failures_table';
 
 describe('Test FailureTable component', () => {
+  afterEach(() => {
+    fetchMock.mockClear();
+    fetchMock.reset();
+  });
 
-    afterEach(() => {
-        fetchMock.mockClear();
-        fetchMock.reset();
-    });
+  it('given cluster failures, should group and display them', async () => {
+    const mockFailures = createDefaultMockFailures();
 
-    it('given cluster failures, should group and display them', async () => {
+    fetchMock.get('/api/projects/chrome/clusters/rules-v2/rule-123345/failures', mockFailures);
 
-        const mockFailures = createDefaultMockFailures();
+    renderWithRouterAndClient(
+        <FailuresTable
+          clusterAlgorithm="rules-v2"
+          clusterId="rule-123345"
+          project="chrome"/>,
+    );
 
-        fetchMock.get('/api/projects/chrome/clusters/rules-v2/rule-123345/failures', mockFailures);
+    await screen.findByRole('table');
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    expect(screen.getByText(mockFailures[0].testId!)).toBeInTheDocument();
+  });
 
-        renderWithRouterAndClient(
-            <FailuresTable
-                clusterAlgorithm="rules-v2"
-                clusterId="rule-123345"
-                project="chrome"
-            />
-        );
+  it('when clicking a sortable column then should modify groups order', async () => {
+    const mockFailures = [
+      newMockFailure().withTestId('group1').build(),
+      newMockFailure().withTestId('group1').build(),
+      newMockFailure().withTestId('group1').build(),
+      newMockFailure().withTestId('group2').build(),
+      newMockFailure().withTestId('group3').build(),
+      newMockFailure().withTestId('group3').build(),
+      newMockFailure().withTestId('group3').build(),
+      newMockFailure().withTestId('group3').build(),
+    ];
+    fetchMock.get('/api/projects/chrome/clusters/rules-v2/rule-123345/failures', mockFailures);
 
-        await screen.findByRole('table');
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        expect(screen.getByText(mockFailures[0].testId!)).toBeInTheDocument();
-    });
+    renderWithRouterAndClient(
+        <FailuresTable
+          clusterAlgorithm="rules-v2"
+          clusterId="rule-123345"
+          project="chrome"/>,
+    );
 
-    it('when clicking a sortable column then should modify groups order', async () => {
-        const mockFailures = [
-            newMockFailure().withTestId('group1').build(),
-            newMockFailure().withTestId('group1').build(),
-            newMockFailure().withTestId('group1').build(),
-            newMockFailure().withTestId('group2').build(),
-            newMockFailure().withTestId('group3').build(),
-            newMockFailure().withTestId('group3').build(),
-            newMockFailure().withTestId('group3').build(),
-            newMockFailure().withTestId('group3').build(),
-        ];
-        fetchMock.get('/api/projects/chrome/clusters/rules-v2/rule-123345/failures', mockFailures);
+    await screen.findByRole('table');
 
-        renderWithRouterAndClient(
-            <FailuresTable
-                clusterAlgorithm="rules-v2"
-                clusterId="rule-123345"
-                project="chrome"
-            />
-        );
+    let allGroupCells = screen.getAllByTestId('failures_table_group_cell');
+    expect(allGroupCells.length).toBe(3);
+    expect(allGroupCells[0]).toHaveTextContent('group1');
+    expect(allGroupCells[1]).toHaveTextContent('group2');
+    expect(allGroupCells[2]).toHaveTextContent('group3');
 
-        await screen.findByRole('table');
+    await fireEvent.click(screen.getByText('Unexpected Failures'));
 
-        let allGroupCells = screen.getAllByTestId('failures_table_group_cell');
-        expect(allGroupCells.length).toBe(3);
-        expect(allGroupCells[0]).toHaveTextContent('group1');
-        expect(allGroupCells[1]).toHaveTextContent('group2');
-        expect(allGroupCells[2]).toHaveTextContent('group3');
+    allGroupCells = screen.getAllByTestId('failures_table_group_cell');
+    expect(allGroupCells.length).toBe(3);
+    expect(allGroupCells[0]).toHaveTextContent('group3');
+    expect(allGroupCells[1]).toHaveTextContent('group1');
+    expect(allGroupCells[2]).toHaveTextContent('group2');
+  });
 
-        await fireEvent.click(screen.getByText('Unexpected Failures'));
+  it('when expanding then should show child groups', async () => {
+    const mockFailures = [
+      newMockFailure().testRunBlocked().withTestId('group1').build(),
+      newMockFailure().withTestId('group1').build(),
+      newMockFailure().withTestId('group1').build(),
+    ];
+    fetchMock.get('/api/projects/chrome/clusters/rules-v2/rule-123345/failures', mockFailures);
 
-        allGroupCells = screen.getAllByTestId('failures_table_group_cell');
-        expect(allGroupCells.length).toBe(3);
-        expect(allGroupCells[0]).toHaveTextContent('group3');
-        expect(allGroupCells[1]).toHaveTextContent('group1');
-        expect(allGroupCells[2]).toHaveTextContent('group2');
-    });
+    renderWithRouterAndClient(
+        <FailuresTable
+          clusterAlgorithm="rules-v2"
+          clusterId="rule-123345"
+          project="chrome"/>,
+    );
 
-    it('when expanding then should show child groups', async () => {
-        const mockFailures = [
-            newMockFailure().testRunBlocked().withTestId('group1').build(),
-            newMockFailure().withTestId('group1').build(),
-            newMockFailure().withTestId('group1').build(),
-        ];
-        fetchMock.get('/api/projects/chrome/clusters/rules-v2/rule-123345/failures', mockFailures);
+    await screen.findByRole('table');
 
-        renderWithRouterAndClient(
-            <FailuresTable
-                clusterAlgorithm="rules-v2"
-                clusterId="rule-123345"
-                project="chrome"
-            />
-        );
+    let allGroupCells = screen.getAllByTestId('failures_table_group_cell');
+    expect(allGroupCells.length).toBe(1);
+    expect(allGroupCells[0]).toHaveTextContent('group1');
 
-        await screen.findByRole('table');
+    await fireEvent.click(screen.getByLabelText('Expand group'));
 
-        let allGroupCells = screen.getAllByTestId('failures_table_group_cell');
-        expect(allGroupCells.length).toBe(1);
-        expect(allGroupCells[0]).toHaveTextContent('group1');
+    allGroupCells = screen.getAllByTestId('failures_table_group_cell');
+    expect(allGroupCells.length).toBe(4);
+  });
 
-        await fireEvent.click(screen.getByLabelText('Expand group'));
+  it('when filtering by failure type then should display matching groups', async () => {
+    const mockFailures = [
+      newMockFailure().withoutPresubmit().withTestId('group1').build(),
+      newMockFailure().withTestId('group2').build(),
+      newMockFailure().withTestId('group3').build(),
+    ];
+    fetchMock.get('/api/projects/chrome/clusters/rules-v2/rule-123345/failures', mockFailures);
 
-        allGroupCells = screen.getAllByTestId('failures_table_group_cell');
-        expect(allGroupCells.length).toBe(4);
-    });
+    renderWithRouterAndClient(
+        <FailuresTable
+          clusterAlgorithm="rules-v2"
+          clusterId="rule-123345"
+          project="chrome"/>,
+    );
 
-    it('when filtering by failure type then should display matching groups', async () => {
-        const mockFailures = [
-            newMockFailure().withoutPresubmit().withTestId('group1').build(),
-            newMockFailure().withTestId('group2').build(),
-            newMockFailure().withTestId('group3').build(),
-        ];
-        fetchMock.get('/api/projects/chrome/clusters/rules-v2/rule-123345/failures', mockFailures);
+    await screen.findByRole('table');
 
-        renderWithRouterAndClient(
-            <FailuresTable
-                clusterAlgorithm="rules-v2"
-                clusterId="rule-123345"
-                project="chrome"
-            />
-        );
+    let allGroupCells = screen.getAllByTestId('failures_table_group_cell');
+    expect(allGroupCells.length).toBe(3);
+    expect(allGroupCells[0]).toHaveTextContent('group1');
+    expect(allGroupCells[1]).toHaveTextContent('group2');
+    expect(allGroupCells[2]).toHaveTextContent('group3');
 
-        await screen.findByRole('table');
+    await fireEvent.change(screen.getByTestId('failure_filter_input'), { target: { value: FailureFilters[1] } });
 
-        let allGroupCells = screen.getAllByTestId('failures_table_group_cell');
-        expect(allGroupCells.length).toBe(3);
-        expect(allGroupCells[0]).toHaveTextContent('group1');
-        expect(allGroupCells[1]).toHaveTextContent('group2');
-        expect(allGroupCells[2]).toHaveTextContent('group3');
+    allGroupCells = screen.getAllByTestId('failures_table_group_cell');
+    expect(allGroupCells.length).toBe(2);
+    expect(allGroupCells[0]).toHaveTextContent('group2');
+    expect(allGroupCells[1]).toHaveTextContent('group3');
+  });
 
-        await fireEvent.change(screen.getByTestId('failure_filter_input'), { target: { value: FailureFilters[1] } });
+  it('when filtering with impact then should recalculate impact', async () => {
+    const mockFailures = [
+      newMockFailure().withoutPresubmit().withTestId('group1').build(),
+      newMockFailure().withTestId('group1').build(),
+    ];
+    fetchMock.get('/api/projects/chrome/clusters/rules-v2/rule-123345/failures', mockFailures);
 
-        allGroupCells = screen.getAllByTestId('failures_table_group_cell');
-        expect(allGroupCells.length).toBe(2);
-        expect(allGroupCells[0]).toHaveTextContent('group2');
-        expect(allGroupCells[1]).toHaveTextContent('group3');
-    });
+    renderWithRouterAndClient(
+        <FailuresTable
+          clusterAlgorithm="rules-v2"
+          clusterId="rule-123345"
+          project="chrome"/>,
+    );
 
-    it('when filtering with impact then should recalculate impact', async () => {
-        const mockFailures = [
-            newMockFailure().withoutPresubmit().withTestId('group1').build(),
-            newMockFailure().withTestId('group1').build(),
-        ];
-        fetchMock.get('/api/projects/chrome/clusters/rules-v2/rule-123345/failures', mockFailures);
+    await screen.findByRole('table');
+    await fireEvent.change(screen.getByTestId('impact_filter_input'), { target: { value: 'Without Any Retries' } });
 
-        renderWithRouterAndClient(
-            <FailuresTable
-                clusterAlgorithm="rules-v2"
-                clusterId="rule-123345"
-                project="chrome"
-            />
-        );
+    let presubmitRejects = screen.getByTestId('failure_table_group_presubmitrejects');
+    expect(presubmitRejects).toHaveTextContent('1');
 
-        await screen.findByRole('table');
-        await fireEvent.change(screen.getByTestId('impact_filter_input'), { target: { value: 'Without Any Retries' } });
+    await fireEvent.change(screen.getByTestId('impact_filter_input'), { target: { value: 'Actual Impact' } });
 
-        let presubmitRejects = screen.getByTestId('failure_table_group_presubmitrejects');
-        expect(presubmitRejects).toHaveTextContent('1');
+    presubmitRejects = screen.getByTestId('failure_table_group_presubmitrejects');
+    expect(presubmitRejects).toHaveTextContent('0');
+  });
 
-        await fireEvent.change(screen.getByTestId('impact_filter_input'), { target: { value: 'Actual Impact' } });
+  it('when grouping by variants then should modify displayed tree', async () => {
+    const mockFailures = [
+      newMockFailure().withVariantGroups('v1', 'a').withTestId('group1').build(),
+      newMockFailure().withVariantGroups('v1', 'a').withTestId('group1').build(),
+      newMockFailure().withVariantGroups('v1', 'b').withTestId('group1').build(),
+      newMockFailure().withVariantGroups('v1', 'b').withTestId('group1').build(),
+    ];
 
-        presubmitRejects = screen.getByTestId('failure_table_group_presubmitrejects');
-        expect(presubmitRejects).toHaveTextContent('0');
-    });
+    fetchMock.get('/api/projects/chrome/clusters/rules-v2/rule-123345/failures', mockFailures);
 
-    it('when grouping by variants then should modify displayed tree', async () => {
-        const mockFailures = [
-            newMockFailure().withVariantGroups('v1', 'a').withTestId('group1').build(),
-            newMockFailure().withVariantGroups('v1', 'a').withTestId('group1').build(),
-            newMockFailure().withVariantGroups('v1', 'b').withTestId('group1').build(),
-            newMockFailure().withVariantGroups('v1', 'b').withTestId('group1').build(),
-        ];
+    renderWithRouterAndClient(
+        <FailuresTable
+          clusterAlgorithm="rules-v2"
+          clusterId="rule-123345"
+          project="chrome"/>,
+    );
 
-        fetchMock.get('/api/projects/chrome/clusters/rules-v2/rule-123345/failures', mockFailures);
+    await screen.findByRole('table');
+    await fireEvent.change(screen.getByTestId('group_by_input'), { target: { value: 'v1' } });
 
-        renderWithRouterAndClient(
-            <FailuresTable
-                clusterAlgorithm="rules-v2"
-                clusterId="rule-123345"
-                project="chrome"
-            />
-        );
+    const groupedCells = screen.getAllByTestId('failures_table_group_cell');
+    expect(groupedCells.length).toBe(2);
 
-        await screen.findByRole('table');
-        await fireEvent.change(screen.getByTestId('group_by_input'), { target: { value: 'v1' } });
-
-        const groupedCells = screen.getAllByTestId('failures_table_group_cell');
-        expect(groupedCells.length).toBe(2);
-
-        expect(groupedCells[0]).toHaveTextContent('a');
-        expect(groupedCells[1]).toHaveTextContent('b');
-    });
+    expect(groupedCells[0]).toHaveTextContent('a');
+    expect(groupedCells[1]).toHaveTextContent('b');
+  });
 });

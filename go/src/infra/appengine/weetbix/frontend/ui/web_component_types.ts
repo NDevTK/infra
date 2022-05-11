@@ -32,4 +32,4 @@ declare global {
             ['failure-table']: CustomElement<FailureTable>,
         }
     }
-};
+}

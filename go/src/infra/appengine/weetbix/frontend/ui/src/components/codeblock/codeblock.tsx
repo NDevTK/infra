@@ -3,19 +3,16 @@
 // found in the LICENSE file.
 
 import './codeblock.css';
-
-import React from 'react';
-
 interface Props {
     code: string | undefined;
 }
 
 const CodeBlock = ({ code }: Props) => {
-    return (
-        <pre className="codeblock" data-testid="codeblock">
-            {code}
-        </pre>
-    );
+  return (
+    <pre className="codeblock" data-testid="codeblock">
+      {code}
+    </pre>
+  );
 };
 
 export default CodeBlock;

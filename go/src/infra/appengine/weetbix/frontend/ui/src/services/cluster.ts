@@ -6,10 +6,10 @@
 export const getCluster = async (
     project: string,
     clusterAlgorithm: string,
-    clusterId: string
-):  Promise<Cluster> => {
-    const response = await fetch(`/api/projects/${encodeURIComponent(project)}/clusters/${encodeURIComponent(clusterAlgorithm)}/${encodeURIComponent(clusterId)}`);
-    return await response.json();
+    clusterId: string,
+): Promise<Cluster> => {
+  const response = await fetch(`/api/projects/${encodeURIComponent(project)}/clusters/${encodeURIComponent(clusterAlgorithm)}/${encodeURIComponent(clusterId)}`);
+  return await response.json();
 };
 
 // Cluster is the cluster information sent by the server.

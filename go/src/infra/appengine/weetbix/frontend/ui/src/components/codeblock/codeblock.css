@@ -5,12 +5,12 @@
  */
 
 .codeblock {
-    font-family: monospace;
-    border: solid 1px var(--divider-color);
-    background-color: var(--block-background-color);
-    padding: 20px 14px;
-    margin: 0px;
-    display: inline-block;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
+  display: inline-block;
+  padding: 20px 14px;
+  margin: 0;
+  font-family: monospace;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  background-color: var(--block-background-color);
+  border: solid 1px var(--divider-color);
 }

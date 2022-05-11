@@ -4,8 +4,8 @@
 // found in the LICENSE file.
 
 import {
-    TextDecoder,
-    TextEncoder
+  TextDecoder,
+  TextEncoder,
 } from 'util';
 
 import dayjs from 'dayjs';

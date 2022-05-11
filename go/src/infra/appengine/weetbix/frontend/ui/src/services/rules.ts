@@ -5,40 +5,40 @@
 import { AuthorizedPrpcClient } from '../clients/authorized_client';
 
 export const getRulesService = () : RulesService => {
-    const client = new AuthorizedPrpcClient();
-    return new RulesService(client);
+  const client = new AuthorizedPrpcClient();
+  return new RulesService(client);
 };
 
 // For handling errors, import:
 // import { GrpcError } from '@chopsui/prpc-client';
 export class RulesService {
-    private static SERVICE = 'weetbix.v1.Rules';
+  private static SERVICE = 'weetbix.v1.Rules';
 
-    client: AuthorizedPrpcClient;
+  client: AuthorizedPrpcClient;
 
-    constructor(client: AuthorizedPrpcClient) {
-        this.client = client;
-    }
+  constructor(client: AuthorizedPrpcClient) {
+    this.client = client;
+  }
 
-    async get(request: GetRuleRequest) : Promise<Rule> {
-        return this.client.call(RulesService.SERVICE, 'Get', request, {});
-    }
+  async get(request: GetRuleRequest) : Promise<Rule> {
+    return this.client.call(RulesService.SERVICE, 'Get', request, {});
+  }
 
-    async list(request: ListRulesRequest): Promise<ListRulesResponse> {
-        return this.client.call(RulesService.SERVICE, 'List', request, {});
-    }
+  async list(request: ListRulesRequest): Promise<ListRulesResponse> {
+    return this.client.call(RulesService.SERVICE, 'List', request, {});
+  }
 
-    async create(request: CreateRuleRequest): Promise<Rule> {
-        return this.client.call(RulesService.SERVICE, 'Create', request, {});
-    }
+  async create(request: CreateRuleRequest): Promise<Rule> {
+    return this.client.call(RulesService.SERVICE, 'Create', request, {});
+  }
 
-    async update(request: UpdateRuleRequest): Promise<Rule> {
-        return this.client.call(RulesService.SERVICE, 'Update', request, {});
-    }
+  async update(request: UpdateRuleRequest): Promise<Rule> {
+    return this.client.call(RulesService.SERVICE, 'Update', request, {});
+  }
 
-    async lookupBug(request: LookupBugRequest): Promise<LookupBugResponse> {
-        return this.client.call(RulesService.SERVICE, 'LookupBug', request, {});
-    }
+  async lookupBug(request: LookupBugRequest): Promise<LookupBugResponse> {
+    return this.client.call(RulesService.SERVICE, 'LookupBug', request, {});
+  }
 }
 
 export interface GetRuleRequest {
@@ -142,12 +142,12 @@ export interface RuleKey {
 
 // parseRuleName parses a rule resource name into its key parts.
 export const parseRuleName = (name: string):RuleKey => {
-    const results = name.match(ruleNameRE);
-    if (results == null) {
-        throw new Error('invalid rule resource name: ' + name);
-    }
-    return {
-        project: results[1],
-        ruleId: results[2],
-    };
+  const results = name.match(ruleNameRE);
+  if (results == null) {
+    throw new Error('invalid rule resource name: ' + name);
+  }
+  return {
+    project: results[1],
+    ruleId: results[2],
+  };
 };

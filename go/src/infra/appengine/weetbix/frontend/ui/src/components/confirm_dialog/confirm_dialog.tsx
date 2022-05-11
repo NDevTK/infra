@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import React from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -20,26 +19,26 @@ interface Props {
 }
 
 const ConfirmDialog = ({
-    message = '',
-    open,
-    onConfirm,
-    onCancel
+  message = '',
+  open,
+  onConfirm,
+  onCancel,
 }: Props) => {
-    return (
-        <Dialog open={open} maxWidth="xs" fullWidth>
-            <DialogTitle>Are you sure?</DialogTitle>
-            {message && (
-                <DialogContent>
-                    <Typography>{message}</Typography>
-                </DialogContent>
-            )
-            }
-            <DialogActions>
-                <Button variant="outlined" onClick={onCancel}>Cancel</Button>
-                <Button variant="contained" onClick={onConfirm}>Confirm</Button>
-            </DialogActions>
-        </Dialog>
-    );
+  return (
+    <Dialog open={open} maxWidth="xs" fullWidth>
+      <DialogTitle>Are you sure?</DialogTitle>
+      {message && (
+        <DialogContent>
+          <Typography>{message}</Typography>
+        </DialogContent>
+      )
+      }
+      <DialogActions>
+        <Button variant="outlined" onClick={onCancel}>Cancel</Button>
+        <Button variant="contained" onClick={onConfirm}>Confirm</Button>
+      </DialogActions>
+    </Dialog>
+  );
 };
 
 export default ConfirmDialog;

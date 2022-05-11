@@ -5,10 +5,9 @@
 import '../shared_elements/title_bar';
 import '../../web_component_types';
 
-import React from 'react';
 import {
-    Outlet,
-    useParams
+  Outlet,
+  useParams,
 } from 'react-router-dom';
 
 declare global {
@@ -19,15 +18,13 @@ declare global {
 }
 
 const BaseLayout = () => {
-
-    const params = useParams();
-    return (
-        <>
-            <title-bar email={window.email} logoutUrl={window.logoutUrl} project={params.project === null ? undefined : params.project}/>
-            <Outlet />
-        </>
-    );
-
+  const params = useParams();
+  return (
+    <>
+      <title-bar email={window.email} logoutUrl={window.logoutUrl} project={params.project === null ? undefined : params.project}/>
+      <Outlet />
+    </>
+  );
 };
 
 export default BaseLayout;

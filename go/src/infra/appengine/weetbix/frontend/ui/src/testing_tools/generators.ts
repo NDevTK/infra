@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 export const generateRandomNumber = (max: number) => {
-    return Math.trunc(Math.random() * max + 1);
+  return Math.trunc(Math.random() * max + 1);
 };

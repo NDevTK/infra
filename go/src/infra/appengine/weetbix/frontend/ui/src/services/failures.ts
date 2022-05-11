@@ -7,8 +7,8 @@ import { ClusterFailure } from '../tools/failures_tools';
 export const getFailures = async (
     project: string,
     clusterAlgorithm: string,
-    clusterID: string
+    clusterID: string,
 ): Promise<ClusterFailure[]> => {
-    const response = await fetch(`/api/projects/${encodeURIComponent(project)}/clusters/${encodeURIComponent(clusterAlgorithm)}/${encodeURIComponent(clusterID)}/failures`);
-    return await response.json();
+  const response = await fetch(`/api/projects/${encodeURIComponent(project)}/clusters/${encodeURIComponent(clusterAlgorithm)}/${encodeURIComponent(clusterID)}/failures`);
+  return await response.json();
 };

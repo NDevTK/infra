@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import React, {
-    Dispatch,
-    SetStateAction,
-    useEffect,
-    useState
+import {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
 } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -30,106 +30,101 @@ interface Props {
 }
 
 const BugEditDialog = ({
-    open,
-    setOpen,
+  open,
+  setOpen,
 }: Props) => {
+  const { project, id: ruleId } = useParams();
 
-    const { project, id: ruleId } = useParams();
+  const { isLoading, isError, data: rule, error } = useFetchRule(ruleId, project);
 
-    const { isLoading, isError, data: rule, error } = useFetchRule(ruleId, project);
+  const [bugSystem, setBugSystem] = useState('');
+  const [bugId, setBugId] = useState('');
 
-    const [bugSystem, setBugSystem] = useState('');
-    const [bugId, setBugId] = useState('');
+  const mutateRule = useMutateRule(() => {
+    setOpen(false);
+  });
 
-    const mutateRule = useMutateRule(() => {
-        setOpen(false);
-    });
-
-    useEffect(() => {
-        if(rule) {
-            setBugId(rule.bug.id);
-            setBugSystem(rule.bug.system);
-        }
-    }, [rule]);
-
-    if(!ruleId || !project) {
-        return <ErrorAlert
-            errorText={'Project and/or rule are not defined in the URL'}
-            errorTitle="Project and/or rule are undefined"
-            showError
-        />;
+  useEffect(() => {
+    if (rule) {
+      setBugId(rule.bug.id);
+      setBugSystem(rule.bug.system);
     }
+  }, [rule]);
 
-    if(isError || !rule) {
-        return <ErrorAlert
-            errorText={`An erro occured while fetching the rule: ${error}`}
-            errorTitle="Failed to load rule"
-            showError
-        />;
-    }
+  if (!ruleId || !project) {
+    return <ErrorAlert
+      errorText={'Project and/or rule are not defined in the URL'}
+      errorTitle="Project and/or rule are undefined"
+      showError/>;
+  }
 
-    const handleBugSystemChanged = (bugSystem: string) => {
-        setBugSystem(bugSystem);
+  if (isError || !rule) {
+    return <ErrorAlert
+      errorText={`An erro occured while fetching the rule: ${error}`}
+      errorTitle="Failed to load rule"
+      showError/>;
+  }
+
+  const handleBugSystemChanged = (bugSystem: string) => {
+    setBugSystem(bugSystem);
+  };
+
+  const handleBugIdChanged = (bugId: string) => {
+    setBugId(bugId);
+  };
+
+  const handleClose = () => {
+    setBugSystem(rule.bug.system);
+    setBugId(rule.bug.id);
+    setOpen(false);
+  };
+
+  const handleSave = () => {
+    const request: UpdateRuleRequest = {
+      rule: {
+        name: rule.name,
+        bug: {
+          system: bugSystem,
+          id: bugId,
+        },
+      },
+      updateMask: 'bug',
+      etag: rule.etag,
     };
+    mutateRule.mutate(request);
+  };
 
-    const handleBugIdChanged = (bugId: string) => {
-        setBugId(bugId);
-    };
+  if (isLoading) {
+    return <LinearProgress />;
+  }
 
-    const handleClose = () => {
-        setBugSystem(rule.bug.system);
-        setBugId(rule.bug.id);
-        setOpen(false);
-    };
-
-    const handleSave = () => {
-        const request: UpdateRuleRequest = {
-            rule: {
-                name: rule.name,
-                bug: {
-                    system: bugSystem,
-                    id: bugId,
-                },
-            },
-            updateMask: 'bug',
-            etag: rule.etag,
-        };
-        mutateRule.mutate(request);
-    };
-
-    if (isLoading) {
-        return <LinearProgress />;
-    }
-
-    return (
-        <>
-            <Dialog open={open} fullWidth>
-                <DialogTitle>Change associated bug</DialogTitle>
-                <DialogContent sx={{ mt: 1 }}>
-                    <BugPicker
-                        bugSystem={bugSystem}
-                        bugId={bugId}
-                        handleBugSystemChanged={handleBugSystemChanged}
-                        handleBugIdChanged={handleBugIdChanged}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        variant="outlined"
-                        onClick={handleClose}>
-                        Cancel
-                    </Button>
-                    <LoadingButton
-                        variant="contained"
-                        onClick={handleSave}
-                        loading={mutateRule.isLoading}
-                    >
-                        Save
-                    </LoadingButton>
-                </DialogActions>
-            </Dialog>
-        </>
-    );
+  return (
+    <>
+      <Dialog open={open} fullWidth>
+        <DialogTitle>Change associated bug</DialogTitle>
+        <DialogContent sx={{ mt: 1 }}>
+          <BugPicker
+            bugSystem={bugSystem}
+            bugId={bugId}
+            handleBugSystemChanged={handleBugSystemChanged}
+            handleBugIdChanged={handleBugIdChanged}/>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="outlined"
+            onClick={handleClose}>
+              Cancel
+          </Button>
+          <LoadingButton
+            variant="contained"
+            onClick={handleSave}
+            loading={mutateRule.isLoading}>
+              Save
+          </LoadingButton>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
 };
 
 export default BugEditDialog;

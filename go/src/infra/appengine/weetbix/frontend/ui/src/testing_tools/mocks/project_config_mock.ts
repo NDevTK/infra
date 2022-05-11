@@ -7,16 +7,16 @@ import fetchMock from 'fetch-mock-jest';
 import { ProjectConfig } from '../../services/config';
 
 export const createMockProjectConfig = (): ProjectConfig => {
-    return {
-        project: 'chromium',
-        monorail: {
-            project: 'chromium',
-            displayPrefix: 'crbug.com'
-        },
-        paths: []
-    };
+  return {
+    project: 'chromium',
+    monorail: {
+      project: 'chromium',
+      displayPrefix: 'crbug.com',
+    },
+    paths: [],
+  };
 };
 
 export const mockFetchProjectConfig = () => {
-    fetchMock.get('/api/projects/chromium/config', createMockProjectConfig());
+  fetchMock.get('/api/projects/chromium/config', createMockProjectConfig());
 };

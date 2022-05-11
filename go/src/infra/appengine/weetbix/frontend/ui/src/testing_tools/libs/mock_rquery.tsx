@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import React from 'react';
 import {
   QueryClient,
-  QueryClientProvider
+  QueryClientProvider,
 } from 'react-query';
 
 import { render } from '@testing-library/react';
@@ -14,6 +13,6 @@ export const renderWithClient = (ui: React.ReactElement) => {
   const client = new QueryClient();
 
   return render(
-      <QueryClientProvider client={client}>{ui}</QueryClientProvider>
+      <QueryClientProvider client={client}>{ui}</QueryClientProvider>,
   );
 };

@@ -3,52 +3,50 @@
 // found in the LICENSE file.
 
 // import { nanoid } from 'nanoid';
-import React, {
-    Fragment,
-    ReactNode
+import {
+  Fragment,
+  ReactNode,
 } from 'react';
 
 import {
-    FailureGroup,
-    VariantGroup
+  FailureGroup,
+  VariantGroup,
 } from '../../../tools/failures_tools';
 import FailuresTableRows from './failures_table_rows/failures_table_rows';
 
 const renderGroup = (
     group: FailureGroup,
-    variantGroups: VariantGroup[]
+    variantGroups: VariantGroup[],
 ): ReactNode => {
-
-    return (
-        <Fragment>
-            <FailuresTableRows
-                group={group}
-                variantGroups={variantGroups}
-            >
-                {
-                    group.children.map(childGroup => (
-                        <Fragment key={childGroup.id}>
-                            {renderGroup(childGroup, variantGroups)}
-                        </Fragment>
-                    ))
-                }
-            </FailuresTableRows>
-        </Fragment>
-    );
+  return (
+    <Fragment>
+      <FailuresTableRows
+        group={group}
+        variantGroups={variantGroups}>
+        {
+          group.children.map((childGroup) => (
+            <Fragment key={childGroup.id}>
+              {renderGroup(childGroup, variantGroups)}
+            </Fragment>
+          ))
+        }
+      </FailuresTableRows>
+    </Fragment>
+  );
 };
 
 interface Props {
     group: FailureGroup;
     variantGroups: VariantGroup[];
-};
+}
 
 const FailuresTableGroup = ({
-    group,
-    variantGroups
+  group,
+  variantGroups,
 }: Props) => {
-    return (
-        <>{renderGroup(group, variantGroups)}</>
-    );
+  return (
+    <>{renderGroup(group, variantGroups)}</>
+  );
 };
 
 export default FailuresTableGroup;
