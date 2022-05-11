@@ -211,11 +211,21 @@ func (k *karteFrontend) persistActionRangeImpl(ctx context.Context, client bqPer
 
 	logging.Infof(ctx, "Beginning to insert record to bigquery")
 
-	insertCb := client.getInserter("entities", "actions")
+	// TODO(gregorynisbet): This function doesn't need to exist.
+	//                      Remove this function eventually as part of using ValueSaver everywhere.
+	insertCb := func(ctx context.Context, ents []*ActionEntity) error {
+		valueSavers := make([]cloudBQ.ValueSaver, 0, len(ents))
+		for _, ent := range ents {
+			valueSavers = append(valueSavers, ent.ConvertToBQAction())
+		}
+		f := client.getInserter("entities", "actions")
+		err := f(ctx, valueSavers)
+		return errors.Annotate(err, "insert rows").Err()
+	}
 
 	tally := 0
 
-	for {
+	for q.Token != stopToken {
 		batch, _, err := q.Next(ctx, stride)
 		if err != nil {
 			return nil, errors.Annotate(err, "persist action range").Err()
