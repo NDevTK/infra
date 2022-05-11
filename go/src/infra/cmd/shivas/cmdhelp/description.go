@@ -2141,6 +2141,15 @@ shivas add peripheral-wifi -f {fpath.csv}
 shivas replace peripheral-wifi -f {fpath.csv}
 shivas delete peripheral-wifi -f {fpath.csv}
 `
+
+	// AddDevboardMachineLongDesc long description for AddDevboardMachineCmd
+	AddDevboardMachineLongDesc string = `Add a devboard machine.
+Examples:
+shivas add devboard-machine -name {name}
+Adds a devboard machine to UFS.
+
+For now, only used on Satlab.
+`
 )
 
 func CronTriggerAvailableJobsString() string {
