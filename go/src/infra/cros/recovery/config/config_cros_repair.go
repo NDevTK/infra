@@ -20,7 +20,7 @@ func crosRepairPlan() *Plan {
 			"device_enrollment",
 			"power_info",
 			"tpm_info",
-			"tools_checks",
+			"cros_gsctool",
 			"hardware_audit",
 			"firmware_check",
 			"stop_start_ui",
@@ -209,15 +209,6 @@ func crosRepairActions() map[string]*Action {
 				"Repair by powerwash",
 			},
 			ExecName: "cros_is_tpm_in_good_status",
-		},
-		"tools_checks": {
-			Conditions: []string{
-				"is_not_flex_board",
-			},
-			Dependencies: []string{
-				"cros_gsctool",
-			},
-			ExecName: "sample_pass",
 		},
 		"hardware_audit": {
 			Dependencies: []string{
@@ -442,6 +433,7 @@ func crosRepairActions() map[string]*Action {
 				"the DUT.",
 			},
 			Conditions: []string{
+				//TODO(b:231609148: Flex device don't have security chip and gsctool.
 				"is_not_flex_board",
 			},
 			RecoveryActions: []string{
@@ -1346,6 +1338,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify that device was not booted from USB-drive.",
 			},
 			Conditions: []string{
+				//TODO(b:231627956): Flex board cannot run crossystem set_default_boot
 				"is_not_flex_board",
 				"Device booted from USB-drive",
 			},

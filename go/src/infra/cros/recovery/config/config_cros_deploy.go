@@ -89,6 +89,7 @@ func deployActions() map[string]*Action {
 				"Verify that FW on the DUT has dev keys.",
 			},
 			Conditions: []string{
+				//TODO(b:231627918): Flex does not have own firmware for EC/AP
 				"is_not_flex_board",
 			},
 			Dependencies: []string{
