@@ -22,7 +22,7 @@ describe('SelectMenu', () => {
     assert.isNotNull(form)
   });
 
-  it('renders options on click', () => {
+  it('renders options on click', async () => {
     const input = document.getElementById('outlined-select-category');
     if (!input) {
       throw new Error('Input is undefined');
@@ -31,7 +31,7 @@ describe('SelectMenu', () => {
     userEvent.click(input)
 
     // 14 is the current number of options in the select menu
-    const count = screen.getAllByTestId('select-menu-item').length;
+    const count = (await screen.findAllByTestId('select-menu-item')).length;
 
     assert.equal(count, 2);
   });

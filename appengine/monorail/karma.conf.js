@@ -119,13 +119,6 @@ module.exports = function(config) {
             use: ['babel-loader'],
           },
           {
-            test: /\.js$/,
-            loader: 'istanbul-instrumenter-loader',
-            include: path.resolve('static_src/'),
-            exclude: [/\.test.(js|ts|tsx)$/],
-            query: {esModules: true},
-          },
-          {
             test: /\.css$/i,
             use: [
               {loader: 'style-loader', options: {injectType: 'styleTag'}},

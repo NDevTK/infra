@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 import React from 'react';
-import { render, screen, cleanup } from '@testing-library/react';
-import userEvent from '@testing-library/user-event'
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import { assert } from 'chai';
 import sinon from 'sinon';
 
@@ -47,7 +46,7 @@ describe('RadioDescription', () => {
     render(<RadioDescription onClickRadio={setValue} />);
 
     const radio = screen.getByRole('radio', { name: /Web Developer/i });
-    userEvent.click(radio);
+    fireEvent.click(radio);
 
     // Asserts that "Web Developer" was passed into our "setValue" function.
     sinon.assert.calledWith(setValue, IssueWizardPersona.Developer);
@@ -60,7 +59,7 @@ describe('RadioDescription', () => {
 
     // Click text in the RoleSelection component
     const p = screen.getByText('End User');
-    userEvent.click(p);
+    fireEvent.click(p);
 
     // Asserts that "End User" was passed into our "setValue" function.
     sinon.assert.calledWith(setValue, IssueWizardPersona.EndUser);
