@@ -212,11 +212,11 @@ type Dut struct {
 	// Internal storage info.
 	Storage *Storage
 	// Battery info.
-	Battery *DUTBattery
+	Battery *Battery
 	// Wifi info.
-	Wifi *DUTWifi
+	Wifi *Wifi
 	// Bluetooth info.
-	Bluetooth *DUTBluetooth
+	Bluetooth *Bluetooth
 
 	// Peripheral devices.
 	// ServoHost of the DUT setup.
@@ -238,28 +238,6 @@ type Dut struct {
 	// All values has to be converted to string.
 	// Example: pools, force_flashing, restrictions and special abilities.
 	ExtraAttributes map[string][]string
-}
-
-// DUTWifi holds info about internal wifi of the DUT.
-type DUTWifi struct {
-	// State of the component.
-	State HardwareState
-	// Name of wifi chip used on the device.
-	ChipName string
-}
-
-// DUTBluetooth holds info about internal bluetooth of the DUT.
-type DUTBluetooth struct {
-	// The hardware expected present based on hardware feature.
-	Expected bool
-	// State of the component.
-	State HardwareState
-}
-
-// DUTBattery holds info about battery of the DUT.
-type DUTBattery struct {
-	// State of the component.
-	State HardwareState
 }
 
 // PeripheralWifiState describes the state of peripheral wifi testbed.

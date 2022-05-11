@@ -392,3 +392,25 @@ message BluetoothPeer {
   // State of the device.
   State state = 2;
 }
+
+// Wifi holds info about internal wifi of the DUT.
+message Wifi {
+  // State of the component.
+  HardwareState state = 1;
+  // Name of wifi chip used on the device.
+  string chip_name = 2;
+}
+
+// Bluetooth holds info about internal bluetooth of the DUT.
+message Bluetooth {
+  // State of the component.
+  HardwareState state = 1;
+  // The hardware expected present based on hardware feature.
+  bool expected = 2;
+}
+
+// Battery holds info about battery of the DUT.
+message Battery {
+  // State of the component.
+  HardwareState state = 1;
+}

@@ -103,13 +103,13 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 	machine := data.GetMachine()
 	make := data.GetManufacturingConfig()
 	name := lc.GetName()
-	var battery *tlw.DUTBattery
+	var battery *tlw.Battery
 	supplyType := tlw.PowerSupplyTypeUnspecified
 	if dc != nil {
 		switch dc.GetPower() {
 		case ufsdevice.Config_POWER_SUPPLY_BATTERY:
 			supplyType = tlw.PowerSupplyTypeBattery
-			battery = &tlw.DUTBattery{
+			battery = &tlw.Battery{
 				State: convertHardwareState(ds.GetBatteryState()),
 			}
 		case ufsdevice.Config_POWER_SUPPLY_AC_ONLY:
@@ -268,8 +268,8 @@ func createDUTStorage(dc *ufsdevice.Config, ds *ufslab.DutState) *tlw.Storage {
 	}
 }
 
-func createDUTWifi(make *ufsmake.ManufacturingConfig, ds *ufslab.DutState) *tlw.DUTWifi {
-	return &tlw.DUTWifi{
+func createDUTWifi(make *ufsmake.ManufacturingConfig, ds *ufslab.DutState) *tlw.Wifi {
+	return &tlw.Wifi{
 		State:    convertHardwareState(ds.GetWifiState()),
 		ChipName: make.GetWifiChip(),
 	}
@@ -301,8 +301,8 @@ func createWifiRouterHosts(wifi *ufslab.Wifi) []*tlw.WifiRouterHost {
 	return routers
 }
 
-func createDUTBluetooth(ds *ufslab.DutState, dc *ufsdevice.Config) *tlw.DUTBluetooth {
-	return &tlw.DUTBluetooth{
+func createDUTBluetooth(ds *ufslab.DutState, dc *ufsdevice.Config) *tlw.Bluetooth {
+	return &tlw.Bluetooth{
 		Expected: configHasFeature(dc, ufsdevice.Config_HARDWARE_FEATURE_BLUETOOTH),
 		State:    convertHardwareState(ds.GetBluetoothState()),
 	}
