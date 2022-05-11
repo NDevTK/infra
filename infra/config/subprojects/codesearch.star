@@ -196,6 +196,18 @@ def update_submodules_mirror(
 builder(
     name = "codesearch-gen-chromium-initiator",
     executable = build.recipe("chromium_codesearch_initiator"),
+    properties = {
+        "builders": [
+            "codesearch-gen-chromium-android",
+            "codesearch-gen-chromium-chromiumos",
+            "codesearch-gen-chromium-fuchsia",
+            "codesearch-gen-chromium-lacros",
+            "codesearch-gen-chromium-linux",
+            "codesearch-gen-chromium-mac",
+            "codesearch-gen-chromium-win",
+        ],
+        "source_repo": "https://chromium.googlesource.com/codesearch/chromium/src",
+    },
     builder_group_property_name = "builder_group",
     execution_timeout = 5 * time.hour,
     category = "gen|init",
