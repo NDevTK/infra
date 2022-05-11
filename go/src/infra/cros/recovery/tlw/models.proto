@@ -375,3 +375,20 @@ message Chameleon {
   // State of the device.
   State state = 2;
 }
+
+// BluetoothPeer models a Bluetooth peer device and its state as used by
+// recovery.
+message BluetoothPeer {
+  // Name is the resource name.
+  string name = 1;
+  // State describes the state of bluetooth peer device.
+  enum State {
+    STATE_UNSPECIFIED = 0;
+    // Device and software on it is working as expected.
+    WORKING = 1;
+    // Device is broken or not working as expected.
+    BROKEN = 2;
+  }
+  // State of the device.
+  State state = 2;
+}

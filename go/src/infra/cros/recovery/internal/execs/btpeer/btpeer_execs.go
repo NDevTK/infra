@@ -19,7 +19,7 @@ func setStateBrokenExec(ctx context.Context, info *execs.ExecInfo) error {
 	if h, err := activeHost(info.RunArgs); err != nil {
 		return errors.Annotate(err, "set state broken").Err()
 	} else {
-		h.State = tlw.BluetoothPeerStateBroken
+		h.State = tlw.BluetoothPeer_BROKEN
 	}
 	return nil
 }
@@ -29,7 +29,7 @@ func setStateWorkingExec(ctx context.Context, info *execs.ExecInfo) error {
 	if h, err := activeHost(info.RunArgs); err != nil {
 		return errors.Annotate(err, "set state working").Err()
 	} else {
-		h.State = tlw.BluetoothPeerStateWorking
+		h.State = tlw.BluetoothPeer_WORKING
 	}
 	return nil
 }

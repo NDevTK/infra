@@ -118,19 +118,19 @@ func convertChameleonState(s ufslab.PeripheralState) tlw.Chameleon_State {
 	return tlw.Chameleon_STATE_UNSPECIFIED
 }
 
-var bluetoothPeerStates = map[ufslab.PeripheralState]tlw.BluetoothPeerState{
-	ufslab.PeripheralState_WORKING: tlw.BluetoothPeerStateWorking,
-	ufslab.PeripheralState_BROKEN:  tlw.BluetoothPeerStateBroken,
+var bluetoothPeerStates = map[ufslab.PeripheralState]tlw.BluetoothPeer_State{
+	ufslab.PeripheralState_WORKING: tlw.BluetoothPeer_WORKING,
+	ufslab.PeripheralState_BROKEN:  tlw.BluetoothPeer_BROKEN,
 }
 
-func convertBluetoothPeerState(s ufslab.PeripheralState) tlw.BluetoothPeerState {
+func convertBluetoothPeerState(s ufslab.PeripheralState) tlw.BluetoothPeer_State {
 	if ns, ok := bluetoothPeerStates[s]; ok {
 		return ns
 	}
-	return tlw.BluetoothPeerStateUnspecified
+	return tlw.BluetoothPeer_STATE_UNSPECIFIED
 }
 
-func convertBluetoothPeerStateToUFS(s tlw.BluetoothPeerState) ufslab.PeripheralState {
+func convertBluetoothPeerStateToUFS(s tlw.BluetoothPeer_State) ufslab.PeripheralState {
 	for ufsState, tlwState := range bluetoothPeerStates {
 		if s == tlwState {
 			return ufsState

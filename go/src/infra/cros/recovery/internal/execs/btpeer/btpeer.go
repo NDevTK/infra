@@ -12,7 +12,7 @@ import (
 )
 
 // activeHost finds active host related to the executed plan.
-func activeHost(args *execs.RunArgs) (*tlw.BluetoothPeerHost, error) {
+func activeHost(args *execs.RunArgs) (*tlw.BluetoothPeer, error) {
 	for _, btp := range args.DUT.BluetoothPeerHosts {
 		if btp.Name == args.ResourceName {
 			return btp, nil

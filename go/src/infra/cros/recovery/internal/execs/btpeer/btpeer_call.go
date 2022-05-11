@@ -17,7 +17,7 @@ import (
 )
 
 // Call calls XMLRPC server from bluetooth peer.
-func Call(ctx context.Context, in tlw.Access, host *tlw.BluetoothPeerHost, method string, args ...interface{}) (*xmlrpc.Value, error) {
+func Call(ctx context.Context, in tlw.Access, host *tlw.BluetoothPeer, method string, args ...interface{}) (*xmlrpc.Value, error) {
 	if method == "" {
 		return nil, errors.Reason("bluetooth peer call: method name is empty").Err()
 	}

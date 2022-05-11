@@ -165,12 +165,12 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 
 // createBluetoothPeerHosts use the UFS states for Bluetooth peer devices to create
 // the equivalent tlw slice.
-func createBluetoothPeerHosts(peripherals *ufslab.Peripherals) []*tlw.BluetoothPeerHost {
-	var bluetoothPeerHosts []*tlw.BluetoothPeerHost
+func createBluetoothPeerHosts(peripherals *ufslab.Peripherals) []*tlw.BluetoothPeer {
+	var bluetoothPeerHosts []*tlw.BluetoothPeer
 	for _, btp := range peripherals.GetBluetoothPeers() {
 		var (
 			hostname string
-			state    tlw.BluetoothPeerState
+			state    tlw.BluetoothPeer_State
 		)
 		switch d := btp.GetDevice().(type) {
 		case *ufslab.BluetoothPeer_RaspberryPi:
@@ -183,7 +183,7 @@ func createBluetoothPeerHosts(peripherals *ufslab.Peripherals) []*tlw.BluetoothP
 			// event, which helps counterweight that risk.
 			continue
 		}
-		bluetoothPeerHosts = append(bluetoothPeerHosts, &tlw.BluetoothPeerHost{
+		bluetoothPeerHosts = append(bluetoothPeerHosts, &tlw.BluetoothPeer{
 			Name:  hostname,
 			State: state,
 		})
@@ -414,7 +414,7 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 		}
 	}
 	for _, btph := range dut.BluetoothPeerHosts {
-		if btph.State == tlw.BluetoothPeerStateWorking {
+		if btph.State == tlw.BluetoothPeer_WORKING {
 			state.WorkingBluetoothBtpeer += 1
 		}
 	}
