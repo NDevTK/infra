@@ -140,15 +140,11 @@ func mainRunInternal(ctx context.Context, input *steps.LabpackInput, state *buil
 }
 
 // Upload logs to google cloud.
-// The function has to fail only if that is critical fro the process.
-// TODO: Need collect metrics of success collected logs per run to Karte.
 func uploadLogs(ctx context.Context, state *build.State, lg logger.Logger) (rErr error) {
 	step, ctx := build.StartStep(ctx, "Upload logs")
 	lg.Infof("Beginning to upload logs")
 	defer func() { step.End(rErr) }()
 	// Construct the client that we will need to push the logs first.
-	// Eventually, we will make this error fatal. However, for right now, we will
-	// just log whether we succeeded or failed to build the client.
 	authenticator := luciauth.NewAuthenticator(
 		ctx,
 		luciauth.SilentLogin,
@@ -165,24 +161,21 @@ func uploadLogs(ctx context.Context, state *build.State, lg logger.Logger) (rErr
 		return errors.Reason("NewAuthenticator(...): did not successfully auth!").Err()
 	}
 	email, err := authenticator.GetEmail()
-	if err == nil {
-		lg.Infof("Auth email is %q", email)
-	} else {
+	if err != nil {
 		return errors.Annotate(err, "upload logs").Err()
 	}
+	lg.Infof("Auth email is %q", email)
 
 	rt, err := authenticator.Transport()
-	if err == nil {
-		lg.Infof("authenticator.Transport(): successfully authed!")
-	} else {
-		lg.Errorf("authenticator.Transport(...): error: %s", err)
+	if err != nil {
+		return errors.Annotate(err, "authenticator.Transport(...): error").Err()
 	}
+
 	client, err := lucigs.NewProdClient(ctx, rt)
-	if err == nil {
-		lg.Infof("Successfully created client")
-	} else {
-		lg.Errorf("Failed to create client: %s", err)
+	if err != nil {
+		return errors.Annotate(err, "failed to create client(...)").Err()
 	}
+
 	// Actually persist the logs.
 	swarmingTaskID := state.Infra().GetSwarming().GetTaskId()
 	if err := parallelUpload(ctx, lg, client, swarmingTaskID); err != nil {
