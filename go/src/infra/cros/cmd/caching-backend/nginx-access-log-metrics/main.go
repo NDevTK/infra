@@ -40,11 +40,13 @@ type record struct {
 }
 
 var (
-	svcAcctJSONPath = flag.String("service-account-json", "", "Path to JSON file with service account credentials to use")
-	projectID       = flag.String("project-id", "cros-lab-servers", "ID of the cloud projecdt to upload metrics data to")
-	dataset         = flag.String("dataset", "caching_backend", "Dataset name of the BigQuery tables")
-	tableName       = flag.String("table", "access_log", "BigQuery table name")
-	inputLogFile    = flag.String("input-log-file", "/var/log/nginx/gs-cache.access.log", "Nginx access log for gs_cache")
+	svcAcctJSONPath     = flag.String("service-account-json", "", "Path to JSON file with service account credentials to use")
+	projectID           = flag.String("project-id", "cros-lab-servers", "ID of the cloud projecdt to upload metrics data to")
+	dataset             = flag.String("dataset", "caching_backend", "Dataset name of the BigQuery tables")
+	tableName           = flag.String("table", "access_log", "BigQuery table name")
+	inputLogFile        = flag.String("input-log-file", "/var/log/nginx/gs-cache.access.log", "Nginx access log for gs_cache")
+	tsmonCredentialPath = flag.String("ts-mon-credentials", "", "path to a pkcs8 json credential file")
+	tsmonEndpoint       = flag.String("ts-mon-endpoint", "", "url (including file://, https://, pubsub://project/topic) to post monitoring metrics to")
 )
 
 func main() {
@@ -62,8 +64,6 @@ func innerMain() error {
 		return err
 	}
 
-	ctx := cancelOnSignals(context.Background())
-
 	t := bquploader.TargetTable{
 		ProjectID: *projectID,
 		Dataset:   *dataset,
@@ -75,8 +75,9 @@ func innerMain() error {
 	}
 	defer uploader.Close()
 
+	ctx := context.Background()
 	setupTsMon(ctx)
-	defer shutdownTsMon()
+	defer shutdownTsMon(ctx)
 
 	tailer, err := filetailer.New(*inputLogFile)
 	if err != nil {
@@ -93,7 +94,7 @@ func innerMain() error {
 			}
 		}
 	}()
-	<-ctx.Done()
+	<-cancelOnSignals(ctx).Done()
 	return nil
 }
 
@@ -227,24 +228,26 @@ func (i *record) Save() (row map[string]bigquery.Value, insertID string, err err
 
 // setupTsMon set up tsmon.
 func setupTsMon(ctx context.Context) {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	c, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
 	fl := tsmon.NewFlags()
+	fl.Endpoint = *tsmonEndpoint
+	fl.Credentials = *tsmonCredentialPath
 	fl.Flush = tsmon.FlushAuto
 	fl.Target.SetDefaultsFromHostname()
 	fl.Target.TargetType = target.TaskType
 	fl.Target.TaskServiceName = "caching_backend"
 	fl.Target.TaskJobName = "nginx"
 
-	if err := tsmon.InitializeFromFlags(ctx, &fl); err != nil {
+	if err := tsmon.InitializeFromFlags(c, &fl); err != nil {
 		log.Printf("Skipping tsmon setup: %s", err)
 	}
 }
 
 // shutdownTsMon shuts down tsmon.
-func shutdownTsMon() {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+func shutdownTsMon(ctx context.Context) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	log.Printf("Shutting down tsmon...")
 	tsmon.Shutdown(ctx)
