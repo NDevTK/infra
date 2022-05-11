@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ecb19671_47f782ef",
+        "filename": "appengine/monorail/flaskregisterpages.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2022-05-11T20:46:44Z",
+      "side": 1,
+      "message": "Same comments here as in https://crrev.com/c/3641317. Making a duplicate comment here so that I can remember to look at this CL again once https://crrev.com/c/3641317 resolves its comments",
+      "range": {
+        "startLine": 71,
+        "startChar": 0,
+        "endLine": 71,
+        "endChar": 45
+      },
+      "revId": "e706232b6c7cf3aabd95328bda8b17d322e7eca6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "917c2d04_75a435c1",
+        "filename": "appengine/monorail/flaskregisterpages.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2022-05-11T20:46:44Z",
+      "side": 1,
+      "message": "Seeing this pattern multiple times makes me wonder whether we should be passing in the Flask app instance or sharing some common instance instead of instantiating a new app each time?",
+      "range": {
+        "startLine": 72,
+        "startChar": 0,
+        "endLine": 72,
+        "endChar": 48
+      },
+      "revId": "e706232b6c7cf3aabd95328bda8b17d322e7eca6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "db2a7d7d_273e22ea",
+        "filename": "appengine/monorail/framework/flaskservlet.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2022-05-11T20:46:44Z",
+      "side": 1,
+      "message": "Do we need this?",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 21
+      },
+      "revId": "e706232b6c7cf3aabd95328bda8b17d322e7eca6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cf5a78cf_3a8c33b3",
+        "filename": "appengine/monorail/framework/flaskservlet.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 392,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2022-05-11T20:46:44Z",
+      "side": 1,
+      "message": "Are these for debugging or do we actually want to log these in monorail-prod?",
+      "range": {
+        "startLine": 392,
+        "startChar": 0,
+        "endLine": 392,
+        "endChar": 35
+      },
+      "revId": "e706232b6c7cf3aabd95328bda8b17d322e7eca6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c6ff2866_3a67baf0",
+        "filename": "appengine/monorail/templates/sitewide/user-settings-page.ezt",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2022-05-11T20:46:44Z",
+      "side": 1,
+      "message": "Does this change the URL of the form?",
+      "range": {
+        "startLine": 8,
+        "startChar": 15,
+        "endLine": 8,
+        "endChar": 22
+      },
+      "revId": "e706232b6c7cf3aabd95328bda8b17d322e7eca6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
