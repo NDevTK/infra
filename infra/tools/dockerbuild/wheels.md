@@ -1122,6 +1122,18 @@ wheel: <
 
 * *universal*
 
+### 22.3.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/black-py3"
+  version: "version:22.3.0"
+>
+```
+
+
+* *universal*
+
 ## **blessings-py2**
 
 ### 1.7
@@ -5098,6 +5110,20 @@ wheel: <
 * *windows-x64-py3*
 * *windows-x86*
 * *windows-x86-py3*
+
+## **pathspec-py3**
+
+### 0.9.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pathspec-py3"
+  version: "version:0.9.0"
+>
+```
+
+
+* *universal*
 
 ## **pbr**
 
