@@ -509,6 +509,8 @@ func validateUpdateMachineLSEDUTMask(mask *field_mask.FieldMask, machinelse *ufs
 		case "dut.camerabox.facing":
 		case "dut.camerabox.light":
 		case "dut.usb.smarthub":
+		case "dut.modeminfo":
+		case "dut.siminfo":
 			// valid fields, nothing to validate.
 		default:
 			return status.Errorf(codes.InvalidArgument, "validateUpdateMachineLSEDUTUpdateMask - unsupported update mask path %q", path)
@@ -750,6 +752,31 @@ func processUpdateMachineLSEDUTMask(oldDut, newDut *chromeosLab.DeviceUnderTest,
 			oldDut.GetPeripherals().CameraboxInfo.Light = newDut.GetPeripherals().GetCameraboxInfo().GetLight()
 		} else {
 			oldDut.GetPeripherals().CameraboxInfo = nil
+		}
+	case "dut.modeminfo":
+		if oldDut.Modeminfo == nil {
+			oldDut.Modeminfo = newDut.GetModeminfo()
+		} else if newDut.GetModeminfo() != nil {
+			if newDut.GetModeminfo().GetType() != chromeosLab.ModemType_MODEM_TYPE_UNSPECIFIED {
+				oldDut.Modeminfo.Type = newDut.GetModeminfo().GetType()
+			}
+			if newDut.GetModeminfo().GetImei() != "" {
+				oldDut.Modeminfo.Imei = newDut.GetModeminfo().GetImei()
+			}
+			if newDut.GetModeminfo().GetSupportedBands() != "" {
+				oldDut.Modeminfo.SupportedBands = newDut.GetModeminfo().GetSupportedBands()
+			}
+			if newDut.GetModeminfo().GetSimCount() != 0 {
+				oldDut.Modeminfo.SimCount = newDut.GetModeminfo().GetSimCount()
+			}
+		} else {
+			oldDut.Modeminfo = nil
+		}
+	case "dut.siminfo":
+		if newDut.GetSiminfo() == nil {
+			oldDut.Siminfo = nil
+		} else {
+			oldDut.Siminfo = newDut.GetSiminfo()
 		}
 	}
 }

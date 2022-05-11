@@ -1635,6 +1635,14 @@ Operation will be faster as only name/id will be retrieved from the service.`
 	CableTypeHelpText string = fmt.Sprintf("the name of the cabletype. Can specify multiple comma separated values. "+
 		"Valid CableType strings: [%s]", strings.Join(ufsUtil.ValidCableTypeStr(), ", "))
 
+	//ModemInfoHelpText help text for modeminfo command line options
+	ModemInfoHelpText string = fmt.Sprintf("the name of modemtype,imei,supported_bands,sim_count "+
+		"Valid ModemType strings:[%s]", strings.Join(ufsUtil.ValidModemTypeStr(), ","))
+
+	//SimInfoHelpText help text for siminfo command line options
+	SimInfoHelpText string = fmt.Sprintf("the name of simtype,slot_id,eid,test_esim,iccid,pin,puk,carriername "+
+		"Valid SimType strings:[%s]", strings.Join(ufsUtil.ValidSimTypeStr(), ","))
+
 	// SchedulingUnitTypesHelpText help text for asset type filters
 	SchedulingUnitTypesHelpText string = fmt.Sprintf("\nValid type filters [%s]", strings.Join(ufsUtil.ValidSchedulingUnitTypeStr(), ", "))
 

@@ -934,3 +934,93 @@ func ToUFSAttachedDeviceType(deviceType string) ufspb.AttachedDeviceType {
 	}
 	return ufspb.AttachedDeviceType(ufspb.AttachedDeviceType_value[v])
 }
+
+// StrToModemType refers a map between modem type and and enum value.
+var StrToModemType = map[string]int32{
+	"MODEM_TYPE_UNSPECIFIED":     0,
+	"MODEM_TYPE_QUALCOMM_SC7180": 1,
+	"MODEM_TYPE_FIBOCOMM_L850GL": 2,
+	"MODEM_TYPE_NL668":           3,
+	"MODEM_TYPE_FM350":           4,
+	"MODEM_TYPE_FM101":           5,
+	"MODEM_TYPE_QUALCOMM_SC7280": 6,
+}
+
+// IsModemType checks if a string refers to a valid ModemType.
+func IsModemType(modemType string) bool {
+	_, ok := StrToModemType[modemType]
+	return ok
+}
+
+// ToModemType converts modemType string to a Modem type enum.
+func ToModemType(modemType string) chromeosLab.ModemType {
+	v, ok := StrToModemType[modemType]
+	if !ok {
+		return chromeosLab.ModemType_MODEM_TYPE_UNSPECIFIED
+	}
+	return chromeosLab.ModemType(v)
+}
+
+// StrToSIMType refers a map between sim type and and enum value.
+var StrToSIMType = map[string]int32{
+	"SIM_UNKNOWN":  0,
+	"SIM_PHYSICAL": 1,
+	"SIM_DIGITAL":  2,
+}
+
+// IsSIMType checks if a string refers to a valid simType.
+func IsSIMType(simType string) bool {
+	_, ok := StrToSIMType[simType]
+	return ok
+}
+
+// ValidSimTypeStr returns a valid str list for SimType strings.
+func ValidSimTypeStr() []string {
+	ks := make([]string, 0, len(StrToSIMType))
+	for k := range StrToSIMType {
+		ks = append(ks, k)
+	}
+	return ks
+}
+
+// ToSIMType converts simType string to a Sim type enum.
+func ToSIMType(simType string) chromeosLab.SIMType {
+	v, ok := StrToSIMType[simType]
+	if !ok {
+		return chromeosLab.SIMType_SIM_UNKNOWN
+	}
+	return chromeosLab.SIMType(v)
+}
+
+// StrToNetworkType refers a map between NetworkProvider type and and enum value.
+var StrToNetworkType = map[string]int32{
+	"NETWORK_OTHER":   0,
+	"NETWORK_TEST":    1,
+	"NETWORK_ATT":     2,
+	"NETWORK_TMOBILE": 3,
+	"NETWORK_VERIZON": 4,
+}
+
+// IsNetworkType checks if a string refers to a valid NetworkProvider.
+func IsNetworkType(networkType string) bool {
+	_, ok := StrToNetworkType[networkType]
+	return ok
+}
+
+// ToNetworkType converts Type string to a NetworkProvider type enum.
+func ToNetworkType(networkType string) chromeosLab.NetworkProvider {
+	v, ok := StrToNetworkType[networkType]
+	if !ok {
+		return chromeosLab.NetworkProvider_NETWORK_OTHER
+	}
+	return chromeosLab.NetworkProvider(v)
+}
+
+// ValidModemTypeStr returns a valid str list for ModemType strings.
+func ValidModemTypeStr() []string {
+	ks := make([]string, 0, len(StrToModemType))
+	for k := range StrToModemType {
+		ks = append(ks, k)
+	}
+	return ks
+}

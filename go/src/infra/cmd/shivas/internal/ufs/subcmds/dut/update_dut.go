@@ -9,6 +9,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/golang/protobuf/proto"
@@ -78,6 +79,8 @@ const (
 	cameraFacingPath         = "dut.camerabox.facing"
 	cameraLightPath          = "dut.camerabox.light"
 	usbHubPath               = "dut.usb.smarthub"
+	modemInfoPath            = "dut.modeminfo"
+	simInfoPath              = "dut.siminfo"
 
 	// Operations string for Summary table.
 	ufsOp   = "Update to Database"
@@ -163,6 +166,8 @@ var UpdateDUTCmd = &subcommands.Command{
 		c.Flags.BoolVar(&c.chaos, "chaos", false, "adding this flag will specify if chaos is present")
 		c.Flags.BoolVar(&c.audioCable, "audiocable", false, "adding this flag will specify if audiocable is present")
 		c.Flags.BoolVar(&c.smartUSBHub, "smartusbhub", false, "adding this flag will specify if smartusbhub is present")
+		c.Flags.Var(utils.CSVString(&c.modemInfo), "modeminfo", cmdhelp.ModemInfoHelpText+". "+cmdhelp.ClearFieldHelpText)
+		c.Flags.Var(utils.CSVString(&c.simInfo), "siminfo", cmdhelp.SimInfoHelpText+". "+cmdhelp.ClearFieldHelpText)
 		return c
 	},
 }
@@ -221,6 +226,8 @@ type updateDUT struct {
 	chaos             bool
 	audioCable        bool
 	smartUSBHub       bool
+	modemInfo         []string
+	simInfo           []string
 
 	// For use in determining if a flag is set
 	flagInputs map[string]bool
@@ -430,6 +437,22 @@ func (c updateDUT) validateArgs() error {
 		}
 		if c.light != "" && !ufsUtil.IsLight(c.light) {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid light name, please check help info for '-light'.", c.light)
+		}
+		if len(c.modemInfo) > 0 {
+			if len(c.modemInfo) != 4 {
+				return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s Invalid number of arguments, please check help info for '-modeminfo'.", c.modemInfo)
+			}
+			if c.modemInfo[0] != "" && c.modemInfo[0] != utils.ClearFieldValue && !ufsUtil.IsModemType(c.modemInfo[0]) {
+				return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid modem type, please check help info for '-modeminfo'.", c.modemInfo)
+			}
+		}
+		if len(c.simInfo) > 0 {
+			if len(c.simInfo)%4 != 0 || len(c.simInfo)/4 < 2 {
+				return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s Invalid number of arguments, please check help info for '-siminfo'.", c.simInfo)
+			}
+			if c.simInfo[0] != "" && c.simInfo[0] != utils.ClearFieldValue && !ufsUtil.IsSIMType(c.simInfo[0]) {
+				return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid sim type, please check help info for '-siminfo'.", c.simInfo)
+			}
 		}
 	}
 	if c.newSpecsFile != "" {
@@ -764,6 +787,56 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 				cables = append(cables, cable)
 			}
 			peripherals.Cable = cables
+		}
+	}
+
+	if c.flagInputs["modeminfo"] && len(c.modemInfo) > 0 {
+		mask.Paths = append(mask.Paths, modemInfoPath)
+		if c.modemInfo[0] == utils.ClearFieldValue {
+			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Modeminfo = nil
+		} else {
+			newModeminfo := &chromeosLab.ModemInfo{}
+			for i, v := range c.modemInfo {
+				if i == 0 {
+					newModeminfo.Type = ufsUtil.ToModemType(v)
+				} else if i == 1 {
+					newModeminfo.Imei = v
+				} else if i == 2 {
+					newModeminfo.SupportedBands = v
+				} else if i == 3 {
+					simcount, _ := strconv.Atoi(v)
+					newModeminfo.SimCount = int32(simcount)
+				}
+			}
+			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Modeminfo = newModeminfo
+		}
+	}
+
+	if c.flagInputs["siminfo"] && len(c.simInfo) > 0 {
+		mask.Paths = append(mask.Paths, simInfoPath)
+		if c.simInfo[0] == utils.ClearFieldValue {
+			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Siminfo = nil
+		} else {
+			newSiminfos := make([]*chromeosLab.SIMInfo, 0, 1)
+			newSiminfo := &chromeosLab.SIMInfo{}
+			newSiminfo.Type = ufsUtil.ToSIMType(c.simInfo[0])
+			slotId, _ := strconv.Atoi(c.simInfo[1])
+			newSiminfo.SlotId = int32(slotId)
+			newSiminfo.Eid = c.simInfo[2]
+			boolVal, _ := strconv.ParseBool(c.simInfo[3])
+			newSiminfo.TestEsim = boolVal
+			newSiminfo.ProfileInfo = make([]*chromeosLab.SIMProfileInfo, 0, ((len(c.simInfo) / 4) - 1))
+			for i := 4; i < len(c.simInfo); i += 4 {
+				profileInfo := &chromeosLab.SIMProfileInfo{
+					Iccid:       c.simInfo[i],
+					SimPin:      c.simInfo[i+1],
+					SimPuk:      c.simInfo[i+2],
+					CarrierName: ufsUtil.ToNetworkType(c.simInfo[i+3]),
+				}
+				newSiminfo.ProfileInfo = append(newSiminfo.ProfileInfo, profileInfo)
+			}
+			newSiminfos = append(newSiminfos, newSiminfo)
+			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Siminfo = newSiminfos
 		}
 	}
 
