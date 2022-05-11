@@ -5,7 +5,7 @@
 
 <h3>User Preferences</h3>
 
-<form action="settings.do" method="POST">
+<form action="/hosting/settings.do" method="POST">
   [include "unified-settings.ezt"]
   [if-any read_only][else]
    <input id="submit_btn" type="submit" name="btn" value="Save preferences">

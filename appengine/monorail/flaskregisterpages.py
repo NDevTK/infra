@@ -10,6 +10,7 @@ import settings
 from flask import Flask
 
 from project import project_constants
+from sitewide import usersettings
 
 
 class ServletRegistry(object):
@@ -54,6 +55,23 @@ class ServletRegistry(object):
     flaskapp_excessive_activity = Flask(__name__)
     flaskapp_excessive_activity.add_url_rule(
         '/',
-        view_func=excessiveactivity.ExcessiveActivity(services=service).handler,
+        view_func=excessiveactivity.ExcessiveActivity(
+            services=service).get_handler,
         methods=['GET'])
     return flaskapp_excessive_activity
+
+  def RegisterUserSetting(self, service):
+    flaskapp_user_setting = Flask(__name__)
+    flaskapp_user_setting.add_url_rule(
+        '/',
+        view_func=usersettings.UserSettings(services=service).get_handler,
+        methods=['GET'])
+    return flaskapp_user_setting
+
+  def RegisterUserSettingPost(self, service):
+    flaskapp_user_setting_post = Flask(__name__)
+    flaskapp_user_setting_post.add_url_rule(
+        '/',
+        view_func=usersettings.UserSettings(services=service).post_handler,
+        methods=['POST'])
+    return flaskapp_user_setting_post
