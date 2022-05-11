@@ -36,17 +36,17 @@ func convertHardwareStateToUFS(s tlw.HardwareState) ufslab.HardwareState {
 }
 
 var firmwareChannels = map[ufslab.ServoFwChannel]tlw.ServoFwChannel{
-	ufslab.ServoFwChannel_SERVO_FW_STABLE: tlw.ServoFwChannel_FW_STABLE,
-	ufslab.ServoFwChannel_SERVO_FW_ALPHA:  tlw.ServoFwChannel_FW_ALPHA,
-	ufslab.ServoFwChannel_SERVO_FW_DEV:    tlw.ServoFwChannel_FW_DEV,
-	ufslab.ServoFwChannel_SERVO_FW_PREV:   tlw.ServoFwChannel_FW_PREV,
+	ufslab.ServoFwChannel_SERVO_FW_STABLE: tlw.ServoFwChannel_STABLE,
+	ufslab.ServoFwChannel_SERVO_FW_ALPHA:  tlw.ServoFwChannel_ALPHA,
+	ufslab.ServoFwChannel_SERVO_FW_DEV:    tlw.ServoFwChannel_DEV,
+	ufslab.ServoFwChannel_SERVO_FW_PREV:   tlw.ServoFwChannel_PREV,
 }
 
 func convertFirmwareChannel(s ufslab.ServoFwChannel) tlw.ServoFwChannel {
 	if ns, ok := firmwareChannels[s]; ok {
 		return ns
 	}
-	return tlw.ServoFwChannel_FW_STABLE
+	return tlw.ServoFwChannel_STABLE
 }
 
 var storageTypes = map[ufsdevice.Config_Storage]tlw.Storage_Type{
