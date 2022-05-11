@@ -65,6 +65,13 @@ upload-switch-dev:
 	gae.py upload --app-id=chrome-fleet-karte-dev --app-dir=./cmd/karteserver --force --verbose
 	gae.py switch --app-id=chrome-fleet-karte-dev --app-dir=./cmd/karteserver --force --verbose
 
+# For convenience, upload prod and switch to it and THEN upload dev.
+.PHONY: upload-switch-prod
+upload-switch-prod:
+	gae.py upload --app-id=chrome-fleet-karte --app-dir=./cmd/karteserver --force --verbose
+	gae.py switch --app-id=chrome-fleet-karte --app-dir=./cmd/karteserver --force --verbose
+	$(MAKE) upload-switch-dev
+
 # Intentionally use the gae.py version that is present on the path. If no such
 # command is available on the path, you are not in the correct environment.
 .PHONY: upload-prod
