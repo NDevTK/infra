@@ -929,7 +929,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Quick provision OS": {
 			Docs: []string{
-				"Install stable OS on the device.",
+				"Install stable OS on the device, and suppress the device reboot.",
 			},
 			Conditions: []string{
 				"has_stable_version_cros_image",
@@ -937,7 +937,10 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Device is SSHable",
 			},
-			ExecName:    "cros_provision",
+			ExecName: "cros_provision",
+			ExecExtraArgs: []string{
+				"prevent_reboot:true",
+			},
 			ExecTimeout: &durationpb.Duration{Seconds: 3600},
 		},
 		"cros_servo_power_reset_repair": {
@@ -1383,9 +1386,25 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Write factory-install-reset to file system",
-				"Quick provision OS",
+				"Quick provision OS with reboot",
 			},
 			ExecName: "sample_pass",
+		},
+		"Quick provision OS with reboot": {
+			Docs: []string{
+				"Install stable OS on the device, and allow reboot.",
+			},
+			Conditions: []string{
+				"has_stable_version_cros_image",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_provision",
+			ExecExtraArgs: []string{
+				"prevent_reboot:false",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 3600},
 		},
 		"Update FW from fw-image by servo": {
 			Docs: []string{

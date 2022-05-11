@@ -33,9 +33,10 @@ func provisionExec(ctx context.Context, info *execs.ExecInfo) error {
 	log.Debugf(ctx, "Used OS bucket name: %s", osImageBucket)
 	osImagePath := argsMap.AsString(ctx, "os_image_path", fmt.Sprintf("%s/%s", osImageBucket, osImageName))
 	log.Debugf(ctx, "Used OS image path: %s", osImagePath)
+	preventReboot := argsMap.AsBool(ctx, "prevent_reboot", true)
 	req := &tlw.ProvisionRequest{
 		Resource:        info.RunArgs.ResourceName,
-		PreventReboot:   false,
+		PreventReboot:   preventReboot,
 		SystemImagePath: osImagePath,
 	}
 	if _, ok := argsMap["no_reboot"]; ok {
