@@ -10,6 +10,7 @@ option go_package = "infra/cros/recovery/tlw;tlw";
 
 import "google/protobuf/duration.proto";
 import "go.chromium.org/chromiumos/config/proto/chromiumos/config/api/test/xmlrpc/xmlrpc.proto";
+import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/usb_drive.proto";
 
 // RunRequest represents result of executed command.
 message RunRequest {
@@ -331,6 +332,8 @@ message ServoHost {
   // Name of the servod container if the servo uses a
   // servod-container.
   string container_name = 10;
+  // UsbDrive contains details of the servo's plugged USB drive.
+  chromiumos.test.lab.api.UsbDrive usb_drive = 11;
 }
 
 // ProvisionedInfo holds info about provisioned info for the DUT.
