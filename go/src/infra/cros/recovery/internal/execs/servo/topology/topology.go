@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	labApi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components/servo"
@@ -47,6 +48,9 @@ const (
 
 	// File containing Configuration
 	configurationFileName = "configuration"
+
+	// File containing Manufacturer
+	manufacturerFileName = "manufacturer"
 
 	// This character delimits the prefix that represents base-name of
 	// servo hub path. For example, given the root servo base name
@@ -218,20 +222,67 @@ func RetrieveServoTopology(ctx context.Context, runner execs.Runner, servoSerial
 // represent all the servo devices connected to the servo host.
 func ListOfDevices(ctx context.Context, runner execs.Runner, servoSerial string) ([]*tlw.ServoTopologyItem, error) {
 	devices := []*tlw.ServoTopologyItem{}
+	allDevicePathSlice, err := allSerialFilePaths(ctx, runner, servoSerial)
+	if err != nil {
+		return nil, errors.Annotate(err, "list of devices").Err()
+	}
+	for _, device := range allDevicePathSlice {
+		devices = append(devices, readDeviceInfo(ctx, runner, filepath.Dir(device)))
+	}
+	return devices, nil
+}
+
+// USBDrives reads the USB drive's information that contains the serial and the manufacture.
+func USBDrives(ctx context.Context, runner execs.Runner, servoSerial string) ([]*labApi.UsbDrive, error) {
+	var drives []*labApi.UsbDrive
+	allDevicePathSlice, err := allSerialFilePaths(ctx, runner, servoSerial)
+	if err != nil {
+		return drives, errors.Annotate(err, "usbkey device").Err()
+	}
+	for _, device := range allDevicePathSlice {
+		devicePath := filepath.Dir(device)
+		manufacturer, err := readServoFs(ctx, runner, devicePath, manufacturerFileName)
+		if err != nil {
+			log.Debugf(ctx, "Fail to read USB device manufacturer name: %q", err)
+			continue
+		}
+		if !strings.Contains(strings.ToLower(manufacturer), "usb") {
+			log.Debugf(ctx, "The device found is not usb drive: %q", manufacturer)
+			continue
+		}
+		serial, err := readServoFs(ctx, runner, devicePath, serialNumberFileName)
+		if err != nil {
+			log.Debugf(ctx, "Fail to read USB device serial: %q", err)
+			continue
+		} else if serial == "" {
+			log.Debugf(ctx, "Serial for device %q is empty.", devicePath)
+			continue
+		}
+		sysfsProduct, err := readServoFs(ctx, runner, devicePath, productFileName)
+		if err != nil {
+			log.Debugf(ctx, "Fail to read USB device product name: %q", err)
+		}
+		drives = append(drives, &labApi.UsbDrive{
+			Serial:       serial,
+			Manufacturer: sysfsProduct,
+		})
+	}
+	return drives, nil
+}
+
+// allSerialFilePaths returns all the path of the device that has the serial number.
+func allSerialFilePaths(ctx context.Context, runner execs.Runner, servoSerial string) ([]string, error) {
 	servoHub, err := findServoHub(ctx, runner, servoSerial)
 	if err != nil {
-		return nil, errors.Annotate(err, "retrieve servo topology").Err()
+		return nil, errors.Annotate(err, "all serial file paths").Err()
 	}
 	// Find all serial files of devices under servo-hub. Each device
 	// has to have a serial number.
 	v, err := runner(ctx, time.Minute, fmt.Sprintf(serialFindCMD, servoHub))
 	if err != nil {
-		return nil, errors.Annotate(err, "retrieve servo topology").Err()
+		return nil, errors.Annotate(err, "all serial file paths").Err()
 	}
-	for _, device := range strings.Split(v, "\n") {
-		devices = append(devices, readDeviceInfo(ctx, runner, filepath.Dir(device)))
-	}
-	return devices, nil
+	return strings.Split(v, "\n"), nil
 }
 
 // Find the servo hub path. This is the directory that contains

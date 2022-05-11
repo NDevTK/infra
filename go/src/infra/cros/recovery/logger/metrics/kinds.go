@@ -19,4 +19,10 @@ const (
 	// ServoEachDeviceFwUpdateKind is the actionkind for query the record for each
 	// of the servo device's fw update information.
 	ServoEachDeviceFwUpdateKind = "servo_firmware_update_%s"
+	// USBDriveDetectionKind is the actionKind for query the
+	// record for the DUT's servo's USB-drive.
+	USBDriveDetectionKind = "servo_usbdrive_detection"
+	// USBDriveReplacedKind is the actionKind for query the
+	// record for DUT's old/replaced USB-drive.
+	USBDriveReplacedKind = "servo_usbdrive_replaced_detection"
 )

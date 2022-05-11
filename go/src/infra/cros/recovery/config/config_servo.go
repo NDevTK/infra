@@ -51,16 +51,16 @@ func servoRepairPlan() *Plan {
 			"dut_controller_missing_fault_off",
 			"Set state:TOPOLOGY_ISSUE",
 			"servo_topology",
+			"Verify that USB drive is detectable",
+			"Update USB drive info",
 			"Set state:SERVOD_PROXY_ISSUE",
 			"Initialize DUT part for servo",
 			"Set state:CR50_CONSOLE_MISSING",
 			"Verify cr50 console",
 			"Set state:CCD_TESTLAB_ISSUE",
 			"cr50_testlab",
-			"Set state:SERVOD_PROXY_ISSUE",
 			"servo_ec_check",
 			"Set state:BROKEN",
-			"servo_detect_usbkey",
 			"update_servo_type_label",
 			"Set state:WORKING",
 		},
@@ -671,19 +671,50 @@ func servoRepairPlan() *Plan {
 				},
 				AllowFailAfterRecovery: true,
 			},
-			"servo_detect_usbkey": {
+			"Update USB drive info": {
+				Docs: []string{
+					"Try to update the information of the servo usbkey in inventory and karte.",
+				},
+				Conditions: []string{
+					"Is not servo_v3",
+				},
+				Dependencies: []string{
+					"Change USB drive direction to servo-host",
+				},
+				ExecName:               "servo_update_usbkey_history",
+				AllowFailAfterRecovery: true,
+			},
+			"Change USB drive direction to servo-host": {
+				Docs: []string{
+					"Try to use servod command to point USB drive to servo host.",
+				},
+				Dependencies: []string{
+					"Read servo serial by servod harness",
+				},
+				ExecName: "servo_check_servod_control",
+				ExecExtraArgs: []string{
+					"command:image_usbkey_dev",
+				},
+			},
+			"Verify that USB drive is detectable": {
 				Docs: []string{
 					"Will detect the path to USB Drive on servo-host.",
 					"Verify that usb-key is responsive",
 				},
+				ExecName:               "servo_detect_usbkey",
 				ExecTimeout:            &durationpb.Duration{Seconds: 120},
 				AllowFailAfterRecovery: true,
 			},
-			"servo_audit_usbkey": {
-				Docs:                   []string{"This action will detect whether or not the USB drive is in working condition."},
-				AllowFailAfterRecovery: true,
-				Dependencies:           []string{"servo_detect_usbkey"},
+			"Audit of USB drive": {
+				Docs: []string{
+					"This action will detect whether or not the USB drive is in working condition.",
+				},
+				Dependencies: []string{
+					"Verify that USB drive is detectable",
+				},
+				ExecName:               "servo_audit_usbkey",
 				ExecTimeout:            &durationpb.Duration{Seconds: 7300},
+				AllowFailAfterRecovery: true,
 			},
 			"is_servo_v4": {
 				Docs: []string{
