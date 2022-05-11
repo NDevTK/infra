@@ -240,13 +240,13 @@ enum HardwareState {
 enum ServoFwChannel {
   FW_UNSPECIFIED = 0;
   // Servo firmware from Stable channel.
-  FW_STABLE = 1;
+  STABLE = 1;
   // The previous Servo firmware from Stable channel.
-  FW_PREV = 2;
+  PREV = 2;
   // Servo firmware from Dev channel.
-  FW_DEV = 3;
+  DEV = 3;
   // Servo firmware from Alpha channel.
-  FW_ALPHA = 4;
+  ALPHA = 4;
 }
 
 // ServoHost holds info about host to manage servod services and verify
