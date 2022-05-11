@@ -355,6 +355,18 @@ message RolloutConfig {
   // we are permitted to repair the device in question by the other settings in the config file.
   int32 prod_permille = 6;
 
+  // latest_permille is the probability (multiplied by 1000) that we use the new flow for a DUT at
+  // the "latest" label. The "latest" label is automatically marched forward to the latest version of
+  // paris that has been build, as opposed to "prod" which is manually updated after validation.
+  //
+  // Note that latest_permille and prod_permille are alternatives.
+  // latest_permille + prod_permille is the chance of using Paris at all.
+  // 1000 - latest_permille - prod_permille is the chance of using the legacy flow.
+  //
+  // For example, if prod is 500 and latest is 200, then legacy is implicitly 300.
+  // If prod is 20 and legacy is 1, then legacy is implicitly 979.
+  int32 latest_permille = 7;
+
   // The UFS_error_policy controls what happens if we encounter a UFS error at the beginning of launching a task.
   // The valid values are:
   //  - "default" or "" or "fallback" -- Fall back to the legacy path in the event of a UFS error.
