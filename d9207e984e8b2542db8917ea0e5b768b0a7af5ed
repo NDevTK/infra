@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e9b68627_b99dc1cc",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2022-05-11T22:18:22Z",
+      "side": 1,
+      "message": "separate CL, want to examine the logic by itself as context handling is non-trivial.",
+      "range": {
+        "startLine": 9,
+        "startChar": 3,
+        "endLine": 9,
+        "endChar": 46
+      },
+      "revId": "d9207e984e8b2542db8917ea0e5b768b0a7af5ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
