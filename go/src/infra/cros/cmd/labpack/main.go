@@ -188,6 +188,11 @@ func uploadLogs(ctx context.Context, state *build.State, lg logger.Logger) (rErr
 	if err := parallelUpload(ctx, lg, client, swarmingTaskID); err != nil {
 		return errors.Annotate(err, "upload logs").Err()
 	}
+	// Set the summary markdown to something noticeable.
+	// In the future, change this to be a link to the logs.
+	step.Modify(func(sv *build.StepView) {
+		sv.SummaryMarkdown = "TEMPORARY TEXT c2a45be7-f131-4d43-9e5a-99934d01be5c"
+	})
 	return nil
 }
 
