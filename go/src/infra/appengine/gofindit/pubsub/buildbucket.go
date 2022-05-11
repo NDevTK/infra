@@ -15,6 +15,8 @@ import (
 	"go.chromium.org/luci/common/retry/transient"
 	"go.chromium.org/luci/server/router"
 
+	"infra/appengine/gofindit/compilefailuredetection"
+
 	bbv1 "go.chromium.org/luci/common/api/buildbucket/buildbucket/v1"
 )
 
@@ -57,8 +59,27 @@ func buildbucketPubSubHandlerImpl(c context.Context, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	logging.Infof(c, "Received message for project %s", bbmsg.Build.Project)
-	return nil
+	logging.Infof(c, "Received message for build id %s", bbmsg.Build.Id)
+
+	// For now, we only handle chromium/ci builds
+	// TODO (nqmtuan): Move this into config
+	if !(bbmsg.Build.Project == "chromium" && bbmsg.Build.Bucket == "ci") {
+		logging.Infof(c, "Unsupported build for bucket (%q, %q). Exiting early...", bbmsg.Build.Project, bbmsg.Build.Bucket)
+		return nil
+	}
+
+	// Just ignore non-completed builds
+	if bbmsg.Build.Status != bbv1.StatusCompleted {
+		return nil
+	}
+
+	// We only care about failed builds
+	if bbmsg.Build.Result != bbv1.ResultFailure {
+		return nil
+	}
+
+	_, err = compilefailuredetection.AnalyzeBuild(c, bbmsg.Build.Id)
+	return err
 }
 
 func parseBBMessage(r *http.Request) (*buildBucketMessage, error) {
