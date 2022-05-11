@@ -376,7 +376,6 @@ class ServletRegistry(object):
     self._SetupServlets({
         urls.PROJECT_CREATE: projectcreate.ProjectCreate,
         # The user settings page is a site-wide servlet, not under /u/.
-        urls.USER_SETTINGS: usersettings.UserSettings,
         urls.HOSTING_HOME: hostinghome.HostingHome,
         urls.GROUP_CREATE: groupcreate.GroupCreate,
         urls.GROUP_LIST: grouplist.GroupList,

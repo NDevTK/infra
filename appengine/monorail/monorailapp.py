@@ -42,6 +42,8 @@ flaskRegist = flaskregisterpages.ServletRegistry()
 app = dispatcher.DispatcherMiddleware(
     app, {
         urls.EXCESSIVE_ACTIVITY: flaskRegist.RegisterExcesiveActivity(services),
+        urls.USER_SETTINGS: flaskRegist.RegisterUserSetting(services),
+        '/hosting/settings.do': flaskRegist.RegisterUserSettingPost(services),
     })
 
 endpoints = endpoints_webapp2.api_server(
