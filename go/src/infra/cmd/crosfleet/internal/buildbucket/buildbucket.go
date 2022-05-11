@@ -18,10 +18,13 @@ import (
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/luci/auth/client/authcli"
+	"go.chromium.org/luci/buildbucket"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
+	"go.chromium.org/luci/lucictx"
 	"google.golang.org/genproto/protobuf/field_mask"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -97,6 +100,18 @@ func (c *Client) ScheduleBuild(ctx context.Context, props map[string]interface{}
 	if err != nil {
 		return nil, err
 	}
+
+	// Check if there's a parent build for the task to be launched.
+	// If a ScheduleBuildToken can be found in the Buildbucket section of LUCI_CONTEXT,
+	// it will be the token for the parent build.
+	// Attaching the token to the ScheduleBuild request will enable Buildbucket to
+	// track the parent/child build relationship between the build with the token
+	// and this new build.
+	bbCtx := lucictx.GetBuildbucket(ctx)
+	if bbCtx != nil && bbCtx.GetScheduleBuildToken() != "" {
+		ctx = metadata.NewOutgoingContext(ctx, metadata.Pairs(buildbucket.BuildbucketTokenHeader, bbCtx.ScheduleBuildToken))
+	}
+
 	request := &buildbucketpb.ScheduleBuildRequest{
 		Builder:    c.builderID,
 		Properties: propStruct,
