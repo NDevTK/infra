@@ -341,6 +341,64 @@ func TestTestHistoryServer(t *testing.T) {
 				})
 			})
 		})
+
+		Convey("QueryVariants", func() {
+			req := &pb.QueryVariantsRequest{
+				Project:  "project",
+				TestId:   "test_id",
+				SubRealm: "realm",
+				PageSize: 2,
+			}
+
+			Convey("unauthorised requests are rejected", func() {
+				ctx = auth.WithState(ctx, &authtest.FakeState{
+					Identity: "user:someone@example.com",
+				})
+				res, err := server.QueryVariants(ctx, req)
+				So(err, ShouldErrLike, `caller does not have permission`, `in realm "project:realm"`)
+				So(err, ShouldHaveGRPCStatus, codes.PermissionDenied)
+				So(res, ShouldBeNil)
+			})
+
+			Convey("invalid requests are rejected", func() {
+				req.PageSize = -1
+				res, err := server.QueryVariants(ctx, req)
+				So(err, ShouldNotBeNil)
+				So(err, ShouldHaveGRPCStatus, codes.InvalidArgument)
+				So(res, ShouldBeNil)
+			})
+
+			Convey("e2e", func() {
+				res, err := server.QueryVariants(ctx, req)
+				So(err, ShouldBeNil)
+				So(res, ShouldResembleProto, &pb.QueryVariantsResponse{
+					Variants: []*pb.QueryVariantsResponse_VariantInfo{
+						{
+							VariantHash: pbutil.VariantHash(var1),
+							Variant:     var1,
+						},
+						{
+							VariantHash: pbutil.VariantHash(var3),
+							Variant:     var3,
+						},
+					},
+					NextPageToken: res.NextPageToken,
+				})
+				So(res.NextPageToken, ShouldNotBeEmpty)
+
+				req.PageToken = res.NextPageToken
+				res, err = server.QueryVariants(ctx, req)
+				So(err, ShouldBeNil)
+				So(res, ShouldResembleProto, &pb.QueryVariantsResponse{
+					Variants: []*pb.QueryVariantsResponse_VariantInfo{
+						{
+							VariantHash: pbutil.VariantHash(var2),
+							Variant:     var2,
+						},
+					},
+				})
+			})
+		})
 	})
 }
 
@@ -439,6 +497,47 @@ func TestValidateQueryTestHistoryStatsRequest(t *testing.T) {
 		Convey("negative page size", func() {
 			req.PageSize = -1
 			err := validateQueryTestHistoryStatsRequest(req)
+			So(err, ShouldErrLike, "page_size", "negative")
+		})
+	})
+}
+
+func TestValidateQueryVariantsRequest(t *testing.T) {
+	t.Parallel()
+
+	Convey("validateQueryVariantsRequest", t, func() {
+		req := &pb.QueryVariantsRequest{
+			Project:  "project",
+			TestId:   "test_id",
+			PageSize: 5,
+		}
+
+		Convey("valid", func() {
+			err := validateQueryVariantsRequest(req)
+			So(err, ShouldBeNil)
+		})
+
+		Convey("no project", func() {
+			req.Project = ""
+			err := validateQueryVariantsRequest(req)
+			So(err, ShouldErrLike, "project missing")
+		})
+
+		Convey("no test_id", func() {
+			req.TestId = ""
+			err := validateQueryVariantsRequest(req)
+			So(err, ShouldErrLike, "test_id missing")
+		})
+
+		Convey("no page size", func() {
+			req.PageSize = 0
+			err := validateQueryVariantsRequest(req)
+			So(err, ShouldBeNil)
+		})
+
+		Convey("negative page size", func() {
+			req.PageSize = -1
+			err := validateQueryVariantsRequest(req)
 			So(err, ShouldErrLike, "page_size", "negative")
 		})
 	})

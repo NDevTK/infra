@@ -159,5 +159,49 @@ func validateQueryTestHistoryStatsRequest(req *pb.QueryTestHistoryStatsRequest) 
 // Retrieves variants for a given test ID in a given project that were recorded
 // in the past 90 days.
 func (*testHistoryServer) QueryVariants(ctx context.Context, req *pb.QueryVariantsRequest) (*pb.QueryVariantsResponse, error) {
-	return nil, appstatus.Errorf(codes.Unimplemented, "method QueryVariantsRequest not implemented")
+	if err := validateQueryVariantsRequest(req); err != nil {
+		return nil, invalidArgumentError(err)
+	}
+
+	if req.GetSubRealm() == "" {
+		return nil, appstatus.Errorf(codes.Unimplemented, "multi-realm test history not implemented")
+	}
+	realm := req.GetProject() + ":" + req.GetSubRealm()
+
+	requiredPerms := []realms.Permission{rdbperms.PermListTestResults}
+	if err := utils.HasPermissions(ctx, requiredPerms, realm, nil); err != nil {
+		return nil, err
+	}
+
+	pageSize := int(pageSizeLimiter.Adjust(req.GetPageSize()))
+	opts := testverdicts.ReadVariantsOptions{
+		SubRealms: []string{req.GetSubRealm()},
+		PageSize:  pageSize,
+		PageToken: req.GetPageToken(),
+	}
+
+	variants, nextPageToken, err := testverdicts.ReadVariants(span.Single(ctx), req.GetProject(), req.GetTestId(), opts)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.QueryVariantsResponse{
+		Variants:      variants,
+		NextPageToken: nextPageToken,
+	}, nil
+}
+
+func validateQueryVariantsRequest(req *pb.QueryVariantsRequest) error {
+	switch {
+	case req.GetProject() == "":
+		return errors.Reason("project missing").Err()
+	case req.GetTestId() == "":
+		return errors.Reason("test_id missing").Err()
+	}
+
+	if err := pagination.ValidatePageSize(req.GetPageSize()); err != nil {
+		return errors.Annotate(err, "page_size").Err()
+	}
+
+	return nil
 }

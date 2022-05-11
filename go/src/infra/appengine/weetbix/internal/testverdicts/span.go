@@ -395,6 +395,83 @@ func (tvr *TestVariantRealm) SaveUnverified(ctx context.Context) {
 	span.BufferWrite(ctx, spanner.InsertOrUpdateMap("TestVariantRealms", spanutil.ToSpannerMap(row)))
 }
 
+// ReadVariantsOptions specifies options for ReadVariants().
+type ReadVariantsOptions struct {
+	SubRealms []string
+	PageSize  int
+	PageToken string
+}
+
+// parseQueryVariantsPageToken parses the positions from the page token.
+func parseQueryVariantsPageToken(pageToken string) (afterHash string, err error) {
+	tokens, err := pagination.ParseToken(pageToken)
+	if err != nil {
+		return "", err
+	}
+
+	if len(tokens) != 1 {
+		return "", pagination.InvalidToken(errors.Reason("expected 1 components, got %d", len(tokens)).Err())
+	}
+
+	return tokens[0], nil
+}
+
+// ReadVariants reads all the variants of the specified test from the
+// spanner database.
+// Must be called in a spanner transactional context.
+func ReadVariants(ctx context.Context, project, testID string, opts ReadVariantsOptions) (variants []*pb.QueryVariantsResponse_VariantInfo, nextPageToken string, err error) {
+	paginationVariantHash := ""
+	if opts.PageToken != "" {
+		paginationVariantHash, err = parseQueryVariantsPageToken(opts.PageToken)
+		if err != nil {
+			return nil, "", err
+		}
+	}
+
+	params := map[string]interface{}{
+		"project":   project,
+		"testId":    testID,
+		"subRealms": opts.SubRealms,
+
+		// Control pagination.
+		"limit":                 opts.PageSize,
+		"paginationVariantHash": paginationVariantHash,
+	}
+
+	stmt, err := spanutil.GenerateStatement(variantsQueryTmpl, variantsQueryTmpl.Name(), map[string]interface{}{
+		"params": params,
+	})
+	if err != nil {
+		return nil, "", err
+	}
+	stmt.Params = params
+
+	var b spanutil.Buffer
+	variants = make([]*pb.QueryVariantsResponse_VariantInfo, 0, opts.PageSize)
+	err = span.Query(ctx, stmt).Do(func(row *spanner.Row) error {
+		variant := &pb.QueryVariantsResponse_VariantInfo{}
+		err := b.FromSpanner(
+			row,
+			&variant.VariantHash,
+			&variant.Variant,
+		)
+		if err != nil {
+			return err
+		}
+		variants = append(variants, variant)
+		return nil
+	})
+	if err != nil {
+		return nil, "", err
+	}
+
+	if opts.PageSize != 0 && len(variants) == opts.PageSize {
+		lastVariant := variants[len(variants)-1]
+		nextPageToken = pagination.Token(lastVariant.VariantHash)
+	}
+	return variants, nextPageToken, nil
+}
+
 var testHistoryQueryTmpl = template.Must(template.New("").Parse(`
 	{{define "tvStatus"}}
 		CASE
@@ -497,5 +574,26 @@ var testHistoryQueryTmpl = template.Must(template.New("").Parse(`
 		{{if .params.limit}}
 			LIMIT @limit
 		{{end}}
+	{{end}}
+`))
+
+var variantsQueryTmpl = template.Must(template.New("variantsQuery").Parse(`
+	{{define "variantsQuery"}}
+	SELECT
+		VariantHash,
+		ANY_VALUE(Variant) as Variant,
+	FROM TestVariantRealms
+	WHERE
+		Project = @project
+			AND TestId = @testId
+			{{if .params.subRealms}}
+				AND SubRealm IN UNNEST(@subRealms)
+			{{end}}
+			AND VariantHash > @paginationVariantHash
+	GROUP BY VariantHash
+	ORDER BY VariantHash ASC
+	{{if .params.limit}}
+		LIMIT @limit
+	{{end}}
 	{{end}}
 `))

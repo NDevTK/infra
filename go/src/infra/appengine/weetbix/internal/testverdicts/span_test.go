@@ -599,3 +599,107 @@ func TestReadTestHistoryStats(t *testing.T) {
 		})
 	})
 }
+
+func TestReadVariants(t *testing.T) {
+	Convey("ReadVariants", t, func() {
+		ctx := testutil.SpannerTestContext(t)
+
+		var1 := pbutil.Variant("key1", "val1", "key2", "val1")
+		var2 := pbutil.Variant("key1", "val2", "key2", "val1")
+		var3 := pbutil.Variant("key1", "val2", "key2", "val2")
+		var4 := pbutil.Variant("key1", "val1", "key2", "val2")
+
+		_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
+			insertTVR := func(subRealm string, variant *pb.Variant) {
+				(&TestVariantRealm{
+					Project:     "project",
+					TestID:      "test_id",
+					SubRealm:    subRealm,
+					Variant:     variant,
+					VariantHash: pbutil.VariantHash(variant),
+				}).SaveUnverified(ctx)
+			}
+
+			insertTVR("realm1", var1)
+			insertTVR("realm1", var2)
+
+			insertTVR("realm2", var2)
+			insertTVR("realm2", var3)
+
+			insertTVR("realm3", var4)
+
+			return nil
+		})
+		So(err, ShouldBeNil)
+
+		Convey("pagination works", func() {
+			opts := ReadVariantsOptions{PageSize: 3}
+			variants, nextPageToken, err := ReadVariants(span.Single(ctx), "project", "test_id", opts)
+			So(err, ShouldBeNil)
+			So(nextPageToken, ShouldNotBeEmpty)
+			So(variants, ShouldResembleProto, []*pb.QueryVariantsResponse_VariantInfo{
+				{
+					VariantHash: pbutil.VariantHash(var1),
+					Variant:     var1,
+				},
+				{
+					VariantHash: pbutil.VariantHash(var3),
+					Variant:     var3,
+				},
+				{
+					VariantHash: pbutil.VariantHash(var4),
+					Variant:     var4,
+				},
+			})
+
+			opts.PageToken = nextPageToken
+			variants, nextPageToken, err = ReadVariants(span.Single(ctx), "project", "test_id", opts)
+			So(err, ShouldBeNil)
+			// So(nextPageToken, ShouldBeEmpty)
+			So(variants, ShouldResembleProto, []*pb.QueryVariantsResponse_VariantInfo{
+				{
+					VariantHash: pbutil.VariantHash(var2),
+					Variant:     var2,
+				},
+			})
+		})
+
+		Convey("multi-realm works", func() {
+			opts := ReadVariantsOptions{SubRealms: []string{"realm1", "realm2"}}
+			variants, nextPageToken, err := ReadVariants(span.Single(ctx), "project", "test_id", opts)
+			So(err, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(variants, ShouldResembleProto, []*pb.QueryVariantsResponse_VariantInfo{
+				{
+					VariantHash: pbutil.VariantHash(var1),
+					Variant:     var1,
+				},
+				{
+					VariantHash: pbutil.VariantHash(var3),
+					Variant:     var3,
+				},
+				{
+					VariantHash: pbutil.VariantHash(var2),
+					Variant:     var2,
+				},
+			})
+		})
+
+		Convey("single-realm works", func() {
+			opts := ReadVariantsOptions{SubRealms: []string{"realm2"}}
+			variants, nextPageToken, err := ReadVariants(span.Single(ctx), "project", "test_id", opts)
+			So(err, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(variants, ShouldResembleProto, []*pb.QueryVariantsResponse_VariantInfo{
+				{
+					VariantHash: pbutil.VariantHash(var3),
+					Variant:     var3,
+				},
+				{
+					VariantHash: pbutil.VariantHash(var2),
+					Variant:     var2,
+				},
+			})
+		})
+	})
+}
