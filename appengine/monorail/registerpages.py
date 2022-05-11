@@ -354,7 +354,6 @@ class ServletRegistry(object):
         urls.CSP_REPORT: csp_report.CSPReportPage,
 
         # These are only shown to users if specific conditions are met.
-        urls.EXCESSIVE_ACTIVITY: excessiveactivity.ExcessiveActivity,
         urls.BANNED: banned.Banned,
         urls.PROJECT_MOVED: moved.ProjectMoved,
 
