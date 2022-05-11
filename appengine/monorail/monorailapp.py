@@ -18,7 +18,6 @@ from flask import Flask
 from werkzeug.middleware import dispatcher
 
 from components import endpoints_webapp2
-from flaskapps import getApp
 import gae_ts_mon
 
 import flaskregisterpages
@@ -43,6 +42,8 @@ flaskRegist = flaskregisterpages.ServletRegistry()
 app = dispatcher.DispatcherMiddleware(
     app, {
         urls.EXCESSIVE_ACTIVITY: flaskRegist.RegisterExcesiveActivity(services),
+        urls.USER_SETTINGS: flaskRegist.RegisterUserSetting(services),
+        '/hosting/settings.do': flaskRegist.RegisterUserSettingPost(services),
     })
 
 endpoints = endpoints_webapp2.api_server(
