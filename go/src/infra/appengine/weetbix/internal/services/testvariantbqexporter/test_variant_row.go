@@ -388,7 +388,7 @@ func (b *BQExporter) query(ctx context.Context, f func(*bqpb.TestVariantRow) err
 	if err != nil {
 		return err
 	}
-	st, err := spanutil.GenerateStatement(testVariantRowsTmpl, inputs)
+	st, err := spanutil.GenerateStatement(testVariantRowsTmpl, testVariantRowsTmpl.Name(), inputs)
 	if err != nil {
 		return err
 	}
@@ -538,7 +538,7 @@ var testVariantRowsTmpl = template.Must(template.New("testVariantRowsTmpl").Pars
 				-- status(es) satisfies the filter.
 				OR StatusUpdateTime > @startTime
 			)
-    {{end}}
+		{{end}}
 	)
 
 	SELECT

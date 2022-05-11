@@ -112,9 +112,10 @@ message QueryTestHistoryStatsRequest {
 // A response message for `TestHistory.QueryStats` RPC.
 message QueryTestHistoryStatsResponse {
   message Group {
-    // Start date of the presubmit run (for results that are part of a presubmit
-    // run) or start date of the buildbucket build (otherwise).
-    google.protobuf.Timestamp partition_date = 1;
+    // The start time of this group.
+    // Test verdicts that are paritioned in the 24 hours following this
+    // timestamp are captured in this group.
+    google.protobuf.Timestamp partition_time = 1;
 
     // The hash of the variant.
     string variant_hash = 2;
@@ -134,9 +135,8 @@ message QueryTestHistoryStatsResponse {
     // The number of expected test verdicts in the group.
     int32 expected_count = 7;
 
-    // The average duration of the PASSED test results included in the test
-    // verdict.
-    google.protobuf.Duration passed_avg_duration = 8;
+    // The average value of the passed_avg_duration of the test verdicts.
+    google.protobuf.Duration avg_passed_avg_duration = 8;
   }
 
   // The list of test verdict groups. Test verdicts will be grouped and ordered

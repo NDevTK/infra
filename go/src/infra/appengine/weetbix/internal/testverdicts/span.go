@@ -164,6 +164,8 @@ func (tvr *TestVerdict) SaveUnverified(ctx context.Context) {
 
 // ReadTestHistoryOptions specifies options for ReadTestHistory().
 type ReadTestHistoryOptions struct {
+	Project          string
+	TestID           string
 	SubRealms        []string
 	VariantPredicate *pb.VariantPredicate
 	SubmittedFilter  pb.SubmittedFilter
@@ -172,62 +174,21 @@ type ReadTestHistoryOptions struct {
 	PageToken        string
 }
 
-// parseReadTestHistoryPageToken parses the positions from the page token.
-func parseReadTestHistoryPageToken(pageToken string) (beforeTime time.Time, afterHash, afterInvID string, err error) {
-	tokens, err := pagination.ParseToken(pageToken)
-	if err != nil {
-		return time.Time{}, "", "", err
-	}
-
-	if len(tokens) != 3 {
-		return time.Time{}, "", "", pagination.InvalidToken(errors.Reason("expected 3 components, got %d", len(tokens)).Err())
-	}
-
-	beforeTimeStr, afterHash, afterInvID := tokens[0], tokens[1], tokens[2]
-	beforeTime, err = time.Parse(pageTokenTimeFormat, beforeTimeStr)
-	if err != nil {
-		return time.Time{}, "", "", pagination.InvalidToken(errors.Reason("invalid timestamp").Err())
-	}
-
-	return beforeTime, afterHash, afterInvID, nil
-}
-
-// ReadTestHistory reads verdicts from the spanner database.
-// Must be called in a spanner transactional context.
-func ReadTestHistory(ctx context.Context, project, testID string, opts ReadTestHistoryOptions) (verdicts []*pb.TestVerdict, nextPageToken string, err error) {
+// statement generats a spanner statement for the specified query template.
+func (opts ReadTestHistoryOptions) statement(ctx context.Context, tmpl string, paginationParams []string) (spanner.Statement, error) {
 	now := clock.Now(ctx)
 
-	afterTime := now.Add(-testVerdictTTL)
-	if opts.TimeRange.GetEarliest() != nil {
-		afterTime = opts.TimeRange.GetEarliest().AsTime()
-	}
-
-	beforeTime, afterHash, afterInvID := now, "", ""
-	if opts.TimeRange.GetLatest() != nil {
-		beforeTime = opts.TimeRange.GetLatest().AsTime()
-	}
-	if opts.PageToken != "" {
-		beforeTime, afterHash, afterInvID, err = parseReadTestHistoryPageToken(opts.PageToken)
-		if err != nil {
-			return nil, "", err
-		}
-	}
-
 	params := map[string]interface{}{
-		"project":   project,
-		"testId":    testID,
-		"subRealms": opts.SubRealms,
-		"afterTime": afterTime,
+		"project":    opts.Project,
+		"testId":     opts.TestID,
+		"subRealms":  opts.SubRealms,
+		"afterTime":  now.Add(-testVerdictTTL),
+		"beforeTime": now,
+		"limit":      opts.PageSize,
 
 		// If the filter is unspecified, this param will be ignored during the
 		// statement generation step.
 		"hasUnsubmittedChanges": opts.SubmittedFilter == pb.SubmittedFilter_ONLY_UNSUBMITTED,
-
-		// Control pagination.
-		"limit":             opts.PageSize,
-		"beforeTime":        beforeTime,
-		"afterVariantHash":  afterHash,
-		"afterInvocationID": afterInvID,
 
 		// Status enum variants.
 		"unexpected":          int(pb.TestVerdictStatus_UNEXPECTED),
@@ -235,6 +196,13 @@ func ReadTestHistory(ctx context.Context, project, testID string, opts ReadTestH
 		"flaky":               int(pb.TestVerdictStatus_FLAKY),
 		"exonerated":          int(pb.TestVerdictStatus_EXONERATED),
 		"expected":            int(pb.TestVerdictStatus_EXPECTED),
+	}
+
+	if opts.TimeRange.GetEarliest() != nil {
+		params["afterTime"] = opts.TimeRange.GetEarliest().AsTime()
+	}
+	if opts.TimeRange.GetLatest() != nil {
+		params["beforeTime"] = opts.TimeRange.GetLatest().AsTime()
 	}
 
 	switch p := opts.VariantPredicate.GetPredicate().(type) {
@@ -250,20 +218,50 @@ func ReadTestHistory(ctx context.Context, project, testID string, opts ReadTestH
 		panic(errors.Reason("unexpected variant predicate %q", opts.VariantPredicate).Err())
 	}
 
-	stmt, err := spanutil.GenerateStatement(testHistoryQueryTmpl, map[string]interface{}{
+	if opts.PageToken != "" {
+		tokens, err := pagination.ParseToken(opts.PageToken)
+		if err != nil {
+			return spanner.Statement{}, err
+		}
+
+		if len(tokens) != len(paginationParams) {
+			return spanner.Statement{}, pagination.InvalidToken(errors.Reason("expected %d components, got %d", len(paginationParams), len(tokens)).Err())
+		}
+
+		// Keep all pagination params as strings and convert them to other data
+		// types in the query as necessary. So we can have a unified way of handling
+		// different page tokens.
+		for i, param := range paginationParams {
+			params[param] = tokens[i]
+		}
+	}
+
+	stmt, err := spanutil.GenerateStatement(testHistoryQueryTmpl, tmpl, map[string]interface{}{
 		"submittedFilterSpecified": opts.SubmittedFilter != pb.SubmittedFilter_SUBMITTED_FILTER_UNSPECIFIED,
+		"pagination":               opts.PageToken != "",
 		"params":                   params,
 	})
 	if err != nil {
-		return nil, "", err
+		return spanner.Statement{}, err
 	}
 	stmt.Params = params
+
+	return stmt, nil
+}
+
+// ReadTestHistory reads verdicts from the spanner database.
+// Must be called in a spanner transactional context.
+func ReadTestHistory(ctx context.Context, opts ReadTestHistoryOptions) (verdicts []*pb.TestVerdict, nextPageToken string, err error) {
+	stmt, err := opts.statement(ctx, "testHistoryQuery", []string{"paginationTime", "paginationVariantHash", "paginationInvId"})
+	if err != nil {
+		return nil, "", err
+	}
 
 	var b spanutil.Buffer
 	verdicts = make([]*pb.TestVerdict, 0, opts.PageSize)
 	err = span.Query(ctx, stmt).Do(func(row *spanner.Row) error {
 		tv := &pb.TestVerdict{
-			TestId: testID,
+			TestId: opts.TestID,
 		}
 		var status int64
 		var passedAvgDurationUsec spanner.NullInt64
@@ -286,7 +284,7 @@ func ReadTestHistory(ctx context.Context, project, testID string, opts ReadTestH
 		return nil
 	})
 	if err != nil {
-		return nil, "", err
+		return nil, "", errors.Annotate(err, "query test history").Err()
 	}
 
 	if opts.PageSize != 0 && len(verdicts) == opts.PageSize {
@@ -294,6 +292,57 @@ func ReadTestHistory(ctx context.Context, project, testID string, opts ReadTestH
 		nextPageToken = pagination.Token(lastTV.PartitionTime.AsTime().Format(pageTokenTimeFormat), lastTV.VariantHash, lastTV.InvocationId)
 	}
 	return verdicts, nextPageToken, nil
+}
+
+// ReadTestHistoryStats reads stats of verdicts grouped by UTC dates from the
+// spanner database.
+// Must be called in a spanner transactional context.
+func ReadTestHistoryStats(ctx context.Context, opts ReadTestHistoryOptions) (groups []*pb.QueryTestHistoryStatsResponse_Group, nextPageToken string, err error) {
+	stmt, err := opts.statement(ctx, "testHistoryStatsQuery", []string{"paginationDate", "paginationVariantHash"})
+	if err != nil {
+		return nil, "", err
+	}
+
+	var b spanutil.Buffer
+	groups = make([]*pb.QueryTestHistoryStatsResponse_Group, 0, opts.PageSize)
+	err = span.Query(ctx, stmt).Do(func(row *spanner.Row) error {
+		group := &pb.QueryTestHistoryStatsResponse_Group{}
+		var (
+			unexpectedCount, unexpectedlySkippedCount  int64
+			flakyCount, exoneratedCount, expectedCount int64
+			passedAvgDurationUsec                      spanner.NullInt64
+		)
+		err := b.FromSpanner(
+			row,
+			&group.PartitionTime,
+			&group.VariantHash,
+			&unexpectedCount, &unexpectedlySkippedCount,
+			&flakyCount, &exoneratedCount, &expectedCount,
+			&passedAvgDurationUsec,
+		)
+		if err != nil {
+			return err
+		}
+		group.UnexpectedCount = int32(unexpectedCount)
+		group.UnexpectedlySkippedCount = int32(unexpectedlySkippedCount)
+		group.FlakyCount = int32(flakyCount)
+		group.ExoneratedCount = int32(exoneratedCount)
+		group.ExpectedCount = int32(expectedCount)
+		if passedAvgDurationUsec.Valid {
+			group.AvgPassedAvgDuration = durationpb.New(time.Microsecond * time.Duration(passedAvgDurationUsec.Int64))
+		}
+		groups = append(groups, group)
+		return nil
+	})
+	if err != nil {
+		return nil, "", errors.Annotate(err, "query test history stats").Err()
+	}
+
+	if opts.PageSize != 0 && len(groups) == opts.PageSize {
+		lastGroup := groups[len(groups)-1]
+		nextPageToken = pagination.Token(lastGroup.PartitionTime.AsTime().Format(pageTokenTimeFormat), lastGroup.VariantHash)
+	}
+	return groups, nextPageToken, nil
 }
 
 // TestVariantRealm represents a row in the TestVariantRealm table.
@@ -346,56 +395,107 @@ func (tvr *TestVariantRealm) SaveUnverified(ctx context.Context) {
 	span.BufferWrite(ctx, spanner.InsertOrUpdateMap("TestVariantRealms", spanutil.ToSpannerMap(row)))
 }
 
-var testHistoryQueryTmpl = template.Must(template.New("testHistorySQL").Parse(`
-	SELECT
-		IngestedInvocationId,
-		VariantHash,
+var testHistoryQueryTmpl = template.Must(template.New("").Parse(`
+	{{define "tvStatus"}}
 		CASE
 			WHEN IsExonerated THEN @exonerated
 			WHEN UnexpectedCount = 0 THEN @expected
 			WHEN SkippedCount = UnexpectedCount AND ExpectedCount = 0 THEN @unexpectedlySkipped
 			WHEN ExpectedCount = 0 THEN @unexpected
 			ELSE @flaky
-		END TvStatus,
-		PartitionTime,
-		PassedAvgDurationUsec
-	FROM TestVerdicts
-	WHERE
+		END TvStatus
+	{{end}}
+
+	{{define "testVerdictFilter"}}
 		Project = @project
-		AND TestId = @testId
-		AND PartitionTime > @afterTime
-		{{if .params.subRealms}}
-			AND SubRealm IN UNNEST(@subRealms)
+			AND TestId = @testId
+			AND PartitionTime >= @afterTime
+			AND PartitionTime < @beforeTime
+			{{if .params.subRealms}}
+				AND SubRealm IN UNNEST(@subRealms)
+			{{end}}
+			{{if .params.variantHash}}
+				AND VariantHash = @variantHash
+			{{end}}
+			{{if .params.variantKVs}}
+				AND VariantHash IN (
+					SELECT DISTINCT VariantHash
+					FROM TestVariantRealms
+					WHERE
+						Project = @project
+						AND TestId = @testId
+						{{if .params.subRealms}}
+							AND SubRealm IN UNNEST(@subRealms)
+						{{end}}
+						AND (SELECT LOGICAL_AND(kv IN UNNEST(Variant)) FROM UNNEST(@variantKVs) kv)
+				)
+			{{end}}
+			{{if .submittedFilterSpecified}}
+				AND HasUnsubmittedChanges = @hasUnsubmittedChanges
+			{{end}}
+	{{end}}
+
+	{{define "testHistoryQuery"}}
+		SELECT
+			IngestedInvocationId,
+			VariantHash,
+			{{template "tvStatus" .}},
+			PartitionTime,
+			PassedAvgDurationUsec
+		FROM TestVerdicts
+		WHERE
+			{{template "testVerdictFilter" .}}
+			{{if .pagination}}
+				AND	(
+					PartitionTime < TIMESTAMP(@paginationTime)
+						OR (PartitionTime = TIMESTAMP(@paginationTime) AND VariantHash > @paginationVariantHash)
+						OR (PartitionTime = TIMESTAMP(@paginationTime) AND VariantHash = @paginationVariantHash AND IngestedInvocationId > @paginationInvId)
+				)
+			{{end}}
+		ORDER BY
+			PartitionTime DESC,
+			VariantHash ASC,
+			IngestedInvocationId ASC
+		{{if .params.limit}}
+			LIMIT @limit
 		{{end}}
-		{{if .params.variantHash}}
-			AND VariantHash = @variantHash
-		{{end}}
-		{{if .params.variantKVs}}
-			AND VariantHash IN (
-				SELECT DISTINCT VariantHash
-				FROM TestVariantRealms
-				WHERE
-					Project = @project
-					AND TestId = @testId
-					{{if .params.subRealms}}
-						AND SubRealm IN UNNEST(@subRealms)
-					{{end}}
-					AND (SELECT LOGICAL_AND(kv IN UNNEST(Variant)) FROM UNNEST(@variantKVs) kv)
-			)
-		{{end}}
-		{{if .submittedFilterSpecified}}
-			AND HasUnsubmittedChanges = @hasUnsubmittedChanges
-		{{end}}
-		AND	(
-			PartitionTime < @beforeTime
-				OR (PartitionTime = @beforeTime AND VariantHash > @afterVariantHash)
-				OR (PartitionTime = @beforeTime AND VariantHash = @afterVariantHash AND IngestedInvocationId > @afterInvocationID)
+	{{end}}
+
+	{{define "testHistoryStatsQuery"}}
+		WITH tv as (
+			SELECT
+				VariantHash,
+				{{template "tvStatus" .}},
+				PartitionTime,
+				PassedAvgDurationUsec
+			FROM TestVerdicts
+			WHERE
+				{{template "testVerdictFilter" .}}
+				{{if .pagination}}
+					AND	PartitionTime < TIMESTAMP_ADD(TIMESTAMP(@paginationDate), INTERVAL 1 DAY)
+				{{end}}
 		)
-	ORDER BY
-		PartitionTime DESC,
-		VariantHash ASC,
-		IngestedInvocationId ASC
-	{{if .params.limit}}
-		LIMIT @limit
+		SELECT
+			TIMESTAMP_TRUNC(PartitionTime, DAY, "UTC") AS PartitionDate,
+			VariantHash,
+			COUNTIF(TvStatus = @unexpected) AS UnexpectedCount,
+			COUNTIF(TvStatus = @unexpectedlySkipped) AS UnexpectedlySkippedCount,
+			COUNTIF(TvStatus = @flaky) AS FlakyCount,
+			COUNTIF(TvStatus = @exonerated) AS ExoneratedCount,
+			COUNTIF(TvStatus = @expected) AS ExpectedCount,
+			CAST(AVG(PassedAvgDurationUsec) AS INT64) AS AvgPassedAvgDurationUsec
+		FROM tv
+		GROUP BY PartitionDate, VariantHash
+		{{if .pagination}}
+			HAVING
+				PartitionDate < TIMESTAMP(@paginationDate)
+					OR (PartitionDate = TIMESTAMP(@paginationDate) AND VariantHash > @paginationVariantHash)
+		{{end}}
+		ORDER BY
+			PartitionDate DESC,
+			VariantHash ASC
+		{{if .params.limit}}
+			LIMIT @limit
+		{{end}}
 	{{end}}
 `))
