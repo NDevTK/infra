@@ -308,6 +308,9 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "sample_fail",
 		},
 		"servod_control_exist_for_mac_address": {
+			Conditions: []string{
+				"dut_servo_host_present",
+			},
 			ExecName: "servo_check_servod_control",
 			ExecExtraArgs: []string{
 				"command:macaddr",
@@ -947,6 +950,7 @@ func crosRepairActions() map[string]*Action {
 				"servod_echo",
 			},
 			Dependencies: []string{
+				"dut_servo_host_present",
 				"servo_power_state_reset",
 				"Wait DUT to be SSHable after reset",
 			},
@@ -995,6 +999,7 @@ func crosRepairActions() map[string]*Action {
 				"servod_echo",
 			},
 			Dependencies: []string{
+				"dut_servo_host_present",
 				"Trigger kernel panic by servod",
 				"Wait DUT to be SSHable after reset",
 			},
@@ -1006,6 +1011,9 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"servod_echo",
+			},
+			Dependencies: []string{
+				"dut_servo_host_present",
 			},
 			ExecExtraArgs: []string{
 				"count:3",
@@ -1041,6 +1049,7 @@ func crosRepairActions() map[string]*Action {
 				"Servo main device is GSC chip",
 			},
 			Dependencies: []string{
+				"dut_servo_host_present",
 				"sleep_1_second",
 			},
 			ExecName: "init_dut_for_servo",
@@ -1059,6 +1068,9 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Checks whether the servod has the command control: cr50_reboot.",
 			},
+			Conditions: []string{
+				"dut_servo_host_present",
+			},
 			ExecExtraArgs: []string{
 				"command:cr50_reboot",
 			},
@@ -1067,6 +1079,9 @@ func crosRepairActions() map[string]*Action {
 		"Trigger power_state:cr50_reset": {
 			Docs: []string{
 				"Repair a ChromeOS Device by resetting cr50 by servo.",
+			},
+			Dependencies: []string{
+				"dut_servo_host_present",
 			},
 			ExecExtraArgs: []string{
 				"command:power_state",
@@ -1445,6 +1460,9 @@ func crosRepairActions() map[string]*Action {
 				"Restart and try to boot from USB-drive",
 				"First boot in dev mode can take time so set boot time to 10 minutes.",
 			},
+			Dependencies: []string{
+				"dut_servo_host_present",
+			},
 			ExecName: "cros_dev_mode_boot_from_servo_usb_drive",
 			ExecExtraArgs: []string{
 				"boot_timeout:600",
@@ -1477,6 +1495,7 @@ func crosRepairActions() map[string]*Action {
 				"has_stable_version_cros_image",
 			},
 			Dependencies: []string{
+				"dut_servo_host_present",
 				"Servo has USB-key with require image",
 			},
 			ExecName:      "os_install_repair",
@@ -1522,6 +1541,9 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Verify that servo has build in PD control.",
 			},
+			Conditions: []string{
+				"dut_servo_host_present",
+			},
 			ExecName: "servo_build_in_pd_present",
 		},
 		"Setup does't have Servo PD control": {
@@ -1564,6 +1586,15 @@ func crosRepairActions() map[string]*Action {
 				"wait_interval:5",
 			},
 			AllowFailAfterRecovery: true,
+		},
+		"servo_power_state_reset": {
+			Docs: []string{
+				"Reset the DUT using servod power_state control.",
+			},
+			Dependencies: []string{
+				"dut_servo_host_present",
+			},
+			ExecName: "sample_fail",
 		},
 	}
 }
