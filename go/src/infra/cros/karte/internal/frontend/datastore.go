@@ -79,8 +79,8 @@ func (e *ActionEntity) ConvertToAction() *kartepb.Action {
 	}
 }
 
-// ConvertToBQAction converts a datastore action entity to a bigquery proto.
-func (e *ActionEntity) ConvertToBQAction() cloudBQ.ValueSaver {
+// ConvertToValueSaver converts a datastore action entity to a ValueSaver.
+func (e *ActionEntity) ConvertToValueSaver() cloudBQ.ValueSaver {
 	if e == nil {
 		return nil
 	}

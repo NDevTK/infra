@@ -140,11 +140,11 @@ func (k *karteFrontend) PersistAction(ctx context.Context, req *kartepb.PersistA
 		logging.Errorf(ctx, "Cannot retrieve action: %s", err)
 		return nil, errors.Annotate(err, "persist action").Err()
 	}
-	bqRecord := ent.ConvertToBQAction()
+	valueSaver := ent.ConvertToValueSaver()
 	logging.Infof(ctx, "beginning to insert record to bigquery")
 	tbl := client.Dataset("entities").Table("actions")
 	inserter := tbl.Inserter()
-	if err := inserter.Put(ctx, bqRecord); err != nil {
+	if err := inserter.Put(ctx, valueSaver); err != nil {
 		logging.Errorf(ctx, "cannot insert action: %s", err)
 		return nil, status.Errorf(codes.Aborted, "error persisting single record: %s", err)
 	}
@@ -216,7 +216,7 @@ func (k *karteFrontend) persistActionRangeImpl(ctx context.Context, client bqPer
 	insertCb := func(ctx context.Context, ents []*ActionEntity) error {
 		valueSavers := make([]cloudBQ.ValueSaver, 0, len(ents))
 		for _, ent := range ents {
-			valueSavers = append(valueSavers, ent.ConvertToBQAction())
+			valueSavers = append(valueSavers, ent.ConvertToValueSaver())
 		}
 		f := client.getInserter("entities", "actions")
 		err := f(ctx, valueSavers)
