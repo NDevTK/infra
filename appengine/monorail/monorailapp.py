@@ -18,7 +18,7 @@ from flask import Flask
 from werkzeug.middleware import dispatcher
 
 from components import endpoints_webapp2
-
+from flaskapps import getApp
 import gae_ts_mon
 
 import flaskregisterpages
@@ -40,16 +40,9 @@ gae_ts_mon.initialize_adhoc(app)
 
 flaskRegist = flaskregisterpages.ServletRegistry()
 
-# excessive_activity
-flaskapp_excessive_activity = Flask(__name__)
-flask_route_excessive_active = flaskRegist.RegisterExcesiveActivity(services)
-for rule in flask_route_excessive_active:
-  flaskapp_excessive_activity.add_url_rule(
-      rule[0], view_func=rule[1], methods=rule[2])
-
 app = dispatcher.DispatcherMiddleware(
     app, {
-        urls.EXCESSIVE_ACTIVITY: flaskapp_excessive_activity,
+        urls.EXCESSIVE_ACTIVITY: flaskRegist.RegisterExcesiveActivity(services),
     })
 
 endpoints = endpoints_webapp2.api_server(
