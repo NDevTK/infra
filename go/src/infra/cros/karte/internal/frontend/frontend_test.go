@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	cloudBQ "cloud.google.com/go/bigquery"
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"
@@ -251,11 +252,11 @@ func TestListObservations(t *testing.T) {
 }
 
 type fakeClient struct {
-	items []interface{}
+	items [][]cloudBQ.ValueSaver
 }
 
 func (c *fakeClient) getInserter(dataset string, table string) bqInserter {
-	return func(ctx context.Context, item interface{}) error {
+	return func(ctx context.Context, item []cloudBQ.ValueSaver) error {
 		c.items = append(c.items, item)
 		return nil
 	}

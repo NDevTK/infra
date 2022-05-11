@@ -162,11 +162,13 @@ type persistBqClient struct {
 }
 
 // bqInserter persists ranges of actions to BigQuery.
-type bqInserter = func(context.Context, interface{}) error
+type bqInserter = func(context.Context, []cloudBQ.ValueSaver) error
 
 // getInserter gets the inserter for a table in a dataset.
 func (c persistBqClient) getInserter(dataset string, table string) bqInserter {
-	return c.client.Dataset(dataset).Table(table).Inserter().Put
+	return func(ctx context.Context, valueSavers []cloudBQ.ValueSaver) error {
+		return c.client.Dataset(dataset).Table(table).Inserter().Put(ctx, valueSavers)
+	}
 }
 
 // PersistActionRange persists a range of actions.
