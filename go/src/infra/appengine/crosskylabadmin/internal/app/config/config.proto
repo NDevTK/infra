@@ -367,6 +367,35 @@ message RolloutConfig {
   // If prod is 20 and legacy is 1, then legacy is implicitly 979.
   int32 latest_permille = 7;
 
+  // A Pattern associates a regex identifier to a prod_permille and latest_permille.
+  message Pattern {
+    // A pattern is a regex like "^satlab-555555".
+    string pattern = 1;
+
+    // prod_permille is the probability multiplied by 1000 of using prod.
+    int32 prod_permille = 2;
+
+    // latest_permille is the probability multiplied by 1000 of using latest.
+    //
+    // In the event that latest + prod > 1000, latest is treated as if it were (1000 - prod).
+    int32 latest_permille = 3;
+  };
+
+  // pattern is a list of regex patterns that are associated with prod and latest permilles.
+  //
+  // The patterns are tried LAST to FIRST.
+  // The reason for this is to allow more general patterns to come first and more specific
+  // overrides to come later.
+  //
+  // For example, the following is a reasonable sequence of patterns.
+  //   - ^satlab
+  //   - ^satlab-555555
+  //   - ^satlab-555555-host1
+  //
+  // Organizing these patterns more specific to less specific reads better than organizing
+  // them in another way.
+  repeated Pattern pattern = 8;
+
   // The UFS_error_policy controls what happens if we encounter a UFS error at the beginning of launching a task.
   // The valid values are:
   //  - "default" or "" or "fallback" -- Fall back to the legacy path in the event of a UFS error.
