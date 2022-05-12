@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger/metrics"
@@ -41,14 +42,14 @@ func sampleSleepExec(ctx context.Context, i *ExecInfo) error {
 	return nil
 }
 
-// sampleMetricsAction sends a record to the metrics service.
-func sampleMetricsAction(ctx context.Context, ei *ExecInfo) error {
+// sampleMetricsActionExec sends a record to the metrics service.
+func sampleMetricsActionExec(ctx context.Context, info *ExecInfo) error {
 	// TODO(gregorynisbet): Add more interesting information to the action.
 	action := &metrics.Action{}
-	if ei.RunArgs.Metrics != nil {
+	if info.RunArgs.Metrics != nil {
 		action.StartTime = time.Now()
 		// TODO(gregorynisbet): Don't ignore error here.
-		ei.RunArgs.Metrics.Create(ctx, action)
+		info.RunArgs.Metrics.Create(ctx, action)
 		// TODO(gregorynisbet): Uncomment when update lands.
 		// defer func() { args.Metrics.Update(ctx, action) }()
 	}
@@ -59,9 +60,22 @@ func sampleMetricsAction(ctx context.Context, ei *ExecInfo) error {
 	return nil
 }
 
+// sampleStepSummaryMarkdownExec sets experimental SummaryMarkdown to new step.
+func sampleStepSummaryMarkdownExec(ctx context.Context, info *ExecInfo) error {
+	argsMap := info.GetActionArgs(ctx)
+	msg := argsMap.AsString(ctx, "message", "")
+	if msg != "" {
+		step, _ := build.StartStep(ctx, "Run experimental step")
+		defer func() { step.End(nil) }()
+		step.SetSummaryMarkdown(msg)
+	}
+	return nil
+}
+
 func init() {
 	Register("sample_pass", samplePassActionExec)
 	Register("sample_fail", sampleFailActionExec)
 	Register("sample_sleep", sampleSleepExec)
-	Register("sample_metrics_action", sampleMetricsAction)
+	Register("sample_metrics_action", sampleMetricsActionExec)
+	Register("sample_step_summary_markdown", sampleStepSummaryMarkdownExec)
 }
