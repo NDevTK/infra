@@ -113,8 +113,15 @@ class FlaskServlet(object):
     self.request = flask.request
     self.response = None
     self.ratelimiter = ratelimiter.RateLimiter()
+    self.redirect_url = None
 
-  def handler(self):
+  def get_handler(self):
+    return self.handler(method='GET')
+
+  def post_handler(self):
+    return self.handler(method='POST')
+
+  def handler(self, method):
     """Do common stuff then dispatch the request to get() or put() methods."""
     self.response = flask.make_response()
     handler_start_time = time.time()
@@ -161,9 +168,11 @@ class FlaskServlet(object):
 
       self.response.headers['X-Frame-Options'] = 'SAMEORIGIN'
 
-      if self.request.method == 'POST':
+      if method == 'POST':
         self.post()
-      elif self.request.method == 'GET':
+        if self.redirect_url:
+          return self.redirect(self.redirect_url)
+      elif method == 'GET':
         self.get()
     except exceptions.NoSuchUserException as e:
       logging.info('Trapped NoSuchUserException %s', e)
@@ -388,14 +397,14 @@ class FlaskServlet(object):
         else:
           raise err
 
-    redirect_url = self.ProcessFormData(mr, request.values)
+    self.redirect_url = self.ProcessFormData(mr, request.values)
 
     # Most forms redirect the user to a new URL on success.  If no
     # redirect_url was returned, the form handler must have already
     # sent a response.  E.g., bounced the user back to the form with
     # invalid form fields highlighted.
-    if redirect_url:
-      self.redirect(redirect_url, abort=True)
+    if self.redirect_url:
+      return self.redirect(self.redirect_url, abort=True)
     else:
       assert self.response.response
 
@@ -852,10 +861,9 @@ class FlaskServlet(object):
 
   def redirect(self, url, abort=False):
     if abort:
-      flask.redirect(url, code=302)
-      flask.abort(302)
+      return flask.redirect(url, code=302)
     else:
-      flask.redirect(url)
+      return flask.redirect(url)
 
   def PleaseCorrect(self, mr, **echo_data):
     """Show the same form again so that the user can correct their input."""
