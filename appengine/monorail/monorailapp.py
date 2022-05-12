@@ -43,6 +43,10 @@ app = dispatcher.DispatcherMiddleware(
     app, {
         urls.EXCESSIVE_ACTIVITY:
             flask_regist.RegisterExcesiveActivity(services),
+        urls.USER_SETTINGS:
+            flask_regist.RegisterUserSetting(services),
+        '/hosting/settings.do':
+            flask_regist.RegisterUserSettingPost(services),
     })
 
 endpoints = endpoints_webapp2.api_server(
