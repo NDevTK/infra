@@ -121,6 +121,7 @@ func TestInput(t *testing.T) {
 				So(input.buildProperties, ShouldResembleProtoJSON, `{
 					"foo": "bar"
 				}`)
+				So(input.buildRequestedProperties, ShouldBeNil)
 				So(input.propsProperties, ShouldResembleProtoJSON, `{
 					"top_level_project": {
 						"repo": {
@@ -142,6 +143,23 @@ func TestInput(t *testing.T) {
 				// Make sure the build wasn't modified
 				So(build.Input.Properties.Fields, ShouldContainKey, "$bootstrap/properties")
 				So(build.Input.Properties.Fields, ShouldContainKey, "$bootstrap/exe")
+			})
+
+			Convey("with requested properties", func() {
+				build.Infra = &buildbucketpb.BuildInfra{
+					Buildbucket: &buildbucketpb.BuildInfra_Buildbucket{
+						RequestedProperties: jsonToStruct(`{
+							"foo": "bar"
+						}`),
+					},
+				}
+
+				input, err := opts.NewInput(build)
+
+				So(err, ShouldBeNil)
+				So(input.buildRequestedProperties, ShouldResembleProtoJSON, `{
+					"foo": "bar"
+				}`)
 			})
 
 			Convey("without $bootstrap/properties if PropertiesOptional is set", func() {
