@@ -140,12 +140,12 @@ func (r *recoveryEngine) runActions(ctx context.Context, actions []string, enabl
 // 4) Run action exec function. Fail if any fail.
 func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enableRecovery bool) (rErr error) {
 	action := &metrics.Action{}
+	var step *build.Step
 	if r.args != nil {
 		if actionCloser := r.recordAction(ctx, actionName, action); actionCloser != nil {
 			defer actionCloser(rErr)
 		}
 		if r.args.ShowSteps {
-			var step *build.Step
 			step, ctx = build.StartStep(ctx, fmt.Sprintf("Run %s", actionName))
 			defer func() { step.End(rErr) }()
 		}
@@ -179,7 +179,17 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 	}
 	conditionName, err := r.runActionConditions(ctx, actionName)
 	if err != nil {
-		log.Infof(ctx, "Action %q: skipping, one of conditions %q failed", actionName, conditionName)
+		log.Infof(ctx, "Action %q: skipping, one of conditions %q failed.", actionName, conditionName)
+		if step != nil {
+			// Use modify as Step already can have other messages inside.
+			step.Modify(func(v *build.StepView) {
+				log.Infof(ctx, "Original v.SummaryMarkdown=%q", v.SummaryMarkdown)
+				if v.SummaryMarkdown != "" {
+					v.SummaryMarkdown += "\n"
+				}
+				v.SummaryMarkdown += fmt.Sprintf("Skipped as condition %q failed!", conditionName)
+			})
+		}
 		log.Debugf(ctx, "Action %q: conditions fail with %s", actionName, err)
 		// Return nil error so we can continue execution of next actions...
 		return nil
