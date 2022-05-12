@@ -23,6 +23,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/cmd/cros-tool-runner/internal/common"
+	"infra/cros/cmd/cros-tool-runner/internal/libsserver"
 	"infra/cros/cmd/cros-tool-runner/internal/services"
 )
 
@@ -47,6 +48,8 @@ func Run(ctx context.Context, req *api.CrosToolRunnerTestRequest, crosTestContai
 	inputFileName := path.Join(crosTestDir, "request.json")
 	// The directory for cros-dut artifacts.
 	crosDUTDir := path.Join(artifactDir, "cros-dut")
+	// The directory for artifacts from any test libraries run through cros-libs.
+	crosLibsDir := path.Join(artifactDir, "cros-libs")
 
 	// Setting up directories.
 	if err := os.MkdirAll(crosTestDir, 0755); err != nil {
@@ -90,6 +93,19 @@ func Run(ctx context.Context, req *api.CrosToolRunnerTestRequest, crosTestContai
 	for i, c := range companions {
 		c.DutServer = &lab_api.IpEndpoint{Address: "localhost", Port: dutServices[i+1].Port}
 	}
+
+	// Create and run LibsServer.
+	libsServer, err := libsserver.New(log.Default(), crosLibsDir, token, req)
+	if err != nil {
+		return nil, errors.Annotate(err, "could not start libsserver").Err()
+	}
+	go func() {
+		if err = libsServer.Serve(); err != nil {
+			log.Printf("libsserver error: %v", err)
+		}
+	}()
+	defer libsServer.Stop(ctx)
+
 	testReq := &api.CrosTestRequest{
 		TestSuites: req.GetTestSuites(),
 		Primary: &api.CrosTestRequest_Device{

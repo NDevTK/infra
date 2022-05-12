@@ -40,12 +40,14 @@ type Docker struct {
 	ServicePort int
 	// Run container in detach mode.
 	Detach bool
-	// Name set for assigned to the container.
+	// Name to be assigned to the container - should be unique.
 	Name string
 	// ExecCommand tells if we need run special command when we start container.
 	ExecCommand []string
 	// Attach volumes to the docker image.
 	Volumes []string
+	// PortMappings is a list of "host port:docker port" or "docker port" to publish.
+	PortMappings []string
 
 	// Successful pulled docker image.
 	pulledImage string
@@ -53,6 +55,21 @@ type Docker struct {
 	containerID string
 	// Network used for running container.
 	Network string
+}
+
+// HostPort returns the port which the given docker port maps to.
+func (d *Docker) MatchingHostPort(ctx context.Context, dockerPort string) (string, error) {
+	cmd := exec.Command("docker", "port", d.Name, dockerPort)
+	stdout, stderr, err := common.RunWithTimeout(ctx, cmd, 2*time.Minute, true)
+	if err != nil {
+		log.Printf(fmt.Sprintf("Could not find port %v for %v: %v", dockerPort, d.Name, err), stdout, stderr)
+		return "", errors.Annotate(err, "find mapped port").Err()
+	}
+
+	// Expected stdout is of the form "0.0.0.0:12345\n".
+	port := strings.TrimPrefix(stdout, "0.0.0.0:")
+	port = strings.TrimSuffix(port, "\n")
+	return port, nil
 }
 
 // PullImage pulls docker image.
@@ -163,7 +180,16 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool) (string, error)
 	}
 	// Set to automatically remove the container when it exits.
 	args = append(args, "--rm")
-	args = append(args, "--network", d.Network)
+	if d.Network != "" {
+		args = append(args, "--network", d.Network)
+	}
+
+	// Publish in-docker ports; any without an explicit mapping will need to be looked up later.
+	if len(d.PortMappings) != 0 {
+		args = append(args, "-p")
+		args = append(args, d.PortMappings...)
+	}
+
 	args = append(args, d.pulledImage)
 	if len(d.ExecCommand) > 0 {
 		args = append(args, d.ExecCommand...)

@@ -1,0 +1,2 @@
+[{"name":"example_rest_service","api_type":"REST","version":0,"image":"us-docker.pkg.dev/cros-registry/test-services/cros-libs-ex-rest:local-kathrelkeld","registry":"us-docker.pkg.dev/cros-registry/test-services/","exec_cmd":[],"port":"3000", "ping":"ping","log_dir":"/tmp/logs_dir","owners":["chromeos-frameworks@google.com"],"description":"asdf"}]
+
