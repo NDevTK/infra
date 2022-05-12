@@ -3640,6 +3640,18 @@ wheel: <
 
 * *universal*
 
+### 0.7
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/importlab-py3"
+  version: "version:0.7"
+>
+```
+
+
+* *universal*
+
 ## **importlib-metadata**
 
 ### 1.6.0
