@@ -436,6 +436,108 @@ CREATE TABLE TestVerdicts (
 -- https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/issues/32
 --, ROW DELETION POLICY (OLDER_THAN(PartitionTime, INTERVAL 90 DAY));
 
+-- Stores test results.
+CREATE TABLE TestResults (
+  -- The LUCI Project this test result belongs to.
+  Project STRING(40) NOT NULL,
+
+  -- Unique identifier of the test.
+  -- This has the same value as luci.resultdb.v1.TestResult.test_id.
+  TestId STRING(MAX) NOT NULL,
+
+  -- Partition time, as determined by Weetbix ingestion. Start time of the
+  -- ingested build (for postsubmit results) or start time of the presubmit run
+  -- (for presubmit results). Defines date/time axis of test results plotted
+  -- by date/time.
+  -- Including as part of Primary Key allows direct filtering of data for test
+  -- to last N days. This could be used to improve performance for tests with
+  -- many results, or allow experimentation with keeping longer histories
+  -- (e.g. 120 days) without incurring performance penalty on time-windowed
+  -- queries.
+  PartitionTime TIMESTAMP NOT NULL,
+
+  -- A hex-encoded sha256 of concatenated "<key>:<value>\n" variant pairs.
+  -- Computed as hex(sha256(<concatenated_key_value_pairs>)[:8]),
+  -- where concatenated_key_value_pairs is the result of concatenating
+  -- variant pairs formatted as "<key>:<value>\n" in ascending key order.
+  -- Combination of Realm, TestId and VariantHash can identify a test variant.
+  VariantHash STRING(16) NOT NULL,
+
+  -- The invocation from which these test results were ingested.
+  -- This is the top-level invocation that was ingested.
+  IngestedInvocationId STRING(MAX) NOT NULL,
+
+  -- The index of the test run that contained this test result.
+  -- The test run of a test result is the invocation it is directly
+  -- included inside; typically the invocation for the swarming task
+  -- the tests ran as part of.
+  -- Indexes are assigned to runs based on the order they appear to have
+  -- run in, starting from zero (based on test result timestamps).
+  -- However, if two test runs overlap, the order of indexes for those test
+  -- runs is not guaranteed.
+  RunIndex INT64 NOT NULL,
+
+  -- The index of the test result in the run. The first test result that
+  -- was produced in a run will have index 0, the second will have index 1,
+  -- and so on.
+  ResultIndex INT64 NOT NULL,
+
+  -- Whether the test result was expected.
+  IsUnexpected BOOL NOT NULL,
+
+  -- How long the test execution took, in microseconds.
+  RunDurationUsec INT64,
+
+  -- The test result status.
+  Status INT64 NOT NULL,
+
+  -- Whether the test verdict was exonerated, and if so, for what reason it
+  -- was exonerated.
+  -- This field is stored denormalised. It is guaranteed to be the same for
+  -- all results for a test variant in an ingested invocation.
+  ExonerationStatus INT64 NOT NULL,
+
+  -- The following data is stored denormalised. It is guaranteed to be
+  -- the same for all results for the ingested invocation.
+
+  -- The realm of the test result, excluding project. 62 as ResultDB allows
+  -- at most 64 characters for the construction "<project>:<realm>" and project
+  -- must be at least one character.
+  SubRealm STRING(62) NOT NULL,
+
+  -- The status of the build that contained this test result. Can be used
+  -- to filter incomplete results (e.g. where build was cancelled or had
+  -- an infra failure).
+  -- See weetbix.v1.BuildStatus.
+  BuildStatus INT64 NOT NULL,
+
+  -- Whether the invocation was part of a build that has unsubmitted changes
+  -- applied (such as Gerrit changes) AND the changes were later submitted
+  -- because the build was part of a successful presubmit run.
+  HasContributedToClSubmission BOOL NOT NULL,
+
+  -- The following fields capture information about any unsubmitted
+  -- changelists that were tested by the test execution. In case
+  -- of multiple changelists tested, only one changelist is selected.
+
+  -- Hostname of the gerrit instance of the changelist that was tested
+  -- (if any). For storage efficiency, the suffix "-review.googlesource.com"
+  -- is not stored. Only gerrit hosts are supported.
+  -- 56 chars because maximum length of a domain name label is 63 chars,
+  -- and we subtract 7 chars for "-review".
+  ChangelistHost STRING(56),
+
+  -- The changelist number, e.g. 12345.
+  ChangelistChange INT64,
+
+  -- The patchset number of the changelist, e.g. 1.
+  ChangelistPatch INT64,
+) PRIMARY KEY(Project, TestId, PartitionTime DESC, VariantHash, IngestedInvocationId, RunIndex, ResultIndex)
+-- The following DDL query needs to be uncommented when applied to real Spanner
+-- instances. But it is commented out for Cloud Spanner Emulator:
+-- https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/issues/32
+--, ROW DELETION POLICY (OLDER_THAN(PartitionTime, INTERVAL 90 DAY));
+
 -- Stores top-level invocations which were ingested.
 --
 -- TODO(crbug.com/1266759):
@@ -460,6 +562,12 @@ CREATE TABLE IngestedInvocations (
   -- (for presubmit results).
   PartitionTime TIMESTAMP NOT NULL,
 
+  -- The status of the build that contained this test result. Can be used
+  -- to filter incomplete results (e.g. where build was cancelled or had
+  -- an infra failure).
+  -- See weetbix.v1.BuildStatus.
+  BuildStatus INT64,
+
   -- Whether the invocation was part of a build that has unsubmitted changes
   -- applied (such as Gerrit changes). (This includes unsubmitted changes
   -- that were later submitted, e.g. because of a successful presubmit run.)
@@ -469,6 +577,19 @@ CREATE TABLE IngestedInvocations (
   -- applied (such as Gerrit changes) AND the changes were later submitted
   -- because the build was part of a successful presubmit run.
   HasContributedToClSubmission BOOL NOT NULL,
+
+  -- Hostname of the gerrit instance (if any). For storage
+  -- efficiency, the suffix "-review.googlesource.com" is not stored.
+  -- Only gerrit hosts are supported.
+  -- 56 chars because maximum length of a domain name label is 63 chars,
+  -- and we subtract 7 chars for "-review".
+  ChangelistHost STRING(56),
+
+  -- The changelist number, e.g. 12345.
+  ChangelistChange INT64,
+
+  -- The patchset number of the changelist, e.g. 1.
+  ChangelistPatch INT64,
 ) PRIMARY KEY(Project, IngestedInvocationId)
 -- The following DDL query needs to be uncommented when applied to real Spanner
 -- instances. But it is commented out for Cloud Spanner Emulator:
