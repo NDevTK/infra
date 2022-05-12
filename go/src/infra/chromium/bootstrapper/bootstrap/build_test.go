@@ -237,22 +237,12 @@ func TestGetBootstrapConfig(t *testing.T) {
 					"properties_file": "infra/config/fake-bucket/fake-builder/properties.textpb"
 				}`)
 				build.Input.Properties.Fields["test_property"] = structpb.NewStringValue("foo")
-				build.Infra = &buildbucketpb.BuildInfra{
-					Buildbucket: &buildbucketpb.BuildInfra_Buildbucket{
-						RequestedProperties: jsonToStruct(`{
-							"test_property": "foo"
-						}`),
-					},
-				}
 				input := getInput(build)
 
 				config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
 				So(err, ShouldBeNil)
 				So(config.buildProperties, ShouldResembleProtoJSON, `{
-					"test_property": "foo"
-				}`)
-				So(config.buildRequestedProperties, ShouldResembleProtoJSON, `{
 					"test_property": "foo"
 				}`)
 			})
@@ -978,17 +968,12 @@ func TestUpdateBuild(t *testing.T) {
 					Id:      "fake-revision",
 				}},
 				buildProperties: jsonToStruct(`{
-					"foo": "build-requested-foo-value",
-					"bar": "build-bar-value",
-					"baz": "build-baz-value"
-				}`),
-				buildRequestedProperties: jsonToStruct(`{
-					"foo": "build-requested-foo-value"
+					"foo": "build-foo-value",
+					"bar": "build-bar-value"
 				}`),
 				builderProperties: jsonToStruct(`{
 					"foo": "builder-foo-value",
-					"bar": "builder-bar-value",
-					"shaz": "builder-shaz-value"
+					"baz": "builder-baz-value"
 				}`),
 				skipAnalysisReasons: []string{
 					"skip-analysis-reason1",
@@ -1065,10 +1050,9 @@ func TestUpdateBuild(t *testing.T) {
 								"skip-analysis-reason2"
 							]
 						},
-						"foo": "build-requested-foo-value",
-						"bar": "builder-bar-value",
-						"baz": "build-baz-value",
-						"shaz": "builder-shaz-value"
+						"foo": "build-foo-value",
+						"bar": "build-bar-value",
+						"baz": "builder-baz-value"
 					}
 				}
 			}`)
