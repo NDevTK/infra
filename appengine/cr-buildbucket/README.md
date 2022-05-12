@@ -37,7 +37,7 @@ routes are served by the Go AppEngine service (known as `default-go`).
 Deployment of `cr-buildbucket` requires
 [gae.py](https://chromium.googlesource.com/infra/luci/luci-py/+/refs/heads/main/appengine/components/tools/gae.py)
 similar to other LUCI services whose deployment has not yet been automated. The
-Buildbucket Python services (`default`, `backend`, `beefy`) are deployed from
+Buildbucket Python services (`default`, `backend`) are deployed from
 this directory. To deploy the Go service (`default-go`), see the dummy
 [app.yaml](https://chromium.googlesource.com/infra/luci/luci-go/+/refs/heads/main/buildbucket/appengine/frontend/app.yaml)
 file for instructions. Note that `cr-buildbucket-dev` has its Python services

@@ -143,24 +143,6 @@ class UnregisterBuilders(webapp2.RequestHandler):  # pragma: no cover
   def get(self):
     service.unregister_builders()
 
-
-def _beefy_service_interceptor(
-    request, context, call_details, continuation
-):  # pragma: no cover
-  """Requires the requester to be a member of "buildbucket-beefy-users" group.
-  """
-  if auth.is_group_member('buildbucket-beefy-users'):
-    return continuation(request, context, call_details)
-
-  who = auth.get_current_identity().to_bytes()
-  logging.warning('%s tried to use beefy service', who)
-  context.set_code(prpc.StatusCode.PERMISSION_DENIED)
-  context.set_details(
-      '%s is not allowed to use beefy buildbucket service' % who
-  )
-  return None
-
-
 def get_frontend_routes():  # pragma: no cover
   endpoints_services = [
       legacy_api.BuildBucketApi,
@@ -183,8 +165,6 @@ def get_frontend_routes():  # pragma: no cover
 
   prpc_server = prpc.Server()
   prpc_server.add_interceptor(auth.prpc_interceptor)
-  if modules.get_current_module_name() == 'beefy':
-    prpc_server.add_interceptor(_beefy_service_interceptor)
   prpc_server.add_service(access.AccessServicer())
   routes += prpc_server.get_routes()
 
