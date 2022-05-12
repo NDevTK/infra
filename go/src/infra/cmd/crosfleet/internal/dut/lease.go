@@ -126,13 +126,17 @@ func (c *leaseRun) innerRun(a subcommands.Application, env subcommands.Env) erro
 			c.printer.WriteTextStderr("Unable to contact UFS to print DUT info: %v", err)
 			return nil
 		}
-		leaseInfo.DUT, err = getDutInfo(ctx, ufsClient, host)
+		var allInfoFound bool
+		leaseInfo.DUT, allInfoFound, err = getDutInfo(ctx, ufsClient, host)
 		if err != nil {
 			// Don't fail the command here, since the DUT is already leased.
 			c.printer.WriteTextStderr("Unable to print DUT info: %v", err)
 			return nil
 		}
 		c.printer.WriteTextStderr("%s\n", dutInfoAsBashVariables(leaseInfo.DUT))
+		if !allInfoFound {
+			c.printer.WriteTextStderr("Couldn't fetch complete DUT info for %s, possibly due to transient UFS RPC errors;\nrun `crosfleet dut %s %s` to try again\n", host, infoCmdName, host)
+		}
 	}
 	c.printer.WriteJSONStdout(&leaseInfo)
 	c.printer.WriteTextStdout("Visit http://go/chromeos-lab-duts-ssh for up-to-date docs on SSHing to a leased DUT")

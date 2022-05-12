@@ -127,9 +127,10 @@ func (c *leasesRun) innerRun(a subcommands.Application, env subcommands.Env) err
 	for _, build := range sortedLeaseBuilds {
 		leaseInfo := &dutinfopb.LeaseInfo{Build: build}
 		dutHostname := buildbucket.FindDimValInFinalDims("dut_name", build)
+		allDutInfoFound := true
 		if dutHostname != "" {
 			if c.full {
-				leaseInfo.DUT, err = getDutInfo(ctx, ufsClient, dutHostname)
+				leaseInfo.DUT, allDutInfoFound, err = getDutInfo(ctx, ufsClient, dutHostname)
 				if err != nil {
 					return err
 				}
@@ -142,6 +143,9 @@ func (c *leasesRun) innerRun(a subcommands.Application, env subcommands.Env) err
 		// Otherwise, just print each separately from this loop.
 		leaseInfoList.Leases = append(leaseInfoList.Leases, leaseInfo)
 		c.printer.WriteTextStdout("%s\n", leaseInfoAsBashVariables(leaseInfo, leasesBBClient))
+		if !allDutInfoFound {
+			c.printer.WriteTextStdout("Couldn't fetch complete DUT info for %s, possibly due to transient UFS RPC errors;\nrun `crosfleet dut %s` to try again\n", dutHostname, leasesCmd)
+		}
 	}
 	c.printer.WriteJSONStdout(&leaseInfoList)
 

@@ -12,6 +12,7 @@ import (
 	"infra/cmd/crosfleet/internal/site"
 	"infra/cmd/crosfleet/internal/ufs"
 	"infra/cmdsupport/cmdlib"
+	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
 	ufsutil "infra/unifiedfleet/app/util"
 	"strings"
@@ -68,7 +69,7 @@ func (c *infoRun) innerRun(a subcommands.Application, args []string, env subcomm
 
 	var infoList dutinfopb.DUTInfoList
 	for _, hostname := range args {
-		info, err := getDutInfo(ctx, ufsClient, hostname)
+		info, allInfoFound, err := getDutInfo(ctx, ufsClient, hostname)
 		if err != nil {
 			return err
 		}
@@ -77,32 +78,40 @@ func (c *infoRun) innerRun(a subcommands.Application, args []string, env subcomm
 		// Otherwise, just print each separately from this loop.
 		infoList.DUTs = append(infoList.DUTs, info)
 		c.printer.WriteTextStdout("%s\n", dutInfoAsBashVariables(info))
+		if !allInfoFound {
+			c.printer.WriteTextStdout("Couldn't fetch complete DUT info for %s, possibly due to transient UFS RPC errors;\nrun `crosfleet dut %s %s` to try again\n", hostname, infoCmdName, hostname)
+		}
 	}
 	c.printer.WriteJSONStdout(&infoList)
 	return nil
 }
 
-// getDutInfo returns information about the DUT with the given hostname.
-func getDutInfo(ctx context.Context, ufsClient ufs.Client, hostname string) (*dutinfopb.DUTInfo, error) {
+// getDutInfo returns information about the DUT with the given hostname, and a
+// bool indicating whether all information fields were found in UFS.
+func getDutInfo(ctx context.Context, ufsClient ufs.Client, hostname string) (*dutinfopb.DUTInfo, bool, error) {
 	ctx = contextWithOSNamespace(ctx)
 	correctedHostname := correctedHostname(hostname)
 	labSetup, err := ufsClient.GetMachineLSE(ctx, &ufsapi.GetMachineLSERequest{
 		Name: ufsutil.AddPrefix(ufsutil.MachineLSECollection, correctedHostname),
 	})
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
-	machine, err := ufsClient.GetMachine(ctx, &ufsapi.GetMachineRequest{
-		Name: ufsutil.AddPrefix(ufsutil.MachineCollection, labSetup.GetMachines()[0]),
-	})
-	if err != nil {
-		return nil, err
+	var machine *ufspb.Machine
+	if names := labSetup.GetMachines(); len(names) > 0 && names[0] != "" {
+		machine, err = ufsClient.GetMachine(ctx, &ufsapi.GetMachineRequest{
+			Name: ufsutil.AddPrefix(ufsutil.MachineCollection, labSetup.GetMachines()[0]),
+		})
+		if err != nil {
+			return nil, false, err
+		}
 	}
+	allFieldsFound := correctedHostname != "" && labSetup != nil && machine != nil
 	return &dutinfopb.DUTInfo{
 		Hostname: correctedHostname,
 		LabSetup: labSetup,
 		Machine:  machine,
-	}, nil
+	}, allFieldsFound, nil
 }
 
 // dutInfoAsBashVariables returns a pretty-printed string containing info about
