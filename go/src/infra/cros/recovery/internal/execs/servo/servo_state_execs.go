@@ -47,16 +47,14 @@ func matchStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	args := info.GetActionArgs(ctx)
 	expectedState := strings.ToLower(args.AsString(ctx, "state", ""))
 	if expectedState == "" {
-		return errors.Reason("match state: the servo state string is empty").Err()
+		return errors.Reason("match state: state not provided").Err()
 	}
-	// Update after DUT migrated to proto representation.
 	if d := info.RunArgs.DUT; d != nil {
 		if sh := d.ServoHost; sh != nil {
-			currentState := strings.ToLower(string(sh.State))
+			currentState := strings.ToLower(sh.State.String())
 			if currentState != expectedState {
-				return errors.Reason("match state: servo state mismatch: expected: %q, but got %q", expectedState, currentState).Err()
+				return errors.Reason("match state: state mismatch, expected: %q, but got %q", expectedState, currentState).Err()
 			}
-			// The states matched.
 			return nil
 		}
 	}

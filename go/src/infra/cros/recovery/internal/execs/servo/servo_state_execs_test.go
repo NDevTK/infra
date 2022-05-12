@@ -109,3 +109,72 @@ func TestSetServoStateExec(t *testing.T) {
 		})
 	}
 }
+
+var matchServoStateExecTestCases = []struct {
+	testName    string
+	actionArg   string
+	servoHost   *tlw.ServoHost
+	expectedErr error
+}{
+	{
+		"states are matching",
+		"state:SBU_LOW_VOLTAGE",
+		&tlw.ServoHost{
+			State: tlw.ServoHost_SBU_LOW_VOLTAGE,
+		},
+		nil,
+	},
+	{
+		"not matching",
+		"state:SBU_LOW_VOLTAGE",
+		&tlw.ServoHost{
+			State: tlw.ServoHost_STATE_UNSPECIFIED,
+		},
+		errors.Reason("match state: state mismatch, expected: \"sbu_low_voltage\", but got \"state_unspecified\"").Err(),
+	},
+	{
+		"fail: state info is empty",
+		"",
+		&tlw.ServoHost{
+			State: tlw.ServoHost_STATE_UNSPECIFIED,
+		},
+		errors.Reason("match state: state not provided").Err(),
+	},
+	{
+		"fail: servo host is not exist",
+		"state:Haha",
+		nil,
+		errors.Reason("match state: current servo state is unknown").Err(),
+	},
+}
+
+func TestMatchServoStateExec(t *testing.T) {
+	t.Parallel()
+	for _, tt := range matchServoStateExecTestCases {
+		tt := tt
+		t.Run(tt.testName, func(t *testing.T) {
+			t.Parallel()
+			ctx := context.Background()
+			args := &execs.RunArgs{
+				DUT: &tlw.Dut{ServoHost: tt.servoHost},
+			}
+			info := &execs.ExecInfo{
+				RunArgs:    args,
+				ActionArgs: []string{tt.actionArg},
+			}
+			actualErr := matchStateExec(ctx, info)
+			if tt.expectedErr == nil {
+				// Expected to pass
+				if actualErr != nil {
+					t.Errorf("Expected to pass by fail with %q", actualErr)
+				}
+			} else {
+				if actualErr == nil {
+					t.Errorf("Expected error %q, but got %q", tt.expectedErr, actualErr)
+				} else if !strings.Contains(actualErr.Error(), tt.expectedErr.Error()) {
+					t.Errorf("Expected error %q, but got %q", tt.expectedErr, actualErr)
+				}
+			}
+		})
+	}
+}
