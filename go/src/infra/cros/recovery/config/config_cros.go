@@ -60,8 +60,9 @@ func crosClosePlan() *Plan {
 			"Update peripheral wifi state",
 			"Servo-host logs",
 			"Remove in-use flag on servo-host",
-			"Remove request to reboot is servo is good",
+			"Remove request to reboot if servo is good",
 			"Update DUT state",
+			"Stop servod",
 		},
 		Actions: map[string]*Action{
 			"servo_state_is_working": {
@@ -71,7 +72,7 @@ func crosClosePlan() *Plan {
 				ExecName:      "servo_match_state",
 				ExecExtraArgs: []string{"state:WORKING"},
 			},
-			"Remove request to reboot is servo is good": {
+			"Remove request to reboot if servo is good": {
 				Conditions: []string{
 					"is_not_flex_board",
 					"dut_servo_host_present",
@@ -172,6 +173,15 @@ func crosClosePlan() *Plan {
 				ExecExtraArgs: []string{
 					"state:needs_manual_repair",
 				},
+				AllowFailAfterRecovery: true,
+			},
+			"Stop servod": {
+				Docs: []string{
+					"Stop the servod daemon.",
+					"Allowed to fail as can be run when servod is not running.",
+				},
+				ExecName:               "servo_host_servod_stop",
+				RunControl:             RunControl_ALWAYS_RUN,
 				AllowFailAfterRecovery: true,
 			},
 		},
