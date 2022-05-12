@@ -7,6 +7,7 @@
 import logging
 from framework import excessiveactivity
 import settings
+from flask import Flask
 
 from project import project_constants
 
@@ -50,8 +51,9 @@ class ServletRegistry(object):
     return self.routes
 
   def RegisterExcesiveActivity(self, service):
-    return [
-        (
-            '/', excessiveactivity.ExcessiveActivity(services=service).handler,
-            ['GET'])
-    ]
+    flaskapp_excessive_activity = Flask(__name__)
+    flaskapp_excessive_activity.add_url_rule(
+        '/',
+        view_func=excessiveactivity.ExcessiveActivity(services=service).handler,
+        methods=['GET'])
+    return flaskapp_excessive_activity
