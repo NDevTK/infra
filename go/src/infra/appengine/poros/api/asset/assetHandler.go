@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	proto "infra/appengine/poros/api/proto"
+	"os"
 
 	"github.com/google/uuid"
 	"go.chromium.org/luci/gae/service/datastore"
@@ -95,6 +96,16 @@ func (e *AssetHandler) List(ctx context.Context, in *ListAssetsRequest) (*ListAs
 		res.Assets = append(res.Assets, &assets[i])
 	}
 	return res, nil
+}
+
+func (c *AssetHandler) GetAssetConfiguration(ctx context.Context, in *GetAssetConfigurationRequest) (*GetAssetConfigurationResponse, error) {
+	// TODO: crbug/1322948 - Static file used for implementing & testing the auth
+	// in go binary, this method will be replaced by actual asset config from db
+	data, err := os.ReadFile("./connector_test.asset.textpb")
+	if err != nil {
+		return nil, err
+	}
+	return &GetAssetConfigurationResponse{Config: string(data)}, nil
 }
 
 func getById(ctx context.Context, id string) (*proto.AssetEntity, error) {
