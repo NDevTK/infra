@@ -381,6 +381,7 @@ func servoRepairPlan() *Plan {
 					"Read ppdut5_mv value",
 					"Read ppchg5_mv value",
 				},
+				ExecName: "servo_check_servod_control",
 				ExecExtraArgs: []string{
 					"command:servo_pd_role",
 					"expected_string_value:src",
@@ -390,7 +391,6 @@ func servoRepairPlan() *Plan {
 					"servo_fake_disconnect_dut_repair",
 					"servo_servod_cc_toggle_repair",
 				},
-				ExecName:               "servo_check_servod_control",
 				AllowFailAfterRecovery: true,
 			},
 			"servo_cr50_checks": {
@@ -573,7 +573,9 @@ func servoRepairPlan() *Plan {
 				Conditions: []string{
 					"Is not servo_v3",
 					"Is servo_v4(p1) with type-a connector",
+					"DUT has CrOS EC",
 				},
+				ExecName: "servo_low_ppdut5",
 				RecoveryActions: []string{
 					"Stop servod",
 					"servo_power_delivery_repair",
@@ -585,7 +587,6 @@ func servoRepairPlan() *Plan {
 					"servo_micro_fw_update_repair",
 					"reflash_cr_50_fw_on_dut",
 				},
-				ExecName: "servo_low_ppdut5",
 			},
 			"Servo type-a hub connected": {
 				Docs: []string{
@@ -595,7 +596,7 @@ func servoRepairPlan() *Plan {
 				Conditions: []string{
 					"servo_host_is_labstation",
 					"is_servo_micro",
-					"dut_has_cros_ec",
+					"DUT has CrOS EC",
 					// Followed is condition to check if voltage is low means servo_micro is not connected.
 					"DUT is UP by EC response",
 				},
@@ -615,7 +616,7 @@ func servoRepairPlan() *Plan {
 					"Verification based on EC response.",
 				},
 				Conditions: []string{
-					"dut_has_cros_ec",
+					"DUT has CrOS EC",
 				},
 				Dependencies: []string{
 					"Read servo serial by servod harness",
@@ -629,7 +630,7 @@ func servoRepairPlan() *Plan {
 			"servo_ec_check": {
 				Conditions: []string{
 					"Is not servo_v3",
-					"dut_has_cros_ec",
+					"DUT has CrOS EC",
 				},
 				Dependencies: []string{
 					"Set state:EC_BROKEN",
@@ -642,7 +643,7 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "sample_pass",
 			},
-			"dut_has_cros_ec": {
+			"DUT has CrOS EC": {
 				Docs: []string{
 					"Verify if DUT has ChromeOS firmware for EC",
 				},
@@ -658,7 +659,7 @@ func servoRepairPlan() *Plan {
 			"servo_ec_console": {
 				Conditions: []string{
 					"Is not servo_v3",
-					"dut_has_cros_ec",
+					"DUT has CrOS EC",
 				},
 				ExecExtraArgs: []string{
 					"commands:ec_system_powerstate,ec_board",
@@ -681,7 +682,7 @@ func servoRepairPlan() *Plan {
 			"servo_battery_charging": {
 				Conditions: []string{
 					"Is not servo_v3",
-					"dut_has_cros_ec",
+					"DUT has CrOS EC",
 					"battery_last_charge_readable",
 				},
 				AllowFailAfterRecovery: true,
