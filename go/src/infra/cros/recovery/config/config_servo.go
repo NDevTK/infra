@@ -23,7 +23,7 @@ func servoRepairPlan() *Plan {
 			"servo_v3_uptime",
 			"servo_power_cycle_root_servo",
 			"Set state:SERVO_HOST_ISSUE",
-			"lock_labstation",
+			"Mark labstation as servod is in-use",
 			"Set state:BROKEN",
 			"has_enough_disk_space",
 			"Cache latest servod start time",
@@ -33,7 +33,7 @@ func servoRepairPlan() *Plan {
 			"servo_v3_root_present",
 			"servo_fw_need_update",
 			"Set state:SERVO_HOST_ISSUE",
-			"servo_host_servod_start",
+			"Start servod daemon",
 			"Set state:SERVOD_ISSUE",
 			"Verify that servod started and respond to dut-control",
 			"Set state:SERVO_HOST_ISSUE",
@@ -111,15 +111,18 @@ func servoRepairPlan() *Plan {
 				ExecName:               "cros_register_servod_logs_start",
 				AllowFailAfterRecovery: true,
 			},
-			"servo_host_servod_start": {
+			"Start servod daemon": {
+				Docs: []string{
+					"Start servod daemon on servo-host",
+				},
+				ExecName:    "servo_host_servod_init",
+				ExecTimeout: &durationpb.Duration{Seconds: 120},
 				RecoveryActions: []string{
 					"Stop servod",
 					"servo_power_delivery_repair",
 					"servo_fake_disconnect_dut_repair",
 					"servo_servod_cc_toggle_repair",
 				},
-				ExecName:    "servo_host_servod_init",
-				ExecTimeout: &durationpb.Duration{Seconds: 120},
 			},
 			"Stop servod": {
 				Docs: []string{
@@ -133,15 +136,20 @@ func servoRepairPlan() *Plan {
 			"Initialize docker container": {
 				Docs: []string{
 					"Initiate docker to have access to the host.",
+					"Servod is not needed as on this stage we just verify that servo host is good.",
+					"If start container with servod and root servo device is not connected it will fail.",
 				},
 				Conditions: []string{
 					"is_container",
 				},
+				ExecName: "servo_host_servod_init",
+				ExecExtraArgs: []string{
+					"no_servod:true",
+				},
+				ExecTimeout: &durationpb.Duration{Seconds: 360},
 				RecoveryActions: []string{
 					"Stop servod",
 				},
-				ExecName:    "servo_host_servod_init",
-				ExecTimeout: &durationpb.Duration{Seconds: 360},
 			},
 			"Stop servod daemon on servo-host": {
 				Docs: []string{
@@ -192,10 +200,17 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "is_servo_v3",
 			},
-			"lock_labstation": {
-				Docs:       []string{"create lock file is_in_use"},
-				Conditions: []string{"is_labstation"},
-				ExecName:   "cros_create_servo_in_use",
+			"Mark labstation as servod is in-use": {
+				Docs: []string{
+					"Create lock file is_in_use.",
+				},
+				Conditions: []string{
+					"is_labstation",
+				},
+				ExecName: "cros_create_servo_in_use",
+				RecoveryActions: []string{
+					"Stop servod",
+				},
 			},
 			"has_enough_disk_space": {
 				Docs:          []string{"check the stateful partition have enough disk space that is at least 0.5GB. The storage unit is in GB."},
