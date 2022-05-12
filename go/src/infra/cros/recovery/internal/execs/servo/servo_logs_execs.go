@@ -50,7 +50,6 @@ func parseServodLogTime(rawTime string, log logger.Logger) (*time.Time, error) {
 	if err != nil {
 		return nil, errors.Annotate(err, "extract time from servo logs").Err()
 	}
-	log.Debugf("Parsed servod log time: %v", t)
 	return &t, nil
 }
 
@@ -82,11 +81,14 @@ func getServosStartTime(ctx context.Context, logRoot string, servodPort int, run
 		// path/to/whatever does exist
 		return nil, errors.Annotate(err, "collect servod logs").Err()
 	}
-	output, err := run(ctx, time.Minute, "cat", f)
+	content, err := ioutil.ReadFile(f)
 	if err != nil {
 		return nil, errors.Annotate(err, "collect servod logs").Err()
 	}
-	return parseServodLogTime(output, log)
+	if len(content) == 0 {
+		return nil, errors.Reason("collect servod logs: content is empty").Err()
+	}
+	return parseServodLogTime(string(content), log)
 }
 
 // regServoLogsStartPointExec cache latest servod start-time by logs.
@@ -98,12 +100,14 @@ func regServoLogsStartPointExec(ctx context.Context, info *execs.ExecInfo) error
 	f := filepath.Join(logRoot, servodStarLogTimeFile)
 	if _, err := os.Stat(f); !base_error.Is(err, os.ErrNotExist) {
 		// path/to/whatever does exist
+		log.Debugf("The file %q is already exist!", f)
 		return nil
 	}
 	t, err := getLatestServodLogTime(ctx, run, servod.Port(), log)
 	if err != nil {
 		return errors.Annotate(err, "reg servo logs start point").Err()
 	}
+	log.Debugf("Latest servod logs time: %v", t)
 	ioutil.WriteFile(f, []byte(t.Format(servoLogTimeLayout)), defaultFilePermissions)
 	return nil
 }
@@ -131,8 +135,11 @@ func collectServodLogsExec(ctx context.Context, info *execs.ExecInfo) error {
 	startTime, err := getServosStartTime(ctx, logRoot, servod.Port(), run, log)
 	if err != nil {
 		log.Debugf("Fail to get start time of servod logs: %v", err)
+	} else {
+		log.Debugf("Planning to collect logs since %v", startTime)
 	}
 	for _, lf := range strings.Split(output, "\n") {
+		log.Debugf("Checking servod logs file: %v", lf)
 		t, err := extractTimeFromServoLog(lf, log)
 		if err != nil {
 			log.Debugf("Collect servod logs: %v", err)
