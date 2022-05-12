@@ -655,7 +655,7 @@ func TestReadVariants(t *testing.T) {
 			opts.PageToken = nextPageToken
 			variants, nextPageToken, err = ReadVariants(span.Single(ctx), "project", "test_id", opts)
 			So(err, ShouldBeNil)
-			// So(nextPageToken, ShouldBeEmpty)
+			So(nextPageToken, ShouldBeEmpty)
 			So(variants, ShouldResembleProto, []*pb.QueryVariantsResponse_VariantInfo{
 				{
 					VariantHash: pbutil.VariantHash(var2),
