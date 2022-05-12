@@ -82,6 +82,8 @@ inbound_services:
 libraries:
 - name: endpoints
   version: "1.0"
+- name: flask
+  version: "0.12"
 - name: grpcio
   version: "1.0.0"
 - name: MySQLdb

@@ -9,6 +9,8 @@
 # * OS: macosx_10_* and manylinux*
 # * Architecture: x86_64
 
+flask==0.12 --hash=sha256:7f03bb2c255452444f7265eddb51601806e5447b6f8a2d50bbc77a654a14c118
+
 mysqlclient==1.4.6 --hash=sha256:f3fdaa9a38752a3b214a6fe79d7cae3653731a53e577821f9187e67cbecb2e16
 
 # Required by dev_appserver.py
@@ -16,6 +18,13 @@ enum34==1.1.6 --hash=sha256:6bd0f6ad48ec2aa117d3d141940d484deccda84d4fcd884f5c3d
 
 # Required by gae.py and by dev_appserver.py
 six==1.15.0 --hash=sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced
+
+# Required by flask==0.12
+click==6.6 --hash=sha256:fcf697e1fd4b567d817c69dab10a4035937fe6af175c05fd6806b69f74cbc6c4
+itsdangerous==0.24 --hash=sha256:cbb3fcf8d3e33df861709ecaf89d9e6629cff0a217bc2848f1b41cd30d360519
+Jinja2==2.8 --hash=sha256:1cc03ef32b64be19e0a5b54578dd790906a34943fe9102cfdae0d4495bd536b4
+MarkupSafe==0.23 --hash=sha256:a4ec1aff59b95a14b45eb2e23761a0179e98319da5a7eb76b56ea8cdc7b871c3
+Werkzeug==0.11.11 --hash=sha256:eb3108af06aed08fb2f4fc883f2adf04c8f4997f6368517591b2becf15ae0da2
 
 # Required by grpc-google-iam-v1 <-- google-cloud-tasks
 # first sha is for cp27m-macosx_10_9_x86
