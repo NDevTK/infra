@@ -40,11 +40,13 @@ type record struct {
 }
 
 var (
-	svcAcctJSONPath = flag.String("service-account-json", "", "Path to JSON file with service account credentials to use")
-	projectID       = flag.String("project-id", "cros-lab-servers", "ID of the cloud projecdt to upload metrics data to")
-	dataset         = flag.String("dataset", "caching_backend", "Dataset name of the BigQuery tables")
-	tableName       = flag.String("table", "access_log", "BigQuery table name")
-	inputLogFile    = flag.String("input-log-file", "/var/log/nginx/gs-cache.access.log", "Nginx access log for gs_cache")
+	svcAcctJSONPath     = flag.String("service-account-json", "", "Path to JSON file with service account credentials to use")
+	projectID           = flag.String("project-id", "cros-lab-servers", "ID of the cloud projecdt to upload metrics data to")
+	dataset             = flag.String("dataset", "caching_backend", "Dataset name of the BigQuery tables")
+	tableName           = flag.String("table", "access_log", "BigQuery table name")
+	inputLogFile        = flag.String("input-log-file", "/var/log/nginx/gs-cache.access.log", "Nginx access log for gs_cache")
+	tsmonCredentialPath = flag.String("ts-mon-credentials", "", "Path to a pkcs8 json credential file")
+	tsmonEndpoint       = flag.String("ts-mon-endpoint", "", "URL (including file://, https://, pubsub://project/topic) to post monitoring metrics to")
 )
 
 func main() {
@@ -89,7 +91,7 @@ func innerMain() error {
 			if r := parseLine(tailer.Text()); r != nil {
 				r.hostname = hostname
 				uploader.QueueRecord(r)
-				reportToMonarch(r)
+				reportToTsMon(r)
 			}
 		}
 	}()
@@ -231,6 +233,8 @@ func setupTsMon(ctx context.Context) {
 	defer cancel()
 
 	fl := tsmon.NewFlags()
+	fl.Endpoint = *tsmonEndpoint
+	fl.Credentials = *tsmonCredentialPath
 	fl.Flush = tsmon.FlushAuto
 	fl.Target.SetDefaultsFromHostname()
 	fl.Target.TargetType = target.TaskType
@@ -262,8 +266,8 @@ var recordMetric = metric.NewCounter("chromeos/caching_backend/nginx/response_by
 	field.Bool("full_download"),
 )
 
-// reportToMonarch reports the parsed log line data to Monarch.
-func reportToMonarch(i *record) {
+// reportToTsMon reports the parsed log line data to tsmon server.
+func reportToTsMon(i *record) {
 	// Extract the rpc part from the path (e.g. "/rpc/path/to/file").
 	rpc := "unknown"
 	if s := strings.SplitN(i.path, "/", 3); len(s) > 2 {
