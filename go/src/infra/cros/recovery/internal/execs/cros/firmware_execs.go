@@ -138,7 +138,7 @@ func hasDevSignedFirmwareExec(ctx context.Context, info *execs.ExecInfo) error {
 
 func init() {
 	execs.Register("cros_is_firmware_in_good_state", isFirmwareInGoodState)
-	execs.Register("cros_is_on_rw_firmware_stable_verion", isOnRWFirmwareStableVersionExec)
+	execs.Register("cros_is_on_rw_firmware_stable_version", isOnRWFirmwareStableVersionExec)
 	execs.Register("cros_is_rw_firmware_stable_version_available", isRWFirmwareStableVersionAvailableExec)
 	execs.Register("cros_has_dev_signed_firmware", hasDevSignedFirmwareExec)
 	execs.Register("cros_run_firmware_update", runFirmwareUpdaterExec)

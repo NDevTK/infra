@@ -22,7 +22,7 @@ func crosRepairPlan() *Plan {
 			"tpm_info",
 			"cros_gsctool",
 			"hardware_audit",
-			"firmware_check",
+			"Firmware validations",
 			"stop_start_ui",
 			"rw_vpd",
 			"servo_keyboard",
@@ -221,6 +221,10 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Ensure that firmware is in good state.",
 			},
+			Dependencies: []string{
+				"cros_storage_writing",
+			},
+			ExecName: "cros_is_firmware_in_good_state",
 			RecoveryActions: []string{
 				"Cold reset DUT by servo",
 				"Quick provision OS",
@@ -228,11 +232,10 @@ func crosRepairActions() map[string]*Action {
 				"Update FW from fw-image by servo",
 				"Update firmware from USB-Drive and when booted in recovery mode",
 			},
-			ExecName: "cros_is_firmware_in_good_state",
 		},
-		"firmware_check": {
+		"Firmware validations": {
 			Docs: []string{
-				"Run all firmware checks on the DUT.",
+				"Group action to combine all firmware checks in one place.",
 			},
 			Conditions: []string{
 				"is_not_flex_board",
@@ -376,19 +379,18 @@ func crosRepairActions() map[string]*Action {
 				"Check if the version of RW firmware on DUT matches the stable firmware version.",
 			},
 			Conditions: []string{
-				"Pools required to be in Secure mode",
+				"Pools required to manage FW on the device",
 				"has_stable_version_fw_version",
 			},
 			Dependencies: []string{
 				"cros_storage_writing",
-				"cros_is_on_rw_firmware_stable_verion",
 			},
+			ExecName: "cros_is_on_rw_firmware_stable_version",
 			RecoveryActions: []string{
 				"Fix FW on the DUT to match stable-version",
 				"Cold reset DUT by servo",
 				"Simple reboot",
 			},
-			ExecName: "cros_is_rw_firmware_stable_version_available",
 		},
 		"Fix FW on the DUT to match stable-version": {
 			Docs: []string{
@@ -405,8 +407,8 @@ func crosRepairActions() map[string]*Action {
 				"Disable software-controlled write-protect for 'host'",
 				"Disable software-controlled write-protect for 'ec'",
 			},
-			ExecTimeout: &durationpb.Duration{Seconds: 900},
 			ExecName:    "cros_run_firmware_update",
+			ExecTimeout: &durationpb.Duration{Seconds: 900},
 			ExecExtraArgs: []string{
 				"mode:recovery",
 				"force:true",
@@ -1292,6 +1294,24 @@ func crosRepairActions() map[string]*Action {
 				"string_value:reset",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Pools required to manage FW on the device": {
+			Docs: []string{
+				"Verify that device we check in the pool which not required fw management.",
+			},
+			ExecName: "dut_not_in_pool",
+			ExecExtraArgs: []string{
+				"faft-test",
+				"faft-test-tot",
+				"faft-test-experiment",
+				"faft_test_debug",
+				"faft-cr50",
+				"faft-cr50-debug",
+				"faft-cr50-experimental",
+				"faft-cr50-tot",
+				"faft-experimental",
+				"satlab_faft",
+			},
 		},
 		"Pools allowed to stay in DEV mode": {
 			Docs: []string{
