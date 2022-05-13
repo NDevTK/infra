@@ -158,16 +158,9 @@ func (g *Generator) GenerateArgs(ctx context.Context) (request.Args, error) {
 		return request.Args{}, errors.Annotate(err, "create request args").Err()
 	}
 
-	buildTarget := g.Params.GetSoftwareAttributes().GetBuildTarget().GetName()
-	containers := g.Params.GetExecutionParam().GetContainerMetadata().GetContainers()
-	cftIsEnabled := false
-	if containers != nil {
-		_, cftIsEnabled = containers[buildTarget]
-	}
-
 	trr := &skylab_test_runner.Request{}
 	cft_trr := &skylab_test_runner.CFTTestRequest{}
-	if cftIsEnabled {
+	if g.Params.RunViaCft {
 		cft_trr, err = g.cftTestRunnerRequest(ctx)
 		if err != nil {
 			return request.Args{}, errors.Annotate(err, "create request args").Err()
@@ -193,7 +186,7 @@ func (g *Generator) GenerateArgs(ctx context.Context) (request.Args, error) {
 		SwarmingTags:                     g.swarmingTags(ctx, kv, cmd),
 		TestRunnerRequest:                trr,
 		CFTTestRunnerRequest:             cft_trr,
-		CFTIsEnabled:                     cftIsEnabled,
+		CFTIsEnabled:                     g.Params.RunViaCft,
 		Timeout:                          timeout,
 		Experiments:                      g.Experiments,
 		GerritChanges:                    g.GerritChanges,
