@@ -40,6 +40,7 @@ type getOptionsFn func() options
 
 func parseFlags() options {
 	outputPath := flag.String("output", "", "Path to write the final build.proto state to.")
+	flag.Bool("polymorphic", false, "Whether the builder bootstraps properties for other builders instead of itself; polymorphic builders give precedence to build properties rather than the properties in the properties file")
 	propertiesOptional := flag.Bool("properties-optional", false, "Whether missing $bootstrap/properties property should be allowed")
 	flag.Parse()
 	return options{
