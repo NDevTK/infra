@@ -293,6 +293,12 @@ SPECS.update({
             skip_plat=['mac-x64-cp38', 'mac-arm64', 'mac-arm64-cp38'],
         ),
         SourceOrPrebuilt(
+            'cbor2',
+            '5.4.3',
+            packaged=(),
+            pyversions=['py3'],
+        ),
+        SourceOrPrebuilt(
             'cffi',
             '1.10.0',
             arch_map={

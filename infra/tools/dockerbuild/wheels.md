@@ -1230,6 +1230,26 @@ wheel: <
 
 * *universal*
 
+## **cbor2**
+
+### 5.4.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/cbor2/${vpython_platform}"
+  version: "version:5.4.3"
+>
+```
+
+
+* *linux-arm64-py3*
+* *mac-arm64-cp38*
+* *mac-x64-cp38*
+* *manylinux-x64-py3*
+* *manylinux-x64-py3.9*
+* *windows-x64-py3*
+* *windows-x86-py3*
+
 ## **certifi**
 
 ### 2018.11.29
