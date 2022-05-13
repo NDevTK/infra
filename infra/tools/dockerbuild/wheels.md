@@ -6488,6 +6488,20 @@ wheel: <
 * *mac-arm64-cp38*
 * *mac-x64-cp38*
 
+## **pyocd-py3**
+
+### 0.33.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pyocd-py3"
+  version: "version:0.33.1"
+>
+```
+
+
+* *universal*
+
 ## **pyopenssl**
 
 ### 17.2.0

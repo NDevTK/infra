@@ -1646,6 +1646,7 @@ SPECS.update({
         Universal('pylint', '2.13.8', pyversions=['py3']),
         Universal('pylint-quotes', '0.2.1', pyversions=['py3']),
         Universal('pylint-quotes', '0.2.3', pyversions=['py3']),
+        Universal('pyocd', '0.33.1', pyversions=['py3']),
         Universal('pyopenssl', '17.2.0'),
         Universal('pyopenssl', '19.0.0'),
         Universal('pyparsing', '2.2.0'),
