@@ -50,6 +50,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b118126f_1c77d477",
+        "filename": "appengine/monorail/flaskregisterpages.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1407252
+      },
+      "writtenOn": "2022-05-13T17:31:57Z",
+      "side": 1,
+      "message": "Moving discussion to https://docs.google.com/document/d/1fyAahRq4aYEnL5FzkfDp9raCvH_jccexUcMqSGaTzXU/edit?disco\u003dAAAAZUERBRg\n\nWill resolve this comment and review CL again once design doc discussion resolved",
+      "parentUuid": "d3a497ed_bbce6d10",
+      "range": {
+        "startLine": 71,
+        "startChar": 0,
+        "endLine": 71,
+        "endChar": 45
+      },
+      "revId": "e706232b6c7cf3aabd95328bda8b17d322e7eca6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "917c2d04_75a435c1",
         "filename": "appengine/monorail/flaskregisterpages.py",
         "patchSetId": 4
