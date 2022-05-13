@@ -4,6 +4,7 @@
 
 # Production packages.
 ezt==1.1 --hash=sha256:2131c2aa34d395433410b4e3cb71b22ab1471fae9da1c60e4426f74c86cb0104
+Flask==1.1.4 --hash=sha256:c34f04500f2cbbea882b1acb02002ad6fe6b7ffa64a6164577995657f50aed22
 google-api-python-client==1.12.11 --hash=sha256:7e0a1a265c8d3088ee1987778c72683fcb376e32bada8d7767162bd9c503fd9b
 google-auth==1.35.0 --hash=sha256:997516b42ecb5b63e8d80f5632c1a61dddf41d2a4c2748057837e06e00014258
 google-cloud-logging==1.15.1 --hash=sha256:20c7557fd170891eab1a5e428338ad646203ddc519bc2fc57fd59bef14cd3602
@@ -15,6 +16,13 @@ fakeredis==1.1.1 --hash=sha256:b8cf9c19fbcd53fe0512ece75b2df9430c46f75898111f50c
 
 # Required by fakeredis
 sortedcontainers==2.4.0 --hash=sha256:a163dcaede0f1c021485e957a39245190e74249897e2ae4b2aa38595db237ee0
+
+# Required by Flask==1.1.4
+click==6.6 --hash=sha256:fcf697e1fd4b567d817c69dab10a4035937fe6af175c05fd6806b69f74cbc6c4
+itsdangerous==0.24 --hash=sha256:cbb3fcf8d3e33df861709ecaf89d9e6629cff0a217bc2848f1b41cd30d360519
+Jinja2==2.11.3 --hash=sha256:03e47ad063331dd6a3f04a43eddca8a966a26ba0c5b7207a9a9e4e08f1b29419
+MarkupSafe==0.23 --hash=sha256:a4ec1aff59b95a14b45eb2e23761a0179e98319da5a7eb76b56ea8cdc7b871c3
+Werkzeug==1.0.1 --hash=sha256:2de2a5db0baeae7b2d2664949077c2ac63fbd16d98da0ff71837f7d1dea3fd43
 
 # Required by google-api-python-client
 google-auth-httplib2==0.1.0 --hash=sha256:31e49c36c6b5643b57e82617cb3e021e3e1d2df9da63af67252c02fa9c1f4a10

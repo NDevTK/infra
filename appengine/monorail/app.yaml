@@ -82,10 +82,10 @@ inbound_services:
 libraries:
 - name: endpoints
   version: "1.0"
-- name: flask
-  version: "0.12"
 - name: grpcio
   version: "1.0.0"
+- name: markupsafe
+  version: "0.23"
 - name: MySQLdb
   version: "latest"
 - name: ssl # needed for google.auth.transport and GAE_USE_SOCKETS_HTTPLIB
