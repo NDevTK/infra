@@ -9,6 +9,7 @@ google-api-python-client==1.12.11 --hash=sha256:7e0a1a265c8d3088ee1987778c72683f
 google-auth==1.35.0 --hash=sha256:997516b42ecb5b63e8d80f5632c1a61dddf41d2a4c2748057837e06e00014258
 google-cloud-logging==1.15.1 --hash=sha256:20c7557fd170891eab1a5e428338ad646203ddc519bc2fc57fd59bef14cd3602
 google-cloud-tasks==1.5.0 --hash=sha256:36aa16f0c52aa9a292b1f919d2582725731e9760393c9ca98ce599c68cbf9996
+oauth2client==4.1.3 --hash=sha256:b8a81cc5d60e2d364f0b1b98f958dbd472887acaf1a5b05e21c28c31a2d6d3ac
 redis==3.5.3 --hash=sha256:432b788c4530cfe16d8d943a09d40ca6c16149727e4afe8c2c9d5580c59d9f24
 
 # Development packages.
