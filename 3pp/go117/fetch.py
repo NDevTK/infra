@@ -17,7 +17,7 @@ def do_latest():
   for release in json.load(
       urllib.request.urlopen('https://golang.org/dl/?mode=json&include=all')):
     ver = parse_version(release['version'].replace('go', ''))
-    if ver < parse_version('1.17a0'):
+    if ver < parse_version('1.18a0'):
       versions.append(ver)
   versions.sort()
   print(versions[-1])

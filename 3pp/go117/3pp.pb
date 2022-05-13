@@ -25,7 +25,7 @@ create {
   }
   build {
     install: "install_source.sh"
-    tool: "tools/go116@1.16.7"  # depend on the prebuilt version in $PATH
+    tool: "tools/go117@1.17.10"  # depend on the prebuilt version in $PATH
   }
 }
 
