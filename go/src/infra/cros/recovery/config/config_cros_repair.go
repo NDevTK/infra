@@ -13,10 +13,10 @@ func crosRepairPlan() *Plan {
 		CriticalActions: []string{
 			"dut_state_repair_failed",
 			"Device is SSHable",
-			"internal_storage",
-			"last_provision_successful",
-			"device_system_info",
-			"has_python",
+			"Verify internal storage",
+			"Check if last provision was good",
+			"Verify system info",
+			"Python is present",
 			"device_enrollment",
 			"power_info",
 			"tpm_info",
@@ -88,26 +88,27 @@ func crosRepairActions() map[string]*Action {
 			ExecName:    "cros_ssh",
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
-		"internal_storage": {
+		"Verify internal storage": {
+			Docs: []string{
+				"Verify DUT internal storage",
+			},
 			Dependencies: []string{
-				"cros_storage_writing",
+				"Internal storage is responsive",
 				"cros_storage_file_system",
 				"cros_storage_space_check",
-				"cros_audit_storage_smart",
+				"Quick internal storage audit (SMART)",
 			},
 			ExecName: "sample_pass",
 		},
-		"cros_audit_storage_smart": {
+		"Quick internal storage audit (SMART)": {
 			Docs: []string{
-				"Audit the smart storage device for non-satlab ",
-				"setups. Ref: http://b/230671867",
+				"Quick audit internal storage by reading SMART data.",
+				"The check updates storage state.",
 			},
-			Conditions: []string{
-				"Not Satlab device",
-			},
-			ExecName: "cros_audit_storage_smart",
+			ExecName:               "cros_audit_storage_smart",
+			AllowFailAfterRecovery: true,
 		},
-		"device_system_info": {
+		"Verify system info": {
 			Conditions: []string{
 				"is_not_flex_board",
 			},
@@ -121,7 +122,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_pass",
 		},
-		"has_python": {
+		"Python is present": {
 			Docs: []string{
 				"Verify that device has python on it.",
 				"The Reven boards does not have python. TBD",
@@ -130,18 +131,21 @@ func crosRepairActions() map[string]*Action {
 				"is_not_flex_board",
 			},
 			Dependencies: []string{
-				"cros_storage_writing",
+				"Internal storage is responsive",
 			},
 			ExecName: "cros_has_python_interpreter_working",
 			RecoveryActions: []string{
 				"Quick provision OS",
-				"Install OS in recovery mode by booting from servo USB-drive",
 				"Repair by powerwash",
+				"Install OS in recovery mode by booting from servo USB-drive",
 			},
 		},
-		"last_provision_successful": {
+		"Check if last provision was good": {
+			Docs: []string{
+				"Check if last provision fail on the DUT",
+			},
 			Dependencies: []string{
-				"cros_storage_writing",
+				"Internal storage is responsive",
 			},
 			ExecName: "cros_is_last_provision_successful",
 			RecoveryActions: []string{
@@ -152,7 +156,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"device_enrollment": {
 			Dependencies: []string{
-				"cros_storage_writing",
+				"Internal storage is responsive",
 			},
 			RecoveryActions: []string{
 				"tpm_enrollment_cleanup_and_reboot",
@@ -183,8 +187,8 @@ func crosRepairActions() map[string]*Action {
 				"cros_is_not_virtual_machine",
 			},
 			Dependencies: []string{
-				"cros_storage_writing",
-				"cros_is_ac_power_connected",
+				"Internal storage is responsive",
+				"Power is recognized by DUT",
 				"battery_is_good",
 			},
 			RecoveryActions: []string{
@@ -196,6 +200,15 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 			},
 			ExecName: "sample_pass",
+		},
+		"Power is recognized by DUT": {
+			Docs: []string{
+				"Verify that power is recognized by the DUT as marker as online.",
+			},
+			ExecName: "cros_is_ac_power_connected",
+			RecoveryActions: []string{
+				"Power cycle DUT by RPM and wait",
+			},
 		},
 		"tpm_info": {
 			Conditions: []string{
@@ -222,7 +235,7 @@ func crosRepairActions() map[string]*Action {
 				"Ensure that firmware is in good state.",
 			},
 			Dependencies: []string{
-				"cros_storage_writing",
+				"Internal storage is responsive",
 			},
 			ExecName: "cros_is_firmware_in_good_state",
 			RecoveryActions: []string{
@@ -241,7 +254,7 @@ func crosRepairActions() map[string]*Action {
 				"is_not_flex_board",
 			},
 			Dependencies: []string{
-				"cros_storage_writing",
+				"Internal storage is responsive",
 				"Ensure firmware is in good state",
 				"Check if firmware version matches the stable-version",
 			},
@@ -383,7 +396,7 @@ func crosRepairActions() map[string]*Action {
 				"has_stable_version_fw_version",
 			},
 			Dependencies: []string{
-				"cros_storage_writing",
+				"Internal storage is responsive",
 			},
 			ExecName: "cros_is_on_rw_firmware_stable_version",
 			RecoveryActions: []string{
@@ -459,7 +472,7 @@ func crosRepairActions() map[string]*Action {
 				"Battery is present on device",
 			},
 			Dependencies: []string{
-				"cros_storage_writing",
+				"Internal storage is responsive",
 				"cros_is_battery_chargable_or_good_level",
 			},
 			ExecName: "cros_audit_battery",
@@ -505,7 +518,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"cros_tpm_fwver_match": {
 			Dependencies: []string{
-				"cros_storage_writing",
+				"Internal storage is responsive",
 			},
 			Conditions: []string{
 				"is_not_flex_board",
@@ -517,7 +530,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"cros_tpm_kernver_match": {
 			Dependencies: []string{
-				"cros_storage_writing",
+				"Internal storage is responsive",
 			},
 			Conditions: []string{
 				"is_not_flex_board",
@@ -532,7 +545,7 @@ func crosRepairActions() map[string]*Action {
 				"Check if the default boot drive is disk.",
 			},
 			Dependencies: []string{
-				"cros_storage_writing",
+				"Internal storage is responsive",
 			},
 			Conditions: []string{
 				"is_not_flex_board",
@@ -551,7 +564,7 @@ func crosRepairActions() map[string]*Action {
 				"Pools required to be in Secure mode",
 			},
 			Dependencies: []string{
-				"cros_storage_writing",
+				"Internal storage is responsive",
 			},
 			RecoveryActions: []string{
 				"Switch to secure-mode and reboot",
@@ -568,7 +581,7 @@ func crosRepairActions() map[string]*Action {
 				"Is HWID known",
 			},
 			Dependencies: []string{
-				"cros_storage_writing",
+				"Internal storage is responsive",
 			},
 			ExecName: "cros_match_hwid_to_inventory",
 			RecoveryActions: []string{
@@ -585,7 +598,7 @@ func crosRepairActions() map[string]*Action {
 				"Is serial-number known",
 			},
 			Dependencies: []string{
-				"cros_storage_writing",
+				"Internal storage is responsive",
 			},
 			ExecName: "cros_match_serial_number_inventory",
 			RecoveryActions: []string{
@@ -655,16 +668,19 @@ func crosRepairActions() map[string]*Action {
 			ExecName:               "cros_update_hwid_to_inventory",
 			AllowFailAfterRecovery: true,
 		},
-		"cros_storage_writing": {
+		"Internal storage is responsive": {
+			Docs: []string{
+				"Verify that internal storage is responsive",
+			},
 			Dependencies: []string{
 				"Device is SSHable",
 			},
+			ExecName: "cros_is_file_system_writable",
 			RecoveryActions: []string{
-				"Switch to secure-mode and reboot",
+				"cros_servo_power_reset_repair",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
 			},
-			ExecName: "cros_is_file_system_writable",
 		},
 		"cros_storage_file_system": {
 			Dependencies: []string{
@@ -1251,14 +1267,24 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{"halt_timeout:120"},
 			ExecTimeout:   &durationpb.Duration{Seconds: 3600},
 		},
-		"Install OS in DEV mode by USB-drive": {
+		"Install OS in DEV mode by USB-drive (for special pools)": {
 			Docs: []string{
 				"This action installs the test image on DUT after booking the DUT in dev mode.",
 				"The action is only for deployment as not limited by pools.",
 			},
-			// Conditions: []string{
-			// 	"Pools allowed to stay in DEV mode",
-			// },
+			Conditions: []string{
+				"Pools allowed to stay in DEV mode",
+			},
+			Dependencies: []string{
+				"Install OS in DEV mode by USB-drive",
+			},
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Install OS in DEV mode by USB-drive": {
+			Docs: []string{
+				"This action installs the test image on DUT after booking the DUT in dev mode.",
+			},
 			Dependencies: []string{
 				"Boot DUT from USB in DEV mode",
 				"Device booted from USB-drive",
