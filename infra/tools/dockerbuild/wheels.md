@@ -2788,6 +2788,20 @@ wheel: <
 
 * *universal*
 
+## **google-cloud-kms-py3**
+
+### 2.11.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-cloud-kms-py3"
+  version: "version:2.11.1"
+>
+```
+
+
+* *universal*
+
 ## **google-cloud-language**
 
 ### 1.0.0
