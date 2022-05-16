@@ -472,3 +472,27 @@ func UpdateRPMHost(ctx context.Context, rpm *ufspb.RPM, nwOpt *ufsAPI.NetworkOpt
 	}
 	return nil
 }
+
+// updateIndexInRPM updates indexes in rpm objects
+//
+// This function can be used inside a transaction.
+func updateIndexInRPM(ctx context.Context, indexName, oldValue, newValue string, hc *HistoryClient) error {
+	var newEntities []*ufspb.RPM
+	var err error
+	switch indexName {
+	case "rack":
+		newEntities, err = registration.QueryRPMByPropertyName(ctx, "rack", oldValue, false)
+		if err != nil {
+			return errors.Annotate(err, "failed to query rpms in rack %s", newValue).Err()
+		}
+		for _, n := range newEntities {
+			oldCopy := proto.Clone(n).(*ufspb.RPM)
+			n.Rack = newValue
+			hc.LogRPMChanges(oldCopy, n)
+		}
+	}
+	if _, err := registration.BatchUpdateRPMs(ctx, newEntities); err != nil {
+		return errors.Annotate(err, "failed to batch update rpms").Err()
+	}
+	return nil
+}
