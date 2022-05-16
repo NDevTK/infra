@@ -72,6 +72,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7f0c4be4_2c092b10",
+        "filename": "appengine/monorail/flaskregisterpages.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-05-16T15:40:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d3a497ed_bbce6d10",
+      "range": {
+        "startLine": 71,
+        "startChar": 0,
+        "endLine": 71,
+        "endChar": 45
+      },
+      "revId": "e706232b6c7cf3aabd95328bda8b17d322e7eca6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "917c2d04_75a435c1",
@@ -142,6 +166,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef50f2fd_4e4f8c5a",
+        "filename": "appengine/monorail/framework/flaskservlet.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-05-16T15:40:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "db2a7d7d_273e22ea",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 21
+      },
+      "revId": "e706232b6c7cf3aabd95328bda8b17d322e7eca6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "cf5a78cf_3a8c33b3",
@@ -155,6 +203,30 @@
       "writtenOn": "2022-05-11T20:46:44Z",
       "side": 1,
       "message": "Are these for debugging or do we actually want to log these in monorail-prod?",
+      "range": {
+        "startLine": 392,
+        "startChar": 0,
+        "endLine": 392,
+        "endChar": 35
+      },
+      "revId": "e706232b6c7cf3aabd95328bda8b17d322e7eca6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1d94694e_5d6fd762",
+        "filename": "appengine/monorail/framework/flaskservlet.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 392,
+      "author": {
+        "id": 1530767
+      },
+      "writtenOn": "2022-05-16T15:40:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cf5a78cf_3a8c33b3",
       "range": {
         "startLine": 392,
         "startChar": 0,
