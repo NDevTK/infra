@@ -44,3 +44,8 @@ export async function queryAuthState(): Promise<AuthState> {
   }
   return res.json();
 }
+
+export async function clearAuthState(): Promise<void> {
+  authState = null;
+  return;
+}

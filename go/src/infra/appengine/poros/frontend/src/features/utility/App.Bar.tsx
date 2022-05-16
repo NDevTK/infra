@@ -15,9 +15,9 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
+import Avatar from '@mui/material/Avatar';
 import ScienceIcon from '@mui/icons-material/Science';
 import HelpIcon from '@mui/icons-material/Help';
 import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
@@ -25,6 +25,8 @@ import { Route, Routes, Link } from 'react-router-dom';
 
 import { Asset } from '../asset/Asset';
 import { AssetList } from '../asset/AssetList';
+import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { fetchUserPictureAsync, logoutAsync } from './utilitySlice';
 
 const drawerWidth = 240;
 
@@ -104,6 +106,9 @@ export default function SideDrawerWithAppBar() {
 
   const isMenuOpen = Boolean(anchorEl);
   const menuId = 'primary-search-account-menu';
+  const dispatch = useAppDispatch();
+  dispatch(fetchUserPictureAsync());
+  const userPicture: string = useAppSelector((state) => state.utility.userPicture);
 
   const routes = [
     {
@@ -136,6 +141,10 @@ export default function SideDrawerWithAppBar() {
     setAnchorEl(null);
   };
 
+  const handleLogout = () => {
+    dispatch(logoutAsync());
+  };
+
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
@@ -152,8 +161,7 @@ export default function SideDrawerWithAppBar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
   );
 
@@ -187,7 +195,7 @@ export default function SideDrawerWithAppBar() {
               onClick={handleProfileMenuOpen}
               color="inherit"
             >
-              <AccountCircle />
+              <Avatar src={userPicture}></Avatar>
             </IconButton>
           </Box>
         </Toolbar>

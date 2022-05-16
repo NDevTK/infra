@@ -5,10 +5,12 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import assetReducer from '../features/asset/assetSlice';
+import utilityReducer from '../features/utility/utilitySlice';
 
 export const store = configureStore({
   reducer: {
     asset: assetReducer,
+    utility: utilityReducer,
   },
   devTools: process.env.NODE_ENV !== 'production',
 });
