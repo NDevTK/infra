@@ -39,6 +39,9 @@ func crosRepairPlan() *Plan {
 func crosRepairActions() map[string]*Action {
 	return map[string]*Action{
 		"Set state: ready": {
+			Docs: []string{
+				"The action set devices with state ready for the testing.",
+			},
 			ExecName: "dut_set_state",
 			ExecExtraArgs: []string{
 				"state:ready",
@@ -46,6 +49,9 @@ func crosRepairActions() map[string]*Action {
 			RunControl: RunControl_RUN_ONCE,
 		},
 		"Set state: repair_failed": {
+			Docs: []string{
+				"The action set devices with state means that repair tsk did not success to recover the devices.",
+			},
 			ExecName: "dut_set_state",
 			ExecExtraArgs: []string{
 				"state:repair_failed",
@@ -53,7 +59,13 @@ func crosRepairActions() map[string]*Action {
 			RunControl: RunControl_RUN_ONCE,
 		},
 		"Set state: needs_deploy": {
-			ExecName: "dut_state_needs_deploy",
+			Docs: []string{
+				"The action set devices with request to be redeployed.",
+			},
+			ExecName: "dut_set_state",
+			ExecExtraArgs: []string{
+				"state:needs_deploy",
+			},
 		},
 		"Device is pingable": {
 			Docs: []string{
@@ -134,12 +146,12 @@ func crosRepairActions() map[string]*Action {
 				"Is not Flex device",
 			},
 			Dependencies: []string{
-				"cros_default_boot",
-				"cros_boot_in_normal_mode",
+				"Default boot set as internal storage",
+				"Verify that DUT is not in DEV mode",
 				"Match HWID",
 				"Match serial-number",
-				"cros_tpm_fwver_match",
-				"cros_tpm_kernver_match",
+				"Verify tmp_fwver is updated correctly",
+				"Verify tpm_kernver is updated correctly",
 			},
 			ExecName: "sample_pass",
 		},
@@ -171,7 +183,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_is_last_provision_successful",
 			RecoveryActions: []string{
-				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode by USB-drive (for special pools)",
@@ -550,7 +561,11 @@ func crosRepairActions() map[string]*Action {
 			ExecName:               "cros_audit_bluetooth",
 			AllowFailAfterRecovery: true,
 		},
-		"cros_tpm_fwver_match": {
+		"Verify tmp_fwver is updated correctly": {
+			Docs: []string{
+				"For dev-signed firmware, tpm_fwver reported from crossystem should always be 0x10001.",
+				"Firmware update on DUTs with incorrect tmp_fwver may fail due to firmware rollback protection.",
+			},
 			Dependencies: []string{
 				"Internal storage is responsive",
 			},
@@ -559,14 +574,16 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_match_dev_tpm_firmware_version",
 			RecoveryActions: []string{
-				//TODO: just run TMP reset.
-				"Quick provision OS",
-				"Repair by powerwash",
+				"ChromeOS TMP recovery (not critical)",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
 		},
-		"cros_tpm_kernver_match": {
+		"Verify tpm_kernver is updated correctly": {
+			Docs: []string{
+				"For dev-signed firmware, tpm_kernver reported from crossystem should always be 0x10001.",
+				"Firmware update on DUTs with incorrect tpm_kernver may fail due to firmware rollback protection.",
+			},
 			Dependencies: []string{
 				"Internal storage is responsive",
 			},
@@ -575,14 +592,23 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_match_dev_tpm_kernel_version",
 			RecoveryActions: []string{
-				//TODO: just run TMP reset.
-				"Quick provision OS",
-				"Repair by powerwash",
+				"ChromeOS TMP recovery (not critical)",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
 		},
-		"cros_default_boot": {
+		"ChromeOS TMP recovery (not critical)": {
+			Docs: []string{
+				"Run chromeos-tpm-recovery on DUT to reset TPM.",
+				"That is experimental recovery action.",
+			},
+			ExecName: "cros_run_shell_command",
+			ExecExtraArgs: []string{
+				"chromeos-tpm-recovery",
+			},
+			AllowFailAfterRecovery: true,
+		},
+		"Default boot set as internal storage": {
 			Docs: []string{
 				"Check if the default boot drive is disk.",
 			},
@@ -596,12 +622,13 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"Set default boot as disk",
 				"Quick provision OS",
-				"Repair by powerwash",
-				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
 		},
-		"cros_boot_in_normal_mode": {
+		"Verify that DUT is not in DEV mode": {
+			Docs: []string{
+				"Verify that devices is not in DEV mode.",
+				"Mostly devices in the lab required to be in Secure mode, not DEV mode.",
+			},
 			Conditions: []string{
 				"Is not Flex device",
 				"Pools required to be in Secure mode",
@@ -609,10 +636,11 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Internal storage is responsive",
 			},
+			ExecName: "cros_is_not_in_dev_mode",
 			RecoveryActions: []string{
 				"Switch to secure-mode and reboot",
+				"Quick provision OS",
 			},
-			ExecName: "cros_is_not_in_dev_mode",
 		},
 		"Match HWID": {
 			Docs: []string{
@@ -628,7 +656,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_match_hwid_to_inventory",
 			RecoveryActions: []string{
-				"Set state:need_deploy",
+				"Set state: needs_deploy",
 			},
 		},
 		"Match serial-number": {
@@ -645,14 +673,8 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_match_serial_number_inventory",
 			RecoveryActions: []string{
-				"Set state:need_deploy",
+				"Set state: needs_deploy",
 			},
-		},
-		"Set state:need_deploy": {
-			Docs: []string{
-				"Set state needs_deploy",
-			},
-			ExecName: "dut_state_needs_deploy",
 		},
 		"Is HWID known": {
 			Docs: []string{
