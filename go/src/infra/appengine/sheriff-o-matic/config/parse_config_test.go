@@ -23,7 +23,7 @@ func TestConfigParses(t *testing.T) {
 	}
 
 	// Basic sanity check - there should be at least one builder group.
-	if len(cr.BuilderGroupCfgs) == 0 {
+	if len(cr.IgnoredSteps) == 0 {
 		t.Errorf("Expected non-empty config, got %v", cr)
 	}
 }

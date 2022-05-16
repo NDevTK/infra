@@ -25,20 +25,6 @@ func TestExcludeFailure(t *testing.T) {
 			want:         false,
 		},
 		{
-			name:         "specifically excluded builder",
-			buildergroup: "fake.buildergroup",
-			builder:      "fake.builder",
-			step:         "fake_step",
-			cr: &ConfigRules{
-				BuilderGroupCfgs: map[string]BuilderGroupConfig{
-					"fake.buildergroup": {
-						ExcludedBuilders: []string{"fake.builder"},
-					},
-				},
-			},
-			want: true,
-		},
-		{
 			name:         "specifically excluded buildergroup step",
 			buildergroup: "fake.buildergroup",
 			builder:      "fake.builder",
