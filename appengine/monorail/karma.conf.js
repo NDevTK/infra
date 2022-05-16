@@ -4,8 +4,6 @@
  * license that can be found in the LICENSE file.
  */
 
-const path = require('path');
-
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 
 module.exports = function(config) {
@@ -23,6 +21,8 @@ module.exports = function(config) {
         ui: 'bdd',
         checkLeaks: true,
         globals: [
+          // Used for submitting Issue Wizard Feedback.
+          'userfeedback',
           'CS_env',
           // __tsMonClient probably shouldn't be allowed to
           // leak between tests, but locating the current source of these
@@ -62,7 +62,7 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['parallel', 'mocha', 'sinon'],
+    frameworks: ['mocha', 'sinon', 'webpack'],
 
 
     // list of files / patterns to load in the browser
@@ -89,20 +89,11 @@ module.exports = function(config) {
       'karma-coverage',
       'karma-mocha',
       'karma-mocha-reporter',
-      'karma-parallel',
       'karma-sinon',
       'karma-sourcemap-loader',
       'karma-webpack',
       '@chopsui/karma-reporter',
     ],
-
-    parallelOptions: {
-      // Our builder is on a VM with 8 CPUs, so force this
-      // to run the same number of shards locally too.
-      // Vary this number to stress test order dependencies.
-      executors: isDebug ? 1 : 7, // Defaults to cpu-count - 1
-      shardStrategy: 'round-robin',
-    },
 
     webpack: {
       // webpack configuration
