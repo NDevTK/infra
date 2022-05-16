@@ -10,7 +10,7 @@ google-auth==1.35.0 --hash=sha256:997516b42ecb5b63e8d80f5632c1a61dddf41d2a4c2748
 google-cloud-logging==1.15.1 --hash=sha256:20c7557fd170891eab1a5e428338ad646203ddc519bc2fc57fd59bef14cd3602
 google-cloud-tasks==1.5.0 --hash=sha256:36aa16f0c52aa9a292b1f919d2582725731e9760393c9ca98ce599c68cbf9996
 httplib2==0.20.4 --hash=sha256:58a98e45b4b1a48273073f905d2961666ecf0fbac4250ea5b47aef259eb5c585
-oauth2client==4.1.3 --hash=sha256:b8a81cc5d60e2d364f0b1b98f958dbd472887acaf1a5b05e21c28c31a2d6d3ac
+oauth2client==3.0.0 --hash=sha256:5b5b056ec6f2304e7920b632885bd157fa71d1a7f3ddd00a43b1541a8d1a2460
 redis==3.5.3 --hash=sha256:432b788c4530cfe16d8d943a09d40ca6c16149727e4afe8c2c9d5580c59d9f24
 
 # Development packages.
