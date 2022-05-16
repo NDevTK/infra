@@ -75,7 +75,7 @@ func crosClosePlan() *Plan {
 			},
 			"Remove request to reboot if servo is good": {
 				Conditions: []string{
-					"is_not_flex_board",
+					"Is not Flex device",
 					"dut_servo_host_present",
 					"servo_state_is_working",
 				},
@@ -84,13 +84,13 @@ func crosClosePlan() *Plan {
 			},
 			"Remove in-use flag on servo-host": {
 				Conditions: []string{
-					"is_not_flex_board",
+					"Is not Flex device",
 					"dut_servo_host_present",
 				},
 				ExecName:               "cros_remove_servo_in_use",
 				AllowFailAfterRecovery: true,
 			},
-			"is_not_flex_board": {
+			"Is not Flex device": {
 				Docs: []string{"Verify that device is belong Reven models"},
 				ExecExtraArgs: []string{
 					"string_values:x1c",

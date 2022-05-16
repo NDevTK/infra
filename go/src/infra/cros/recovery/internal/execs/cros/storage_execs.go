@@ -84,26 +84,26 @@ func hasEnoughStorageSpaceExec(ctx context.Context, info *execs.ExecInfo) error 
 	return nil
 }
 
-// hasEnoughInodesExec confirms the given path has at least the amount of free inodes specified by the actionArgs arguments.
+// hasEnoughFreeIndexNodesExec confirms the given path has at least the amount of free index nodes specified by the actionArgs arguments.
 // provides arguments should be in the formart of:
 // ["path:x"]
-// x is the number of kilos of inodes.
+// x is the number of kilos of index nodes.
 // input will only consist of one path and its corresponding value for storage.
-func hasEnoughInodesExec(ctx context.Context, info *execs.ExecInfo) error {
+func hasEnoughFreeIndexNodesExec(ctx context.Context, info *execs.ExecInfo) error {
 	if len(info.ActionArgs) != 1 {
-		return errors.Reason("has enough inodes: input in wrong format").Err()
+		return errors.Reason("has enough index nodes: input in wrong format").Err()
 	}
 	inputs := strings.Split(info.ActionArgs[0], ":")
 	if len(inputs) != 2 {
-		return errors.Reason("has enough inodes: input in wrong format").Err()
+		return errors.Reason("has enough index nodes: input in wrong format").Err()
 	}
 	path := inputs[0]
-	pathMinKiloInodes, convertErr := strconv.ParseFloat(inputs[1], 64)
+	pathMinKiloIndexNodes, convertErr := strconv.ParseFloat(inputs[1], 64)
 	if convertErr != nil {
-		return errors.Annotate(convertErr, "has enough storage inodes: convert stateful path min kilo inodes").Err()
+		return errors.Annotate(convertErr, "has enough storage index nodes: convert stateful path min kilo nodes").Err()
 	}
-	err := linux.PathHasEnoughValue(ctx, info.DefaultRunner(), info.RunArgs.ResourceName, path, linux.SpaceTypeInode, pathMinKiloInodes*1000)
-	return errors.Annotate(err, "has enough storage inodes").Err()
+	err := linux.PathHasEnoughValue(ctx, info.DefaultRunner(), info.RunArgs.ResourceName, path, linux.SpaceTypeInode, pathMinKiloIndexNodes*1000)
+	return errors.Annotate(err, "has enough storage index nodes").Err()
 }
 
 // hasEnoughStorageSpacePercentageExec confirms the given path has at least the percentage of free space specified by the actionArgs arguments.
@@ -133,5 +133,5 @@ func init() {
 	execs.Register("cros_audit_storage_smart", auditStorageSMARTExec)
 	execs.Register("cros_has_enough_storage_space", hasEnoughStorageSpaceExec)
 	execs.Register("cros_has_enough_storage_space_percentage", hasEnoughStorageSpacePercentageExec)
-	execs.Register("cros_has_enough_inodes", hasEnoughInodesExec)
+	execs.Register("cros_has_enough_index_nodes", hasEnoughFreeIndexNodesExec)
 }

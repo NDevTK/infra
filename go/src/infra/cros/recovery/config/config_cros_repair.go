@@ -23,7 +23,7 @@ func crosRepairPlan() *Plan {
 			"cros_gsctool",
 			"hardware_audit",
 			"Firmware validations",
-			"stop_start_ui",
+			"Login UI is up",
 			"rw_vpd",
 			"servo_keyboard",
 			"servo_mac_address",
@@ -52,6 +52,9 @@ func crosRepairActions() map[string]*Action {
 			},
 			RunControl: RunControl_RUN_ONCE,
 		},
+		"Set state: needs_deploy": {
+			ExecName: "dut_state_needs_deploy",
+		},
 		"Device is pingable": {
 			Docs: []string{
 				"Verify that device is reachable by ping.",
@@ -73,6 +76,7 @@ func crosRepairActions() map[string]*Action {
 				"Update FW from fw-image by servo and reboot",
 				"Restore AC detection by EC console",
 				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode by USB-drive (for special pools)",
 				"Reset power using servo if booted from USB",
 				"Update firmware from USB-Drive and when booted in recovery mode",
 			},
@@ -96,6 +100,7 @@ func crosRepairActions() map[string]*Action {
 				"Update FW from fw-image by servo and reboot",
 				"Restore AC detection by EC console",
 				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode by USB-drive (for special pools)",
 				"Reset power using servo if booted from USB",
 				"Update firmware from USB-Drive and when booted in recovery mode",
 			},
@@ -107,8 +112,10 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Internal storage is responsive",
-				"cros_storage_file_system",
-				"cros_storage_space_check",
+				"Kernel does not know issues",
+				"Stateful partition has enough free index nodes",
+				"Stateful partition has enough free space",
+				"Stateful partition (encrypted) has enough free space",
 				"Quick internal storage audit (SMART)",
 			},
 			ExecName: "sample_pass",
@@ -117,13 +124,14 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Quick audit internal storage by reading SMART data.",
 				"The check updates storage state.",
+				"The check is not critical as update storage state.",
 			},
 			ExecName:               "cros_audit_storage_smart",
 			AllowFailAfterRecovery: true,
 		},
 		"Verify system info": {
 			Conditions: []string{
-				"is_not_flex_board",
+				"Is not Flex device",
 			},
 			Dependencies: []string{
 				"cros_default_boot",
@@ -141,14 +149,13 @@ func crosRepairActions() map[string]*Action {
 				"The Reven boards does not have python. TBD",
 			},
 			Conditions: []string{
-				"is_not_flex_board",
+				"Is not Flex device",
 			},
 			Dependencies: []string{
 				"Internal storage is responsive",
 			},
 			ExecName: "cros_has_python_interpreter_working",
 			RecoveryActions: []string{
-				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
 			},
@@ -196,7 +203,7 @@ func crosRepairActions() map[string]*Action {
 		"power_info": {
 			Docs: []string{"Check for the AC power, and battery charging capability."},
 			Conditions: []string{
-				"is_not_flex_board",
+				"Is not Flex device",
 				"cros_is_not_virtual_machine",
 			},
 			Dependencies: []string{
@@ -225,7 +232,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"tpm_info": {
 			Conditions: []string{
-				"is_not_flex_board",
+				"Is not Flex device",
 				"cros_is_not_virtual_machine",
 				"cros_is_tpm_present",
 			},
@@ -264,7 +271,7 @@ func crosRepairActions() map[string]*Action {
 				"Group action to combine all firmware checks in one place.",
 			},
 			Conditions: []string{
-				"is_not_flex_board",
+				"Is not Flex device",
 			},
 			Dependencies: []string{
 				"Internal storage is responsive",
@@ -273,10 +280,11 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_pass",
 		},
-		"stop_start_ui": {
+		"Login UI is up": {
 			Docs: []string{
 				"Check the command 'stop ui' won't crash the DUT.",
 			},
+			ExecName:    "cros_stop_start_ui",
 			ExecTimeout: &durationpb.Duration{Seconds: 45},
 			RecoveryActions: []string{
 				"Cold reset by servo and wait for SSH",
@@ -285,14 +293,13 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 			},
-			ExecName: "cros_stop_start_ui",
 		},
 		"rw_vpd": {
 			Docs: []string{
 				"Verify that keys: 'should_send_rlz_ping', 'gbind_attribute', 'ubind_attribute' are present in vpd RW_VPD partition.",
 			},
 			Conditions: []string{
-				"is_not_flex_board",
+				"Is not Flex device",
 			},
 			RecoveryActions: []string{
 				"Install OS in recovery mode by booting from servo USB-drive",
@@ -465,7 +472,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				//TODO(b:231609148: Flex device don't have security chip and gsctool.
-				"is_not_flex_board",
+				"Is not Flex device",
 			},
 			RecoveryActions: []string{
 				"Install OS in recovery mode by booting from servo USB-drive",
@@ -534,7 +541,7 @@ func crosRepairActions() map[string]*Action {
 				"Internal storage is responsive",
 			},
 			Conditions: []string{
-				"is_not_flex_board",
+				"Is not Flex device",
 			},
 			RecoveryActions: []string{
 				"Install OS in recovery mode by booting from servo USB-drive",
@@ -546,7 +553,7 @@ func crosRepairActions() map[string]*Action {
 				"Internal storage is responsive",
 			},
 			Conditions: []string{
-				"is_not_flex_board",
+				"Is not Flex device",
 			},
 			RecoveryActions: []string{
 				"Install OS in recovery mode by booting from servo USB-drive",
@@ -561,7 +568,7 @@ func crosRepairActions() map[string]*Action {
 				"Internal storage is responsive",
 			},
 			Conditions: []string{
-				"is_not_flex_board",
+				"Is not Flex device",
 			},
 			RecoveryActions: []string{
 				"Set default boot as disk",
@@ -573,7 +580,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"cros_boot_in_normal_mode": {
 			Conditions: []string{
-				"is_not_flex_board",
+				"Is not Flex device",
 				"Pools required to be in Secure mode",
 			},
 			Dependencies: []string{
@@ -589,7 +596,7 @@ func crosRepairActions() map[string]*Action {
 				"Match HWID to value in inventory",
 			},
 			Conditions: []string{
-				"is_not_flex_board",
+				"Is not Flex device",
 				"Not Satlab device",
 				"Is HWID known",
 			},
@@ -606,7 +613,7 @@ func crosRepairActions() map[string]*Action {
 				"Match serial number to value in inventory",
 			},
 			Conditions: []string{
-				"is_not_flex_board",
+				"Is not Flex device",
 				"Not Satlab device",
 				"Is serial-number known",
 			},
@@ -695,7 +702,7 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in recovery mode by booting from servo USB-drive",
 			},
 		},
-		"cros_storage_file_system": {
+		"Kernel does not know issues": {
 			Docs: []string{
 				"Verify instrenal storage is writable.",
 				"If linux has some hardware error then file system can became read-only.",
@@ -710,39 +717,48 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in recovery mode by booting from servo USB-drive",
 			},
 		},
-		"cros_storage_space_check": {
-			Dependencies: []string{
-				"cros_stateful_partition_has_enough_inodes",
-				"cros_stateful_partition_has_enough_storage_space",
-				"cros_encrypted_stateful_partition_has_enough_storage_space",
-			},
-			ExecName: "sample_pass",
-		},
-		"cros_stateful_partition_has_enough_inodes": {
+		"Stateful partition has enough free index nodes": {
 			Docs: []string{
-				"check the stateful partition path has enough inodes",
+				"Check the stateful partition path has enough index nodes.",
 			},
-			ExecName: "cros_has_enough_inodes",
+			ExecName: "cros_has_enough_index_nodes",
 			ExecExtraArgs: []string{
 				"/mnt/stateful_partition:100",
 			},
+			RecoveryActions: []string{
+				"Repair by powerwash",
+				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode by USB-drive (for special pools)",
+			},
 		},
-		"cros_stateful_partition_has_enough_storage_space": {
+		"Stateful partition has enough free space": {
 			Docs: []string{
-				"check the stateful partition have enough disk space. The storage unit is in GB.",
+				"Check the stateful partition have enough disk space.",
+				"Expected to have free 0.1GB storage unit.",
 			},
 			ExecName: "cros_has_enough_storage_space",
 			ExecExtraArgs: []string{
 				"/mnt/stateful_partition:0.7",
 			},
+			RecoveryActions: []string{
+				"Repair by powerwash",
+				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode by USB-drive (for special pools)",
+			},
 		},
-		"cros_encrypted_stateful_partition_has_enough_storage_space": {
+		"Stateful partition (encrypted) has enough free space": {
 			Docs: []string{
-				"check the encrypted stateful partition have enough disk space. The storage unit is in GB.",
+				"Check the encrypted stateful partition have enough disk space.",
+				"Expected to have free 0.1GB storage unit.",
 			},
 			ExecName: "cros_has_enough_storage_space",
 			ExecExtraArgs: []string{
 				"/mnt/stateful_partition/encrypted:0.1",
+			},
+			RecoveryActions: []string{
+				"Repair by powerwash",
+				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
 		},
 		"device_labels": {
@@ -925,7 +941,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				//TODO(b:231640496): flex board unpingable after switching to secure-mode.
-				"is_not_flex_board",
+				"Is not Flex device",
 				"Pools required to be in Secure mode",
 			},
 			Dependencies: []string{
@@ -951,7 +967,7 @@ func crosRepairActions() map[string]*Action {
 			ExecTimeout:            &durationpb.Duration{Seconds: 3600},
 			AllowFailAfterRecovery: true,
 		},
-		"is_not_flex_board": {
+		"Is not Flex device": {
 			Docs: []string{
 				"Verify that device is belong Reven models",
 			},
@@ -1230,9 +1246,6 @@ func crosRepairActions() map[string]*Action {
 			AllowFailAfterRecovery: true,
 			RunControl:             RunControl_ALWAYS_RUN,
 		},
-		"Set needs_deploy state": {
-			ExecName: "dut_state_needs_deploy",
-		},
 		"Install OS in recovery mode by booting from servo USB-drive": {
 			Docs: []string{
 				"This action installs the test image on DUT utilizing ",
@@ -1413,7 +1426,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				//TODO(b:231627956): Flex board cannot run crossystem set_default_boot
-				"is_not_flex_board",
+				"Is not Flex device",
 				"Device booted from USB-drive",
 			},
 			RecoveryActions: []string{
