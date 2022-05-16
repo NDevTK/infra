@@ -222,6 +222,28 @@ func hasCr50PhaseExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// dutServoStateMandatesManualRepairExec checks whether the state of
+// the servo on the DUT makes it imperative to set the state of the
+// DUT to need manual repair.
+func dutServoStateMandatesManualRepairExec(ctx context.Context, info *execs.ExecInfo) error {
+	servoStates := info.GetActionArgs(ctx).AsStringSlice(ctx, "servo_states", nil)
+	if servoStates == nil {
+		log.Debugf(ctx, "DUT Servo State Mandates Manual Repair: no states mentioned in the action, don't have enough information to check whether servo state requires manual repair on the DUT.")
+		return nil
+	}
+	sh := info.RunArgs.DUT.ServoHost
+	// Assume this will always be non-nil because actions using this
+	// exec will be conditioned in the config on availability of
+	// ServoHost.
+	for _, s := range servoStates {
+		if state, ok := tlw.ServoHost_State_value[s]; ok && tlw.ServoHost_State(state) == sh.State {
+			log.Debugf(ctx, "DUT Servo State Mandates Manual Repair")
+			return nil
+		}
+	}
+	return errors.Reason("dut servo state mandates manual repair: manual repair not required").Err()
+}
+
 func init() {
 	execs.Register("dut_servo_host_present", servoHostPresentExec)
 	execs.Register("dut_has_name", hasDutNameActionExec)
@@ -239,4 +261,5 @@ func init() {
 	execs.Register("dut_has_serial_number", hasDutSerialNumberExec)
 	execs.Register("dut_set_state", setDutStateExec)
 	execs.Register("dut_has_cr50", hasCr50PhaseExec)
+	execs.Register("dut_servo_state_required_manual_attention", dutServoStateMandatesManualRepairExec)
 }

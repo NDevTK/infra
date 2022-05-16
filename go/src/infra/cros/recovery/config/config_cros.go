@@ -61,7 +61,8 @@ func crosClosePlan() *Plan {
 			"Servo-host logs",
 			"Remove in-use flag on servo-host",
 			"Remove request to reboot if servo is good",
-			"Update DUT state",
+			"Update DUT state for failures more than threshold",
+			"Update DUT state based on servo state",
 			"Stop servod",
 		},
 		Actions: map[string]*Action{
@@ -149,7 +150,7 @@ func crosClosePlan() *Plan {
 				ExecName:               "update_peripheral_wifi_state",
 				AllowFailAfterRecovery: true,
 			},
-			"Check failure count": {
+			"Failure count above threshold": {
 				Docs: []string{
 					"Check if the number of times the recovery task ",
 					"has failed is greater than a threshold value or ",
@@ -161,13 +162,50 @@ func crosClosePlan() *Plan {
 					"repair_failed_count:49",
 				},
 			},
-			"Update DUT state": {
+			"Update DUT state for failures more than threshold": {
 				Docs: []string{
 					"Set the DUT state to the value passed in the ",
 					"extra args.",
 				},
 				Conditions: []string{
-					"Check failure count",
+					"Failure count above threshold",
+				},
+				ExecName: "dut_set_state",
+				ExecExtraArgs: []string{
+					"state:needs_manual_repair",
+				},
+				AllowFailAfterRecovery: true,
+			},
+			"Failure count are not above threshold": {
+				Docs: []string{
+					"Check if the number of times the recovery task ",
+					"has failed is not greater than a threshold value",
+				},
+				Dependencies: []string{
+					"Failure count above threshold",
+				},
+				ExecName: "sample_fail",
+			},
+			"Servo state demands manual repair": {
+				Docs: []string{
+					"Check whether the state of servo mandates a ",
+					"manual repair on the DUT.",
+				},
+				ExecName: "dut_servo_state_required_manual_attention",
+				ExecExtraArgs: []string{
+					"servo_states:NEED_REPLACEMENT,DUT_NOT_CONNECTED",
+				},
+			},
+			"Update DUT state based on servo state": {
+				Docs: []string{
+					"Set the DUT state based on the state of servo. ",
+					"This applies only if the count of failures is ",
+					"not above a threshold amount",
+				},
+				Conditions: []string{
+					"Failure count are not above threshold",
+					"dut_servo_host_present",
+					"Servo state demands manual repair",
 				},
 				ExecName: "dut_set_state",
 				ExecExtraArgs: []string{
