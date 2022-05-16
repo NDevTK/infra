@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cea052c8_6dbe9af7",
+        "filename": "go/src/infra/cros/cmd/labpack/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-05-16T20:24:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ac675c75_abf9c85f",
+      "revId": "53694a4e77325dced964fa8b5151272e32aa0d43",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1d678876_a7a4103c",
@@ -48,6 +66,24 @@
       "writtenOn": "2022-05-12T01:35:09Z",
       "side": 1,
       "message": "nit: please log at the end that we done!",
+      "revId": "53694a4e77325dced964fa8b5151272e32aa0d43",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f9b111c9_27be3ab1",
+        "filename": "go/src/infra/cros/cmd/labpack/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-05-16T20:24:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1d678876_a7a4103c",
       "revId": "53694a4e77325dced964fa8b5151272e32aa0d43",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
