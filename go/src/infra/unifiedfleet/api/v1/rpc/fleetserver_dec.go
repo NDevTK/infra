@@ -538,6 +538,23 @@ func (s *DecoratedFleet) DeleteRack(ctx context.Context, req *DeleteRackRequest)
 	return
 }
 
+func (s *DecoratedFleet) RenameRack(ctx context.Context, req *RenameRackRequest) (rsp *models.Rack, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "RenameRack", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.RenameRack(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "RenameRack", rsp, err)
+	}
+	return
+}
+
 func (s *DecoratedFleet) CreateMachineLSE(ctx context.Context, req *CreateMachineLSERequest) (rsp *models.MachineLSE, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context

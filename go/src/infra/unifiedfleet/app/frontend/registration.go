@@ -323,6 +323,14 @@ func (fs *FleetServerImpl) DeleteRack(ctx context.Context, req *ufsAPI.DeleteRac
 	return &empty.Empty{}, err
 }
 
+// RenameRack rename a rack name to a new one.
+func (fs *FleetServerImpl) RenameRack(ctx context.Context, req *ufsAPI.RenameRackRequest) (rsp *ufspb.Rack, err error) {
+	defer func() {
+		err = grpcutil.GRPCifyAndLogErr(ctx, err)
+	}()
+	return nil, err
+}
+
 // CreateNic creates nic entry in database.
 func (fs *FleetServerImpl) CreateNic(ctx context.Context, req *ufsAPI.CreateNicRequest) (rsp *ufspb.Nic, err error) {
 	defer func() {
