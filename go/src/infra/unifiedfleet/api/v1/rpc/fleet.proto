@@ -124,6 +124,9 @@ service Fleet {
   // Delete delete the rack
   rpc DeleteRack(DeleteRackRequest) returns (google.protobuf.Empty);
 
+  // Rename rename the rack
+  rpc RenameRack(RenameRackRequest) returns (models.Rack);
+
   // CreateMachineLSE creates a new machineLSE
   rpc CreateMachineLSE(CreateMachineLSERequest) returns (models.MachineLSE);
 
@@ -1013,6 +1016,20 @@ message ListRacksResponse {
 message DeleteRackRequest {
   // The name of the Rack to delete
   string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = { type: "unified-fleet-system.appspot.com/Rack" }
+  ];
+}
+
+message RenameRackRequest {
+  // The name of the Rack to rename
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = { type: "unified-fleet-system.appspot.com/Rack" }
+  ];
+
+  // The new name of the Machine
+  string new_name = 2 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = { type: "unified-fleet-system.appspot.com/Rack" }
   ];
