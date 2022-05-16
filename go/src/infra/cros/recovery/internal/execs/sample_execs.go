@@ -6,6 +6,7 @@ package execs
 
 import (
 	"context"
+	"io"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
@@ -62,12 +63,33 @@ func sampleMetricsActionExec(ctx context.Context, info *ExecInfo) error {
 
 // sampleStepSummaryMarkdownExec sets experimental SummaryMarkdown to new step.
 func sampleStepSummaryMarkdownExec(ctx context.Context, info *ExecInfo) error {
-	argsMap := info.GetActionArgs(ctx)
-	msg := argsMap.AsString(ctx, "message", "")
-	if msg != "" {
-		step, _ := build.StartStep(ctx, "Run experimental step")
-		defer func() { step.End(nil) }()
-		step.SetSummaryMarkdown(msg)
+	if len(info.ActionArgs) == 0 {
+		return nil
+	}
+	step, _ := build.StartStep(ctx, "Experimental step")
+	defer func() { step.End(nil) }()
+	for _, msg := range info.ActionArgs {
+		step.Modify(func(v *build.StepView) {
+			if v.SummaryMarkdown != "" {
+				v.SummaryMarkdown += "<br/>"
+			}
+			v.SummaryMarkdown += msg
+		})
+	}
+	return nil
+}
+
+// sampleStepLogExec sets experimental logs to new step.
+func sampleStepLogExec(ctx context.Context, info *ExecInfo) error {
+	step, _ := build.StartStep(ctx, "Experimental step")
+	defer func() { step.End(nil) }()
+	for k, v := range info.GetActionArgs(ctx) {
+		req := step.Log(k)
+		if v != "" {
+			if _, err := io.WriteString(req, v); err != nil {
+				log.Debugf(ctx, "Fail to log %v.", err)
+			}
+		}
 	}
 	return nil
 }
@@ -78,4 +100,5 @@ func init() {
 	Register("sample_sleep", sampleSleepExec)
 	Register("sample_metrics_action", sampleMetricsActionExec)
 	Register("sample_step_summary_markdown", sampleStepSummaryMarkdownExec)
+	Register("sample_step_logs", sampleStepLogExec)
 }

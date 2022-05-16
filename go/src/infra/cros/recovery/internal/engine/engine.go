@@ -185,9 +185,9 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 			step.Modify(func(v *build.StepView) {
 				log.Infof(ctx, "Original v.SummaryMarkdown=%q", v.SummaryMarkdown)
 				if v.SummaryMarkdown != "" {
-					v.SummaryMarkdown += "\n"
+					v.SummaryMarkdown += "<br/>"
 				}
-				v.SummaryMarkdown += fmt.Sprintf("Skipped as condition %q failed!", conditionName)
+				v.SummaryMarkdown += fmt.Sprintf(" * Skipped as condition %q failed!", conditionName)
 			})
 		}
 		log.Debugf(ctx, "Action %q: conditions fail with %s", actionName, err)
