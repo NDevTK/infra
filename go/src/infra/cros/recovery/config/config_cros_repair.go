@@ -156,8 +156,10 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_has_python_interpreter_working",
 			RecoveryActions: []string{
+				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
 		},
 		"Check if last provision was good": {
@@ -169,9 +171,10 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_is_last_provision_successful",
 			RecoveryActions: []string{
-				"Install OS in recovery mode by booting from servo USB-drive",
 				"Quick provision OS",
 				"Repair by powerwash",
+				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
 		},
 		"device_enrollment": {
@@ -211,13 +214,15 @@ func crosRepairActions() map[string]*Action {
 				"Power is recognized by DUT",
 				"battery_is_good",
 			},
-			RecoveryActions: []string{
+			RecoveryActions: []string{ //need move for dependencies
 				"Power cycle DUT by RPM and wait",
 				"Cold reset by servo and wait for SSH",
 				"Cr50 reset by servo wait for SSH",
 				"Restore AC detection by EC console",
-				"Install OS in recovery mode by booting from servo USB-drive",
 				"Quick provision OS",
+				"Repair by powerwash",
+				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
 			ExecName: "sample_pass",
 		},
@@ -231,17 +236,22 @@ func crosRepairActions() map[string]*Action {
 			},
 		},
 		"tpm_info": {
+			Docs: []string{
+				"Verify that TPM statuses is ok.",
+			},
 			Conditions: []string{
 				"Is not Flex device",
 				"cros_is_not_virtual_machine",
 				"cros_is_tpm_present",
 			},
+			ExecName: "cros_is_tpm_in_good_status",
 			RecoveryActions: []string{
-				"Install OS in recovery mode by booting from servo USB-drive",
+				//TODO: Need recovery action to reset TPM!
 				"Quick provision OS",
 				"Repair by powerwash",
+				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
-			ExecName: "cros_is_tpm_in_good_status",
 		},
 		"hardware_audit": {
 			Dependencies: []string{
@@ -287,11 +297,13 @@ func crosRepairActions() map[string]*Action {
 			ExecName:    "cros_stop_start_ui",
 			ExecTimeout: &durationpb.Duration{Seconds: 45},
 			RecoveryActions: []string{
+				// TODO: need action to start service only.
 				"Cold reset by servo and wait for SSH",
 				"Cr50 reset by servo wait for SSH",
-				"Install OS in recovery mode by booting from servo USB-drive",
 				"Quick provision OS",
 				"Repair by powerwash",
+				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
 		},
 		"rw_vpd": {
@@ -301,12 +313,13 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Is not Flex device",
 			},
+			ExecName: "cros_are_required_rw_vpd_keys_present",
 			RecoveryActions: []string{
-				"Install OS in recovery mode by booting from servo USB-drive",
+				//TODO: Need run tmp reset.
 				"Quick provision OS",
 				"Repair by powerwash",
+				"Install OS in recovery mode by booting from servo USB-drive",
 			},
-			ExecName:               "cros_are_required_rw_vpd_keys_present",
 			AllowFailAfterRecovery: true,
 		},
 		"servo_keyboard": {
@@ -475,9 +488,10 @@ func crosRepairActions() map[string]*Action {
 				"Is not Flex device",
 			},
 			RecoveryActions: []string{
-				"Install OS in recovery mode by booting from servo USB-drive",
 				"Quick provision OS",
 				"Repair by powerwash",
+				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
 			ExecName: "cros_is_gsc_tool_present",
 		},
@@ -543,10 +557,14 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Is not Flex device",
 			},
-			RecoveryActions: []string{
-				"Install OS in recovery mode by booting from servo USB-drive",
-			},
 			ExecName: "cros_match_dev_tpm_firmware_version",
+			RecoveryActions: []string{
+				//TODO: just run TMP reset.
+				"Quick provision OS",
+				"Repair by powerwash",
+				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode by USB-drive (for special pools)",
+			},
 		},
 		"cros_tpm_kernver_match": {
 			Dependencies: []string{
@@ -555,28 +573,33 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Is not Flex device",
 			},
-			RecoveryActions: []string{
-				"Install OS in recovery mode by booting from servo USB-drive",
-			},
 			ExecName: "cros_match_dev_tpm_kernel_version",
+			RecoveryActions: []string{
+				//TODO: just run TMP reset.
+				"Quick provision OS",
+				"Repair by powerwash",
+				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode by USB-drive (for special pools)",
+			},
 		},
 		"cros_default_boot": {
 			Docs: []string{
 				"Check if the default boot drive is disk.",
 			},
-			Dependencies: []string{
-				"Internal storage is responsive",
-			},
 			Conditions: []string{
 				"Is not Flex device",
 			},
+			Dependencies: []string{
+				"Internal storage is responsive",
+			},
+			ExecName: "cros_is_default_boot_from_disk",
 			RecoveryActions: []string{
 				"Set default boot as disk",
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
-			ExecName: "cros_is_default_boot_from_disk",
 		},
 		"cros_boot_in_normal_mode": {
 			Conditions: []string{
@@ -698,8 +721,10 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_is_file_system_writable",
 			RecoveryActions: []string{
 				"Cold reset by servo and wait for SSH",
+				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
 		},
 		"Kernel does not know issues": {
@@ -713,8 +738,10 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_has_critical_kernel_error",
 			RecoveryActions: []string{
 				"Cold reset by servo and wait for SSH",
+				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
 		},
 		"Stateful partition has enough free index nodes": {
@@ -726,6 +753,7 @@ func crosRepairActions() map[string]*Action {
 				"/mnt/stateful_partition:100",
 			},
 			RecoveryActions: []string{
+				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode by USB-drive (for special pools)",
@@ -741,6 +769,7 @@ func crosRepairActions() map[string]*Action {
 				"/mnt/stateful_partition:0.7",
 			},
 			RecoveryActions: []string{
+				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode by USB-drive (for special pools)",
@@ -756,6 +785,7 @@ func crosRepairActions() map[string]*Action {
 				"/mnt/stateful_partition/encrypted:0.1",
 			},
 			RecoveryActions: []string{
+				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode by USB-drive (for special pools)",
@@ -991,6 +1021,7 @@ func crosRepairActions() map[string]*Action {
 			ExecTimeout: &durationpb.Duration{Seconds: 3600},
 		},
 		"Wait to be SSHable (normal boot)": {
+			// No recovery actions as that is help action.
 			Docs: []string{
 				"Try to wait device to be sshable after the device being rebooted.",
 				"Waiting time 150 seconds.",
@@ -1000,17 +1031,14 @@ func crosRepairActions() map[string]*Action {
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
 		"Wait to be pingable (normal boot)": {
+			// No recovery actions as that is help action.
 			Docs: []string{
 				"Wait DUT to be pingable after some action on it.",
 				"Waiting time 150 seconds.",
 			},
+			ExecName:    "cros_ping",
 			ExecTimeout: &durationpb.Duration{Seconds: 150},
-			RecoveryActions: []string{
-				"Install OS in recovery mode by booting from servo USB-drive",
-				"Repair by powerwash",
-			},
-			ExecName:   "cros_ping",
-			RunControl: RunControl_ALWAYS_RUN,
+			RunControl:  RunControl_ALWAYS_RUN,
 		},
 		"Trigger kernel panic to reset the whole board and try ssh to DUT": {
 			Docs: []string{
