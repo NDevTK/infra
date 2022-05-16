@@ -5,16 +5,15 @@
 import './bugs_table';
 import '../../../../web_component_types';
 
-import React from 'react';
 import {
-    useParams
+  useParams,
 } from 'react-router-dom';
 
 const BugsTableWrapper = () => {
-    const { project } = useParams();
-    return (
-        <bugs-table project={project} />
-    );
+  const { project } = useParams();
+  return (
+    <bugs-table project={project} />
+  );
 };
 
 export default BugsTableWrapper;

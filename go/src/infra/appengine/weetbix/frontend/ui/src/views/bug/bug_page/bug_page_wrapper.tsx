@@ -5,27 +5,27 @@
 import './bug_page';
 import '../../../../web_component_types';
 
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import {
-    useNavigate,
-    useParams
+  useNavigate,
+  useParams,
 } from 'react-router-dom';
 
 const BugPageWrapper = () => {
-    const { bugTracker, id } = useParams();
-    const navigate = useNavigate();
-    const elementRef = useCallback(node => {
-        if (node !== null) {
-            node.navigate = navigate;
-        }
-    }, []);
-    return (
-        <bug-page
-            bugTracker={bugTracker}
-            bugId={id}
-            ref={elementRef}
-        />
-    );
+  const { bugTracker, id } = useParams();
+  const navigate = useNavigate();
+  const elementRef = useCallback((node) => {
+    if (node !== null) {
+      node.navigate = navigate;
+    }
+  }, [navigate]);
+  return (
+    <bug-page
+      bugTracker={bugTracker}
+      bugId={id}
+      ref={elementRef}
+    />
+  );
 };
 
 export default BugPageWrapper;

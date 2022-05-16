@@ -5,16 +5,15 @@
 import './cluster_table';
 import '../../../../web_component_types';
 
-import React from 'react';
 import {
-    useParams
+  useParams,
 } from 'react-router-dom';
 
 const ClusterTableWrapper = () => {
-    const { project } = useParams();
-    return (
-        <cluster-table project={project} />
-    )
+  const { project } = useParams();
+  return (
+    <cluster-table project={project} />
+  );
 };
 
 export default ClusterTableWrapper;
