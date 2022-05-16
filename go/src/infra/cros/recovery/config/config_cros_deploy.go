@@ -33,7 +33,7 @@ func deployActions() map[string]*Action {
 	var repairCriticalActions []string
 	for _, a := range crosRepairPlan().GetCriticalActions() {
 		// Exclude repair state to keep need_deploy state as default.
-		if a == "dut_state_repair_failed" {
+		if a == "Set state: repair_failed" {
 			continue
 		}
 		repairCriticalActions = append(repairCriticalActions, a)
@@ -117,8 +117,8 @@ func deployActions() map[string]*Action {
 				"Disable software-controlled write-protect for 'ec'",
 				"Update FW with factory mode",
 				"Cold reset DUT by servo",
-				"Wait DUT to be pingable after reset",
-				"Wait DUT to be SSHable after reset",
+				"Wait to be pingable (normal boot)",
+				"Wait to be SSHable (normal boot)",
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
@@ -136,8 +136,8 @@ func deployActions() map[string]*Action {
 				"Disable software-controlled write-protect for 'ec'",
 				"Update FW with factory mode",
 				"Simple reboot",
-				"Wait DUT to be pingable after reset",
-				"Wait DUT to be SSHable after reset",
+				"Wait to be pingable (normal boot)",
+				"Wait to be SSHable (normal boot)",
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
