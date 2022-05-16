@@ -1,0 +1,182 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "09419e41_e160ba6e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-05-16T18:39:25Z",
+      "side": 1,
+      "message": "LGTM with minor suggestions. ",
+      "revId": "7c993e85753461e8c0b4a62863ae00423b94c863",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "05259add_d0540c05",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_deploy.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-05-16T18:39:25Z",
+      "side": 1,
+      "message": "Wait be SSHable --\u003e Wait to be SSHable",
+      "range": {
+        "startLine": 121,
+        "startChar": 10,
+        "endLine": 121,
+        "endChar": 12
+      },
+      "revId": "7c993e85753461e8c0b4a62863ae00423b94c863",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8d649e68_b608a32f",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_deploy.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-05-16T18:39:25Z",
+      "side": 1,
+      "message": "Wait be SSHable --\u003e Wait to be SSHable",
+      "range": {
+        "startLine": 140,
+        "startChar": 5,
+        "endLine": 140,
+        "endChar": 34
+      },
+      "revId": "7c993e85753461e8c0b4a62863ae00423b94c863",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bd9ecb76_64bb2522",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 977,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-05-16T18:39:25Z",
+      "side": 1,
+      "message": "Wait be SSHable --\u003e Wait to be SSHable",
+      "range": {
+        "startLine": 977,
+        "startChar": 3,
+        "endLine": 977,
+        "endChar": 32
+      },
+      "revId": "7c993e85753461e8c0b4a62863ae00423b94c863",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "97016e23_15af48b4",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 1010,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-05-16T18:39:25Z",
+      "side": 1,
+      "message": "Wait be SSHable --\u003e Wait to be SSHable",
+      "range": {
+        "startLine": 1010,
+        "startChar": 5,
+        "endLine": 1010,
+        "endChar": 34
+      },
+      "revId": "7c993e85753461e8c0b4a62863ae00423b94c863",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "070778a4_9ecf360b",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 1043,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-05-16T18:39:25Z",
+      "side": 1,
+      "message": "Wait be SSHable --\u003e Wait to be SSHable",
+      "range": {
+        "startLine": 1043,
+        "startChar": 5,
+        "endLine": 1043,
+        "endChar": 33
+      },
+      "revId": "7c993e85753461e8c0b4a62863ae00423b94c863",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0a751528_68e1c714",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 1279,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-05-16T18:39:25Z",
+      "side": 1,
+      "message": "Wait be SSHable --\u003e Wait to be SSHable",
+      "range": {
+        "startLine": 1279,
+        "startChar": 5,
+        "endLine": 1279,
+        "endChar": 35
+      },
+      "revId": "7c993e85753461e8c0b4a62863ae00423b94c863",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1f0ab5fa_f98daa7e",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 1317,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2022-05-16T18:39:25Z",
+      "side": 1,
+      "message": "Wait be SSHable --\u003e Wait to be SSHable",
+      "range": {
+        "startLine": 1317,
+        "startChar": 5,
+        "endLine": 1317,
+        "endChar": 34
+      },
+      "revId": "7c993e85753461e8c0b4a62863ae00423b94c863",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
