@@ -22,6 +22,30 @@
       },
       "revId": "eb43835bf2233d18f30a18b71ba006f8a734dee8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "49cf6560_89ba5228",
+        "filename": "go/src/infra/cros/karte/GNUmakefile",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-05-16T20:38:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "27f727ad_6c14b703",
+      "range": {
+        "startLine": 73,
+        "startChar": 1,
+        "endLine": 73,
+        "endChar": 26
+      },
+      "revId": "eb43835bf2233d18f30a18b71ba006f8a734dee8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
