@@ -13,7 +13,7 @@ import (
 func crosDeployPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
-			"Set needs_deploy state",
+			"Set state: needs_deploy",
 			"Clean up",
 			"Servo has USB-key with require image",
 			"Device is pingable before deploy",
@@ -90,7 +90,7 @@ func deployActions() map[string]*Action {
 			},
 			Conditions: []string{
 				//TODO(b:231627918): Flex does not have own firmware for EC/AP
-				"is_not_flex_board",
+				"Is not Flex device",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
