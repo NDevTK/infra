@@ -807,3 +807,35 @@ func TestBatchGetRacks(t *testing.T) {
 		})
 	})
 }
+
+func TestRenameRack(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	rack1 := &ufspb.Rack{
+		Name:  "rename-rack-0",
+		Realm: util.AtlLabAdminRealm,
+	}
+	_, err := registration.CreateRack(ctx, rack1)
+	Convey("RenameRack", t, func() {
+		Convey("RenameRack - happy path", func() {
+			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AtlLabAdminRealm)
+			_, err = RenameRack(ctx, "rename-rack-0", "rename-rack-0-new")
+			So(err, ShouldBeNil)
+		})
+		Convey("RenameRack - permission denied", func() {
+			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
+			_, err = RenameRack(ctx, "rename-rack-0", "rename-rack-0-new")
+			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+		})
+		Convey("RenameRack - old rack doesn't exist", func() {
+			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AtlLabAdminRealm)
+			_, err = RenameRack(ctx, "rename-rack-non-existing", "rename-rack-0-new")
+			So(util.IsNotFoundError(err), ShouldBeTrue)
+		})
+		Convey("RenameRack - new rack already exists", func() {
+			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AtlLabAdminRealm)
+			_, err = RenameRack(ctx, "rename-rack-0", "rename-rack-0")
+			So(err.Error(), ShouldContainSubstring, "already exists in the system")
+		})
+	})
+}

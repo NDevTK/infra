@@ -21,6 +21,7 @@ import (
 	ufsds "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/model/registration"
+	"infra/unifiedfleet/app/util"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
@@ -386,6 +387,46 @@ func DeleteRack(ctx context.Context, id string) error {
 
 	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
 		logging.Errorf(ctx, "Failed to delete rack and its associated switches, rpms and kvms in datastore: %s", err)
+		return err
+	}
+	return nil
+}
+
+// RenameRack renames a rack in datastore
+//
+// All corresponding entites which are related to the old rack will be updated.
+func RenameRack(ctx context.Context, oldName, newName string) (rack *ufspb.Rack, err error) {
+	f := func(ctx context.Context) error {
+		oldRack, err := registration.GetRack(ctx, oldName)
+		if status.Code(err) == codes.Internal {
+			return err
+		}
+		if oldRack == nil {
+			return status.Errorf(codes.NotFound, ufsds.NotFound)
+		}
+
+		// Check if any other resource references this rack.
+		if err = validateRenameRack(ctx, oldRack, newName); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
+		logging.Errorf(ctx, "Failed to rename rack: %s", err)
+		return nil, err
+	}
+	return rack, nil
+}
+
+// validateRenameRack validates if a rack can be renamed
+func validateRenameRack(ctx context.Context, oldRack *ufspb.Rack, newName string) error {
+	// Check permission
+	if err := util.CheckPermission(ctx, util.RegistrationsUpdate, oldRack.GetRealm()); err != nil {
+		return err
+	}
+	// Check if new rack name already exists
+	if err := resourceAlreadyExists(ctx, []*Resource{GetRackResource(newName)}, nil); err != nil {
 		return err
 	}
 	return nil

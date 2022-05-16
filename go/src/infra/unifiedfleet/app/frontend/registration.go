@@ -331,6 +331,10 @@ func (fs *FleetServerImpl) RenameRack(ctx context.Context, req *ufsAPI.RenameRac
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
+	_, err = controller.RenameRack(ctx, util.RemovePrefix(req.Name), util.RemovePrefix(req.NewName))
+	if err != nil {
+		return nil, err
+	}
 	return nil, err
 }
 

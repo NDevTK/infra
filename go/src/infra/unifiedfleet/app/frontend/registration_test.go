@@ -846,23 +846,24 @@ func TestRenameRack(t *testing.T) {
 		Convey("The old rack name doesn't follow rackname format", func() {
 			_, err := tf.Fleet.RenameRack(tf.C, &ufsAPI.RenameRackRequest{
 				Name:    "oldRack",
-				NewName: "newRack",
+				NewName: "newrack",
 			})
 			So(err.Error(), ShouldContainSubstring, ufsAPI.RackNameFormat)
 		})
 		Convey("The new rack name after renaming doesn't follow rackname format", func() {
 			_, err := tf.Fleet.RenameRack(tf.C, &ufsAPI.RenameRackRequest{
 				Name:    "racks/oldRack",
-				NewName: "newRack",
+				NewName: "newrack",
 			})
 			So(err.Error(), ShouldContainSubstring, ufsAPI.RackNameFormat)
 		})
-		Convey("Happy path", func() {
+
+		Convey("The new rack name is not all lowercase", func() {
 			_, err := tf.Fleet.RenameRack(tf.C, &ufsAPI.RenameRackRequest{
 				Name:    "racks/oldRack",
-				NewName: "racks/newRack",
+				NewName: "newRack",
 			})
-			So(err, ShouldBeNil)
+			So(err.Error(), ShouldContainSubstring, "should be in all lowercase")
 		})
 	})
 }
