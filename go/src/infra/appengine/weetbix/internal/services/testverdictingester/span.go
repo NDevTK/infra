@@ -92,10 +92,8 @@ func recordIngestedInvocation(ctx context.Context, inv *testresults.IngestedInvo
 
 func batchTestResults(inv *testresults.IngestedInvocation, inputC chan []*rdbpb.TestVariant, outputC chan []*spanner.Mutation) {
 	// Must be selected such that no more than 20,000 mutations occur in
-	// one transaction in the worst case. Currently we are at exactly this
-	// limit:
-	// 20,000 / (14 (for test result) + 6 (for test variant realm)) = 1,000.
-	const batchSize = 1000
+	// one transaction in the worst case.
+	const batchSize = 800
 
 	// The number of test results in the current batch.
 	var trCount int
