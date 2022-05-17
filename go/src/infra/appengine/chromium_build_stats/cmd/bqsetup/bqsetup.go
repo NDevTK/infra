@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+//go:build ignore
 // +build ignore
 
 // Binary bqsetup is a tool that create/update BigQuery table/transfer config for ninja log.

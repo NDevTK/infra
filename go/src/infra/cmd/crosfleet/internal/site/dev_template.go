@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+//go:build dev
 // +build dev
 
 // This file is intended for overriding environment values in this package when building for local testing.
