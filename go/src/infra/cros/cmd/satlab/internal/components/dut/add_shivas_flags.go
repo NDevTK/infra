@@ -158,6 +158,12 @@ func makeAddShivasFlags(c *addDUT) flagmap {
 	if c.envFlags.Namespace != "" {
 		out["namespace"] = []string{c.envFlags.Namespace}
 	}
+	if c.paris {
+		out["paris"] = []string{}
+	} else {
+		// false need provide with = or will be ignored with shivas.
+		out["paris=false"] = []string{}
+	}
 	return out
 }
 
@@ -223,6 +229,9 @@ type shivasAddDUT struct {
 	// Machine specific fields
 	model string
 	board string
+
+	// Task scheduling fields.
+	paris bool
 }
 
 // DefaultDeployTaskActions are the default actoins run at deploy time.
@@ -289,4 +298,5 @@ func registerAddShivasFlags(c *addDUT) {
 	// crbug.com/1188488 showed us that it might be wise to add model/board during deployment if required.
 	c.Flags.StringVar(&c.model, "model", "", "model of the DUT undergoing deployment. If not given, HaRT data is used. Fails if model is not known for the DUT")
 	c.Flags.StringVar(&c.board, "board", "", "board of the DUT undergoing deployment. If not given, HaRT data is used. Fails if board is not known for the DUT")
+	c.Flags.BoolVar(&c.paris, "paris", false, "Use PARIS rather than legacy flow (dogfood).")
 }

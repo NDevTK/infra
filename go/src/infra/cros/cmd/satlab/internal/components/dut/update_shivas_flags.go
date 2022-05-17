@@ -5,14 +5,15 @@
 package dut
 
 import (
-	"infra/cmd/shivas/cmdhelp"
-	"infra/cmd/shivas/utils"
-	"infra/cros/cmd/satlab/internal/site"
-	"infra/libs/swarming"
 	"strings"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
+
+	"infra/cmd/shivas/cmdhelp"
+	"infra/cmd/shivas/utils"
+	"infra/cros/cmd/satlab/internal/site"
+	"infra/libs/swarming"
 )
 
 // MakeUpdateShivasFlags serializes the command line arguments of updateDUT into a flagmap
@@ -121,6 +122,12 @@ func makeUpdateShivasFlags(c *updateDUT) flagmap {
 	if c.envFlags.Namespace != "" {
 		// Do nothing.
 	}
+	if c.paris {
+		out["paris"] = []string{}
+	} else {
+		// false need provide with = or will be ignored with shivas.
+		out["paris=false"] = []string{}
+	}
 	return out
 }
 
@@ -179,6 +186,8 @@ type shivasUpdateDUT struct {
 
 	// For use in determining if a flag is set
 	flagInputs map[string]bool
+
+	paris bool
 }
 
 // RegisterUpdateShivasFlags registers the flags inherited from shivas.
@@ -231,4 +240,6 @@ func registerUpdateShivasFlags(c *updateDUT) {
 	c.Flags.BoolVar(&c.chaos, "chaos", false, "adding this flag will specify if chaos is present")
 	c.Flags.BoolVar(&c.audioCable, "audiocable", false, "adding this flag will specify if audiocable is present")
 	c.Flags.BoolVar(&c.smartUSBHub, "smartusbhub", false, "adding this flag will specify if smartusbhub is present")
+
+	c.Flags.BoolVar(&c.paris, "paris", false, "Use PARIS rather than legacy flow (dogfood).")
 }
