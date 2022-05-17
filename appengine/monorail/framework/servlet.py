@@ -30,7 +30,7 @@ import time
 import urllib
 
 import ezt
-from third_party import httpagentparser
+import httpagentparser
 
 from google.appengine.api import app_identity
 from google.appengine.api import modules

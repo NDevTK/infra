@@ -25,6 +25,7 @@ from businesslogic import work_env
 import ezt
 from features import features_bizobj, hotlist_views
 import flask
+import httpagentparser
 from project import project_constants
 from proto import project_pb2
 from search import query2ast
@@ -38,7 +39,6 @@ from framework import permissions
 from framework import ratelimiter
 from framework import template_helpers
 from framework import xsrf
-from third_party import httpagentparser
 
 from google.appengine.api import app_identity
 from google.appengine.api import modules
