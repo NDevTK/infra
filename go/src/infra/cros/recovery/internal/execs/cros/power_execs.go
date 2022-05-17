@@ -98,7 +98,7 @@ func isBatteryChargableOrGoodLevelExec(ctx context.Context, info *execs.ExecInfo
 	if batteryLevelError != nil && batteryChargingError != nil {
 		multiBatteryError := errors.NewMultiError(batteryLevelError, batteryChargingError)
 		// Log both of batteryLevelError and batteryChargingError
-		log.Errorf(ctx, multiBatteryError[0].Error()+" and "+multiBatteryError[1].Error())
+		log.Errorf(ctx, "%s and %s", multiBatteryError[0].Error(), multiBatteryError[1].Error())
 		return errors.Annotate(multiBatteryError, "battery chargable or good level: battery does not have enough charge and in discharging state").Err()
 	}
 	if batteryLevelError != nil {

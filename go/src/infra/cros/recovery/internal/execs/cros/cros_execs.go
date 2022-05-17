@@ -80,6 +80,16 @@ func notOnStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// readOSVersionExec read devices OS version.
+func readOSVersionExec(ctx context.Context, info *execs.ExecInfo) error {
+	fromDevice, err := releaseBuildPath(ctx, info.DefaultRunner())
+	if err != nil {
+		return errors.Annotate(err, "read os version").Err()
+	}
+	log.Debugf(ctx, "OS version on device: %s", fromDevice)
+	return nil
+}
+
 // isDefaultBootFromDiskExec confirms the resource is set to boot from disk by default.
 func isDefaultBootFromDiskExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
@@ -301,6 +311,7 @@ func init() {
 	execs.Register("cros_reboot", rebootExec)
 	execs.Register("cros_is_on_stable_version", isOnStableVersionExec)
 	execs.Register("cros_not_on_stable_version", notOnStableVersionExec)
+	execs.Register("cros_read_os_version", readOSVersionExec)
 	execs.Register("cros_is_default_boot_from_disk", isDefaultBootFromDiskExec)
 	execs.Register("cros_is_not_in_dev_mode", isNotInDevModeExec)
 	execs.Register("cros_run_shell_command", runShellCommandExec)

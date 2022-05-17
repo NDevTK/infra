@@ -18,9 +18,9 @@ func crosRepairPlan() *Plan {
 			"Verify system info",
 			"Python is present",
 			"Verify that device is not enrolled",
-			"power_info",
-			"tpm_info",
-			"cros_gsctool",
+			"Check power sources",
+			"Check TPM statuses",
+			"Verify present of gsctool",
 			"hardware_audit",
 			"Firmware validations",
 			"Login UI is up",
@@ -155,6 +155,18 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_pass",
 		},
+		"Read OS version": {
+			Docs: []string{
+				"Read and log current OS version.",
+			},
+			ExecName: "cros_read_os_version",
+			RecoveryActions: []string{
+				"Quick provision OS",
+				"Repair by powerwash",
+				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode by USB-drive (for special pools)",
+			},
+		},
 		"Python is present": {
 			Docs: []string{
 				"Verify that device has python on it.",
@@ -180,6 +192,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Internal storage is responsive",
+				"Read OS version",
 			},
 			ExecName: "cros_is_last_provision_successful",
 			RecoveryActions: []string{
@@ -217,28 +230,39 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 600},
 		},
-		"power_info": {
+		"Check power sources": {
 			Docs: []string{"Check for the AC power, and battery charging capability."},
 			Conditions: []string{
 				"Is not Flex device",
 				"cros_is_not_virtual_machine",
 			},
 			Dependencies: []string{
-				"Internal storage is responsive",
 				"Power is recognized by DUT",
-				"battery_is_good",
+				"Battery is changing or have accepted level",
+				"Audit battery",
 			},
-			RecoveryActions: []string{ //need move for dependencies
+			ExecName: "sample_pass",
+		},
+		"Battery is changing or have accepted level": {
+			Docs: []string{
+				"Check the battery charging state.",
+			},
+			Conditions: []string{
+				"cros_is_battery_expected",
+				"cros_is_not_virtual_machine",
+				"Battery is expected on device",
+				"Battery is present on device",
+			},
+			ExecName: "cros_is_battery_chargable_or_good_level",
+			RecoveryActions: []string{
 				"Power cycle DUT by RPM and wait",
 				"Cold reset by servo and wait for SSH",
 				"Cr50 reset by servo wait for SSH",
 				"Restore AC detection by EC console",
-				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
-			ExecName: "sample_pass",
 		},
 		"Power is recognized by DUT": {
 			Docs: []string{
@@ -247,9 +271,14 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_is_ac_power_connected",
 			RecoveryActions: []string{
 				"Power cycle DUT by RPM and wait",
+				"Cold reset by servo and wait for SSH",
+				"Cr50 reset by servo wait for SSH",
+				"Repair by powerwash",
+				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
 		},
-		"tpm_info": {
+		"Check TPM statuses": {
 			Docs: []string{
 				"Verify that TPM statuses is ok.",
 			},
@@ -260,7 +289,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_is_tpm_in_good_status",
 			RecoveryActions: []string{
-				//TODO: Need recovery action to reset TPM!
+				"ChromeOS TMP recovery (not critical)",
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
@@ -490,26 +519,25 @@ func crosRepairActions() map[string]*Action {
 			ExecName:    "cros_provision",
 			ExecTimeout: &durationpb.Duration{Seconds: 3600},
 		},
-		"cros_gsctool": {
+		"Verify present of gsctool": {
 			Docs: []string{
-				"Confirm that the GSC tool is function. This action ",
-				"has been created so that it can be used to attach a ",
-				"recovery action if the GSC tool is not functional on ",
-				"the DUT.",
+				"Confirm that the GSC tool is function.",
+				"Applicable only if device has Google security chip.",
 			},
 			Conditions: []string{
 				//TODO(b:231609148: Flex device don't have security chip and gsctool.
 				"Is not Flex device",
+				"DUT has Cr50 phase label",
 			},
+			ExecName: "cros_is_gsc_tool_present",
 			RecoveryActions: []string{
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
-			ExecName: "cros_is_gsc_tool_present",
 		},
-		"battery_is_good": {
+		"Audit battery": {
 			Docs: []string{
 				"Check battery on the DUT is normal and update battery hardware state accordingly.",
 			},
@@ -518,11 +546,9 @@ func crosRepairActions() map[string]*Action {
 				"cros_is_not_virtual_machine",
 				"Battery is expected on device",
 				"Battery is present on device",
-			},
-			Dependencies: []string{
 				"Internal storage is responsive",
-				"cros_is_battery_chargable_or_good_level",
 			},
+			// TODO: verify if the battery state is for replacement and escape from the finish the process.
 			ExecName: "cros_audit_battery",
 		},
 		"Battery is expected on device": {
@@ -950,29 +976,31 @@ func crosRepairActions() map[string]*Action {
 				"Verify that provision labels is correct.",
 			},
 			Dependencies: []string{
-				"cros_match_cros_version_to_inventory",
-				"cros_match_job_repo_url_version_to_inventory",
+				"Match CrOS version with provision label",
+				"Match job_repo_url with provision label",
 			},
 			ExecName: "sample_pass",
 		},
-		"cros_match_cros_version_to_inventory": {
+		"Match CrOS version with provision label": {
 			Docs: []string{
 				"Verify that cros-version match version on the host.",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
 			},
+			ExecName: "cros_match_cros_version_to_inventory",
 			RecoveryActions: []string{
 				"Update provisioned info",
 			},
 		},
-		"cros_match_job_repo_url_version_to_inventory": {
+		"Match job_repo_url with provision label": {
 			Docs: []string{
 				"Verify that job_repo_url matches the version on the host.",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
 			},
+			ExecName: "cros_match_job_repo_url_version_to_inventory",
 			RecoveryActions: []string{
 				"Update provisioned info",
 			},
