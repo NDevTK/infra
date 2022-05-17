@@ -16,17 +16,6 @@ import (
 	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/internal/retry"
-)
-
-const (
-	// TODO (vkjoshi@): Migrate the constants (such as
-	// MinimumBatteryLevel) and helper functions from
-	// internal/execs/cros package to internal/components/cros. Bug
-	// b/223061820 captures this task.
-	// The percentage of the battery that is considered to be not enough.
-	MinimumBatteryLevel = 80
-	verify_gsc_cmd      = "gsctool -a -f"
 )
 
 // pingExec verifies the DUT is pingable.
@@ -236,8 +225,7 @@ func waitForSystemExec(ctx context.Context, info *execs.ExecInfo) error {
 // If host-info has label 'cr50' then we expect to have GSC tool on the host.
 func isGscToolPresentExec(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
-	_, err := r(ctx, time.Minute, verify_gsc_cmd)
-	if err != nil {
+	if _, err := r(ctx, time.Minute, "gsctool", "-a", "-f"); err != nil {
 		return errors.Annotate(err, "gsc tool present: gsc tool issue detected").Err()
 	}
 	log.Debugf(ctx, "GSC tool is functional")
@@ -288,66 +276,6 @@ func crosSwitchToSecureModeExec(ctx context.Context, info *execs.ExecInfo) error
 	return nil
 }
 
-// enrollmentCleanupExec cleans up the enrollment state on the
-// ChromeOS device.
-func enrollmentCleanupExec(ctx context.Context, info *execs.ExecInfo) error {
-	argsMap := info.GetActionArgs(ctx)
-	run := info.NewRunner(info.RunArgs.DUT.Name)
-	// 1. Reset VPD enrollment state
-	repairTimeout := argsMap.AsDuration(ctx, "repair_timeout", 120, time.Second)
-	log.Debugf(ctx, "enrollment cleanup: using repair timeout :%s", repairTimeout)
-	run(ctx, repairTimeout, "/usr/sbin/update_rw_vpd check_enrollment", "0")
-	// 2. clear tpm owner state
-	clearTpmOwnerTimeout := argsMap.AsDuration(ctx, "clear_tpm_owner_timeout", 60, time.Second)
-	log.Debugf(ctx, "enrollment cleanup: using clear tpm owner timeout :%s", clearTpmOwnerTimeout)
-	if _, err := run(ctx, clearTpmOwnerTimeout, "crossystem", "clear_tpm_owner_request=1"); err != nil {
-		log.Debugf(ctx, "enrollment cleanup: unable to clear TPM.")
-		return errors.Annotate(err, "enrollment cleanup").Err()
-	}
-	filesToRemove := []string{
-		"/home/chronos/.oobe_completed",
-		"/home/chronos/Local\\ State",
-		"/var/cache/shill/default.profile",
-	}
-	dirsToRemove := []string{
-		"/home/.shadow/*",
-		filepath.Join("/var/cache/shill/default.profile", "*"),
-		"/var/lib/whitelist/*", // nocheck
-		"/var/cache/app_pack",
-		"/var/lib/tpm",
-	}
-	// We do not care about any errors that might be returned by the
-	// following two command executions.
-	fileDeletionTimeout := argsMap.AsDuration(ctx, "file_deletion_timeout", 120, time.Second)
-	run(ctx, fileDeletionTimeout, "sudo", "rm", "-rf", strings.Join(filesToRemove, " "), strings.Join(dirsToRemove, " "))
-	run(ctx, fileDeletionTimeout, "sync")
-	rebootTimeout := argsMap.AsDuration(ctx, "reboot_timeout", 10, time.Second)
-	log.Debugf(ctx, "enrollment cleanup: using reboot timeout :%s", rebootTimeout)
-	if err := SimpleReboot(ctx, run, rebootTimeout, info); err != nil {
-		return errors.Annotate(err, "enrollment cleanup").Err()
-	}
-	// Finally, we will read the TPM status, and will check whether it
-	// has been cleared or not.
-	tpmTimeout := argsMap.AsDuration(ctx, "tpm_timeout", 150, time.Second)
-	log.Debugf(ctx, "enrollment cleanup: using tpm timeout :%s", tpmTimeout)
-	retry.WithTimeout(ctx, time.Second, tpmTimeout, func() error {
-		tpmStatus := NewTpmStatus(ctx, run, repairTimeout)
-		if tpmStatus.hasSuccess() {
-			return nil
-		}
-		return errors.Reason("enrollment cleanup: failed to read TPM status.").Err()
-	}, "wait to read tpm status")
-	tpmStatus := NewTpmStatus(ctx, run, repairTimeout)
-	isOwned, err := tpmStatus.isOwned()
-	if err != nil {
-		return errors.Reason("enrollment cleanup: failed to read TPM status.").Err()
-	}
-	if isOwned {
-		return errors.Reason("enrollment cleanup: failed to clear TPM.").Err()
-	}
-	return nil
-}
-
 // updateCrossystemExec update the value of the command to the value passed in from the config file.
 //
 // the actionArgs should be in the format of ["command:....", "value:....", "check_after_update:true/false"]
@@ -385,6 +313,5 @@ func init() {
 	execs.Register("cros_is_tool_present", isToolPresentExec)
 	execs.Register("cros_set_gbb_flags", crosSetGbbFlagsExec)
 	execs.Register("cros_switch_to_secure_mode", crosSwitchToSecureModeExec)
-	execs.Register("cros_enrollment_cleanup", enrollmentCleanupExec)
 	execs.Register("cros_update_crossystem", updateCrossystemExec)
 }
