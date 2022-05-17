@@ -9,6 +9,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/execs/cros/power"
 	"infra/cros/recovery/internal/log"
@@ -68,8 +69,8 @@ func isBatteryLevelGreaterThanMinimumExec(ctx context.Context, info *execs.ExecI
 	if err != nil {
 		return errors.Annotate(err, "battery has enough charge").Err()
 	}
-	if currentLevel < MinimumBatteryLevel {
-		return errors.Reason("battery has enough charge: battery's current level is less than the minimum level: %d", MinimumBatteryLevel).Err()
+	if currentLevel < cros.MinimumBatteryLevel {
+		return errors.Reason("battery has enough charge: battery's current level is less than the minimum level: %d", cros.MinimumBatteryLevel).Err()
 	}
 	return nil
 }
