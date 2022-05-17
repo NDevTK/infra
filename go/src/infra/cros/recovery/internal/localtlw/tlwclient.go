@@ -345,7 +345,15 @@ func (c *tlwClient) prepareServodContainer(ctx context.Context, dut *tlw.Dut, o 
 		containerStartArgs = []string{"tail", "-f", "/dev/null"}
 	}
 	containerArgs := createServodContainerArgs(true, envVar, containerStartArgs)
-	res, err := d.Start(ctx, containerName, containerArgs, time.Hour)
+	// We always need to call pull before start as it will verify that image we used is latest.
+	// If pull is missed the image will be used from local docker cache.
+	// Image is small is expected to be download in less 1 minute but for safety we set 5.
+	// TODO: Need collect info how long it takes in field.
+	if err := d.Pull(ctx, containerArgs.ImageName, 5*time.Minute); err != nil {
+		return errors.Annotate(err, "start servod container").Err()
+	}
+	// Servod expected to start in less 1 minutes and we set 2 in case there is any issue is exist.
+	res, err := d.Start(ctx, containerName, containerArgs, 2*time.Minute)
 	if err != nil {
 		return errors.Annotate(err, "start servod container").Err()
 	}

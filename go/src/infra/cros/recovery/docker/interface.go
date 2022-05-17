@@ -15,6 +15,7 @@ import (
 
 // Client wraps interface to docker communication.
 type Client interface {
+	Pull(ctx context.Context, imageName string, timeout time.Duration) error
 	Start(ctx context.Context, containerName string, req *ContainerArgs, timeout time.Duration) (*StartResponse, error)
 	IsUp(ctx context.Context, containerName string) (bool, error)
 	Remove(ctx context.Context, containerName string, force bool) error

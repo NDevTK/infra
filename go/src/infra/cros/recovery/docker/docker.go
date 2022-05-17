@@ -88,9 +88,40 @@ func createDockerClient(ctx context.Context) (*client.Client, error) {
 	return client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 }
 
+// Pull is pulling docker image.
+//
+// The pull is guaranty by docker that it will verify is image is latest version with required tag.
+// If image is already latest the process will finished without any errors.
+func (d *dockerClient) Pull(ctx context.Context, imageName string, timeout time.Duration) error {
+	if imageName == "" {
+		return errors.Reason("pull: name is not provided").Err()
+	}
+	// Timeouts less than 1 second are too short for docker pull to realistically finish.
+	if timeout < time.Second {
+		return errors.Reason("pull: timeout %v is less than 1 second", timeout).Err()
+	}
+	res, err := runWithTimeout(ctx, timeout, "docker", "pull", "--", imageName)
+	if res != nil {
+		log.Debugf(ctx, "Run docker pull %q: exitcode: %v", imageName, res.ExitCode)
+		log.Debugf(ctx, "Run docker pull %q: stdout: %v", imageName, res.Stdout)
+		log.Debugf(ctx, "Run docker pull %q: stderr: %v", imageName, res.Stderr)
+	}
+	if err != nil {
+		log.Debugf(ctx, "Run docker pull %q: err: %v", imageName, err)
+	}
+	return errors.Annotate(err, "pull image").Err()
+}
+
 // StartContainer pull and start container by request.
 // More details https://docs.docker.com/engine/reference/run/
 func (d *dockerClient) Start(ctx context.Context, containerName string, req *ContainerArgs, timeout time.Duration) (*StartResponse, error) {
+	if containerName == "" {
+		return nil, errors.Reason("start: containerName is not provided").Err()
+	}
+	// Timeouts less than 1 second are too short for docker run to realistically finish.
+	if timeout < time.Second {
+		return nil, errors.Reason("start: timeout %v is less than 1 second", timeout).Err()
+	}
 	// TODO: migrate to use docker SDK.
 	// TODO: move logic to separate method with tests.
 	args := []string{"run"}
