@@ -239,7 +239,7 @@ func getCommitLog(ctx context.Context, cfg *rules.RefConfig, repoState *rules.Re
 
 	// Fetch log of newHead only
 	var newErr error
-	fl, newErr = gitiles.PagingLog(ctx, gc, &gitilespb.LogRequest{
+	_, newErr = gitiles.PagingLog(ctx, gc, &gitilespb.LogRequest{
 		Project:    project,
 		Committish: newHead,
 	}, 1)

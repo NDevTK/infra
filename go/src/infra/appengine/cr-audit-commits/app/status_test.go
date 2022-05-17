@@ -105,6 +105,7 @@ func TestStatusPage(t *testing.T) {
 				So(resp.StatusCode, ShouldEqual, 200)
 				// There is a link to the last scanned rev
 				b, err := ioutil.ReadAll(resp.Body)
+				So(err, ShouldBeNil)
 				resp.Body.Close()
 				linkText := fmt.Sprintf("%s/+/000000", expectedRuleMap["new-repo"].BaseRepoURL)
 				So(string(b), ShouldContainSubstring, linkText)
@@ -158,6 +159,7 @@ func TestStatusPage(t *testing.T) {
 				So(err, ShouldBeNil)
 				defer resp.Body.Close()
 				b, err := ioutil.ReadAll(resp.Body)
+				So(err, ShouldBeNil)
 				So(resp.StatusCode, ShouldEqual, 200)
 				for i := 1; i < 12; i++ {
 					linkText := fmt.Sprintf("%s/+/%02d%02d%02d", expectedRuleMap["new-repo"].BaseRepoURL, i, i, i)

@@ -257,6 +257,9 @@ func (rule CulpritInBuild) Run(ctx context.Context, ap *AuditParams, rc *Relevan
 	}
 
 	buildURL, err := failedBuildFromCommitMessage(rc.CommitMessage)
+	if err != nil {
+		return nil, err
+	}
 	changes, err := getBlamelist(ctx, buildURL, cs)
 	if err != nil {
 		return nil, err
