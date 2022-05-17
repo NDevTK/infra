@@ -111,10 +111,12 @@ class FlaskServlet(object):
     self.content_type = content_type
     self.mr = None
     self.request = flask.request
+    self.request_path = None
     self.response = None
     self.ratelimiter = ratelimiter.RateLimiter()
 
-  def handler(self):
+  # pylint: disable=unused-argument
+  def handler(self, **kwargs):
     """Do common stuff then dispatch the request to get() or put() methods."""
     self.response = flask.make_response()
     handler_start_time = time.time()
@@ -128,6 +130,7 @@ class FlaskServlet(object):
     # GC_COUNT.add(count2, {'generation': 2})
 
     self.mr = monorailrequest.MonorailRequest(self.services)
+    self.request_path = self.request.base_url[len(self.request.host_url) - 1:]
     self.response.headers.add(
         'Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
 
@@ -380,7 +383,7 @@ class FlaskServlet(object):
     if self.CHECK_SECURITY_TOKEN:
       try:
         xsrf.ValidateToken(
-            request.values.get('token'), mr.auth.user_id, request.path)
+            request.values.get('token'), mr.auth.user_id, self.request_path)
       except xsrf.TokenIncorrect as err:
         if self.ALLOW_XHR:
           xsrf.ValidateToken(
@@ -676,8 +679,7 @@ class FlaskServlet(object):
         mr.auth.user_id, xsrf.XHR_SERVLET_PATH)
     # Always add other anti-xsrf tokens when the user is logged in.
     if mr.auth.user_id:
-      form_token_path = self._FormHandlerURL(mr.request.path)
-      form_token_path = '/'
+      form_token_path = self._FormHandlerURL(mr.request_path)
       base_data['form_token'] = xsrf.GenerateToken(
           mr.auth.user_id, form_token_path)
       base_data['form_token_path'] = form_token_path
@@ -753,7 +755,7 @@ class FlaskServlet(object):
     if not mr.project.moved_to:
       return  # This project has not moved.
     admin_url = '/p/%s%s' % (mr.project_name, urls.ADMIN_META)
-    if request.path.startswith(admin_url):
+    if self.request_path.startswith(admin_url):
       return  # It moved, but we are near the page that can un-move it.
 
     logging.info(

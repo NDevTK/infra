@@ -76,6 +76,7 @@ class FlaskServletTest(unittest.TestCase):
     project = fake.Project(project_name='proj', moved_to='http://example.com')
     request, mr = testing_helpers.GetRequestObjects(
         path='/p/proj', project=project)
+    self.page_class.request_path = '/p/test'
     self.page_class._CheckForMovedProject(mr, request)
     mock_abort.assert_called_once_with(302)
 

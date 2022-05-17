@@ -240,6 +240,7 @@ class MonorailRequest(MonorailRequestBase):
     """
     with self.profiler.Phase('basic parsing'):
       self.request = request
+      self.request_path = request.path
       self.current_page_url = request.url
       self.current_page_url_encoded = urllib.quote_plus(self.current_page_url)
 
@@ -251,9 +252,8 @@ class MonorailRequest(MonorailRequestBase):
       logging.info('Request: %s', self.current_page_url)
 
     with self.profiler.Phase('path parsing'):
-      (viewed_user_val, self.project_name,
-       self.hotlist_id, self.hotlist_name) = _ParsePathIdentifiers(
-           self.request.path)
+      (viewed_user_val, self.project_name, self.hotlist_id,
+       self.hotlist_name) = _ParsePathIdentifiers(self.request_path)
       self.viewed_username = _GetViewedEmail(
           viewed_user_val, self.cnxn, services)
     with self.profiler.Phase('qs parsing'):
@@ -296,6 +296,7 @@ class MonorailRequest(MonorailRequestBase):
     """
     with self.profiler.Phase('basic parsing'):
       self.request = request
+      self.request_path = request.base_url[len(request.host_url) - 1:]
       self.current_page_url = request.url
       self.current_page_url_encoded = urllib.quote_plus(self.current_page_url)
 
@@ -308,7 +309,7 @@ class MonorailRequest(MonorailRequestBase):
 
     with self.profiler.Phase('path parsing'):
       (viewed_user_val, self.project_name, self.hotlist_id,
-       self.hotlist_name) = _ParsePathIdentifiers(self.request.url)
+       self.hotlist_name) = _ParsePathIdentifiers(self.request_path)
       self.viewed_username = _GetViewedEmail(
           viewed_user_val, self.cnxn, services)
     with self.profiler.Phase('qs parsing'):
