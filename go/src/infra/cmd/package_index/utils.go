@@ -191,7 +191,7 @@ func setVnameForFile(vnameProto *kpb.VName, filepath, defaultCorpus string) {
 	// Vname paths should be relative to the superrepository a file is in.
 	// For chromium, some paths have the src/ prefix and others do not. To make
 	// vnames consistent, strip the prefix from paths. See b/195151313 for more.
-	if *projectFlag == "chromium" && strings.HasPrefix(filepath, "src/") {
+	if (*projectFlag == "chromium" || *projectFlag == "chrome") && strings.HasPrefix(filepath, "src/") {
 		filepath = filepath[4:]
 	}
 
