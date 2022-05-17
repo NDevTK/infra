@@ -159,6 +159,29 @@ func hasBatteryExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// matchBatteryStateExec match statet of battery with expected.
+//
+// Please provide expected state by action args [state:your-state]
+func matchBatteryStateExec(ctx context.Context, info *execs.ExecInfo) error {
+	if d := info.RunArgs.DUT; d == nil || d.Battery == nil {
+		return errors.Reason("match battery state: data is not present").Err()
+	}
+	actionMap := info.GetActionArgs(ctx)
+	state := strings.ToUpper(actionMap.AsString(ctx, "state", ""))
+	if state == "" {
+		return errors.Reason("match battery state: state is not provided").Err()
+	}
+	s, ok := tlw.HardwareState_value[state]
+	if !ok {
+		return errors.Reason("match battery state: state %q is invalid", state).Err()
+	}
+	currentState := info.RunArgs.DUT.Battery.GetState()
+	if s != int32(currentState) {
+		return errors.Reason("match battery state: current state %s does not match expected state %q", currentState.String(), s).Err()
+	}
+	return nil
+}
+
 // hasDutHwidExec verifies that DUT has an HWID available.
 func hasDutHwidExec(ctx context.Context, info *execs.ExecInfo) error {
 	if d := info.RunArgs.DUT; d != nil && d.Hwid != "" {
@@ -257,6 +280,7 @@ func init() {
 	execs.Register("dut_is_in_audio_box", dutInAudioBoxExec)
 	execs.Register("dut_servo_has_serial", servoVerifySerialNumberExec)
 	execs.Register("dut_has_battery", hasBatteryExec)
+	execs.Register("dut_match_battery_state", matchBatteryStateExec)
 	execs.Register("dut_has_hwid", hasDutHwidExec)
 	execs.Register("dut_has_serial_number", hasDutSerialNumberExec)
 	execs.Register("dut_set_state", setDutStateExec)
