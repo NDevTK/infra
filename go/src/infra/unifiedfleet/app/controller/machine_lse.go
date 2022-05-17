@@ -1157,8 +1157,8 @@ func validateCreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE,
 		}
 	}
 
-	// 6. Check for device config if its an OS MachineLSE
-	if machinelse.GetChromeosMachineLse().GetDeviceLse() != nil {
+	// 6. Check for device config
+	if shouldValidateDeviceConfig(machinelse) {
 		// Validate device config
 		if err := validateDeviceConfig(ctx, machine); err != nil {
 			// Keep error msg shorter to avoid hitting gRPC response length limit
@@ -1167,6 +1167,20 @@ func validateCreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE,
 	}
 
 	return nil
+}
+
+// shouldValidateDeviceConfig returns whether we should validate device config.
+// Applies to OS LSEs that are ChromeOS devices.
+func shouldValidateDeviceConfig(m *ufspb.MachineLSE) bool {
+	lse := m.GetChromeosMachineLse().GetDeviceLse()
+	if lse == nil {
+		return false
+	}
+	// Devboards aren't ChromeOS devices and don't have device config.
+	if lse.GetDevboard() != nil {
+		return false
+	}
+	return true
 }
 
 // UpdateMachineLSEHost updates the machinelse host(update ip assignment).

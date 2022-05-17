@@ -414,6 +414,32 @@ func TestCreateMachineLSE(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(changes, ShouldHaveLength, 0)
 		})
+
+		Convey("Create new devboard machineLSE", func() {
+			machine1 := &ufspb.Machine{
+				Name: "machine-5",
+			}
+			_, err := registration.CreateMachine(ctx, machine1)
+			So(err, ShouldBeNil)
+
+			devboard := &ufspb.ChromeOSDeviceLSE_Devboard{
+				Devboard: &chromeosLab.Devboard{},
+			}
+			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
+				Name:     "machinelse-5",
+				Machines: []string{"machine-5"},
+				Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+					ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+						ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+							DeviceLse: &ufspb.ChromeOSDeviceLSE{
+								Device: devboard,
+							},
+						},
+					},
+				},
+			})
+			So(err, ShouldBeNil)
+		})
 	})
 }
 
