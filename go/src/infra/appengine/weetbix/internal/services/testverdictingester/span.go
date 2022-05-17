@@ -6,6 +6,8 @@ package testverdictingester
 
 import (
 	"context"
+	"fmt"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/spanner"
@@ -16,8 +18,10 @@ import (
 	"go.chromium.org/luci/server/span"
 
 	"infra/appengine/weetbix/internal/tasks/taskspb"
+	"infra/appengine/weetbix/internal/testresults"
 	"infra/appengine/weetbix/internal/testverdicts"
 	"infra/appengine/weetbix/pbutil"
+	pb "infra/appengine/weetbix/proto/v1"
 	"infra/appengine/weetbix/utils"
 )
 
@@ -30,17 +34,43 @@ func recordIngestedInvocation(ctx context.Context, task *taskspb.IngestTestVerdi
 
 	proj, subRealm := utils.SplitRealm(inv.Realm)
 	contributedToCLSubmission := task.GetPresubmitRun().GetPresubmitRunSucceeded()
-	hasUnsubmittedChanges := len(build.GetInput().GetGerritChanges()) != 0
+	gerritChanges := build.GetInput().GetGerritChanges()
+
+	var buildStatus pb.BuildStatus
+	switch build.Status {
+	case bbpb.Status_CANCELED:
+		buildStatus = pb.BuildStatus_BUILD_STATUS_CANCELED
+	case bbpb.Status_SUCCESS:
+		buildStatus = pb.BuildStatus_BUILD_STATUS_SUCCESS
+	case bbpb.Status_FAILURE:
+		buildStatus = pb.BuildStatus_BUILD_STATUS_FAILURE
+	case bbpb.Status_INFRA_FAILURE:
+		buildStatus = pb.BuildStatus_BUILD_STATUS_INFRA_FAILURE
+	default:
+		return fmt.Errorf("build has unknown status: %v", build.Status)
+	}
 
 	// Update the IngestedInvocations table.
-	ingestedInv := &testverdicts.IngestedInvocation{
+	ingestedInv := &testresults.IngestedInvocation{
 		Project:                      proj,
 		IngestedInvocationID:         invID,
 		SubRealm:                     subRealm,
 		PartitionTime:                task.PartitionTime.AsTime(),
-		HasUnsubmittedChanges:        hasUnsubmittedChanges,
+		BuildStatus:                  buildStatus,
 		HasContributedToClSubmission: contributedToCLSubmission,
 	}
+	if len(gerritChanges) > 0 {
+		// TODO(meiring): Ingest all gerrit changes.
+		change := gerritChanges[0]
+		if !strings.HasSuffix(change.Host, "-review.googlesource.com") {
+			return fmt.Errorf(`Gerrit host %q does not end in expected suffix "-review.googlesource.com"`, change.Host)
+		}
+		host := strings.TrimSuffix(change.Host, "-review.googlesource.com")
+		ingestedInv.ChangelistHost = spanner.NullString{StringVal: host, Valid: true}
+		ingestedInv.ChangelistChange = spanner.NullInt64{Int64: change.Change, Valid: true}
+		ingestedInv.ChangelistPatchset = spanner.NullInt64{Int64: change.Patchset, Valid: true}
+	}
+
 	_, err = span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
 		ingestedInv.SaveUnverified(ctx)
 		return nil
@@ -89,7 +119,7 @@ func recordTestVerdicts(ctx context.Context, task *taskspb.IngestTestVerdicts, b
 			verdict.SaveUnverified(ctx)
 
 			// Record the test variant realm.
-			tvr := &testverdicts.TestVariantRealm{
+			tvr := &testresults.TestVariantRealm{
 				Project:           proj,
 				TestID:            tv.TestId,
 				VariantHash:       tv.VariantHash,

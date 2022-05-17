@@ -12,13 +12,12 @@ import (
 	"cloud.google.com/go/spanner"
 	"github.com/golang/protobuf/proto"
 	. "github.com/smartystreets/goconvey/convey"
+	. "go.chromium.org/luci/common/testing/assertions"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/appengine/weetbix/pbutil"
 	atvpb "infra/appengine/weetbix/proto/analyzedtestvariant"
 	pb "infra/appengine/weetbix/proto/v1"
-
-	. "go.chromium.org/luci/common/testing/assertions"
 )
 
 func TestTypeConversion(t *testing.T) {
@@ -53,6 +52,16 @@ func TestTypeConversion(t *testing.T) {
 
 	Convey(`atvpb.Status`, t, func() {
 		test(atvpb.Status_STATUS_UNSPECIFIED, int64(0))
+	})
+
+	Convey(`pb.BuildStatus`, t, func() {
+		test(pb.BuildStatus_BUILD_STATUS_SUCCESS, int64(1))
+	})
+	Convey(`pb.ExonerationStatus`, t, func() {
+		test(pb.ExonerationStatus_OCCURS_ON_MAINLINE, int64(20))
+	})
+	Convey(`pb.TestResultStatus`, t, func() {
+		test(pb.TestResultStatus_PASS, int64(1))
 	})
 
 	Convey(`*pb.Variant`, t, func() {

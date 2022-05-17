@@ -483,7 +483,8 @@ CREATE TABLE TestResults (
   ResultIndex INT64 NOT NULL,
 
   -- Whether the test result was expected.
-  IsUnexpected BOOL NOT NULL,
+  -- The value 'true' is used to encode true, and NULL encodes false.
+  IsUnexpected BOOL,
 
   -- How long the test execution took, in microseconds.
   RunDurationUsec INT64,
@@ -514,7 +515,8 @@ CREATE TABLE TestResults (
   -- Whether the invocation was part of a build that has unsubmitted changes
   -- applied (such as Gerrit changes) AND the changes were later submitted
   -- because the build was part of a successful presubmit run.
-  HasContributedToClSubmission BOOL NOT NULL,
+  -- The value 'true' is used to encode true, and NULL encodes false.
+  HasContributedToClSubmission BOOL,
 
   -- The following fields capture information about any unsubmitted
   -- changelists that were tested by the test execution. In case
@@ -531,7 +533,7 @@ CREATE TABLE TestResults (
   ChangelistChange INT64,
 
   -- The patchset number of the changelist, e.g. 1.
-  ChangelistPatch INT64,
+  ChangelistPatchset INT64,
 ) PRIMARY KEY(Project, TestId, PartitionTime DESC, VariantHash, IngestedInvocationId, RunIndex, ResultIndex)
 -- The following DDL query needs to be uncommented when applied to real Spanner
 -- instances. But it is commented out for Cloud Spanner Emulator:
@@ -542,8 +544,9 @@ CREATE TABLE TestResults (
 --
 -- TODO(crbug.com/1266759):
 -- This forms part of an experiment embedded into the design.
--- If joining to this table is efficient, we may leave IsPresumbmit,
--- realm, commit position data here and drop it off the TestVerdicts table.
+-- If joining to this table is efficient, we may leave Changelist,
+-- Build Status, realm and commit position data here and drop it
+-- off the TestResults table.
 -- If not, we may decide to delete this table.
 CREATE TABLE IngestedInvocations (
   -- The LUCI Project the invocation is a part of.
@@ -569,14 +572,10 @@ CREATE TABLE IngestedInvocations (
   BuildStatus INT64,
 
   -- Whether the invocation was part of a build that has unsubmitted changes
-  -- applied (such as Gerrit changes). (This includes unsubmitted changes
-  -- that were later submitted, e.g. because of a successful presubmit run.)
-  HasUnsubmittedChanges BOOL NOT NULL,
-
-  -- Whether the invocation was part of a build that has unsubmitted changes
   -- applied (such as Gerrit changes) AND the changes were later submitted
   -- because the build was part of a successful presubmit run.
-  HasContributedToClSubmission BOOL NOT NULL,
+  -- The value 'true' is used to encode true, and NULL encodes false.
+  HasContributedToClSubmission BOOL,
 
   -- Hostname of the gerrit instance (if any). For storage
   -- efficiency, the suffix "-review.googlesource.com" is not stored.
@@ -589,13 +588,13 @@ CREATE TABLE IngestedInvocations (
   ChangelistChange INT64,
 
   -- The patchset number of the changelist, e.g. 1.
-  ChangelistPatch INT64,
+  ChangelistPatchset INT64,
 ) PRIMARY KEY(Project, IngestedInvocationId)
 -- The following DDL query needs to be uncommented when applied to real Spanner
 -- instances. But it is commented out for Cloud Spanner Emulator:
 -- https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/issues/32
 -- Use a slightly longer retention period to prevent the invocation being
--- dropped before the associated TestVerdicts.
+-- dropped before the associated TestResults.
 --, ROW DELETION POLICY (OLDER_THAN(PartitionTime, INTERVAL 100 DAY));
 
 -- Serves three purposes:

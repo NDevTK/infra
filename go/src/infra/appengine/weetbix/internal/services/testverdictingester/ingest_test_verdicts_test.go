@@ -12,11 +12,6 @@ import (
 	"cloud.google.com/go/spanner"
 	"github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
-	"google.golang.org/genproto/protobuf/field_mask"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/fieldmaskpb"
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/clock"
 	. "go.chromium.org/luci/common/testing/assertions"
@@ -25,14 +20,20 @@ import (
 	"go.chromium.org/luci/server/span"
 	"go.chromium.org/luci/server/tq"
 	_ "go.chromium.org/luci/server/tq/txn/spanner"
+	"google.golang.org/genproto/protobuf/field_mask"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/appengine/weetbix/internal/buildbucket"
 	ctrlpb "infra/appengine/weetbix/internal/ingestion/control/proto"
 	"infra/appengine/weetbix/internal/resultdb"
 	"infra/appengine/weetbix/internal/tasks/taskspb"
+	"infra/appengine/weetbix/internal/testresults"
 	"infra/appengine/weetbix/internal/testutil"
 	"infra/appengine/weetbix/internal/testverdicts"
 	"infra/appengine/weetbix/pbutil"
+	weetbixpb "infra/appengine/weetbix/proto/v1"
 )
 
 func init() {
@@ -142,14 +143,17 @@ func TestIngestTestVerdicts(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// Validate IngestedInvocations table is populated.
-			err = testverdicts.ReadIngestedInvocations(span.Single(ctx), spanner.AllKeys(), func(inv *testverdicts.IngestedInvocation) error {
-				So(inv, ShouldResemble, &testverdicts.IngestedInvocation{
+			err = testresults.ReadIngestedInvocations(span.Single(ctx), spanner.AllKeys(), func(inv *testresults.IngestedInvocation) error {
+				So(inv, ShouldResemble, &testresults.IngestedInvocation{
 					Project:                      "chromium",
 					IngestedInvocationID:         "build-87654321",
 					SubRealm:                     "ci",
 					PartitionTime:                payload.PartitionTime.AsTime(),
-					HasUnsubmittedChanges:        false,
+					BuildStatus:                  weetbixpb.BuildStatus_BUILD_STATUS_FAILURE,
 					HasContributedToClSubmission: false,
+					ChangelistHost:               spanner.NullString{StringVal: "mygerrit", Valid: true},
+					ChangelistChange:             spanner.NullInt64{Int64: 12345, Valid: true},
+					ChangelistPatchset:           spanner.NullInt64{Int64: 5, Valid: true},
 				})
 				return nil
 			})
@@ -167,7 +171,8 @@ func TestIngestTestVerdicts(t *testing.T) {
 				WithProject("chromium").
 				WithPartitionTime(payload.PartitionTime.AsTime()).
 				WithIngestedInvocationID("build-87654321").
-				WithSubRealm("ci")
+				WithSubRealm("ci").
+				WithHasUnsubmittedChanges(true)
 			So(tvs, ShouldResemble, []*testverdicts.TestVerdict{
 				tvBuilder.WithTestID("test_id_1").
 					WithVariantHash("hash_1").
@@ -204,8 +209,8 @@ func TestIngestTestVerdicts(t *testing.T) {
 			})
 
 			// Validate TestVariantRealms table is populated.
-			tvrs := make([]*testverdicts.TestVariantRealm, 0)
-			err = testverdicts.ReadTestVariantRealms(span.Single(ctx), spanner.AllKeys(), func(tvr *testverdicts.TestVariantRealm) error {
+			tvrs := make([]*testresults.TestVariantRealm, 0)
+			err = testresults.ReadTestVariantRealms(span.Single(ctx), spanner.AllKeys(), func(tvr *testresults.TestVariantRealm) error {
 				tvrs = append(tvrs, tvr)
 				return nil
 			})
@@ -214,7 +219,7 @@ func TestIngestTestVerdicts(t *testing.T) {
 			So(tvrs[1].LastIngestionTime, ShouldNotBeZeroValue)
 			So(tvrs[2].LastIngestionTime, ShouldNotBeZeroValue)
 			So(tvrs[3].LastIngestionTime, ShouldNotBeZeroValue)
-			So(tvrs, ShouldResemble, []*testverdicts.TestVariantRealm{
+			So(tvrs, ShouldResemble, []*testresults.TestVariantRealm{
 				{
 					Project:           "chromium",
 					TestID:            "test_id_1",

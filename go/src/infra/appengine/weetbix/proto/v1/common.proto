@@ -124,6 +124,27 @@ message ClusterId {
   string id = 2;
 }
 
+// BuildStatus the result of the build in which the test verdict was produced.
+// This can be used to detect if the test verdict is incomplete (e.g. because
+// an infra failure or cancellation occurred), and whether the unexpected
+// test verdict was also followed by a failing build.
+enum BuildStatus {
+  // A build must not have this status.
+  BUILD_STATUS_UNSPECIFIED = 0;
+
+  // The build succeeded.
+  BUILD_STATUS_SUCCESS = 1;
+
+  // The build failed.
+  BUILD_STATUS_FAILURE = 2;
+
+  // The build encountered an infrastructure failure.
+  BUILD_STATUS_INFRA_FAILURE = 3;
+
+  // The build was canceled.
+  BUILD_STATUS_CANCELED = 4;
+}
+
 // ExonerationStatus explains if and why a test failure was
 // exonerated. Exonerated means the failure was ignored and did not
 // have further impact, in terms of causing the build to fail or

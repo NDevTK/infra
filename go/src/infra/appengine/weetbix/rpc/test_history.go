@@ -15,6 +15,7 @@ import (
 	"google.golang.org/grpc/codes"
 
 	"infra/appengine/weetbix/internal/pagination"
+	"infra/appengine/weetbix/internal/testresults"
 	"infra/appengine/weetbix/internal/testverdicts"
 	"infra/appengine/weetbix/pbutil"
 	pb "infra/appengine/weetbix/proto/v1"
@@ -174,13 +175,13 @@ func (*testHistoryServer) QueryVariants(ctx context.Context, req *pb.QueryVarian
 	}
 
 	pageSize := int(pageSizeLimiter.Adjust(req.GetPageSize()))
-	opts := testverdicts.ReadVariantsOptions{
+	opts := testresults.ReadVariantsOptions{
 		SubRealms: []string{req.GetSubRealm()},
 		PageSize:  pageSize,
 		PageToken: req.GetPageToken(),
 	}
 
-	variants, nextPageToken, err := testverdicts.ReadVariants(span.Single(ctx), req.GetProject(), req.GetTestId(), opts)
+	variants, nextPageToken, err := testresults.ReadVariants(span.Single(ctx), req.GetProject(), req.GetTestId(), opts)
 	if err != nil {
 		return nil, err
 	}

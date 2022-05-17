@@ -17,6 +17,7 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"infra/appengine/weetbix/internal/testresults"
 	"infra/appengine/weetbix/internal/testutil"
 	"infra/appengine/weetbix/pbutil"
 	pb "infra/appengine/weetbix/proto/v1"
@@ -36,7 +37,7 @@ func TestReadTestHistory(t *testing.T) {
 
 		_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
 			insertTVR := func(subRealm string, variant *pb.Variant) {
-				(&TestVariantRealm{
+				(&testresults.TestVariantRealm{
 					Project:     "project",
 					TestID:      "test_id",
 					SubRealm:    subRealm,
@@ -346,7 +347,7 @@ func TestReadTestHistoryStats(t *testing.T) {
 
 		_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
 			insertTVR := func(subRealm string, variant *pb.Variant) {
-				(&TestVariantRealm{
+				(&testresults.TestVariantRealm{
 					Project:     "project",
 					TestID:      "test_id",
 					SubRealm:    subRealm,
@@ -404,22 +405,22 @@ func TestReadTestHistoryStats(t *testing.T) {
 			So(nextPageToken, ShouldNotBeEmpty)
 			So(verdicts, ShouldResembleProto, []*pb.QueryTestHistoryStatsResponse_Group{
 				{
-					PartitionTime:        timestamppb.New(now.Add(-1 * day)),
-					VariantHash:          pbutil.VariantHash(var1),
-					ExpectedCount:        2,
-					AvgPassedAvgDuration: durationpb.New(2 * time.Second),
+					PartitionTime:     timestamppb.New(now.Add(-1 * day)),
+					VariantHash:       pbutil.VariantHash(var1),
+					ExpectedCount:     2,
+					PassedAvgDuration: durationpb.New(2 * time.Second),
 				},
 				{
-					PartitionTime:        timestamppb.New(now.Add(-1 * day)),
-					VariantHash:          pbutil.VariantHash(var2),
-					ExpectedCount:        1,
-					AvgPassedAvgDuration: nil,
+					PartitionTime:     timestamppb.New(now.Add(-1 * day)),
+					VariantHash:       pbutil.VariantHash(var2),
+					ExpectedCount:     1,
+					PassedAvgDuration: nil,
 				},
 				{
-					PartitionTime:        timestamppb.New(now.Add(-2 * day)),
-					VariantHash:          pbutil.VariantHash(var1),
-					ExpectedCount:        2,
-					AvgPassedAvgDuration: durationpb.New(time.Second),
+					PartitionTime:     timestamppb.New(now.Add(-2 * day)),
+					VariantHash:       pbutil.VariantHash(var1),
+					ExpectedCount:     2,
+					PassedAvgDuration: durationpb.New(time.Second),
 				},
 			})
 
@@ -429,16 +430,16 @@ func TestReadTestHistoryStats(t *testing.T) {
 			So(nextPageToken, ShouldBeEmpty)
 			So(verdicts, ShouldResembleProto, []*pb.QueryTestHistoryStatsResponse_Group{
 				{
-					PartitionTime:        timestamppb.New(now.Add(-2 * day)),
-					VariantHash:          pbutil.VariantHash(var2),
-					ExpectedCount:        1,
-					AvgPassedAvgDuration: durationpb.New(time.Second),
+					PartitionTime:     timestamppb.New(now.Add(-2 * day)),
+					VariantHash:       pbutil.VariantHash(var2),
+					ExpectedCount:     1,
+					PassedAvgDuration: durationpb.New(time.Second),
 				},
 				{
-					PartitionTime:        timestamppb.New(now.Add(-3 * day)),
-					VariantHash:          pbutil.VariantHash(var3),
-					ExpectedCount:        1,
-					AvgPassedAvgDuration: durationpb.New(time.Minute),
+					PartitionTime:     timestamppb.New(now.Add(-3 * day)),
+					VariantHash:       pbutil.VariantHash(var3),
+					ExpectedCount:     1,
+					PassedAvgDuration: durationpb.New(time.Minute),
 				},
 			})
 		})
@@ -455,16 +456,16 @@ func TestReadTestHistoryStats(t *testing.T) {
 			So(nextPageToken, ShouldBeEmpty)
 			So(verdicts, ShouldResembleProto, []*pb.QueryTestHistoryStatsResponse_Group{
 				{
-					PartitionTime:        timestamppb.New(now.Add(-2 * day)),
-					VariantHash:          pbutil.VariantHash(var1),
-					ExpectedCount:        2,
-					AvgPassedAvgDuration: durationpb.New(time.Second),
+					PartitionTime:     timestamppb.New(now.Add(-2 * day)),
+					VariantHash:       pbutil.VariantHash(var1),
+					ExpectedCount:     2,
+					PassedAvgDuration: durationpb.New(time.Second),
 				},
 				{
-					PartitionTime:        timestamppb.New(now.Add(-2 * day)),
-					VariantHash:          pbutil.VariantHash(var2),
-					ExpectedCount:        1,
-					AvgPassedAvgDuration: durationpb.New(time.Second),
+					PartitionTime:     timestamppb.New(now.Add(-2 * day)),
+					VariantHash:       pbutil.VariantHash(var2),
+					ExpectedCount:     1,
+					PassedAvgDuration: durationpb.New(time.Second),
 				},
 			})
 		})
@@ -481,22 +482,22 @@ func TestReadTestHistoryStats(t *testing.T) {
 				So(nextPageToken, ShouldBeEmpty)
 				So(verdicts, ShouldResembleProto, []*pb.QueryTestHistoryStatsResponse_Group{
 					{
-						PartitionTime:        timestamppb.New(now.Add(-1 * day)),
-						VariantHash:          pbutil.VariantHash(var2),
-						ExpectedCount:        1,
-						AvgPassedAvgDuration: nil,
+						PartitionTime:     timestamppb.New(now.Add(-1 * day)),
+						VariantHash:       pbutil.VariantHash(var2),
+						ExpectedCount:     1,
+						PassedAvgDuration: nil,
 					},
 					{
-						PartitionTime:        timestamppb.New(now.Add(-2 * day)),
-						VariantHash:          pbutil.VariantHash(var2),
-						ExpectedCount:        1,
-						AvgPassedAvgDuration: durationpb.New(time.Second),
+						PartitionTime:     timestamppb.New(now.Add(-2 * day)),
+						VariantHash:       pbutil.VariantHash(var2),
+						ExpectedCount:     1,
+						PassedAvgDuration: durationpb.New(time.Second),
 					},
 					{
-						PartitionTime:        timestamppb.New(now.Add(-3 * day)),
-						VariantHash:          pbutil.VariantHash(var3),
-						ExpectedCount:        1,
-						AvgPassedAvgDuration: durationpb.New(time.Minute),
+						PartitionTime:     timestamppb.New(now.Add(-3 * day)),
+						VariantHash:       pbutil.VariantHash(var3),
+						ExpectedCount:     1,
+						PassedAvgDuration: durationpb.New(time.Minute),
 					},
 				})
 			})
@@ -512,10 +513,10 @@ func TestReadTestHistoryStats(t *testing.T) {
 				So(nextPageToken, ShouldBeEmpty)
 				So(verdicts, ShouldResembleProto, []*pb.QueryTestHistoryStatsResponse_Group{
 					{
-						PartitionTime:        timestamppb.New(now.Add(-3 * day)),
-						VariantHash:          pbutil.VariantHash(var3),
-						ExpectedCount:        1,
-						AvgPassedAvgDuration: durationpb.New(time.Minute),
+						PartitionTime:     timestamppb.New(now.Add(-3 * day)),
+						VariantHash:       pbutil.VariantHash(var3),
+						ExpectedCount:     1,
+						PassedAvgDuration: durationpb.New(time.Minute),
 					},
 				})
 			})
@@ -532,16 +533,16 @@ func TestReadTestHistoryStats(t *testing.T) {
 			So(nextPageToken, ShouldBeEmpty)
 			So(verdicts, ShouldResembleProto, []*pb.QueryTestHistoryStatsResponse_Group{
 				{
-					PartitionTime:        timestamppb.New(now.Add(-1 * day)),
-					VariantHash:          pbutil.VariantHash(var2),
-					ExpectedCount:        1,
-					AvgPassedAvgDuration: nil,
+					PartitionTime:     timestamppb.New(now.Add(-1 * day)),
+					VariantHash:       pbutil.VariantHash(var2),
+					ExpectedCount:     1,
+					PassedAvgDuration: nil,
 				},
 				{
-					PartitionTime:        timestamppb.New(now.Add(-2 * day)),
-					VariantHash:          pbutil.VariantHash(var2),
-					ExpectedCount:        1,
-					AvgPassedAvgDuration: durationpb.New(time.Second),
+					PartitionTime:     timestamppb.New(now.Add(-2 * day)),
+					VariantHash:       pbutil.VariantHash(var2),
+					ExpectedCount:     1,
+					PassedAvgDuration: durationpb.New(time.Second),
 				},
 			})
 		})
@@ -553,22 +554,22 @@ func TestReadTestHistoryStats(t *testing.T) {
 			So(nextPageToken, ShouldBeEmpty)
 			So(verdicts, ShouldResembleProto, []*pb.QueryTestHistoryStatsResponse_Group{
 				{
-					PartitionTime:        timestamppb.New(now.Add(-2 * day)),
-					VariantHash:          pbutil.VariantHash(var1),
-					ExpectedCount:        1,
-					AvgPassedAvgDuration: durationpb.New(0),
+					PartitionTime:     timestamppb.New(now.Add(-2 * day)),
+					VariantHash:       pbutil.VariantHash(var1),
+					ExpectedCount:     1,
+					PassedAvgDuration: durationpb.New(0),
 				},
 				{
-					PartitionTime:        timestamppb.New(now.Add(-2 * day)),
-					VariantHash:          pbutil.VariantHash(var2),
-					ExpectedCount:        1,
-					AvgPassedAvgDuration: durationpb.New(time.Second),
+					PartitionTime:     timestamppb.New(now.Add(-2 * day)),
+					VariantHash:       pbutil.VariantHash(var2),
+					ExpectedCount:     1,
+					PassedAvgDuration: durationpb.New(time.Second),
 				},
 				{
-					PartitionTime:        timestamppb.New(now.Add(-3 * day)),
-					VariantHash:          pbutil.VariantHash(var3),
-					ExpectedCount:        1,
-					AvgPassedAvgDuration: durationpb.New(time.Minute),
+					PartitionTime:     timestamppb.New(now.Add(-3 * day)),
+					VariantHash:       pbutil.VariantHash(var3),
+					ExpectedCount:     1,
+					PassedAvgDuration: durationpb.New(time.Minute),
 				},
 			})
 
@@ -578,126 +579,22 @@ func TestReadTestHistoryStats(t *testing.T) {
 			So(nextPageToken, ShouldBeEmpty)
 			So(verdicts, ShouldResembleProto, []*pb.QueryTestHistoryStatsResponse_Group{
 				{
-					PartitionTime:        timestamppb.New(now.Add(-1 * day)),
-					VariantHash:          pbutil.VariantHash(var1),
-					ExpectedCount:        2,
-					AvgPassedAvgDuration: durationpb.New(2 * time.Second),
+					PartitionTime:     timestamppb.New(now.Add(-1 * day)),
+					VariantHash:       pbutil.VariantHash(var1),
+					ExpectedCount:     2,
+					PassedAvgDuration: durationpb.New(2 * time.Second),
 				},
 				{
-					PartitionTime:        timestamppb.New(now.Add(-1 * day)),
-					VariantHash:          pbutil.VariantHash(var2),
-					ExpectedCount:        1,
-					AvgPassedAvgDuration: nil,
+					PartitionTime:     timestamppb.New(now.Add(-1 * day)),
+					VariantHash:       pbutil.VariantHash(var2),
+					ExpectedCount:     1,
+					PassedAvgDuration: nil,
 				},
 				{
-					PartitionTime:        timestamppb.New(now.Add(-2 * day)),
-					VariantHash:          pbutil.VariantHash(var1),
-					ExpectedCount:        1,
-					AvgPassedAvgDuration: durationpb.New(2 * time.Second),
-				},
-			})
-		})
-	})
-}
-
-func TestReadVariants(t *testing.T) {
-	Convey("ReadVariants", t, func() {
-		ctx := testutil.SpannerTestContext(t)
-
-		var1 := pbutil.Variant("key1", "val1", "key2", "val1")
-		var2 := pbutil.Variant("key1", "val2", "key2", "val1")
-		var3 := pbutil.Variant("key1", "val2", "key2", "val2")
-		var4 := pbutil.Variant("key1", "val1", "key2", "val2")
-
-		_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
-			insertTVR := func(subRealm string, variant *pb.Variant) {
-				(&TestVariantRealm{
-					Project:     "project",
-					TestID:      "test_id",
-					SubRealm:    subRealm,
-					Variant:     variant,
-					VariantHash: pbutil.VariantHash(variant),
-				}).SaveUnverified(ctx)
-			}
-
-			insertTVR("realm1", var1)
-			insertTVR("realm1", var2)
-
-			insertTVR("realm2", var2)
-			insertTVR("realm2", var3)
-
-			insertTVR("realm3", var4)
-
-			return nil
-		})
-		So(err, ShouldBeNil)
-
-		Convey("pagination works", func() {
-			opts := ReadVariantsOptions{PageSize: 3}
-			variants, nextPageToken, err := ReadVariants(span.Single(ctx), "project", "test_id", opts)
-			So(err, ShouldBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(variants, ShouldResembleProto, []*pb.QueryVariantsResponse_VariantInfo{
-				{
-					VariantHash: pbutil.VariantHash(var1),
-					Variant:     var1,
-				},
-				{
-					VariantHash: pbutil.VariantHash(var3),
-					Variant:     var3,
-				},
-				{
-					VariantHash: pbutil.VariantHash(var4),
-					Variant:     var4,
-				},
-			})
-
-			opts.PageToken = nextPageToken
-			variants, nextPageToken, err = ReadVariants(span.Single(ctx), "project", "test_id", opts)
-			So(err, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(variants, ShouldResembleProto, []*pb.QueryVariantsResponse_VariantInfo{
-				{
-					VariantHash: pbutil.VariantHash(var2),
-					Variant:     var2,
-				},
-			})
-		})
-
-		Convey("multi-realm works", func() {
-			opts := ReadVariantsOptions{SubRealms: []string{"realm1", "realm2"}}
-			variants, nextPageToken, err := ReadVariants(span.Single(ctx), "project", "test_id", opts)
-			So(err, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(variants, ShouldResembleProto, []*pb.QueryVariantsResponse_VariantInfo{
-				{
-					VariantHash: pbutil.VariantHash(var1),
-					Variant:     var1,
-				},
-				{
-					VariantHash: pbutil.VariantHash(var3),
-					Variant:     var3,
-				},
-				{
-					VariantHash: pbutil.VariantHash(var2),
-					Variant:     var2,
-				},
-			})
-		})
-
-		Convey("single-realm works", func() {
-			opts := ReadVariantsOptions{SubRealms: []string{"realm2"}}
-			variants, nextPageToken, err := ReadVariants(span.Single(ctx), "project", "test_id", opts)
-			So(err, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(variants, ShouldResembleProto, []*pb.QueryVariantsResponse_VariantInfo{
-				{
-					VariantHash: pbutil.VariantHash(var3),
-					Variant:     var3,
-				},
-				{
-					VariantHash: pbutil.VariantHash(var2),
-					Variant:     var2,
+					PartitionTime:     timestamppb.New(now.Add(-2 * day)),
+					VariantHash:       pbutil.VariantHash(var1),
+					ExpectedCount:     1,
+					PassedAvgDuration: durationpb.New(2 * time.Second),
 				},
 			})
 		})

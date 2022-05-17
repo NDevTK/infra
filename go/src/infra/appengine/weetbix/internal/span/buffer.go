@@ -10,9 +10,8 @@ import (
 
 	"cloud.google.com/go/spanner"
 	"github.com/golang/protobuf/proto"
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	"go.chromium.org/luci/common/errors"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/appengine/weetbix/internal"
 	"infra/appengine/weetbix/pbutil"
@@ -94,6 +93,12 @@ func (b *Buffer) fromSpanner(row *spanner.Row, col int, goPtr interface{}) error
 		spanPtr = &b.NullTime
 	case *atvpb.Status:
 		spanPtr = &b.Int64
+	case *pb.BuildStatus:
+		spanPtr = &b.Int64
+	case *pb.ExonerationStatus:
+		spanPtr = &b.Int64
+	case *pb.TestResultStatus:
+		spanPtr = &b.Int64
 	case **pb.Variant:
 		spanPtr = &b.StringSlice
 	case *[]*pb.StringPair:
@@ -137,6 +142,15 @@ func (b *Buffer) fromSpanner(row *spanner.Row, col int, goPtr interface{}) error
 
 	case *atvpb.Status:
 		*goPtr = atvpb.Status(b.Int64)
+
+	case *pb.BuildStatus:
+		*goPtr = pb.BuildStatus(b.Int64)
+
+	case *pb.ExonerationStatus:
+		*goPtr = pb.ExonerationStatus(b.Int64)
+
+	case *pb.TestResultStatus:
+		*goPtr = pb.TestResultStatus(b.Int64)
 
 	case **pb.Variant:
 		if *goPtr, err = pbutil.VariantFromStrings(b.StringSlice); err != nil {
@@ -204,6 +218,15 @@ func ToSpanner(v interface{}) interface{} {
 		return ret
 
 	case atvpb.Status:
+		return int64(v)
+
+	case pb.BuildStatus:
+		return int64(v)
+
+	case pb.ExonerationStatus:
+		return int64(v)
+
+	case pb.TestResultStatus:
 		return int64(v)
 
 	case *pb.Variant:

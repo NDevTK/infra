@@ -27,6 +27,15 @@ func mockedGetBuildRsp(inv string) *bbpb.Build {
 			},
 		},
 		Status: bbpb.Status_FAILURE,
+		Input: &bbpb.Build_Input{
+			GerritChanges: []*bbpb.GerritChange{
+				{
+					Host:     "mygerrit-review.googlesource.com",
+					Change:   12345,
+					Patchset: 5,
+				},
+			},
+		},
 	}
 }
 

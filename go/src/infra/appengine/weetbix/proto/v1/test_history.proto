@@ -135,8 +135,8 @@ message QueryTestHistoryStatsResponse {
     // The number of expected test verdicts in the group.
     int32 expected_count = 7;
 
-    // The average value of the passed_avg_duration of the test verdicts.
-    google.protobuf.Duration avg_passed_avg_duration = 8;
+    // The average duration of passing test results in the group.
+    google.protobuf.Duration passed_avg_duration = 8;
   }
 
   // The list of test verdict groups. Test verdicts will be grouped and ordered

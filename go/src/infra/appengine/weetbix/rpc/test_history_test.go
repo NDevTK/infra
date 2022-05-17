@@ -20,6 +20,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"infra/appengine/weetbix/internal/testresults"
 	"infra/appengine/weetbix/internal/testutil"
 	"infra/appengine/weetbix/internal/testverdicts"
 	"infra/appengine/weetbix/pbutil"
@@ -55,7 +56,7 @@ func TestTestHistoryServer(t *testing.T) {
 
 		_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
 			insertTVR := func(subRealm string, variant *pb.Variant) {
-				(&testverdicts.TestVariantRealm{
+				(&testresults.TestVariantRealm{
 					Project:     "project",
 					TestID:      "test_id",
 					SubRealm:    subRealm,

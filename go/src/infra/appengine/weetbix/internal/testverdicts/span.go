@@ -10,11 +10,10 @@ import (
 	"time"
 
 	"cloud.google.com/go/spanner"
-	"google.golang.org/protobuf/types/known/durationpb"
-
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/server/span"
+	"google.golang.org/protobuf/types/known/durationpb"
 
 	"infra/appengine/weetbix/internal/pagination"
 	spanutil "infra/appengine/weetbix/internal/span"
@@ -26,56 +25,6 @@ const (
 	testVerdictTTL      = 90 * 24 * time.Hour
 	pageTokenTimeFormat = time.RFC3339Nano
 )
-
-// IngestedInvocation represents a row in the IngestedInvocations table.
-type IngestedInvocation struct {
-	Project                      string
-	IngestedInvocationID         string
-	SubRealm                     string
-	PartitionTime                time.Time
-	HasUnsubmittedChanges        bool
-	HasContributedToClSubmission bool
-}
-
-// ReadIngestedInvocations read ingested invocations from the
-// IngestedInvocations table.
-// Must be called in a spanner transactional context.
-func ReadIngestedInvocations(ctx context.Context, keys spanner.KeySet, fn func(inv *IngestedInvocation) error) error {
-	var b spanutil.Buffer
-	fields := []string{"Project", "IngestedInvocationId", "SubRealm", "PartitionTime", "HasUnsubmittedChanges", "HasContributedToClSubmission"}
-	return span.Read(ctx, "IngestedInvocations", keys, fields).Do(
-		func(row *spanner.Row) error {
-			inv := &IngestedInvocation{}
-			err := b.FromSpanner(
-				row,
-				&inv.Project,
-				&inv.IngestedInvocationID,
-				&inv.SubRealm,
-				&inv.PartitionTime,
-				&inv.HasContributedToClSubmission,
-				&inv.HasContributedToClSubmission,
-			)
-			if err != nil {
-				return err
-			}
-			return fn(inv)
-		})
-}
-
-// SaveUnverified saves the ingested invocation into the IngestedInvocations
-// table without verifying it.
-// Must be called in spanner RW transactional context.
-func (inv *IngestedInvocation) SaveUnverified(ctx context.Context) {
-	row := map[string]interface{}{
-		"Project":                      inv.Project,
-		"IngestedInvocationId":         inv.IngestedInvocationID,
-		"SubRealm":                     inv.SubRealm,
-		"PartitionTime":                inv.PartitionTime,
-		"HasUnsubmittedChanges":        inv.HasUnsubmittedChanges,
-		"HasContributedToClSubmission": inv.HasContributedToClSubmission,
-	}
-	span.BufferWrite(ctx, spanner.InsertOrUpdateMap("IngestedInvocations", spanutil.ToSpannerMap(row)))
-}
 
 // TestVerdict represents a row in the TestVerdicts table.
 type TestVerdict struct {
@@ -329,7 +278,7 @@ func ReadTestHistoryStats(ctx context.Context, opts ReadTestHistoryOptions) (gro
 		group.ExoneratedCount = int32(exoneratedCount)
 		group.ExpectedCount = int32(expectedCount)
 		if passedAvgDurationUsec.Valid {
-			group.AvgPassedAvgDuration = durationpb.New(time.Microsecond * time.Duration(passedAvgDurationUsec.Int64))
+			group.PassedAvgDuration = durationpb.New(time.Microsecond * time.Duration(passedAvgDurationUsec.Int64))
 		}
 		groups = append(groups, group)
 		return nil
@@ -343,133 +292,6 @@ func ReadTestHistoryStats(ctx context.Context, opts ReadTestHistoryOptions) (gro
 		nextPageToken = pagination.Token(lastGroup.PartitionTime.AsTime().Format(pageTokenTimeFormat), lastGroup.VariantHash)
 	}
 	return groups, nextPageToken, nil
-}
-
-// TestVariantRealm represents a row in the TestVariantRealm table.
-type TestVariantRealm struct {
-	Project           string
-	TestID            string
-	VariantHash       string
-	SubRealm          string
-	Variant           *pb.Variant
-	LastIngestionTime time.Time
-}
-
-// ReadTestVariantRealms read test variant realms from the TestVariantRealms
-// table.
-// Must be called in a spanner transactional context.
-func ReadTestVariantRealms(ctx context.Context, keys spanner.KeySet, fn func(tvr *TestVariantRealm) error) error {
-	var b spanutil.Buffer
-	fields := []string{"Project", "TestId", "VariantHash", "SubRealm", "Variant", "LastIngestionTime"}
-	return span.Read(ctx, "TestVariantRealms", keys, fields).Do(
-		func(row *spanner.Row) error {
-			tvr := &TestVariantRealm{}
-			err := b.FromSpanner(
-				row,
-				&tvr.Project,
-				&tvr.TestID,
-				&tvr.VariantHash,
-				&tvr.SubRealm,
-				&tvr.Variant,
-				&tvr.LastIngestionTime,
-			)
-			if err != nil {
-				return err
-			}
-			return fn(tvr)
-		})
-}
-
-// SaveUnverified saves the test variant realm into the TestVariantRealms table
-// without verifying it.
-// Must be called in spanner RW transactional context.
-func (tvr *TestVariantRealm) SaveUnverified(ctx context.Context) {
-	row := map[string]interface{}{
-		"Project":           tvr.Project,
-		"TestId":            tvr.TestID,
-		"VariantHash":       tvr.VariantHash,
-		"SubRealm":          tvr.SubRealm,
-		"Variant":           tvr.Variant,
-		"LastIngestionTime": tvr.LastIngestionTime,
-	}
-	span.BufferWrite(ctx, spanner.InsertOrUpdateMap("TestVariantRealms", spanutil.ToSpannerMap(row)))
-}
-
-// ReadVariantsOptions specifies options for ReadVariants().
-type ReadVariantsOptions struct {
-	SubRealms []string
-	PageSize  int
-	PageToken string
-}
-
-// parseQueryVariantsPageToken parses the positions from the page token.
-func parseQueryVariantsPageToken(pageToken string) (afterHash string, err error) {
-	tokens, err := pagination.ParseToken(pageToken)
-	if err != nil {
-		return "", err
-	}
-
-	if len(tokens) != 1 {
-		return "", pagination.InvalidToken(errors.Reason("expected 1 components, got %d", len(tokens)).Err())
-	}
-
-	return tokens[0], nil
-}
-
-// ReadVariants reads all the variants of the specified test from the
-// spanner database.
-// Must be called in a spanner transactional context.
-func ReadVariants(ctx context.Context, project, testID string, opts ReadVariantsOptions) (variants []*pb.QueryVariantsResponse_VariantInfo, nextPageToken string, err error) {
-	paginationVariantHash := ""
-	if opts.PageToken != "" {
-		paginationVariantHash, err = parseQueryVariantsPageToken(opts.PageToken)
-		if err != nil {
-			return nil, "", err
-		}
-	}
-
-	params := map[string]interface{}{
-		"project":   project,
-		"testId":    testID,
-		"subRealms": opts.SubRealms,
-
-		// Control pagination.
-		"limit":                 opts.PageSize,
-		"paginationVariantHash": paginationVariantHash,
-	}
-
-	stmt, err := spanutil.GenerateStatement(variantsQueryTmpl, variantsQueryTmpl.Name(), map[string]interface{}{
-		"params": params,
-	})
-	if err != nil {
-		return nil, "", err
-	}
-	stmt.Params = params
-
-	var b spanutil.Buffer
-	variants = make([]*pb.QueryVariantsResponse_VariantInfo, 0, opts.PageSize)
-	err = span.Query(ctx, stmt).Do(func(row *spanner.Row) error {
-		variant := &pb.QueryVariantsResponse_VariantInfo{}
-		err := b.FromSpanner(
-			row,
-			&variant.VariantHash,
-			&variant.Variant,
-		)
-		if err != nil {
-			return err
-		}
-		variants = append(variants, variant)
-		return nil
-	})
-	if err != nil {
-		return nil, "", err
-	}
-
-	if opts.PageSize != 0 && len(variants) == opts.PageSize {
-		lastVariant := variants[len(variants)-1]
-		nextPageToken = pagination.Token(lastVariant.VariantHash)
-	}
-	return variants, nextPageToken, nil
 }
 
 var testHistoryQueryTmpl = template.Must(template.New("").Parse(`
@@ -574,26 +396,5 @@ var testHistoryQueryTmpl = template.Must(template.New("").Parse(`
 		{{if .params.limit}}
 			LIMIT @limit
 		{{end}}
-	{{end}}
-`))
-
-var variantsQueryTmpl = template.Must(template.New("variantsQuery").Parse(`
-	{{define "variantsQuery"}}
-	SELECT
-		VariantHash,
-		ANY_VALUE(Variant) as Variant,
-	FROM TestVariantRealms
-	WHERE
-		Project = @project
-			AND TestId = @testId
-			{{if .params.subRealms}}
-				AND SubRealm IN UNNEST(@subRealms)
-			{{end}}
-			AND VariantHash > @paginationVariantHash
-	GROUP BY VariantHash
-	ORDER BY VariantHash ASC
-	{{if .params.limit}}
-		LIMIT @limit
-	{{end}}
 	{{end}}
 `))
