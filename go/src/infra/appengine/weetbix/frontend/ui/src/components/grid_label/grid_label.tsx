@@ -1,9 +1,10 @@
 // Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import React from 'react';
 
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 
 interface Props {
     text?: string;
