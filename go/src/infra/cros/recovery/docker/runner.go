@@ -19,15 +19,19 @@ import (
 
 // runResult holds info of execution.
 type runResult struct {
-	ExitCode int
-	Stdout   string
-	Stderr   string
+	FinishedOnTime bool
+	ExitCode       int
+	Stdout         string
+	Stderr         string
 }
 
-// runWithTimeout runs command with timeout limit.
-func runWithTimeout(ctx context.Context, timeout time.Duration, command string, args ...string) (res *runResult, err error) {
-	//exitCode int, stdout string, stderr string, err error) {
-	res = &runResult{}
+// runWithTimeout runs command with a time limit.
+//
+// runResult.FinishedOnTime will be set to true if and only if a command was run and it completed within the limit.
+// err is nil if and only if the command actually ran, completed with the time limit, and exited successfully.
+//
+// Note that exceeding the timeout does not cause the process that was started to stop.
+func runWithTimeout(ctx context.Context, timeout time.Duration, command string, args ...string) (res runResult, err error) {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 	cw := make(chan error, 1)
@@ -45,6 +49,7 @@ func runWithTimeout(ctx context.Context, timeout time.Duration, command string, 
 	}()
 	select {
 	case e := <-cw:
+		res.FinishedOnTime = true
 		if exitError, ok := e.(*exec.ExitError); ok {
 			res.ExitCode = exitError.ExitCode()
 		} else if e != nil {
@@ -54,7 +59,7 @@ func runWithTimeout(ctx context.Context, timeout time.Duration, command string, 
 		return
 	case <-ctx.Done():
 		res.ExitCode = 124
-		err = errors.Reason("run with timeout %s: excited timeout", timeout).Err()
+		err = errors.Reason("run with timeout %s: exceeded timeout", timeout).Err()
 		return
 	}
 }

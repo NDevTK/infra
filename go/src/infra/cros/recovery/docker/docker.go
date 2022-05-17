@@ -101,11 +101,9 @@ func (d *dockerClient) Pull(ctx context.Context, imageName string, timeout time.
 		return errors.Reason("pull: timeout %v is less than 1 second", timeout).Err()
 	}
 	res, err := runWithTimeout(ctx, timeout, "docker", "pull", "--", imageName)
-	if res != nil {
-		log.Debugf(ctx, "Run docker pull %q: exitcode: %v", imageName, res.ExitCode)
-		log.Debugf(ctx, "Run docker pull %q: stdout: %v", imageName, res.Stdout)
-		log.Debugf(ctx, "Run docker pull %q: stderr: %v", imageName, res.Stderr)
-	}
+	log.Debugf(ctx, "Run docker pull %q: exitcode: %v", imageName, res.ExitCode)
+	log.Debugf(ctx, "Run docker pull %q: stdout: %v", imageName, res.Stdout)
+	log.Debugf(ctx, "Run docker pull %q: stderr: %v", imageName, res.Stderr)
 	if err != nil {
 		log.Debugf(ctx, "Run docker pull %q: err: %v", imageName, err)
 	}
