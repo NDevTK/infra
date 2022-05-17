@@ -423,8 +423,18 @@ func (p *provisionState) provisionDLCs(ctx context.Context, specs []*tls.Provisi
 		dlcID := spec.GetId()
 		dlcOutputDir := path.Join(dlcCacheDir, dlcID, dlcPackage)
 		if err := p.installDLC(ctx, spec, dlcOutputDir, getActiveDLCSlot(r)); err != nil {
-			return fmt.Errorf("provision DLCs: failed to install the following DLC %s (%s)", dlcID, err)
+			return fmt.Errorf("provision DLCs: failed to install the following DLC (%s), %s", dlcID, err)
 		}
+	}
+
+	// As part of the transition to using tmpfiles.d, dlcservice paths must have correct permissions/owners set.
+	// Simply starting the dlcservice daemon will not fix this due to security concerns.
+	if err := runCmd(p.c, fmt.Sprintf("chown -R dlcservice:dlcservice %s", dlcCacheDir)); err != nil {
+		return fmt.Errorf("provision DLCs: failed to set owner for DLC cache (%s), %s", dlcCacheDir, err)
+	}
+
+	if err := runCmd(p.c, fmt.Sprintf("chmod -R 0755 %s", dlcCacheDir)); err != nil {
+		return fmt.Errorf("provision DLCs: failed to set permissions for DLC cache (%s), %s", dlcCacheDir, err)
 	}
 
 	return nil
