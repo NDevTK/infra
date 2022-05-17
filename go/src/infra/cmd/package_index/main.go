@@ -25,7 +25,7 @@ var chanSize = 1000
 var numRoutines = 32
 
 var (
-	projectFlag       = flag.String("project", "chromium", "Project this kzip should be generated for. This should be set to 'chromium' or 'chromiumos'. Defaults to 'chromium'.")
+	projectFlag       = flag.String("project", "chromium", "Project this kzip should be generated for. This should be set to 'chromium', 'chrome', or 'chromiumos'. Defaults to 'chromium'.")
 	outputFlag        = flag.String("path_to_archive_output", "", "Path to index pack archive to be generated.")
 	compDbFlag        = flag.String("path_to_compdb", "", "Path to the compilation database.")
 	gnFlag            = flag.String("path_to_gn_targets", "", "Path to the gn targets json file.")
@@ -42,8 +42,8 @@ var (
 func validateFlags(ctx context.Context) {
 	flagErr := false
 
-	if *projectFlag != "chromium" && *projectFlag != "chromiumos" {
-		logging.Errorf(ctx, "project not supported. 'chromium' and 'chromiumos' are the only supported projects.")
+	if *projectFlag != "chromium" && *projectFlag != "chrome" && *projectFlag != "chromiumos" {
+		logging.Errorf(ctx, "project not supported. 'chromium', 'chrome', and 'chromiumos' are the only supported projects.")
 		flagErr = true
 	}
 
