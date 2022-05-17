@@ -27,7 +27,6 @@ PY_DIRS = api,businesslogic,features,framework,project,proto,search,services,sit
 _VERSION ?= $(shell ../../../infra/luci/appengine/components/tools/calculate_version.py)
 
 RUN_CLOUD_TASKS := ../../cipd/cloud-tasks-emulator \
-	  --queue projects/monorail-staging/locations/us-central1/queues/componentexport \
 		--queue projects/monorail-staging/locations/us-central1/queues/default \
 		--queue projects/monorail-staging/locations/us-central1/queues/notifications \
 		--queue projects/monorail-staging/locations/us-central1/queues/outboundemail \

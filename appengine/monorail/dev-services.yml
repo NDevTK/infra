@@ -24,7 +24,6 @@ services:
     environment:
       APP_ENGINE_EMULATOR_HOST: 'http://host.docker.internal:8080'
     command: >
-      --queue projects/monorail-staging/locations/us-central1/queues/componentexport
       --queue projects/monorail-staging/locations/us-central1/queues/default
       --queue projects/monorail-staging/locations/us-central1/queues/notifications
       --queue projects/monorail-staging/locations/us-central1/queues/outboundemail

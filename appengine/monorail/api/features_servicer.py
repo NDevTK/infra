@@ -15,7 +15,6 @@ from api.api_proto import common_pb2
 from api.api_proto import features_pb2
 from api.api_proto import features_prpc_pb2
 from businesslogic import work_env
-from features import component_helpers
 from features import features_bizobj
 from framework import exceptions
 from framework import framework_bizobj
@@ -304,20 +303,3 @@ class FeaturesServicer(monorail_servicer.MonorailServicer):
       we.DeleteHotlist(hotlist_id)
 
     return features_pb2.DeleteHotlistResponse()
-
-  # TODO(https://crbug.com/monorail/7515): Replace or delete PredictComponent.
-  @monorail_servicer.PRPCMethod
-  def PredictComponent(self, mc, request):
-    """Predict the component of an issue based on the given text."""
-    with work_env.WorkEnv(mc, self.services) as we:
-      project = we.GetProjectByName(request.project_name)
-      config = we.GetProjectConfig(project.project_id)
-
-    component_ref = None
-    component_id = component_helpers.PredictComponent(request.text, config)
-
-    if component_id:
-      component_ref = converters.ConvertComponentRef(component_id, config)
-
-    result = features_pb2.PredictComponentResponse(component_ref=component_ref)
-    return result

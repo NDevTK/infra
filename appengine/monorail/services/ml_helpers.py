@@ -8,6 +8,7 @@ Helper functions for spam and component classification. These are mostly for
 feature extraction, so that the serving code and training code both use the same
 set of features.
 """
+# TODO(crbug.com/monorail/7515): DELETE THIS FILE and all references.
 
 from __future__ import division
 from __future__ import print_function

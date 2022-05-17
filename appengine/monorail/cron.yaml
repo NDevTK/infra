@@ -24,9 +24,6 @@ cron:
 - description: send ts_mon metrics
   url: /internal/cron/ts_mon/send
   schedule: every 1 minutes
-- description: export spam model training examples
-  url: /_cron/spamDataExport
-  schedule: every day 09:00
 - description: fetch api clients from luci-config
   url: /_cron/loadApiClientConfigs
   schedule: every 30 minutes synchronized
@@ -36,12 +33,6 @@ cron:
 - description: ping all issues with date fields that arrived
   url: /_cron/dateAction
   schedule: every day 12:00
-- description: retrain spam model with GCS training data
-  url: /_cron/spamTraining
-  schedule: every day 10:00
-- description: export component model training examples
-  url: /_cron/componentDataExport
-  schedule: every mon 9:00
 - description: sync monorail's user lists with wipeout-lite
   url: /_cron/wipeoutSync
   schedule: every day 09:00

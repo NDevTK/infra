@@ -29,17 +29,12 @@ from features import inboundemail
 from features import notify
 from features import rerankhotlist
 from features import savedqueries
-from features import spammodel
-from features import spamtraining
-from features import componentexport
 
 from framework import banned
 from framework import clientmon
 from framework import csp_report
 from framework import deleteusers
-from framework import excessiveactivity
 from framework import trimvisitedpages
-from framework import framework_bizobj
 from framework import reap
 from framework import registerpages_helpers
 from framework import ts_mon_js
@@ -217,16 +212,10 @@ class ServletRegistry(object):
         urls.NOTIFY_BULK_CHANGE_TASK: notify.NotifyBulkChangeTask,
         urls.NOTIFY_APPROVAL_CHANGE_TASK: notify.NotifyApprovalChangeTask,
         urls.OUTBOUND_EMAIL_TASK: notify.OutboundEmailTask,
-        urls.SPAM_DATA_EXPORT_TASK: spammodel.TrainingDataExportTask,
         urls.DATE_ACTION_CRON: dateaction.DateActionCron,
-        urls.SPAM_TRAINING_CRON: spamtraining.TrainSpamModelCron,
         urls.PUBLISH_PUBSUB_ISSUE_CHANGE_TASK:
             pubsub.PublishPubsubIssueChangeTask,
         urls.ISSUE_DATE_ACTION_TASK: dateaction.IssueDateActionTask,
-        urls.COMPONENT_DATA_EXPORT_CRON:
-          componentexport.ComponentTrainingDataExport,
-        urls.COMPONENT_DATA_EXPORT_TASK:
-          componentexport.ComponentTrainingDataExportTask,
         urls.FLT_ISSUE_CONVERSION_TASK: fltconversion.FLTConvertTask,
         })
 
@@ -360,7 +349,6 @@ class ServletRegistry(object):
         # These are not externally accessible
         urls.RAMCACHE_CONSOLIDATE_CRON: cachemanager_svc.RamCacheConsolidate,
         urls.REAP_CRON: reap.Reap,
-        urls.SPAM_DATA_EXPORT_CRON: spammodel.TrainingDataExport,
         urls.LOAD_API_CLIENT_CONFIGS_CRON: (
             client_config_svc.LoadApiClientConfigs),
         urls.CLIENT_MON: clientmon.ClientMonitor,

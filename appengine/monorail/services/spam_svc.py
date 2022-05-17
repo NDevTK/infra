@@ -12,12 +12,9 @@ from __future__ import absolute_import
 import collections
 import logging
 import settings
-import sys
 
 from collections import defaultdict
-from features import filterrules_helpers
 from framework import sql
-from framework import framework_constants
 from infra_libs import ts_mon
 from services import ml_helpers
 
