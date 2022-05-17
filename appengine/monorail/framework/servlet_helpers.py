@@ -214,20 +214,18 @@ def SafeCreateLoginURL(mr, continue_url=None):
   """Make a login URL w/ a detailed continue URL, otherwise use a short one."""
   continue_url = continue_url or mr.current_page_url
   try:
-    url = users.create_login_url(continue_url)
+    # Check the URL length
+    users.create_login_url(continue_url)
   except users.RedirectTooLongError:
     if mr.project_name:
-      url = users.create_login_url('/p/%s' % mr.project_name)
+      continue_url = '/p/%s' % mr.project_name
     else:
-      url = users.create_login_url('/')
-
-  # Give the user a choice of existing accounts in their session
-  # or the option to add an account, even if they are currently
-  # signed in to exactly one account.
-  if mr.auth.user_id:
-    # Notice: this makes assuptions about the output of users.create_login_url,
-    # which can change at any time. See https://crbug.com/monorail/3352.
-    url = url.replace('/ServiceLogin', '/AccountChooser', 1)
+      continue_url = '/'
+  # URL to allow user to choose an account when >1 account is logged in.
+  redirect_url = (
+      'https://accounts.google.com/AccountChooser?continue='
+      'https://uc.appengine.google.com/ah/conflogin%3Fcontinue%3D{}')
+  url = redirect_url.format(continue_url)
   return url
 
 

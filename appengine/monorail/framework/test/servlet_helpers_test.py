@@ -223,8 +223,10 @@ class ComputerCreateUrl(unittest.TestCase):
   def testCreateLoginUrl(self):
     _, mr = testing_helpers.GetRequestObjects(
         path='/p/proj/issues/detail?id=123&q=term', project=self.project)
-    url = servlet_helpers.SafeCreateLoginURL(mr, '/continue')
-    self.assertIn('/continue', url)
+    url = servlet_helpers.SafeCreateLoginURL(mr, 'current.url.to.return.to')
+    # Ensure that users can pick their account to use with Monorail.
+    self.assertIn('/AccountChooser', url)
+    self.assertIn('current.url.to.return.to', url)
 
   def testCreateLogoutUrl(self):
     _, mr = testing_helpers.GetRequestObjects(
