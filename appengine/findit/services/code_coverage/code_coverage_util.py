@@ -78,11 +78,11 @@ def GetMetricsBasedOnCoverageTool(coverage_tool):  # pragma: no cover
   """
   metrics = []
   if coverage_tool == 'clang':
-    metrics = ['line', 'function', 'region']
+    metrics = ['line', 'branch']
   elif coverage_tool == 'v8':
     metrics = ['line']
   elif coverage_tool == 'jacoco':
-    metrics = ['line', 'branch', 'instruction']
+    metrics = ['line', 'branch']
   else:
     raise AssertionError('Unrecognized coverage tool: %s' % coverage_tool)
 
