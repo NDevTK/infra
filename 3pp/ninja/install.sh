@@ -12,7 +12,7 @@ PREFIX="$1"
 # Cross compiling; rely on `ninja` in $PATH.
 ./configure.py
 ninja -j $(nproc)
-if [[ $PLATFORM == windows* ]]; then
+if [[ $_3PP_PLATFORM == windows* ]]; then
   cp ninja.exe "$PREFIX"
 else
   cp ninja "$PREFIX"
