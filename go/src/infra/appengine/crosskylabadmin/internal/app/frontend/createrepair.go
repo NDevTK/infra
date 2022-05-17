@@ -26,10 +26,13 @@ import (
 	"infra/libs/skylab/common/heuristics"
 )
 
-// Paris represents a decision to use the paris stack for this request.
+// paris represents a decision to use the paris stack for this request.
 const paris = "paris"
 
-// Legacy represents a decision to use the legacy stack for this request.
+// parisLatest represents a decision to use the paris stack on the latest channel for this request.
+const parisLatest = "latest"
+
+// legacy represents a decision to use the legacy stack for this request.
 const legacy = "legacy"
 
 // Reason is a rationale for why we made the decision that we made.
@@ -215,16 +218,24 @@ func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dut
 			return legacy, malformedPolicy
 		}
 	}
-	threshold := r.GetProdPermille()
+	// threshold is the chance of using Paris at all, which is equal to prod + latest.
+	threshold := r.GetProdPermille() + r.GetLatestPermille()
+	// latestThreshold is a smaller threshold for using latest specifically.
+	latestThreshold := r.GetLatestPermille()
 	myValue := math.Round(1000.0 * randFloat)
 	// If the threshold is zero, let's reject all possible values of myValue.
 	// This way a threshold of zero actually means 0.0% instead of 0.1%.
 	valueBelowThreshold := threshold != 0 && myValue <= float64(threshold)
+	valueBelowLatestThreshold := latestThreshold != 0 && myValue <= float64(latestThreshold)
 	if r.GetOptinAllDuts() {
-		if valueBelowThreshold {
+		switch {
+		case valueBelowLatestThreshold:
+			return parisLatest, scoreBelowThreshold
+		case valueBelowThreshold:
 			return paris, scoreBelowThreshold
+		default:
+			return legacy, scoreTooHigh
 		}
-		return legacy, scoreTooHigh
 	}
 	if threshold == 0 {
 		return legacy, thresholdZero
@@ -232,10 +243,14 @@ func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dut
 	if !r.GetOptinAllDuts() && len(r.GetOptinDutPool()) > 0 && isDisjoint(info.pools, r.GetOptinDutPool()) {
 		return legacy, wrongPool
 	}
-	if valueBelowThreshold {
+	switch {
+	case valueBelowLatestThreshold:
+		return parisLatest, scoreBelowThreshold
+	case valueBelowThreshold:
 		return paris, scoreBelowThreshold
+	default:
+		return legacy, scoreTooHigh
 	}
-	return legacy, scoreTooHigh
 }
 
 // CreateBuildbucketRepairTask creates a new repair task for a labstation.

@@ -384,6 +384,22 @@ func TestRouteRepairTask(t *testing.T) {
 			hasErr:        false,
 		},
 		{
+			name: "paris labstation latest",
+			in: &config.Paris{
+				LabstationRepair: &config.RolloutConfig{
+					Enable:         true,
+					OptinAllDuts:   true,
+					LatestPermille: 1000,
+				},
+			},
+			botID:         "foo-labstation1",
+			expectedState: "ready",
+			pools:         []string{"some-pool"},
+			randFloat:     1,
+			out:           parisLatest,
+			hasErr:        false,
+		},
+		{
 			name: "legacy labstation",
 			in: &config.Paris{
 				LabstationRepair: &config.RolloutConfig{
@@ -529,12 +545,14 @@ func TestRouteRepairTaskProbability(t *testing.T) {
 	ctx := context.Background()
 
 	rolloutCfg := &config.RolloutConfig{
-		Enable:       true,
-		OptinAllDuts: true,
-		ProdPermille: 1,
+		Enable:         true,
+		OptinAllDuts:   true,
+		ProdPermille:   1,
+		LatestPermille: 1,
 	}
 
-	tally := 0
+	prodTally := 0
+	latestTally := 0
 
 	for i := 0; i < samples; i++ {
 		dest, reason := routeRepairTaskImpl(
@@ -554,8 +572,11 @@ func TestRouteRepairTaskProbability(t *testing.T) {
 		default:
 			t.Errorf("unexpected reason: %q", reasonMessageMap[reason])
 		}
-		if dest == paris {
-			tally++
+		switch dest {
+		case paris:
+			prodTally++
+		case parisLatest:
+			latestTally++
 		}
 	}
 
@@ -564,11 +585,15 @@ func TestRouteRepairTaskProbability(t *testing.T) {
 	//
 	// However, this test is mostly interested in the case where the interpretation of rolloutPermille is backwards,
 	// so a wide tolerance is acceptable.
-	expected := 0.001 * samples
-	tol := 3 * expected
-	dist := math.Abs(float64(tally) - expected)
+	prodExpected := 0.001 * samples
+	prodTol := 3 * prodExpected
+	if dist := math.Abs(float64(prodTally) - prodExpected); dist > prodTol {
+		t.Errorf("prod difference %f is too high", dist)
+	}
 
-	if dist > tol {
-		t.Errorf("difference %f is too high", dist)
+	latestExpected := 0.001 * samples
+	latestTol := 3 * latestExpected
+	if dist := math.Abs(float64(latestTally) - latestExpected); dist > latestTol {
+		t.Errorf("latest difference %f is too high", dist)
 	}
 }
