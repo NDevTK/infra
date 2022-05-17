@@ -49,20 +49,22 @@ const (
 	malformedPolicy
 	nilArgument
 	notALabstation
+	errorExtractingPermilleInfo
 )
 
 // ReasonMessageMap maps each reason to a readable description.
 var reasonMessageMap = map[reason]string{
-	parisNotEnabled:      "PARIS is not enabled",
-	allDevicesAreOptedIn: "All devices are opted in",
-	noPools:              "Device has no pools, possibly due to error calling UFS",
-	wrongPool:            "Device has a pool not matching opted-in pools",
-	scoreBelowThreshold:  "Random score associated with is below threshold, authorizing new flow",
-	scoreTooHigh:         "Random score associated with task is too high",
-	thresholdZero:        "Route labstation repair task: a threshold of zero implies that optinAllLabstations should be set, but optinAllLabstations is not set",
-	malformedPolicy:      "Unrecognized policy",
-	nilArgument:          "A required argument was unexpectedly nil",
-	notALabstation:       "Paris not enabled yet for non-labstations",
+	parisNotEnabled:             "PARIS is not enabled",
+	allDevicesAreOptedIn:        "All devices are opted in",
+	noPools:                     "Device has no pools, possibly due to error calling UFS",
+	wrongPool:                   "Device has a pool not matching opted-in pools",
+	scoreBelowThreshold:         "Random score associated with is below threshold, authorizing new flow",
+	scoreTooHigh:                "Random score associated with task is too high",
+	thresholdZero:               "Route labstation repair task: a threshold of zero implies that optinAllLabstations should be set, but optinAllLabstations is not set",
+	malformedPolicy:             "Unrecognized policy",
+	nilArgument:                 "A required argument was unexpectedly nil",
+	notALabstation:              "Paris not enabled yet for non-labstations",
+	errorExtractingPermilleInfo: "Error extracting permille info",
 }
 
 // UFSErrorPolicy controls how UFS errors are handled.
@@ -182,9 +184,10 @@ func CreateRepairTask(ctx context.Context, botID string, expectedState string, p
 // DUTRoutingInfo is all the deterministic information about a DUT that is necessary to decide
 // whether to use a legacy task or a paris task.
 //
-// For example, we DO need to know whether a DUT is a labstation or not, but we DO NOT need to know
-// what the exact hostname is.
+// We need to know whether a DUT is a labstation or not.
+// We also need to know its hostname so we can choose the pattern stanza that applies to it.
 type dutRoutingInfo struct {
+	hostname   string
 	labstation bool
 	pools      []string
 }
@@ -218,15 +221,21 @@ func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dut
 			return legacy, malformedPolicy
 		}
 	}
+
+	d, err := r.ComputePermilleData(info.hostname)
+	if err != nil {
+		return legacy, errorExtractingPermilleInfo
+	}
+
 	// threshold is the chance of using Paris at all, which is equal to prod + latest.
-	threshold := r.GetProdPermille() + r.GetLatestPermille()
+	threshold := d.Prod + d.Latest
 	// latestThreshold is a smaller threshold for using latest specifically.
-	latestThreshold := r.GetLatestPermille()
+	latestThreshold := d.Latest
 	myValue := math.Round(1000.0 * randFloat)
 	// If the threshold is zero, let's reject all possible values of myValue.
 	// This way a threshold of zero actually means 0.0% instead of 0.1%.
-	valueBelowThreshold := threshold != 0 && myValue <= float64(threshold)
-	valueBelowLatestThreshold := latestThreshold != 0 && myValue <= float64(latestThreshold)
+	valueBelowThreshold := threshold != 0 && myValue <= threshold
+	valueBelowLatestThreshold := latestThreshold != 0 && myValue <= latestThreshold
 	if r.GetOptinAllDuts() {
 		switch {
 		case valueBelowLatestThreshold:
