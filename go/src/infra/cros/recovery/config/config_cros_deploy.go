@@ -72,7 +72,7 @@ func deployActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Device is pingable before deploy",
-				"has_stable_version_cros_image",
+				"Recovery version has OS image path",
 				"Device NOT booted from USB-drive",
 			},
 			ExecName: "cros_is_os_test_channel",
@@ -303,7 +303,7 @@ func deployActions() map[string]*Action {
 				"Read HWID from DUT (Satlab)",
 				"Read DUT serial-number from DUT",
 				"Read DUT serial-number from DUT (Satlab)",
-				"device_sku",
+				"Read device SKU",
 				"servo_type_label",
 			},
 			ExecName: "sample_pass",

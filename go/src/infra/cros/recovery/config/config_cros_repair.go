@@ -21,15 +21,15 @@ func crosRepairPlan() *Plan {
 			"Check power sources",
 			"Check TPM statuses",
 			"Verify present of gsctool",
-			"hardware_audit",
+			"Audit wifi",
+			"Audit bluetooth",
 			"Firmware validations",
 			"Login UI is up",
-			"rw_vpd",
-			"servo_keyboard",
-			"servo_mac_address",
+			"Verify keys of RW_VPD",
+			"Update Servo NIC mac address",
 			"Match provision labels",
 			"Set state: ready",
-			"device_labels",
+			"Update special device labels",
 			"Collect dmesg logs from DUT",
 		},
 		Actions: crosRepairActions(),
@@ -296,10 +296,17 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
 		},
-		"hardware_audit": {
+		"Firmware validations": {
+			Docs: []string{
+				"Group action to combine all firmware checks in one place.",
+			},
+			Conditions: []string{
+				"Is not Flex device",
+			},
 			Dependencies: []string{
-				"wifi_audit",
-				"bluetooth_audit",
+				"Ensure firmware is in good state",
+				"RW Firmware version matches the recovery-version",
+				"Verify servo keyboard firmware",
 			},
 			ExecName: "sample_pass",
 		},
@@ -313,25 +320,10 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_is_firmware_in_good_state",
 			RecoveryActions: []string{
 				"Cold reset DUT by servo",
-				"Quick provision OS",
 				"Fix FW on the DUT to match stable-version",
 				"Update FW from fw-image by servo",
 				"Update firmware from USB-Drive and when booted in recovery mode",
 			},
-		},
-		"Firmware validations": {
-			Docs: []string{
-				"Group action to combine all firmware checks in one place.",
-			},
-			Conditions: []string{
-				"Is not Flex device",
-			},
-			Dependencies: []string{
-				"Internal storage is responsive",
-				"Ensure firmware is in good state",
-				"Check if firmware version matches the stable-version",
-			},
-			ExecName: "sample_pass",
 		},
 		"Login UI is up": {
 			Docs: []string{
@@ -349,7 +341,7 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
 		},
-		"rw_vpd": {
+		"Verify keys of RW_VPD": {
 			Docs: []string{
 				"Verify that keys: 'should_send_rlz_ping', 'gbind_attribute', 'ubind_attribute' are present in vpd RW_VPD partition.",
 			},
@@ -358,14 +350,15 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_are_required_rw_vpd_keys_present",
 			RecoveryActions: []string{
-				//TODO: Need run tmp reset.
+				// TODO: Need run tmp reset.
+				// TODO: Missed original recovery action to set key values.
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
 			},
 			AllowFailAfterRecovery: true,
 		},
-		"servo_keyboard": {
+		"Verify servo keyboard firmware": {
 			Conditions: []string{
 				"dut_servo_host_present",
 				"servo_state_is_working",
@@ -379,9 +372,12 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"lsusb -vv -d 03eb:2042 |grep \"Remote Wakeup\"",
 			},
+			RecoveryActions: []string{
+				// TODO: update keyboard firmware.
+			},
 			AllowFailAfterRecovery: true,
 		},
-		"servo_mac_address": {
+		"Update Servo NIC mac address": {
 			Conditions: []string{
 				"dut_servo_host_present",
 				"Is not servo_v3",
@@ -463,13 +459,13 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_fail",
 		},
-		"Check if firmware version matches the stable-version": {
+		"RW Firmware version matches the recovery-version": {
 			Docs: []string{
 				"Check if the version of RW firmware on DUT matches the stable firmware version.",
 			},
 			Conditions: []string{
+				"Recovery version has firmware version",
 				"Pools required to manage FW on the device",
-				"has_stable_version_fw_version",
 			},
 			Dependencies: []string{
 				"Internal storage is responsive",
@@ -477,8 +473,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_is_on_rw_firmware_stable_version",
 			RecoveryActions: []string{
 				"Fix FW on the DUT to match stable-version",
-				"Cold reset DUT by servo",
-				"Simple reboot",
+				"Update FW from fw-image by servo",
 			},
 		},
 		"Fix FW on the DUT to match stable-version": {
@@ -487,8 +482,8 @@ func crosRepairActions() map[string]*Action {
 				"Update FW required the DUT to be run on stable-version OS.",
 			},
 			Conditions: []string{
-				"has_stable_version_cros_image",
-				"has_stable_version_fw_version",
+				"Recovery version has OS image path",
+				"Recovery version has firmware version",
 			},
 			Dependencies: []string{
 				"Provision OS if needed",
@@ -510,7 +505,7 @@ func crosRepairActions() map[string]*Action {
 				"Perfrom provision OS if device is not running on it.",
 			},
 			Conditions: []string{
-				"has_stable_version_cros_image",
+				"Recovery version has OS image path",
 				"cros_not_on_stable_version",
 			},
 			Dependencies: []string{
@@ -570,24 +565,30 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_fail",
 		},
-		"wifi_audit": {
+		"Audit wifi": {
 			Docs: []string{
 				"Check wifi on the DUT is normal and update wifi hardware state accordingly.",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
 			},
-			ExecName:               "cros_audit_wifi",
+			ExecName: "cros_audit_wifi",
+			RecoveryActions: []string{
+				"Cold reset by servo and wait for SSH",
+			},
 			AllowFailAfterRecovery: true,
 		},
-		"bluetooth_audit": {
+		"Audit bluetooth": {
 			Docs: []string{
 				"Check bluetooth on the DUT is normal and update bluetooth hardware state accordingly.",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
 			},
-			ExecName:               "cros_audit_bluetooth",
+			ExecName: "cros_audit_bluetooth",
+			RecoveryActions: []string{
+				"Cold reset by servo and wait for SSH",
+			},
 			AllowFailAfterRecovery: true,
 		},
 		"Verify tmp_fwver is updated correctly": {
@@ -842,25 +843,49 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
 		},
-		"device_labels": {
+		"Update special device labels": {
+			Docs: []string{
+				"Read special labels everytime as part of repair process.",
+			},
 			Dependencies: []string{
-				"device_sku",
-				"cr50_labels",
-				"audio_loop_back_label",
+				"Read device SKU",
+				"Read Cr50 PHASE",
+				"Read Cr50 key ID",
+				"Read if audio loopback present",
 			},
 			ExecName: "sample_pass",
 		},
-		"audio_loop_back_label": {
+		"Read Cr50 PHASE": {
+			Docs: []string{
+				"Update the cr50 phase label from device.",
+			},
+			Conditions: []string{
+				"Cr50 firmware present on the device",
+			},
+			ExecName:               "cros_update_cr50_label",
+			AllowFailAfterRecovery: true,
+		},
+		"Read Cr50 key ID": {
+			Docs: []string{
+				"Update the cr50 key ID from device.",
+			},
+			Conditions: []string{
+				"Cr50 firmware present on the device",
+			},
+			ExecName:               "cros_update_cr50_key_id_label",
+			AllowFailAfterRecovery: true,
+		},
+		"Read if audio loopback present": {
 			Docs: []string{
 				"Update the audio_loop_back label on the cros Device.",
 			},
 			Conditions: []string{
-				"dut_audio_loop_back_state_not_working",
+				"Audio loopback state is not WORKING",
 			},
 			ExecName:               "cros_update_audio_loopback_state_label",
 			AllowFailAfterRecovery: true,
 		},
-		"dut_audio_loop_back_state_not_working": {
+		"Audio loopback state is not WORKING": {
 			Docs: []string{
 				"Confirm that the DUT's audio loopback state is in not working state",
 			},
@@ -869,26 +894,13 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_fail",
 		},
-		"cr50_labels": {
-			Docs: []string{
-				"Update the cr50 label on the cros Device.",
-			},
-			Conditions: []string{
-				"cros_is_cr50_firmware_exist",
-			},
-			Dependencies: []string{
-				"cros_update_cr50_label",
-				"cros_update_cr50_key_id_label",
-			},
-			ExecName:               "sample_pass",
-			AllowFailAfterRecovery: true,
-		},
-		"cros_is_cr50_firmware_exist": {
-			Conditions: []string{
-				"DUT has Cr50 phase label",
-			},
+		"Cr50 firmware present on the device": {
 			Docs: []string{
 				"Checks if the cr 50 firmware exists on the DUT by running the gsctool version command.",
+				"The action working as condition. Please do not exclude based on labels.",
+			},
+			Dependencies: []string{
+				"Read OS version",
 			},
 			ExecName: "cros_run_shell_command",
 			ExecExtraArgs: []string{
@@ -901,7 +913,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "dut_has_cr50",
 		},
-		"device_sku": {
+		"Read device SKU": {
 			Docs: []string{
 				"Update the device_sku label from the device if not present in inventory data.",
 			},
@@ -1065,7 +1077,7 @@ func crosRepairActions() map[string]*Action {
 				"Install stable OS on the device.",
 			},
 			Conditions: []string{
-				"has_stable_version_cros_image",
+				"Recovery version has OS image path",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
@@ -1277,10 +1289,7 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Collect the entire output of dmesg",
 			},
-			Conditions:             []string{},
-			Dependencies:           []string{},
 			ExecName:               "cros_dmesg",
-			RecoveryActions:        []string{},
 			AllowFailAfterRecovery: true,
 		},
 		"Restore AC detection by EC console": {
@@ -1480,6 +1489,18 @@ func crosRepairActions() map[string]*Action {
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
+		"Recovery version has firmware version": {
+			Docs: []string{
+				"Verify that recovery version has firmware version.",
+			},
+			ExecName: "has_stable_version_fw_version",
+		},
+		"Recovery version has OS image path": {
+			Docs: []string{
+				"Verify that recovery version has OS image path.",
+			},
+			ExecName: "has_stable_version_cros_image",
+		},
 		"Simple reboot": {
 			Docs: []string{
 				"Simple un-blocker reboot.",
@@ -1553,7 +1574,7 @@ func crosRepairActions() map[string]*Action {
 				"servo_state_is_working",
 			},
 			Dependencies: []string{
-				"has_stable_version_fw_version",
+				"Recovery version has firmware version",
 			},
 			ExecName: "cros_update_fw_with_fw_image_by_servo_from",
 			ExecExtraArgs: []string{
@@ -1595,7 +1616,7 @@ func crosRepairActions() map[string]*Action {
 				"servo_state_is_working",
 			},
 			Dependencies: []string{
-				"has_stable_version_fw_version",
+				"Recovery version has firmware version",
 			},
 			ExecName: "cros_update_fw_with_fw_image_by_servo_from",
 			ExecExtraArgs: []string{
@@ -1645,7 +1666,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"DUT not on stable version",
-				"has_stable_version_cros_image",
+				"Recovery version has OS image path",
 			},
 			Dependencies: []string{
 				"dut_servo_host_present",
@@ -1660,7 +1681,7 @@ func crosRepairActions() map[string]*Action {
 				"Check that firmware manifest in OS tells that expected version nis present.",
 			},
 			Dependencies: []string{
-				"has_stable_version_fw_version",
+				"Recovery version has firmware version",
 			},
 			ExecName: "cros_is_rw_firmware_stable_version_available",
 		},
