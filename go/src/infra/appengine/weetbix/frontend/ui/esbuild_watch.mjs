@@ -8,6 +8,7 @@ import esbuild from 'esbuild';
 esbuild.build({
   entryPoints: ['index.tsx'],
   bundle: true,
+  inject: ['src/tools/react_shim.ts'],
   outfile: 'dist/main.js',
   sourcemap: true,
   logLevel: 'debug',
