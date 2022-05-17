@@ -33,6 +33,14 @@ var (
 	maxSpannerTimestamp = time.Date(9999, time.December, 31, 23, 59, 59, 999999999, time.UTC)
 )
 
+// Changelist represents a gerrit changelist.
+type Changelist struct {
+	// Host is the gerrit hostname, excluding "-review.googlesource.com".
+	Host     string
+	Change   int64
+	Patchset int64
+}
+
 // IngestedInvocation represents a row in the IngestedInvocations table.
 type IngestedInvocation struct {
 	Project                      string
@@ -41,9 +49,7 @@ type IngestedInvocation struct {
 	PartitionTime                time.Time
 	BuildStatus                  pb.BuildStatus
 	HasContributedToClSubmission bool
-	ChangelistHost               spanner.NullString
-	ChangelistChange             spanner.NullInt64
-	ChangelistPatchset           spanner.NullInt64
+	Changelists                  []Changelist
 }
 
 // ReadIngestedInvocations read ingested invocations from the
@@ -54,30 +60,59 @@ func ReadIngestedInvocations(ctx context.Context, keys spanner.KeySet, fn func(i
 	fields := []string{
 		"Project", "IngestedInvocationId", "SubRealm", "PartitionTime",
 		"BuildStatus", "HasContributedToClSubmission",
-		"ChangelistHost", "ChangelistChange", "ChangelistPatchset",
+		"ChangelistHosts", "ChangelistChanges", "ChangelistPatchsets",
 	}
 	return span.Read(ctx, "IngestedInvocations", keys, fields).Do(
 		func(row *spanner.Row) error {
 			inv := &IngestedInvocation{}
 			var hasContributedToClSubmission spanner.NullBool
+			var changelistHosts []string
+			var changelistChanges []int64
+			var changelistPatchsets []int64
+
 			err := b.FromSpanner(
 				row,
 				&inv.Project, &inv.IngestedInvocationID, &inv.SubRealm, &inv.PartitionTime,
 				&inv.BuildStatus, &hasContributedToClSubmission,
-				&inv.ChangelistHost, &inv.ChangelistChange, &inv.ChangelistPatchset,
+				&changelistHosts, &changelistChanges, &changelistPatchsets,
 			)
 			if err != nil {
 				return err
 			}
 			inv.HasContributedToClSubmission = hasContributedToClSubmission.Valid && hasContributedToClSubmission.Bool
+
+			// Data in spanner should be consistent, so
+			// len(changelistHosts) == len(changelistChanges)
+			//    == len(changelistPatchsets).
+			if len(changelistHosts) != len(changelistChanges) ||
+				len(changelistChanges) != len(changelistPatchsets) {
+				panic("Changelist arrays have mismatched length in Spanner")
+			}
+			changelists := make([]Changelist, 0, len(changelistHosts))
+			for i := range changelistHosts {
+				changelists = append(changelists, Changelist{
+					Host:     changelistHosts[i],
+					Change:   changelistChanges[i],
+					Patchset: changelistPatchsets[i],
+				})
+			}
+			inv.Changelists = changelists
 			return fn(inv)
 		})
 }
 
-// SaveUnverified saves the ingested invocation into the IngestedInvocations
-// table without verifying it.
-// Must be called in spanner RW transactional context.
-func (inv *IngestedInvocation) SaveUnverified(ctx context.Context) {
+// SaveUnverified returns a mutation to insert the ingested invocation into
+// the IngestedInvocations table. The ingested invocation is not validated.
+func (inv *IngestedInvocation) SaveUnverified() *spanner.Mutation {
+	changelistHosts := make([]string, 0, len(inv.Changelists))
+	changelistChanges := make([]int64, 0, len(inv.Changelists))
+	changelistPatchsets := make([]int64, 0, len(inv.Changelists))
+	for _, cl := range inv.Changelists {
+		changelistHosts = append(changelistHosts, cl.Host)
+		changelistChanges = append(changelistChanges, cl.Change)
+		changelistPatchsets = append(changelistPatchsets, cl.Patchset)
+	}
+
 	row := map[string]interface{}{
 		"Project":                      inv.Project,
 		"IngestedInvocationId":         inv.IngestedInvocationID,
@@ -85,11 +120,11 @@ func (inv *IngestedInvocation) SaveUnverified(ctx context.Context) {
 		"PartitionTime":                inv.PartitionTime,
 		"BuildStatus":                  inv.BuildStatus,
 		"HasContributedToClSubmission": spanner.NullBool{Bool: inv.HasContributedToClSubmission, Valid: inv.HasContributedToClSubmission},
-		"ChangelistHost":               inv.ChangelistHost,
-		"ChangelistChange":             inv.ChangelistChange,
-		"ChangelistPatchset":           inv.ChangelistPatchset,
+		"ChangelistHosts":              changelistHosts,
+		"ChangelistChanges":            changelistChanges,
+		"ChangelistPatchsets":          changelistPatchsets,
 	}
-	span.BufferWrite(ctx, spanner.InsertOrUpdateMap("IngestedInvocations", spanutil.ToSpannerMap(row)))
+	return spanner.InsertOrUpdateMap("IngestedInvocations", spanutil.ToSpannerMap(row))
 }
 
 // TestResult represents a row in the TestResults table.
@@ -110,9 +145,7 @@ type TestResult struct {
 	SubRealm                     string
 	BuildStatus                  pb.BuildStatus
 	HasContributedToClSubmission bool
-	ChangelistHost               spanner.NullString
-	ChangelistChange             spanner.NullInt64
-	ChangelistPatchset           spanner.NullInt64
+	Changelists                  []Changelist
 }
 
 // ReadTestResults reads test results from the TestResults table.
@@ -125,7 +158,7 @@ func ReadTestResults(ctx context.Context, keys spanner.KeySet, fn func(tr *TestR
 		"IsUnexpected", "RunDurationUsec", "Status",
 		"ExonerationStatus",
 		"SubRealm", "BuildStatus", "HasContributedToClSubmission",
-		"ChangelistHost", "ChangelistChange", "ChangelistPatchset",
+		"ChangelistHosts", "ChangelistChanges", "ChangelistPatchsets",
 	}
 	return span.Read(ctx, "TestResults", keys, fields).Do(
 		func(row *spanner.Row) error {
@@ -133,6 +166,9 @@ func ReadTestResults(ctx context.Context, keys spanner.KeySet, fn func(tr *TestR
 			var runDurationUsec spanner.NullInt64
 			var isUnexpected spanner.NullBool
 			var hasContributedToClSubmission spanner.NullBool
+			var changelistHosts []string
+			var changelistChanges []int64
+			var changelistPatchsets []int64
 			err := b.FromSpanner(
 				row,
 				&tr.Project, &tr.TestID, &tr.PartitionTime, &tr.VariantHash, &tr.IngestedInvocationID,
@@ -140,7 +176,7 @@ func ReadTestResults(ctx context.Context, keys spanner.KeySet, fn func(tr *TestR
 				&isUnexpected, &runDurationUsec, &tr.Status,
 				&tr.ExonerationStatus,
 				&tr.SubRealm, &tr.BuildStatus, &hasContributedToClSubmission,
-				&tr.ChangelistHost, &tr.ChangelistChange, &tr.ChangelistPatchset,
+				&changelistHosts, &changelistChanges, &changelistPatchsets,
 			)
 			if err != nil {
 				return err
@@ -151,18 +187,43 @@ func ReadTestResults(ctx context.Context, keys spanner.KeySet, fn func(tr *TestR
 			}
 			tr.IsUnexpected = isUnexpected.Valid && isUnexpected.Bool
 			tr.HasContributedToClSubmission = hasContributedToClSubmission.Valid && hasContributedToClSubmission.Bool
+
+			// Data in spanner should be consistent, so
+			// len(changelistHosts) == len(changelistChanges)
+			//    == len(changelistPatchsets).
+			if len(changelistHosts) != len(changelistChanges) ||
+				len(changelistChanges) != len(changelistPatchsets) {
+				panic("Changelist arrays have mismatched length in Spanner")
+			}
+			changelists := make([]Changelist, 0, len(changelistHosts))
+			for i := range changelistHosts {
+				changelists = append(changelists, Changelist{
+					Host:     changelistHosts[i],
+					Change:   changelistChanges[i],
+					Patchset: changelistPatchsets[i],
+				})
+			}
+			tr.Changelists = changelists
 			return fn(tr)
 		})
 }
 
-// SaveUnverified saves the test result into the TestResults table without
-// verifying it.
-// Must be called in spanner RW transactional context.
-func (tr *TestResult) SaveUnverified(ctx context.Context) {
+// SaveUnverified prepare a mutation to insert the test result into the
+// TestResults table. The test result is not validated.
+func (tr *TestResult) SaveUnverified() *spanner.Mutation {
 	var runDurationUsec spanner.NullInt64
 	if tr.RunDuration != nil {
 		runDurationUsec.Int64 = tr.RunDuration.Microseconds()
 		runDurationUsec.Valid = true
+	}
+
+	changelistHosts := make([]string, 0, len(tr.Changelists))
+	changelistChanges := make([]int64, 0, len(tr.Changelists))
+	changelistPatchsets := make([]int64, 0, len(tr.Changelists))
+	for _, cl := range tr.Changelists {
+		changelistHosts = append(changelistHosts, cl.Host)
+		changelistChanges = append(changelistChanges, cl.Change)
+		changelistPatchsets = append(changelistPatchsets, cl.Patchset)
 	}
 
 	row := map[string]interface{}{
@@ -180,11 +241,11 @@ func (tr *TestResult) SaveUnverified(ctx context.Context) {
 		"SubRealm":                     tr.SubRealm,
 		"BuildStatus":                  tr.BuildStatus,
 		"HasContributedToClSubmission": spanner.NullBool{Bool: tr.HasContributedToClSubmission, Valid: tr.HasContributedToClSubmission},
-		"ChangelistHost":               tr.ChangelistHost,
-		"ChangelistChange":             tr.ChangelistChange,
-		"ChangelistPatchset":           tr.ChangelistPatchset,
+		"ChangelistHosts":              changelistHosts,
+		"ChangelistChanges":            changelistChanges,
+		"ChangelistPatchsets":          changelistPatchsets,
 	}
-	span.BufferWrite(ctx, spanner.InsertOrUpdateMap("TestResults", spanutil.ToSpannerMap(row)))
+	return spanner.InsertOrUpdateMap("TestResults", spanutil.ToSpannerMap(row))
 }
 
 // ReadTestHistoryOptions specifies options for ReadTestHistory().
@@ -412,10 +473,10 @@ func ReadTestVariantRealms(ctx context.Context, keys spanner.KeySet, fn func(tvr
 		})
 }
 
-// SaveUnverified saves the test variant realm into the TestVariantRealms table
-// without verifying it.
+// SaveUnverified creates a mutation to save the test variant realm into
+// the TestVariantRealms table. The test variant realm is not verified.
 // Must be called in spanner RW transactional context.
-func (tvr *TestVariantRealm) SaveUnverified(ctx context.Context) {
+func (tvr *TestVariantRealm) SaveUnverified() *spanner.Mutation {
 	row := map[string]interface{}{
 		"Project":           tvr.Project,
 		"TestId":            tvr.TestID,
@@ -424,7 +485,7 @@ func (tvr *TestVariantRealm) SaveUnverified(ctx context.Context) {
 		"Variant":           tvr.Variant,
 		"LastIngestionTime": tvr.LastIngestionTime,
 	}
-	span.BufferWrite(ctx, spanner.InsertOrUpdateMap("TestVariantRealms", spanutil.ToSpannerMap(row)))
+	return spanner.InsertOrUpdateMap("TestVariantRealms", spanutil.ToSpannerMap(row))
 }
 
 // ReadVariantsOptions specifies options for ReadVariants().
@@ -541,7 +602,7 @@ var testHistoryQueryTmpl = template.Must(template.New("").Parse(`
 				)
 			{{end}}
 			{{if .submittedFilterSpecified}}
-				AND (ChangelistChange IS NOT NULL) = @hasUnsubmittedChanges
+				AND (ARRAY_LENGTH(ChangelistHosts) > 0) = @hasUnsubmittedChanges
 			{{end}}
 	{{end}}
 	{{define "testHistoryQuery"}}

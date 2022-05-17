@@ -7,8 +7,6 @@ package testresults
 import (
 	"time"
 
-	"cloud.google.com/go/spanner"
-
 	pb "infra/appengine/weetbix/proto/v1"
 )
 
@@ -34,9 +32,18 @@ func NewTestResult() *TestResultBuilder {
 		SubRealm:                     "realm",
 		BuildStatus:                  pb.BuildStatus_BUILD_STATUS_SUCCESS,
 		HasContributedToClSubmission: true,
-		ChangelistHost:               spanner.NullString{Valid: true, StringVal: "mygerrit"},
-		ChangelistChange:             spanner.NullInt64{Valid: true, Int64: 12345678},
-		ChangelistPatchset:           spanner.NullInt64{Valid: true, Int64: 9},
+		Changelists: []Changelist{
+			{
+				Host:     "mygerrit",
+				Change:   12345678,
+				Patchset: 9,
+			},
+			{
+				Host:     "anothergerrit",
+				Change:   234568790,
+				Patchset: 1,
+			},
+		},
 	}
 	return &TestResultBuilder{
 		result: result,
@@ -118,17 +125,12 @@ func (b *TestResultBuilder) WithHasContributedToClSubmission(hasContributedToClS
 	return b
 }
 
-func (b *TestResultBuilder) WithChangelist(host string, change, patch int64) *TestResultBuilder {
-	b.result.ChangelistHost = spanner.NullString{Valid: true, StringVal: host}
-	b.result.ChangelistChange = spanner.NullInt64{Valid: true, Int64: change}
-	b.result.ChangelistPatchset = spanner.NullInt64{Valid: true, Int64: patch}
-	return b
-}
-
-func (b *TestResultBuilder) WithoutChangelist() *TestResultBuilder {
-	b.result.ChangelistHost = spanner.NullString{}
-	b.result.ChangelistChange = spanner.NullInt64{}
-	b.result.ChangelistPatchset = spanner.NullInt64{}
+func (b *TestResultBuilder) WithChangelists(changelist []Changelist) *TestResultBuilder {
+	// Copy changelist to stop changes the caller may make to changelist
+	// after this call propagating into the resultant test result.
+	cls := make([]Changelist, len(changelist))
+	copy(cls, changelist)
+	b.result.Changelists = cls
 	return b
 }
 
@@ -137,6 +139,10 @@ func (b *TestResultBuilder) Build() *TestResult {
 	// not change the returned test verdict.
 	result := new(TestResult)
 	*result = b.result
+
+	cls := make([]Changelist, len(b.result.Changelists))
+	copy(cls, b.result.Changelists)
+	result.Changelists = cls
 	return result
 }
 

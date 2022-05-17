@@ -33,13 +33,13 @@ func TestReadTestHistory(t *testing.T) {
 
 		_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
 			insertTVR := func(subRealm string, variant *pb.Variant) {
-				(&TestVariantRealm{
+				span.BufferWrite(ctx, (&TestVariantRealm{
 					Project:     "project",
 					TestID:      "test_id",
 					SubRealm:    subRealm,
 					Variant:     variant,
 					VariantHash: pbutil.VariantHash(variant),
-				}).SaveUnverified(ctx)
+				}).SaveUnverified())
 			}
 
 			insertTVR("realm", var1)
@@ -57,9 +57,20 @@ func TestReadTestHistory(t *testing.T) {
 					WithSubRealm("realm").
 					WithStatus(pb.TestResultStatus_PASS)
 				if hasUnsubmittedChanges {
-					baseTestResult = baseTestResult.WithChangelist("mygerrit", 4321, 5)
+					baseTestResult = baseTestResult.WithChangelists([]Changelist{
+						{
+							Host:     "mygerrit",
+							Change:   4321,
+							Patchset: 5,
+						},
+						{
+							Host:     "anothergerrit",
+							Change:   5471,
+							Patchset: 6,
+						},
+					})
 				} else {
-					baseTestResult = baseTestResult.WithoutChangelist()
+					baseTestResult = baseTestResult.WithChangelists(nil)
 				}
 
 				trs := NewTestVariant().
@@ -68,7 +79,7 @@ func TestReadTestHistory(t *testing.T) {
 					WithPassedAvgDuration(avgDuration).
 					Build()
 				for _, tr := range trs {
-					tr.SaveUnverified(ctx)
+					span.BufferWrite(ctx, tr.SaveUnverified())
 				}
 			}
 
@@ -385,13 +396,13 @@ func TestReadTestHistoryStats(t *testing.T) {
 
 		_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
 			insertTVR := func(subRealm string, variant *pb.Variant) {
-				(&TestVariantRealm{
+				span.BufferWrite(ctx, (&TestVariantRealm{
 					Project:     "project",
 					TestID:      "test_id",
 					SubRealm:    subRealm,
 					Variant:     variant,
 					VariantHash: pbutil.VariantHash(variant),
-				}).SaveUnverified(ctx)
+				}).SaveUnverified())
 			}
 
 			insertTVR("realm", var1)
@@ -409,9 +420,15 @@ func TestReadTestHistoryStats(t *testing.T) {
 					WithSubRealm("realm").
 					WithStatus(pb.TestResultStatus_PASS)
 				if hasUnsubmittedChanges {
-					baseTestResult = baseTestResult.WithChangelist("mygerrit", 4321, 5)
+					baseTestResult = baseTestResult.WithChangelists([]Changelist{
+						{
+							Host:     "mygerrit",
+							Change:   4321,
+							Patchset: 5,
+						},
+					})
 				} else {
-					baseTestResult = baseTestResult.WithoutChangelist()
+					baseTestResult = baseTestResult.WithChangelists(nil)
 				}
 
 				trs := NewTestVariant().
@@ -420,7 +437,7 @@ func TestReadTestHistoryStats(t *testing.T) {
 					WithPassedAvgDuration(avgDuration).
 					Build()
 				for _, tr := range trs {
-					tr.SaveUnverified(ctx)
+					span.BufferWrite(ctx, tr.SaveUnverified())
 				}
 			}
 
@@ -693,13 +710,13 @@ func TestReadVariants(t *testing.T) {
 
 		_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
 			insertTVR := func(subRealm string, variant *pb.Variant) {
-				(&TestVariantRealm{
+				span.BufferWrite(ctx, (&TestVariantRealm{
 					Project:     "project",
 					TestID:      "test_id",
 					SubRealm:    subRealm,
 					Variant:     variant,
 					VariantHash: pbutil.VariantHash(variant),
-				}).SaveUnverified(ctx)
+				}).SaveUnverified())
 			}
 
 			insertTVR("realm1", var1)

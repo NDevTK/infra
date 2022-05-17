@@ -37,13 +37,13 @@ func TestReadTestHistory(t *testing.T) {
 
 		_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
 			insertTVR := func(subRealm string, variant *pb.Variant) {
-				(&testresults.TestVariantRealm{
+				span.BufferWrite(ctx, (&testresults.TestVariantRealm{
 					Project:     "project",
 					TestID:      "test_id",
 					SubRealm:    subRealm,
 					Variant:     variant,
 					VariantHash: pbutil.VariantHash(variant),
-				}).SaveUnverified(ctx)
+				}).SaveUnverified())
 			}
 
 			insertTVR("realm", var1)
@@ -347,13 +347,13 @@ func TestReadTestHistoryStats(t *testing.T) {
 
 		_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
 			insertTVR := func(subRealm string, variant *pb.Variant) {
-				(&testresults.TestVariantRealm{
+				span.BufferWrite(ctx, (&testresults.TestVariantRealm{
 					Project:     "project",
 					TestID:      "test_id",
 					SubRealm:    subRealm,
 					Variant:     variant,
 					VariantHash: pbutil.VariantHash(variant),
-				}).SaveUnverified(ctx)
+				}).SaveUnverified())
 			}
 
 			insertTVR("realm", var1)

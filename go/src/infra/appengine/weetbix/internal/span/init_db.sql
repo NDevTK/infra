@@ -519,21 +519,23 @@ CREATE TABLE TestResults (
   HasContributedToClSubmission BOOL,
 
   -- The following fields capture information about any unsubmitted
-  -- changelists that were tested by the test execution. In case
-  -- of multiple changelists tested, only one changelist is selected.
+  -- changelists that were tested by the test execution. The arrays
+  -- are matched in length and correspond in index, i.e.
+  -- ChangelistHosts[OFFSET(0)] corresponds with ChangelistChanges[OFFSET(0)]
+  -- and ChangelistPatchsets[OFFSET(0)].
 
-  -- Hostname of the gerrit instance of the changelist that was tested
+  -- Hostname(s) of the gerrit instance of the changelist that was tested
   -- (if any). For storage efficiency, the suffix "-review.googlesource.com"
   -- is not stored. Only gerrit hosts are supported.
   -- 56 chars because maximum length of a domain name label is 63 chars,
   -- and we subtract 7 chars for "-review".
-  ChangelistHost STRING(56),
+  ChangelistHosts ARRAY<STRING(56)> NOT NULL,
 
-  -- The changelist number, e.g. 12345.
-  ChangelistChange INT64,
+  -- The changelist number(s), e.g. 12345.
+  ChangelistChanges ARRAY<INT64> NOT NULL,
 
-  -- The patchset number of the changelist, e.g. 1.
-  ChangelistPatchset INT64,
+  -- The patchset number(s) of the changelist, e.g. 1.
+  ChangelistPatchsets ARRAY<INT64> NOT NULL,
 ) PRIMARY KEY(Project, TestId, PartitionTime DESC, VariantHash, IngestedInvocationId, RunIndex, ResultIndex)
 -- The following DDL query needs to be uncommented when applied to real Spanner
 -- instances. But it is commented out for Cloud Spanner Emulator:
@@ -577,18 +579,24 @@ CREATE TABLE IngestedInvocations (
   -- The value 'true' is used to encode true, and NULL encodes false.
   HasContributedToClSubmission BOOL,
 
-  -- Hostname of the gerrit instance (if any). For storage
-  -- efficiency, the suffix "-review.googlesource.com" is not stored.
-  -- Only gerrit hosts are supported.
+  -- The following fields capture information about any unsubmitted
+  -- changelists that were tested by the test execution. The arrays
+  -- are matched in length and correspond in index, i.e.
+  -- ChangelistHosts[OFFSET(0)] corresponds with ChangelistChanges[OFFSET(0)]
+  -- and ChangelistPatchsets[OFFSET(0)].
+
+  -- Hostname(s) of the gerrit instance of the changelist that was tested
+  -- (if any). For storage efficiency, the suffix "-review.googlesource.com"
+  -- is not stored. Only gerrit hosts are supported.
   -- 56 chars because maximum length of a domain name label is 63 chars,
   -- and we subtract 7 chars for "-review".
-  ChangelistHost STRING(56),
+  ChangelistHosts ARRAY<STRING(56)> NOT NULL,
 
-  -- The changelist number, e.g. 12345.
-  ChangelistChange INT64,
+  -- The changelist number(s), e.g. 12345.
+  ChangelistChanges ARRAY<INT64> NOT NULL,
 
-  -- The patchset number of the changelist, e.g. 1.
-  ChangelistPatchset INT64,
+  -- The patchset number(s) of the changelist, e.g. 1.
+  ChangelistPatchsets ARRAY<INT64> NOT NULL,
 ) PRIMARY KEY(Project, IngestedInvocationId)
 -- The following DDL query needs to be uncommented when applied to real Spanner
 -- instances. But it is commented out for Cloud Spanner Emulator:

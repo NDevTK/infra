@@ -10,18 +10,17 @@ import (
 	"fmt"
 	"time"
 
+	bbpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/common/clock"
+	"go.chromium.org/luci/common/logging"
+	rdbpb "go.chromium.org/luci/resultdb/proto/v1"
+	"go.chromium.org/luci/server/tq"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
-
-	bbpb "go.chromium.org/luci/buildbucket/proto"
-	"go.chromium.org/luci/common/clock"
-	"go.chromium.org/luci/common/logging"
-	rdbpb "go.chromium.org/luci/resultdb/proto/v1"
-	"go.chromium.org/luci/server/tq"
 
 	"infra/appengine/weetbix/internal/buildbucket"
 	"infra/appengine/weetbix/internal/resultdb"
@@ -57,7 +56,7 @@ func RegisterTaskClass() {
 		Kind:      tq.Transactional,
 		Handler: func(ctx context.Context, payload proto.Message) error {
 			task := payload.(*taskspb.IngestTestVerdicts)
-			return ingestTestVerdicts(ctx, task)
+			return ingestTestResults(ctx, task)
 		},
 	})
 }
@@ -71,7 +70,7 @@ func Schedule(ctx context.Context, task *taskspb.IngestTestVerdicts) error {
 	})
 }
 
-func ingestTestVerdicts(ctx context.Context, payload *taskspb.IngestTestVerdicts) error {
+func ingestTestResults(ctx context.Context, payload *taskspb.IngestTestVerdicts) error {
 	if err := validateRequest(ctx, payload); err != nil {
 		return err
 	}
@@ -111,7 +110,11 @@ func ingestTestVerdicts(ctx context.Context, payload *taskspb.IngestTestVerdicts
 		return fmt.Errorf("invocation has invalid realm: %q", inv.Realm)
 	}
 
-	err = recordIngestedInvocation(ctx, payload, build, inv)
+	ingestedInv, err := extractIngestedInvocation(payload, build, inv)
+	if err != nil {
+		return err
+	}
+	err = recordIngestedInvocation(ctx, ingestedInv)
 	if err != nil {
 		return err
 	}
@@ -132,6 +135,8 @@ func ingestTestVerdicts(ctx context.Context, payload *taskspb.IngestTestVerdicts
 					"variant_hash",
 					"status",
 					"variant",
+					"results.*.result.name",
+					"results.*.result.start_time",
 					"results.*.result.status",
 					"results.*.result.expected",
 					"results.*.result.duration",
@@ -146,7 +151,7 @@ func ingestTestVerdicts(ctx context.Context, payload *taskspb.IngestTestVerdicts
 
 	// Record the test verdicts.
 	eg.Go(func() error {
-		return recordTestVerdicts(ctx, payload, build, inv, tvsC)
+		return recordTestResults(ctx, ingestedInv, tvsC)
 	})
 
 	// If any transaction failed, the task will be retried and the tables will be

@@ -213,52 +213,6 @@ func TestIngest(t *testing.T) {
 				testIngestion(tvs, expectedCFs)
 				So(len(chunkStore.Contents), ShouldEqual, 1)
 			})
-			Convey(`Failure with legacy exoneration due to FindIt/Weetbix`, func() {
-				tv.Exonerations = []*rdbpb.TestExoneration{
-					{
-						Name:            fmt.Sprintf("invocations/testrun-mytestrun/tests/test-name-%v/exonerations/exon-1", uniqifier),
-						TestId:          tv.TestId,
-						Variant:         proto.Clone(tv.Variant).(*rdbpb.Variant),
-						VariantHash:     "hash",
-						ExonerationId:   "exon-1",
-						ExplanationHtml: "<p>FindIt reported this test as being flaky.</p>",
-					},
-					{
-						Name:            fmt.Sprintf("invocations/testrun-mytestrun/tests/test-name-%v/exonerations/exon-1", uniqifier),
-						TestId:          tv.TestId,
-						Variant:         proto.Clone(tv.Variant).(*rdbpb.Variant),
-						VariantHash:     "hash",
-						ExonerationId:   "exon-1",
-						ExplanationHtml: "<p>Weetbix reported this test as being flaky.</p>",
-					},
-				}
-
-				for _, cf := range expectedCFs {
-					cf.ExonerationStatus = pb.ExonerationStatus_OCCURS_ON_OTHER_CLS
-				}
-
-				testIngestion(tvs, expectedCFs)
-				So(len(chunkStore.Contents), ShouldEqual, 1)
-			})
-			Convey(`Failure with other legacy exoneration`, func() {
-				tv.Exonerations = []*rdbpb.TestExoneration{
-					{
-						Name:            fmt.Sprintf("invocations/testrun-mytestrun/tests/test-name-%v/exonerations/exon-1", uniqifier),
-						TestId:          tv.TestId,
-						Variant:         proto.Clone(tv.Variant).(*rdbpb.Variant),
-						VariantHash:     "hash",
-						ExonerationId:   "exon-1",
-						ExplanationHtml: "<p>Some other description</p>",
-					},
-				}
-
-				for _, cf := range expectedCFs {
-					cf.ExonerationStatus = pb.ExonerationStatus_OTHER_EXPLICIT
-				}
-
-				testIngestion(tvs, expectedCFs)
-				So(len(chunkStore.Contents), ShouldEqual, 1)
-			})
 			Convey(`Failure with explicit exoneration`, func() {
 				tv.Exonerations = []*rdbpb.TestExoneration{
 					{

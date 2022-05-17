@@ -31,7 +31,6 @@ import (
 	"infra/appengine/weetbix/internal/tasks/taskspb"
 	"infra/appengine/weetbix/internal/testresults"
 	"infra/appengine/weetbix/internal/testutil"
-	"infra/appengine/weetbix/internal/testverdicts"
 	"infra/appengine/weetbix/pbutil"
 	weetbixpb "infra/appengine/weetbix/proto/v1"
 )
@@ -74,12 +73,12 @@ func TestIngestTestVerdicts(t *testing.T) {
 			}
 			Convey(`too early`, func() {
 				payload.PartitionTime = timestamppb.New(clock.Now(ctx).Add(25 * time.Hour))
-				err := ingestTestVerdicts(ctx, payload)
+				err := ingestTestResults(ctx, payload)
 				So(err, ShouldErrLike, "too far in the future")
 			})
 			Convey(`too late`, func() {
 				payload.PartitionTime = timestamppb.New(clock.Now(ctx).Add(-91 * 24 * time.Hour))
-				err := ingestTestVerdicts(ctx, payload)
+				err := ingestTestResults(ctx, payload)
 				So(err, ShouldErrLike, "too long ago")
 			})
 		})
@@ -124,6 +123,8 @@ func TestIngestTestVerdicts(t *testing.T) {
 						"variant_hash",
 						"status",
 						"variant",
+						"results.*.result.name",
+						"results.*.result.start_time",
 						"results.*.result.status",
 						"results.*.result.expected",
 						"results.*.result.duration",
@@ -138,8 +139,11 @@ func TestIngestTestVerdicts(t *testing.T) {
 					Id:   bID,
 				},
 				PartitionTime: timestamppb.New(clock.Now(ctx)),
+				PresubmitRun: &ctrlpb.PresubmitResult{
+					PresubmitRunSucceeded: true,
+				},
 			}
-			err := ingestTestVerdicts(ctx, payload)
+			err := ingestTestResults(ctx, payload)
 			So(err, ShouldBeNil)
 
 			// Validate IngestedInvocations table is populated.
@@ -150,63 +154,136 @@ func TestIngestTestVerdicts(t *testing.T) {
 					SubRealm:                     "ci",
 					PartitionTime:                payload.PartitionTime.AsTime(),
 					BuildStatus:                  weetbixpb.BuildStatus_BUILD_STATUS_FAILURE,
-					HasContributedToClSubmission: false,
-					ChangelistHost:               spanner.NullString{StringVal: "mygerrit", Valid: true},
-					ChangelistChange:             spanner.NullInt64{Int64: 12345, Valid: true},
-					ChangelistPatchset:           spanner.NullInt64{Int64: 5, Valid: true},
+					HasContributedToClSubmission: true,
+					Changelists: []testresults.Changelist{
+						{
+							Host:     "mygerrit",
+							Change:   12345,
+							Patchset: 5,
+						},
+						{
+							Host:     "anothergerrit",
+							Change:   77788,
+							Patchset: 19,
+						},
+					},
 				})
 				return nil
 			})
 			So(err, ShouldBeNil)
 
-			// Validate TestVerdicts table is populated.
-			tvs := make([]*testverdicts.TestVerdict, 0)
-			err = testverdicts.ReadTestVerdicts(span.Single(ctx), spanner.AllKeys(), func(tv *testverdicts.TestVerdict) error {
-				tvs = append(tvs, tv)
-				return nil
-			})
-			So(err, ShouldBeNil)
-
-			tvBuilder := testverdicts.NewTestVerdict().
+			trBuilder := testresults.NewTestResult().
 				WithProject("chromium").
 				WithPartitionTime(payload.PartitionTime.AsTime()).
 				WithIngestedInvocationID("build-87654321").
 				WithSubRealm("ci").
-				WithHasUnsubmittedChanges(true)
-			So(tvs, ShouldResemble, []*testverdicts.TestVerdict{
-				tvBuilder.WithTestID("test_id_1").
+				WithBuildStatus(weetbixpb.BuildStatus_BUILD_STATUS_FAILURE).
+				WithChangelists([]testresults.Changelist{
+					{
+						Host:     "mygerrit",
+						Change:   12345,
+						Patchset: 5,
+					},
+					{
+						Host:     "anothergerrit",
+						Change:   77788,
+						Patchset: 19,
+					},
+				}).
+				WithHasContributedToClSubmission(true)
+			expectedTRs := []*testresults.TestResult{
+				trBuilder.WithTestID("test_id_1").
 					WithVariantHash("hash_1").
-					WithExpectedCount(0).
-					WithUnexpectedCount(1).
-					WithSkippedCount(0).
-					WithIsExonerated(false).
-					WithoutPassedAvgDuration().
+					WithRunIndex(0).
+					WithResultIndex(0).
+					WithIsUnexpected(true).
+					WithStatus(weetbixpb.TestResultStatus_FAIL).
+					WithRunDuration(10 * time.Second).
+					WithExonerationStatus(weetbixpb.ExonerationStatus_NOT_EXONERATED).
 					Build(),
-				tvBuilder.WithTestID("test_id_1").
+				trBuilder.WithTestID("test_id_1").
 					WithVariantHash("hash_2").
-					WithExpectedCount(1).
-					WithUnexpectedCount(1).
-					WithSkippedCount(0).
-					WithIsExonerated(false).
-					WithPassedAvgDuration(time.Second).
+					WithRunIndex(0).
+					WithResultIndex(0).
+					WithIsUnexpected(false).
+					WithStatus(weetbixpb.TestResultStatus_PASS).
+					WithRunDuration(time.Second).
+					WithExonerationStatus(weetbixpb.ExonerationStatus_NOT_EXONERATED).
 					Build(),
-				tvBuilder.WithTestID("test_id_2").
+				trBuilder.WithTestID("test_id_1").
+					WithVariantHash("hash_2").
+					WithRunIndex(0).
+					WithResultIndex(1).
+					WithIsUnexpected(true).
+					WithStatus(weetbixpb.TestResultStatus_FAIL).
+					WithRunDuration(10 * time.Second).
+					WithExonerationStatus(weetbixpb.ExonerationStatus_NOT_EXONERATED).
+					Build(),
+				trBuilder.WithTestID("test_id_2").
 					WithVariantHash("hash_1").
-					WithExpectedCount(2).
-					WithUnexpectedCount(1).
-					WithSkippedCount(0).
-					WithIsExonerated(false).
-					WithPassedAvgDuration(time.Second * 2).
+					WithRunIndex(0).
+					WithResultIndex(0).
+					WithIsUnexpected(false).
+					WithStatus(weetbixpb.TestResultStatus_PASS).
+					WithRunDuration(3 * time.Second).
+					WithExonerationStatus(weetbixpb.ExonerationStatus_NOT_EXONERATED).
 					Build(),
-				tvBuilder.WithTestID("test_id_2").
+				trBuilder.WithTestID("test_id_2").
+					WithVariantHash("hash_1").
+					WithRunIndex(0).
+					WithResultIndex(1).
+					WithIsUnexpected(false).
+					WithStatus(weetbixpb.TestResultStatus_PASS).
+					WithRunDuration(time.Second).
+					WithExonerationStatus(weetbixpb.ExonerationStatus_NOT_EXONERATED).
+					Build(),
+				trBuilder.WithTestID("test_id_2").
+					WithVariantHash("hash_1").
+					WithRunIndex(1).
+					WithResultIndex(0).
+					WithIsUnexpected(true).
+					WithStatus(weetbixpb.TestResultStatus_FAIL).
+					WithRunDuration(10 * time.Second).
+					WithExonerationStatus(weetbixpb.ExonerationStatus_NOT_EXONERATED).
+					Build(),
+				trBuilder.WithTestID("test_id_2").
 					WithVariantHash("hash_2").
-					WithExpectedCount(2).
-					WithUnexpectedCount(1).
-					WithSkippedCount(0).
-					WithIsExonerated(true).
-					WithPassedAvgDuration(time.Second).
+					WithRunIndex(0).
+					WithResultIndex(0).
+					WithIsUnexpected(true).
+					WithStatus(weetbixpb.TestResultStatus_FAIL).
+					WithRunDuration(10 * time.Second).
+					WithExonerationStatus(weetbixpb.ExonerationStatus_NOT_EXONERATED).
 					Build(),
+				trBuilder.WithTestID("test_id_2").
+					WithVariantHash("hash_2").
+					WithRunIndex(1).
+					WithResultIndex(0).
+					WithIsUnexpected(false).
+					WithStatus(weetbixpb.TestResultStatus_PASS).
+					WithRunDuration(time.Second).
+					WithExonerationStatus(weetbixpb.ExonerationStatus_NOT_EXONERATED).
+					Build(),
+				trBuilder.WithTestID("test_id_2").
+					WithVariantHash("hash_2").
+					WithRunIndex(1).
+					WithResultIndex(1).
+					WithIsUnexpected(false).
+					WithStatus(weetbixpb.TestResultStatus_PASS).
+					WithRunDuration(2 * time.Second).
+					WithExonerationStatus(weetbixpb.ExonerationStatus_NOT_EXONERATED).
+					Build(),
+			}
+
+			// Validate TestResults table is populated.
+			var actualTRs []*testresults.TestResult
+			err = testresults.ReadTestResults(span.Single(ctx), spanner.AllKeys(), func(tr *testresults.TestResult) error {
+				actualTRs = append(actualTRs, tr)
+				return nil
 			})
+			So(err, ShouldBeNil)
+
+			So(actualTRs, ShouldResemble, expectedTRs)
 
 			// Validate TestVariantRealms table is populated.
 			tvrs := make([]*testresults.TestVariantRealm, 0)

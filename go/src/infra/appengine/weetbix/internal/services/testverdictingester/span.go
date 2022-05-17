@@ -11,21 +11,22 @@ import (
 	"time"
 
 	"cloud.google.com/go/spanner"
+	"github.com/pkg/errors"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/sync/parallel"
 	rdbpbutil "go.chromium.org/luci/resultdb/pbutil"
 	rdbpb "go.chromium.org/luci/resultdb/proto/v1"
 	"go.chromium.org/luci/server/span"
 
+	"infra/appengine/weetbix/internal/ingestion/resultdb"
 	"infra/appengine/weetbix/internal/tasks/taskspb"
 	"infra/appengine/weetbix/internal/testresults"
-	"infra/appengine/weetbix/internal/testverdicts"
 	"infra/appengine/weetbix/pbutil"
 	pb "infra/appengine/weetbix/proto/v1"
 	"infra/appengine/weetbix/utils"
 )
 
-func recordIngestedInvocation(ctx context.Context, task *taskspb.IngestTestVerdicts, build *bbpb.Build, inv *rdbpb.Invocation) error {
+func extractIngestedInvocation(task *taskspb.IngestTestVerdicts, build *bbpb.Build, inv *rdbpb.Invocation) (*testresults.IngestedInvocation, error) {
 	invID, err := rdbpbutil.ParseInvocationName(inv.Name)
 	if err != nil {
 		// This should never happen. Inv was originated from ResultDB.
@@ -33,8 +34,11 @@ func recordIngestedInvocation(ctx context.Context, task *taskspb.IngestTestVerdi
 	}
 
 	proj, subRealm := utils.SplitRealm(inv.Realm)
-	contributedToCLSubmission := task.GetPresubmitRun().GetPresubmitRunSucceeded()
-	gerritChanges := build.GetInput().GetGerritChanges()
+
+	contributedToCLSubmission := false
+	if task.PresubmitRun != nil {
+		contributedToCLSubmission = task.PresubmitRun.PresubmitRunSucceeded
+	}
 
 	var buildStatus pb.BuildStatus
 	switch build.Status {
@@ -47,107 +51,140 @@ func recordIngestedInvocation(ctx context.Context, task *taskspb.IngestTestVerdi
 	case bbpb.Status_INFRA_FAILURE:
 		buildStatus = pb.BuildStatus_BUILD_STATUS_INFRA_FAILURE
 	default:
-		return fmt.Errorf("build has unknown status: %v", build.Status)
+		return nil, fmt.Errorf("build has unknown status: %v", build.Status)
 	}
 
-	// Update the IngestedInvocations table.
-	ingestedInv := &testresults.IngestedInvocation{
+	gerritChanges := build.GetInput().GetGerritChanges()
+	changelists := make([]testresults.Changelist, 0, len(gerritChanges))
+	for _, change := range gerritChanges {
+		if !strings.HasSuffix(change.Host, "-review.googlesource.com") {
+			return nil, fmt.Errorf(`gerrit host %q does not end in expected suffix "-review.googlesource.com"`, change.Host)
+		}
+		host := strings.TrimSuffix(change.Host, "-review.googlesource.com")
+		changelists = append(changelists, testresults.Changelist{
+			Host:     host,
+			Change:   change.Change,
+			Patchset: change.Patchset,
+		})
+	}
+
+	return &testresults.IngestedInvocation{
 		Project:                      proj,
 		IngestedInvocationID:         invID,
 		SubRealm:                     subRealm,
 		PartitionTime:                task.PartitionTime.AsTime(),
 		BuildStatus:                  buildStatus,
 		HasContributedToClSubmission: contributedToCLSubmission,
-	}
-	if len(gerritChanges) > 0 {
-		// TODO(meiring): Ingest all gerrit changes.
-		change := gerritChanges[0]
-		if !strings.HasSuffix(change.Host, "-review.googlesource.com") {
-			return fmt.Errorf(`Gerrit host %q does not end in expected suffix "-review.googlesource.com"`, change.Host)
-		}
-		host := strings.TrimSuffix(change.Host, "-review.googlesource.com")
-		ingestedInv.ChangelistHost = spanner.NullString{StringVal: host, Valid: true}
-		ingestedInv.ChangelistChange = spanner.NullInt64{Int64: change.Change, Valid: true}
-		ingestedInv.ChangelistPatchset = spanner.NullInt64{Int64: change.Patchset, Valid: true}
-	}
+		Changelists:                  changelists,
+	}, nil
+}
 
-	_, err = span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
-		ingestedInv.SaveUnverified(ctx)
+func recordIngestedInvocation(ctx context.Context, inv *testresults.IngestedInvocation) error {
+	// Update the IngestedInvocations table.
+	m := inv.SaveUnverified()
+
+	_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
+		span.BufferWrite(ctx, m)
 		return nil
 	})
 	return err
 }
 
-// recordTestVerdicts records test verdicts from an test-verdict-ingestion task.
-func recordTestVerdicts(ctx context.Context, task *taskspb.IngestTestVerdicts, build *bbpb.Build, inv *rdbpb.Invocation, tvsC chan []*rdbpb.TestVariant) error {
-	const (
-		workerCount = 8
-		batchSize   = 1000
-	)
+func batchTestResults(inv *testresults.IngestedInvocation, inputC chan []*rdbpb.TestVariant, outputC chan []*spanner.Mutation) {
+	// Must be selected such that no more than 20,000 mutations occur in
+	// one transaction in the worst case. Currently we are at exactly this
+	// limit:
+	// 20,000 / (14 (for test result) + 6 (for test variant realm)) = 1,000.
+	const batchSize = 1000
 
-	invId, err := rdbpbutil.ParseInvocationName(inv.Name)
-	if err != nil {
-		return err
+	// The number of test results in the current batch.
+	var trCount int
+	var ms []*spanner.Mutation
+	startBatch := func() {
+		ms = make([]*spanner.Mutation, 0, 2*batchSize)
+		trCount = 0
+	}
+	outputBatch := func() {
+		if len(ms) == 0 {
+			// This should never happen.
+			panic("Pushing empty batch")
+		}
+		outputC <- ms
 	}
 
-	proj, subRealm := utils.SplitRealm(inv.Realm)
-	contributedToCLSubmission := task.GetPresubmitRun().GetPresubmitRunSucceeded()
-	hasUnsubmittedChanges := len(build.GetInput().GetGerritChanges()) != 0
-
-	// recordBatch updates TestVerdicts table and TestVariantRealms table from a
-	// batch of test variants. Must be called in a spanner RW transactional
-	// context.
-	recordBatch := func(ctx context.Context, batch []*rdbpb.TestVariant) error {
-		for _, tv := range batch {
-			// Record the test verdict.
-			expectedCount, unexpectedCount, skippedCount := countResults(tv)
-			verdict := &testverdicts.TestVerdict{
-				Project:                      proj,
-				TestID:                       tv.TestId,
-				PartitionTime:                task.PartitionTime.AsTime(),
-				VariantHash:                  tv.VariantHash,
-				IngestedInvocationID:         invId,
-				SubRealm:                     subRealm,
-				ExpectedCount:                expectedCount,
-				UnexpectedCount:              unexpectedCount,
-				SkippedCount:                 skippedCount,
-				IsExonerated:                 tv.Status == rdbpb.TestVariantStatus_EXONERATED,
-				PassedAvgDuration:            calcPassedAvgDuration(tv),
-				HasUnsubmittedChanges:        hasUnsubmittedChanges,
-				HasContributedToClSubmission: contributedToCLSubmission,
+	startBatch()
+	for tvs := range inputC {
+		for _, tv := range tvs {
+			// Limit batch size.
+			// Keep all results for one test variant in one batch, so that the
+			// TestVariantRealm record is kept together with the test results.
+			if trCount+len(tv.Results) > batchSize {
+				outputBatch()
+				startBatch()
 			}
-			verdict.SaveUnverified(ctx)
 
-			// Record the test variant realm.
-			tvr := &testresults.TestVariantRealm{
-				Project:           proj,
+			tvr := testresults.TestVariantRealm{
+				Project:           inv.Project,
 				TestID:            tv.TestId,
 				VariantHash:       tv.VariantHash,
-				SubRealm:          subRealm,
+				SubRealm:          inv.SubRealm,
 				Variant:           pbutil.VariantFromResultDB(tv.Variant),
 				LastIngestionTime: spanner.CommitTimestamp,
 			}
-			tvr.SaveUnverified(ctx)
-		}
-		return nil
-	}
+			ms = append(ms, tvr.SaveUnverified())
 
-	return parallel.WorkPool(workerCount, func(c chan<- func() error) {
-		batchC := make(chan []*rdbpb.TestVariant, workerCount)
+			exonerationStatus := resultdb.StatusFromExonerations(tv.Exonerations)
 
-		// Split test variants into smaller batches so we have less than 20k
-		// mutations in a single spanner transaction.
-		c <- func() error {
-			defer close(batchC)
-			for tvs := range tvsC {
-				for i := 0; i < len(tvs); i += batchSize {
-					end := i + batchSize
-					if end > len(tvs) {
-						end = len(tvs)
+			// Group results into test runs and order them by start time.
+			resultsByRun := resultdb.GroupAndOrderTestResults(tv.Results)
+			for runIndex, run := range resultsByRun {
+				for resultIndex, inputTR := range run {
+					tr := testresults.TestResult{
+						Project:                      inv.Project,
+						TestID:                       tv.TestId,
+						PartitionTime:                inv.PartitionTime,
+						VariantHash:                  tv.VariantHash,
+						IngestedInvocationID:         inv.IngestedInvocationID,
+						RunIndex:                     int64(runIndex),
+						ResultIndex:                  int64(resultIndex),
+						IsUnexpected:                 !inputTR.Result.Expected,
+						Status:                       resultdb.TestResultStatus(inputTR.Result.Status),
+						ExonerationStatus:            exonerationStatus,
+						SubRealm:                     inv.SubRealm,
+						BuildStatus:                  inv.BuildStatus,
+						HasContributedToClSubmission: inv.HasContributedToClSubmission,
+						Changelists:                  inv.Changelists,
 					}
-					batchC <- tvs[i:end]
+					if inputTR.Result.Duration != nil {
+						d := new(time.Duration)
+						*d = inputTR.Result.Duration.AsDuration()
+						tr.RunDuration = d
+					}
+					// Convert the test result into a mutation immediately
+					// to avoid storing both the TestResult object and
+					// mutation object in memory until the transaction
+					// commits.
+					ms = append(ms, tr.SaveUnverified())
+					trCount++
 				}
 			}
+		}
+	}
+	if len(ms) > 0 {
+		outputBatch()
+	}
+}
+
+// recordTestResults records test results from an test-verdict-ingestion task.
+func recordTestResults(ctx context.Context, inv *testresults.IngestedInvocation, inputC chan []*rdbpb.TestVariant) error {
+	const workerCount = 8
+
+	return parallel.WorkPool(workerCount, func(c chan<- func() error) {
+		batchC := make(chan []*spanner.Mutation)
+
+		c <- func() error {
+			defer close(batchC)
+			batchTestResults(inv, inputC, batchC)
 			return nil
 		}
 
@@ -158,46 +195,11 @@ func recordTestVerdicts(ctx context.Context, task *taskspb.IngestTestVerdicts, b
 
 			c <- func() error {
 				_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
-					return recordBatch(ctx, batch)
+					span.BufferWrite(ctx, batch...)
+					return nil
 				})
-				return err
+				return errors.Wrap(err, "insert test results and test variant realms")
 			}
 		}
 	})
-}
-
-func countResults(tv *rdbpb.TestVariant) (expected, unexpected, skipped int64) {
-	for _, trb := range tv.Results {
-		tr := trb.Result
-		if tr.Status == rdbpb.TestStatus_SKIP {
-			skipped++
-		}
-		if tr.Expected {
-			expected++
-		} else {
-			unexpected++
-		}
-	}
-	return
-}
-
-// calcPassedAvgDuration calculates the average duration of passed results.
-// Return nil if there's no passed results.
-func calcPassedAvgDuration(tv *rdbpb.TestVariant) *time.Duration {
-	count := 0
-	totalDuration := time.Duration(0)
-	for _, trb := range tv.Results {
-		tr := trb.Result
-		if tr.Status != rdbpb.TestStatus_PASS {
-			// Only calculate passed test results
-			continue
-		}
-		count++
-		totalDuration += tr.Duration.AsDuration()
-	}
-	if count == 0 {
-		return nil
-	}
-	avgDuration := totalDuration / time.Duration(count)
-	return &avgDuration
 }

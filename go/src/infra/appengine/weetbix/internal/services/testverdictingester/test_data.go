@@ -11,6 +11,7 @@ import (
 	"go.chromium.org/luci/resultdb/pbutil"
 	rdbpb "go.chromium.org/luci/resultdb/proto/v1"
 	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func mockedGetBuildRsp(inv string) *bbpb.Build {
@@ -34,6 +35,11 @@ func mockedGetBuildRsp(inv string) *bbpb.Build {
 					Change:   12345,
 					Patchset: 5,
 				},
+				{
+					Host:     "anothergerrit-review.googlesource.com",
+					Change:   77788,
+					Patchset: 19,
+				},
 			},
 		},
 	}
@@ -50,9 +56,11 @@ func mockedQueryTestVariantsRsp() *rdbpb.QueryTestVariantsResponse {
 				Results: []*rdbpb.TestResultBundle{
 					{
 						Result: &rdbpb.TestResult{
-							Status:   rdbpb.TestStatus_FAIL,
-							Expected: false,
-							Duration: durationpb.New(time.Second * 10),
+							Name:      "invocations/a/tests/test_id_1/results/run0-first",
+							StartTime: timestamppb.New(time.Date(2010, time.January, 1, 0, 0, 0, 0, time.UTC)),
+							Status:    rdbpb.TestStatus_FAIL,
+							Expected:  false,
+							Duration:  durationpb.New(time.Second * 10),
 						},
 					},
 				},
@@ -65,16 +73,20 @@ func mockedQueryTestVariantsRsp() *rdbpb.QueryTestVariantsResponse {
 				Results: []*rdbpb.TestResultBundle{
 					{
 						Result: &rdbpb.TestResult{
-							Status:   rdbpb.TestStatus_FAIL,
-							Expected: false,
-							Duration: durationpb.New(time.Second * 10),
+							Name:      "invocations/a/tests/test_id_1/results/run0-second",
+							StartTime: timestamppb.New(time.Date(2010, time.January, 1, 0, 0, 10, 0, time.UTC)),
+							Status:    rdbpb.TestStatus_FAIL,
+							Expected:  false,
+							Duration:  durationpb.New(time.Second * 10),
 						},
 					},
 					{
 						Result: &rdbpb.TestResult{
-							Status:   rdbpb.TestStatus_PASS,
-							Expected: true,
-							Duration: durationpb.New(time.Second),
+							Name:      "invocations/a/tests/test_id_1/results/run0-first",
+							StartTime: timestamppb.New(time.Date(2010, time.January, 1, 0, 0, 0, 0, time.UTC)),
+							Status:    rdbpb.TestStatus_PASS,
+							Expected:  true,
+							Duration:  durationpb.New(time.Second),
 						},
 					},
 				},
@@ -87,23 +99,29 @@ func mockedQueryTestVariantsRsp() *rdbpb.QueryTestVariantsResponse {
 				Results: []*rdbpb.TestResultBundle{
 					{
 						Result: &rdbpb.TestResult{
-							Status:   rdbpb.TestStatus_FAIL,
-							Expected: false,
-							Duration: durationpb.New(time.Second * 10),
+							Name:      "invocations/b/tests/test_id_2/results/run1-first",
+							StartTime: timestamppb.New(time.Date(2010, time.January, 1, 0, 0, 10, 0, time.UTC)),
+							Status:    rdbpb.TestStatus_FAIL,
+							Expected:  false,
+							Duration:  durationpb.New(time.Second * 10),
 						},
 					},
 					{
 						Result: &rdbpb.TestResult{
-							Status:   rdbpb.TestStatus_PASS,
-							Expected: true,
-							Duration: durationpb.New(time.Second),
+							Name:      "invocations/a/tests/test_id_2/results/run0-second",
+							StartTime: timestamppb.New(time.Date(2010, time.January, 1, 0, 0, 20, 0, time.UTC)),
+							Status:    rdbpb.TestStatus_PASS,
+							Expected:  true,
+							Duration:  durationpb.New(time.Second),
 						},
 					},
 					{
 						Result: &rdbpb.TestResult{
-							Status:   rdbpb.TestStatus_PASS,
-							Expected: true,
-							Duration: durationpb.New(time.Second * 3),
+							Name:      "invocations/a/tests/test_id_2/results/run0-first",
+							StartTime: timestamppb.New(time.Date(2010, time.January, 1, 0, 0, 0, 0, time.UTC)),
+							Status:    rdbpb.TestStatus_PASS,
+							Expected:  true,
+							Duration:  durationpb.New(time.Second * 3),
 						},
 					},
 				},
@@ -116,23 +134,29 @@ func mockedQueryTestVariantsRsp() *rdbpb.QueryTestVariantsResponse {
 				Results: []*rdbpb.TestResultBundle{
 					{
 						Result: &rdbpb.TestResult{
-							Status:   rdbpb.TestStatus_FAIL,
-							Expected: false,
-							Duration: durationpb.New(time.Second * 10),
+							Name:      "invocations/a/tests/test_id_2/results/run0-first",
+							StartTime: timestamppb.New(time.Date(2010, time.January, 1, 0, 0, 0, 0, time.UTC)),
+							Status:    rdbpb.TestStatus_FAIL,
+							Expected:  false,
+							Duration:  durationpb.New(time.Second * 10),
 						},
 					},
 					{
 						Result: &rdbpb.TestResult{
-							Status:   rdbpb.TestStatus_PASS,
-							Expected: true,
-							Duration: durationpb.New(time.Second),
+							Name:      "invocations/b/tests/test_id_2/results/run1-second",
+							StartTime: timestamppb.New(time.Date(2010, time.January, 1, 0, 0, 10, 0, time.UTC)),
+							Status:    rdbpb.TestStatus_PASS,
+							Expected:  true,
+							Duration:  durationpb.New(2 * time.Second),
 						},
 					},
 					{
 						Result: &rdbpb.TestResult{
-							Status:   rdbpb.TestStatus_PASS,
-							Expected: true,
-							Duration: durationpb.New(time.Second),
+							Name:      "invocations/b/tests/test_id_2/results/run1-first",
+							StartTime: timestamppb.New(time.Date(2010, time.January, 1, 0, 0, 0, 0, time.UTC)),
+							Status:    rdbpb.TestStatus_PASS,
+							Expected:  true,
+							Duration:  durationpb.New(time.Second),
 						},
 					},
 				},
