@@ -134,7 +134,8 @@ func TestPerformBootstrap(t *testing.T) {
 							"cipd_version": "fake-version",
 							"cmd": ["fake-exe"]
 						}
-					}
+					},
+					"foo": "build-value"
 				}
 			}
 		}`)
@@ -162,7 +163,7 @@ func TestPerformBootstrap(t *testing.T) {
 			project.Revisions["fake-revision"] = &fakegitiles.Revision{
 				Files: map[string]*string{
 					"fake-properties-file": strPtr(`{
-						"foo": "bar"
+						"foo": "builder-value"
 					}`),
 				},
 			}
@@ -206,7 +207,56 @@ func TestPerformBootstrap(t *testing.T) {
 								"cmd": ["fake-exe"]
 							}
 						},
-						"foo": "bar"
+						"foo": "builder-value"
+					}
+				}
+			}`)
+		})
+
+		Convey("succeeds for polymorphic with build properties prioritized over builder properties", func() {
+			project.Refs["fake-ref"] = "fake-revision"
+			project.Revisions["fake-revision"] = &fakegitiles.Revision{
+				Files: map[string]*string{
+					"fake-properties-file": strPtr(`{
+						"foo": "builder-value"
+					}`),
+				},
+			}
+			opts.polymorphic = true
+
+			_, exeInput, err := performBootstrap(ctx, input, opts)
+			So(err, ShouldBeNil)
+			build := &buildbucketpb.Build{}
+			proto.Unmarshal(exeInput, build)
+			So(build, ShouldResembleProtoJSON, `{
+				"input": {
+					"gitiles_commit": {
+						"host": "fake-host",
+						"project": "fake-project",
+						"ref": "fake-ref",
+						"id": "fake-revision"
+					},
+					"properties": {
+						"$build/chromium_bootstrap": {
+							"commits": [
+								{
+									"host": "fake-host",
+									"project": "fake-project",
+									"ref": "fake-ref",
+									"id": "fake-revision"
+								}
+							],
+							"exe": {
+								"cipd": {
+									"server": "https://chrome-infra-packages.appspot.com",
+									"package": "fake-package",
+									"requested_version": "fake-version",
+									"actual_version": "fake-instance-id"
+								},
+								"cmd": ["fake-exe"]
+							}
+						},
+						"foo": "build-value"
 					}
 				}
 			}`)

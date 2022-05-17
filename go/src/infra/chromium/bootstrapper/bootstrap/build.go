@@ -70,8 +70,14 @@ type BootstrapConfig struct {
 	// may modify the properties file.
 	change *gerritChange
 
+	// preferBuildProperties causes properties set in buildProperties to override the properties
+	// set in builderProperties instead of the other way around
+	preferBuildProperties bool
 	// buildProperties is the properties that were set on the build.
 	buildProperties *structpb.Struct
+	// buildRequestedProperties is the properties that were requested when the build was
+	// scheduled.
+	buildRequestedProperties *structpb.Struct
 	// builderProperties is the properties read from the builder's
 	// properties file.
 	builderProperties *structpb.Struct
@@ -117,7 +123,13 @@ func (b *BuildBootstrapper) GetBootstrapConfig(ctx context.Context, input *Input
 		}
 	}
 
+	// Polymorphic builders prefer build properties so that the properties bootstrapped for
+	// another builder can't override the properties necessary for correct operation of the
+	// polymorphic builder (e.g. recipe)
+	config.preferBuildProperties = input.polymorphic
+
 	config.buildProperties = input.buildProperties
+	config.buildRequestedProperties = input.buildRequestedProperties
 
 	return config, nil
 }
@@ -359,25 +371,40 @@ func convertGerritHostToGitilesHost(host string) string {
 	return strings.Join(pieces, ".")
 }
 
-// UpdateBuild gets the properties to use for the bootstrapped build.
+// UpdateBuild updates the build proto to use as input for the bootstrapped executable.
 //
-// The properties will be composed of multiple elements:
-//   * The properties read from the properties file identified by the
-//     config_project and properties_file fields of the build's
-//     $bootstrap/properties property.
-//   * The $build/chromium_bootstrap property will be set with information about
-//     the bootstrapping process that the bootstrapped executable can use to
-//     ensure it operates in a manner that is consistent with the bootstrapping
-//     process. See chromium_bootstrap.proto for more information.
-//   * The build's input properties with the $bootstrap/properties and
-//     $bootstrap/exe properties removed. Values specified in the build's
-//     properties override properties in the properties file.
+// The build's properties will be combined from multiple sources, with earlier source in the list
+// taking priority:
+//   * The properties requested at the time the build is scheduled.
+//   * The $build/chromium_bootstrap property will be set with information about the bootstrapping
+//     process that the bootstrapped executable can use to ensure it operates in a manner that is
+//     consistent with the bootstrapping process. See chromium_bootstrap.proto for more information.
+//   * The properties read from the properties file identified by the config_project and
+//     properties_file fields of the build's $bootstrap/properties property.
+//   * The build's input properties with the $bootstrap/properties and $bootstrap/exe properties
+//     removed.
+//
+// Additionally, if the build's input gitiles commit matches the project that the config was read
+// from, the commit will be updated to refer to the same revision that the config came from.
 func (c *BootstrapConfig) UpdateBuild(build *buildbucketpb.Build, bootstrappedExe *BootstrappedExe) error {
-	var properties *structpb.Struct
-	if c.builderProperties != nil {
-		properties = proto.Clone(c.builderProperties).(*structpb.Struct)
+	properties := &structpb.Struct{
+		Fields: map[string]*structpb.Value{},
+	}
+	updateProperties := func(updates *structpb.Struct) {
+		for key, value := range updates.GetFields() {
+			properties.Fields[key] = value
+		}
+	}
+
+	if c.preferBuildProperties {
+		updateProperties(c.builderProperties)
+		updateProperties(c.buildProperties)
+		// buildRequestedProperties is a subset of buildProperties, so there's no need to
+		// re-apply them
 	} else {
-		properties = &structpb.Struct{}
+		updateProperties(c.buildProperties)
+		updateProperties(c.builderProperties)
+		updateProperties(c.buildRequestedProperties)
 	}
 
 	commits := []*buildbucketpb.GitilesCommit{}
@@ -396,13 +423,6 @@ func (c *BootstrapConfig) UpdateBuild(build *buildbucketpb.Build, bootstrappedEx
 		"$build/chromium_bootstrap": modProperties,
 	}); err != nil {
 		return errors.Annotate(err, "failed to write out properties for chromium_bootstrap module: {%s}", modProperties).Err()
-	}
-
-	for key := range c.buildProperties.Fields {
-		delete(properties.Fields, key)
-	}
-	if err := exe.WriteProperties(properties, c.buildProperties.AsMap()); err != nil {
-		return errors.Annotate(err, "failed to write out properties from the build: {%s}", c.buildProperties).Err()
 	}
 
 	build.Input.Properties = properties

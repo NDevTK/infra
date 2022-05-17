@@ -40,12 +40,13 @@ type getOptionsFn func() options
 
 func parseFlags() options {
 	outputPath := flag.String("output", "", "Path to write the final build.proto state to.")
-	flag.Bool("polymorphic", false, "Whether the builder bootstraps properties for other builders instead of itself; polymorphic builders give precedence to build properties rather than the properties in the properties file")
+	polymorphic := flag.Bool("polymorphic", false, "Whether the builder bootstraps properties for other builders instead of itself; polymorphic builders give precedence to build properties rather than the properties in the properties file")
 	propertiesOptional := flag.Bool("properties-optional", false, "Whether missing $bootstrap/properties property should be allowed")
 	flag.Parse()
 	return options{
 		outputPath:         *outputPath,
 		cipdRoot:           "cipd",
+		polymorphic:        *polymorphic,
 		propertiesOptional: *propertiesOptional,
 	}
 }
@@ -67,6 +68,7 @@ func getBuild(ctx context.Context, input io.Reader) (*buildbucketpb.Build, error
 type options struct {
 	outputPath         string
 	cipdRoot           string
+	polymorphic        bool
 	propertiesOptional bool
 }
 
@@ -79,7 +81,10 @@ func performBootstrap(ctx context.Context, input io.Reader, opts options) ([]str
 	}
 
 	logging.Infof(ctx, "creating bootstrap input")
-	inputOpts := bootstrap.InputOptions{PropertiesOptional: opts.propertiesOptional}
+	inputOpts := bootstrap.InputOptions{
+		Polymorphic:        opts.polymorphic,
+		PropertiesOptional: opts.propertiesOptional,
+	}
 	bootstrapInput, err := inputOpts.NewInput(build)
 	if err != nil {
 		return nil, nil, err

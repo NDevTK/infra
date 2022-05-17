@@ -19,6 +19,12 @@ import (
 
 // InputOptions provides options that are inputs to the bootstrapping process.
 type InputOptions struct {
+	// Polymorphic changes the bootstrapper's behavior to support polymorphic builders: builders
+	// that bootstrap properties for other builders. Polymorphic builders will prefer the
+	// build's properties over the properties in the properties file with the expectation that
+	// any properties that the polymorphic builder is setting its definition are required for
+	// proper operation of the builder (e.g. recipe).
+	Polymorphic bool
 	// PropertiesOptional changes the bootstrapper's behavior to not fail if
 	// the $bootstrap/properties property is not set or if the identified
 	// file does not exist at the revision being bootstrapped.
@@ -29,13 +35,34 @@ type InputOptions struct {
 // that prepare a bootstrapped executable to run. It is safe to share a single
 // instance between multiple operations that take Input.
 type Input struct {
-	commits            []*buildbucketpb.GitilesCommit
-	changes            []*buildbucketpb.GerritChange
-	buildProperties    *structpb.Struct
+	// commits are the gitiles commits that the bootstrapper can examine when bootstrapping the
+	// properties. The considered commits will be the commit that is specified in the build's
+	// input if one is present and any commits specified by the $bootstrap/trigger property.
+	commits []*buildbucketpb.GitilesCommit
+	// changes are the gerrit changes that the bootstrapper can examine when bootstrapping the
+	// properties. The considered changes will be the changes in the build's input if any are
+	// present.
+	changes []*buildbucketpb.GerritChange
+	// buildProperties are the properties set in the build's input.
+	buildProperties *structpb.Struct
+	// buildRequestedProperties are the properties requested when the build was scheduled.
+	buildRequestedProperties *structpb.Struct
+	// polymorphic changes the behavior to support polymoprhic builders by prioritizing build
+	// properties over properties from the properties file
+	polymorphic bool
+	// propertiesOptional prevents a lack of $bootstrap/properties property or the properties
+	// file from being treated as an error.
 	propertiesOptional bool
-	propsProperties    *BootstrapPropertiesProperties
-	exeProperties      *BootstrapExeProperties
-	casRecipeBundle    *apipb.CASReference
+	// propsProperties is the value of the build's $bootstrap/properties property, if present.
+	// This controls where the properties for the builder are looked up.
+	propsProperties *BootstrapPropertiesProperties
+	// exeProperties is the value of the build's $bootstrap/exe property. This controls the
+	// executable that the bootstrapper will launch.
+	exeProperties *BootstrapExeProperties
+	// casRecipeBundle is the value of the build's led_cas_recipe_bundle property, if present.
+	// This will be set when using "led edit-recipe-bundle" and will override the bundle to use
+	// for the executable.
+	casRecipeBundle *apipb.CASReference
 }
 
 // NewInput creates a new Input, returning an error if build input fails
@@ -54,6 +81,8 @@ func (o InputOptions) NewInput(build *buildbucketpb.Build) (*Input, error) {
 	if properties == nil {
 		properties = &structpb.Struct{}
 	}
+
+	requestedProperties := build.GetInfra().GetBuildbucket().GetRequestedProperties()
 
 	// Check for the presence of required properties
 	exeProperties := &BootstrapExeProperties{}
@@ -122,16 +151,19 @@ func (o InputOptions) NewInput(build *buildbucketpb.Build) (*Input, error) {
 	properties = proto.Clone(properties).(*structpb.Struct)
 	for k := range propsToParse {
 		delete(properties.Fields, k)
+		delete(requestedProperties.GetFields(), k)
 	}
 
 	input := &Input{
-		commits:            commits,
-		changes:            changes,
-		buildProperties:    properties,
-		propertiesOptional: o.PropertiesOptional,
-		propsProperties:    propsProperties,
-		exeProperties:      exeProperties,
-		casRecipeBundle:    casRecipeBundle,
+		commits:                  commits,
+		changes:                  changes,
+		buildProperties:          properties,
+		buildRequestedProperties: requestedProperties,
+		polymorphic:              o.Polymorphic,
+		propertiesOptional:       o.PropertiesOptional,
+		propsProperties:          propsProperties,
+		exeProperties:            exeProperties,
+		casRecipeBundle:          casRecipeBundle,
 	}
 	return input, nil
 }

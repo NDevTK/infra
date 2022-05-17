@@ -237,6 +237,13 @@ func TestGetBootstrapConfig(t *testing.T) {
 					"properties_file": "infra/config/fake-bucket/fake-builder/properties.textpb"
 				}`)
 				build.Input.Properties.Fields["test_property"] = structpb.NewStringValue("foo")
+				build.Infra = &buildbucketpb.BuildInfra{
+					Buildbucket: &buildbucketpb.BuildInfra_Buildbucket{
+						RequestedProperties: jsonToStruct(`{
+							"test_property": "foo"
+						}`),
+					},
+				}
 				input := getInput(build)
 
 				config, err := bootstrapper.GetBootstrapConfig(ctx, input)
@@ -245,6 +252,51 @@ func TestGetBootstrapConfig(t *testing.T) {
 				So(config.buildProperties, ShouldResembleProtoJSON, `{
 					"test_property": "foo"
 				}`)
+				So(config.buildRequestedProperties, ShouldResembleProtoJSON, `{
+					"test_property": "foo"
+				}`)
+				So(config.preferBuildProperties, ShouldBeFalse)
+			})
+
+			Convey("for polymorphic bootstrapping", func() {
+				topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
+				topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
+					Files: map[string]*string{
+						"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{}`),
+					},
+				}
+				setBootstrapPropertiesProperties(build, `{
+					"top_level_project": {
+						"repo": {
+							"host": "chromium.googlesource.com",
+							"project": "top/level"
+						},
+						"ref": "refs/heads/top-level"
+					},
+					"properties_file": "infra/config/fake-bucket/fake-builder/properties.textpb"
+				}`)
+				inputOpts := InputOptions{Polymorphic: true}
+				input, err := inputOpts.NewInput(build)
+				util.PanicOnError(err)
+
+				config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+				So(err, ShouldBeNil)
+				So(config.preferBuildProperties, ShouldBeTrue)
+			})
+
+			Convey("for properties-optional bootstrapping", func() {
+				inputOpts := InputOptions{PropertiesOptional: true}
+				delete(build.Input.Properties.Fields, "$bootstrap/properties")
+				input, err := inputOpts.NewInput(build)
+				util.PanicOnError(err)
+
+				config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+				So(err, ShouldBeNil)
+				So(config.commit, ShouldBeNil)
+				So(config.change, ShouldBeNil)
+				So(config.builderProperties, ShouldBeNil)
 			})
 
 			Convey("for top-level project", func() {
@@ -936,19 +988,6 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 			})
 
-			Convey("for properties-optional bootstrapping", func() {
-				inputOpts := InputOptions{PropertiesOptional: true}
-				delete(build.Input.Properties.Fields, "$bootstrap/properties")
-				input, err := inputOpts.NewInput(build)
-				util.PanicOnError(err)
-
-				config, err := bootstrapper.GetBootstrapConfig(ctx, input)
-
-				So(err, ShouldBeNil)
-				So(config.commit, ShouldBeNil)
-				So(config.change, ShouldBeNil)
-				So(config.builderProperties, ShouldBeNil)
-			})
 		})
 
 	})
@@ -968,12 +1007,17 @@ func TestUpdateBuild(t *testing.T) {
 					Id:      "fake-revision",
 				}},
 				buildProperties: jsonToStruct(`{
-					"foo": "build-foo-value",
-					"bar": "build-bar-value"
+					"foo": "build-requested-foo-value",
+					"bar": "build-bar-value",
+					"baz": "build-baz-value"
+				}`),
+				buildRequestedProperties: jsonToStruct(`{
+					"foo": "build-requested-foo-value"
 				}`),
 				builderProperties: jsonToStruct(`{
 					"foo": "builder-foo-value",
-					"baz": "builder-baz-value"
+					"bar": "builder-bar-value",
+					"shaz": "builder-shaz-value"
 				}`),
 				skipAnalysisReasons: []string{
 					"skip-analysis-reason1",
@@ -1009,53 +1053,110 @@ func TestUpdateBuild(t *testing.T) {
 				},
 			}
 
-			err := config.UpdateBuild(build, exe)
+			Convey("preferring builder properties by default", func() {
+				err := config.UpdateBuild(build, exe)
 
-			So(err, ShouldBeNil)
-			So(build, ShouldResembleProtoJSON, `{
-				"input": {
-					"gitiles_commit": {
-						"host": "fake-host",
-						"project": "fake-project",
-						"ref": "fake-ref",
-						"id": "fake-revision"
-					},
-					"properties": {
-						"$build/chromium_bootstrap": {
-							"commits": [
-								{
-									"host": "fake-host",
-									"project": "fake-project",
-									"ref": "fake-ref",
-									"id": "fake-revision"
-								},
-								{
-									"host": "fake-host2",
-									"project": "fake-project2",
-									"ref": "fake-ref2",
-									"id": "fake-revision2"
-								}
-							],
-							"exe": {
-								"cipd": {
-									"server": "fake-cipd-server",
-									"package": "fake-cipd-package",
-									"requested_version": "fake-cipd-ref",
-									"actual_version": "fake-cipd-instance-id"
-								},
-								"cmd": ["fake-exe"]
-							},
-							"skip_analysis_reasons": [
-								"skip-analysis-reason1",
-								"skip-analysis-reason2"
-							]
+				So(err, ShouldBeNil)
+				So(build, ShouldResembleProtoJSON, `{
+					"input": {
+						"gitiles_commit": {
+							"host": "fake-host",
+							"project": "fake-project",
+							"ref": "fake-ref",
+							"id": "fake-revision"
 						},
-						"foo": "build-foo-value",
-						"bar": "build-bar-value",
-						"baz": "builder-baz-value"
+						"properties": {
+							"$build/chromium_bootstrap": {
+								"commits": [
+									{
+										"host": "fake-host",
+										"project": "fake-project",
+										"ref": "fake-ref",
+										"id": "fake-revision"
+									},
+									{
+										"host": "fake-host2",
+										"project": "fake-project2",
+										"ref": "fake-ref2",
+										"id": "fake-revision2"
+									}
+								],
+								"exe": {
+									"cipd": {
+										"server": "fake-cipd-server",
+										"package": "fake-cipd-package",
+										"requested_version": "fake-cipd-ref",
+										"actual_version": "fake-cipd-instance-id"
+									},
+									"cmd": ["fake-exe"]
+								},
+								"skip_analysis_reasons": [
+									"skip-analysis-reason1",
+									"skip-analysis-reason2"
+								]
+							},
+							"foo": "build-requested-foo-value",
+							"bar": "builder-bar-value",
+							"baz": "build-baz-value",
+							"shaz": "builder-shaz-value"
+						}
 					}
-				}
-			}`)
+				}`)
+			})
+
+			Convey("when preferring build properties", func() {
+				config.preferBuildProperties = true
+
+				err := config.UpdateBuild(build, exe)
+
+				So(err, ShouldBeNil)
+				So(build, ShouldResembleProtoJSON, `{
+					"input": {
+						"gitiles_commit": {
+							"host": "fake-host",
+							"project": "fake-project",
+							"ref": "fake-ref",
+							"id": "fake-revision"
+						},
+						"properties": {
+							"$build/chromium_bootstrap": {
+								"commits": [
+									{
+										"host": "fake-host",
+										"project": "fake-project",
+										"ref": "fake-ref",
+										"id": "fake-revision"
+									},
+									{
+										"host": "fake-host2",
+										"project": "fake-project2",
+										"ref": "fake-ref2",
+										"id": "fake-revision2"
+									}
+								],
+								"exe": {
+									"cipd": {
+										"server": "fake-cipd-server",
+										"package": "fake-cipd-package",
+										"requested_version": "fake-cipd-ref",
+										"actual_version": "fake-cipd-instance-id"
+									},
+									"cmd": ["fake-exe"]
+								},
+								"skip_analysis_reasons": [
+									"skip-analysis-reason1",
+									"skip-analysis-reason2"
+								]
+							},
+							"foo": "build-requested-foo-value",
+							"bar": "build-bar-value",
+							"baz": "build-baz-value",
+							"shaz": "builder-shaz-value"
+						}
+					}
+				}`)
+			})
+
 		})
 
 		Convey("updates build with $build/chromium_bootstrap module properties and build properties for properties optional bootstrapping", func() {
