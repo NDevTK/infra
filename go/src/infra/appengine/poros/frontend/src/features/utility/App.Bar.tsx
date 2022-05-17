@@ -108,7 +108,9 @@ export default function SideDrawerWithAppBar() {
   const menuId = 'primary-search-account-menu';
   const dispatch = useAppDispatch();
   dispatch(fetchUserPictureAsync());
-  const userPicture: string = useAppSelector((state) => state.utility.userPicture);
+  const userPicture: string = useAppSelector(
+    (state) => state.utility.userPicture
+  );
 
   const routes = [
     {

@@ -43,7 +43,7 @@ export const utilitySlice = createSlice({
       state.userPicture = action.payload;
     });
     builder.addCase(logoutAsync.fulfilled, () => {
-      window.location.href = 'www.google.com';
+      window.location.href = window.logoutUrl;
     });
   },
 });
