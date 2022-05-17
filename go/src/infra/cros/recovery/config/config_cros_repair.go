@@ -17,7 +17,7 @@ func crosRepairPlan() *Plan {
 			"Check if last provision was good",
 			"Verify system info",
 			"Python is present",
-			"device_enrollment",
+			"Verify that device is not enrolled",
 			"power_info",
 			"tpm_info",
 			"cros_gsctool",
@@ -158,9 +158,9 @@ func crosRepairActions() map[string]*Action {
 		"Python is present": {
 			Docs: []string{
 				"Verify that device has python on it.",
-				"The Reven boards does not have python. TBD",
 			},
 			Conditions: []string{
+				// TODO(b/232854289): remove when closed the bug.
 				"Is not Flex device",
 			},
 			Dependencies: []string{
@@ -188,22 +188,26 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
 		},
-		"device_enrollment": {
+		"Verify that device is not enrolled": {
+			Docs: []string{
+				"Verify that the device's enrollment state is clean.",
+			},
 			Dependencies: []string{
 				"Internal storage is responsive",
 			},
-			RecoveryActions: []string{
-				"tpm_enrollment_cleanup_and_reboot",
-			},
 			ExecName: "cros_is_enrollment_in_clean_state",
+			RecoveryActions: []string{
+				"Cleanup the enrollment state and wait for boot",
+			},
 		},
-		"tpm_enrollment_cleanup_and_reboot": {
+		"Cleanup the enrollment state and wait for boot": {
 			Docs: []string{
 				"Cleanup the enrollment state.",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
 			},
+			ExecName: "cros_enrollment_cleanup",
 			ExecExtraArgs: []string{
 				"repair_timeout:120",
 				"clear_tpm_owner_timeout:60",
@@ -212,7 +216,6 @@ func crosRepairActions() map[string]*Action {
 				"tpm_timeout:150",
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 600},
-			ExecName:    "cros_enrollment_cleanup",
 		},
 		"power_info": {
 			Docs: []string{"Check for the AC power, and battery charging capability."},
