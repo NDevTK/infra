@@ -170,6 +170,9 @@ func compilerProxyLogFetch(ctx context.Context, logPath string) (*compilerproxyl
 		return nil, err
 	}
 	cpl, err := compilerproxylog.Parse(logPath, rd)
+	if err != nil {
+		return nil, err
+	}
 	return cpl, nil
 }
 
