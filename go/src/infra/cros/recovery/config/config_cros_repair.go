@@ -148,6 +148,8 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Default boot set as internal storage",
 				"Verify that DUT is not in DEV mode",
+				"Missing HWID",
+				"Missing serial-number",
 				"Match HWID",
 				"Match serial-number",
 				"Verify tmp_fwver is updated correctly",
@@ -672,22 +674,47 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 			},
 		},
+		"Missing HWID": {
+			Docs: []string{
+				"Verify if device missing HWID because deployment was missed.",
+			},
+			Conditions: []string{
+				"Is not Flex device",
+				"Not Satlab device",
+				"Read OS version",
+				"Is HWID empty",
+			},
+			Dependencies: []string{
+				"Set state: needs_deploy",
+			},
+			ExecName: "sample_fail",
+		},
 		"Match HWID": {
 			Docs: []string{
 				"Match HWID to value in inventory",
 			},
 			Conditions: []string{
 				"Is not Flex device",
-				"Not Satlab device",
+				"Read OS version",
 				"Is HWID known",
 			},
-			Dependencies: []string{
-				"Internal storage is responsive",
+			ExecName:               "cros_match_hwid_to_inventory",
+			AllowFailAfterRecovery: true,
+		},
+		"Missing serial-number": {
+			Docs: []string{
+				"Verify if device missing serial number because deployment was missed.",
 			},
-			ExecName: "cros_match_hwid_to_inventory",
-			RecoveryActions: []string{
+			Conditions: []string{
+				"Is not Flex device",
+				"Not Satlab device",
+				"Read OS version",
+				"Is serial-number empty",
+			},
+			Dependencies: []string{
 				"Set state: needs_deploy",
 			},
+			ExecName: "sample_fail",
 		},
 		"Match serial-number": {
 			Docs: []string{
@@ -695,16 +722,11 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is not Flex device",
-				"Not Satlab device",
+				"Read OS version",
 				"Is serial-number known",
 			},
-			Dependencies: []string{
-				"Internal storage is responsive",
-			},
-			ExecName: "cros_match_serial_number_inventory",
-			RecoveryActions: []string{
-				"Set state: needs_deploy",
-			},
+			ExecName:               "cros_match_serial_number_inventory",
+			AllowFailAfterRecovery: true,
 		},
 		"Is HWID known": {
 			Docs: []string{
@@ -712,12 +734,31 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "dut_has_hwid",
 		},
+		"Is HWID empty": {
+			Docs: []string{
+				"Check whether the DUT information includes its HWID.",
+			},
+			Conditions: []string{
+				"Is HWID known",
+			},
+			ExecName: "sample_fail",
+		},
 		"Is serial-number known": {
 			Docs: []string{
 				"Check whether the DUT information includes its ",
 				"serial number.",
 			},
 			ExecName: "dut_has_serial_number",
+		},
+		"Is serial-number empty": {
+			Docs: []string{
+				"Check whether the DUT information includes its ",
+				"serial number.",
+			},
+			Conditions: []string{
+				"Is serial-number known",
+			},
+			ExecName: "sample_fail",
 		},
 		"Not Satlab device": {
 			Docs: []string{
