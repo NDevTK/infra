@@ -137,6 +137,7 @@ func (e *Eval) EvaluateSafety(ctx context.Context, strategy Strategy) (*evalpb.R
 			// Invoke the strategy.
 			in := Input{TestVariants: rej.FailedTestVariants}
 			in.ensureChangedFilesInclude(rej.Patchsets...)
+			in.Timestamp = rej.Timestamp.AsTime()
 			out := &Output{TestVariantAffectedness: make([]rts.Affectedness, len(in.TestVariants))}
 			if err := strategy(ctx, in, out); err != nil {
 				return errors.Annotate(err, "the selection strategy failed").Err()
@@ -259,6 +260,7 @@ func (e *Eval) evaluateEfficiency(ctx context.Context, strategy Strategy, res *e
 			}
 			in.ChangedFiles = in.ChangedFiles[:0]
 			in.ensureChangedFilesInclude(rec.Patchsets...)
+			in.Timestamp = rec.Timestamp.AsTime()
 
 			out.TestVariantAffectedness = make([]rts.Affectedness, len(in.TestVariants))
 			if err := strategy(ctx, in, out); err != nil {

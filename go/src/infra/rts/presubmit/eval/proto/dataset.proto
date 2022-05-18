@@ -37,6 +37,9 @@ message TestDurationRecord {
   repeated GerritPatchset patchsets = 1;
   // A sample of test durations from results of the patchsets.
   repeated TestDuration test_durations = 2;
+
+  // When the code change was rejected.
+  google.protobuf.Timestamp timestamp = 3;
 }
 
 // How long a test took.

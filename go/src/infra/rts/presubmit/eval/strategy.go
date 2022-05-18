@@ -6,6 +6,7 @@ package eval
 
 import (
 	"context"
+	"time"
 
 	"infra/rts"
 
@@ -23,6 +24,9 @@ type Input struct {
 	// The strategy needs to decide how much each of these test variants is
 	// affected by the changed files.
 	TestVariants []*evalpb.TestVariant
+
+	// The time the rejection occurred
+	Timestamp time.Time
 }
 
 // ensureChangedFilesInclude ensures that in.ChangedFiles includes all changed

@@ -220,6 +220,7 @@ const testDurationsSQL = commonSubqueries + `
 SELECT
 	patchsetArray(change, patchset, ANY_VALUE(af.files)) AS patchsets,
 	ARRAY_AGG(STRUCT(testVariant, FORMAT("%fs", duration) as duration)) AS testDurations,
+	RFC3339(MIN(ps_approx_timestamp)) as timestamp,
 FROM tryjobs t
 JOIN test_results tr ON t.id = tr.build_id
 JOIN affected_files af USING (change, patchset)
