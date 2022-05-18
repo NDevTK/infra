@@ -254,9 +254,21 @@ func shutdownTsMon(ctx context.Context) {
 	tsmon.Shutdown(ctx)
 }
 
-// recordMetric is a tsmon metric for the parsed log.
-var recordMetric = metric.NewCounter("chromeos/caching_backend/nginx/response_bytes_sent",
-	"response of caching backend",
+// respBytesSent is a tsmon metric for the response bytes sent to clients.
+var respBytesSent = metric.NewCounter("chromeos/caching_backend/nginx/response_bytes_sent",
+	"response bytes sent to clients from a caching backend",
+	nil,
+	field.String("hostname"),
+	field.String("http_method"),
+	field.String("rpc"),
+	field.Int("status"),
+	field.String("cache"),
+	field.Bool("full_download"),
+)
+
+// respBytesPerSecond is a tsmon metric for the response bandwidth.
+var respBytesPerSecond = metric.NewInt("chromes/caching_backend/nginx/response_bytes_per_second",
+	"response bandwidth (Byte/second) to clients from a caching backend",
 	nil,
 	field.String("hostname"),
 	field.String("http_method"),
@@ -276,5 +288,8 @@ func reportToTsMon(i *record) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	recordMetric.Add(ctx, int64(i.bodyBytesSent), i.hostname, i.httpMethod, rpc, i.status, i.cacheStatus, i.expectedSize == i.bodyBytesSent)
+	respBytesSent.Add(ctx, int64(i.bodyBytesSent), i.hostname, i.httpMethod, rpc, i.status, i.cacheStatus, i.expectedSize == i.bodyBytesSent)
+	if i.requestTime > 0.0 {
+		respBytesPerSecond.Set(ctx, int64(float64(i.bodyBytesSent)/i.requestTime), i.hostname, i.httpMethod, rpc, i.status, i.cacheStatus, i.expectedSize == i.bodyBytesSent)
+	}
 }
