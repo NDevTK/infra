@@ -122,7 +122,7 @@ var UpdateDUTCmd = &subcommands.Command{
 		c.commonFlags.Register(&c.Flags)
 
 		c.Flags.StringVar(&c.newSpecsFile, "f", "", cmdhelp.DUTUpdateFileText)
-		c.Flags.BoolVar(&c.paris, "paris", false, "Use PARIS rather than legacy flow (dogfood).")
+		c.Flags.BoolVar(&c.paris, "paris", true, "Use PARIS rather than legacy flow.")
 
 		c.Flags.StringVar(&c.hostname, "name", "", "hostname of the DUT.")
 		c.Flags.StringVar(&c.machine, "asset", "", "asset tag of the DUT.")
