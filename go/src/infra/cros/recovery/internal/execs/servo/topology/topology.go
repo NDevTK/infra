@@ -246,8 +246,16 @@ func USBDrives(ctx context.Context, runner execs.Runner, servoSerial string) ([]
 			log.Debugf(ctx, "Fail to read USB device manufacturer name: %q", err)
 			continue
 		}
-		if !strings.Contains(strings.ToLower(manufacturer), "usb") {
-			log.Debugf(ctx, "The device found is not usb drive: %q", manufacturer)
+		product, err := readServoFs(ctx, runner, devicePath, productFileName)
+		if err != nil {
+			log.Debugf(ctx, "Fail to read USB device product name: %q", err)
+		}
+		// To detect usb is complicated so we check if any of them will mention it.
+		// TODO: Find better logic to distinguish USB drive from other components.
+		if strings.Contains(strings.ToLower(manufacturer), "usb") || strings.Contains(strings.ToLower(product), "usb") {
+			log.Debugf(ctx, "The device found is usb drive!")
+		} else {
+			log.Debugf(ctx, "The device found is usb drive!")
 			continue
 		}
 		serial, err := readServoFs(ctx, runner, devicePath, serialNumberFileName)
@@ -258,13 +266,9 @@ func USBDrives(ctx context.Context, runner execs.Runner, servoSerial string) ([]
 			log.Debugf(ctx, "Serial for device %q is empty.", devicePath)
 			continue
 		}
-		sysfsProduct, err := readServoFs(ctx, runner, devicePath, productFileName)
-		if err != nil {
-			log.Debugf(ctx, "Fail to read USB device product name: %q", err)
-		}
 		drives = append(drives, &labApi.UsbDrive{
 			Serial:       serial,
-			Manufacturer: sysfsProduct,
+			Manufacturer: manufacturer,
 		})
 	}
 	return drives, nil

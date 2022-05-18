@@ -251,6 +251,7 @@ func createServoHost(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.ServoHost 
 		SmartUsbhubPresent: p.GetSmartUsbhub(),
 		ServoTopology:      convertServoTopologyFromUFS(p.GetServo().GetServoTopology()),
 		ContainerName:      p.GetServo().GetDockerContainerName(),
+		UsbDrive:           p.GetServo().GetUsbDrive(),
 	}
 }
 
@@ -334,6 +335,7 @@ func getUFSLabDataFromSpecs(dutID string, dut *tlw.Dut) *ufsAPI.UpdateDeviceReco
 		labData.ServoType = sh.ServodType
 		labData.SmartUsbhub = sh.SmartUsbhubPresent
 		labData.ServoTopology = convertServoTopologyToUFS(sh.ServoTopology)
+		labData.ServoUsbDrive = sh.GetUsbDrive()
 	}
 	for _, router := range dut.WifiRouterHosts {
 		labData.WifiRouters = append(labData.WifiRouters, &ufsAPI.UpdateDeviceRecoveryDataRequest_WifiRouter{
