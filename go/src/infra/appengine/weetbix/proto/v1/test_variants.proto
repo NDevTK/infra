@@ -1,0 +1,227 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package weetbix.v1;
+
+option go_package = "infra/appengine/weetbix/proto/v1;weetbixpb";
+
+import "google/protobuf/timestamp.proto";
+import "infra/appengine/weetbix/proto/v1/common.proto";
+import "infra/appengine/weetbix/proto/v1/changelist.proto";
+
+// Provides methods to obtain statistics about test variants.
+service TestVariants {
+    // Queries the failure rate of specified test variants, returning
+    // signals indicating if the test variant is flaky and/or
+    // deterministically failing. Intended for use by recipes to
+    // inform exoneration decisions.
+    //
+    // TODO(crbug.com/1314194): This is an experimental RPC implemented for
+    // Chrome CQ exoneration and is subject to change or removal.
+    //
+    // Changes to this RPC should comply with https://google.aip.dev/231.
+    rpc QueryFailureRate(QueryTestVariantFailureRateRequest)
+        returns (QueryTestVariantFailureRateResponse) {};
+}
+
+message QueryTestVariantFailureRateRequest {
+    // The LUCI Project for which test variants should be looked up.
+    string project = 1;
+
+    // The list of test variants to retrieve results for.
+    // At most 100 test variants may be specified in one request.
+    repeated TestVariantIdentifier test_variants = 2;
+}
+
+// The identity of a test variant.
+message TestVariantIdentifier {
+    // A unique identifier of the test in a LUCI project.
+    string test_id = 1;
+
+    // Description of one specific way of running the test,
+    // e.g. a specific bucket, builder and a test suite.
+    Variant variant = 2;
+}
+
+message QueryTestVariantFailureRateResponse {
+    // The test variant failure rate analysis requested.
+    // Test variants are returned in the order they were requested.
+    repeated TestVariantFailureRateAnalysis test_variants = 1;
+}
+
+// Signals relevant to determining whether a test variant should be
+// exonerated in presubmit.
+message TestVariantFailureRateAnalysis {
+    // A unique identifier of the test in a LUCI project.
+    string test_id = 1;
+
+    // Description of one specific way of running the test,
+    // e.g. a specific bucket, builder and a test suite.
+    Variant variant = 2;
+
+    // A signal relevant to detecting deterministically or
+    // very flaky tests, measured over the last 10 verdicts (or 24 hours
+    // of weekday data, whichever is less).
+    //
+    // See FailingRunRatio for more details about signal design, usage
+    // and limitations.
+    //
+    // Example exoneration criteria:
+    //  Exonerate if value >= 5 (i.e. at least 5 verdicts had
+    //    the first test run fail).
+    //  Do not exonerate if (denominator - value) >= 6. (I.E. at least 6
+    //    verdicts had the first test run pass).
+    //  Otherwise, if denominator < 10 verdicts, determine if you prefer to
+    //    reject the CL by default (fail-closed) or exonerate by default
+    //    (fail-open).
+    //
+    // The example criteria limits false exoneration occurrences to an average
+    // of 1 CL per year, assuming:
+    // - a bad CL (CL that actually breaks a given test) rate of 0.1%,
+    // - 1,000 CLs tested per day,
+    // - 1,000,000 tests run per CL
+    // It results in ~5 CLs incorrectly not exonerated per deterministic test
+    // breakage (plus more depending on ingestion latency), absent other
+    // exoneration strategies.
+    FailingRunRatio failing_run_ratio = 3;
+
+    // The failing runs included in the numerator of failing_run_ratio
+    // (if any). Entries are returned in descending partition_time order.
+    repeated VerdictExample failing_run_examples = 4;
+
+    // A signal relevant to detecting the low to moderately
+    // flaky tests, over a period including the last 24 hours worth of
+    // weekday data (in UTC), or last 1000 verdicts, whichever is less.
+    //
+    // Definition of "the last 24 hours worth of weekday data":
+    // If it is currently a weekend (in UTC), the returned data will cover all
+    // of the weekend to-date and all of Friday (in UTC).
+    // If it is currently Monday (in UTC), the returned data will cover all
+    // of the weekend, and the hours since the current time on Friday.
+    // Otherwise, if it is a Tuesday to Friday (in UTC), the returned data
+    // will cover the last 24 hours.
+    //
+    // See FlakyVerdictRatio for more details about signal design, usage
+    // and limitations.
+    FlakyVerdictRatio flaky_verdict_ratio = 5;
+
+    // The flaky verdicts included in the numerator of flaky_verdict_ratio.
+    // If there are more than 10, only the 10 most recent examples are
+    // returned. Entries are returned in descending partition_time order.
+    repeated VerdictExample flaky_verdict_examples = 6;
+}
+
+// FlakyVerdictRatio counts the number of verdicts with both a failing
+// AND a passing run, in proportion to the number of verdicts with passing
+// runs.
+//
+// It is a signal for the detection of test variants
+// whose test runs are failing in a less-flaky way, e.g. those with a
+// run-level failure rate of between 0 and ~90%.
+//
+// A run captures all test results in one lowest-level ResultDB invocation,
+// e.g. a single swarming task.
+// For the purposes of this signal, a run with one or more EXPECTED test
+// results is considered a pass, and a run with only UNEXPECTED test results
+// is considered a fail.
+//
+// This signal is only suitable for detecting tests with low to
+// moderate failure rates, as it only uses runs both with passes and
+// failures to identify flakiness.
+// This is to exclude the effect of bad CLs (CLs which break the test
+// by making it deterministically fail with an UNEXPECTED result).
+//
+// If runs with passes are not occurring (e.g. because the test
+// is broken and deterministically failing), there will be no signal.
+// There will also be no signal if builders are not configured to
+// retry failed test runs at least occasionally, so as to obtain
+// some passes upon retry for test runs that failed initially.
+// The absence of signal can be identified by the fact the denominator is
+// zero.
+message FlakyVerdictRatio {
+    // The number of verdicts in which the first test run
+    // FAILED, and second test run PASSED. (See FlakyVerdictRatio
+    // for meaning of a failed and passed test run.)
+    //
+    // This signal is designed not to be affected by bad CLs
+    // (i.e. CLs which break the test such that is starts failing
+    // deterministically) and as such, the criteria for detecting
+    // flaky tests using this method can be made more sensitive than
+    // for FailingRunRatio.
+    int64 numerator = 1;
+
+    // The number of verdicts in in which the first or second
+    // test run PASSED.
+    //
+    // Dividing numerator by denominator will yield an estimate of
+    // the likelihood a flake occurs in a run that is demonstrated
+    // to be not affected by bad CL (CL that always causes test
+    // runs to fail). This will be an understimate of the true
+    // flakiness rate of the test.
+    int64 denominator = 2;
+}
+
+// FailingRunRatio counts the number of verdicts in which the first test run
+// failed, in proportion to the total number of verdicts.
+//
+// It is a signal for the detection of test variants
+// whose test runs are failing in a highly-flaky way, e.g. from
+// ~80% up to 100% flaky (i.e. deterministically failing).
+//
+// A run captures all test results in one lowest-level ResultDB invocation,
+// e.g. a single swarming task.
+// For the purposes of this signal, a run with one or more EXPECTED test
+// results is considered a pass, and a run with only UNEXPECTED test results
+// is considered a fail.
+//
+// This signal is most appropriate for the detection of tests which are
+// failing at higher rates, with a focus on deterministically and
+// almost-deterministically failing tests.
+//
+// It is not suitable for detection of tests with lower levels of flakiness as
+// the signal is affected by bad CLs (CLs which break the test),
+// which means setting low thresholds could lead to falsely exonerating
+// test failures caused by bad CLs and thereby falsely accepting those CLs.
+// If no recent test verdicts are recorded for the requested test,
+// there will be no signal. This can be identified by the fact the
+// denominator is zero.
+message FailingRunRatio {
+    // The number of verdicts in which the first run of the test failed.
+    //
+    // This signal is produced by both:
+    // - test flakiness (including deterministic failures) on Good CLs
+    //   (i.e. the signal we wish to measure), and
+    // - bad CLs breaking the test (i.e. a confounding factor).
+    //
+    // As this signal is designed to detect highly-flaky and
+    // deterministically failing tests, we cannot rely on only using runs
+    // with passes to measure flakiness (like FlakyVerdictRatio can).
+    // As such, the detection criteria for this signal should be more
+    // onerous than for FlakyVerdictRatio to avoid falsely exonerating test
+    // failures only caused by some bad CLs.
+    int64 numerator = 3;
+
+    // The total number of verdicts over the period that the signal was measured.
+    // Dividing numerator by denominator will yield an estimate of the
+    // likelihood ((the CL is bad) OR (the CL is good and the test failed in an
+    //             independent test run)).
+    // This will be an overestimate of the true flakiness rate of the test.
+    int64 denominator = 4;
+}
+
+// VerdictExample describes a verdict is part of a signal.
+message VerdictExample {
+    // The partition time of the verdict. This the time associated with the
+    // test result for test history purposes, usually the build or presubmit
+    // run start time.
+    google.protobuf.Timestamp partition_time = 1;
+
+    // The identity of the ingested invocation.
+    string ingested_invocation_id = 2;
+
+    // The changelist(s) tested, if any.
+    repeated Changelist changelist = 3;
+}
