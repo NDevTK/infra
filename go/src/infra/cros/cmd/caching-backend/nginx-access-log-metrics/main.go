@@ -267,7 +267,7 @@ var respBytesSent = metric.NewCounter("chromeos/caching_backend/nginx/response_b
 )
 
 // respBytesPerSecond is a tsmon metric for the response bandwidth.
-var respBytesPerSecond = metric.NewInt("chromes/caching_backend/nginx/response_bytes_per_second",
+var respBytesPerSecond = metric.NewInt("chromeos/caching_backend/nginx/response_bytes_per_second",
 	"response bandwidth (Byte/second) to clients from a caching backend",
 	nil,
 	field.String("hostname"),
