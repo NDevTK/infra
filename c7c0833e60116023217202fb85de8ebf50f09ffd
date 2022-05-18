@@ -16,6 +16,23 @@
       "message": "will keep it for now as not sure that we need to merge it as that action is too slow.",
       "revId": "c7c0833e60116023217202fb85de8ebf50f09ffd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a32af94b_d5b3c968",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-05-18T17:08:23Z",
+      "side": 1,
+      "message": "Still +1.",
+      "revId": "c7c0833e60116023217202fb85de8ebf50f09ffd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
