@@ -41,7 +41,7 @@ type record struct {
 
 var (
 	svcAcctJSONPath     = flag.String("service-account-json", "", "Path to JSON file with service account credentials to use")
-	projectID           = flag.String("project-id", "cros-lab-servers", "ID of the cloud projecdt to upload metrics data to")
+	projectID           = flag.String("project-id", "cros-lab-servers", "ID of the cloud project to upload metrics data to")
 	dataset             = flag.String("dataset", "caching_backend", "Dataset name of the BigQuery tables")
 	tableName           = flag.String("table", "access_log", "BigQuery table name")
 	inputLogFile        = flag.String("input-log-file", "/var/log/nginx/gs-cache.access.log", "Nginx access log for gs_cache")
@@ -64,8 +64,6 @@ func innerMain() error {
 		return err
 	}
 
-	ctx := cancelOnSignals(context.Background())
-
 	t := bquploader.TargetTable{
 		ProjectID: *projectID,
 		Dataset:   *dataset,
@@ -77,8 +75,12 @@ func innerMain() error {
 	}
 	defer uploader.Close()
 
+	ctx := context.Background()
 	setupTsMon(ctx)
-	defer shutdownTsMon()
+	defer shutdownTsMon(ctx)
+	// We set up context cancellation after tsmon setup because we want tsmon
+	// to finish flushing.
+	ctx = cancelOnSignals(ctx)
 
 	tailer, err := filetailer.New(*inputLogFile)
 	if err != nil {
@@ -121,7 +123,7 @@ func parseLine(line string) *record {
 	groups := make(map[string]string)
 	for i, group := range logRegex.SubexpNames() {
 		// Handle the case of "entire matching group" (i.e. index == 0) and
-		// unamed group.
+		// unnamed group.
 		if i == 0 || group == "" {
 			continue
 		}
@@ -221,7 +223,8 @@ func (i *record) Save() (row map[string]bigquery.Value, insertID string, err err
 		"request_time":    i.requestTime,
 		"cache":           i.cacheStatus,
 	}
-	// A unique insert ID can prevent duplicated uploading when the BigQuery client retrys.
+	// A unique insert ID can prevent duplicated uploading when the BigQuery
+	// client retries.
 	insertID = fmt.Sprintf("%v", row)
 
 	return row, insertID, nil
@@ -229,9 +232,6 @@ func (i *record) Save() (row map[string]bigquery.Value, insertID string, err err
 
 // setupTsMon set up tsmon.
 func setupTsMon(ctx context.Context) {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	defer cancel()
-
 	fl := tsmon.NewFlags()
 	fl.Endpoint = *tsmonEndpoint
 	fl.Credentials = *tsmonCredentialPath
@@ -247,8 +247,8 @@ func setupTsMon(ctx context.Context) {
 }
 
 // shutdownTsMon shuts down tsmon.
-func shutdownTsMon() {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+func shutdownTsMon(ctx context.Context) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	log.Printf("Shutting down tsmon...")
 	tsmon.Shutdown(ctx)
