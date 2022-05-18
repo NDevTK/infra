@@ -25,4 +25,13 @@ create {
   }
 }
 
+create {
+  platform_re: "linux-amd64"
+  build {
+    # ninja is built without docker,
+    # and cmake also should be built in the same environment.
+    no_docker_env: true
+  }
+}
+
 upload { pkg_prefix: "tools" }

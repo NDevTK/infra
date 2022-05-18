@@ -8,7 +8,7 @@ set -x
 set -o pipefail
 
 PREFIX="$1"
-BASEDIR="/work/checkout"
+BASEDIR=$(pwd)
 
 # Fetch Chromium's sysroot
 CHROMIUM_BUILD_REVISION="28bea73326715ae8bc8673b16046d0c32df48a3e"
@@ -25,6 +25,13 @@ SYSROOT="${BASEDIR}/chromium_build/linux/debian_bullseye_amd64-sysroot"
 LIB_PATH="${SYSROOT}/usr/lib/x86_64-linux-gnu"
 INCLUDE_PATH="${SYSROOT}/usr/include/x86_64-linux-gnu"
 
+# Fetch Chromium's clang
+CHROMIUM_CLANG_REVISION="6e492e7a5c4b7c7d8a59a5568d57d436e17c28e9"
+curl "https://chromium.googlesource.com/chromium/src/tools/clang/+/${CHROMIUM_CLANG_REVISION}/scripts/update.py?format=TEXT" \
+  | base64 -d | python3 - --output-dir=chromium_clang
+CLANG_PATH="${BASEDIR}/chromium_clang/bin/clang++"
+
+CXX="$CLANG_PATH" \
 CFLAGS="--sysroot=${SYSROOT} -I${INCLUDE_PATH}" \
 LDFLAGS="--sysroot=${SYSROOT} -B${LIB_PATH}" \
   ./configure.py --bootstrap

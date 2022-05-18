@@ -34,7 +34,9 @@ create {
 
 create {
   platform_re: "linux-amd64"
+  # manylinux2014 is too old to run chromium's clang++.
   build {
+    no_docker_env: true
     install: "install_linux-amd64.sh"
   }
 }
