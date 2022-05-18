@@ -48,7 +48,7 @@ LUCI_GO_PATH_IN_INFRA = 'infra/go/src/go.chromium.org/luci'
 def apply_golangci_lint(api, co):
   go_files = sorted(
       set([
-          api.path.dirname(f) + '/...'
+          (api.path.dirname(f) or '.') + '/...'
           # Set --diff-filter to exclude deleted/renamed files.
           # https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203
           for f in co.get_changed_files(diff_filter='ACMTR')
@@ -217,3 +217,16 @@ def GenTests(api):
         patch_set=2,
     ) + api.properties(go_version_variant='bleeding_edge')
   )
+
+  yield (api.test('root_files') + api.buildbucket.try_build(
+      'infra',
+      'try',
+      'luci-go lint',
+      change_number=607472,
+      patch_set=2,
+  ) + api.properties(run_lint=True) + api.step_data(
+      'get change list',
+      stdout=api.raw_io.output_text(
+          textwrap.dedent("""\
+      something.go
+      """))))
