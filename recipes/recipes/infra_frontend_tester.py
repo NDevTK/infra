@@ -77,6 +77,11 @@ def RunInfraFrontendTests(api, env):
                                   'dashboard', 'frontend')
   RunFrontendTests(api, env, cwd, 'chopsdash')
 
+  # Run Weetbix UI tests
+  cwd = api.path['checkout'].join('go', 'src', 'infra', 'appengine', 'weetbix',
+                                  'frontend', 'ui')
+  RunFrontendTests(api, env, cwd, 'weetbix')
+
   # Fixes bug https://buganizer.corp.google.com/issues/232723599
 
   # cwd = api.path['checkout'].join('go', 'src', 'infra', 'appengine',

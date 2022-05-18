@@ -479,6 +479,53 @@
     "name": "chopsdash test"
   },
   {
+    "cmd": [
+      "npm",
+      "ci"
+    ],
+    "cwd": "[START_DIR]/infra/go/src/infra/appengine/weetbix/frontend/ui",
+    "env": {
+      "PATH": "[START_DIR]/packages/bin:<PATH>"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra/infra:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "weetbix npm install"
+  },
+  {
+    "cmd": [
+      "npm",
+      "run",
+      "test"
+    ],
+    "cwd": "[START_DIR]/infra/go/src/infra/appengine/weetbix/frontend/ui",
+    "env": {
+      "PATH": "[START_DIR]/packages/bin:<PATH>"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra/infra:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "weetbix test"
+  },
+  {
     "name": "$result"
   }
 ]
