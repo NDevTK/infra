@@ -1,0 +1,73 @@
+// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package dut
+
+import (
+	"context"
+	"testing"
+
+	"github.com/google/go-cmp/cmp"
+
+	"infra/cros/recovery/internal/execs"
+	"infra/cros/recovery/tlw"
+)
+
+var setDutStateCases = []struct {
+	actionArg    string
+	errorMessage string
+}{
+	{
+		"empty",
+		"set dut state: state is not provided",
+	},
+	{
+		"state:",
+		"set dut state: state is not provided",
+	},
+	{
+		"state:wrong",
+		"set dut state: unsupported state \"wrong\"",
+	},
+	{
+		"state:READY",
+		"",
+	},
+	{
+		"state:ready",
+		"",
+	},
+	{
+		"state:ready2",
+		"set dut state: unsupported state \"ready2\"",
+	},
+}
+
+func TestSetDUTState(t *testing.T) {
+	t.Parallel()
+	for _, c := range setDutStateCases {
+		cs := c
+		t.Run(cs.actionArg, func(t *testing.T) {
+			ctx := context.Background()
+			info := &execs.ExecInfo{
+				RunArgs: &execs.RunArgs{
+					DUT: &tlw.Dut{},
+				},
+				ActionArgs: []string{cs.actionArg},
+			}
+			err := setDutStateExec(ctx, info)
+			if cs.errorMessage == "" {
+				if err != nil {
+					t.Errorf("%q -> received error when not expected it: %v", cs.actionArg, err)
+				}
+			} else {
+				if err == nil {
+					t.Errorf("%q -> expected error %q but did not get error", cs.actionArg, cs.errorMessage)
+				} else if !cmp.Equal(err.Error(), cs.errorMessage) {
+					t.Errorf("%q -> expected error %q but got: %q", cs.actionArg, cs.errorMessage, err.Error())
+				}
+			}
+		})
+	}
+}
