@@ -283,7 +283,7 @@
             {% for target_metric in metrics %}
               {% set found = False %}
               {% for metric in datum.summaries %}
-                {% if not found and metric.name == target_metric.name %}
+                {% if not found and (metric.name == target_metric.name  or (metric.name == 'branche' and target_metric.name == 'branch')) %}
                   {% set found = True %}
                   {% if metric.total == 0 %}
                     {% set percent = 100 %}
