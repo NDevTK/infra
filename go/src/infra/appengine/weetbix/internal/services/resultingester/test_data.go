@@ -44,6 +44,7 @@ func mockedQueryTestVariantsRsp() *rdbpb.QueryTestVariantsResponse {
 				Results: []*rdbpb.TestResultBundle{
 					{
 						Result: &rdbpb.TestResult{
+							Name:   "invocations/build-1234/tests/ninja%3A%2F%2Ftest_new_failure/results/one",
 							Status: rdbpb.TestStatus_FAIL,
 							Tags:   pbutil.StringPairs("random_tag", "random_tag_value", "monorail_component", "Monorail>Component"),
 						},
@@ -57,6 +58,7 @@ func mockedQueryTestVariantsRsp() *rdbpb.QueryTestVariantsResponse {
 				Results: []*rdbpb.TestResultBundle{
 					{
 						Result: &rdbpb.TestResult{
+							Name:   "invocations/build-1234/tests/ninja%3A%2F%2Ftest_known_flake/results/one",
 							Status: rdbpb.TestStatus_FAIL,
 							Tags:   pbutil.StringPairs("os", "Mac", "monorail_component", "Monorail>Component"),
 						},
@@ -70,6 +72,7 @@ func mockedQueryTestVariantsRsp() *rdbpb.QueryTestVariantsResponse {
 				Results: []*rdbpb.TestResultBundle{
 					{
 						Result: &rdbpb.TestResult{
+							Name:   "invocations/build-1234/tests/ninja%3A%2F%2Ftest_consistent_failure/results/one",
 							Status: rdbpb.TestStatus_FAIL,
 						},
 					},
@@ -82,6 +85,7 @@ func mockedQueryTestVariantsRsp() *rdbpb.QueryTestVariantsResponse {
 				Results: []*rdbpb.TestResultBundle{
 					{
 						Result: &rdbpb.TestResult{
+							Name:   "invocations/build-1234/tests/ninja%3A%2F%2Ftest_no_new_results/results/one",
 							Status: rdbpb.TestStatus_FAIL,
 						},
 					},
@@ -95,6 +99,7 @@ func mockedQueryTestVariantsRsp() *rdbpb.QueryTestVariantsResponse {
 				Results: []*rdbpb.TestResultBundle{
 					{
 						Result: &rdbpb.TestResult{
+							Name:   "invocations/build-1234/tests/ninja%3A%2F%2Ftest_skip/results/one",
 							Status: rdbpb.TestStatus_SKIP,
 						},
 					},
@@ -107,11 +112,13 @@ func mockedQueryTestVariantsRsp() *rdbpb.QueryTestVariantsResponse {
 				Results: []*rdbpb.TestResultBundle{
 					{
 						Result: &rdbpb.TestResult{
+							Name:   "invocations/build-1234/tests/ninja%3A%2F%2Ftest_new_flake/results/one",
 							Status: rdbpb.TestStatus_FAIL,
 						},
 					},
 					{
 						Result: &rdbpb.TestResult{
+							Name:   "invocations/build-1234/tests/ninja%3A%2F%2Ftest_new_flake/results/two",
 							Status: rdbpb.TestStatus_PASS,
 						},
 					},
@@ -124,11 +131,13 @@ func mockedQueryTestVariantsRsp() *rdbpb.QueryTestVariantsResponse {
 				Results: []*rdbpb.TestResultBundle{
 					{
 						Result: &rdbpb.TestResult{
+							Name:   "invocations/build-1234/tests/ninja%3A%2F%2Ftest_has_unexpected/results/one",
 							Status: rdbpb.TestStatus_FAIL,
 						},
 					},
 					{
 						Result: &rdbpb.TestResult{
+							Name:   "invocations/build-1234/tests/ninja%3A%2F%2Ftest_has_unexpected/results/two",
 							Status: rdbpb.TestStatus_PASS,
 						},
 					},
@@ -141,6 +150,7 @@ func mockedQueryTestVariantsRsp() *rdbpb.QueryTestVariantsResponse {
 				Results: []*rdbpb.TestResultBundle{
 					{
 						Result: &rdbpb.TestResult{
+							Name:   "invocations/build-1234/tests/ninja%3A%2F%2Ftest_unexpected_pass/results/one",
 							Status: rdbpb.TestStatus_PASS,
 						},
 					},

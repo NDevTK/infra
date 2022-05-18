@@ -56,7 +56,12 @@ func failuresFromTestVariants(opts Options, tvs []*rdbpb.TestVariant) []*cpb.Fai
 					exoneration = pb.ExonerationStatus_IMPLICIT
 				}
 
-				testRun := resultdb.TestRunFromResult(tr.Result)
+				testRun, err := resultdb.InvocationFromTestResultName(tr.Result.Name)
+				if err != nil {
+					// Should never happen, as the result name from ResultDB
+					// should be valid.
+					panic(err)
+				}
 				failure := failureFromResult(tv, tr.Result, opts, exoneration, testRun)
 				failure.IngestedInvocationResultIndex = int64(resultIndex)
 				failure.IngestedInvocationResultCount = int64(len(tv.Results))

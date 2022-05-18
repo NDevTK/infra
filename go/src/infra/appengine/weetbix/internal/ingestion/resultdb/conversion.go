@@ -5,8 +5,9 @@
 package resultdb
 
 import (
-	"regexp"
+	"fmt"
 	"sort"
+	"strings"
 
 	rdbpb "go.chromium.org/luci/resultdb/proto/v1"
 
@@ -79,7 +80,12 @@ func GroupAndOrderTestResults(input []*rdbpb.TestResultBundle) [][]*rdbpb.TestRe
 	// Runs will be created in the order of the first test result
 	// that is inside them.
 	for _, tr := range input {
-		testRun := TestRunFromResult(tr.Result)
+		testRun, err := InvocationFromTestResultName(tr.Result.Name)
+		if err != nil {
+			// This should never happen, as the test results came from
+			// ResultDB.
+			panic(err)
+		}
 		idx, ok := runIndexByName[testRun]
 		if !ok {
 			// Create an empty run.
@@ -93,19 +99,27 @@ func GroupAndOrderTestResults(input []*rdbpb.TestResultBundle) [][]*rdbpb.TestRe
 	return result
 }
 
-// testRunRe extracts the test run from the ResultDB test result name. This is
-// the parent invocation the test result was included in, as distinct from
-// the ingested invocation ID.
-var testRunRe = regexp.MustCompile(`^invocations/([^/]+)/tests/[^/]+/results/[^/]+$`)
-
-// TestRunFromResult extracts the invocation that the test result is
-// immediately included inside.
-func TestRunFromResult(r *rdbpb.TestResult) string {
-	match := testRunRe.FindStringSubmatch(r.Name)
-	if len(match) == 0 {
-		return ""
+// InvocationFromTestResultName extracts the invocation that the
+// test result is immediately included inside.
+func InvocationFromTestResultName(name string) (string, error) {
+	// Using a regexp here was consuming 5% of all CPU cycles
+	// related to test verdict ingestion, so do the extracting
+	// manually using indexes.
+	// The format of the name is
+	// ^invocations/([^/]+)/tests/[^/]+/results/[^/]+$,
+	// and we want to extract the invocation name.
+	startIdx := strings.Index(name, "/")
+	if startIdx < 0 || (startIdx+1) >= len(name) || name[:startIdx] != "invocations" {
+		// This should never happen as the invocation came from ResultDB.
+		return "", fmt.Errorf("invalid test result name %q, expected invocations/{invocation_name}/...", name)
 	}
-	return match[1]
+	endIdx := strings.Index(name[startIdx+1:], "/")
+	if endIdx <= 0 {
+		// This should never happen as the invocation came from ResultDB.
+		return "", fmt.Errorf("invalid test result name %q, expected invocations/{invocation_name}/...", name)
+	}
+	endIdx = endIdx + (startIdx + 1)
+	return name[startIdx+1 : endIdx], nil
 }
 
 func sortResultsByStartTime(results []*rdbpb.TestResultBundle) []*rdbpb.TestResultBundle {

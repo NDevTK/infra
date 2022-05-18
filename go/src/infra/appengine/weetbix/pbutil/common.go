@@ -11,9 +11,8 @@ import (
 	"sort"
 	"time"
 
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	"go.chromium.org/luci/common/errors"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	pb "infra/appengine/weetbix/proto/v1"
 )
@@ -153,7 +152,7 @@ func VariantToStrings(vr *pb.Variant) []string {
 	pairs := make([]string, len(keys))
 	defMap := vr.GetDef()
 	for i, k := range keys {
-		pairs[i] = fmt.Sprintf("%s:%s", k, defMap[k])
+		pairs[i] = (k + ":" + defMap[k])
 	}
 	return pairs
 }

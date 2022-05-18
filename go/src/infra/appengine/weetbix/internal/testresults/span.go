@@ -208,6 +208,17 @@ func ReadTestResults(ctx context.Context, keys spanner.KeySet, fn func(tr *TestR
 		})
 }
 
+// TestResultSaveCols is the set of columns written to in a test result save.
+// Allocated here once to avoid reallocating on every test result save.
+var TestResultSaveCols = []string{
+	"Project", "TestId", "PartitionTime", "VariantHash",
+	"IngestedInvocationId", "RunIndex", "ResultIndex",
+	"IsUnexpected", "RunDurationUsec", "Status",
+	"ExonerationStatus", "SubRealm", "BuildStatus",
+	"HasContributedToClSubmission",
+	"ChangelistHosts", "ChangelistChanges", "ChangelistPatchsets",
+}
+
 // SaveUnverified prepare a mutation to insert the test result into the
 // TestResults table. The test result is not validated.
 func (tr *TestResult) SaveUnverified() *spanner.Mutation {
@@ -226,26 +237,24 @@ func (tr *TestResult) SaveUnverified() *spanner.Mutation {
 		changelistPatchsets = append(changelistPatchsets, cl.Patchset)
 	}
 
-	row := map[string]interface{}{
-		"Project":                      tr.Project,
-		"TestId":                       tr.TestID,
-		"PartitionTime":                tr.PartitionTime,
-		"VariantHash":                  tr.VariantHash,
-		"IngestedInvocationId":         tr.IngestedInvocationID,
-		"RunIndex":                     tr.RunIndex,
-		"ResultIndex":                  tr.ResultIndex,
-		"IsUnexpected":                 spanner.NullBool{Bool: tr.IsUnexpected, Valid: tr.IsUnexpected},
-		"RunDurationUsec":              runDurationUsec,
-		"Status":                       tr.Status,
-		"ExonerationStatus":            tr.ExonerationStatus,
-		"SubRealm":                     tr.SubRealm,
-		"BuildStatus":                  tr.BuildStatus,
-		"HasContributedToClSubmission": spanner.NullBool{Bool: tr.HasContributedToClSubmission, Valid: tr.HasContributedToClSubmission},
-		"ChangelistHosts":              changelistHosts,
-		"ChangelistChanges":            changelistChanges,
-		"ChangelistPatchsets":          changelistPatchsets,
+	isUnexpected := spanner.NullBool{Bool: tr.IsUnexpected, Valid: tr.IsUnexpected}
+	hasContributedToCLSubmission := spanner.NullBool{Bool: tr.HasContributedToClSubmission, Valid: tr.HasContributedToClSubmission}
+	// Specify values directly in a slice of instead of
+	// a map (and calling InsertOrUpdateMap)
+	// as profiling revealed ~15% of all CPU cycles spent
+	// ingesting test results was wasted in generating
+	// the original map and converting it back to the slice
+	// needed for a *spanner.Mutation,
+	// and ingestion appears to be CPU bound at times.
+	vals := []interface{}{
+		tr.Project, tr.TestID, tr.PartitionTime, tr.VariantHash,
+		tr.IngestedInvocationID, tr.RunIndex, tr.ResultIndex,
+		isUnexpected, runDurationUsec, int64(tr.Status),
+		int64(tr.ExonerationStatus), tr.SubRealm, int64(tr.BuildStatus),
+		hasContributedToCLSubmission,
+		changelistHosts, changelistChanges, changelistPatchsets,
 	}
-	return spanner.InsertOrUpdateMap("TestResults", spanutil.ToSpannerMap(row))
+	return spanner.InsertOrUpdate("TestResults", TestResultSaveCols, vals)
 }
 
 // ReadTestHistoryOptions specifies options for ReadTestHistory().
@@ -473,19 +482,22 @@ func ReadTestVariantRealms(ctx context.Context, keys spanner.KeySet, fn func(tvr
 		})
 }
 
+// TestVariantRealmSaveCols is the set of columns written to in a test variant
+// realm save. Allocated here once to avoid reallocating on every save.
+var TestVariantRealmSaveCols = []string{
+	"Project", "TestId", "VariantHash", "SubRealm",
+	"Variant", "LastIngestionTime",
+}
+
 // SaveUnverified creates a mutation to save the test variant realm into
 // the TestVariantRealms table. The test variant realm is not verified.
 // Must be called in spanner RW transactional context.
 func (tvr *TestVariantRealm) SaveUnverified() *spanner.Mutation {
-	row := map[string]interface{}{
-		"Project":           tvr.Project,
-		"TestId":            tvr.TestID,
-		"VariantHash":       tvr.VariantHash,
-		"SubRealm":          tvr.SubRealm,
-		"Variant":           tvr.Variant,
-		"LastIngestionTime": tvr.LastIngestionTime,
+	vals := []interface{}{
+		tvr.Project, tvr.TestID, tvr.VariantHash, tvr.SubRealm,
+		pbutil.VariantToStrings(tvr.Variant), tvr.LastIngestionTime,
 	}
-	return spanner.InsertOrUpdateMap("TestVariantRealms", spanutil.ToSpannerMap(row))
+	return spanner.InsertOrUpdate("TestVariantRealms", TestVariantRealmSaveCols, vals)
 }
 
 // ReadVariantsOptions specifies options for ReadVariants().
