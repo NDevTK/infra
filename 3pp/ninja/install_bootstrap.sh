@@ -10,6 +10,8 @@ set -o pipefail
 PREFIX="$1"
 
 ./configure.py --bootstrap
+./ninja all
+./ninja_test
 if [[ $_3PP_PLATFORM == windows* ]]; then
   cp ninja.exe "$PREFIX"
 else
