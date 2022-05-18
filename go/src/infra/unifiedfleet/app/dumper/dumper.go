@@ -71,6 +71,13 @@ var Jobs = []*cron.CronTab{
 		TrigType: cron.EVERY,
 		Job:      reportUFSInventoryCronHandler,
 	},
+	{
+		// Sync Goldeneye Data
+		Name:     util.CronJobNames["goldeneyeDevicesSyncCron"],
+		Time:     20 * time.Minute,
+		TrigType: cron.DAILY,
+		Job:      getGoldenEyeData,
+	},
 }
 
 // InitServer initializes a cron server.
