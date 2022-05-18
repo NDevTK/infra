@@ -469,6 +469,15 @@ indexes:
   - name: cl_patchset.change
   - name: based_on
 
+- kind: PresubmitCoverageData
+  properties:
+  - name: cl_patchset.project
+  - name: cl_patchset.server_host
+  - name: cl_patchset.change
+    direction: desc
+  - name: cl_patchset.patchset
+    direction: desc
+
 - kind: CoverageReportModifier
   properties:
   - name: server_host
