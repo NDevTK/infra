@@ -44,16 +44,16 @@ You may also be able to use an arbitrary cloud project (e.g. 'dev') if you
 setup Cloud Datastore emulator and setup a config for that project under
 configs.
 
-You can run the UI `Jest` unit tests by:
+You can run the UI tests by:
 ```
 cd frontend/ui
 npm run test
 ```
 
-You can run the `Cypress` end-to-end tests by first starting a server and then running:
+You can debug the UI unit tests by visiting the server started by the following command with your browser:
 ```
 cd frontend/ui
-npm run e2e
+npm run test-watch
 ```
 
 ## Deployment
