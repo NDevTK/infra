@@ -129,8 +129,19 @@ func crosRepairActions() map[string]*Action {
 				"Stateful partition has enough free space",
 				"Stateful partition (encrypted) has enough free space",
 				"Quick internal storage audit (SMART)",
+				"Check DUT state and fail if needs replacement",
 			},
 			ExecName: "sample_pass",
+		},
+		"Check DUT state and fail if needs replacement": {
+			Docs: []string{
+				"Verify DUT internal storage",
+			},
+			ExecName: "dut_state_match",
+			ExecExtraArgs: []string{
+				"state:needs_replacement",
+				"invert:true",
+			},
 		},
 		"Quick internal storage audit (SMART)": {
 			Docs: []string{
@@ -242,6 +253,7 @@ func crosRepairActions() map[string]*Action {
 				"Power is recognized by DUT",
 				"Battery is changing or have accepted level",
 				"Audit battery",
+				"Check DUT state and fail if needs replacement",
 			},
 			ExecName: "sample_pass",
 		},

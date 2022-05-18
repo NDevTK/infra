@@ -9,6 +9,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/dutstate"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/execs/cros/battery"
 	"infra/cros/recovery/internal/log"
@@ -32,6 +33,8 @@ func auditBatteryExec(ctx context.Context, info *execs.ExecInfo) error {
 	if hardwareState == tlw.HardwareState_HARDWARE_NEED_REPLACEMENT {
 		log.Infof(ctx, "Detected issue with storage on the DUT.")
 		info.RunArgs.DUT.Battery.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
+		log.Debugf(ctx, "Audit Battery Exec: setting dut state to %s", string(dutstate.NeedsReplacement))
+		info.RunArgs.DUT.State = dutstate.NeedsReplacement
 	}
 	return nil
 }

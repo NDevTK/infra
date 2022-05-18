@@ -7,8 +7,11 @@ package dut
 import (
 	"context"
 
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/dutstate"
 	"infra/cros/recovery/internal/execs"
+	"infra/cros/recovery/internal/log"
 )
 
 // dutStateReadyActionExec sets dut-state as ready.
@@ -35,11 +38,26 @@ func dutStateReservedActionExec(ctx context.Context, info *execs.ExecInfo) error
 	return nil
 }
 
-// TODO(otabek@): Add execs for other states.
+// dutStateMatchExec checks whether the state of the DUT matches the
+// expected state as mentioned in the extra arguments.
+func dutStateMatchExec(ctx context.Context, info *execs.ExecInfo) error {
+	argsMap := info.GetActionArgs(ctx)
+	expectedState := argsMap.AsString(ctx, "state", "")
+	invertResult := argsMap.AsBool(ctx, "invert", false)
+	log.Debugf(ctx, "Dut State Match Exec: actual DUT state: %s, expected state :%s", string(info.RunArgs.DUT.State), expectedState)
+	matched := info.RunArgs.DUT.State == dutstate.State(expectedState)
+	if matched && invertResult {
+		return errors.Reason("dut state match exec: the actual dut state %s matches the expected state %s, and result of comparition is inverted.", info.RunArgs.DUT.State, expectedState).Err()
+	} else if !matched && !invertResult {
+		return errors.Reason("dut state match exec: the actual dut state %s does not the expected state %s.", info.RunArgs.DUT.State, expectedState).Err()
+	}
+	return nil
+}
 
 func init() {
 	execs.Register("dut_state_ready", dutStateReadyActionExec)
 	execs.Register("dut_state_repair_failed", dutStateRepairFailedActionExec)
 	execs.Register("dut_state_needs_deploy", dutStateNeedsDeployActionExec)
 	execs.Register("dut_state_reserved", dutStateReservedActionExec)
+	execs.Register("dut_state_match", dutStateMatchExec)
 }

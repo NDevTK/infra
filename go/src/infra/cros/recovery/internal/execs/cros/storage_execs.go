@@ -12,6 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/dutstate"
 	"infra/cros/recovery/internal/components/linux"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/execs/cros/storage"
@@ -54,6 +55,8 @@ func auditStorageSMARTExec(ctx context.Context, info *execs.ExecInfo) error {
 	if convertedHardwareState == tlw.HardwareState_HARDWARE_NEED_REPLACEMENT {
 		log.Debugf(ctx, "Detected issue with storage on the DUT")
 		info.RunArgs.DUT.Storage.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
+		log.Debugf(ctx, "Audit Storage Smart: setting the dut state to :%s", string(dutstate.NeedsReplacement))
+		info.RunArgs.DUT.State = dutstate.NeedsReplacement
 		return errors.Reason("audit storage smart: hardware state need replacement").Err()
 	}
 	return nil
