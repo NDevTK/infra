@@ -16,6 +16,7 @@ import (
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
+	ufsProto "infra/unifiedfleet/api/v1/models"
 )
 
 // hasDutNameActionExec verifies that DUT provides name.
@@ -226,13 +227,17 @@ func regexNameMatchExec(ctx context.Context, info *execs.ExecInfo) error {
 // the action arguments.
 func setDutStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	args := info.GetActionArgs(ctx)
-	newState := strings.ToUpper(args.AsString(ctx, "state", ""))
+	newState := strings.ToLower(args.AsString(ctx, "state", ""))
 	if newState == "" {
 		return errors.Reason("set dut state: state is not provided").Err()
 	}
-	log.Debugf(ctx, "Previous dut state: %s", info.RunArgs.DUT.State)
-	info.RunArgs.DUT.State = dutstate.State(newState)
-	log.Infof(ctx, "Set dut state to be: %s", newState)
+	state := dutstate.State(newState)
+	if dutstate.ConvertToUFSState(state) == ufsProto.State_STATE_UNSPECIFIED {
+		return errors.Reason("set dut state: unsupported state %q", newState).Err()
+	}
+	log.Debugf(ctx, "Old DUT state: %s", info.RunArgs.DUT.State)
+	info.RunArgs.DUT.State = state
+	log.Infof(ctx, "New DUT state: %s", newState)
 	return nil
 }
 
