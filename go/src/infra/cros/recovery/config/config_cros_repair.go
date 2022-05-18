@@ -1393,9 +1393,15 @@ func crosRepairActions() map[string]*Action {
 				"Servo USB-Key needs to be reflashed",
 				"Servo has USB-key with require image",
 			},
-			ExecName:      "os_install_repair",
-			ExecExtraArgs: []string{"halt_timeout:120"},
-			ExecTimeout:   &durationpb.Duration{Seconds: 3600},
+			ExecName: "os_install_repair",
+			ExecExtraArgs: []string{
+				"boot_timeout:480",
+				"boot_interval:10",
+				"halt_timeout:120",
+				"install_timeout:1200",
+				"tpm_reset_timeout:60",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 3600},
 		},
 		"Install OS in DEV mode by USB-drive (for special pools)": {
 			Docs: []string{
@@ -1713,9 +1719,15 @@ func crosRepairActions() map[string]*Action {
 				"dut_servo_host_present",
 				"Servo has USB-key with require image",
 			},
-			ExecName:      "os_install_repair",
-			ExecExtraArgs: []string{"halt_timeout:120"},
-			ExecTimeout:   &durationpb.Duration{Seconds: 3600},
+			ExecName: "os_install_repair",
+			ExecExtraArgs: []string{
+				"boot_timeout:480",
+				"boot_interval:10",
+				"halt_timeout:120",
+				"install_timeout:1200",
+				"tpm_reset_timeout:60",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 3600},
 		},
 		"Check if stable version is availabe on installed OS": {
 			Docs: []string{
