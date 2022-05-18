@@ -11,6 +11,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components/cros"
+	"infra/cros/recovery/internal/components/cros/firmware"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/execs/metrics"
 	"infra/cros/recovery/internal/log"
@@ -35,26 +36,44 @@ func runChromeosInstallCommandWhenBootFromUSBDriveExec(ctx context.Context, info
 	return errors.Annotate(err, "run install os after boot from USB-drive").Err()
 }
 
-// osInstallRepairExec re-installs a test image from USB, utilizing
-// the features of servo to execute this repair.
-func osInstallRepairExec(ctx context.Context, info *execs.ExecInfo) error {
+// installFromUSBDriveInRecoveryModeExec re-installs a test image from USB.
+//
+// Also can flash firmware  as part of action.
+func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.ExecInfo) error {
 	am := info.GetActionArgs(ctx)
 	dut := info.RunArgs.DUT
 	dutRun := info.NewRunner(dut.Name)
 	dutBackgroundRun := info.NewBackgroundRunner(dut.Name)
 	dutPing := info.NewPinger(dut.Name)
 	servod := info.NewServod()
+	logger := info.NewLogger()
 	callback := func(_ context.Context) error {
-		// Clear TPM is not critical as can fail in some cases.
-		tpmResetTimeout := am.AsDuration(ctx, "tpm_reset_timeout", 60, time.Second)
-		if _, err := dutRun(ctx, tpmResetTimeout, "chromeos-tpm-recovery"); err != nil {
-			log.Debugf(ctx, "Install OS from USB: (non-critical) fail to reset tmp: Error: %s", err)
+		if am.AsBool(ctx, "run_tpm_reset", false) {
+			// Clear TPM is not critical as can fail in some cases.
+			tpmResetTimeout := am.AsDuration(ctx, "tpm_reset_timeout", 60, time.Second)
+			if _, err := dutRun(ctx, tpmResetTimeout, "chromeos-tpm-recovery"); err != nil {
+				logger.Debugf("Install from USB drive: (non-critical) fail to reset tmp: Error: %s", err)
+			}
 		}
-		installTimeout := am.AsDuration(ctx, "install_timeout", 600, time.Second)
-		if _, err := dutRun(ctx, installTimeout, "chromeos-install", "--yes"); err != nil {
-			return errors.Annotate(err, "servo OS install repair").Err()
+		if am.AsBool(ctx, "run_os_install", false) {
+			installTimeout := am.AsDuration(ctx, "install_timeout", 600, time.Second)
+			if _, err := dutRun(ctx, installTimeout, "chromeos-install", "--yes"); err != nil {
+				return errors.Annotate(err, "install from usb drive in recovery mode").Err()
+			}
+			logger.Debugf("Install from USB drive: finished install process")
 		}
-		log.Debugf(ctx, "Install OS from USB: finished install process")
+		if am.AsBool(ctx, "run_fw_update", false) {
+			req := &firmware.FirmwareUpdaterRequest{
+				// Options for the mode are: autoupdate, recovery, factory.
+				Mode:           am.AsString(ctx, "fw_update_mode", "autoupdate"),
+				Force:          am.AsBool(ctx, "fw_update_use_force", false),
+				UpdaterTimeout: am.AsDuration(ctx, "fw_update_timeout", 600, time.Second),
+			}
+			if err := firmware.RunFirmwareUpdater(ctx, req, dutRun, logger); err != nil {
+				return errors.Annotate(err, "install from usb drive in recovery mode").Err()
+			}
+			logger.Debugf("Install from USB drive: finished fw update")
+		}
 		return nil
 	}
 	req := &cros.BootInRecoveryRequest{
@@ -66,8 +85,8 @@ func osInstallRepairExec(ctx context.Context, info *execs.ExecInfo) error {
 		HaltTimeout:         am.AsDuration(ctx, "halt_timeout", 120, time.Second),
 		IgnoreRebootFailure: am.AsBool(ctx, "ignore_reboot_failure", false),
 	}
-	if err := cros.BootInRecoveryMode(ctx, req, dutRun, dutBackgroundRun, dutPing, servod, info.NewLogger()); err != nil {
-		return errors.Annotate(err, "servo OS install repair").Err()
+	if err := cros.BootInRecoveryMode(ctx, req, dutRun, dutBackgroundRun, dutPing, servod, logger); err != nil {
+		return errors.Annotate(err, "install from usb drive in recovery mode").Err()
 	}
 	return nil
 }
@@ -132,7 +151,7 @@ func isTimeToForceDownloadImageToUsbKeyExec(ctx context.Context, info *execs.Exe
 func init() {
 	execs.Register("cros_dev_mode_boot_from_servo_usb_drive", devModeBootFromServoUSBDriveExec)
 	execs.Register("cros_run_chromeos_install_command_after_boot_usbdrive", runChromeosInstallCommandWhenBootFromUSBDriveExec)
-	execs.Register("os_install_repair", osInstallRepairExec)
+	execs.Register("cros_install_in_recovery_mode", installFromUSBDriveInRecoveryModeExec)
 	execs.Register("cros_verify_boot_in_recovery_mode", verifyBootInRecoveryModeExec)
 	execs.Register("cros_is_time_to_force_download_image_to_usbkey", isTimeToForceDownloadImageToUsbKeyExec)
 }

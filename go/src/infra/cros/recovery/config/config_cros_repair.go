@@ -1393,8 +1393,10 @@ func crosRepairActions() map[string]*Action {
 				"Servo USB-Key needs to be reflashed",
 				"Servo has USB-key with require image",
 			},
-			ExecName: "os_install_repair",
+			ExecName: "cros_install_in_recovery_mode",
 			ExecExtraArgs: []string{
+				"run_tpm_reset:true",
+				"run_os_install:true",
 				"boot_timeout:480",
 				"boot_interval:10",
 				"halt_timeout:120",
@@ -1704,31 +1706,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_not_on_stable_version",
 		},
-		"Install OS in recovery mode by booting from servo USB-drive if not on stable OS": {
-			Docs: []string{
-				"This action installs the test image on DUT utilizing ",
-				"the features of servo, only if the DUT is not ",
-				"already on stable OS. DUT will be booted in recovery ",
-				"mode.",
-			},
-			Conditions: []string{
-				"DUT not on stable version",
-				"Recovery version has OS image path",
-			},
-			Dependencies: []string{
-				"dut_servo_host_present",
-				"Servo has USB-key with require image",
-			},
-			ExecName: "os_install_repair",
-			ExecExtraArgs: []string{
-				"boot_timeout:480",
-				"boot_interval:10",
-				"halt_timeout:120",
-				"install_timeout:1200",
-				"tpm_reset_timeout:60",
-			},
-			ExecTimeout: &durationpb.Duration{Seconds: 3600},
-		},
 		"Check if stable version is availabe on installed OS": {
 			Docs: []string{
 				"Check that firmware manifest in OS tells that expected version nis present.",
@@ -1741,15 +1718,24 @@ func crosRepairActions() map[string]*Action {
 		"Update firmware from USB-Drive and when booted in recovery mode": {
 			Docs: []string{
 				"Update FW on the DUT using the USB-Drive.",
+				"The process will required to boot device in recovery mode.",
 			},
 			Dependencies: []string{
-				"Install OS in recovery mode by booting from servo USB-drive if not on stable OS",
+				"dut_servo_host_present",
+				"Recovery version has OS image path",
+				"Servo has USB-key with require image",
 			},
-			ExecName: "cros_run_firmware_update",
+			ExecName: "cros_install_in_recovery_mode",
 			ExecExtraArgs: []string{
-				"mode:recovery",
-				"reboot:by_host",
+				"run_fw_update:true",
+				"boot_timeout:480",
+				"boot_interval:10",
+				"halt_timeout:120",
+				"fw_update_mode:recovery",
+				"fw_update_use_force:false",
+				"fw_update_timeout:600",
 			},
+			ExecTimeout: &durationpb.Duration{Seconds: 2000},
 		},
 		"Perfrom RPM config verification": {
 			Docs: []string{
