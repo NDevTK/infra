@@ -23,7 +23,7 @@ type fakeClient struct {
 
 func (c *fakeClient) op() error {
 	c.count += 1
-	if c.count <= c.max {
+	if c.max < 0 || c.count <= c.max {
 		return c.err
 	}
 	return nil
@@ -70,10 +70,10 @@ func TestRetry(t *testing.T) {
 			So(err, ShouldBeNil)
 		})
 
-		Convey("fails if all retries are exhausted", func() {
+		Convey("fails if operation does not succeed within max time", func() {
 			client := &fakeClient{
 				err: status.Error(codes.NotFound, "fake not found failure"),
-				max: 6,
+				max: -1,
 			}
 
 			err := Retry(ctx, "fake op", client.op)

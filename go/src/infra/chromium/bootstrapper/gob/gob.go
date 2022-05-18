@@ -33,7 +33,7 @@ func (i *retryIterator) Next(ctx context.Context, err error) time.Duration {
 // Retry attempts a GoB operation with retries.
 //
 // Retry mitigates the effects of short-lived outages and replication lag by
-// retrying operations with a 404 or 503 status code. The service client's error
+// retrying operations with certain error codes. The service client's error
 // should be returned in order to correctly detect this situation. The retries
 // will use exponential backoff with a context with the clock tagged with
 // "gob-retry". When performing retries, a log will be emitted that uses opName
@@ -43,10 +43,13 @@ func Retry(ctx context.Context, opName string, fn func() error) error {
 		return &retryIterator{
 			backoff: retry.ExponentialBackoff{
 				Limited: retry.Limited{
-					Delay:   time.Second,
-					Retries: 5,
+					Delay:    time.Second,
+					MaxTotal: 10 * time.Minute,
+					// Don't limit the number of retries, just use the MaxTotal
+					Retries: -1,
 				},
 				Multiplier: 2,
+				MaxDelay:   30 * time.Second,
 			},
 		}
 	}
