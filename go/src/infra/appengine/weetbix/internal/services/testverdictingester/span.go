@@ -175,7 +175,7 @@ func batchTestResults(inv *testresults.IngestedInvocation, inputC chan []*rdbpb.
 
 // recordTestResults records test results from an test-verdict-ingestion task.
 func recordTestResults(ctx context.Context, inv *testresults.IngestedInvocation, inputC chan []*rdbpb.TestVariant) error {
-	const workerCount = 8
+	const workerCount = 16
 
 	return parallel.WorkPool(workerCount, func(c chan<- func() error) {
 		batchC := make(chan []*spanner.Mutation)
