@@ -9,6 +9,8 @@ from framework import banned, excessiveactivity
 import settings
 from flask import Flask
 
+import flask
+
 from project import project_constants
 from sitewide import usersettings
 
@@ -73,4 +75,11 @@ class ServletRegistry(object):
 
     for rule in _HOSTING_URL:
       flaskapp_hosting.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
+
+    # pylint: disable=unused-variable
+    @flaskapp_hosting.route('/')
+    def DefaultToMainPage():
+      url = flask.request.host_url
+      return flask.redirect(url)
+
     return flaskapp_hosting
