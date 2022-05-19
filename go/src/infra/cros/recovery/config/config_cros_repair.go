@@ -230,6 +230,7 @@ func crosRepairActions() map[string]*Action {
 		"Cleanup the enrollment state and wait for boot": {
 			Docs: []string{
 				"Cleanup the enrollment state.",
+				"The recovery process can fail but still fix the issue.",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
@@ -242,7 +243,8 @@ func crosRepairActions() map[string]*Action {
 				"reboot_timeout:10",
 				"tpm_timeout:150",
 			},
-			ExecTimeout: &durationpb.Duration{Seconds: 600},
+			ExecTimeout:            &durationpb.Duration{Seconds: 600},
+			AllowFailAfterRecovery: true,
 		},
 		"Check power sources": {
 			Docs: []string{"Check for the AC power, and battery charging capability."},
