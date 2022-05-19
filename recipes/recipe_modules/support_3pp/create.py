@@ -172,7 +172,8 @@ def _build_impl(api, cipd_spec, is_latest, spec_lookup, force_build, recurse_fn,
                 '/p/%(package)s/+/%(instance_id)s' % pin_result)
 
         # If reporting to Snoopy is enabled, try to report built package.
-        if 'security.snoopy' in api.buildbucket.build.input.experiments:
+        if ('security.snoopy' in api.buildbucket.build.input.experiments and
+            not api.tryserver.is_tryserver):
           # Attach provenance after the package has been uploaded.
           package_hash = api.file.file_hash(cipd_spec.local_pkg_path(),
                                             test_data='deadbeef')

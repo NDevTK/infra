@@ -78,17 +78,17 @@ PROPERTIES = {
 
 def RunSteps(api, package_locations, to_build, platform, force_build,
              package_prefix, source_cache_prefix):
-  # If reporting to Snoopy is enabled, try to report built package.
-  if 'security.snoopy' in api.buildbucket.build.input.experiments:
-    try:
-      api.bcid_reporter.report_stage("start")
-    except Exception:  # pragma: no cover
-      api.step.active_result.presentation.status = api.step.FAILURE
   if api.tryserver.is_tryserver:
     revision = api.tryserver.gerrit_change_fetch_ref
     api.support_3pp._experimental = True
   else:
     revision = 'refs/heads/main'
+    # If reporting to Snoopy is enabled, try to report built package.
+    if 'security.snoopy' in api.buildbucket.build.input.experiments:
+      try:
+        api.bcid_reporter.report_stage("start")
+      except Exception:  # pragma: no cover
+        api.step.active_result.presentation.status = api.step.FAILURE
 
   # NOTE: We essentially ignore the on-machine CIPD cache here. We do this in
   # order to make sure this builder always operates with the current set of tags
