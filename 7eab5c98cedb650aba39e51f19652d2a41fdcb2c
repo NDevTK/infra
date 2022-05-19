@@ -16,6 +16,24 @@
       "message": "where is the logic for updating corresponding entities to this rack?",
       "revId": "7eab5c98cedb650aba39e51f19652d2a41fdcb2c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f3d31b1f_c08e13db",
+        "filename": "go/src/infra/unifiedfleet/app/controller/rack.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 397,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-05-19T18:07:20Z",
+      "side": 1,
+      "message": "next CL actually...",
+      "parentUuid": "007e848c_d79f763a",
+      "revId": "7eab5c98cedb650aba39e51f19652d2a41fdcb2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
