@@ -122,10 +122,7 @@ func mainDeviceIsGSCExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err != nil {
 		return errors.Annotate(err, "main devices is gsc").Err()
 	}
-	md, err := mainServoDeviceHelper(sType.String())
-	if err != nil {
-		return errors.Annotate(err, "main devices is gsc").Err()
-	}
+	md := sType.MainDevice()
 	switch md {
 	case servo.C2D2:
 		fallthrough

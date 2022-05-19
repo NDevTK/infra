@@ -113,3 +113,33 @@ func TestServoType(t *testing.T) {
 		}
 	}
 }
+
+var mainDeviceTestCases = []struct {
+	servoType string
+	expected  string
+}{
+	{"servo_v4_with_ccd_cr50", "ccd_cr50"},
+	{"servo_v4_with_c2d2_and_ccd_cr50", "c2d2"},
+	{"servo_v4_with_servo_micro", "servo_micro"},
+	{"servo_v4_and_servo_micro", ""},
+	{"servo_v4", ""},
+	{"servo_v3", ""},
+	{"c2d2", ""},
+	{"servo_micro", ""},
+	{"servo_v4_with_servo_micro_and_ccd_cr50", "servo_micro"},
+}
+
+func TestMainDevice(t *testing.T) {
+	t.Parallel()
+	for _, tt := range mainDeviceTestCases {
+		tt := tt
+		t.Run(tt.servoType, func(t *testing.T) {
+			t.Parallel()
+			servo := NewServoType(tt.servoType)
+			main := servo.MainDevice()
+			if main != tt.expected {
+				t.Errorf("%q -> expected %q, but got %q", tt.servoType, tt.expected, main)
+			}
+		})
+	}
+}

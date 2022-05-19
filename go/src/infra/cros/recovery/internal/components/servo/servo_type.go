@@ -113,6 +113,16 @@ func (s *ServoType) String() string {
 	return s.str
 }
 
+// MainDevice extracts the main servo device.
+func (s *ServoType) MainDevice() string {
+	s1 := strings.Split(s.str, "_with_")
+	if len(s1) < 2 {
+		return ""
+	}
+	s2 := strings.Split(s1[len(s1)-1], "_and_")[0]
+	return s2
+}
+
 // GetServoType finds and returns the servo type of the DUT's servo.
 func GetServoType(ctx context.Context, servod components.Servod) (*ServoType, error) {
 	res, err := servod.Get(ctx, "servo_type")

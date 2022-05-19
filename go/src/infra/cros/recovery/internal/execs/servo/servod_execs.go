@@ -6,10 +6,12 @@ package servo
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/components/servo"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/internal/retry"
@@ -132,10 +134,15 @@ func servodCanReadAllExec(ctx context.Context, info *execs.ExecInfo) error {
 // active DUT controller.
 func servodSetActiveDutControllerExec(ctx context.Context, info *execs.ExecInfo) error {
 	servod := info.NewServod()
-	mainDevice, err := MainServoDevice(ctx, servod)
+	servoType, err := servo.GetServoType(ctx, servod)
 	if err != nil {
-		return errors.Annotate(err, "servod set active dut controller").Err()
+		return errors.Annotate(err, "servod set active dut control").Err()
 	}
+	if !strings.Contains(servoType.String(), "_and_") {
+		// We have only one child device it will be detect by it self.
+		return nil
+	}
+	mainDevice := servoType.MainDevice()
 	if mainDevice == "" {
 		return errors.Reason("servod set active dut controller: main device is empty.").Err()
 	}

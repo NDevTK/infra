@@ -531,9 +531,10 @@ func servoRepairPlan() *Plan {
 					"Is not servo_v3",
 				},
 				Dependencies: []string{
-					"servod_set_main_device",
+					"Set main servo device",
 					"Open gsc testlab",
 				},
+				ExecName: "init_dut_for_servo",
 				RecoveryActions: []string{
 					"servo_power_delivery_repair",
 					"servo_fake_disconnect_dut_repair",
@@ -543,7 +544,6 @@ func servoRepairPlan() *Plan {
 					"reflash_cr_50_fw_on_dut",
 					"reset_ec_on_dut",
 				},
-				ExecName: "init_dut_for_servo",
 			},
 			"pwr_button_supported_models": {
 				Docs: []string{"power button check is not applicable for these models"},
@@ -794,8 +794,13 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "sample_fail",
 			},
-			"servod_set_main_device": {
+			"Set main servo device": {
+				Docs: []string{
+					"Set main device is it not set before.",
+					"Applicable if we have more than one child servo device.",
+				},
 				Conditions: []string{
+					"Is not servo_v3",
 					"servo_has_active_dut_controller",
 				},
 				ExecName: "servod_set_main_device",
