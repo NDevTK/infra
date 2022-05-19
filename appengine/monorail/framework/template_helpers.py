@@ -11,7 +11,7 @@ from __future__ import absolute_import
 
 import cgi
 import cStringIO
-import httplib
+from six.moves import http_client
 import logging
 import time
 import types
@@ -157,7 +157,7 @@ class MonorailTemplate(object):
     if content_type:
       response.content_type = content_type
 
-    response.status = data.get('http_response_code', httplib.OK)
+    response.status = data.get('http_response_code', http_client.OK)
     whole_page = self.GetResponse(data)
     if data.get('prevent_sniffing'):
       for sniff_pattern, sniff_replacement in SNIFFABLE_PATTERNS.items():
@@ -171,7 +171,7 @@ class MonorailTemplate(object):
     if content_type:
       response.content_type = content_type
 
-    response.status_code = data.get('http_response_code', httplib.OK)
+    response.status_code = data.get('http_response_code', http_client.OK)
     whole_page = self.GetResponse(data)
     if data.get('prevent_sniffing'):
       for sniff_pattern, sniff_replacement in SNIFFABLE_PATTERNS.items():

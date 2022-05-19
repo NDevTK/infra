@@ -8,7 +8,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import httplib
+from six.moves import http_client
 import unittest
 
 from framework import exceptions
@@ -39,6 +39,4 @@ class Custom404Test(unittest.TestCase):
     _, mr = testing_helpers.GetRequestObjects(path='/p/proj/junk')
 
     page_data = self.servlet.GatherPageData(mr)
-    self.assertEqual(
-      {'http_response_code': httplib.NOT_FOUND},
-      page_data)
+    self.assertEqual({'http_response_code': http_client.NOT_FOUND}, page_data)

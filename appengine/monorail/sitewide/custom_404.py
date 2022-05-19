@@ -15,7 +15,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import httplib
+from six.moves import http_client
 from framework import exceptions
 from framework import servlet
 
@@ -37,5 +37,5 @@ class ErrorPage(servlet.Servlet):
     if not mr.project_name:
       raise exceptions.InputException('No project specified')
     return {
-      'http_response_code': httplib.NOT_FOUND,
-      }
+        'http_response_code': http_client.NOT_FOUND,
+    }

@@ -14,7 +14,6 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import httplib
 import json
 import logging
 import time

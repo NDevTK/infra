@@ -9,7 +9,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 
-import httplib
+from six.moves import http_client
 import logging
 
 import webapp2
@@ -27,7 +27,7 @@ def MakeRedirect(redirect_to_this_uri, permanent=True):
       self.response.headers.add('Strict-Transport-Security',
           'max-age=31536000; includeSubDomains')
       self.response.status = (
-          httplib.MOVED_PERMANENTLY if permanent else httplib.FOUND)
+          http_client.MOVED_PERMANENTLY if permanent else http_client.FOUND)
 
   return Redirect
 
@@ -74,8 +74,8 @@ def MakeRedirectInScope(uri_in_scope, scope, permanent=True, keep_qs=False):
       self.response.headers.add('Strict-Transport-Security',
           'max-age=31536000; includeSubDomains')
       if permanent and not keep_qs:
-        self.response.status = httplib.MOVED_PERMANENTLY
+        self.response.status = http_client.MOVED_PERMANENTLY
       else:
-        self.response.status = httplib.FOUND
+        self.response.status = http_client.FOUND
 
   return RedirectInScope

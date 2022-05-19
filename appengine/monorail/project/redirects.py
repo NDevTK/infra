@@ -13,7 +13,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import httplib
+from six.moves import http_client
 
 from framework import framework_helpers
 from framework import servlet
@@ -26,14 +26,14 @@ class WikiRedirect(servlet.Servlet):
   def get(self, **kwargs):
     """Construct a 302 pointing at project.docs_url, or at adminIntro."""
     if not self.mr.project:
-      self.response.status = httplib.NOT_FOUND
+      self.response.status = http_client.NOT_FOUND
       return
     docs_url = self.mr.project.docs_url
     if not docs_url:
       docs_url = framework_helpers.FormatAbsoluteURL(
           self.mr, urls.ADMIN_INTRO, include_project=True)
     self.response.location = docs_url
-    self.response.status = httplib.MOVED_PERMANENTLY
+    self.response.status = http_client.MOVED_PERMANENTLY
 
 
 class SourceRedirect(servlet.Servlet):
@@ -42,11 +42,11 @@ class SourceRedirect(servlet.Servlet):
   def get(self, **kwargs):
     """Construct a 302 pointing at project.source_url, or at adminIntro."""
     if not self.mr.project:
-      self.response.status = httplib.NOT_FOUND
+      self.response.status = http_client.NOT_FOUND
       return
     source_url = self.mr.project.source_url
     if not source_url:
       source_url = framework_helpers.FormatAbsoluteURL(
           self.mr, urls.ADMIN_INTRO, include_project=True)
     self.response.location = source_url
-    self.response.status = httplib.MOVED_PERMANENTLY
+    self.response.status = http_client.MOVED_PERMANENTLY

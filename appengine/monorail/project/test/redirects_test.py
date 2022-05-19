@@ -8,7 +8,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import httplib
+from six.moves import http_client
 import unittest
 
 import webapp2
@@ -35,14 +35,13 @@ class WikiRedirectTest(unittest.TestCase):
     """Visiting a project that we don't host is 404."""
     self.servlet.mr.project = None
     self.servlet.get()
-    self.assertEqual(
-        httplib.NOT_FOUND, self.servlet.response.status_code)
+    self.assertEqual(http_client.NOT_FOUND, self.servlet.response.status_code)
 
   def testRedirect_NoDocsSpecified(self):
     """Visiting any old wiki URL goes to admin intro by default."""
     self.servlet.get()
     self.assertEqual(
-        httplib.MOVED_PERMANENTLY, self.servlet.response.status_code)
+        http_client.MOVED_PERMANENTLY, self.servlet.response.status_code)
     self.assertTrue(
         self.servlet.response.location.endswith(urls.ADMIN_INTRO))
 
@@ -51,7 +50,7 @@ class WikiRedirectTest(unittest.TestCase):
     self.project.docs_url = 'some_url'
     self.servlet.get()
     self.assertEqual(
-        httplib.MOVED_PERMANENTLY, self.servlet.response.status_code)
+        http_client.MOVED_PERMANENTLY, self.servlet.response.status_code)
     self.assertEqual('some_url', self.servlet.response.location)
 
 
@@ -70,14 +69,13 @@ class SourceRedirectTest(unittest.TestCase):
     """Visiting a project that we don't host is 404."""
     self.servlet.mr.project = None
     self.servlet.get()
-    self.assertEqual(
-        httplib.NOT_FOUND, self.servlet.response.status_code)
+    self.assertEqual(http_client.NOT_FOUND, self.servlet.response.status_code)
 
   def testRedirect_NoSrcSpecified(self):
     """Visiting any old source code URL goes to admin intro by default."""
     self.servlet.get()
     self.assertEqual(
-        httplib.MOVED_PERMANENTLY, self.servlet.response.status_code)
+        http_client.MOVED_PERMANENTLY, self.servlet.response.status_code)
     self.assertTrue(
         self.servlet.response.location.endswith(urls.ADMIN_INTRO))
 
@@ -86,5 +84,5 @@ class SourceRedirectTest(unittest.TestCase):
     self.project.source_url = 'some_url'
     self.servlet.get()
     self.assertEqual(
-        httplib.MOVED_PERMANENTLY, self.servlet.response.status_code)
+        http_client.MOVED_PERMANENTLY, self.servlet.response.status_code)
     self.assertEqual('some_url', self.servlet.response.location)

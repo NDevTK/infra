@@ -12,7 +12,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import httplib
+from six.moves import http_client
 import json
 import logging
 
@@ -72,7 +72,7 @@ class JsonFeed(servlet.Servlet):
       if self.CHECK_SAME_APP and not settings.local_mode:
         calling_app_id = request.headers.get('X-Appengine-Inbound-Appid')
         if calling_app_id != app_identity.get_application_id():
-          self.response.status = httplib.FORBIDDEN
+          self.response.status = http_client.FORBIDDEN
           return
 
       self._CheckForMovedProject(mr, request)
@@ -89,7 +89,7 @@ class JsonFeed(servlet.Servlet):
       self.abort(400, msg)
     except permissions.PermissionException as e:
       logging.info('Trapped PermissionException %s', e)
-      self.response.status = httplib.FORBIDDEN
+      self.response.status = http_client.FORBIDDEN
 
   # pylint: disable=unused-argument
   # pylint: disable=arguments-differ

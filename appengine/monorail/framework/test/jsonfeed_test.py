@@ -8,7 +8,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import httplib
+from six.moves import http_client
 import logging
 import unittest
 
@@ -102,10 +102,10 @@ class JsonFeedTest(unittest.TestCase):
     # Note that request has no X-Appengine-Inbound-Appid set.
     self.assertIsNone(feed.get())
     self.assertFalse(feed.handle_request_called)
-    self.assertEqual(httplib.FORBIDDEN, feed.response.status)
+    self.assertEqual(http_client.FORBIDDEN, feed.response.status)
     self.assertIsNone(feed.post())
     self.assertFalse(feed.handle_request_called)
-    self.assertEqual(httplib.FORBIDDEN, feed.response.status)
+    self.assertEqual(http_client.FORBIDDEN, feed.response.status)
 
   def testSameAppOnly_InternalOnlyCalledFromWrongApp(self):
     feed = TestableJsonFeed()
@@ -114,10 +114,10 @@ class JsonFeedTest(unittest.TestCase):
     feed.mr.request.headers['X-Appengine-Inbound-Appid'] = 'wrong'
     self.assertIsNone(feed.get())
     self.assertFalse(feed.handle_request_called)
-    self.assertEqual(httplib.FORBIDDEN, feed.response.status)
+    self.assertEqual(http_client.FORBIDDEN, feed.response.status)
     self.assertIsNone(feed.post())
     self.assertFalse(feed.handle_request_called)
-    self.assertEqual(httplib.FORBIDDEN, feed.response.status)
+    self.assertEqual(http_client.FORBIDDEN, feed.response.status)
 
 
 class TestableJsonFeed(jsonfeed.JsonFeed):

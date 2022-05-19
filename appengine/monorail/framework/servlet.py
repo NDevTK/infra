@@ -21,7 +21,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 import gc
-import httplib
+from six.moves import http_client
 import json
 import logging
 import os
@@ -199,8 +199,8 @@ class Servlet(webapp2.RequestHandler):
       except MySQLdb.OperationalError as e:
         logging.exception(e)
         page_data = {
-          'http_response_code': httplib.SERVICE_UNAVAILABLE,
-          'requested_url': self.request.url,
+            'http_response_code': http_client.SERVICE_UNAVAILABLE,
+            'requested_url': self.request.url,
         }
         self.template = template_helpers.GetTemplate(
             'templates/framework/database-maintenance.ezt',
@@ -228,15 +228,15 @@ class Servlet(webapp2.RequestHandler):
 
     except exceptions.InputException as e:
       logging.info('Rejecting invalid input: %r', e)
-      self.response.status = httplib.BAD_REQUEST
+      self.response.status = http_client.BAD_REQUEST
 
     except exceptions.NoSuchProjectException as e:
       logging.info('Rejecting invalid request: %r', e)
-      self.response.status = httplib.NOT_FOUND
+      self.response.status = http_client.NOT_FOUND
 
     except xsrf.TokenIncorrect as e:
       logging.info('Bad XSRF token: %r', e.message)
-      self.response.status = httplib.BAD_REQUEST
+      self.response.status = http_client.BAD_REQUEST
 
     except permissions.BannedUserException as e:
       logging.warning('The user has been banned')
@@ -246,7 +246,7 @@ class Servlet(webapp2.RequestHandler):
 
     except ratelimiter.RateLimitExceeded as e:
       logging.info('RateLimitExceeded Exception %s', e)
-      self.response.status = httplib.BAD_REQUEST
+      self.response.status = http_client.BAD_REQUEST
       self.response.body = 'Slow your roll.'
 
     finally:
@@ -369,8 +369,8 @@ class Servlet(webapp2.RequestHandler):
         # Display the missing permissions template.
         page_data = {
             'reason': e.message,
-            'http_response_code': httplib.FORBIDDEN,
-            }
+            'http_response_code': http_client.FORBIDDEN,
+        }
         with self.mr.profiler.Phase('gather base data'):
           page_data.update(self.GatherBaseData(self.mr, nonce))
         self._AddHelpDebugPageData(page_data)
@@ -431,7 +431,7 @@ class Servlet(webapp2.RequestHandler):
     except permissions.PermissionException as e:
       logging.warning('Trapped permission-related exception "%s".', e)
       # TODO(jrobbins): can we do better than an error page? not much.
-      self.response.status = httplib.BAD_REQUEST
+      self.response.status = http_client.BAD_REQUEST
 
   def _DoCommonRequestProcessing(self, request, mr):
     """Do common processing dependent on having the user and project pbs."""
