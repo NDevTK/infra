@@ -26,9 +26,16 @@ create {
 }
 
 create {
-  platform_re: "windows-.*|mac-.*"
+  platform_re: "windows-.*"
   build {
     install: "install_bootstrap.sh"
+  }
+}
+
+create {
+  platform_re: "mac-.*"
+  build {
+    install: "install_mac.sh"
   }
 }
 
