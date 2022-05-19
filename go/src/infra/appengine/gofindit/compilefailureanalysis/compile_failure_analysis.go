@@ -79,21 +79,25 @@ func AnalyzeFailure(
 // and returns the regression range based on GitilesCommit.
 func findRegressionRange(
 	c context.Context,
-	first_failed_build_id int64,
-	last_passed_build_id int64,
+	firstFailedBuildID int64,
+	lastPassedBuildID int64,
 ) (*gfipb.RegressionRange, error) {
-	first_failed_build, err := buildbucket.GetBuild(c, first_failed_build_id, nil)
+	firstFailedBuild, err := buildbucket.GetBuild(c, firstFailedBuildID, nil)
 	if err != nil {
-		return nil, fmt.Errorf("Error getting build %d: %w", first_failed_build_id, err)
+		return nil, fmt.Errorf("error getting build %d: %w", firstFailedBuildID, err)
 	}
 
-	last_passed_build, err := buildbucket.GetBuild(c, last_passed_build_id, nil)
+	lastPassedBuild, err := buildbucket.GetBuild(c, lastPassedBuildID, nil)
 	if err != nil {
-		return nil, fmt.Errorf("Error getting build %d: %w", last_passed_build_id, err)
+		return nil, fmt.Errorf("error getting build %d: %w", lastPassedBuildID, err)
+	}
+
+	if firstFailedBuild.GetInput().GetGitilesCommit() == nil || lastPassedBuild.GetInput().GetGitilesCommit() == nil {
+		return nil, fmt.Errorf("couldn't get gitiles commit for builds (%d, %d)", lastPassedBuildID, firstFailedBuildID)
 	}
 
 	return &gfipb.RegressionRange{
-		FirstFailed: first_failed_build.GetInput().GitilesCommit,
-		LastPassed:  last_passed_build.GetInput().GitilesCommit,
+		FirstFailed: firstFailedBuild.GetInput().GetGitilesCommit(),
+		LastPassed:  lastPassedBuild.GetInput().GetGitilesCommit(),
 	}, nil
 }

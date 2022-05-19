@@ -10,12 +10,14 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/google/go-cmp/cmp"
 	. "github.com/smartystreets/goconvey/convey"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
+	"google.golang.org/protobuf/proto"
 
 	"infra/appengine/gofindit/internal/buildbucket"
 	"infra/appengine/gofindit/internal/gitiles"
@@ -118,4 +120,71 @@ func TestAnalyzeFailure(t *testing.T) {
 		datastore.GetAll(c, q, &nthsection_analyses)
 		So(len(nthsection_analyses), ShouldEqual, 1)
 	})
+}
+
+func TestFindRegressionRange(t *testing.T) {
+	t.Parallel()
+	// Setup mock for buildbucket
+	ctl := gomock.NewController(t)
+	defer ctl.Finish()
+	c := context.Background()
+
+	Convey("No Gitiles Commit", t, func() {
+		mc := buildbucket.NewMockedClient(c, ctl)
+		c = mc.Ctx
+		res := &bbpb.Build{}
+		mc.Client.EXPECT().GetBuild(gomock.Any(), gomock.Any(), gomock.Any()).Return(res, nil).AnyTimes()
+		_, e := findRegressionRange(c, 8001, 8000)
+		So(e, ShouldNotBeNil)
+	})
+
+	Convey("Have Gitiles Commit", t, func() {
+		mc := buildbucket.NewMockedClient(c, ctl)
+		c = mc.Ctx
+		res1 := &bbpb.Build{
+			Input: &bbpb.Build_Input{
+				GitilesCommit: &bbpb.GitilesCommit{
+					Host:    "host1",
+					Project: "proj1",
+					Id:      "id1",
+					Ref:     "ref1",
+				},
+			},
+		}
+
+		res2 := &bbpb.Build{
+			Input: &bbpb.Build_Input{
+				GitilesCommit: &bbpb.GitilesCommit{
+					Host:    "host2",
+					Project: "proj2",
+					Id:      "id2",
+					Ref:     "ref2",
+				},
+			},
+		}
+
+		// It is hard to match the exact GetBuildRequest. We use Times() to simulate different response.
+		mc.Client.EXPECT().GetBuild(gomock.Any(), gomock.Any(), gomock.Any()).Return(res1, nil).Times(1)
+		mc.Client.EXPECT().GetBuild(gomock.Any(), gomock.Any(), gomock.Any()).Return(res2, nil).Times(1)
+
+		rr, e := findRegressionRange(c, 8001, 8000)
+		So(e, ShouldBeNil)
+
+		diff := cmp.Diff(rr.FirstFailed, &bbpb.GitilesCommit{
+			Host:    "host1",
+			Project: "proj1",
+			Id:      "id1",
+			Ref:     "ref1",
+		}, cmp.Comparer(proto.Equal))
+		So(diff, ShouldEqual, "")
+
+		diff = cmp.Diff(rr.LastPassed, &bbpb.GitilesCommit{
+			Host:    "host2",
+			Project: "proj2",
+			Id:      "id2",
+			Ref:     "ref2",
+		}, cmp.Comparer(proto.Equal))
+		So(diff, ShouldEqual, "")
+	})
+
 }
