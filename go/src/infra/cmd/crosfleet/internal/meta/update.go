@@ -6,6 +6,7 @@ package meta
 
 import (
 	"fmt"
+	"infra/libs/cipd"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -19,9 +20,8 @@ import (
 	"infra/cmd/crosfleet/internal/site"
 )
 
-// crosfleetLatest is a fragment of a cipd manifest that is used to install the latest version of the crosfleet
-// command line tool.
-const crosfleetLatest = "chromiumos/infra/crosfleet/${platform} latest"
+// crosfleetDir is the CIPD parent directory for crosfleet packages.
+const crosfleetParentDir = "chromiumos/infra/crosfleet/"
 
 // Update subcommand: Update crosfleet tool.
 var Update = &subcommands.Command{
@@ -101,8 +101,29 @@ func isCIPDRootDir(dir string) bool {
 	return fi.Mode().IsDir()
 }
 
+// currentEnsureFile captures the current state of all installed CIPD packages.
+func ensureFileWithLatestCrosfleet(dir string) (string, error) {
+	packages, err := cipd.InstalledPackages("crosfleet")(dir)
+	if err != nil {
+		return "", err
+	}
+	var packageConfigs []string
+	for _, p := range packages {
+		if strings.HasPrefix(p.Package, crosfleetParentDir) {
+			p.Pin.InstanceID = "latest"
+		}
+		config := fmt.Sprintf("%s %s", p.Package, p.Pin.InstanceID)
+		packageConfigs = append(packageConfigs, config)
+	}
+	fmt.Println(strings.Join(packageConfigs, "\n"))
+	return strings.Join(packageConfigs, "\n"), nil
+}
+
 // cipdEnsureLatest takes an application and a directory and runs a command with
 // arguments that will read a cipd manifest from stdin and then run "ensure".
+//
+// We dynamically generate an ensure file to ensure no other installed CIPD
+// packages are removed during the crosfleet package update.
 //
 // Without this function, you need to run `sudo env PATH="$PATH" crosfleet update` in order to update
 // crosfleet if crosfleet was installed as root.
@@ -110,17 +131,21 @@ func isCIPDRootDir(dir string) bool {
 // cipdEnsureLatest assumes that the directory exists and that the [[dir]]/.cipd directory
 // exists.
 func cipdEnsureLatest(a subcommands.Application, dir string, printer *common.CLIPrinter) error {
+	ensureFile, err := ensureFileWithLatestCrosfleet(dir)
+	if err != nil {
+		return err
+	}
 	// We create two runnable command objects that update the cipd directory.
 	// One runs as the current user and the other always runs as root.
 	// If the command that runs as the current user fails, then we try the second command.
 	asSelf := exec.Command("cipd", "ensure", "-root", dir, "-ensure-file", "-")
-	asSelf.Stdin = strings.NewReader(crosfleetLatest)
+	asSelf.Stdin = strings.NewReader(ensureFile)
 	asSelf.Stdout = printer.GetOut()
 	asSelf.Stderr = printer.GetErr()
 	// Windows does not support sudo
 	pathvar := fmt.Sprintf("PATH=%s", os.Getenv("PATH"))
 	asRootUnix := exec.Command("sudo", "/usr/bin/env", pathvar, "cipd", "ensure", "-root", dir, "-ensure-file", "-")
-	asRootUnix.Stdin = strings.NewReader(crosfleetLatest)
+	asRootUnix.Stdin = strings.NewReader(ensureFile)
 	asRootUnix.Stdout = printer.GetOut()
 	asRootUnix.Stderr = printer.GetErr()
 
