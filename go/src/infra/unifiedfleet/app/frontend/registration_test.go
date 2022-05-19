@@ -824,6 +824,42 @@ func TestDeleteRack(t *testing.T) {
 	})
 }
 
+func TestRenameRack(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	tf, validate := newTestFixtureWithContext(ctx, t)
+	defer validate()
+	Convey("RenameRack", t, func() {
+		Convey("Rename a empty rack name", func() {
+			_, err := tf.Fleet.RenameRack(tf.C, &ufsAPI.RenameRackRequest{
+				Name: "",
+			})
+			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+		})
+		Convey("Rename a rack to an empty name", func() {
+			_, err := tf.Fleet.RenameRack(tf.C, &ufsAPI.RenameRackRequest{
+				Name:    "oldRack",
+				NewName: "",
+			})
+			So(err.Error(), ShouldContainSubstring, "Missing new rack name")
+		})
+		Convey("The new rack name after renaming doesn't follow rackname format", func() {
+			_, err := tf.Fleet.RenameRack(tf.C, &ufsAPI.RenameRackRequest{
+				Name:    "racks/oldRack",
+				NewName: "newRack",
+			})
+			So(err.Error(), ShouldContainSubstring, ufsAPI.RackNameFormat)
+		})
+		Convey("Happy path", func() {
+			_, err := tf.Fleet.RenameRack(tf.C, &ufsAPI.RenameRackRequest{
+				Name:    "racks/oldRack",
+				NewName: "racks/newRack",
+			})
+			So(err, ShouldBeNil)
+		})
+	})
+}
+
 func TestCreateNic(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()

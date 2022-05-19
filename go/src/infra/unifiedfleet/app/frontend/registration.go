@@ -328,6 +328,9 @@ func (fs *FleetServerImpl) RenameRack(ctx context.Context, req *ufsAPI.RenameRac
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
 	return nil, err
 }
 
