@@ -10,7 +10,7 @@ from __future__ import absolute_import
 
 import itertools
 import logging
-import rfc822
+import email.utils
 
 import settings
 from businesslogic import work_env
@@ -227,7 +227,7 @@ def _GetOwnerID(user_svc, cnxn, owner_email):
     owner_email = owner_email.strip()
   if not owner_email:
     return framework_constants.NO_USER_SPECIFIED
-  emails = [addr for _, addr in rfc822.AddressList(owner_email)]
+  emails = [addr for _, addr in email.utils.getaddresses([owner_email])]
   return user_svc.LookupExistingUserIDs(
       cnxn, emails).get(owner_email) or framework_constants.NO_USER_SPECIFIED
 
@@ -237,7 +237,7 @@ def _GetCCIDs(user_svc, cnxn, cc_emails):
     cc_emails = cc_emails.strip()
   if not cc_emails:
     return []
-  emails = [addr for _, addr in rfc822.AddressList(cc_emails)]
+  emails = [addr for _, addr in email.utils.getaddresses([cc_emails])]
   return [userID for _, userID
           in user_svc.LookupExistingUserIDs(cnxn, emails).iteritems()
           if userID is not None]
