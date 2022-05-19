@@ -327,7 +327,7 @@ func renameSwitchHelper(ctx context.Context, oldSwitchName, newSwitchName string
 	}
 
 	// Update Nic with new switch name
-	if err := updateIndexingForNic(ctx, "switch", oldSwitchName, newSwitchName, hc); err != nil {
+	if err := updateIndexInNic(ctx, "switch", oldSwitchName, newSwitchName, hc); err != nil {
 		return errors.Annotate(err, "failed to update indexing for hosts").Err()
 	}
 

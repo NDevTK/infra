@@ -467,7 +467,7 @@ func renameRackHelper(ctx context.Context, oldName, newName string, hc *HistoryC
 	}
 
 	// Rename nics associated with this rack
-	if err := updateIndexingForNic(ctx, "rack", oldName, newName, hc); err != nil {
+	if err := updateIndexInNic(ctx, "rack", oldName, newName, hc); err != nil {
 		return err
 	}
 

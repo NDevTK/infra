@@ -610,9 +610,10 @@ func validateRenameNic(ctx context.Context, oldNic *ufspb.Nic, newNicName string
 	return nil
 }
 
-// updateIndexingForNic updates indexing for Nic tables
-// can be used inside a transaction
-func updateIndexingForNic(ctx context.Context, property, oldValue, newValue string, hc *HistoryClient) error {
+// updateIndexInNic updates indexes in nic objects
+//
+// This function can be used inside a transaction.
+func updateIndexInNic(ctx context.Context, property, oldValue, newValue string, hc *HistoryClient) error {
 	var nics []*ufspb.Nic
 	var err error
 	switch property {
