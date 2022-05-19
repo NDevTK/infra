@@ -5,7 +5,7 @@
 """This file sets up all the urls for monorail pages."""
 
 import logging
-from framework import excessiveactivity
+from framework import banned, excessiveactivity
 import settings
 from flask import Flask
 
@@ -66,7 +66,9 @@ class ServletRegistry(object):
         # (
         #     '/settings.do',
         #     usersettings.UserSettings(services=service).PostUserSetting,
-        #     ['POST'])
+        #     ['POST']),
+        # ('/noAccess', banned.Banned(services=service).GetNoAccessPage,
+        #   ['GET'])
     ]
 
     for rule in _HOSTING_URL:

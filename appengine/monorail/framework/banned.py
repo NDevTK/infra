@@ -18,7 +18,7 @@ import logging
 
 import ezt
 
-from framework import permissions
+from framework import flaskservlet, permissions
 from framework import servlet
 
 
@@ -52,3 +52,6 @@ class Banned(servlet.Servlet):
         # user back to this page after they sign out.
         'currentPageURLEncoded': None,
         }
+
+  # def GetNoAccessPage(self, **kwargs):
+  #   return self.handler(**kwargs)
