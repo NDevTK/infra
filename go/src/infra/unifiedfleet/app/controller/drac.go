@@ -556,9 +556,10 @@ func validateDeleteDrac(ctx context.Context, drac *ufspb.Drac) error {
 	return nil
 }
 
-// updateIndexingForDrac updates indexing for Drac tables
-// can be used inside a transaction
-func updateIndexingForDrac(ctx context.Context, property, oldValue, newValue string, hc *HistoryClient) error {
+// updateIndexInDrac updates indexes in drac objects
+//
+// This function can be used inside a transaction.
+func updateIndexInDrac(ctx context.Context, property, oldValue, newValue string, hc *HistoryClient) error {
 	var dracs []*ufspb.Drac
 	var err error
 	switch property {
