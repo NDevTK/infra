@@ -558,6 +558,30 @@ func updateIndexingForMachineResources(ctx context.Context, oldMachine *ufspb.Ma
 	return nil
 }
 
+// updateIndexInMachine updates indexes in machine objects
+//
+// This function can be used inside a transaction.
+func updateIndexInMachine(ctx context.Context, indexName, oldValue, newValue string, hc *HistoryClient) error {
+	var newEntities []*ufspb.Machine
+	var err error
+	switch indexName {
+	case "rack":
+		newEntities, err = registration.QueryMachineByPropertyName(ctx, "rack", oldValue, false)
+		if err != nil {
+			return errors.Annotate(err, "failed to query machines in rack %s", newValue).Err()
+		}
+		for _, n := range newEntities {
+			oldCopy := proto.Clone(n).(*ufspb.Machine)
+			n.Location.Rack = newValue
+			hc.LogMachineChanges(oldCopy, n)
+		}
+	}
+	if _, err := registration.BatchUpdateMachines(ctx, newEntities); err != nil {
+		return errors.Annotate(err, "failed to batch update machines").Err()
+	}
+	return nil
+}
+
 // GetMachine returns machine for the given id from datastore.
 func GetMachine(ctx context.Context, id string) (*ufspb.Machine, error) {
 	machine, err := registration.GetMachine(ctx, id)
