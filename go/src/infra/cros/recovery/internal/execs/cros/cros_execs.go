@@ -200,9 +200,6 @@ func isNotVirtualMachineExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err != nil {
 		return errors.Annotate(err, "not virtual machine").Err()
 	}
-	if out == "" {
-		return errors.Reason("not virtual machine: no cpu information found").Err()
-	}
 	if strings.Contains(strings.ToLower(out), "qemu") {
 		return errors.Reason("not virtual machine: qemu is virtual machine").Err()
 	}
