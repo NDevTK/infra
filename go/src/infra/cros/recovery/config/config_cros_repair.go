@@ -225,6 +225,7 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"Cleanup the enrollment state and wait for boot",
 			},
+			AllowFailAfterRecovery: true,
 		},
 		"Cleanup the enrollment state and wait for boot": {
 			Docs: []string{
