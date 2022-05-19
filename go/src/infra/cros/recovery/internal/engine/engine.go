@@ -356,7 +356,7 @@ func (r *recoveryEngine) runRecoveries(ctx context.Context, actionName string) (
 			// Engine allows to use each recovery action only once in scope of the action.
 			continue
 		}
-		if err := r.runActions(ctx, []string{recoveryName}, false); err != nil {
+		if err := r.runAction(ctx, recoveryName, false); err != nil {
 			log.Debugf(ctx, "Recovery action %q: fail. Error: %s ", recoveryName, err)
 			r.registerRecoveryUsage(actionName, recoveryName, err)
 			continue
