@@ -16,7 +16,6 @@ import (
 
 	"infra/appengine/weetbix/internal/pagination"
 	"infra/appengine/weetbix/internal/testresults"
-	"infra/appengine/weetbix/internal/testverdicts"
 	"infra/appengine/weetbix/pbutil"
 	pb "infra/appengine/weetbix/proto/v1"
 	"infra/appengine/weetbix/utils"
@@ -57,7 +56,7 @@ func (*testHistoryServer) Query(ctx context.Context, req *pb.QueryTestHistoryReq
 	}
 
 	pageSize := int(pageSizeLimiter.Adjust(req.GetPageSize()))
-	opts := testverdicts.ReadTestHistoryOptions{
+	opts := testresults.ReadTestHistoryOptions{
 		Project:          req.GetProject(),
 		TestID:           req.GetTestId(),
 		SubRealms:        []string{req.GetPredicate().GetSubRealm()},
@@ -68,7 +67,7 @@ func (*testHistoryServer) Query(ctx context.Context, req *pb.QueryTestHistoryReq
 		PageToken:        req.GetPageToken(),
 	}
 
-	verdicts, nextPageToken, err := testverdicts.ReadTestHistory(span.Single(ctx), opts)
+	verdicts, nextPageToken, err := testresults.ReadTestHistory(span.Single(ctx), opts)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +115,7 @@ func (*testHistoryServer) QueryStats(ctx context.Context, req *pb.QueryTestHisto
 	}
 
 	pageSize := int(pageSizeLimiter.Adjust(req.GetPageSize()))
-	opts := testverdicts.ReadTestHistoryOptions{
+	opts := testresults.ReadTestHistoryOptions{
 		Project:          req.GetProject(),
 		TestID:           req.GetTestId(),
 		SubRealms:        []string{req.GetPredicate().GetSubRealm()},
@@ -127,7 +126,7 @@ func (*testHistoryServer) QueryStats(ctx context.Context, req *pb.QueryTestHisto
 		PageToken:        req.GetPageToken(),
 	}
 
-	groups, nextPageToken, err := testverdicts.ReadTestHistoryStats(span.Single(ctx), opts)
+	groups, nextPageToken, err := testresults.ReadTestHistoryStats(span.Single(ctx), opts)
 	if err != nil {
 		return nil, err
 	}

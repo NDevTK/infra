@@ -617,6 +617,7 @@ var testHistoryQueryTmpl = template.Must(template.New("").Parse(`
 				AND (ARRAY_LENGTH(ChangelistHosts) > 0) = @hasUnsubmittedChanges
 			{{end}}
 	{{end}}
+
 	{{define "testHistoryQuery"}}
 		SELECT
 			PartitionTime,
@@ -688,7 +689,6 @@ var testHistoryQueryTmpl = template.Must(template.New("").Parse(`
 `))
 
 var variantsQueryTmpl = template.Must(template.New("variantsQuery").Parse(`
-	{{define "variantsQuery"}}
 	SELECT
 		VariantHash,
 		ANY_VALUE(Variant) as Variant,
@@ -704,6 +704,5 @@ var variantsQueryTmpl = template.Must(template.New("variantsQuery").Parse(`
 	ORDER BY VariantHash ASC
 	{{if .params.limit}}
 		LIMIT @limit
-	{{end}}
 	{{end}}
 `))

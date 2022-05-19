@@ -10,8 +10,6 @@ import (
 	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
-	"go.chromium.org/luci/common/clock"
-	"go.chromium.org/luci/common/clock/testclock"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/resultdb/rdbperms"
 	"go.chromium.org/luci/server/auth"
@@ -22,7 +20,6 @@ import (
 
 	"infra/appengine/weetbix/internal/testresults"
 	"infra/appengine/weetbix/internal/testutil"
-	"infra/appengine/weetbix/internal/testverdicts"
 	"infra/appengine/weetbix/pbutil"
 	pb "infra/appengine/weetbix/proto/v1"
 )
@@ -30,7 +27,6 @@ import (
 func TestTestHistoryServer(t *testing.T) {
 	Convey("TestHistoryServer", t, func() {
 		ctx := testutil.SpannerTestContext(t)
-		ctx, _ = testclock.UseTime(ctx, time.Date(2022, time.January, 1, 0, 0, 0, 0, time.UTC))
 
 		ctx = auth.WithState(ctx, &authtest.FakeState{
 			Identity: "user:someone@example.com",
@@ -46,7 +42,7 @@ func TestTestHistoryServer(t *testing.T) {
 			},
 		})
 
-		now := clock.Now(ctx)
+		referenceTime := time.Date(2022, time.January, 1, 0, 0, 0, 0, time.UTC)
 		day := 24 * time.Hour
 
 		var1 := pbutil.Variant("key1", "val1", "key2", "val1")
@@ -71,26 +67,51 @@ func TestTestHistoryServer(t *testing.T) {
 			insertTVR("realm2", var4)
 
 			insertTV := func(partitionTime time.Time, variant *pb.Variant, invId string, hasUnsubmittedChanges bool) {
-				(&testverdicts.TestVerdict{
-					Project:               "project",
-					TestID:                "test_id",
-					SubRealm:              "realm",
-					PartitionTime:         partitionTime,
-					VariantHash:           pbutil.VariantHash(variant),
-					IngestedInvocationID:  invId,
-					HasUnsubmittedChanges: hasUnsubmittedChanges,
-				}).SaveUnverified(ctx)
+				baseTestResult := testresults.NewTestResult().
+					WithProject("project").
+					WithTestID("test_id").
+					WithVariantHash(pbutil.VariantHash(variant)).
+					WithPartitionTime(partitionTime).
+					WithIngestedInvocationID(invId).
+					WithSubRealm("realm").
+					WithStatus(pb.TestResultStatus_PASS).
+					WithoutRunDuration()
+				if hasUnsubmittedChanges {
+					baseTestResult = baseTestResult.WithChangelists([]testresults.Changelist{
+						{
+							Host:     "mygerrit",
+							Change:   4321,
+							Patchset: 5,
+						},
+						{
+							Host:     "anothergerrit",
+							Change:   5471,
+							Patchset: 6,
+						},
+					})
+				} else {
+					baseTestResult = baseTestResult.WithChangelists(nil)
+				}
+
+				trs := testresults.NewTestVariant().
+					WithBaseTestResult(baseTestResult.Build()).
+					WithStatus(pb.TestVerdictStatus_EXPECTED).
+					WithPassedAvgDuration(nil).
+					Build()
+				for _, tr := range trs {
+					span.BufferWrite(ctx, tr.SaveUnverified())
+				}
 			}
 
-			insertTV(now.Add(-1*day), var1, "inv1", false)
-			insertTV(now.Add(-1*day), var1, "inv2", false)
-			insertTV(now.Add(-1*day), var2, "inv1", false)
+			insertTV(referenceTime.Add(-1*day), var1, "inv1", false)
+			insertTV(referenceTime.Add(-1*day), var1, "inv2", false)
+			insertTV(referenceTime.Add(-1*day), var2, "inv1", false)
 
-			insertTV(now.Add(-2*day), var1, "inv1", false)
-			insertTV(now.Add(-2*day), var1, "inv2", true)
-			insertTV(now.Add(-2*day), var2, "inv1", true)
+			insertTV(referenceTime.Add(-2*day), var1, "inv1", false)
+			insertTV(referenceTime.Add(-2*day), var1, "inv2", true)
+			insertTV(referenceTime.Add(-2*day), var2, "inv1", true)
 
-			insertTV(now.Add(-3*day), var3, "inv1", true)
+			insertTV(referenceTime.Add(-3*day), var3, "inv1", true)
 
 			return nil
 		})
@@ -173,35 +194,35 @@ func TestTestHistoryServer(t *testing.T) {
 							VariantHash:   pbutil.VariantHash(var1),
 							InvocationId:  "inv1",
 							Status:        pb.TestVerdictStatus_EXPECTED,
-							PartitionTime: timestamppb.New(now.Add(-1 * day)),
+							PartitionTime: timestamppb.New(referenceTime.Add(-1 * day)),
 						},
 						{
 							TestId:        "test_id",
 							VariantHash:   pbutil.VariantHash(var1),
 							InvocationId:  "inv2",
 							Status:        pb.TestVerdictStatus_EXPECTED,
-							PartitionTime: timestamppb.New(now.Add(-1 * day)),
+							PartitionTime: timestamppb.New(referenceTime.Add(-1 * day)),
 						},
 						{
 							TestId:        "test_id",
 							VariantHash:   pbutil.VariantHash(var2),
 							InvocationId:  "inv1",
 							Status:        pb.TestVerdictStatus_EXPECTED,
-							PartitionTime: timestamppb.New(now.Add(-1 * day)),
+							PartitionTime: timestamppb.New(referenceTime.Add(-1 * day)),
 						},
 						{
 							TestId:        "test_id",
 							VariantHash:   pbutil.VariantHash(var1),
 							InvocationId:  "inv1",
 							Status:        pb.TestVerdictStatus_EXPECTED,
-							PartitionTime: timestamppb.New(now.Add(-2 * day)),
+							PartitionTime: timestamppb.New(referenceTime.Add(-2 * day)),
 						},
 						{
 							TestId:        "test_id",
 							VariantHash:   pbutil.VariantHash(var1),
 							InvocationId:  "inv2",
 							Status:        pb.TestVerdictStatus_EXPECTED,
-							PartitionTime: timestamppb.New(now.Add(-2 * day)),
+							PartitionTime: timestamppb.New(referenceTime.Add(-2 * day)),
 						},
 					},
 					NextPageToken: res.NextPageToken,
@@ -218,14 +239,14 @@ func TestTestHistoryServer(t *testing.T) {
 							VariantHash:   pbutil.VariantHash(var2),
 							InvocationId:  "inv1",
 							Status:        pb.TestVerdictStatus_EXPECTED,
-							PartitionTime: timestamppb.New(now.Add(-2 * day)),
+							PartitionTime: timestamppb.New(referenceTime.Add(-2 * day)),
 						},
 						{
 							TestId:        "test_id",
 							VariantHash:   pbutil.VariantHash(var3),
 							InvocationId:  "inv1",
 							Status:        pb.TestVerdictStatus_EXPECTED,
-							PartitionTime: timestamppb.New(now.Add(-3 * day)),
+							PartitionTime: timestamppb.New(referenceTime.Add(-3 * day)),
 						},
 					},
 				})
@@ -298,23 +319,22 @@ func TestTestHistoryServer(t *testing.T) {
 			})
 
 			Convey("e2e", func() {
-				day := 24 * time.Hour
 				res, err := server.QueryStats(ctx, req)
 				So(err, ShouldBeNil)
 				So(res, ShouldResembleProto, &pb.QueryTestHistoryStatsResponse{
 					Groups: []*pb.QueryTestHistoryStatsResponse_Group{
 						{
-							PartitionTime: timestamppb.New(now.Add(-1 * day)),
+							PartitionTime: timestamppb.New(referenceTime.Add(-1 * day)),
 							VariantHash:   pbutil.VariantHash(var1),
 							ExpectedCount: 2,
 						},
 						{
-							PartitionTime: timestamppb.New(now.Add(-1 * day)),
+							PartitionTime: timestamppb.New(referenceTime.Add(-1 * day)),
 							VariantHash:   pbutil.VariantHash(var2),
 							ExpectedCount: 1,
 						},
 						{
-							PartitionTime: timestamppb.New(now.Add(-2 * day)),
+							PartitionTime: timestamppb.New(referenceTime.Add(-2 * day)),
 							VariantHash:   pbutil.VariantHash(var1),
 							ExpectedCount: 2,
 						},
@@ -329,12 +349,12 @@ func TestTestHistoryServer(t *testing.T) {
 				So(res, ShouldResembleProto, &pb.QueryTestHistoryStatsResponse{
 					Groups: []*pb.QueryTestHistoryStatsResponse_Group{
 						{
-							PartitionTime: timestamppb.New(now.Add(-2 * day)),
+							PartitionTime: timestamppb.New(referenceTime.Add(-2 * day)),
 							VariantHash:   pbutil.VariantHash(var2),
 							ExpectedCount: 1,
 						},
 						{
-							PartitionTime: timestamppb.New(now.Add(-3 * day)),
+							PartitionTime: timestamppb.New(referenceTime.Add(-3 * day)),
 							VariantHash:   pbutil.VariantHash(var3),
 							ExpectedCount: 1,
 						},
