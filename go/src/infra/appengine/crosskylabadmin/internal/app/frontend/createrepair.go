@@ -142,7 +142,6 @@ func RouteRepairTask(ctx context.Context, botID string, expectedState string, po
 		ctx,
 		rolloutConfig,
 		&dutRoutingInfo{
-			hostname:   heuristics.NormalizeBotNameToDeviceName(botID),
 			labstation: isLabstation,
 			pools:      pools,
 		},
@@ -223,7 +222,7 @@ func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dut
 		}
 	}
 
-	d, err := r.ComputePermilleData(ctx, info.hostname)
+	d, err := r.ComputePermilleData(info.hostname)
 	if err != nil {
 		return legacy, errorExtractingPermilleInfo
 	}

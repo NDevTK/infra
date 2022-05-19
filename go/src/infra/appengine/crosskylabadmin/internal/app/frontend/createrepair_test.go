@@ -471,27 +471,6 @@ func TestRouteRepairTask(t *testing.T) {
 			out:           "",
 			hasErr:        true,
 		},
-		{
-			name: "Scheduling task on DUT with pattern override.",
-			in: &config.Paris{
-				DutRepair: &config.RolloutConfig{
-					Enable:       true,
-					ProdPermille: 1000,
-					Pattern: []*config.RolloutConfig_Pattern{
-						{
-							Pattern:        "^foo",
-							LatestPermille: 1000,
-						},
-					},
-				},
-			},
-			botID:         "foo-host4",
-			expectedState: "needs_repair",
-			pools:         []string{"some-pool"},
-			randFloat:     1,
-			out:           "latest",
-			hasErr:        false,
-		},
 	}
 
 	for i, tt := range cases {
