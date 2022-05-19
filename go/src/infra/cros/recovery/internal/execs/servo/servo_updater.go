@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components/servo"
+	components_topology "infra/cros/recovery/internal/components/servo/topology"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/execs/servo/topology"
 	"infra/cros/recovery/internal/log"
@@ -238,7 +239,7 @@ type FwUpdaterRequest struct {
 func UpdateDevicesServoFw(ctx context.Context, r execs.Runner, req FwUpdaterRequest, devices []*tlw.ServoTopologyItem) []*tlw.ServoTopologyItem {
 	failDevices := []*tlw.ServoTopologyItem{}
 	for _, device := range devices {
-		if !topology.IsItemGood(ctx, device) {
+		if !components_topology.IsItemGood(ctx, device) {
 			log.Debugf(ctx, "%s does not have minimum required data to update its firmware", device.Type)
 			continue
 		}

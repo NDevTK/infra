@@ -15,6 +15,7 @@ import (
 
 	components_cros "infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/components/servo"
+	components_topology "infra/cros/recovery/internal/components/servo/topology"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/execs/cros"
 	"infra/cros/recovery/internal/execs/cros/battery"
@@ -239,7 +240,7 @@ func isRootServoPresentExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err != nil {
 		return errors.Annotate(err, "is root servo present exec").Err()
 	}
-	if !topology.IsItemGood(ctx, rootServo) {
+	if !components_topology.IsItemGood(ctx, rootServo) {
 		log.Infof(ctx, "Is Servo Root Present Exec: no good root servo found")
 		return errors.Reason("is servo root present exec: no good root servo found").Err()
 	}
@@ -316,21 +317,22 @@ func servoFirmwareNeedsUpdateExec(ctx context.Context, info *execs.ExecInfo) err
 	// topology instead of re-computing it. This is avoid unnecessary
 	// expenditure of time in obtaining the topology here.
 	devices := topology.Devices(info.RunArgs.DUT.ServoHost.ServoTopology, "")
-	var err error
-	if devices == nil {
+	err := components_topology.VerifyServoTopologyItems(ctx, devices)
+	if err != nil {
 		// This situation can arise if the servo topology has been
 		// verified in an earlier action, but the topology was not
 		// persisted because the updateServo parameter was not set in
-		// that action. In this case we do not have any choice but to
+		// that action, or for some reason the stored topology is
+		// corrupted. In this case we do not have any choice but to
 		// re-compute the topology.
 		devices, err = topology.ListOfDevices(ctx, runner, info.RunArgs.DUT.ServoHost.SerialNumber)
 		if err != nil {
 			errors.Annotate(err, "servo firmware needs update exec").Err()
 		}
-		log.Debugf(ctx, "Servo Firmware Needs Update Exec: topology re-computer because pre-existing servo topology not found.")
+		log.Debugf(ctx, "Servo Firmware Needs Update Exec: topology re-computed because pre-existing servo topology not found, or had errors.")
 	}
 	for _, d := range devices {
-		if topology.IsItemGood(ctx, d) {
+		if components_topology.IsItemGood(ctx, d) {
 			log.Debugf(ctx, "Servo Firmware Needs Update Exec: device type (d.Type) :%q.", d.Type)
 			if needsUpdate(ctx, runner, d, info.RunArgs.DUT.ServoHost.FirmwareChannel) {
 				log.Debugf(ctx, "Servo Firmware Needs Update Exec: needs update is true")
@@ -606,8 +608,9 @@ func initDutForServoExec(ctx context.Context, info *execs.ExecInfo) error {
 //
 // @params: actionArgs should be in the format of:
 // Ex: ["try_attempt_count:x", "try_force_update_after_fail:true/false",
-//		"force_update:true/false", "ignore_version:true/false",
-//		"servo_board:servo_micro"]
+//
+//	"force_update:true/false", "ignore_version:true/false",
+//	"servo_board:servo_micro"]
 func servoUpdateServoFirmwareExec(ctx context.Context, info *execs.ExecInfo) (err error) {
 	fwUpdateMap := info.GetActionArgs(ctx)
 	// If the passed in "try_attempt_count" is either 0 or cannot be parsed successfully,

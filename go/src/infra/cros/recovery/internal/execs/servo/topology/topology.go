@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components/servo"
+	"infra/cros/recovery/internal/components/servo/topology"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
@@ -205,7 +206,7 @@ func RetrieveServoTopology(ctx context.Context, runner execs.Runner, servoSerial
 		errors.Annotate(err, "retrieve servo topology").Err()
 	}
 	for _, d := range devices {
-		if IsItemGood(ctx, d) {
+		if topology.IsItemGood(ctx, d) {
 			if d.Serial == servoSerial {
 				servoTopology.Root = d
 			} else {
@@ -321,12 +322,6 @@ func findServoHub(ctx context.Context, runner execs.Runner, servoSerial string) 
 // ServoTopologyItem instance.
 func ConvertServoTopologyItemToString(c *tlw.ServoTopologyItem) string {
 	return fmt.Sprintf("deviceType %q, product %q, serial %q, hub %q, path %q, version %q", c.Type, c.SysfsProduct, c.Serial, c.UsbHubPort, c.SysfsPath, c.FwVersion)
-}
-
-// IsItemGood checks whether a ServoTopologyItem has
-// minimum required data.
-func IsItemGood(ctx context.Context, c *tlw.ServoTopologyItem) bool {
-	return c.Serial != "" && c.Type != "" && c.UsbHubPort != ""
 }
 
 // Devices creates and returns a slice of the servo devices in servo topology.
