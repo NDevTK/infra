@@ -409,6 +409,33 @@ func RenameRack(ctx context.Context, oldName, newName string) (rack *ufspb.Rack,
 		if err = validateRenameRack(ctx, oldRack, newName); err != nil {
 			return err
 		}
+
+		rack = proto.Clone(oldRack).(*ufspb.Rack)
+		hc := getRackClientHistory(oldRack)
+		if err = renameRackHelper(ctx, oldName, newName, hc); err != nil {
+			return err
+		}
+
+		// Delete old, create new
+		if err = registration.DeleteRack(ctx, oldName); err != nil {
+			return err
+		}
+		rack.Name = newName
+		if _, err = registration.BatchUpdateRacks(ctx, []*ufspb.Rack{rack}); err != nil {
+			return err
+		}
+
+		// Log history change events
+		hc.LogRackChanges(&ufspb.Rack{Name: oldName}, nil)
+		hc.LogRackChanges(nil, rack)
+		err = hc.SaveChangeEvents(ctx)
+		if err != nil {
+			return err
+		}
+		// TODO(xixuan): in next CLs, refactor function replaceStateHelper
+		newHc := getRackClientHistory(rack)
+		newHc.stUdt.replaceStateHelper(ctx, util.AddPrefix(util.RackCollection, oldName))
+		err = newHc.SaveChangeEvents(ctx)
 		return nil
 	}
 
@@ -417,6 +444,50 @@ func RenameRack(ctx context.Context, oldName, newName string) (rack *ufspb.Rack,
 		return nil, err
 	}
 	return rack, nil
+}
+
+func renameRackHelper(ctx context.Context, oldName, newName string, hc *HistoryClient) error {
+	// Rename hosts associated with this rack
+	if err := updateIndexingForMachineLSE(ctx, "rack", oldName, newName, hc); err != nil {
+		return err
+	}
+
+	// Rename machines associated with this rack
+	if err := updateIndexInMachine(ctx, "rack", oldName, newName, hc); err != nil {
+		return err
+	}
+
+	// Rename assets associated with this rack
+	if err := updateIndexInAsset(ctx, "rack", oldName, newName, hc); err != nil {
+		return err
+	}
+
+	// Rename switches associated with this rack
+	if err := updateIndexInSwitch(ctx, "rack", oldName, newName, hc); err != nil {
+		return err
+	}
+
+	// Rename nics associated with this rack
+	if err := updateIndexingForNic(ctx, "rack", oldName, newName, hc); err != nil {
+		return err
+	}
+
+	// Rename rpms associated with this rack
+	if err := updateIndexInRPM(ctx, "rack", oldName, newName, hc); err != nil {
+		return err
+	}
+
+	// Rename kvms associated with this rack
+	if err := updateIndexInKVM(ctx, "rack", oldName, newName, hc); err != nil {
+		return err
+	}
+
+	// Rename dracs associated with this rack
+	if err := updateIndexingForDrac(ctx, "rack", oldName, newName, hc); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // validateRenameRack validates if a rack can be renamed
