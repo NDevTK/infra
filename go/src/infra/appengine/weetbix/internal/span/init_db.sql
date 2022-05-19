@@ -656,4 +656,4 @@ CREATE TABLE TestVariantRealms (
 -- The following DDL query needs to be uncommented when applied to real Spanner
 -- instances. But it is commented out for Cloud Spanner Emulator:
 -- https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/issues/32
---, ROW DELETION POLICY (OLDER_THAN(LastIngestionTime, INTERVAL 90 DAY));
+--, ROW DELETION POLICY (OLDER_THAN(LastIngestionTime, INTERVAL 91 DAY));

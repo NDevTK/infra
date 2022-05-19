@@ -7,12 +7,15 @@ package testverdictingester
 import (
 	"context"
 	"fmt"
+	"math"
+	"math/rand"
 	"strings"
 	"time"
 
 	"cloud.google.com/go/spanner"
 	"github.com/pkg/errors"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/sync/parallel"
 	rdbpbutil "go.chromium.org/luci/resultdb/pbutil"
 	rdbpb "go.chromium.org/luci/resultdb/proto/v1"
@@ -90,24 +93,34 @@ func recordIngestedInvocation(ctx context.Context, inv *testresults.IngestedInvo
 	return err
 }
 
-func batchTestResults(inv *testresults.IngestedInvocation, inputC chan []*rdbpb.TestVariant, outputC chan []*spanner.Mutation) {
+type batch struct {
+	// The test variant realms to insert/update if they are stale.
+	// Test variant realms should be inserted before any test results.
+	testVariantRealms []testresults.TestVariantRealm
+	// Test results to insert. Already prepared as Spanner mutations.
+	testResults []*spanner.Mutation
+}
+
+func batchTestResults(inv *testresults.IngestedInvocation, inputC chan []*rdbpb.TestVariant, outputC chan batch) {
 	// Must be selected such that no more than 20,000 mutations occur in
 	// one transaction in the worst case.
-	const batchSize = 800
+	const batchSize = 1000
 
-	// The number of test results in the current batch.
-	var trCount int
-	var ms []*spanner.Mutation
+	var trs []*spanner.Mutation
+	var tvrs []testresults.TestVariantRealm
 	startBatch := func() {
-		ms = make([]*spanner.Mutation, 0, 2*batchSize)
-		trCount = 0
+		trs = make([]*spanner.Mutation, 0, batchSize)
+		tvrs = make([]testresults.TestVariantRealm, 0, batchSize)
 	}
 	outputBatch := func() {
-		if len(ms) == 0 {
+		if len(trs) == 0 {
 			// This should never happen.
 			panic("Pushing empty batch")
 		}
-		outputC <- ms
+		outputC <- batch{
+			testVariantRealms: tvrs,
+			testResults:       trs,
+		}
 	}
 
 	startBatch()
@@ -116,7 +129,7 @@ func batchTestResults(inv *testresults.IngestedInvocation, inputC chan []*rdbpb.
 			// Limit batch size.
 			// Keep all results for one test variant in one batch, so that the
 			// TestVariantRealm record is kept together with the test results.
-			if trCount+len(tv.Results) > batchSize {
+			if len(trs) > batchSize {
 				outputBatch()
 				startBatch()
 			}
@@ -129,7 +142,7 @@ func batchTestResults(inv *testresults.IngestedInvocation, inputC chan []*rdbpb.
 				Variant:           pbutil.VariantFromResultDB(tv.Variant),
 				LastIngestionTime: spanner.CommitTimestamp,
 			}
-			ms = append(ms, tvr.SaveUnverified())
+			tvrs = append(tvrs, tvr)
 
 			exonerationStatus := resultdb.StatusFromExonerations(tv.Exonerations)
 
@@ -162,15 +175,122 @@ func batchTestResults(inv *testresults.IngestedInvocation, inputC chan []*rdbpb.
 					// to avoid storing both the TestResult object and
 					// mutation object in memory until the transaction
 					// commits.
-					ms = append(ms, tr.SaveUnverified())
-					trCount++
+					trs = append(trs, tr.SaveUnverified())
 				}
 			}
 		}
 	}
-	if len(ms) > 0 {
+	if len(trs) > 0 {
 		outputBatch()
 	}
+}
+
+var testResultIngestionRandomnessKey = "used in tests only for forcing ensureTestVariantRealms determinism"
+
+// ensureTestVariantRealms ensures the specified test variant realm entries exist with
+// a recent LastIngestionTime.
+// The implementation assumes the Project and Subrealm of every TestVariantRealm
+// passed to this method is the same.
+func ensureTestVariantRealms(ctx context.Context, tvrs []testresults.TestVariantRealm) error {
+	// Look up the test variant realms to check if they already exist.
+	keys := make([]spanner.Key, 0, len(tvrs))
+	for _, tvr := range tvrs {
+		keys = append(keys, spanner.Key{tvr.Project, tvr.TestID, tvr.VariantHash, tvr.SubRealm})
+	}
+
+	now := clock.Now(ctx)
+
+	updateProb := rand.Float64()
+	if fixedProb, ok := ctx.Value(&testResultIngestionRandomnessKey).(float64); ok {
+		updateProb = fixedProb
+	}
+
+	// No need to read back to the Project and SubRealm as it is the same for all
+	// entries.
+	ks := spanner.KeySetFromKeys(keys...)
+	cols := []string{"TestId", "VariantHash", "LastIngestionTime"}
+	it := span.Read(span.Single(ctx), "TestVariantRealms", ks, cols)
+
+	// For each test, the list of variants that do not require an update to the
+	// TestVariant realm entry. (Realm is not required to be stored, as it is the
+	// same for all entries.)
+	freshTestVariants := make(map[string][]string, len(tvrs))
+	updatesRequired := len(tvrs)
+
+	err := it.Do(func(r *spanner.Row) error {
+		var testID, variantHash string
+		var lastIngestionTime time.Time
+		err := r.Columns(&testID, &variantHash, &lastIngestionTime)
+		if err != nil {
+			return err
+		}
+		d := now.Sub(lastIngestionTime)
+		if durationSinceUpdateToUpdateProbability(d) >= updateProb {
+			updatesRequired++
+		} else {
+			freshTestVariants[testID] = append(freshTestVariants[testID], variantHash)
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	if updatesRequired == 0 {
+		return nil
+	}
+
+	// Insert/update the test variant realm entries which don't exist/are stale.
+	ms := make([]*spanner.Mutation, 0, updatesRequired)
+	for _, tvr := range tvrs {
+		freshVariants := freshTestVariants[tvr.TestID]
+		requiresUpdate := true
+		for _, vh := range freshVariants {
+			if vh == tvr.VariantHash {
+				requiresUpdate = false
+			}
+		}
+		if requiresUpdate {
+			ms = append(ms, tvr.SaveUnverified())
+		}
+	}
+
+	_, err = span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
+		span.BufferWrite(ctx, ms...)
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// durationSinceUpdateToUpdateProbability computes the probability with which
+// a test variant realm record should be updated.
+// The returned probability is a value between 0.0 and 1.0. The returned
+// probabilities are designed to spread out updates to the records in a way
+// that minimises the risk of concurrent updates.
+func durationSinceUpdateToUpdateProbability(d time.Duration) float64 {
+	if d < 0 {
+		// Never update if stored time is after now.
+		return 0.0
+	}
+	if d > time.Hour*12 {
+		// Always update if older than 12 hours.
+		return 1.0
+	}
+	// As the time since last update increases from 0 hours to 12 hours,
+	// gradually scale up the probability we will update the test variant,
+	// from (1 in a million) to (certainty). Use exponential scaling as this
+	// minimises the probability of contention over a wide range of test
+	// result insert rates for the test variant.
+	// (Lack of updates to a test variant realm record can be taken as
+	// an indication there are relatively fewer tasks inserting test results
+	// for it, so it is safe to increase the fraction of tasks that will
+	// update it.)
+	fractionUntilUpdate := d.Seconds() / (12 * 60 * 60)
+	exp := -1 + fractionUntilUpdate
+	return math.Pow(1000*1000, exp)
 }
 
 // recordTestResults records test results from an test-verdict-ingestion task.
@@ -178,7 +298,7 @@ func recordTestResults(ctx context.Context, inv *testresults.IngestedInvocation,
 	const workerCount = 8
 
 	return parallel.WorkPool(workerCount, func(c chan<- func() error) {
-		batchC := make(chan []*spanner.Mutation)
+		batchC := make(chan batch)
 
 		c <- func() error {
 			defer close(batchC)
@@ -192,11 +312,18 @@ func recordTestResults(ctx context.Context, inv *testresults.IngestedInvocation,
 			batch := batch
 
 			c <- func() error {
-				_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
-					span.BufferWrite(ctx, batch...)
+				err := ensureTestVariantRealms(ctx, batch.testVariantRealms)
+				if err != nil {
+					return errors.Wrap(err, "inserting test variant realms")
+				}
+				_, err = span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
+					span.BufferWrite(ctx, batch.testResults...)
 					return nil
 				})
-				return errors.Wrap(err, "insert test results and test variant realms")
+				if err != nil {
+					return errors.Wrap(err, "inserting test results")
+				}
+				return nil
 			}
 		}
 	})
