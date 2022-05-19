@@ -574,6 +574,7 @@ func updateIndexInMachine(ctx context.Context, indexName, oldValue, newValue str
 			oldCopy := proto.Clone(n).(*ufspb.Machine)
 			n.Location.Rack = newValue
 			hc.LogMachineChanges(oldCopy, n)
+			fmt.Println("new rack: ", n)
 		}
 	}
 	if _, err := registration.BatchUpdateMachines(ctx, newEntities); err != nil {
@@ -790,9 +791,6 @@ func renameMachineInner(ctx context.Context, oldMachineName, newMachineName stri
 	if err != nil {
 		return
 	}
-	newHc := GetMachineHistoryClient(machine)
-	newHc.stUdt.replaceStateHelper(ctx, util.AddPrefix(util.MachineCollection, oldMachineName))
-	err = newHc.SaveChangeEvents(ctx)
 	return
 }
 
@@ -898,7 +896,6 @@ func ReplaceMachine(ctx context.Context, oldMachine *ufspb.Machine, newMachine *
 		}
 		hc.LogMachineChanges(oldMachine, nil)
 		hc.LogMachineChanges(nil, newMachine)
-		hc.stUdt.replaceStateHelper(ctx, util.AddPrefix(util.MachineCollection, oldMachine.GetName()))
 		return hc.SaveChangeEvents(ctx)
 	}
 

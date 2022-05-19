@@ -54,22 +54,6 @@ func (su *stateUpdater) updateStateHelper(ctx context.Context, newS ufspb.State)
 	return nil
 }
 
-func (su *stateUpdater) replaceStateHelper(ctx context.Context, oldR string) error {
-	old, _ := state.GetStateRecord(ctx, oldR)
-	state.DeleteStates(ctx, []string{oldR})
-	newRecord := &ufspb.StateRecord{
-		State:        old.GetState(),
-		ResourceName: su.ResourceName,
-		User:         util.CurrentUser(ctx),
-	}
-	if _, err := state.BatchUpdateStates(ctx, []*ufspb.StateRecord{newRecord}); err != nil {
-		return err
-	}
-	su.logChanges(LogStateChanges(old, nil))
-	su.logChanges(LogStateChanges(nil, newRecord))
-	return nil
-}
-
 func (su *stateUpdater) addLseStateHelper(ctx context.Context, lse *ufspb.MachineLSE, machine *ufspb.Machine) error {
 	stateRecords := make([]*ufspb.StateRecord, 0)
 	rn := util.AddPrefix(util.MachineCollection, machine.GetName())
