@@ -448,7 +448,9 @@ func (r *RenameRackRequest) Validate() error {
 	if r.NewName == "" {
 		return status.Errorf(codes.InvalidArgument, "Missing new rack name to rename")
 	}
-	// Only validate new name in case we want to rename some invalid old names.
+	if strings.ToLower(r.NewName) != r.NewName {
+		return status.Errorf(codes.InvalidArgument, "Invalid name %s: new rack name should be in all lowercase.", r.NewName)
+	}
 	return validateResourceName(rackRegex, RackNameFormat, r.GetNewName())
 }
 
