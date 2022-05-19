@@ -14,15 +14,15 @@ from __future__ import absolute_import
 
 import logging
 import webapp2
-from flask import Flask
-from werkzeug.middleware import dispatcher
+# from flask import Flask
+# from werkzeug.middleware import dispatcher
 
 from components import endpoints_webapp2
 import gae_ts_mon
 
-import flaskregisterpages
+# import flaskregisterpages
 import registerpages
-from framework import sorting, urls
+from framework import sorting
 from services import api_svc_v1
 from services import service_manager
 
@@ -37,13 +37,12 @@ app = webapp2.WSGIApplication(
 # service account and change to gae_ts_mon.initialize_prod()
 gae_ts_mon.initialize_adhoc(app)
 
-flask_regist = flaskregisterpages.ServletRegistry()
+# flask_regist = flaskregisterpages.ServletRegistry()
 
-app = dispatcher.DispatcherMiddleware(
-    app, {
-        urls.EXCESSIVE_ACTIVITY:
-            flask_regist.RegisterExcesiveActivity(services),
-    })
+# app = dispatcher.DispatcherMiddleware(
+#     app, {
+#         '/hosting': flask_regist.RegisterHostingUrl(services),
+#     })
 
 endpoints = endpoints_webapp2.api_server(
     [api_svc_v1.MonorailApi, api_svc_v1.ClientConfigApi])

@@ -114,6 +114,7 @@ class FlaskServlet(object):
     self.request_path = None
     self.response = None
     self.ratelimiter = ratelimiter.RateLimiter()
+    self.redirect_url = None
 
   # pylint: disable=unused-argument
   def handler(self, **kwargs):
@@ -166,6 +167,8 @@ class FlaskServlet(object):
 
       if self.request.method == 'POST':
         self.post()
+        if self.redirect_url:
+          return self.redirect(self.redirect_url)
       elif self.request.method == 'GET':
         self.get()
     except exceptions.NoSuchUserException as e:
@@ -391,14 +394,14 @@ class FlaskServlet(object):
         else:
           raise err
 
-    redirect_url = self.ProcessFormData(mr, request.values)
+    self.redirect_url = self.ProcessFormData(mr, request.values)
 
     # Most forms redirect the user to a new URL on success.  If no
     # redirect_url was returned, the form handler must have already
     # sent a response.  E.g., bounced the user back to the form with
     # invalid form fields highlighted.
-    if redirect_url:
-      self.redirect(redirect_url, abort=True)
+    if self.redirect_url:
+      return self.redirect(self.redirect_url, abort=True)
     else:
       assert self.response.response
 
@@ -854,10 +857,9 @@ class FlaskServlet(object):
 
   def redirect(self, url, abort=False):
     if abort:
-      flask.redirect(url, code=302)
-      flask.abort(302)
+      return flask.redirect(url, code=302)
     else:
-      flask.redirect(url)
+      return flask.redirect(url)
 
   def PleaseCorrect(self, mr, **echo_data):
     """Show the same form again so that the user can correct their input."""

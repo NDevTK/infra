@@ -10,6 +10,7 @@ import settings
 from flask import Flask
 
 from project import project_constants
+from sitewide import usersettings
 
 
 class ServletRegistry(object):
@@ -50,10 +51,24 @@ class ServletRegistry(object):
     """Register all the monorail request handlers."""
     return self.routes
 
-  def RegisterExcesiveActivity(self, service):
-    flaskapp_excessive_activity = Flask(__name__)
-    flaskapp_excessive_activity.add_url_rule(
-        '/',
-        view_func=excessiveactivity.ExcessiveActivity(services=service).handler,
-        methods=['GET'])
-    return flaskapp_excessive_activity
+  # pylint: disable=unused-argument
+  def RegisterHostingUrl(self, service):
+    flaskapp_hosting = Flask(__name__)
+    _HOSTING_URL = [
+        # (
+        #     '/excessiveActivity',
+        #     excessiveactivity.ExcessiveActivity(
+        #         services=service).GetExcessiveActivity, ['GET']),
+        # (
+        #     '/settings',
+        #     usersettings.UserSettings(services=service).GetUserSetting, ['GET'
+        #                                                                 ]),
+        # (
+        #     '/settings.do',
+        #     usersettings.UserSettings(services=service).PostUserSetting,
+        #     ['POST'])
+    ]
+
+    for rule in _HOSTING_URL:
+      flaskapp_hosting.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
+    return flaskapp_hosting

@@ -30,7 +30,7 @@ from features import notify
 from features import rerankhotlist
 from features import savedqueries
 
-from framework import banned
+from framework import banned, excessiveactivity
 from framework import clientmon
 from framework import csp_report
 from framework import deleteusers
@@ -339,24 +339,38 @@ class ServletRegistry(object):
 
   def _RegisterFrameworkHandlers(self):
     """Register page and form handlers for framework functionality."""
-    self._SetupServlets({
-        urls.CSP_REPORT: csp_report.CSPReportPage,
+    self._SetupServlets(
+        {
+            urls.CSP_REPORT:
+                csp_report.CSPReportPage,
 
-        # These are only shown to users if specific conditions are met.
-        urls.BANNED: banned.Banned,
-        urls.PROJECT_MOVED: moved.ProjectMoved,
+            # These are only shown to users if specific conditions are met.
+            urls.EXCESSIVE_ACTIVITY:
+                excessiveactivity.ExcessiveActivity,
+            urls.BANNED:
+                banned.Banned,
+            urls.PROJECT_MOVED:
+                moved.ProjectMoved,
 
-        # These are not externally accessible
-        urls.RAMCACHE_CONSOLIDATE_CRON: cachemanager_svc.RamCacheConsolidate,
-        urls.REAP_CRON: reap.Reap,
-        urls.LOAD_API_CLIENT_CONFIGS_CRON: (
-            client_config_svc.LoadApiClientConfigs),
-        urls.CLIENT_MON: clientmon.ClientMonitor,
-        urls.TRIM_VISITED_PAGES_CRON: trimvisitedpages.TrimVisitedPages,
-        urls.TS_MON_JS: ts_mon_js.MonorailTSMonJSHandler,
-        urls.WARMUP: warmup.Warmup,
-        urls.START: warmup.Start,
-        urls.STOP: warmup.Stop
+            # These are not externally accessible
+            urls.RAMCACHE_CONSOLIDATE_CRON:
+                cachemanager_svc.RamCacheConsolidate,
+            urls.REAP_CRON:
+                reap.Reap,
+            urls.LOAD_API_CLIENT_CONFIGS_CRON:
+                (client_config_svc.LoadApiClientConfigs),
+            urls.CLIENT_MON:
+                clientmon.ClientMonitor,
+            urls.TRIM_VISITED_PAGES_CRON:
+                trimvisitedpages.TrimVisitedPages,
+            urls.TS_MON_JS:
+                ts_mon_js.MonorailTSMonJSHandler,
+            urls.WARMUP:
+                warmup.Warmup,
+            urls.START:
+                warmup.Start,
+            urls.STOP:
+                warmup.Stop
         })
 
   def _RegisterSitewideHandlers(self):

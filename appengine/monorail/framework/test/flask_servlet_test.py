@@ -71,14 +71,15 @@ class FlaskServletTest(unittest.TestCase):
     self.page_class._CheckForMovedProject(mr, request)
     mock_abort.assert_not_called()
 
-  @mock.patch('flask.abort')
-  def testCheckForMovedProject_Redirect(self, mock_abort):
+  @mock.patch('flask.redirect')
+  def testCheckForMovedProject_Redirect(self, mock_redirect):
     project = fake.Project(project_name='proj', moved_to='http://example.com')
     request, mr = testing_helpers.GetRequestObjects(
         path='/p/proj', project=project)
     self.page_class.request_path = '/p/test'
     self.page_class._CheckForMovedProject(mr, request)
-    mock_abort.assert_called_once_with(302)
+    mock_redirect.assert_called_once_with(
+        'http://127.0.0.1/hosting/moved?project=proj', code=302)
 
   def testGatherBaseData(self):
     project = self.page_class.services.project.TestAddProject(

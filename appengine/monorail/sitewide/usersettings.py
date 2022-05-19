@@ -63,3 +63,13 @@ class UserSettings(servlet.Servlet):
         saved=1, ts=int(time.time()))
 
     return url
+
+  # pylint: disable=unused-argument
+  def GetUserSetting(self, **kwargs):
+    return
+    # return self.handler(**kwargs)
+
+  # pylint: disable=unused-argument
+  def PostUserSetting(self, **kwargs):
+    return
+    # return self.handler(**kwargs)
