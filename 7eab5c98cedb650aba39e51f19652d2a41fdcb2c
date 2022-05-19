@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "007e848c_d79f763a",
+        "filename": "go/src/infra/unifiedfleet/app/controller/rack.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 397,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-05-19T17:55:23Z",
+      "side": 1,
+      "message": "where is the logic for updating corresponding entities to this rack?",
+      "revId": "7eab5c98cedb650aba39e51f19652d2a41fdcb2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
