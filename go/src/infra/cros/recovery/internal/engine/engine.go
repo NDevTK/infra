@@ -141,6 +141,14 @@ func (r *recoveryEngine) runActions(ctx context.Context, actions []string, enabl
 func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enableRecovery bool) (rErr error) {
 	action := &metrics.Action{}
 	var step *build.Step
+	// The step and metrics need to know about error but if we need to stop from return then it is here.
+	forgiveError := false
+	defer func() {
+		if forgiveError {
+			log.Debugf(ctx, "Action %q: forgiven error: %v", actionName, rErr)
+			rErr = nil
+		}
+	}()
 	if r.args != nil {
 		if actionCloser := r.recordAction(ctx, actionName, action); actionCloser != nil {
 			defer actionCloser(rErr)
@@ -172,8 +180,8 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 		if a.GetAllowFailAfterRecovery() {
 			log.Infof(ctx, "Action %q: fail (cached). Error: %s", actionName, aErr)
 			log.Debugf(ctx, "Action %q: error ignored as action is allowed to fail.", actionName)
-			// Return nil error so we can continue execution of next actions...
-			return nil
+			// Return error to report for step and metrics but stop from return to parent.
+			forgiveError = true
 		}
 		return errors.Annotate(aErr, "run action %q: (cached)", actionName).Err()
 	}
@@ -201,10 +209,10 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 		if a.GetAllowFailAfterRecovery() {
 			log.Infof(ctx, "Action %q: one of dependencies fail. Error: %s", actionName, err)
 			log.Debugf(ctx, "Action %q: error ignored as action is allowed to fail.", actionName)
-			return nil
-		} else {
-			return errors.Annotate(err, "run action %q", actionName).Err()
+			// Return error to report for step and metrics but stop from return to parent.
+			forgiveError = true
 		}
+		return errors.Annotate(err, "run action %q", actionName).Err()
 	}
 	if err := r.runActionExec(ctx, actionName, enableRecovery); err != nil {
 		if startOverTag.In(err) {
@@ -213,13 +221,13 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 		if a.GetAllowFailAfterRecovery() {
 			log.Infof(ctx, "Action %q: fail. Error: %s", actionName, err)
 			log.Debugf(ctx, "Action %q: error ignored as action is allowed to fail.", actionName)
-		} else {
-			return errors.Annotate(err, "run action %q", actionName).Err()
+			// Return error to report for step and metrics but stop from return to parent.
+			forgiveError = true
 		}
-	} else {
-		log.Infof(ctx, "Action %q: finished successfully.", actionName)
+		return errors.Annotate(err, "run action %q", actionName).Err()
 	}
 	// Return nil error so we can continue execution of next actions...
+	log.Infof(ctx, "Action %q: finished successfully.", actionName)
 	return nil
 }
 
