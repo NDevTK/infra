@@ -440,6 +440,18 @@ func (r *DeleteRackRequest) Validate() error {
 	return validateResourceName(rackRegex, RackNameFormat, r.Name)
 }
 
+// Validate validates input requests of RenameRack.
+func (r *RenameRackRequest) Validate() error {
+	if r.Name == "" {
+		return status.Errorf(codes.InvalidArgument, EmptyName)
+	}
+	if r.NewName == "" {
+		return status.Errorf(codes.InvalidArgument, "Missing new rack name to rename")
+	}
+	// Only validate new name in case we want to rename some invalid old names.
+	return validateResourceName(rackRegex, RackNameFormat, r.GetNewName())
+}
+
 // Validate validates input requests of CreateMachineLSE.
 func (r *CreateMachineLSERequest) Validate() error {
 	if r.MachineLSE == nil {
