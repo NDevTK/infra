@@ -191,6 +191,7 @@ class FlipperList(servlet.Servlet):
     self.redirect(url)
 
 
+# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
 class FlipperIndex(jsonfeed.JsonFeed):
   """Return a JSON object of an issue's index in search.
 

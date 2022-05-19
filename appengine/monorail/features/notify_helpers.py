@@ -123,6 +123,7 @@ def AddAllEmailTasks(tasks):
   return notified
 
 
+# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
 class NotifyTaskBase(jsonfeed.InternalTask):
   """Abstract base class for notification task handler."""
 

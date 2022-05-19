@@ -31,6 +31,7 @@ from search import backendsearchpipeline
 from tracker import tracker_constants
 
 
+# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
 class BackendSearch(jsonfeed.InternalTask):
   """JSON servlet for issue search in a GAE backend."""
 

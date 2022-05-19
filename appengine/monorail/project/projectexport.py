@@ -43,6 +43,7 @@ class ProjectExport(servlet.Servlet):
     }
 
 
+# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
 class ProjectExportJSON(jsonfeed.JsonFeed):
   """ProjectExportJSON shows all configuration for a Project in JSON form."""
 

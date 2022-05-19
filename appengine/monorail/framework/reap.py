@@ -16,6 +16,7 @@ from framework import jsonfeed
 RUN_DURATION_LIMIT = 50 * 60  # 50 minutes
 
 
+# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
 class Reap(jsonfeed.InternalTask):
   """Look for doomed and deletable projects and delete them."""
 

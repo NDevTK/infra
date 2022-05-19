@@ -10,6 +10,8 @@ from __future__ import absolute_import
 
 from framework import jsonfeed
 
+
+# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
 class TrimVisitedPages(jsonfeed.InternalTask):
 
   """Look for users with more than 10 visited hotlists and deletes extras."""

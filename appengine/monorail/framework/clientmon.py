@@ -18,6 +18,8 @@ from framework import jsonfeed
 
 from infra_libs import ts_mon
 
+
+# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
 class ClientMonitor(jsonfeed.JsonFeed):
   """JSON feed to track client side js errors in ts_mon."""
 

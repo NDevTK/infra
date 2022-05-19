@@ -32,6 +32,7 @@ def authorize():
   return credentials.authorize(httplib2.Http(timeout=60))
 
 
+# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
 class WipeoutSyncCron(jsonfeed.InternalTask):
   """Enqueue tasks for sending user lists to wipeout-lite and deleting deleted
      users fetched from wipeout-lite."""
@@ -62,6 +63,7 @@ class WipeoutSyncCron(jsonfeed.InternalTask):
         task, queue=framework_constants.QUEUE_FETCH_WIPEOUT_DELETED_USERS)
 
 
+# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
 class SendWipeoutUserListsTask(jsonfeed.InternalTask):
   """Sends a batch of monorail users to wipeout-lite."""
 
@@ -88,6 +90,7 @@ class SendWipeoutUserListsTask(jsonfeed.InternalTask):
         'Received response, %s with contents, %s', resp, data)
 
 
+# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
 class DeleteWipeoutUsersTask(jsonfeed.InternalTask):
   """Fetches deleted users from wipeout-lite and enqueues tasks to delete
      those users from Monorail's DB."""
@@ -123,6 +126,7 @@ class DeleteWipeoutUsersTask(jsonfeed.InternalTask):
     return json.loads(data)
 
 
+# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
 class DeleteUsersTask(jsonfeed.InternalTask):
   """Deletes users from Monorail's DB."""
 

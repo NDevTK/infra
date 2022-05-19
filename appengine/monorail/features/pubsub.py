@@ -26,6 +26,7 @@ from framework import exceptions
 from framework import jsonfeed
 
 
+# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
 class PublishPubsubIssueChangeTask(jsonfeed.InternalTask):
   """JSON servlet that pushes issue update messages onto a pub/sub topic."""
 

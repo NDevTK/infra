@@ -39,6 +39,8 @@ from tracker import tracker_views
 
 TEMPLATE_PATH = framework_constants.TEMPLATE_PATH
 
+
+# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
 class DateActionCron(jsonfeed.InternalTask):
   """Find and process issues with date-type values that arrived today."""
 

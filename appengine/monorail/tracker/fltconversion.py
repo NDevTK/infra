@@ -134,6 +134,7 @@ ProjectInfo = collections.namedtuple(
     'phase_map, approvals_to_labels, labels_re')
 
 
+# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
 class FLTConvertTask(jsonfeed.InternalTask):
   """FLTConvert converts current Type=Launch issues into Type=FLT-Launch."""
 

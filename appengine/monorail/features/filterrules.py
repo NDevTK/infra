@@ -15,6 +15,7 @@ from framework import jsonfeed
 from tracker import tracker_constants
 
 
+# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
 class RecomputeDerivedFieldsTask(jsonfeed.InternalTask):
   """JSON servlet that recomputes derived fields on a batch of issues."""
 
@@ -36,6 +37,7 @@ class RecomputeDerivedFieldsTask(jsonfeed.InternalTask):
         }
 
 
+# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
 class ReindexQueueCron(jsonfeed.InternalTask):
   """JSON servlet that reindexes some issues each minute, as needed."""
 

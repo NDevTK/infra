@@ -70,6 +70,7 @@ class IssueExport(servlet.Servlet):
     }
 
 
+# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
 class IssueExportJSON(jsonfeed.JsonFeed):
   """IssueExport shows a range of issues in JSON format."""
 

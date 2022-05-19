@@ -57,6 +57,7 @@ class BanSpammer(servlet.Servlet):
         saved=1, ts=int(time.time()))
 
 
+# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
 class BanSpammerTask(jsonfeed.InternalTask):
   """This task will update all of the comments and issues created by the
      target user with is_spam=True, and also add a manual verdict attached
