@@ -569,7 +569,7 @@ func RenameNic(ctx context.Context, oldNicName, newNicName string) (*ufspb.Nic, 
 		hc := getNicHistoryClient(oldNicCopy)
 
 		// Update MachineLSE with new nic name
-		if err := updateIndexingForMachineLSE(ctx, "nic", oldNicName, newNicName, hc); err != nil {
+		if err := updateIndexInMachineLSE(ctx, "nic", oldNicName, newNicName, hc); err != nil {
 			return errors.Annotate(err, "failed to update indexing for hosts").Err()
 		}
 

@@ -825,7 +825,7 @@ func renameMachineHelper(ctx context.Context, oldMachineName, newMachineName str
 	}
 
 	// Update the MachineLSE with new machine name and new nic name
-	if err := updateIndexingForMachineLSE(ctx, "machine", oldMachineName, newMachineName, hc); err != nil {
+	if err := updateIndexInMachineLSE(ctx, "machine", oldMachineName, newMachineName, hc); err != nil {
 		return errors.Annotate(err, "failed to update indexing for hosts").Err()
 	}
 

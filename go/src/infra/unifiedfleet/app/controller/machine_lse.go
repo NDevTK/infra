@@ -1594,10 +1594,10 @@ func validateDeleteMachineLSEHost(ctx context.Context, lse *ufspb.MachineLSE) er
 	return nil
 }
 
-// updateIndexingForMachineLSE updates indexing for Machinelse table
+// updateIndexInMachineLSE updates indexes in machine_lse objects
 //
 // This function can be used inside a transaction.
-func updateIndexingForMachineLSE(ctx context.Context, property, oldValue, newValue string, hc *HistoryClient) error {
+func updateIndexInMachineLSE(ctx context.Context, property, oldValue, newValue string, hc *HistoryClient) error {
 	var lses []*ufspb.MachineLSE
 	var err error
 	switch property {

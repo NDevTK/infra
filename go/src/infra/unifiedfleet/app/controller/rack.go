@@ -447,7 +447,7 @@ func RenameRack(ctx context.Context, oldName, newName string) (rack *ufspb.Rack,
 
 func renameRackHelper(ctx context.Context, oldName, newName string, hc *HistoryClient) error {
 	// Rename hosts associated with this rack
-	if err := updateIndexingForMachineLSE(ctx, "rack", oldName, newName, hc); err != nil {
+	if err := updateIndexInMachineLSE(ctx, "rack", oldName, newName, hc); err != nil {
 		return err
 	}
 
