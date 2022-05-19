@@ -427,14 +427,9 @@ func RenameRack(ctx context.Context, oldName, newName string) (rack *ufspb.Rack,
 
 		// Log history change events
 		hc.LogRackChanges(&ufspb.Rack{Name: oldName}, &ufspb.Rack{Name: newName})
-		err = hc.SaveChangeEvents(ctx)
-		if err != nil {
+		if err := hc.SaveChangeEvents(ctx); err != nil {
 			return err
 		}
-		// TODO(xixuan): in next CLs, refactor function replaceStateHelper
-		newHc := getRackClientHistory(rack)
-		newHc.stUdt.replaceStateHelper(ctx, util.AddPrefix(util.RackCollection, oldName))
-		err = newHc.SaveChangeEvents(ctx)
 		return nil
 	}
 

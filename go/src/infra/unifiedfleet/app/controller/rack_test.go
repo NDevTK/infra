@@ -864,12 +864,12 @@ func TestRenameRack(t *testing.T) {
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "racks/rename-rack-0-new")
 			So(err, ShouldBeNil)
 			So(changes, ShouldHaveLength, 2)
+			So(changes[0].GetEventLabel(), ShouldEqual, "rack")
 			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRename)
 			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRename)
-			So(changes[0].GetEventLabel(), ShouldEqual, "rack")
+			So(changes[1].GetEventLabel(), ShouldEqual, "rack.name")
 			So(changes[1].GetOldValue(), ShouldEqual, "rename-rack-0-old")
 			So(changes[1].GetNewValue(), ShouldEqual, "rename-rack-0-new")
-			So(changes[1].GetEventLabel(), ShouldEqual, "rack.name")
 
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "assets/rename-asset-0")
 			So(err, ShouldBeNil)
@@ -877,29 +877,35 @@ func TestRenameRack(t *testing.T) {
 			So(changes, ShouldHaveLength, 2)
 			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
 			So(changes[0].GetEventLabel(), ShouldEqual, "asset")
+			So(changes[1].GetEventLabel(), ShouldEqual, "asset.location")
 			So(changes[1].GetOldValue(), ShouldContainSubstring, "rename-rack-0-old")
 			So(changes[1].GetNewValue(), ShouldContainSubstring, "rename-rack-0-new")
-			So(changes[1].GetEventLabel(), ShouldEqual, "asset.location")
 
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "machines/rename-machine-0")
 			So(err, ShouldBeNil)
 			// The first is the registration of the machine, the second is the rack change.
-			So(changes, ShouldHaveLength, 2)
+			So(changes, ShouldHaveLength, 3)
 			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
 			So(changes[0].GetEventLabel(), ShouldEqual, "machine")
-			So(changes[1].GetOldValue(), ShouldContainSubstring, "rename-rack-0-old")
-			So(changes[1].GetNewValue(), ShouldContainSubstring, "rename-rack-0-new")
-			So(changes[1].GetEventLabel(), ShouldEqual, "machine.location")
+			// Please note that adding a machine will set the machine state to registered.
+			// Adding a machine lse for a machine will change the machine's state to SERVING automatically.
+			So(changes[1].GetEventLabel(), ShouldEqual, "machine.resource_state")
+			So(changes[1].GetOldValue(), ShouldEqual, "STATE_REGISTERED")
+			So(changes[1].GetNewValue(), ShouldEqual, "STATE_SERVING")
+			So(changes[2].GetEventLabel(), ShouldEqual, "machine.location")
+			So(changes[2].GetOldValue(), ShouldContainSubstring, "rename-rack-0-old")
+			So(changes[2].GetNewValue(), ShouldContainSubstring, "rename-rack-0-new")
 
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "hosts/rename-host-0")
 			So(err, ShouldBeNil)
 			// The first is the registration of the machineLSE, the second is the rack change.
 			So(changes, ShouldHaveLength, 2)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
 			So(changes[0].GetEventLabel(), ShouldEqual, "machine_lse")
+			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
+			So(changes[1].GetEventLabel(), ShouldEqual, "machine_lse.rack")
 			So(changes[1].GetOldValue(), ShouldEqual, "rename-rack-0-old")
 			So(changes[1].GetNewValue(), ShouldEqual, "rename-rack-0-new")
-			So(changes[1].GetEventLabel(), ShouldEqual, "machine_lse.rack")
+
 		})
 		Convey("RenameRack - permission denied", func() {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)

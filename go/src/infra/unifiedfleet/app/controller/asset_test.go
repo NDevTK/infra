@@ -19,7 +19,6 @@ import (
 	"infra/unifiedfleet/app/model/history"
 	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/model/registration"
-	"infra/unifiedfleet/app/model/state"
 	"infra/unifiedfleet/app/util"
 )
 
@@ -730,14 +729,10 @@ func TestRenameAsset(t *testing.T) {
 			So(changes[0].NewValue, ShouldEqual, "RENAME")
 			So(changes[1].OldValue, ShouldEqual, "EVE7000")
 			So(changes[1].NewValue, ShouldEqual, "EVE7001")
-			// State record for old machine should be deleted
-			s, err := state.GetStateRecord(ctx, "machines/EVE7000")
-			So(err, ShouldNotBeNil)
-			// State record for the renamed machine should be same as old one
-			s, err = state.GetStateRecord(ctx, "machines/EVE7001")
+			// Verify state is not changed
+			machine, err := registration.GetMachine(ctx, "EVE7001")
 			So(err, ShouldBeNil)
-			// State should be set to registered. No change.
-			So(s.GetState(), ShouldEqual, ufspb.State_STATE_REGISTERED)
+			So(machine.GetResourceState(), ShouldEqual, ufspb.State_STATE_REGISTERED)
 		})
 	})
 }
