@@ -20,6 +20,144 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "3baa119b_09ffa158",
+        "filename": "go/src/infra/unifiedfleet/app/controller/asset.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 660,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-05-20T19:20:51Z",
+      "side": 1,
+      "message": "Please add a test for this function.",
+      "range": {
+        "startLine": 660,
+        "startChar": 4,
+        "endLine": 660,
+        "endChar": 23
+      },
+      "revId": "76f98deb297ba18e398313908efa43a49c815ab4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "caa77bd2_bb7b58f3",
+        "filename": "go/src/infra/unifiedfleet/app/controller/kvm.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 474,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-05-20T19:20:51Z",
+      "side": 1,
+      "message": "Please add a test for this function.",
+      "range": {
+        "startLine": 474,
+        "startChar": 4,
+        "endLine": 474,
+        "endChar": 21
+      },
+      "revId": "76f98deb297ba18e398313908efa43a49c815ab4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c10b316e_c1b19b1c",
+        "filename": "go/src/infra/unifiedfleet/app/controller/machine.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 564,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-05-20T19:20:51Z",
+      "side": 1,
+      "message": "Please add a test for this function.",
+      "range": {
+        "startLine": 564,
+        "startChar": 4,
+        "endLine": 564,
+        "endChar": 24
+      },
+      "revId": "76f98deb297ba18e398313908efa43a49c815ab4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f8ec2173_33df99d8",
+        "filename": "go/src/infra/unifiedfleet/app/controller/rack.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 415,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-05-20T19:20:51Z",
+      "side": 1,
+      "message": "Please use `err :\u003d`.",
+      "range": {
+        "startLine": 415,
+        "startChar": 8,
+        "endLine": 415,
+        "endChar": 10
+      },
+      "revId": "76f98deb297ba18e398313908efa43a49c815ab4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5e6b51d7_f7d39094",
+        "filename": "go/src/infra/unifiedfleet/app/controller/rack.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 420,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-05-20T19:20:51Z",
+      "side": 1,
+      "message": "Please use `err :\u003d`.",
+      "range": {
+        "startLine": 420,
+        "startChar": 4,
+        "endLine": 420,
+        "endChar": 10
+      },
+      "revId": "76f98deb297ba18e398313908efa43a49c815ab4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9932536f_ecc99c55",
+        "filename": "go/src/infra/unifiedfleet/app/controller/rack.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 424,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-05-20T19:20:51Z",
+      "side": 1,
+      "message": "Please use `err :\u003d`.",
+      "range": {
+        "startLine": 424,
+        "startChar": 11,
+        "endLine": 424,
+        "endChar": 13
+      },
+      "revId": "76f98deb297ba18e398313908efa43a49c815ab4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e6838ce6_ba67fd3e",
         "filename": "go/src/infra/unifiedfleet/app/controller/rack_test.go",
         "patchSetId": 3
