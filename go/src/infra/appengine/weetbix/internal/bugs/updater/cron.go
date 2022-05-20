@@ -132,6 +132,9 @@ func UpdateAnalysisAndBugs(ctx context.Context, monorailHost, gcpProject string,
 				enableBugUpdates:   enable,
 				maxBugsFiledPerRun: 1,
 			}
+			// Assign project to local variable to ensure it can be
+			// accessed correctly inside function closures.
+			project := project
 			c <- func() error {
 				// Isolate other projects from bug update errors
 				// in one project.
