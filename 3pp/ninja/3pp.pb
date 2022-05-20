@@ -4,10 +4,18 @@ create {
 }
 
 create {
-  source { git {
-    repo: "https://chromium.googlesource.com/external/github.com/ninja-build/ninja"
-    tag_pattern: "v%s"
-  }}
+  source {
+    git {
+      repo: "https://chromium.googlesource.com/external/github.com/ninja-build/ninja"
+      tag_pattern: "v%s"
+      # TODO(crbug.com/931218): migrate to CIPD 1.8.2 packages before version update.
+      version_restriction: {
+        op: EQ
+        val: "1.8.2"
+      }
+    }
+    patch_version: "chromium.1"
+  }
 }
 
 create {
