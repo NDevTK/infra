@@ -18,12 +18,20 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-
-	"google.golang.org/appengine"
+	"os"
 )
 
 func main() {
-	vanity, err := ioutil.ReadFile("./vanity.yaml")
+	var configPath string
+	switch len(os.Args) {
+	case 1:
+		configPath = "vanity.yaml"
+	case 2:
+		configPath = os.Args[1]
+	default:
+		log.Fatal("usage: govanityurls [CONFIG]")
+	}
+	vanity, err := ioutil.ReadFile(configPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,9 +40,16 @@ func main() {
 		log.Fatal(err)
 	}
 	http.Handle("/", h)
-	appengine.Main()
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func defaultHost(r *http.Request) string {
-	return appengine.DefaultVersionHostname(appengine.NewContext(r))
+	return r.Host
 }
