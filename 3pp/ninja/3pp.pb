@@ -34,16 +34,9 @@ create {
 }
 
 create {
-  platform_re: "windows-.*|mac-.*"
+  platform_re: "windows-.*|mac-.*|linux-amd64"
   build {
     install: "install_bootstrap.sh"
-  }
-}
-
-create {
-  platform_re: "linux-amd64"
-  build {
-    install: "install_linux-amd64.sh"
   }
 }
 
