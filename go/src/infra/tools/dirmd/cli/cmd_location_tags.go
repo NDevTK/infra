@@ -71,10 +71,14 @@ func (r *tagRun) run(ctx context.Context, args []string) error {
 	if err := r.validate(); err != nil {
 		return err
 	}
-	mapping, err := dirmd.ReadMapping(ctx, dirmdpb.MappingForm_REDUCED, r.root)
+	mapping, err := dirmd.ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, r.root)
 	if err != nil {
 		return err
 	}
+	if err = mapping.Reduce(); err != nil {
+		return err
+	}
+
 	tags, err := dirmd.ToLocationTags(mapping)
 	if err != nil {
 		return err

@@ -47,7 +47,7 @@ func (m *Mapping) ComputeAll() error {
 
 // Reduce removes all redundant information.
 func (m *Mapping) Reduce() error {
-	// This function implemenation is similar to ComputeAll()'s implementation,
+	// This function implementation is similar to ComputeAll()'s implementation,
 	// but the redundant info is determined after mixins are applied and before
 	// metadata of the current node is added.
 	// The function maintains two mappings: computed and reduced, and both are
