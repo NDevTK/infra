@@ -438,22 +438,9 @@ func runSinglePlan(ctx context.Context, planName string, plan *config.Plan, exec
 
 // runDUTPlanPerResource runs a plan against the single resource of the DUT.
 func runDUTPlanPerResource(ctx context.Context, resource, planName string, plan *config.Plan, execArgs *execs.RunArgs) (rErr error) {
-	log.Infof(ctx, "Run plan %q for %q: started", planName, resource)
-	if execArgs.ShowSteps {
-		var step *build.Step
-		step, ctx = build.StartStep(ctx, fmt.Sprintf("Run plan %q for %q", planName, resource))
-		defer func() { step.End(rErr) }()
-	}
-	if i, ok := execArgs.Logger.(logger.LogIndenter); ok {
-		i.Indent()
-		defer func() { i.Dedent() }()
-	}
 	execArgs.ResourceName = resource
-	if err := engine.Run(ctx, planName, plan, execArgs); err != nil {
-		return errors.Annotate(err, "run plan %q for %q", planName, execArgs.ResourceName).Err()
-	}
-	log.Infof(ctx, "Run plan %q for %s: finished successfully.", planName, execArgs.ResourceName)
-	return nil
+	err := engine.Run(ctx, planName, plan, execArgs)
+	return errors.Annotate(err, "run plan %q for %q", planName, execArgs.ResourceName).Err()
 }
 
 // collectResourcesForPlan collect resource names for supported plan.

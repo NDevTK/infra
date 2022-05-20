@@ -58,27 +58,45 @@ func (r *recoveryEngine) close() {
 // runPlan executes recovery plan with critical-actions.
 func (r *recoveryEngine) runPlan(ctx context.Context) (rErr error) {
 	log.Infof(ctx, "Plan %q: started", r.planName)
-
+	// The step and metrics need to know about error but if we need to stop from return then it is here.
+	forgiveError := false
+	defer func() {
+		if forgiveError {
+			log.Debugf(ctx, "Plan %q: forgiven error: %v", r.planName, rErr)
+			rErr = nil
+		}
+	}()
+	if r.args != nil {
+		// TODO: Generate metrics for plan closing.
+		if r.args.ShowSteps {
+			var step *build.Step
+			step, ctx = build.StartStep(ctx, fmt.Sprintf("Run plan %q", r.planName))
+			if r.plan.GetAllowFail() {
+				step.SetSummaryMarkdown("Allowed to fail!")
+			}
+			defer func() { step.End(rErr) }()
+		}
+		if i, ok := r.args.Logger.(logger.LogIndenter); ok {
+			i.Indent()
+			defer func() { i.Dedent() }()
+		}
+	}
 	var restartTally int64
 	var forgivenFailureTally int64
 	if r.args != nil && r.args.Metrics != nil {
-		var mErr error
-		var closer execs.CloserFunc
 		action := &metrics.Action{}
-		closer, mErr = r.args.NewMetric(
+		closer, mErr := r.args.NewMetric(
 			ctx,
 			fmt.Sprintf("plan:%s", r.planName),
 			action,
 		)
-		if mErr == nil {
+		if mErr == nil && action != nil {
 			defer func() {
-				if action != nil {
-					action.Observations = append(
-						action.Observations,
-						metrics.NewInt64Observation("restarts", restartTally),
-						metrics.NewInt64Observation("forgiven_failures", forgivenFailureTally),
-					)
-				}
+				action.Observations = append(
+					action.Observations,
+					metrics.NewInt64Observation("restarts", restartTally),
+					metrics.NewInt64Observation("forgiven_failures", forgivenFailureTally),
+				)
 				closer(ctx, rErr)
 			}()
 		}
@@ -93,18 +111,19 @@ func (r *recoveryEngine) runPlan(ctx context.Context) (rErr error) {
 				continue
 			}
 			if r.plan.GetAllowFail() {
-				log.Infof(ctx, "Plan %q for %s: failed with error: %s.", r.planName, r.args.ResourceName, err)
+				log.Debugf(ctx, "Plan %q for %s: failed with error: %s.", r.planName, r.args.ResourceName, err)
 				log.Infof(ctx, "Plan %q for %s: is allowed to fail, continue.", r.planName, r.args.ResourceName)
 				forgivenFailureTally++
-				return nil
+				forgiveError = true
 			}
+			log.Infof(ctx, "Plan %q: fail", r.planName)
 			return errors.Annotate(err, "run plan %q", r.planName).Err()
 		}
 		break
 	}
 	log.Infof(ctx, "Plan %q: finished successfully.", r.planName)
-	log.Infof(ctx, "Plan %q: recorded %d restarts during execution.", r.planName, restartTally)
-	log.Infof(ctx, "Plan %q: recorded %d forgiven failures during execution.", r.planName, forgivenFailureTally)
+	log.Debugf(ctx, "Plan %q: recorded %d restarts during execution.", r.planName, restartTally)
+	log.Debugf(ctx, "Plan %q: recorded %d forgiven failures during execution.", r.planName, forgivenFailureTally)
 	return nil
 }
 
