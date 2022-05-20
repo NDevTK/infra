@@ -334,10 +334,10 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_is_firmware_in_good_state",
 			RecoveryActions: []string{
-				"Cold reset DUT by servo",
 				"Fix FW on the DUT to match stable-version",
 				"Update FW from fw-image by servo",
 				"Update firmware from USB-Drive and when booted in recovery mode",
+				"Cold reset DUT by servo and wait to boot",
 			},
 		},
 		"Login UI is up": {
@@ -489,6 +489,7 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"Fix FW on the DUT to match stable-version",
 				"Update FW from fw-image by servo",
+				"Update firmware from USB-Drive and when booted in recovery mode",
 			},
 		},
 		"Fix FW on the DUT to match stable-version": {

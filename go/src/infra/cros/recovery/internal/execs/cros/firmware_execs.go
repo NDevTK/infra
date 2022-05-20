@@ -90,26 +90,27 @@ func isRWFirmwareStableVersionAvailableExec(ctx context.Context, info *execs.Exe
 func runFirmwareUpdaterExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.NewRunner(info.RunArgs.DUT.Name)
 	am := info.GetActionArgs(ctx)
+	logger := info.NewLogger()
 	req := &firmware.FirmwareUpdaterRequest{
 		// Options for the mode are: autoupdate, recovery, factory.
 		Mode:           am.AsString(ctx, "mode", "autoupdate"),
 		Force:          am.AsBool(ctx, "force", false),
 		UpdaterTimeout: am.AsDuration(ctx, "updater_timeout", 600, time.Second),
 	}
-	info.NewLogger().Debugf("Run firmware update: request to run with %q mode.", req.Mode)
-	if err := firmware.RunFirmwareUpdater(ctx, req, run, info.NewLogger()); err != nil {
+	logger.Debugf("Run firmware update: request to run with %q mode.", req.Mode)
+	if err := firmware.RunFirmwareUpdater(ctx, req, run, logger); err != nil {
 		return errors.Annotate(err, "run firmware update").Err()
 	}
 	switch am.AsString(ctx, "reboot", "") {
 	case "by_servo":
-		info.NewLogger().Debugf("Start DUT reset by servo.")
+		logger.Debugf("Start DUT reset by servo.")
 		if err := info.NewServod().Set(ctx, "power_state", "reset"); err != nil {
 			return errors.Annotate(err, "run firmware update: reboot by servo").Err()
 		}
 	case "by_host":
-		info.NewLogger().Debugf("Start DUT reset by host.")
+		logger.Debugf("Start DUT reset by host.")
 		if _, err := run(ctx, time.Minute, "reboot && exit"); err != nil {
-			return errors.Annotate(err, "run firmware update: reboot by host").Err()
+			logger.Debugf("fail to initiate reboot (not critical): %v", err)
 		}
 	}
 	return nil
