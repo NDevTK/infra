@@ -8,14 +8,13 @@ package pubsub
 import (
 	"context"
 	"encoding/json"
+	"infra/appengine/gofindit/compilefailuredetection"
 	"net/http"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/retry/transient"
 	"go.chromium.org/luci/server/router"
-
-	"infra/appengine/gofindit/compilefailuredetection"
 
 	bbv1 "go.chromium.org/luci/common/api/buildbucket/buildbucket/v1"
 )
@@ -34,7 +33,6 @@ type buildBucketMessage struct {
 
 // BuildbucketPubSubHandler handles pub/sub messages from buildbucket
 func BuildbucketPubSubHandler(ctx *router.Context) {
-	logging.Infof(ctx.Context, "Received buildbucket pubsub message")
 	if err := buildbucketPubSubHandlerImpl(ctx.Context, ctx.Request); err != nil {
 		logging.Errorf(ctx.Context, "Error processing buildbucket pubsub message: %s", err)
 		processError(ctx, err)
@@ -59,22 +57,24 @@ func buildbucketPubSubHandlerImpl(c context.Context, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	logging.Infof(c, "Received message for build id %s", bbmsg.Build.Id)
+	logging.Debugf(c, "Received message for build id %d", bbmsg.Build.Id)
 
 	// For now, we only handle chromium/ci builds
 	// TODO (nqmtuan): Move this into config
-	if !(bbmsg.Build.Project == "chromium" && bbmsg.Build.Bucket == "ci") {
-		logging.Infof(c, "Unsupported build for bucket (%q, %q). Exiting early...", bbmsg.Build.Project, bbmsg.Build.Bucket)
+	if !(bbmsg.Build.Project == "chromium" && bbmsg.Build.Bucket == "luci.chromium.ci") {
+		logging.Debugf(c, "Unsupported build for bucket (%q, %q). Exiting early...", bbmsg.Build.Project, bbmsg.Build.Bucket)
 		return nil
 	}
 
 	// Just ignore non-completed builds
 	if bbmsg.Build.Status != bbv1.StatusCompleted {
+		logging.Debugf(c, "Build status = %s. Exiting early...", bbmsg.Build.Status)
 		return nil
 	}
 
 	// We only care about failed builds
 	if bbmsg.Build.Result != bbv1.ResultFailure {
+		logging.Debugf(c, "Result = %s. Exiting early...", bbmsg.Build.Result)
 		return nil
 	}
 

@@ -72,7 +72,7 @@ func GetAnalysisResult(c context.Context, analysis *gfim.CompileFailureAnalysis)
 	}
 
 	// Gets heuristic analysis results.
-	q := datastore.NewQuery("CompileHeuristicAnalysis").Eq("parent", datastore.KeyForObj(c, analysis))
+	q := datastore.NewQuery("CompileHeuristicAnalysis").Ancestor(datastore.KeyForObj(c, analysis))
 	heuristicAnalyses := []*gfim.CompileHeuristicAnalysis{}
 	err := datastore.GetAll(c, q, &heuristicAnalyses)
 
@@ -92,7 +92,7 @@ func GetAnalysisResult(c context.Context, analysis *gfim.CompileFailureAnalysis)
 
 	// Getting the suspects for heuristic analysis
 	suspects := []*gfim.Suspect{}
-	q = datastore.NewQuery("Suspect").Eq("parent", datastore.KeyForObj(c, heuristicAnalysis)).Order("-score")
+	q = datastore.NewQuery("Suspect").Ancestor(datastore.KeyForObj(c, heuristicAnalysis)).Order("-score")
 	err = datastore.GetAll(c, q, &suspects)
 	if err != nil {
 		return nil, err

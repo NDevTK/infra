@@ -47,6 +47,7 @@ type LuciFailedBuild struct {
 
 // CompileFailure represents a compile failure in one or more targets.
 type CompileFailure struct {
+	// Id is the build Id of the compile failure
 	Id int64 `gae:"$id"`
 	// The key to LuciFailedBuild that the failure belongs to.
 	Build *datastore.Key `gae:"$parent"`
@@ -119,14 +120,14 @@ type CompileRerunBuild struct {
 // Culprit is the culprit of rerun analysis.
 type Culprit struct {
 	// Key to the CompileFailureAnalysis that results in this culprit.
-	ParentAnalysis *datastore.Key `gae:"parent"`
+	ParentAnalysis *datastore.Key `gae:"$parent"`
 	buildbucketpb.GitilesCommit
 }
 
 // Suspect is the suspect of heuristic analysis.
 type Suspect struct {
 	// Key to the CompileFailureHeuristicAnalysis that results in this suspect.
-	ParentAnalysis *datastore.Key `gae:"parent"`
+	ParentAnalysis *datastore.Key `gae:"$parent"`
 
 	// The commit of the suspect
 	buildbucketpb.GitilesCommit
@@ -142,14 +143,14 @@ type Suspect struct {
 
 	// A short, human-readable string that concisely describes a fact about the
 	// suspect. e.g. 'add a/b/x.cc'
-	Justification string `gae:"justification"`
+	Justification string `gae:"justification,noindex"`
 }
 
 // CompileHeuristicAnalysis is heuristic analysis for compile failures.
 type CompileHeuristicAnalysis struct {
 	Id int64 `gae:"$id"`
 	// Key to the parent CompileFailureAnalysis
-	ParentAnalysis *datastore.Key `gae:"parent"`
+	ParentAnalysis *datastore.Key `gae:"$parent"`
 	// Time when the analysis starts to run.
 	StartTime time.Time `gae:"start_time"`
 	// Time when the analysis ends.
@@ -162,7 +163,7 @@ type CompileHeuristicAnalysis struct {
 type CompileNthSectionAnalysis struct {
 	Id int64 `gae:"$id"`
 	// Key to the parent CompileFailureAnalysis
-	ParentAnalysis *datastore.Key `gae:"parent"`
+	ParentAnalysis *datastore.Key `gae:"$parent"`
 	// Time when the analysis starts to run.
 	StartTime time.Time `gae:"start_time"`
 	// Time when the analysis ends.

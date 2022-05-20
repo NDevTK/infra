@@ -10,7 +10,11 @@ import (
 	"context"
 	"fmt"
 
+	"infra/appengine/gofindit/compilefailureanalysis"
 	"infra/appengine/gofindit/internal/buildbucket"
+	"infra/appengine/gofindit/model"
+
+	"go.chromium.org/luci/gae/service/datastore"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging"
@@ -20,6 +24,7 @@ import (
 // AnalyzeBuild analyzes a build and trigger an analysis if necessary.
 // Returns true if a new analysis is triggered, returns false otherwise.
 func AnalyzeBuild(c context.Context, bbid int64) (bool, error) {
+	logging.Infof(c, "AnalyzeBuild %d", bbid)
 	build, err := buildbucket.GetBuild(c, bbid, &buildbucketpb.BuildMask{
 		Fields: &fieldmaskpb.FieldMask{
 			Paths: []string{"id", "builder", "input", "status", "steps"},
@@ -36,13 +41,31 @@ func AnalyzeBuild(c context.Context, bbid int64) (bool, error) {
 
 	lastPassedBuild, firstFailedBuild, err := getLastPassedFirstFailedBuilds(c, build)
 
-	// Could not find last passed build, skip the analysis
+	// Could not find last passed build, skip the analysis.
 	if err != nil {
 		logging.Infof(c, "Could not find last passed/first failed builds for failure of build %d. Exiting...", bbid)
 		return false, nil
 	}
 
-	return triggerAnalysisIfNeeded(c, lastPassedBuild, firstFailedBuild)
+	// Check if we need to trigger a new analysis.
+	yes, cf, err := analysisExists(c, build, lastPassedBuild, firstFailedBuild)
+	if err != nil {
+		return false, err
+	}
+	// We don't need to trigger a new analysis.
+	if !yes {
+		return false, nil
+	}
+
+	// No analysis for the regression range. Trigger one.
+	// For now, it just triggers a heuristic analysis, which runs very fast.
+	// In the future, once we have nth-section analysis, we should put in a task
+	// queue and return immediately.
+	_, err = compilefailureanalysis.AnalyzeFailure(c, cf, firstFailedBuild.Id, lastPassedBuild.Id)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 // Search builds older than refBuild to find the last passed and first failed builds
@@ -80,17 +103,124 @@ func getLastPassedFirstFailedBuilds(c context.Context, refBuild *buildbucketpb.B
 	return lastPassedBuild, firstFailedBuild, nil
 }
 
-// triggerAnalysisIfNeeded checks if there has been an analysis with the regression range.
-// if not, it will trigger an analysis.
-func triggerAnalysisIfNeeded(c context.Context, lastPassedBuild *buildbucketpb.Build, firstFailedBuild *buildbucketpb.Build) (bool, error) {
-	logging.Infof(c, "triggerAnalysisIfNeeded for range (%d, %d)", lastPassedBuild.Id, firstFailedBuild.Id)
-	// TODO (nqmtuan): Implement this
+// analysisExists checks if we need to trigger a new analysis.
+// The function checks if there has been an analysis with the regression range.
+// Returns true if a new analysis should be triggered, returns false otherwise.
+// Also return the compileFailure model associated with the failure for convenience.
+// Note that this function also create/update the associated CompileFailureModel
+func analysisExists(c context.Context, refFailedBuild *buildbucketpb.Build, lastPassedBuild *buildbucketpb.Build, firstFailedBuild *buildbucketpb.Build) (bool, *model.CompileFailure, error) {
+	logging.Infof(c, "check analysisExists for range (%d, %d)", lastPassedBuild.Id, firstFailedBuild.Id)
+
+	// Create a CompileFailure record in datastore if necessary
+	compileFailure, err := createCompileFailureModel(c, refFailedBuild)
+
 	// Search in datastore if there is already an analysis with the same regression range
 	// If not, trigger an analysis
-	// For now, it just triggers a heuristic analysis, which runs very fast
-	// In the future, once we have nth-section analysis, we should put in a task
-	// queue and return immediately
-	return false, nil
+	analysis, err := searchAnalysis(c, lastPassedBuild.Id, firstFailedBuild.Id)
+
+	if err != nil {
+		return false, nil, err
+	}
+
+	// There is an existing analysis.
+	// We should not trigger another analysis, but instead we will "merge" the
+	// compile failure with the existing one.
+	if analysis != nil {
+		compileFailureId := analysis.CompileFailure.IntID()
+		logging.Infof(c, "An analysis already existed for compile failure with ID %d", compileFailureId)
+		cf := &model.CompileFailure{
+			Id:    compileFailureId,
+			Build: analysis.CompileFailure.Parent(),
+		}
+		// Find the compile failure that the analysis runs on
+		err := datastore.Get(c, cf)
+		if err != nil {
+			logging.Errorf(c, "Cannot find compile failure ID %d", compileFailureId)
+			return false, nil, err
+		}
+
+		// If they are the same compileFailure, don't do anything.
+		// This may happen when we receive duplicated/retried message from pubsub.
+		if cf.Id == compileFailure.Id {
+			return false, compileFailure, nil
+		}
+
+		// "Merge" the compile failures, so they use the same analysis
+		compileFailure.MergedFailureKey = analysis.CompileFailure
+		err = datastore.RunInTransaction(c, func(c context.Context) error {
+			return datastore.Put(c, compileFailure)
+		}, nil)
+
+		if err != nil {
+			return false, nil, err
+		}
+
+		return false, compileFailure, nil
+	}
+
+	return true, compileFailure, nil
+}
+
+func createCompileFailureModel(c context.Context, failedBuild *buildbucketpb.Build) (*model.CompileFailure, error) {
+	// As we are using build ID as ID here, the entities will be created if not exist.
+	// If it exists, we just update the entities.
+	var compileFailure *model.CompileFailure
+	err := datastore.RunInTransaction(c, func(c context.Context) error {
+		var gitilesCommit buildbucketpb.GitilesCommit
+		input := failedBuild.GetInput()
+		if input != nil && input.GitilesCommit != nil {
+			gitilesCommit = *(input.GitilesCommit)
+		}
+		buildModel := &model.LuciFailedBuild{
+			Id: failedBuild.Id,
+			LuciBuild: model.LuciBuild{
+				BuildId:       failedBuild.Id,
+				Project:       failedBuild.GetBuilder().Project,
+				Bucket:        failedBuild.GetBuilder().Bucket,
+				Builder:       failedBuild.GetBuilder().Builder,
+				BuildNumber:   int(failedBuild.Number),
+				Status:        failedBuild.Status,
+				StartTime:     failedBuild.StartTime.AsTime(),
+				EndTime:       failedBuild.EndTime.AsTime(),
+				CreateTime:    failedBuild.CreateTime.AsTime(),
+				GitilesCommit: gitilesCommit,
+			},
+			FailureType: model.BuildFailureType_Compile,
+		}
+		e := datastore.Put(c, buildModel)
+		if e != nil {
+			return e
+		}
+		compileFailure = &model.CompileFailure{
+			Id:    failedBuild.Id,
+			Build: datastore.KeyForObj(c, buildModel),
+		}
+		return datastore.Put(c, compileFailure)
+	}, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return compileFailure, nil
+}
+
+func searchAnalysis(c context.Context, lastPassedBuildId int64, firstFailedBuildId int64) (*model.CompileFailureAnalysis, error) {
+	q := datastore.NewQuery("CompileFailureAnalysis").Eq("last_passed_build_id", lastPassedBuildId).Eq("first_failed_build_id", firstFailedBuildId)
+	analyses := []*model.CompileFailureAnalysis{}
+	err := datastore.GetAll(c, q, &analyses)
+	if err != nil {
+		logging.Errorf(c, "Error querying datastore for analysis for range (%d, %d): %s", lastPassedBuildId, firstFailedBuildId, err)
+		return nil, err
+	}
+	if len(analyses) == 0 {
+		return nil, nil
+	}
+	// There should only be at most one analysis for a range.
+	if len(analyses) > 1 {
+		logging.Warningf(c, "Found more than one analysis form range (%d, %d)", lastPassedBuildId, firstFailedBuildId)
+	}
+	return analyses[0], nil
 }
 
 // hasCompileStepStatus checks if the compile step for a build has the specified status.

@@ -51,16 +51,19 @@ func AnalyzeFailure(
 	}
 
 	// TODO (nqmtuan): run heuristic analysis and nth-section analysis in parallel
-	// Heuristic analysis
-	heuristicResult, e := heuristic.Analyze(c, analysis, regression_range)
-	if e != nil {
-		logging.Errorf(c, "Error during heuristic analysis: %v", e)
-	}
-
 	// Nth-section analysis
 	_, e = nthsection.Analyze(c, analysis, regression_range)
 	if e != nil {
 		logging.Errorf(c, "Error during nthsection analysis: %v", e)
+	}
+
+	// Heuristic analysis
+	heuristicResult, e := heuristic.Analyze(c, analysis, regression_range)
+	if e != nil {
+		logging.Errorf(c, "Error during heuristic analysis: %v", e)
+		// As we only run heuristic analysis now, returns the error if heuristic
+		// analysis failed.
+		return nil, e
 	}
 
 	// TODO: For now, just check heuristic analysis status
