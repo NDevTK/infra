@@ -147,6 +147,13 @@ hooks = [
   {
     "pattern": ".",
     "action": [
+      "python", "-c",
+      "import shutil; shutil.rmtree('./infra/appengine/monorail/lib', True)",
+    ],
+  },
+  {
+    "pattern": ".",
+    "action": [
       "python", "-u", "-m", "pip", "install", "--no-deps", "--require-hashes",
       "-t", "./infra/appengine/monorail/lib",
       "-r", "./infra/appengine/monorail/requirements.py2.txt",
