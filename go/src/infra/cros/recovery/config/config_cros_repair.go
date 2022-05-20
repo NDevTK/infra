@@ -21,8 +21,7 @@ func crosRepairPlan() *Plan {
 			"Check power sources",
 			"Check TPM statuses",
 			"Verify present of gsctool",
-			"Audit wifi",
-			"Audit bluetooth",
+			"Audit",
 			"Firmware validations",
 			"Login UI is up",
 			"Verify keys of RW_VPD",
@@ -128,8 +127,6 @@ func crosRepairActions() map[string]*Action {
 				"Stateful partition has enough free index nodes",
 				"Stateful partition has enough free space",
 				"Stateful partition (encrypted) has enough free space",
-				"Quick internal storage audit (SMART)",
-				"Check DUT state and fail if needs replacement",
 			},
 			ExecName: "sample_pass",
 		},
@@ -143,7 +140,7 @@ func crosRepairActions() map[string]*Action {
 				"invert:true",
 			},
 		},
-		"Quick internal storage audit (SMART)": {
+		"Audit storage (SMART only)": {
 			Docs: []string{
 				"Quick audit internal storage by reading SMART data.",
 				"The check updates storage state.",
@@ -171,6 +168,9 @@ func crosRepairActions() map[string]*Action {
 		"Read OS version": {
 			Docs: []string{
 				"Read and log current OS version.",
+			},
+			Dependencies: []string{
+				"Internal storage is responsive",
 			},
 			ExecName: "cros_read_os_version",
 			RecoveryActions: []string{
@@ -255,8 +255,6 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Power is recognized by DUT",
 				"Battery is changing or have accepted level",
-				"Audit battery",
-				"Check DUT state and fail if needs replacement",
 			},
 			ExecName: "sample_pass",
 		},
@@ -390,7 +388,7 @@ func crosRepairActions() map[string]*Action {
 				"lsusb -vv -d 03eb:2042 |grep \"Remote Wakeup\"",
 			},
 			RecoveryActions: []string{
-				// TODO: update keyboard firmware.
+				// TODO(b:233368615): update keyboard firmware.
 			},
 			AllowFailAfterRecovery: true,
 		},
@@ -541,13 +539,20 @@ func crosRepairActions() map[string]*Action {
 				"Is not Flex device",
 				"DUT has Cr50 phase label",
 			},
-			ExecName: "cros_is_gsc_tool_present",
+			Dependencies: []string{
+				"Read OS version",
+			},
+			ExecName: "cros_run_shell_command",
+			ExecExtraArgs: []string{
+				"gsctool -a -f",
+			},
 			RecoveryActions: []string{
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode by USB-drive (for special pools)",
 			},
+			AllowFailAfterRecovery: true,
 		},
 		"Audit battery": {
 			Docs: []string{
@@ -582,6 +587,20 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_fail",
 		},
+		"Audit": {
+			Docs: []string{
+				"Perform audit testing on the host.",
+			},
+			Dependencies: []string{
+				"Read OS version",
+				"Audit battery",
+				"Audit storage (SMART only)",
+				"Audit wifi",
+				"Audit bluetooth",
+				"Check DUT state and fail if needs replacement",
+			},
+			ExecName: "sample_pass",
+		},
 		"Audit wifi": {
 			Docs: []string{
 				"Check wifi on the DUT is normal and update wifi hardware state accordingly.",
@@ -613,11 +632,11 @@ func crosRepairActions() map[string]*Action {
 				"For dev-signed firmware, tpm_fwver reported from crossystem should always be 0x10001.",
 				"Firmware update on DUTs with incorrect tmp_fwver may fail due to firmware rollback protection.",
 			},
-			Dependencies: []string{
-				"Internal storage is responsive",
-			},
 			Conditions: []string{
 				"Is not Flex device",
+			},
+			Dependencies: []string{
+				"Internal storage is responsive",
 			},
 			ExecName: "cros_match_dev_tpm_firmware_version",
 			RecoveryActions: []string{
@@ -631,11 +650,11 @@ func crosRepairActions() map[string]*Action {
 				"For dev-signed firmware, tpm_kernver reported from crossystem should always be 0x10001.",
 				"Firmware update on DUTs with incorrect tpm_kernver may fail due to firmware rollback protection.",
 			},
-			Dependencies: []string{
-				"Internal storage is responsive",
-			},
 			Conditions: []string{
 				"Is not Flex device",
+			},
+			Dependencies: []string{
+				"Internal storage is responsive",
 			},
 			ExecName: "cros_match_dev_tpm_kernel_version",
 			RecoveryActions: []string{
@@ -916,7 +935,7 @@ func crosRepairActions() map[string]*Action {
 				"Update the cr50 phase label from device.",
 			},
 			Conditions: []string{
-				"Cr50 firmware present on the device",
+				"Is gsctool present on the host",
 			},
 			ExecName:               "cros_update_cr50_label",
 			AllowFailAfterRecovery: true,
@@ -926,7 +945,7 @@ func crosRepairActions() map[string]*Action {
 				"Update the cr50 key ID from device.",
 			},
 			Conditions: []string{
-				"Cr50 firmware present on the device",
+				"Is gsctool present on the host",
 			},
 			ExecName:               "cros_update_cr50_key_id_label",
 			AllowFailAfterRecovery: true,
@@ -950,7 +969,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_fail",
 		},
-		"Cr50 firmware present on the device": {
+		"Is gsctool present on the host": {
 			Docs: []string{
 				"Checks if the cr 50 firmware exists on the DUT by running the gsctool version command.",
 				"The action working as condition. Please do not exclude based on labels.",
@@ -1219,7 +1238,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"dut_servo_host_present",
-				"sleep_1_second",
+				"Sleep 1s",
 			},
 			ExecName: "init_dut_for_servo",
 		},
@@ -1259,11 +1278,12 @@ func crosRepairActions() map[string]*Action {
 			ExecName:               "servo_set",
 			AllowFailAfterRecovery: true,
 		},
-		"sleep_1_second": {
+		"Sleep 1s": {
+			ExecName: "sample_sleep",
 			ExecExtraArgs: []string{
 				"sleep:1",
 			},
-			ExecName: "sample_sleep",
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Read BIOS from DUT by servo": {
 			Docs: []string{

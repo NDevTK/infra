@@ -15,27 +15,14 @@ import (
 	"infra/cros/recovery/internal/log"
 )
 
-const (
-	// Expected value of tpm dev-signed firmware version.
-	devTpmFirmwareVersion = "0x00010001"
-	// Expected value of tpm dev-signed kernel version.
-	devTPMKernelVersion = "0x00010001"
-	// Command for checking the tpm kernel version.
-	tpmKernelVersionCommand = "tpm_kernver"
-	// Command for checking the tpm firmware version.
-	tpmFirmwareVersionCommand = "tpm_fwver"
-)
-
 // isOnDevTPMKernelVersionExec verifies dev's tpm kernel version is match to expected value.
 //
 // For dev-signed firmware, tpm_kernver reported from
 // crossystem should always be 0x10001. Firmware update on DUTs with
 // incorrect tpm_kernver may fail due to firmware rollback protection.
 func matchDevTPMKernelVersionExec(ctx context.Context, info *execs.ExecInfo) error {
-	if err := cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), tpmKernelVersionCommand, devTPMKernelVersion); err != nil {
-		return errors.Annotate(err, "match dev tpm kernel version").Err()
-	}
-	return nil
+	err := cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), "tpm_kernver", "0x00010001")
+	return errors.Annotate(err, "match dev tpm kernel version").Err()
 }
 
 // matchDevTPMFirmwareVersionExec verifies dev's tpm firmware version is match to expected value.
@@ -44,10 +31,8 @@ func matchDevTPMKernelVersionExec(ctx context.Context, info *execs.ExecInfo) err
 // crossystem should always be 0x10001. Firmware update on DUTs with
 // incorrect tmp_fwver may fail due to firmware rollback protection.
 func matchDevTPMFirmwareVersionExec(ctx context.Context, info *execs.ExecInfo) error {
-	if err := cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), tpmFirmwareVersionCommand, devTpmFirmwareVersion); err != nil {
-		return errors.Annotate(err, "match dev tpm firmware version").Err()
-	}
-	return nil
+	err := cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), "tpm_fwver", "0x00010001")
+	return errors.Annotate(err, "match dev tpm firmware version").Err()
 }
 
 // isTPMPresentExec confirms that the given DUT's TPM is present.

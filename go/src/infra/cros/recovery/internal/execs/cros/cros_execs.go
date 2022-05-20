@@ -225,20 +225,6 @@ func waitForSystemExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// isGscToolPresentExec confirms that GSC tool is functional.
-//
-// If board/model expected to have GSC tool but it does not have it then need
-// to re-image the host to recover it.
-// If host-info has label 'cr50' then we expect to have GSC tool on the host.
-func isGscToolPresentExec(ctx context.Context, info *execs.ExecInfo) error {
-	r := info.DefaultRunner()
-	if _, err := r(ctx, time.Minute, "gsctool", "-a", "-f"); err != nil {
-		return errors.Annotate(err, "gsc tool present: gsc tool issue detected").Err()
-	}
-	log.Debugf(ctx, "GSC tool is functional")
-	return nil
-}
-
 // isToolPresentExec checks the presence of the tool on the DUT.
 //
 // For example, the tool "dfu-programmer" is checked by running the command:
@@ -317,7 +303,6 @@ func init() {
 	execs.Register("cros_has_critical_kernel_error", hasCriticalKernelErrorExec)
 	execs.Register("cros_is_not_virtual_machine", isNotVirtualMachineExec)
 	execs.Register("cros_wait_for_system", waitForSystemExec)
-	execs.Register("cros_is_gsc_tool_present", isGscToolPresentExec)
 	execs.Register("cros_is_tool_present", isToolPresentExec)
 	execs.Register("cros_set_gbb_flags", crosSetGbbFlagsExec)
 	execs.Register("cros_switch_to_secure_mode", crosSwitchToSecureModeExec)

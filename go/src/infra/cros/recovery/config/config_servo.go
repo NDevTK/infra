@@ -20,37 +20,37 @@ func servoRepairPlan() *Plan {
 			"Set state:NO_SSH",
 			"Device is pingable",
 			"Device is SSHable",
-			"servo_v3_uptime",
+			"Servo_v3 uptime is not long",
 			"servo_power_cycle_root_servo",
 			"Set state:SERVO_HOST_ISSUE",
 			"Mark labstation as servod is in-use",
 			"Set state:BROKEN",
-			"has_enough_disk_space",
+			"Has enough free disk space",
 			"Cache latest servod start time",
 			"Set state:NOT_CONNECTED",
-			"servo_v4_root_present",
+			"Servo_v4(p1) main present",
 			"Set state:NEED_REPLACEMENT",
-			"servo_v3_root_present",
-			"servo_fw_need_update",
+			"Servo_v3 root present",
+			"All servo's fw updated",
 			"Set state:SERVO_HOST_ISSUE",
 			"Start servod daemon",
 			"Set state:SERVOD_ISSUE",
-			"Verify that servod started and respond to dut-control",
+			"Servod is responsive to dut-control",
 			"Set state:SERVO_HOST_ISSUE",
 			"Read servo serial by servod harness",
 			"Set state:DUT_NOT_CONNECTED",
-			"servo_dut_detected",
+			"Verify servo connected to the DUT",
 			"Set state:COLD_RESET_PIN_ISSUE",
-			"servo_cold_reset_pin",
+			"Cold reset pin is detected",
 			"Set state:WARM_RESET_PIN_ISSUE",
-			"servo_warm_reset_pin",
+			"Warm reset pin is detected",
 			"Set state:SERVOD_ISSUE",
 			"Check if PD is src state",
-			"servo_cr50_checks",
+			"Verify Cr50 detected",
 			"Set state:DUT_NOT_CONNECTED",
-			"dut_controller_missing_fault_off",
+			"Servod detect all children components",
 			"Set state:TOPOLOGY_ISSUE",
-			"servo_topology",
+			"Servo topology",
 			"Verify that USB drive is detectable",
 			"Update USB drive info",
 			"Set state:SERVOD_PROXY_ISSUE",
@@ -58,10 +58,10 @@ func servoRepairPlan() *Plan {
 			"Set state:CR50_CONSOLE_MISSING",
 			"Verify cr50 console",
 			"Set state:CCD_TESTLAB_ISSUE",
-			"cr50_testlab",
-			"servo_ec_check",
+			"Cr50 testlab is enabled",
+			"Verify EC",
 			"Set state:BROKEN",
-			"update_servo_type_label",
+			"Record good servo type",
 			"Set state:WORKING",
 		},
 		Actions: map[string]*Action{
@@ -119,9 +119,7 @@ func servoRepairPlan() *Plan {
 				ExecTimeout: &durationpb.Duration{Seconds: 120},
 				RecoveryActions: []string{
 					"Stop servod",
-					"Toggle PD (5 times) and stop",
-					"Try fake disconnect and stop",
-					"Toggle CC line and stop",
+					"Create request to reboot labstation",
 				},
 			},
 			"Stop servod": {
@@ -173,7 +171,10 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "servo_servod_port_present",
 			},
-			"servo_v3_uptime": {
+			"Servo_v3 uptime is not long": {
+				Docs: []string{
+					"If servo_v3 is running longer than 96h it can have some issue.",
+				},
 				Conditions: []string{
 					"Is servo_v3 used",
 				},
@@ -182,16 +183,50 @@ func servoRepairPlan() *Plan {
 					"max_duration:96h",
 				},
 				RecoveryActions: []string{
-					"reboot",
+					"Simple reboot and wait",
 				},
 			},
-			"reboot": {ExecName: "sample_pass"},
+			"Simple reboot and wait": {
+				Docs: []string{
+					"Reboot host and wait for it to be up.",
+				},
+				Dependencies: []string{
+					"Simple reboot",
+					"Wait to be SSHable (normal boot)",
+				},
+				ExecName:   "sample_pass",
+				RunControl: RunControl_ALWAYS_RUN,
+			},
+			"Wait to be SSHable (normal boot)": {
+				// No recovery actions as that is help action.
+				Docs: []string{
+					"Try to wait device to be sshable after the device being rebooted.",
+					"Waiting time 150 seconds.",
+				},
+				ExecName:    "cros_ssh",
+				ExecTimeout: &durationpb.Duration{Seconds: 150},
+				RunControl:  RunControl_ALWAYS_RUN,
+			},
+			"Simple reboot": {
+				Docs: []string{
+					"Simple un-blocker reboot.",
+				},
+				ExecName: "cros_run_shell_command",
+				ExecExtraArgs: []string{
+					"reboot && exit",
+				},
+				RunControl: RunControl_ALWAYS_RUN,
+			},
 			"is_labstation": {
-				Docs:     []string{"Condition to check if the servohost is a labstation."},
+				Docs: []string{
+					"Condition to check if the servohost is a labstation.",
+				},
 				ExecName: "servo_host_is_labstation",
 			},
 			"is_container": {
-				Docs:     []string{"Condition to check if servo uses servod container."},
+				Docs: []string{
+					"Condition to check if servo uses servod container.",
+				},
 				ExecName: "servo_uses_servod_container",
 			},
 			"Is servo_v3 used": {
@@ -209,38 +244,51 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "cros_create_servo_in_use",
 				RecoveryActions: []string{
-					"Stop servod",
-				},
-			},
-			"has_enough_disk_space": {
-				Docs:          []string{"check the stateful partition have enough disk space that is at least 0.5GB. The storage unit is in GB."},
-				Conditions:    []string{"is_not_container"},
-				ExecName:      "cros_has_enough_storage_space",
-				ExecExtraArgs: []string{"/mnt/stateful_partition:0.5"},
-				RecoveryActions: []string{
-					"servo_servod_and_labstation_disk_cleanup",
+					"Sleep 1s",
 					"Create request to reboot labstation",
-					"servo_host_v3_reboot",
 				},
 			},
-			"servo_servod_and_labstation_disk_cleanup": {
-				Docs: []string{"Clean up the old servod files as well as labstation."},
+			"Has enough free disk space": {
+				Docs: []string{
+					"Check if stateful partition have enough disk space that is at least 0.5GB.",
+				},
+				Conditions: []string{
+					"is_not_container",
+				},
+				ExecName: "cros_has_enough_storage_space",
+				ExecExtraArgs: []string{
+					"/mnt/stateful_partition:0.5",
+				},
+				RecoveryActions: []string{
+					"Remove logs and other files",
+					"Create request to reboot labstation",
+					"Reboot servo_v3",
+				},
+			},
+			"Remove logs and other files": {
+				Docs: []string{
+					"Clean up the old servod files as well as labstation.",
+				},
 				Dependencies: []string{
 					"servo_labstation_disk_cleanup",
-					"servod_old_logs_cleanup",
+					"Remove logs older 5 days",
 				},
 				ExecName: "sample_pass",
 			},
-			"servod_old_logs_cleanup": {
-				Docs:          []string{"Clean up the old servod files based on the max number of days given in the argument."},
-				ExecName:      "servo_servod_old_logs_cleanup",
-				ExecExtraArgs: []string{"max_days:5"},
+			"Remove logs older 5 days": {
+				Docs: []string{
+					"Clean up the old servod logs which older than 5 days.",
+				},
+				ExecName: "servo_servod_old_logs_cleanup",
+				ExecExtraArgs: []string{
+					"max_days:5",
+				},
 			},
 			"is_not_container": {
 				Conditions: []string{"is_container"},
 				ExecName:   "sample_fail",
 			},
-			"servo_topology": {
+			"Servo topology": {
 				Docs: []string{
 					"host.check_diskspace('/mnt/stateful_partition', 0.5)",
 				},
@@ -248,13 +296,13 @@ func servoRepairPlan() *Plan {
 					"Is not servo_v3",
 				},
 				Dependencies: []string{
-					"cros_ssh",
-					"servo_topology_single_child",
-					"servo_topology_dual_setup",
+					"Device is SSHable",
+					"Servo topology min one child",
+					"Servo topology min two children",
 				},
 				ExecName: "sample_pass",
 			},
-			"servo_topology_single_child": {
+			"Servo topology min one child": {
 				Conditions: []string{
 					"Is not servo_v3",
 				},
@@ -265,18 +313,18 @@ func servoRepairPlan() *Plan {
 				},
 				RecoveryActions: []string{
 					"Stop servod",
-					"servo_power_cycle_repair",
+					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
 					"Toggle CC line and stop",
-					"Reboot by DUT's EC and stop",
+					"Reboot by EC console and stop",
 					"Cold reset the DUT by servod and stop",
+					"Reflash Cr50 fw and stop",
+					"Reset EC from DUT and stop",
 					"Create request to reboot labstation",
-					"reflash_cr_50_fw_on_dut",
-					"reset_ec_on_dut",
 				},
 			},
-			"servo_topology_dual_setup": {
+			"Servo topology min two children": {
 				Conditions: []string{
 					"Is not servo_v3",
 					"is_dual_setup",
@@ -288,42 +336,45 @@ func servoRepairPlan() *Plan {
 				},
 				RecoveryActions: []string{
 					"Stop servod",
-					"servo_power_cycle_repair",
+					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
 					"Toggle CC line and stop",
-					"Reboot by DUT's EC and stop",
+					"Reboot by EC console and stop",
 					"Cold reset the DUT by servod and stop",
+					"Reflash Cr50 fw and stop",
+					"Reset EC from DUT and stop",
 					"Create request to reboot labstation",
-					"reflash_cr_50_fw_on_dut",
-					"reset_ec_on_dut",
 				},
 			},
-			"servo_v3_root_present": {
+			"Servo_v3 root present": {
 				Docs: []string{
-					"This remains to be implemented.",
+					"Check is servo_v3 is present.",
 				},
 				Conditions: []string{
 					"Is servo_v3 used",
 				},
-				RecoveryActions: []string{
-					"servo_host_v3_reboot",
-				},
 				ExecName: "servo_v3_root_present",
+				RecoveryActions: []string{
+					"Reboot servo_v3",
+				},
 			},
-			"servo_v4_root_present": {
+			"Servo_v4(p1) main present": {
+				Docs: []string{
+					"Verify that servo_v4(p1) board is present",
+				},
 				Conditions: []string{
 					"Is not servo_v3",
 				},
+				ExecName: "servo_v4_root_present",
 				ExecExtraArgs: []string{
 					"update_topology:true",
 				},
 				RecoveryActions: []string{
 					"Create request to reboot labstation",
 				},
-				ExecName: "servo_v4_root_present",
 			},
-			"servo_fw_need_update": {
+			"All servo's fw updated": {
 				Docs: []string{
 					"Check whether servo devices required firmware update.",
 					"Check running agains version specified by servo_updater channel.",
@@ -334,22 +385,25 @@ func servoRepairPlan() *Plan {
 				ExecName:    "servo_fw_need_update",
 				ExecTimeout: &durationpb.Duration{Seconds: 300},
 				RecoveryActions: []string{
-					"servo_fw_update",
+					"Sleep 1s", //first try to re-read
+					"Update all servo's firmware",
 				},
 			},
 			"Read servo serial by servod harness": {
-				Docs:     []string{"run command from xmlrpc"},
+				Docs: []string{
+					"Try to read servo serial by XMLRPC request to servod.",
+				},
 				ExecName: "servod_echo",
 				RecoveryActions: []string{
 					"Stop servod",
-					"servo_power_cycle_repair",
-					"Toggle PD (5 times) and stop",
+					"Toggle PD once and stop",
+					// Other actions just in case as we do not expect to run them.
 					"Try fake disconnect and stop",
 					"Toggle CC line and stop",
-					"Reboot by DUT's EC and stop",
+					"Reboot by EC console and stop",
 					"Cold reset the DUT by servod and stop",
-					"reflash_cr_50_fw_on_dut",
-					"reset_ec_on_dut",
+					"Reflash Cr50 fw and stop",
+					"Reset EC from DUT and stop",
 				},
 			},
 			"Read ppdut5_mv value": {
@@ -373,6 +427,7 @@ func servoRepairPlan() *Plan {
 			"Check if PD is src state": {
 				Docs: []string{
 					"Verify that PD is src power to the DUT.",
+					"Action can fail as not always the power is delivered by servo.",
 				},
 				Conditions: []string{
 					"Is servo_v4(p1) used with type-c connector",
@@ -387,13 +442,14 @@ func servoRepairPlan() *Plan {
 					"expected_string_value:src",
 				},
 				RecoveryActions: []string{
+					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
 					"Toggle CC line and stop",
 				},
 				AllowFailAfterRecovery: true,
 			},
-			"servo_cr50_checks": {
+			"Verify Cr50 detected": {
 				Docs: []string{
 					"Run basic cr50/ti50 detections checks.",
 				},
@@ -402,57 +458,64 @@ func servoRepairPlan() *Plan {
 				},
 				Dependencies: []string{
 					"Set state:SBU_LOW_VOLTAGE",
-					"servo_cr50_low_sbu",
+					"Servo SBU voltage is good",
 					"Set state:DUT_NOT_CONNECTED",
-					"servo_cr50_enumerated",
+					"Servo Cr50 enumerated",
 				},
 				ExecName: "sample_pass",
 			},
-			"servo_cr50_low_sbu": {
+			"Servo SBU voltage is good": {
+				Docs: []string{
+					"Verify that SBU voltage is in expected range (2500mv).",
+				},
 				Conditions: []string{
 					"Is not servo_v3",
 					"Is servo_v4(p1) used with type-c connector",
-					"servo_is_sbu_voltage_issue",
+					"Servod detect voltage issue",
 				},
+				ExecName: "servo_cr50_low_sbu",
 				RecoveryActions: []string{
 					"Stop servod",
-					"servo_power_cycle_repair",
+					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
 					"Toggle CC line and stop",
-					"Reboot by DUT's EC and stop",
+					"Reboot by EC console and stop",
 					"Cold reset the DUT by servod and stop",
-					"reflash_cr_50_fw_on_dut",
-					"reset_ec_on_dut",
+					"Reflash Cr50 fw and stop",
+					"Reset EC from DUT and stop",
 				},
 			},
-			"servo_is_sbu_voltage_issue": {
+			"Servod detect voltage issue": {
+				Docs: []string{
+					"Verify that servod is detected required children.",
+				},
+				ExecName: "servo_check_servod_control",
 				ExecExtraArgs: []string{
 					"command:dut_sbu_voltage_float_fault",
 					"expected_string_value:on",
 				},
 				RecoveryActions: []string{
-					"servo_power_cycle_repair",
+					"Stop servod",
+					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
 					"Toggle CC line and stop",
-					"Reboot by DUT's EC and stop",
+					"Reboot by EC console and stop",
+					"Reset EC from DUT and stop",
 					"Cold reset the DUT by servod and stop",
-					"reflash_cr_50_fw_on_dut",
-					"reset_ec_on_dut",
+					"Reflash Cr50 fw and stop",
 				},
-				ExecName: "servo_check_servod_control",
 			},
-			"servo_cr50_enumerated": {
-				Docs: []string{"prev name servo_cr50_off"},
+			"Servo Cr50 enumerated": {
+				Docs: []string{
+					"Verify that Cr50/GSC is enumerated or not.",
+				},
 				Conditions: []string{
 					"Is not servo_v3",
 					"Is servo_v4(p1) used with type-c connector",
-					"servo_is_sbu_voltage_issue",
-				},
-				RecoveryActions: []string{
-					"Stop servod",
-					"servo_power_cycle_repair",
+					// If this pass then we have issue.
+					"Servod detect voltage issue",
 				},
 				ExecName: "sample_fail",
 			},
@@ -466,7 +529,9 @@ func servoRepairPlan() *Plan {
 				ExecName: "servo_main_device_is_gcs",
 			},
 			"Verify cr50 console": {
-				Docs: []string{"Create new action to check that servotype has ccd_cr50, and set that as a condition for this action."},
+				Docs: []string{
+					"Verify that Cr50 console is responsive.",
+				},
 				Conditions: []string{
 					"Is not servo_v3",
 					"Servo main device is GSC chip",
@@ -474,24 +539,24 @@ func servoRepairPlan() *Plan {
 				Dependencies: []string{
 					"Initialize DUT part for servo",
 				},
+				ExecName: "servod_can_read_all",
 				ExecExtraArgs: []string{
 					"commands:cr50_ccd_level,cr50_testlab,cr50_ccd_state_flags",
 					"any_one:true",
 				},
 				RecoveryActions: []string{
 					"Stop servod",
-					"servo_power_cycle_repair",
+					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
 					"Toggle CC line and stop",
-					"Reboot by DUT's EC and stop",
+					"Reboot by EC console and stop",
 					"Cold reset the DUT by servod and stop",
-					"reflash_cr_50_fw_on_dut",
-					"reset_ec_on_dut",
+					"Reflash Cr50 fw and stop",
+					"Reset EC from DUT and stop",
 				},
-				ExecName: "servod_can_read_all",
 			},
-			"cr50_testlab": {
+			"Cr50 testlab is enabled": {
 				Docs: []string{
 					"Verify that testlab flag is enabled in GSC chip.",
 					"Expect that cr50/GSC will required to set cr50 testlab is enabled.",
@@ -506,13 +571,11 @@ func servoRepairPlan() *Plan {
 					"expected_string_value:on",
 				},
 				RecoveryActions: []string{
+					// TODO: need verify if we can enable testlab.
 					"Open gsc testlab",
+					"Stop servod",
 					"Try fake disconnect and stop",
 					"Toggle CC line and stop",
-					"Reboot by DUT's EC and stop",
-					"Cold reset the DUT by servod and stop",
-					"reflash_cr_50_fw_on_dut",
-					"reset_ec_on_dut",
 				},
 			},
 			"Open gsc testlab": {
@@ -532,6 +595,9 @@ func servoRepairPlan() *Plan {
 				AllowFailAfterRecovery: true,
 			},
 			"Initialize DUT part for servo": {
+				Docs: []string{
+					"Call servod to init dependencies for DUT",
+				},
 				Conditions: []string{
 					"Is not servo_v3",
 				},
@@ -541,13 +607,15 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "init_dut_for_servo",
 				RecoveryActions: []string{
+					"Stop servod",
+					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
 					"Toggle CC line and stop",
-					"Reboot by DUT's EC and stop",
+					"Reboot by EC console and stop",
 					"Cold reset the DUT by servod and stop",
-					"reflash_cr_50_fw_on_dut",
-					"reset_ec_on_dut",
+					"Reflash Cr50 fw and stop",
+					"Reset EC from DUT and stop",
 				},
 			},
 			"pwr_button_supported_models": {
@@ -558,23 +626,37 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "dut_check_model",
 			},
-			"servo_pwr_button_pin": {
-				Conditions:   []string{"pwr_button_supported_models"},
-				Dependencies: []string{"dut_has_model_name"},
+			"Verify power button signal": {
+				Docs: []string{
+					"verify that pwr_button signal is present.",
+					"If signal is not present then probably we have issue with servo connection.",
+				},
+				Conditions: []string{
+					"pwr_button_supported_models",
+				},
 				ExecExtraArgs: []string{
 					"command:pwr_button",
 					"expected_string_value:release",
 				},
+				ExecName: "servo_check_servod_control",
 				RecoveryActions: []string{
 					"Stop servod",
+					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
 					"Toggle CC line and stop",
+					"Reboot by EC console and stop",
+					"Cold reset the DUT by servod and stop",
+					"Reset EC from DUT and stop",
+					"Force reflash servo_micro fw and stop",
+					"Reflash Cr50 fw and stop",
 				},
-				ExecName:               "servo_check_servod_control",
 				AllowFailAfterRecovery: true,
 			},
-			"servo_dut_detected": {
+			"Verify servo connected to the DUT": {
+				Docs: []string{
+					"Verify if servo connected to the DUTand received required voltage from it.",
+				},
 				Conditions: []string{
 					"Is not servo_v3",
 					"Is servo_v4(p1) with type-a connector",
@@ -586,11 +668,10 @@ func servoRepairPlan() *Plan {
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
 					"Toggle CC line and stop",
-					"Reboot by DUT's EC and stop",
+					"Reboot by EC console and stop",
 					"Cold reset the DUT by servod and stop",
-					"reset_ec_on_dut",
-					"servo_micro_fw_update_repair",
-					"reflash_cr_50_fw_on_dut",
+					"Reset EC from DUT and stop",
+					"Force reflash servo_micro fw and stop",
 				},
 			},
 			"Servo type-a hub connected": {
@@ -599,7 +680,7 @@ func servoRepairPlan() *Plan {
 					"Working only for labstation with servo_micro.",
 				},
 				Conditions: []string{
-					"servo_host_is_labstation",
+					"is_labstation",
 					"is_servo_micro",
 					"DUT has CrOS EC",
 					// Followed is condition to check if voltage is low means servo_micro is not connected.
@@ -608,11 +689,10 @@ func servoRepairPlan() *Plan {
 				ExecName: "servo_low_ppdut5",
 				RecoveryActions: []string{
 					"Stop servod",
-					"Toggle PD (5 times) and stop",
-					"Toggle CC line and stop",
-					"Reboot by DUT's EC and stop",
+					"Try fake disconnect and stop",
+					"Reboot by EC console and stop",
 					"Cold reset the DUT by servod and stop",
-					"reset_ec_on_dut",
+					"Reset EC from DUT and stop",
 				},
 			},
 			"DUT is UP by EC response": {
@@ -632,18 +712,18 @@ func servoRepairPlan() *Plan {
 					"expected_string_value:S0",
 				},
 			},
-			"servo_ec_check": {
+			"Verify EC": {
 				Conditions: []string{
 					"Is not servo_v3",
 					"DUT has CrOS EC",
 				},
 				Dependencies: []string{
 					"Set state:EC_BROKEN",
-					"servo_ec_console",
+					"Verify EC console",
 					"Set state:BAD_RIBBON_CABLE",
-					"servo_pwr_button_pin",
+					"Verify power button signal",
 					"Set state:LID_OPEN_FAILED",
-					"servo_lid_open",
+					"Is lid open",
 					"servo_battery_charging",
 				},
 				ExecName: "sample_pass",
@@ -661,22 +741,25 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "servo_check_servod_control",
 			},
-			"servo_ec_console": {
+			"Verify EC console": {
 				Conditions: []string{
 					"Is not servo_v3",
 					"DUT has CrOS EC",
 				},
+				ExecName: "servod_can_read_all",
 				ExecExtraArgs: []string{
 					"commands:ec_system_powerstate,ec_board",
 					"any_one:true",
 				},
 				RecoveryActions: []string{
-					"Reboot by DUT's EC and stop",
+					"Stop servod",
+					"Try fake disconnect and stop",
+					"Toggle CC line and stop",
+					"Toggle PD once and stop",
+					"Reboot by EC console and stop",
 					"Cold reset the DUT by servod and stop",
-					"reflash_cr_50_fw_on_dut",
-					"reset_ec_on_dut",
+					"Reset EC from DUT and stop",
 				},
-				ExecName: "servod_can_read_all",
 			},
 			"battery_last_charge_readable": {
 				ExecExtraArgs: []string{
@@ -756,14 +839,20 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "servo_check_servod_control",
 			},
-			"servo_lid_open": {
-				RecoveryActions: []string{
-					"Reboot by DUT's EC and stop",
-					"Cold reset the DUT by servod and stop",
-					"reflash_cr_50_fw_on_dut",
-					"reset_ec_on_dut",
+			"Is lid open": {
+				Docs: []string{
+					"Verify lid of the is open",
+					"Allowed to fail as check if ont effect the servo functionality.",
 				},
 				ExecName: "servod_lidopen",
+				RecoveryActions: []string{
+					"Stop servod",
+					"Reboot by EC console and stop",
+					"Cold reset the DUT by servod and stop",
+					"Reflash Cr50 fw and stop",
+					"Reset EC from DUT and stop",
+				},
+				AllowFailAfterRecovery: true,
 			},
 			"Is not servo_v3": {
 				Docs: []string{
@@ -806,19 +895,19 @@ func servoRepairPlan() *Plan {
 				},
 				Conditions: []string{
 					"Is not servo_v3",
-					"servo_has_active_dut_controller",
+					"Servod knows about active_dut_controller control",
 				},
 				ExecName: "servod_set_main_device",
 				RecoveryActions: []string{
 					"Stop servod",
 					"Toggle PD (5 times) and stop",
 					"Toggle CC line and stop",
-					"Reboot by DUT's EC and stop",
+					"Reboot by EC console and stop",
 					"Cold reset the DUT by servod and stop",
-					"reset_ec_on_dut",
+					"Reset EC from DUT and stop",
 				},
 			},
-			"servo_fw_update": {
+			"Update all servo's firmware": {
 				Docs: []string{
 					"Try to update in  normal ways 3 times, if fail allow run force update.",
 				},
@@ -829,36 +918,37 @@ func servoRepairPlan() *Plan {
 					"Set state:SERVO_UPDATER_ISSUE",
 					"Stop servod daemon on servo-host",
 				},
+				ExecName: "servo_update_servo_firmware",
 				ExecExtraArgs: []string{
 					"try_attempt_count:3",
 					"try_force_update_after_fail:true",
 				},
 				ExecTimeout: &durationpb.Duration{Seconds: 600},
-				ExecName:    "servo_update_servo_firmware",
+				RunControl:  RunControl_RUN_ONCE,
 			},
-			"servo_micro_fw_update_repair": {
+			"Force reflash servo_micro fw and stop": {
 				Docs: []string{
 					"Try to update servo micro firmware",
 				},
 				Conditions: []string{
-					"servo_host_is_labstation",
+					"is_labstation",
 					"is_servo_micro",
-					"is_time_to_update_servo_micro_fw",
+					"Is ok to force update servo_micro firmware",
 				},
 				Dependencies: []string{
-					"servo_micro_fw_update",
+					"Force update servo_micro firmware",
 					"Stop servod",
 				},
 				ExecName: "sample_pass",
 			},
-			"servo_micro_fw_update": {
+			"Force update servo_micro firmware": {
 				Docs: []string{
 					"Try to update servo micro firmware",
 				},
 				Conditions: []string{
-					"servo_host_is_labstation",
+					"is_labstation",
 					"is_servo_micro",
-					"is_time_to_update_servo_micro_fw",
+					"Is ok to force update servo_micro firmware",
 				},
 				ExecExtraArgs: []string{
 					"force_update:true",
@@ -868,17 +958,17 @@ func servoRepairPlan() *Plan {
 				ExecTimeout: &durationpb.Duration{Seconds: 180},
 				ExecName:    "servo_update_servo_firmware",
 			},
-			"is_time_to_update_servo_micro_fw": {
+			"Is ok to force update servo_micro firmware": {
 				Docs: []string{
 					"Verify that it is time when we can try to re-flash fw on servo micro.",
 					"Re-flashing limited to once per once per 2 weeks to avoid over-flashing the servo device.",
 				},
 				Conditions: []string{
-					"last_time_servo_micro_fw_update_within_2_weeks",
+					"Last servo_micro fw updated within 2 weeks",
 				},
 				ExecName: "sample_fail",
 			},
-			"last_time_servo_micro_fw_update_within_2_weeks": {
+			"Last servo_micro fw updated within 2 weeks": {
 				Docs: []string{
 					"Confirm that servo micro fw update action has occurred in the past 2 weeks. (336 hours)",
 				},
@@ -888,147 +978,137 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "metrics_found_at_last_time",
 			},
-			"servo_warm_reset_supported": {
-				ExecExtraArgs: []string{"command:warm_reset"},
-				ExecName:      "servo_check_servod_control",
+			"Warm reset control known by servo": {
+				Docs: []string{
+					"Verify is servod expected to have warm_reset control",
+				},
+				ExecName: "servo_check_servod_control",
+				ExecExtraArgs: []string{
+					"command:warm_reset",
+				},
 			},
-			"servo_warm_reset_pin_for_servo_v3": {
+			"Warm reset pin is detected (servo_v3)": {
+				// TODO: need monitor before make it critical.
+				Docs: []string{
+					"Verify that warm_reset pin is detected by servod.",
+					"If pin is not present then issue can be related to incorrect connected servo or issue with connector.",
+				},
 				Conditions: []string{
 					"Is servo_v3 used",
-					"servo_warm_reset_supported",
+					"Warm reset control known by servo",
 				},
+				ExecName: "servo_check_servod_control",
 				ExecExtraArgs: []string{
 					"command:warm_reset",
 					"expected_string_value:off",
 				},
-				RecoveryActions: []string{
-					"Stop servod",
-					"Toggle PD (5 times) and stop",
-					"Try fake disconnect and stop",
-					"Toggle CC line and stop",
-					"Reboot by DUT's EC and stop",
-					"Cold reset the DUT by servod and stop",
-					"reflash_cr_50_fw_on_dut",
-					"reset_ec_on_dut",
-				},
-				ExecName: "servo_check_servod_control",
 			},
-			"servo_warm_reset_pin_for_servo_micro": {
+			"Warm reset pin is detected (servo_micro)": {
+				// TODO: need monitor before make it critical.
+				Docs: []string{
+					"Verify that warm_reset pin is detected by servod.",
+					"If pin is not present then issue can be related to incorrect connected servo or issue with connector.",
+				},
 				Conditions: []string{
 					"is_servo_micro",
-					"servo_warm_reset_supported",
+					"Warm reset control known by servo",
 				},
+				ExecName: "servo_check_servod_control",
 				ExecExtraArgs: []string{
 					"command:warm_reset",
 					"expected_string_value:off",
 				},
-				RecoveryActions: []string{
-					"Stop servod",
-					"Toggle PD (5 times) and stop",
-					"Toggle CC line and stop",
-					"Reboot by DUT's EC and stop",
-					"Cold reset the DUT by servod and stop",
-					"reflash_cr_50_fw_on_dut",
-					"reset_ec_on_dut",
-				},
-				ExecName: "servo_check_servod_control",
 			},
-			"servo_warm_reset_pin": {
+			"Warm reset pin is detected": {
 				Docs: []string{"We need to check for warm reset only for servo micro and V3."},
 				Dependencies: []string{
-					"servo_warm_reset_pin_for_servo_v3",
-					"servo_warm_reset_pin_for_servo_micro",
+					"Warm reset pin is detected (servo_v3)",
+					"Warm reset pin is detected (servo_micro)",
 				},
-				AllowFailAfterRecovery: true,
 				ExecName:               "sample_pass",
+				AllowFailAfterRecovery: true,
 			},
-			"servo_cold_reset_pin": {
+			"Cold reset pin is detected": {
 				Conditions: []string{
 					"Is servo_v3 used",
 					"Is servo_v4(p1) with type-a connector",
 				},
+				ExecName: "servo_check_servod_control",
 				ExecExtraArgs: []string{
 					"command:cold_reset",
 					"expected_string_value:off",
 				},
 				RecoveryActions: []string{
 					"Stop servod",
-					"Toggle PD (5 times) and stop",
-					"Try fake disconnect and stop",
-					"Toggle CC line and stop",
-					"Reboot by DUT's EC and stop",
-					"Cold reset the DUT by servod and stop",
-					"reflash_cr_50_fw_on_dut",
-					"reset_ec_on_dut",
+					"Reboot by EC console and stop",
+					"Reset EC from DUT and stop",
 				},
-				ExecName: "servo_check_servod_control",
 			},
-			"Verify that servod started and respond to dut-control": {
-				Docs:        []string{"Uses a servod control to check whether the servod daemon is responsive."},
+			"Servod is responsive to dut-control": {
+				Docs: []string{
+					"Uses a servod control to check whether the servod daemon is responsive.",
+				},
 				ExecName:    "servo_servod_echo_host",
 				ExecTimeout: &durationpb.Duration{Seconds: 30},
 				RecoveryActions: []string{
 					"Stop servod",
-					"Toggle PD (5 times) and stop",
-					"Try fake disconnect and stop",
-					"Toggle CC line and stop",
-					"Reboot by DUT's EC and stop",
+					"Reboot by EC console and stop",
 					"Cold reset the DUT by servod and stop",
-					"reflash_cr_50_fw_on_dut",
-					"reset_ec_on_dut",
+					"Reset EC from DUT and stop",
+					"Create request to reboot labstation",
 				},
 			},
-			"update_servo_type_label": {
-				Docs:     []string{"Update the servo type label for the DUT info."},
+			"Record good servo type": {
+				Docs: []string{
+					"Record servo type information.",
+				},
 				ExecName: "servo_update_servo_type_label",
 			},
-			"dut_controller_missing_fault_off": {
-				ExecExtraArgs: []string{"command:dut_controller_missing_fault",
-					"expected_string_value:off",
+			"Servod detect all children components": {
+				Docs: []string{
+					"Check if servod detected all required children components.",
 				},
 				Conditions: []string{
 					"Is not servo_v3",
 				},
+				ExecName: "servo_check_servod_control",
+				ExecExtraArgs: []string{
+					"command:dut_controller_missing_fault",
+					"expected_string_value:off",
+				},
 				RecoveryActions: []string{
+					"Stop servod",
+					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
 					"Toggle CC line and stop",
-					"Reboot by DUT's EC and stop",
+					"Reboot by EC console and stop",
 					"Cold reset the DUT by servod and stop",
-					"reflash_cr_50_fw_on_dut",
-					"reset_ec_on_dut",
+					"Reset EC from DUT and stop",
 				},
-				ExecName: "servo_check_servod_control",
 			},
-			"servo_has_active_dut_controller": {
-				ExecExtraArgs: []string{"command:active_dut_controller"},
-				RecoveryActions: []string{
-					"Toggle PD (5 times) and stop",
-					"Try fake disconnect and stop",
-					"Toggle CC line and stop",
-					"Reboot by DUT's EC and stop",
-					"Cold reset the DUT by servod and stop",
-					"reflash_cr_50_fw_on_dut",
-					"reset_ec_on_dut",
-				},
+			"Servod knows about active_dut_controller control": {
 				ExecName: "servo_check_servod_control",
+				ExecExtraArgs: []string{
+					"command:active_dut_controller",
+				},
 			},
 			"servod_restart_dut": {
 				ExecName: "sample_pass",
 			},
-			"servo_power_cycle_repair": {
+			"Toggle PD once and stop": {
 				Docs: []string{
 					"Toggle the servod command servo_pd_role only once. And then stop the servod afterwards.",
 					"TODO: Add dependency for servo initialize.",
 				},
 				Dependencies: []string{
-					"servo_pd_toggle_once",
+					"Toggle PD once",
 					"Stop servod",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
 				ExecName:   "sample_pass",
+				RunControl: RunControl_ALWAYS_RUN,
 			},
-			"servo_pd_toggle_once": {
+			"Toggle PD once": {
 				Docs: []string{
 					"Toggle the servod command servo_pd_role only once.",
 				},
@@ -1253,7 +1333,7 @@ func servoRepairPlan() *Plan {
 				},
 				RunControl: RunControl_ALWAYS_RUN,
 			},
-			"Reboot by DUT's EC and stop": {
+			"Reboot by EC console and stop": {
 				Docs: []string{
 					"Try to reboot DUT's EC by servod UART console and stop servod after that.",
 				},
@@ -1302,50 +1382,60 @@ func servoRepairPlan() *Plan {
 					"Try to create reboot flag file request.",
 				},
 				Conditions: []string{
-					"cros_ssh",
+					"Device is SSHable",
+					"is_labstation",
 				},
 				ExecName:   "cros_create_reboot_request",
 				RunControl: RunControl_ALWAYS_RUN,
 			},
-			"reflash_cr_50_fw_on_dut": {
+			"Reflash Cr50 fw and stop": {
 				Docs: []string{
 					"Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.",
 				},
 				Conditions: []string{
 					"is_servo_type_ccd",
-					"cros_is_time_to_reflash_cr50_fw",
+					"Is reflash Cr50 was done more 24 hours ago",
 				},
 				Dependencies: []string{
-					"cros_reflash_cr50_fw",
+					"Reflash Cr50 fw on DUT",
 					"Stop servod",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
 				ExecName:   "sample_pass",
+				RunControl: RunControl_ALWAYS_RUN,
 			},
-			"cros_reflash_cr50_fw": {
+			"Reflash Cr50 fw on DUT": {
 				Docs: []string{
 					"Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.",
 					"Reboot after the fw flash is successful.",
 				},
-				Dependencies: []string{"cros_ssh_dut"},
-				ExecName:     "cros_reflash_cr50_fw",
+				Dependencies: []string{
+					"DUT is SSHable",
+				},
+				ExecName: "cros_reflash_cr50_fw",
 				ExecExtraArgs: []string{
 					"flash_timeout:120",
 					"wait_timeout:30",
 				},
 				ExecTimeout: &durationpb.Duration{Seconds: 150},
+				RunControl:  RunControl_RUN_ONCE,
 			},
-			"cros_is_time_to_reflash_cr50_fw": {
+			"DUT is SSHable": {
+				Docs: []string{
+					"verify if DUT is SSH-able",
+				},
+				ExecName: "cros_ssh_dut",
+			},
+			"Is reflash Cr50 was done more 24 hours ago": {
 				Docs: []string{
 					"Verify that it is time when we can try to re-flash fw on cr50 (H1).",
 					"Re-flashing limited to once per once per day to avoid over-flashing the device.",
 				},
 				Conditions: []string{
-					"cros_last_time_cr50_reflash_within_24hr",
+					"Is reflash Cr50 was done within 24 hours",
 				},
 				ExecName: "sample_fail",
 			},
-			"cros_last_time_cr50_reflash_within_24hr": {
+			"Is reflash Cr50 was done within 24 hours": {
 				Docs: []string{
 					"Confirm that no cr50 reflash action has occurred in the past 24 hours.",
 				},
@@ -1355,9 +1445,9 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "metrics_found_at_last_time",
 			},
-			"reset_ec_on_dut": {
+			"Reset EC from DUT and stop": {
 				Docs: []string{
-					"Try to reset EC from DUT side to wake CR50 up. And then restart the servod.",
+					"Try to reset EC from DUT side to wake CR50 up and then stop the servod.",
 				},
 				Conditions: []string{
 					"is_servo_type_ccd",
@@ -1366,18 +1456,27 @@ func servoRepairPlan() *Plan {
 					"cros_reset_ec",
 					"Stop servod",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
 				ExecName:   "sample_pass",
+				RunControl: RunControl_ALWAYS_RUN,
 			},
 			"cros_reset_ec": {
-				Docs:          []string{"Try to wake up the device as it will trigger recovering ec, cr50, and other fw."},
-				Dependencies:  []string{"cros_ssh_dut"},
-				ExecExtraArgs: []string{"wait_timeout:30"},
-				RunControl:    RunControl_ALWAYS_RUN,
+				Docs: []string{
+					"Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.",
+				},
+				Dependencies: []string{
+					"DUT is SSHable",
+				},
+				ExecName: "cros_reset_ec",
+				ExecExtraArgs: []string{
+					"wait_timeout:30",
+				},
+				RunControl: RunControl_ALWAYS_RUN,
 			},
 			"servo_power_cycle_root_servo": {
-				Docs:       []string{"Try to reset(power-cycle) the servo via smart usbhub."},
-				Conditions: []string{"servo_host_is_labstation"},
+				Docs: []string{"Try to reset(power-cycle) the servo via smart usbhub."},
+				Conditions: []string{
+					"is_labstation",
+				},
 				ExecExtraArgs: []string{
 					"reset_timeout:60",
 					"wait_timeout:20",
@@ -1386,18 +1485,26 @@ func servoRepairPlan() *Plan {
 				RunControl:             RunControl_RUN_ONCE,
 				AllowFailAfterRecovery: true,
 			},
-			"servo_host_v3_reboot": {
+			"Reboot servo_v3": {
 				Docs: []string{
 					"Try to reboot servo host v3.",
 				},
 				Conditions: []string{
 					"Is servo_v3 used",
 				},
-				ExecTimeout: &durationpb.Duration{Seconds: 300},
+				ExecName: "servo_host_v3_reboot",
 				ExecExtraArgs: []string{
 					"reboot_timeout:10",
 				},
-				RunControl: RunControl_RUN_ONCE,
+				ExecTimeout: &durationpb.Duration{Seconds: 300},
+				RunControl:  RunControl_RUN_ONCE,
+			},
+			"Sleep 1s": {
+				ExecName: "sample_sleep",
+				ExecExtraArgs: []string{
+					"sleep:1",
+				},
+				RunControl: RunControl_ALWAYS_RUN,
 			},
 		},
 	}
