@@ -22,6 +22,7 @@ import (
 
 // crosfleetDir is the CIPD parent directory for crosfleet packages.
 const crosfleetParentDir = "chromiumos/infra/crosfleet/"
+const crosfleetProdCIPDRef = "prod"
 
 // Update subcommand: Update crosfleet tool.
 var Update = &subcommands.Command{
@@ -62,7 +63,7 @@ func (c *updateRun) innerRun(a subcommands.Application) error {
 		return err
 	}
 
-	if err := cipdEnsureLatest(a, root, &c.printer); err != nil {
+	if err := cipdEnsureProd(a, root, &c.printer); err != nil {
 		return err
 	}
 	c.printer.WriteTextStderr("%s: You may need to run crosfleet login again after the update", a.GetName())
@@ -102,7 +103,7 @@ func isCIPDRootDir(dir string) bool {
 }
 
 // currentEnsureFile captures the current state of all installed CIPD packages.
-func ensureFileWithLatestCrosfleet(dir string) (string, error) {
+func ensureFileWithProdCrosfleet(dir string) (string, error) {
 	packages, err := cipd.InstalledPackages("crosfleet")(dir)
 	if err != nil {
 		return "", err
@@ -110,16 +111,15 @@ func ensureFileWithLatestCrosfleet(dir string) (string, error) {
 	var packageConfigs []string
 	for _, p := range packages {
 		if strings.HasPrefix(p.Package, crosfleetParentDir) {
-			p.Pin.InstanceID = "latest"
+			p.Pin.InstanceID = crosfleetProdCIPDRef
 		}
 		config := fmt.Sprintf("%s %s", p.Package, p.Pin.InstanceID)
 		packageConfigs = append(packageConfigs, config)
 	}
-	fmt.Println(strings.Join(packageConfigs, "\n"))
 	return strings.Join(packageConfigs, "\n"), nil
 }
 
-// cipdEnsureLatest takes an application and a directory and runs a command with
+// cipdEnsureProd takes an application and a directory and runs a command with
 // arguments that will read a cipd manifest from stdin and then run "ensure".
 //
 // We dynamically generate an ensure file to ensure no other installed CIPD
@@ -128,10 +128,10 @@ func ensureFileWithLatestCrosfleet(dir string) (string, error) {
 // Without this function, you need to run `sudo env PATH="$PATH" crosfleet update` in order to update
 // crosfleet if crosfleet was installed as root.
 //
-// cipdEnsureLatest assumes that the directory exists and that the [[dir]]/.cipd directory
+// cipdEnsureProd assumes that the directory exists and that the [[dir]]/.cipd directory
 // exists.
-func cipdEnsureLatest(a subcommands.Application, dir string, printer *common.CLIPrinter) error {
-	ensureFile, err := ensureFileWithLatestCrosfleet(dir)
+func cipdEnsureProd(a subcommands.Application, dir string, printer *common.CLIPrinter) error {
+	ensureFile, err := ensureFileWithProdCrosfleet(dir)
 	if err != nil {
 		return err
 	}
