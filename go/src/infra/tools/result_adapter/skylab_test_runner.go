@@ -10,9 +10,11 @@ import (
 	"fmt"
 	"html"
 	"io"
+	"time"
 
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Following CrOS test_runner's convention, test_case represents a single test
@@ -28,9 +30,11 @@ type TestRunnerAutotest struct {
 }
 
 type TestRunnerTestCase struct {
-	Name                 string `json:"name"`
-	Verdict              string `json:"verdict"`
-	HumanReadableSummary string `json:"human_readable_summary"`
+	Name                 string    `json:"name"`
+	Verdict              string    `json:"verdict"`
+	HumanReadableSummary string    `json:"human_readable_summary"`
+	StartTime            time.Time `json:"start_time"`
+	EndTime              time.Time `json:"end_time"`
 }
 
 // ConvertFromJSON reads the provided reader into the receiver.
@@ -59,6 +63,14 @@ func (r *TestRunnerResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, 
 		if c.HumanReadableSummary != "" {
 			tr.SummaryHtml = fmt.Sprintf("<pre>%s</pre>", html.EscapeString(c.HumanReadableSummary))
 		}
+
+		if !c.StartTime.IsZero() {
+			tr.StartTime = timestamppb.New(c.StartTime)
+			if !c.EndTime.IsZero() {
+				tr.Duration = msToDuration(float64(c.EndTime.Sub(c.StartTime).Milliseconds()))
+			}
+		}
+
 		ret = append(ret, tr)
 	}
 	return ret, nil
