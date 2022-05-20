@@ -19,6 +19,7 @@ import time
 import ezt
 
 from businesslogic import work_env
+from framework import flaskservlet
 from framework import framework_bizobj
 from framework import framework_constants
 from framework import framework_helpers
@@ -37,7 +38,7 @@ class PeopleList(servlet.Servlet):
   """People list page shows a paginatied list of project members."""
 
   _PAGE_TEMPLATE = 'project/people-list-page.ezt'
-  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_PEOPLE
+  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_PEOPLE
 
   def AssertBasePermission(self, mr):
     super(PeopleList, self).AssertBasePermission(mr)
@@ -232,3 +233,9 @@ class PeopleList(servlet.Servlet):
     # 3. Determine the next page in the UI flow.
     return framework_helpers.FormatAbsoluteURL(
         mr, urls.PEOPLE_LIST, saved=1, ts=int(time.time()))
+
+  # def GetPeopleListPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostPeopleListPage(self, **kwargs):
+  #   return self.handler(**kwargs)

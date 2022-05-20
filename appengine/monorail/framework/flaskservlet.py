@@ -61,6 +61,7 @@ class FlaskServlet(object):
   _MAIN_TAB_MODE = None  # Normally overridden in subclasses to be one of these:
 
   MAIN_TAB_ISSUES = 't2'
+  MAIN_TAB_PEOPLE = 't3'
   IN_TAB_PEOPLE = 't3'
   MAIN_TAB_PROCESS = 't4'
   MAIN_TAB_UPDATES = 't5'

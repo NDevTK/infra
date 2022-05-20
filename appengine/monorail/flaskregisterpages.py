@@ -5,12 +5,13 @@
 """This file sets up all the urls for monorail pages."""
 
 import logging
-from framework import banned, excessiveactivity
 import settings
-from flask import Flask
 
 import flask
 
+from framework import banned
+from framework import excessiveactivity
+from project import peoplelist
 from project import project_constants
 from sitewide import usersettings
 
@@ -55,7 +56,7 @@ class ServletRegistry(object):
 
   # pylint: disable=unused-argument
   def RegisterHostingUrl(self, service):
-    flaskapp_hosting = Flask(__name__)
+    flaskapp_hosting = flask.Flask(__name__)
     _HOSTING_URL = [
         # (
         #     '/excessiveActivity',
@@ -69,8 +70,9 @@ class ServletRegistry(object):
         #     '/settings.do',
         #     usersettings.UserSettings(services=service).PostUserSetting,
         #     ['POST']),
-        # ('/noAccess', banned.Banned(services=service).GetNoAccessPage,
-        #   ['GET'])
+        # (
+        #     '/noAccess',
+        #     banned.Banned(services=service).GetNoAccessPage, ['GET'])
     ]
 
     for rule in _HOSTING_URL:
@@ -83,3 +85,20 @@ class ServletRegistry(object):
       return flask.redirect(url)
 
     return flaskapp_hosting
+
+  def RegisterProjectUrls(self, service):
+    flaskapp_project = flask.Flask(__name__)
+    _PROJECT_URLS = [
+        # (
+        #     '/people/list',
+        #     peoplelist.PeopleList(services=service).GetPeopleListPage,
+        #     ['GET']),
+        # (
+        #     '/people/list.do',
+        #     peoplelist.PeopleList(services=service).PostPeopleListPage,
+        #     ['Post'])
+    ]
+
+    for rule in _PROJECT_URLS:
+      flaskapp_project.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
+    return flaskapp_project

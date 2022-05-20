@@ -38,10 +38,10 @@ app = webapp2.WSGIApplication(
 gae_ts_mon.initialize_adhoc(app)
 
 # flask_regist = flaskregisterpages.ServletRegistry()
-
 # app = dispatcher.DispatcherMiddleware(
 #     app, {
 #         '/hosting': flask_regist.RegisterHostingUrl(services),
+#         '/p': flask_regist.RegisterProjectUrls(services),
 #     })
 
 endpoints = endpoints_webapp2.api_server(
