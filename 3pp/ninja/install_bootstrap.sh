@@ -9,7 +9,16 @@ set -o pipefail
 
 PREFIX="$1"
 
-./configure.py --bootstrap
+CFLAGS=""
+if [[ $_3PP_PLATFORM == mac* ]]; then
+  XCODE_SDK_PATH=$(xcrun --show-sdk-path)
+  # the min version is configured in mac_sdk.gni
+  # https://crrev.com/e840c4b48a861be294f206bd694ebce986ddbb88/build/config/mac/mac_sdk.gni#28
+  MACOSX_VERSION_MIN="10.13"
+  CFLAGS="-isysroot${XCODE_SDK_PATH} -mmacosx-version-min=${MACOSX_VERSION_MIN}"
+fi
+
+CFLAGS="${CFLAGS}" ./configure.py --bootstrap
 ./ninja all
 ./ninja_test
 if [[ $_3PP_PLATFORM == windows* ]]; then
