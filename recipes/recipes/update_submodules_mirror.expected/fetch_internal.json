@@ -74,6 +74,32 @@
       "vpython3",
       "-u",
       "RECIPE_REPO[depot_tools]/gclient.py",
+      "sync",
+      "-n",
+      "-p",
+      "--no-history",
+      "--shallow",
+      "--no-bootstrap",
+      "--spec",
+      "solutions=[{'managed': False, 'name': 'src/', 'url': 'https://chromium.googlesource.com/chromium/src', 'deps_file': 'DEPS', 'custom_vars': {'checkout_src_internal': True}}]"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror",
+    "env_suffixes": {
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "Process refs/heads/main.gclient sync",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_REPO[depot_tools]/gclient.py",
       "revinfo",
       "--deps",
       "all",

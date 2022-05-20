@@ -1705,9 +1705,9 @@ This recipe runs legacy analyzers for the infra repo.
 
 PYTHON_VERSION_COMPATIBILITY: PY3
 
-&mdash; **def [GetSubmodules](/recipes/recipes/update_submodules_mirror.py#190)(api, deps, source_checkout_name, overlays):**
+&mdash; **def [GetSubmodules](/recipes/recipes/update_submodules_mirror.py#203)(api, deps, source_checkout_name, overlays):**
 
-&mdash; **def [RefToRemoteRef](/recipes/recipes/update_submodules_mirror.py#184)(ref):**
+&mdash; **def [RefToRemoteRef](/recipes/recipes/update_submodules_mirror.py#197)(ref):**
 
 &mdash; **def [RunSteps](/recipes/recipes/update_submodules_mirror.py#60)(api, source_repo, target_repo, extra_submodules, refs, overlays, internal, with_tags):**
 ### *recipes* / [windows\_adk:examples/ensure](/recipes/recipe_modules/windows_adk/examples/ensure.py)

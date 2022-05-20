@@ -121,6 +121,19 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, refs, overlays,
         gclient_spec[0]['custom_vars'] = {'checkout_src_internal': True}
       gclient_spec_repr = ("solutions=" + repr(gclient_spec))
       with api.context(cwd=checkout_dir):
+        if internal:
+          # run sync to fetch additional repositories (may have additional
+          # DEPS). We may want to consider doing this even for non-internal.
+          api.gclient('sync', [
+              'sync',
+              '-n',
+              '-p',
+              '--no-history',
+              '--shallow',
+              '--no-bootstrap',
+              '--spec',
+              gclient_spec_repr,
+          ])
         deps = json.loads(
             api.gclient(
                 'evaluate DEPS', [
