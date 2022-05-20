@@ -9,10 +9,6 @@ package buildbucket
 import (
 	"context"
 	"fmt"
-	"infra/cmd/crosfleet/internal/common"
-	dutinfopb "infra/cmd/crosfleet/internal/proto"
-	"infra/cmd/crosfleet/internal/site"
-	"infra/cmdsupport/cmdlib"
 	"strings"
 	"time"
 
@@ -26,6 +22,11 @@ import (
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"infra/cmd/crosfleet/internal/common"
+	dutinfopb "infra/cmd/crosfleet/internal/proto"
+	"infra/cmd/crosfleet/internal/site"
+	"infra/cmdsupport/cmdlib"
 )
 
 const (

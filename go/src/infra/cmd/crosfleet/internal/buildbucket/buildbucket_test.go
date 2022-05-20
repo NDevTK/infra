@@ -5,12 +5,13 @@
 package buildbucket
 
 import (
-	"infra/cmd/crosfleet/internal/common"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+
+	"infra/cmd/crosfleet/internal/common"
 )
 
 func TestAddServiceVersion(t *testing.T) {
