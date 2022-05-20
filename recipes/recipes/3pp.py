@@ -165,7 +165,8 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
         force_build=force_build,
         tryserver_affected_files=tryserver_affected_files)
     # If reporting to Snoopy is enabled, try to report built package.
-    if 'security.snoopy' in api.buildbucket.build.input.experiments:
+    if ('security.snoopy' in api.buildbucket.build.input.experiments and
+        not api.tryserver.is_tryserver):
       try:
         api.bcid_reporter.report_stage("upload-complete")
       except Exception:  # pragma: no cover
