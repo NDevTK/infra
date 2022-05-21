@@ -467,3 +467,27 @@ func validateUpdateKVMHost(ctx context.Context, kvm *ufspb.KVM, vlanName, ipv4St
 	// Check if resources does not exist
 	return ResourceExist(ctx, []*Resource{GetKVMResource(kvm.Name), GetVlanResource(vlanName)}, nil)
 }
+
+// updateIndexInKVM updates indexes in kvms objects
+//
+// This function can be used inside a transaction.
+func updateIndexInKVM(ctx context.Context, indexName, oldValue, newValue string, hc *HistoryClient) error {
+	var newEntities []*ufspb.KVM
+	var err error
+	switch indexName {
+	case "rack":
+		newEntities, err = registration.QueryKVMByPropertyName(ctx, "rack", oldValue, false)
+		if err != nil {
+			return errors.Annotate(err, "failed to query kvms in rack %s", newValue).Err()
+		}
+		for _, n := range newEntities {
+			oldCopy := proto.Clone(n).(*ufspb.KVM)
+			n.Rack = newValue
+			hc.LogKVMChanges(oldCopy, n)
+		}
+	}
+	if _, err := registration.BatchUpdateKVMs(ctx, newEntities); err != nil {
+		return errors.Annotate(err, "failed to batch update kvms").Err()
+	}
+	return nil
+}

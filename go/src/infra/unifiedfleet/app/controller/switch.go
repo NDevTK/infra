@@ -468,3 +468,27 @@ func getSwitchHistoryClient(m *ufspb.Switch) *HistoryClient {
 		},
 	}
 }
+
+// updateIndexInSwitch updates indexes in switch objects
+//
+// This function can be used inside a transaction.
+func updateIndexInSwitch(ctx context.Context, indexName, oldValue, newValue string, hc *HistoryClient) error {
+	var newEntities []*ufspb.Switch
+	var err error
+	switch indexName {
+	case "rack":
+		newEntities, err = registration.QuerySwitchByPropertyName(ctx, "rack", oldValue, false)
+		if err != nil {
+			return errors.Annotate(err, "failed to query switches in rack %s", newValue).Err()
+		}
+		for _, n := range newEntities {
+			oldCopy := proto.Clone(n).(*ufspb.Switch)
+			n.Rack = newValue
+			hc.LogSwitchChanges(oldCopy, n)
+		}
+	}
+	if _, err := registration.BatchUpdateSwitches(ctx, newEntities); err != nil {
+		return errors.Annotate(err, "failed to batch update switches").Err()
+	}
+	return nil
+}

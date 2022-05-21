@@ -653,3 +653,27 @@ func updateMachineFromAsset(ctx context.Context, machine *ufspb.Machine, asset *
 	}
 	return nil
 }
+
+// updateIndexInAsset updates indexes in asset objects
+//
+// This function can be used inside a transaction.
+func updateIndexInAsset(ctx context.Context, indexName, oldValue, newValue string, hc *HistoryClient) error {
+	var newEntities []*ufspb.Asset
+	var err error
+	switch indexName {
+	case "rack":
+		newEntities, err = registration.QueryAssetByPropertyName(ctx, "rack", oldValue, false)
+		if err != nil {
+			return errors.Annotate(err, "failed to query assets in rack %s", newValue).Err()
+		}
+		for _, n := range newEntities {
+			oldCopy := proto.Clone(n).(*ufspb.Asset)
+			n.Location.Rack = newValue
+			hc.LogAssetChanges(oldCopy, n)
+		}
+	}
+	if _, err := registration.BatchUpdateAssets(ctx, newEntities); err != nil {
+		return errors.Annotate(err, "failed to batch update assets").Err()
+	}
+	return nil
+}

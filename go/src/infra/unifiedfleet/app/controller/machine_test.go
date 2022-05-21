@@ -1561,3 +1561,27 @@ func TestBatchGetMachines(t *testing.T) {
 		})
 	})
 }
+
+func TestUpdateIndexInMachine(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	registration.CreateMachine(ctx, &ufspb.Machine{
+		Name: "machine-update-index",
+		Location: &ufspb.Location{
+			Zone: ufspb.Zone_ZONE_CHROMEOS6,
+			Rack: "index-rack-old",
+		},
+		Device: &ufspb.Machine_ChromeBrowserMachine{
+			ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
+		},
+	})
+	Convey("Testing updateIndexInMachine", t, func() {
+		Convey("updateIndexInMachine - update index rack", func() {
+			err := updateIndexInMachine(ctx, "rack", "index-rack-old", "index-rack-new", &HistoryClient{})
+			So(err, ShouldBeNil)
+			machine, err := registration.GetMachine(ctx, "machine-update-index")
+			So(err, ShouldBeNil)
+			So(machine.GetLocation().GetRack(), ShouldEqual, "index-rack-new")
+		})
+	})
+}

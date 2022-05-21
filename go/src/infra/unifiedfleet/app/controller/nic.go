@@ -626,6 +626,16 @@ func updateIndexingForNic(ctx context.Context, property, oldValue, newValue stri
 			nic.GetSwitchInterface().Switch = newValue
 			hc.LogNicChanges(oldNicCopy, nic)
 		}
+	case "rack":
+		nics, err := registration.QueryNicByPropertyName(ctx, "rack", oldValue, false)
+		if err != nil {
+			return errors.Annotate(err, "failed to query nics in rack %s", oldValue).Err()
+		}
+		for _, n := range nics {
+			oldCopy := proto.Clone(n).(*ufspb.Nic)
+			n.Rack = newValue
+			hc.LogNicChanges(oldCopy, n)
+		}
 	}
 	if _, err := registration.BatchUpdateNics(ctx, nics); err != nil {
 		return errors.Annotate(err, "unable to batch update nics").Err()
