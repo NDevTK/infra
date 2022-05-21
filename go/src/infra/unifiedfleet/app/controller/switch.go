@@ -332,7 +332,7 @@ func renameSwitchHelper(ctx context.Context, oldSwitchName, newSwitchName string
 	}
 
 	// Update Drac with new switch name
-	if err := updateIndexingForDrac(ctx, "switch", oldSwitchName, newSwitchName, hc); err != nil {
+	if err := updateIndexInDrac(ctx, "switch", oldSwitchName, newSwitchName, hc); err != nil {
 		return errors.Annotate(err, "failed to update indexing for dracs").Err()
 	}
 	return nil

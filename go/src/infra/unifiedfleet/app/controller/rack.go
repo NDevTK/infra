@@ -482,7 +482,7 @@ func renameRackHelper(ctx context.Context, oldName, newName string, hc *HistoryC
 	}
 
 	// Rename dracs associated with this rack
-	if err := updateIndexingForDrac(ctx, "rack", oldName, newName, hc); err != nil {
+	if err := updateIndexInDrac(ctx, "rack", oldName, newName, hc); err != nil {
 		return err
 	}
 
