@@ -366,29 +366,36 @@ func (hc *HistoryClient) LogRackChanges(oldData *ufspb.Rack, newData *ufspb.Rack
 	if oldData == nil && newData == nil {
 		return
 	}
-	resourceName := util.AddPrefix(util.RackCollection, newData.GetName())
-	if newData == nil {
-		resourceName = util.AddPrefix(util.RackCollection, oldData.GetName())
-	}
+	newResName := util.AddPrefix(util.RackCollection, newData.GetName())
+	oldResName := util.AddPrefix(util.RackCollection, oldData.GetName())
 	if oldData == nil {
-		hc.changes = append(hc.changes, logLifeCycle(resourceName, "rack", LifeCycleRegistration)...)
-		hc.logMsgEntity(resourceName, false, newData)
+		hc.changes = append(hc.changes, logLifeCycle(newResName, "rack", LifeCycleRegistration)...)
+		hc.logMsgEntity(newResName, false, newData)
 		return
 	}
 	if newData == nil {
-		hc.changes = append(hc.changes, logLifeCycle(resourceName, "rack", LifeCycleRetire)...)
+		hc.changes = append(hc.changes, logLifeCycle(oldResName, "rack", LifeCycleRetire)...)
 		oldData.UpdateTime = ptypes.TimestampNow()
-		hc.logMsgEntity(resourceName, true, oldData)
+		hc.logMsgEntity(oldResName, true, oldData)
 		return
 	}
-	hc.changes = append(hc.changes, logCommon(resourceName, "rack.location", oldData.GetLocation(), newData.GetLocation())...)
-	hc.changes = append(hc.changes, logCommon(resourceName, "rack.capacity_ru", oldData.GetCapacityRu(), newData.GetCapacityRu())...)
-	hc.changes = append(hc.changes, logCommon(resourceName, "rack.realm", oldData.GetRealm(), newData.GetRealm())...)
-	hc.changes = append(hc.changes, logCommon(resourceName, "rack.description", oldData.GetDescription(), newData.GetDescription())...)
-	if newData.GetChromeBrowserRack() != nil {
-		hc.changes = append(hc.changes, logChromeBrowserRack(resourceName, oldData.GetChromeBrowserRack(), newData.GetChromeBrowserRack())...)
+	if oldData.GetName() != newData.GetName() {
+		hc.changes = append(hc.changes, logLifeCycle(oldResName, "rack", LifeCycleRename)...)
+		hc.changes = append(hc.changes, logCommon(oldResName, "rack.name", oldData.GetName(), newData.GetName())...)
+		hc.changes = append(hc.changes, logLifeCycle(newResName, "rack", LifeCycleRename)...)
+		hc.changes = append(hc.changes, logCommon(newResName, "rack.name", oldData.GetName(), newData.GetName())...)
+		hc.logMsgEntity(oldResName, true, oldData)
+		hc.logMsgEntity(newResName, false, newData)
+		return
 	}
-	hc.logMsgEntity(resourceName, false, newData)
+	hc.changes = append(hc.changes, logCommon(newResName, "rack.location", oldData.GetLocation(), newData.GetLocation())...)
+	hc.changes = append(hc.changes, logCommon(newResName, "rack.capacity_ru", oldData.GetCapacityRu(), newData.GetCapacityRu())...)
+	hc.changes = append(hc.changes, logCommon(newResName, "rack.realm", oldData.GetRealm(), newData.GetRealm())...)
+	hc.changes = append(hc.changes, logCommon(newResName, "rack.description", oldData.GetDescription(), newData.GetDescription())...)
+	if newData.GetChromeBrowserRack() != nil {
+		hc.changes = append(hc.changes, logChromeBrowserRack(newResName, oldData.GetChromeBrowserRack(), newData.GetChromeBrowserRack())...)
+	}
+	hc.logMsgEntity(newResName, false, newData)
 }
 
 // LogNicChanges logs the change of the given nic.

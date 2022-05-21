@@ -331,11 +331,13 @@ func (fs *FleetServerImpl) RenameRack(ctx context.Context, req *ufsAPI.RenameRac
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
-	_, err = controller.RenameRack(ctx, util.RemovePrefix(req.Name), util.RemovePrefix(req.NewName))
+	rack, err := controller.RenameRack(ctx, util.RemovePrefix(req.Name), util.RemovePrefix(req.NewName))
 	if err != nil {
 		return nil, err
 	}
-	return nil, err
+	// https://aip.dev/122 - as per AIP guideline
+	rack.Name = util.AddPrefix(util.RackCollection, rack.Name)
+	return rack, err
 }
 
 // CreateNic creates nic entry in database.

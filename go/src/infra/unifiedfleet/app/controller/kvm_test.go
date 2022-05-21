@@ -983,3 +983,22 @@ func TestBatchGetKVMs(t *testing.T) {
 		})
 	})
 }
+
+func TestUpdateIndexInKVM(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	registration.CreateKVM(ctx, &ufspb.KVM{
+		Name:       "kvm-update-index",
+		MacAddress: "kvm-update-index-address",
+		Rack:       "index-rack-old",
+	})
+	Convey("Testing updateIndexInKVM", t, func() {
+		Convey("updateIndexInKVM - update index rack", func() {
+			err := updateIndexInKVM(ctx, "rack", "index-rack-old", "index-rack-new", &HistoryClient{})
+			So(err, ShouldBeNil)
+			kvm, err := registration.GetKVM(ctx, "kvm-update-index")
+			So(err, ShouldBeNil)
+			So(kvm.GetRack(), ShouldEqual, "index-rack-new")
+		})
+	})
+}

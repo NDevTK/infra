@@ -741,3 +741,25 @@ func TestRenameAsset(t *testing.T) {
 		})
 	})
 }
+
+func TestUpdateIndexInAsset(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	registration.CreateAsset(ctx, &ufspb.Asset{
+		Name: "asset-update-index",
+		Type: ufspb.AssetType_DUT,
+		Location: &ufspb.Location{
+			Zone: ufspb.Zone_ZONE_CHROMEOS6,
+			Rack: "index-rack-old",
+		},
+	})
+	Convey("Testing updateIndexInAsset", t, func() {
+		Convey("updateIndexInAsset - update index rack", func() {
+			err := updateIndexInAsset(ctx, "rack", "index-rack-old", "index-rack-new", &HistoryClient{})
+			So(err, ShouldBeNil)
+			asset, err := registration.GetAsset(ctx, "asset-update-index")
+			So(err, ShouldBeNil)
+			So(asset.GetLocation().GetRack(), ShouldEqual, "index-rack-new")
+		})
+	})
+}

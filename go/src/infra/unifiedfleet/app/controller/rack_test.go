@@ -811,20 +811,99 @@ func TestBatchGetRacks(t *testing.T) {
 func TestRenameRack(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	rack1 := &ufspb.Rack{
-		Name:  "rename-rack-0",
+	_, err := registration.CreateRack(ctx, &ufspb.Rack{
+		Name:  "rename-rack",
 		Realm: util.AtlLabAdminRealm,
-	}
-	_, err := registration.CreateRack(ctx, rack1)
+	})
 	Convey("RenameRack", t, func() {
 		Convey("RenameRack - happy path", func() {
-			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AtlLabAdminRealm)
-			_, err = RenameRack(ctx, "rename-rack-0", "rename-rack-0-new")
+			ctx := initializeMockAuthDB(ctx, "user:user@example.com", util.AtlLabAdminRealm, util.RegistrationsUpdate, util.RegistrationsCreate, util.InventoriesCreate)
+			_, err := registration.CreateRack(ctx, &ufspb.Rack{
+				Name:  "rename-rack-0-old",
+				Realm: util.AtlLabAdminRealm,
+			})
 			So(err, ShouldBeNil)
+			_, err = AssetRegistration(ctx, &ufspb.Asset{
+				Name: "rename-asset-0",
+				Location: &ufspb.Location{
+					Rack: "rename-rack-0-old",
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
+				Realm: util.AtlLabAdminRealm,
+			})
+			So(err, ShouldBeNil)
+			_, err = MachineRegistration(ctx, &ufspb.Machine{
+				Name: "rename-machine-0",
+				Location: &ufspb.Location{
+					Rack: "rename-rack-0-old",
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
+				Realm: util.AtlLabAdminRealm,
+			})
+			So(err, ShouldBeNil)
+			_, err = CreateMachineLSE(ctx, &ufspb.MachineLSE{
+				Hostname: "rename-host-0",
+				Machines: []string{"rename-machine-0"},
+			}, nil)
+			So(err, ShouldBeNil)
+
+			// Test begins
+			_, err = RenameRack(ctx, "rename-rack-0-old", "rename-rack-0-new")
+			So(err, ShouldBeNil)
+
+			asset, err := GetAsset(ctx, "rename-asset-0")
+			So(err, ShouldBeNil)
+			So(asset.GetLocation().GetRack(), ShouldEqual, "rename-rack-0-new")
+			machine, err := GetMachine(ctx, "rename-machine-0")
+			So(err, ShouldBeNil)
+			So(machine.GetLocation().GetRack(), ShouldEqual, "rename-rack-0-new")
+			lse, err := GetMachineLSE(ctx, "rename-host-0")
+			So(err, ShouldBeNil)
+			So(lse.GetRack(), ShouldEqual, "rename-rack-0-new")
+			// Verify change events
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "racks/rename-rack-0-new")
+			So(err, ShouldBeNil)
+			So(changes, ShouldHaveLength, 2)
+			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRename)
+			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRename)
+			So(changes[0].GetEventLabel(), ShouldEqual, "rack")
+			So(changes[1].GetOldValue(), ShouldEqual, "rename-rack-0-old")
+			So(changes[1].GetNewValue(), ShouldEqual, "rename-rack-0-new")
+			So(changes[1].GetEventLabel(), ShouldEqual, "rack.name")
+
+			changes, err = history.QueryChangesByPropertyName(ctx, "name", "assets/rename-asset-0")
+			So(err, ShouldBeNil)
+			// The first is the registration of the asset, the second is the rack change.
+			So(changes, ShouldHaveLength, 2)
+			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
+			So(changes[0].GetEventLabel(), ShouldEqual, "asset")
+			So(changes[1].GetOldValue(), ShouldContainSubstring, "rename-rack-0-old")
+			So(changes[1].GetNewValue(), ShouldContainSubstring, "rename-rack-0-new")
+			So(changes[1].GetEventLabel(), ShouldEqual, "asset.location")
+
+			changes, err = history.QueryChangesByPropertyName(ctx, "name", "machines/rename-machine-0")
+			So(err, ShouldBeNil)
+			// The first is the registration of the machine, the second is the rack change.
+			So(changes, ShouldHaveLength, 2)
+			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
+			So(changes[0].GetEventLabel(), ShouldEqual, "machine")
+			So(changes[1].GetOldValue(), ShouldContainSubstring, "rename-rack-0-old")
+			So(changes[1].GetNewValue(), ShouldContainSubstring, "rename-rack-0-new")
+			So(changes[1].GetEventLabel(), ShouldEqual, "machine.location")
+
+			changes, err = history.QueryChangesByPropertyName(ctx, "name", "hosts/rename-host-0")
+			So(err, ShouldBeNil)
+			// The first is the registration of the machineLSE, the second is the rack change.
+			So(changes, ShouldHaveLength, 2)
+			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
+			So(changes[0].GetEventLabel(), ShouldEqual, "machine_lse")
+			So(changes[1].GetOldValue(), ShouldEqual, "rename-rack-0-old")
+			So(changes[1].GetNewValue(), ShouldEqual, "rename-rack-0-new")
+			So(changes[1].GetEventLabel(), ShouldEqual, "machine_lse.rack")
 		})
 		Convey("RenameRack - permission denied", func() {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
-			_, err = RenameRack(ctx, "rename-rack-0", "rename-rack-0-new")
+			_, err = RenameRack(ctx, "rename-rack", "rename-rack-new")
 			So(err.Error(), ShouldContainSubstring, PermissionDenied)
 		})
 		Convey("RenameRack - old rack doesn't exist", func() {
@@ -834,7 +913,7 @@ func TestRenameRack(t *testing.T) {
 		})
 		Convey("RenameRack - new rack already exists", func() {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AtlLabAdminRealm)
-			_, err = RenameRack(ctx, "rename-rack-0", "rename-rack-0")
+			_, err = RenameRack(ctx, "rename-rack", "rename-rack")
 			So(err.Error(), ShouldContainSubstring, "already exists in the system")
 		})
 	})
