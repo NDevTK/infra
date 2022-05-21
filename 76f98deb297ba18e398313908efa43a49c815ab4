@@ -333,6 +333,24 @@
       "parentUuid": "e6838ce6_ba67fd3e",
       "revId": "76f98deb297ba18e398313908efa43a49c815ab4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9cb42d79_28731bf4",
+        "filename": "go/src/infra/unifiedfleet/app/controller/rack_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 819,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2022-05-21T05:26:14Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "a0d24a55_ba0b8e00",
+      "revId": "76f98deb297ba18e398313908efa43a49c815ab4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
