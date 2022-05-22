@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b1fa434d_35c8875e",
+        "filename": "go/src/infra/unifiedfleet/app/controller/drac.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 561,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-05-22T06:59:19Z",
+      "side": 1,
+      "message": "I don\u0027t understand this comment, is there anything special about this function that makes it usable in a transaction or should the comment be that this function will/should be used in a transaction?",
+      "revId": "06a695435d16cdef67e00b4a08e1ae916919ecec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3933109a_34dd6af9",
+        "filename": "go/src/infra/unifiedfleet/app/controller/drac.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 562,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-05-22T06:59:19Z",
+      "side": 1,
+      "message": "IIUC this function is updating the properties of a drac, can it be called something along those lines? Is there a reason for calling it \"updateIndexInDrac\"",
+      "revId": "06a695435d16cdef67e00b4a08e1ae916919ecec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
