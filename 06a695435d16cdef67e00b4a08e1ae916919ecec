@@ -105,6 +105,24 @@
       "parentUuid": "2c06fb2d_658630ed",
       "revId": "06a695435d16cdef67e00b4a08e1ae916919ecec",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "875b8375_cae86f7a",
+        "filename": "go/src/infra/unifiedfleet/app/controller/drac.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 562,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2022-05-23T06:48:42Z",
+      "side": 1,
+      "message": "Not exactly standard. Personally I feel it\u0027s just easier for understanding in controller-layer that we\u0027re updating an index of object A. Property is a datastore-level concept, that\u0027s why the function in datastore layer is called \"QueryXXXByPropertyName\".",
+      "parentUuid": "6f170a74_9c7e2887",
+      "revId": "06a695435d16cdef67e00b4a08e1ae916919ecec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
