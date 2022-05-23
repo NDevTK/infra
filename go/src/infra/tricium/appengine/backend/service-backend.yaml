@@ -1,5 +1,6 @@
 service: backend
-runtime: go111
+runtime: go116
+app_engine_apis: true
 
 handlers:
 
