@@ -26,13 +26,10 @@ type auditRun struct {
 	authFlags authcli.Flags
 	envFlags  site.EnvFlags
 
-	expirationMins           int
-	runVerifyServoUSB        bool
-	runVerifyDUTStorage      bool
-	runVerifyServoFw         bool
-	runFlashServoKeyboardMap bool
-	runVerifyDutMacaddr      bool
-	runVerifyRpmConfig       bool
+	expirationMins      int
+	runVerifyServoUSB   bool
+	runVerifyDUTStorage bool
+	runVerifyRpmConfig  bool
 
 	actions string
 	paris   bool
@@ -51,9 +48,6 @@ var AuditDutsCmd = &subcommands.Command{
 		c.envFlags.Register(&c.Flags)
 		c.Flags.BoolVar(&c.runVerifyServoUSB, "servo-usb", false, "Run the verifier for Servo USB drive.")
 		c.Flags.BoolVar(&c.runVerifyDUTStorage, "dut-storage", false, "Run the verifier for DUT storage.")
-		c.Flags.BoolVar(&c.runVerifyServoFw, "servo-fw", false, "Run the verifier for Servo firmware update.")
-		c.Flags.BoolVar(&c.runFlashServoKeyboardMap, "servo-keyboard", false, "Run the action to flash Servo keyboard map to the DUT.")
-		c.Flags.BoolVar(&c.runVerifyDutMacaddr, "dut-macaddr", false, "Run the verifier to check and cache mac address of DUT NIC to Servo.")
 		c.Flags.BoolVar(&c.runVerifyRpmConfig, "rpm-config", false, "Run the verifier to check and cache mac address of DUT NIC to Servo.")
 		c.Flags.IntVar(&c.expirationMins, "expiration-mins", 10, "The expiration minutes of the task request.")
 		c.Flags.BoolVar(&c.paris, "paris", false, "Use PARIS rather than legacy flow (dogfood).")
@@ -129,15 +123,6 @@ func (c *auditRun) collectActions() (string, error) {
 	}
 	if c.runVerifyServoUSB {
 		a = append(a, "verify-servo-usb-drive")
-	}
-	if c.runVerifyServoFw {
-		a = append(a, "verify-servo-fw")
-	}
-	if c.runFlashServoKeyboardMap {
-		a = append(a, "flash-servo-keyboard-map")
-	}
-	if c.runVerifyDutMacaddr {
-		a = append(a, "verify-dut-macaddr")
 	}
 	if c.runVerifyRpmConfig {
 		a = append(a, "verify-rpm-config")
