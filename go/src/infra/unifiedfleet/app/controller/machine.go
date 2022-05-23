@@ -830,7 +830,7 @@ func renameMachineHelper(ctx context.Context, oldMachineName, newMachineName str
 	}
 
 	// Update Drac with new Machine name
-	if err := updateIndexingForDrac(ctx, "machine", oldMachineName, newMachineName, hc); err != nil {
+	if err := updateIndexInDrac(ctx, "machine", oldMachineName, newMachineName, hc); err != nil {
 		return errors.Annotate(err, "failed to update indexing for dracs").Err()
 	}
 	return nil
