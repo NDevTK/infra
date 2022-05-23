@@ -16,6 +16,8 @@ from project import project_constants
 from sitewide import moved
 from sitewide import projectcreate
 from sitewide import usersettings
+from sitewide import groupcreate
+from sitewide import grouplist
 from features import hotlistcreate
 
 
@@ -93,7 +95,23 @@ class ServletRegistry(object):
         # (
         #     '/createHotlist.do',
         #     hotlistcreate.HotlistCreate(services=service).PostCreateHotlist,
-        #     ['POST'])
+        #     ['POST']),
+        # (
+        #     '/createGroup',
+        #     groupcreate.GroupCreate(services=service).GetGroupCreate,
+        #     ['GET']),
+        # (
+        #     '/createGroup.do',
+        #     groupcreate.GroupCreate(services=service).PostGroupCreate,
+        #     ['POST']),
+        # (
+        #     '/deleteGroup',
+        #     grouplist.GroupDelete(services=service).GetGroupDelete,
+        #     ['GET']),
+        # (
+        #     '/deleteGroup.do',
+        #     grouplist.GroupDelete(services=service).PostGroupDelete,
+        #     ['POST']),
     ]
 
     for rule in _HOSTING_URL:

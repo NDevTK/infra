@@ -11,7 +11,7 @@ from __future__ import absolute_import
 import logging
 import re
 
-from framework import exceptions
+from framework import exceptions, flaskservlet
 from framework import framework_helpers
 from framework import permissions
 from framework import servlet
@@ -102,3 +102,9 @@ class GroupCreate(servlet.Servlet):
       # Go to the new user group's detail page.
       return framework_helpers.FormatAbsoluteURL(
           mr, '/g/%s/' % group_id, include_project=False)
+
+  # def GetGroupCreate(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostGroupCreate(self, **kwargs):
+  #   return self.handler(**kwargs)
