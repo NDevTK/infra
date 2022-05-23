@@ -25,8 +25,6 @@ class IssueEntryAfterLogin(servlet.Servlet):
     if not mr.auth.user_id:
       self.abort(400, 'Only signed-in users should reach this URL.')
 
-    with mr.profiler.Phase('getting config'):
-      config = self.services.config.GetProjectConfig(mr.cnxn, mr.project_id)
-    entry_page_url = servlet_helpers.ComputeIssueEntryURL(mr, config)
+    entry_page_url = servlet_helpers.ComputeIssueEntryURL(mr)
     logging.info('Redirecting to %r', entry_page_url)
     self.redirect(entry_page_url, abort=True)

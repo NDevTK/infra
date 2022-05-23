@@ -175,7 +175,7 @@ def CheckPermForProject(mr, perm, project, art=None):
       perm, mr.auth.effective_ids, project, permissions.GetRestrictions(art))
 
 
-def ComputeIssueEntryURL(mr, config):
+def ComputeIssueEntryURL(mr):
   """Compute the URL to use for the "New issue" subtab.
 
   Args:
@@ -187,11 +187,10 @@ def ComputeIssueEntryURL(mr, config):
     case. Otherewise it will be a fully qualified URL that includes some
     query string parameters.
   """
-  # TODO: remove the custom_issue_entry_url since its no longer
-  if not config.custom_issue_entry_url:
+  if mr.project_name == 'chromium':
+    return '/p/chromium/issues/wizard'
+  else:
     return '/p/%s/issues/entry' % (mr.project_name)
-
-  return '/p/chromium/issues/wizard'
 
 
 def IssueListURL(mr, config, query_string=None):

@@ -110,17 +110,14 @@ class ComputeIssueEntryURLTest(unittest.TestCase):
         path='/p/proj/issues/detail?id=123&q=term',
         project=self.project)
 
-    url = servlet_helpers.ComputeIssueEntryURL(mr, self.config)
+    url = servlet_helpers.ComputeIssueEntryURL(mr)
     self.assertEqual('/p/proj/issues/entry', url)
 
-  def testComputeIssueEntryURL_Customized(self):
+  def testComputeIssueEntryURL_Chromium(self):
     _request, mr = testing_helpers.GetRequestObjects(
-        path='/p/proj/issues/detail?id=123&q=term',
-        project=self.project)
-    mr.auth.user_id = 111
-    self.config.custom_issue_entry_url = FORM_URL
+        path='/p/chromium/issues/detail?id=123&q=term', project=self.project)
 
-    url = servlet_helpers.ComputeIssueEntryURL(mr, self.config)
+    url = servlet_helpers.ComputeIssueEntryURL(mr)
     self.assertIn('/issues/wizard', url)
 
 class IssueListURLTest(unittest.TestCase):
