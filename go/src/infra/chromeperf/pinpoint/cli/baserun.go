@@ -29,10 +29,10 @@ import (
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"golang.org/x/sync/singleflight"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -40,14 +40,14 @@ import (
 
 type baseCommandRun struct {
 	subcommands.CommandRunBase
-	endpoint string
-	workDir  string
-
+	endpoint   string
+	workDir    string
 	json       bool
 	jsonIndent string
 	jsonPrefix string
 
 	clientFactory clientFactory
+	authFlags     authcli.Flags
 }
 
 func (r *baseCommandRun) RegisterFlags(p Param) userConfig {
@@ -67,11 +67,17 @@ func (r *baseCommandRun) RegisterFlags(p Param) userConfig {
 	r.Flags.StringVar(&r.jsonPrefix, "json-prefix", "", text.Doc(`
 		Optional prefix for json output format.
 	`))
+
+	r.authFlags.Register(&r.Flags, p.Auth)
 	return uc
 }
 
 func (r *baseCommandRun) pinpointClient(ctx context.Context) (proto.PinpointClient, error) {
-	r.clientFactory.init(ctx)
+	opts, err := r.authFlags.Options()
+	if err != nil {
+		return nil, err
+	}
+	r.clientFactory.init(ctx, opts)
 
 	endpoint := r.endpoint
 	if !strings.Contains(endpoint, ":") {
@@ -86,9 +92,19 @@ func (r *baseCommandRun) pinpointClient(ctx context.Context) (proto.PinpointClie
 }
 
 func (r *baseCommandRun) httpClient(ctx context.Context) (*http.Client, error) {
-	r.clientFactory.init(ctx)
-
-	return r.clientFactory.http()
+	opts, err := r.authFlags.Options()
+	if err != nil {
+		return nil, err
+	}
+	r.clientFactory.init(ctx, opts)
+	httpClient, err := r.clientFactory.http()
+	switch {
+	case err == auth.ErrLoginRequired:
+		return nil, errors.New("Login required: run `pinpoint auth-login` or use the -service-account-json flag")
+	case err != nil:
+		return nil, err
+	}
+	return httpClient, nil
 }
 
 func (r *baseCommandRun) writeJSON(out io.Writer, data interface{}) error {
@@ -157,12 +173,11 @@ type clientFactory struct {
 	initOnce  sync.Once
 }
 
-func (f *clientFactory) init(ctx context.Context) {
+func (f *clientFactory) init(ctx context.Context, opts auth.Options) {
 	f.initOnce.Do(func() {
 		f.tlsCreds = credentials.NewTLS(nil)
 
-		opts := chromeinfra.DefaultAuthOptions()
-		f.baseAuth = auth.NewAuthenticator(ctx, auth.InteractiveLogin, opts)
+		f.baseAuth = auth.NewAuthenticator(ctx, auth.SilentLogin, opts)
 
 		opts.UseIDTokens = true
 		f.idTokenAuth = auth.NewAuthenticator(ctx, auth.InteractiveLogin, opts)

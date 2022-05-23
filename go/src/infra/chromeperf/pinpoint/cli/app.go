@@ -18,11 +18,15 @@ import (
 	"context"
 
 	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging/gologger"
+	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
 
 func application(p Param) *cli.Application {
+	p.Auth = chromeinfra.DefaultAuthOptions()
 	return &cli.Application{
 		Name:  "pinpoint",
 		Title: "A CLI client for pinpoint.",
@@ -38,6 +42,10 @@ func application(p Param) *cli.Application {
 			cmdCancelJob(p),
 			cmdConfig(p),
 			cmdDiff(p),
+			authcli.SubcommandLogin(p.Auth, "auth-login", false),
+			authcli.SubcommandLogout(p.Auth, "auth-logout", false),
+			authcli.SubcommandInfo(p.Auth, "auth-info", false),
+
 			subcommands.CmdHelp,
 		},
 	}
@@ -46,6 +54,7 @@ func application(p Param) *cli.Application {
 // Param includes the parameters to use for the CLI application.
 type Param struct {
 	DefaultServiceDomain, OIDCProviderURL string
+	Auth                                  auth.Options
 }
 
 // Main invokes the subcommands for the application.
