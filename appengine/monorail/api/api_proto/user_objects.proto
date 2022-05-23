@@ -12,6 +12,8 @@ import "api/api_proto/common.proto";
 
 package monorail;
 
+option go_package = "infra/monorailv2/api/api_proto;monorail";
+
 // TODO(jojwang): monorail:1701, fill User with all info necessary for
 // creating a user profile page.
 // Next available tag: 7

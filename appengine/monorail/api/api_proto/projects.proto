@@ -8,6 +8,8 @@ syntax = "proto3";
 
 package monorail;
 
+option go_package = "infra/monorailv2/api/api_proto;monorail";
+
 import "api/api_proto/common.proto";
 import "api/api_proto/project_objects.proto";
 

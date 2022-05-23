@@ -14,6 +14,7 @@ syntax = "proto3";
 
 package monorail;
 
+option go_package = "infra/monorailv2/api/api_proto;monorail";
 
 // Next available tag: 3
 message ComponentRef {

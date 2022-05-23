@@ -10,6 +10,8 @@ syntax = "proto3";
 
 package monorail;
 
+option go_package = "infra/monorailv2/api/api_proto;monorail";
+
 import "google/protobuf/wrappers.proto";
 import "api/api_proto/common.proto";
 
