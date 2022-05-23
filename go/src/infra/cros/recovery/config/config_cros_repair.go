@@ -1788,7 +1788,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify if RPM verification is required fo setup",
 				"Setup with PD control temprarely excluded from testing.",
 			},
-			Conditions: []string{
+			Dependencies: []string{
 				"dut_servo_host_present",
 				"has_rpm_info",
 				"servo_state_is_working",
@@ -1824,9 +1824,8 @@ func crosRepairActions() map[string]*Action {
 				"Perfrom RPM config verification",
 				"No Battery is present on device",
 			},
-			ExecName:               "rpm_audit_without_battery",
-			ExecTimeout:            &durationpb.Duration{Seconds: 600},
-			AllowFailAfterRecovery: true,
+			ExecName:    "rpm_audit_without_battery",
+			ExecTimeout: &durationpb.Duration{Seconds: 600},
 		},
 		"Verify RPM config with battery": {
 			Docs: []string{
@@ -1844,7 +1843,6 @@ func crosRepairActions() map[string]*Action {
 				"timeout:120",
 				"wait_interval:5",
 			},
-			AllowFailAfterRecovery: true,
 		},
 		"servo_power_state_reset": {
 			Docs: []string{
