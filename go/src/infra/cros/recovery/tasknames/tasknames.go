@@ -10,8 +10,12 @@ package tasknames
 type TaskName string
 
 const (
-	// Audit is used to run audit tasks.
-	Audit TaskName = "audit"
+	// Audit is used to run audit task of RPM.
+	AuditRPM TaskName = "audit_rpm"
+	// Audit is used to run audit task of internal storage.
+	AuditStorage TaskName = "audit_storage"
+	// Audit is used to run audit task of USB drive.
+	AuditUSB TaskName = "audit_usb"
 	// Task used to run auto recovery/repair flow in the lab.
 	Recovery TaskName = "recovery"
 	// Task used to prepare device to be used in the lab.
