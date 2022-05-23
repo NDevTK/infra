@@ -187,15 +187,16 @@ class ServletRegistry(object):
         # Note: the following are at URLS that are not externally accessible.
         urls.NOTIFY_RULES_DELETED_TASK: notify.NotifyRulesDeletedTask,
     })
-    self._SetupProjectServlets({
-        urls.ADMIN_INTRO: projectsummary.ProjectSummary,
-        urls.PEOPLE_LIST: peoplelist.PeopleList,
-        urls.PEOPLE_DETAIL: peopledetail.PeopleDetail,
-        urls.UPDATES_LIST: projectupdates.ProjectUpdates,
-        urls.ADMIN_META: projectadmin.ProjectAdmin,
-        urls.ADMIN_ADVANCED: projectadminadvanced.ProjectAdminAdvanced,
-        urls.ADMIN_EXPORT: projectexport.ProjectExport,
-        urls.ADMIN_EXPORT_JSON: projectexport.ProjectExportJSON,
+    self._SetupProjectServlets(
+        {
+            urls.ADMIN_INTRO: projectsummary.ProjectSummary,
+            urls.PEOPLE_LIST: peoplelist.PeopleList,
+            urls.PEOPLE_DETAIL: peopledetail.PeopleDetail,
+            urls.UPDATES_LIST: projectupdates.ProjectUpdates,
+            urls.ADMIN_META: projectadmin.ProjectAdmin,
+            urls.ADMIN_ADVANCED: projectadminadvanced.ProjectAdminAdvanced,
+            urls.ADMIN_EXPORT: projectexport.ProjectExport,
+            urls.ADMIN_EXPORT_JSON: projectexport.ProjectExportJSON,
         })
 
   def _RegisterIssueHandlers(self):

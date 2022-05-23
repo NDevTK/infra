@@ -11,6 +11,7 @@ import flask
 
 from framework import banned
 from framework import excessiveactivity
+from project import peopledetail
 from project import peoplelist
 from project import project_constants
 from sitewide import moved
@@ -129,13 +130,21 @@ class ServletRegistry(object):
     flaskapp_project = flask.Flask(__name__)
     _PROJECT_URLS = [
         # (
-        #     '/people/list',
+        #     '/<string:project_name>/people/list',
         #     peoplelist.PeopleList(services=service).GetPeopleListPage,
         #     ['GET']),
         # (
-        #     '/people/list.do',
+        #     '/<string:project_name>/people/list.do',
         #     peoplelist.PeopleList(services=service).PostPeopleListPage,
-        #     ['Post'])
+        #     ['POST']),
+        # (
+        #     '/<string:project_name>/people/detail',
+        #     peopledetail.PeopleDetail(services=service).GetPeopleDetailPage,
+        #     ['GET']),
+        # (
+        #     '/<string:project_name>/people/detail.do',
+        #     peopledetail.PeopleDetail(services=service).PostPeopleDetailPage,
+        #     ['POST']),
     ]
 
     for rule in _PROJECT_URLS:

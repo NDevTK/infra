@@ -14,7 +14,6 @@ from __future__ import absolute_import
 
 import logging
 import webapp2
-# from flask import Flask
 # from werkzeug.middleware import dispatcher
 
 from components import endpoints_webapp2

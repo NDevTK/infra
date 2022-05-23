@@ -14,10 +14,10 @@ import time
 import ezt
 
 from framework import exceptions
+from framework import flaskservlet
 from framework import framework_bizobj
 from framework import framework_helpers
 from framework import framework_views
-from framework import jsonfeed
 from framework import permissions
 from framework import servlet
 from framework import template_helpers
@@ -47,7 +47,7 @@ class PeopleDetail(servlet.Servlet):
   """People detail page documents one partipant's involvement in a project."""
 
   _PAGE_TEMPLATE = 'project/people-detail-page.ezt'
-  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_PEOPLE
+  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_PEOPLE
 
   def AssertBasePermission(self, mr):
     """Check that the user is allowed to access this servlet."""
@@ -269,3 +269,9 @@ class PeopleDetail(servlet.Servlet):
 
     self.services.project.UpdateProjectRoles(
         cnxn, project.project_id, owner_ids, committer_ids, contributor_ids)
+
+  # def GetPeopleDetailPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostPeopleDetailPage(self, **kwargs):
+  #   return self.handler(**kwargs)
