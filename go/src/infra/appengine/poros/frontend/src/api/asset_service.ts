@@ -10,11 +10,11 @@ import { fromJsonTimestamp, isSet } from './common/utils';
 /** Performs operations on Assets. */
 export interface IAssetService {
   /** Creates the given Asset. */
-  create(request: CreateAssetRequest): Promise<AssetEntity>;
+  create(request: CreateAssetRequest): Promise<AssetModel>;
   /** Retrieves a Asset for a given unique value. */
-  get(request: GetAssetRequest): Promise<AssetEntity>;
+  get(request: GetAssetRequest): Promise<AssetModel>;
   /** Update a single asset in poros. */
-  update(request: UpdateAssetRequest): Promise<AssetEntity>;
+  update(request: UpdateAssetRequest): Promise<AssetModel>;
   /** Deletes the given Asset. */
   delete(request: DeleteAssetRequest): Promise<Empty>;
   /** Lists all Assets. */
@@ -30,22 +30,22 @@ export class AssetService implements IAssetService {
     this.list = this.list.bind(this);
   }
 
-  create = (request: CreateAssetRequest): Promise<AssetEntity> => {
+  create = (request: CreateAssetRequest): Promise<AssetModel> => {
     const data = CreateAssetRequest.toJSON(request);
     const promise = rpcClient.request('poros.Asset', 'Create', data);
-    return promise.then((data) => AssetEntity.fromJSON(data));
+    return promise.then((data) => AssetModel.fromJSON(data));
   };
 
-  get = (request: GetAssetRequest): Promise<AssetEntity> => {
+  get = (request: GetAssetRequest): Promise<AssetModel> => {
     const data = GetAssetRequest.toJSON(request);
     const promise = rpcClient.request('poros.Asset', 'Get', data);
-    return promise.then((data) => AssetEntity.fromJSON(data));
+    return promise.then((data) => AssetModel.fromJSON(data));
   };
 
-  update = (request: UpdateAssetRequest): Promise<AssetEntity> => {
+  update = (request: UpdateAssetRequest): Promise<AssetModel> => {
     const data = UpdateAssetRequest.toJSON(request);
     const promise = rpcClient.request('poros.Asset', 'Update', data);
-    return promise.then((data) => AssetEntity.fromJSON(data));
+    return promise.then((data) => AssetModel.fromJSON(data));
   };
 
   delete = (request: DeleteAssetRequest): Promise<Empty> => {
@@ -61,7 +61,7 @@ export class AssetService implements IAssetService {
   };
 }
 
-export interface AssetEntity {
+export interface AssetModel {
   /** Unique identifier of the asset */
   assetId: string;
   /** Name of the asset */
@@ -78,8 +78,8 @@ export interface AssetEntity {
   modifiedAt: Date | undefined;
 }
 
-export const AssetEntity = {
-  defaultEntity(): AssetEntity {
+export const AssetModel = {
+  defaultEntity(): AssetModel {
     return {
       assetId: '',
       name: '',
@@ -90,7 +90,7 @@ export const AssetEntity = {
       modifiedAt: undefined,
     };
   },
-  fromJSON(object: any): AssetEntity {
+  fromJSON(object: any): AssetModel {
     console.log(object);
     return {
       assetId: isSet(object.assetId) ? String(object.assetId) : '',
@@ -107,7 +107,7 @@ export const AssetEntity = {
     };
   },
 
-  toJSON(message: AssetEntity): unknown {
+  toJSON(message: AssetModel): unknown {
     const obj: any = {};
     message.assetId !== undefined && (obj.assetId = message.assetId);
     message.name !== undefined && (obj.name = message.name);
@@ -186,7 +186,7 @@ export interface ListAssetsRequest {
 /** Response to ListAssetsRequest. */
 export interface ListAssetsResponse {
   /** The result set. */
-  assets: AssetEntity[];
+  assets: AssetModel[];
   /**
    * A page token that can be passed into future requests to get the next page.
    * Empty if there is no next page.
@@ -210,7 +210,7 @@ export const ListAssetsResponse = {
   fromJSON(object: any): ListAssetsResponse {
     return {
       assets: Array.isArray(object?.assets)
-        ? object.assets.map((e: any) => AssetEntity.fromJSON(e))
+        ? object.assets.map((e: any) => AssetModel.fromJSON(e))
         : [],
       nextPageToken: isSet(object.nextPageToken)
         ? String(object.nextPageToken)
@@ -222,7 +222,7 @@ export const ListAssetsResponse = {
 /** Request to update a single asset in poros. */
 export interface UpdateAssetRequest {
   /** The existing asset to update in the database. */
-  asset: AssetEntity | undefined;
+  asset: AssetModel | undefined;
   /** The list of fields to update. */
   updateMask: string[] | undefined;
 }
@@ -232,7 +232,7 @@ export const UpdateAssetRequest = {
     const obj: any = {};
     message.asset !== undefined &&
       (obj.asset = message.asset
-        ? AssetEntity.toJSON(message.asset)
+        ? AssetModel.toJSON(message.asset)
         : undefined);
     message.updateMask !== undefined &&
       (obj.updateMask = FieldMask.toJSON(FieldMask.wrap(message.updateMask)));

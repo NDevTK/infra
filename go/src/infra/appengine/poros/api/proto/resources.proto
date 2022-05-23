@@ -4,13 +4,13 @@
 
 syntax = "proto3";
 
-package poros;
+package proto;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "infra/appengine/poros/api/proto;poros";
+option go_package = "infra/appengine/poros/api/proto;proto";
 
-message AssetEntity {
+message AssetModel {
   // Unique identifier of the asset
   string asset_id = 1;
   // Name of the asset

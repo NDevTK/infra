@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { AssetEntity } from '../../api/asset_service';
+import { AssetModel } from '../../api/asset_service';
 import assetReducer, { AssetState } from './assetSlice';
 
 describe('asset reducer', () => {
@@ -12,7 +12,7 @@ describe('asset reducer', () => {
     pageNumber: 1,
     pageSize: 10,
     fetchStatus: 'idle',
-    record: AssetEntity.defaultEntity(),
+    record: AssetModel.defaultEntity(),
     savingStatus: 'idle',
     deletingStatus: 'idle',
   };

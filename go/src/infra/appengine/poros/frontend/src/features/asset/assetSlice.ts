@@ -10,14 +10,14 @@ import {
   IAssetService,
   AssetService,
   ListAssetsRequest,
-  AssetEntity,
+  AssetModel,
 } from '../../api/asset_service';
 import { RootState } from '../../app/store';
 
 export interface AssetState {
-  assets: AssetEntity[];
+  assets: AssetModel[];
   pageToken: string | undefined;
-  record: AssetEntity;
+  record: AssetModel;
   fetchStatus: string;
   savingStatus: string;
   deletingStatus: string;
@@ -31,7 +31,7 @@ const initialState: AssetState = {
   pageNumber: 1,
   pageSize: 25,
   fetchStatus: 'idle',
-  record: AssetEntity.defaultEntity(),
+  record: AssetModel.defaultEntity(),
   savingStatus: 'idle',
   deletingStatus: 'idle',
 };
@@ -112,7 +112,7 @@ export const assetSlice = createSlice({
       )[0];
     },
     clearSelectedRecord: (state) => {
-      state.record = AssetEntity.defaultEntity();
+      state.record = AssetModel.defaultEntity();
     },
   },
 
@@ -148,7 +148,7 @@ export const assetSlice = createSlice({
       })
       .addCase(deleteAssetAsync.fulfilled, (state) => {
         state.deletingStatus = 'idle';
-        state.record = AssetEntity.defaultEntity();
+        state.record = AssetModel.defaultEntity();
       });
   },
 });

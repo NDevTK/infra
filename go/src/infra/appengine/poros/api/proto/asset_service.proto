@@ -4,24 +4,24 @@
 
 syntax = "proto3";
 
-package poros;
+package proto;
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
-import "api/proto/resources.proto";
+import "poros/api/proto/resources.proto";
 
-option go_package = "infra/appengine/poros/api/asset;";
+option go_package = "infra/appengine/poros/api/proto;proto";
 
 // Performs operations on Assets.
 service Asset {
   // Creates the given Asset.
-  rpc Create(CreateAssetRequest) returns (AssetEntity);
+  rpc Create(CreateAssetRequest) returns (AssetModel);
 
   // Retrieves a Asset for a given unique value.
-  rpc Get(GetAssetRequest) returns (AssetEntity);
+  rpc Get(GetAssetRequest) returns (AssetModel);
 
   // Update a single asset in EnterpriseAsset.
-  rpc Update(UpdateAssetRequest) returns (AssetEntity);
+  rpc Update(UpdateAssetRequest) returns (AssetModel);
 
   // Deletes the given Asset.
   rpc Delete(DeleteAssetRequest) returns (.google.protobuf.Empty);
@@ -50,7 +50,7 @@ message GetAssetRequest {
 // Request to update a single asset in EnterpriseAsset.
 message UpdateAssetRequest {
   // The existing asset to update in the database.
-  AssetEntity asset = 1;
+  AssetModel asset = 1;
 
   // The list of fields to update.
   .google.protobuf.FieldMask update_mask = 2;
@@ -77,7 +77,7 @@ message ListAssetsRequest {
 // Response to ListAssetsRequest.
 message ListAssetsResponse {
   // The result set.
-  repeated AssetEntity assets = 1;
+  repeated AssetModel assets = 1;
 
   // A page token that can be passed into future requests to get the next page.
   // Empty if there is no next page.

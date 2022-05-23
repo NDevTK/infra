@@ -24,8 +24,9 @@ import (
 	"go.chromium.org/luci/server/router"
 	"go.chromium.org/luci/server/templates"
 
-	"infra/appengine/poros/api/asset"
 	"infra/appengine/poros/api/handlers"
+	"infra/appengine/poros/api/proto"
+	"infra/appengine/poros/api/service"
 )
 
 // authGroup is the name of the LUCI Auth group that controls whether the user
@@ -110,13 +111,13 @@ func main() {
 	server.Main(nil, modules, func(srv *server.Server) error {
 		mw := pageBase(srv)
 
-		handlers := handlers.NewHandlers(srv.Options.Prod)
-		handlers.RegisterRoutes(srv.Routes, mw)
+		handler := handlers.NewHandlers(srv.Options.Prod)
+		handler.RegisterRoutes(srv.Routes, mw)
 
 		srv.Routes.Static("/static/", mw, http.Dir("./static"))
 
 		// Anything that is not found, serve app html and let the client side router handle it.
-		srv.Routes.NotFound(mw, handlers.IndexPage)
+		srv.Routes.NotFound(mw, handler.IndexPage)
 
 		// Register pPRC servers.
 		srv.PRPC.AccessControl = prpc.AllowOriginAll
@@ -131,8 +132,7 @@ func main() {
 		// TODO(crbug/1082369): Remove this workaround once field masks can be decoded.
 		srv.PRPC.HackFixFieldMasksForJSON = true
 
-		assetHandler := &asset.AssetHandler{}
-		asset.RegisterAssetServer(srv.PRPC, assetHandler)
+		proto.RegisterAssetServer(srv.PRPC, &service.AssetHandler{})
 
 		return nil
 	})
