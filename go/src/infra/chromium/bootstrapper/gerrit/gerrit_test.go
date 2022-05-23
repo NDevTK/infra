@@ -84,7 +84,7 @@ func TestGetChangeInfo(t *testing.T) {
 			})
 
 			client := NewClient(ctx)
-			changeInfo, err := client.getChangeInfo(ctx, "fake-host", "fake/project", 123)
+			changeInfo, err := client.GetChangeInfo(ctx, "fake-host", "fake/project", 123, 1)
 
 			So(err, ShouldErrLike, "fake client factory failure")
 			So(changeInfo, ShouldBeNil)
@@ -104,7 +104,7 @@ func TestGetChangeInfo(t *testing.T) {
 				Return(nil, errors.New("fake GetChange failure"))
 
 			client := NewClient(ctx)
-			changeInfo, err := client.getChangeInfo(ctx, "fake-host", "fake/project", 123)
+			changeInfo, err := client.GetChangeInfo(ctx, "fake-host", "fake/project", 123, 1)
 
 			So(err, ShouldErrLike, "fake GetChange failure")
 			So(changeInfo, ShouldBeNil)
@@ -142,13 +142,16 @@ func TestGetChangeInfo(t *testing.T) {
 				Return(mockChangeInfo, nil)
 
 			client := NewClient(ctx)
-			changeInfo, err := client.getChangeInfo(ctx, "fake-host", "fake/project", 123)
+			changeInfo, err := client.GetChangeInfo(ctx, "fake-host", "fake/project", 123, 1)
 
 			So(err, ShouldBeNil)
-			So(changeInfo, ShouldEqual, mockChangeInfo)
+			So(changeInfo, ShouldResemble, &ChangeInfo{
+				TargetRef:       "fake-ref",
+				GitilesRevision: "fake-revision",
+			})
 		})
 
-		Convey("re-uses change info", func() {
+		Convey("fails with not found if change doesn't have requested patchset", func() {
 			mockGerritClient := gerritpb.NewMockGerritClient(gomock.NewController(t))
 			ctx := UseGerritClientFactory(ctx, func(ctx context.Context, host string) (GerritClient, error) {
 				return mockGerritClient, nil
@@ -170,181 +173,11 @@ func TestGetChangeInfo(t *testing.T) {
 				})
 
 			client := NewClient(ctx)
-			changeInfo, _ := client.getChangeInfo(ctx, "fake-host", "fake/project", 123)
-			changeInfo2, _ := client.getChangeInfo(ctx, "fake-host", "fake/project", 123)
-			changeInfoOther, _ := client.getChangeInfo(ctx, "fake-host", "fake/project", 456)
-
-			So(changeInfo, ShouldNotBeNil)
-			So(changeInfo, ShouldPointTo, changeInfo2)
-			So(changeInfoOther, ShouldNotPointTo, changeInfo)
-		})
-
-	})
-}
-
-func TestGetTargetRef(t *testing.T) {
-	t.Parallel()
-
-	ctx := context.Background()
-	ctx = gob.CtxForTest(ctx)
-
-	Convey("Client.GetTargetRef", t, func() {
-
-		Convey("fails if getting change info fails", func() {
-			mockGerritClient := gerritpb.NewMockGerritClient(gomock.NewController(t))
-			ctx := UseGerritClientFactory(ctx, func(ctx context.Context, host string) (GerritClient, error) {
-				return mockGerritClient, nil
-			})
-			mockGerritClient.EXPECT().
-				GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-					Project: "fake/project",
-					Number:  123,
-					Options: []gerritpb.QueryOption{gerritpb.QueryOption_ALL_REVISIONS},
-				})).
-				Return(nil, errors.New("fake GetChange failure"))
-
-			client := NewClient(ctx)
-			ref, err := client.GetTargetRef(ctx, "fake-host", "fake/project", 123)
-
-			So(err, ShouldErrLike, "fake GetChange failure")
-			So(ref, ShouldBeEmpty)
-		})
-
-		Convey("returns the target ref", func() {
-			mockGerritClient := gerritpb.NewMockGerritClient(gomock.NewController(t))
-			ctx := UseGerritClientFactory(ctx, func(ctx context.Context, host string) (GerritClient, error) {
-				return mockGerritClient, nil
-			})
-			mockChangeInfo := &gerritpb.ChangeInfo{
-				Project: "fake/project",
-				Number:  123,
-				Ref:     "fake-ref",
-				Revisions: map[string]*gerritpb.RevisionInfo{
-					"fake-revision": {
-						Number: 1,
-					},
-				},
-			}
-			matcher := proto.MatcherEqual(&gerritpb.GetChangeRequest{
-				Project: "fake/project",
-				Number:  123,
-				Options: []gerritpb.QueryOption{gerritpb.QueryOption_ALL_REVISIONS},
-			})
-			// Check that potentially transient errors are retried
-			mockGerritClient.EXPECT().
-				GetChange(gomock.Any(), matcher).
-				Return(nil, status.Error(codes.NotFound, "fake transient GetChange failure"))
-			mockGerritClient.EXPECT().
-				GetChange(gomock.Any(), matcher).
-				Return(nil, status.Error(codes.Unavailable, "fake transient GetChange failure"))
-			mockGerritClient.EXPECT().
-				GetChange(gomock.Any(), matcher).
-				Return(mockChangeInfo, nil)
-
-			client := NewClient(ctx)
-			ref, err := client.GetTargetRef(ctx, "fake-host", "fake/project", 123)
-
-			So(err, ShouldBeNil)
-			So(ref, ShouldEqual, "fake-ref")
-		})
-
-	})
-}
-
-func TestGetRevision(t *testing.T) {
-	t.Parallel()
-
-	ctx := context.Background()
-	ctx = gob.CtxForTest(ctx)
-
-	Convey("Client.GetRevision", t, func() {
-
-		Convey("fails if getting change info fails", func() {
-			mockGerritClient := gerritpb.NewMockGerritClient(gomock.NewController(t))
-			ctx := UseGerritClientFactory(ctx, func(ctx context.Context, host string) (GerritClient, error) {
-				return mockGerritClient, nil
-			})
-			mockGerritClient.EXPECT().
-				GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-					Project: "fake/project",
-					Number:  123,
-					Options: []gerritpb.QueryOption{gerritpb.QueryOption_ALL_REVISIONS},
-				})).
-				Return(nil, errors.New("fake GetChange failure"))
-
-			client := NewClient(ctx)
-			revision, err := client.GetRevision(ctx, "fake-host", "fake/project", 123, 1)
-
-			So(err, ShouldErrLike, "fake GetChange failure")
-			So(revision, ShouldBeEmpty)
-		})
-
-		Convey("returns revision", func() {
-			mockGerritClient := gerritpb.NewMockGerritClient(gomock.NewController(t))
-			ctx := UseGerritClientFactory(ctx, func(ctx context.Context, host string) (GerritClient, error) {
-				return mockGerritClient, nil
-			})
-			mockChangeInfo := &gerritpb.ChangeInfo{
-				Project: "fake/project",
-				Number:  123,
-				Ref:     "fake-ref",
-				Revisions: map[string]*gerritpb.RevisionInfo{
-					"fake-revision": {
-						Number: 1,
-					},
-				},
-			}
-			matcher := proto.MatcherEqual(&gerritpb.GetChangeRequest{
-				Project: "fake/project",
-				Number:  123,
-				Options: []gerritpb.QueryOption{gerritpb.QueryOption_ALL_REVISIONS},
-			})
-			// Check that potentially transient errors are retried
-			mockGerritClient.EXPECT().
-				GetChange(gomock.Any(), matcher).
-				Return(nil, status.Error(codes.NotFound, "fake transient GetChange failure"))
-			mockGerritClient.EXPECT().
-				GetChange(gomock.Any(), matcher).
-				Return(nil, status.Error(codes.Unavailable, "fake transient GetChange failure"))
-			mockGerritClient.EXPECT().
-				GetChange(gomock.Any(), matcher).
-				Return(mockChangeInfo, nil)
-
-			client := NewClient(ctx)
-			revision, err := client.GetRevision(ctx, "fake-host", "fake/project", 123, 1)
-
-			So(err, ShouldBeNil)
-			So(revision, ShouldEqual, "fake-revision")
-		})
-
-		Convey("fails for non-existent patchset", func() {
-			mockGerritClient := gerritpb.NewMockGerritClient(gomock.NewController(t))
-			ctx := UseGerritClientFactory(ctx, func(ctx context.Context, host string) (GerritClient, error) {
-				return mockGerritClient, nil
-			})
-			mockChangeInfo := &gerritpb.ChangeInfo{
-				Project: "fake/project",
-				Number:  123,
-				Ref:     "fake-ref",
-				Revisions: map[string]*gerritpb.RevisionInfo{
-					"fake-revision": {
-						Number: 1,
-					},
-				},
-			}
-			mockGerritClient.EXPECT().
-				GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-					Project: "fake/project",
-					Number:  123,
-					Options: []gerritpb.QueryOption{gerritpb.QueryOption_ALL_REVISIONS},
-				})).
-				Return(mockChangeInfo, nil)
-
-			client := NewClient(ctx)
-			revision, err := client.GetRevision(ctx, "fake-host", "fake/project", 123, 2)
+			changeInfo, err := client.GetChangeInfo(ctx, "fake-host", "fake/project", 123, 2)
 
 			So(err, ShouldErrLike, "fake-host/c/fake/project/+/123 does not have patchset 2")
-			So(revision, ShouldBeEmpty)
+			So(status.Code(err), ShouldEqual, codes.NotFound)
+			So(changeInfo, ShouldBeNil)
 		})
 
 	})

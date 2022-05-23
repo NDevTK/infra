@@ -14,22 +14,13 @@ import (
 	"go.chromium.org/luci/common/errors"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
-
-// TODO(gbeaty) Enforce uniqueness of change numbers for a host in the fake and
-// remove project from the ID
-type changeId struct {
-	host    string
-	project string
-	change  int64
-}
 
 type Client struct {
 	clients map[string]GerritClient
 	factory GerritClientFactory
-
-	// changeInfo maps host -> project -> change number -> change info
-	changeInfo map[changeId]*gerritpb.ChangeInfo
 }
 
 // GerritClient provides a subset of the generated gerrit RPC client.
@@ -85,54 +76,45 @@ func (c *Client) gerritClientForHost(ctx context.Context, host string) (GerritCl
 	return client, nil
 }
 
-func (c *Client) getChangeInfo(ctx context.Context, host, project string, change int64) (*gerritpb.ChangeInfo, error) {
-	id := changeId{host, project, change}
-	if changeInfo, ok := c.changeInfo[id]; ok {
-		return changeInfo, nil
-	}
+type ChangeInfo struct {
+	// TargetRef is the ref that the change targets.
+	TargetRef string
+	// GitilesRevision is the revision in the corresponding gitiles repository containing the
+	// commits in the patchset.
+	GitilesRevision string
+}
+
+func (c *Client) GetChangeInfo(ctx context.Context, host, project string, change int64, patchset int32) (*ChangeInfo, error) {
 	gerritClient, err := c.gerritClientForHost(ctx, host)
 	if err != nil {
 		return nil, err
 	}
 
-	var changeInfo *gerritpb.ChangeInfo
+	info := &ChangeInfo{}
 	err = gob.Retry(ctx, "GetChange", func() error {
-		var err error
-		changeInfo, err = gerritClient.GetChange(ctx, &gerritpb.GetChangeRequest{
+		changeInfo, err := gerritClient.GetChange(ctx, &gerritpb.GetChangeRequest{
 			Project: project,
 			Number:  change,
 			Options: []gerritpb.QueryOption{gerritpb.QueryOption_ALL_REVISIONS},
 		})
-		return err
+		if err != nil {
+			return err
+		}
+		for rev, revInfo := range changeInfo.Revisions {
+			if revInfo.Number == patchset {
+				info.TargetRef = changeInfo.Ref
+				info.GitilesRevision = rev
+				return nil
+			}
+		}
+		// Occasionally the returned change information doesn't contain the patchset
+		// corresponding to the build's gerrit change, presumably due to replication lag. In
+		// that case return an error with codes.NotFound so that it will be retried.
+		return status.Error(codes.NotFound, fmt.Sprintf("%s/c/%s/+/%d does not have patchset %d", host, project, change, patchset))
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	if c.changeInfo == nil {
-		c.changeInfo = map[changeId]*gerritpb.ChangeInfo{}
-	}
-	c.changeInfo[id] = changeInfo
-	return changeInfo, nil
-}
-
-func (c *Client) GetTargetRef(ctx context.Context, host, project string, change int64) (string, error) {
-	changeInfo, err := c.getChangeInfo(ctx, host, project, change)
-	if err != nil {
-		return "", err
-	}
-	return changeInfo.Ref, nil
-}
-
-func (c *Client) GetRevision(ctx context.Context, host, project string, change int64, patchset int32) (string, error) {
-	changeInfo, err := c.getChangeInfo(ctx, host, project, change)
-	if err != nil {
-		return "", err
-	}
-	for rev, revInfo := range changeInfo.Revisions {
-		if revInfo.Number == patchset {
-			return rev, nil
-		}
-	}
-	return "", errors.Reason("%s/c/%s/+/%d does not have patchset %d", host, project, change, patchset).Err()
+	return info, nil
 }

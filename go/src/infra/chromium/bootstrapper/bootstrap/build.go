@@ -50,10 +50,12 @@ func (c *gitilesCommit) String() string {
 	return fmt.Sprintf("%s/%s/+/%s", c.Host, c.Project, revision)
 }
 
-// gerritChange is a simple wrapper around *buildbucketpb.GerritChange with the
-// gerrit URI as the string representation.
+// gerritChange is a wrapper around *buildbucketpb.GerritChange with the gerrit URI as the string
+// representation and information retrieved from gerrit about the change.
 type gerritChange struct {
 	*buildbucketpb.GerritChange
+
+	gitilesRevision string
 }
 
 func (c *gerritChange) String() string {
@@ -240,12 +242,13 @@ func (b *BuildBootstrapper) getDependencyConfig(ctx context.Context, input *Inpu
 func (b *BuildBootstrapper) getCommitAndChange(ctx context.Context, input *Input, repo *GitilesRepo, ref string) (*gitilesCommit, *gerritChange, error) {
 	change := findMatchingGerritChange(input.changes, repo)
 	if change != nil {
-		logging.Infof(ctx, "getting target ref for config change %s", change)
-		var err error
-		ref, err = b.gerrit.GetTargetRef(ctx, change.Host, change.Project, change.Change)
+		logging.Infof(ctx, "getting change info for config change %s", change)
+		info, err := b.gerrit.GetChangeInfo(ctx, change.Host, change.Project, change.Change, int32(change.Patchset))
 		if err != nil {
-			return nil, nil, errors.Annotate(err, "failed to get target ref for config change %s", change).Err()
+			return nil, nil, errors.Annotate(err, "failed to get change info for config change %s", change).Err()
 		}
+		ref = info.TargetRef
+		change.gitilesRevision = info.GitilesRevision
 	}
 	commit := findMatchingGitilesCommit(input.commits, repo)
 	if commit == nil {
@@ -313,13 +316,8 @@ func (b *BuildBootstrapper) downloadFile(ctx context.Context, commit *gitilesCom
 }
 
 func (b *BuildBootstrapper) getDiffForMaybeAffectedFile(ctx context.Context, change *gerritChange, file string) (string, error) {
-	logging.Infof(ctx, "getting revision for %s", change)
-	revision, err := b.gerrit.GetRevision(ctx, change.Host, change.Project, change.Change, int32(change.Patchset))
-	if err != nil {
-		return "", errors.Annotate(err, "failed to get revision for %s", change).Err()
-	}
 	logging.Infof(ctx, "getting diff for %s", change)
-	diff, err := b.gitiles.DownloadDiff(ctx, convertGerritHostToGitilesHost(change.Host), change.Project, revision, gitiles.PARENT, file)
+	diff, err := b.gitiles.DownloadDiff(ctx, convertGerritHostToGitilesHost(change.Host), change.Project, change.gitilesRevision, gitiles.PARENT, file)
 	if err != nil {
 		return "", errors.Annotate(err, "failed to get diff from %s", change).Err()
 	}
@@ -359,7 +357,7 @@ func findMatchingGitilesCommit(commits []*buildbucketpb.GitilesCommit, repo *Git
 func findMatchingGerritChange(changes []*buildbucketpb.GerritChange, repo *GitilesRepo) *gerritChange {
 	for _, change := range changes {
 		if convertGerritHostToGitilesHost(change.Host) == repo.Host && change.Project == repo.Project {
-			return &gerritChange{change}
+			return &gerritChange{GerritChange: change}
 		}
 	}
 	return nil

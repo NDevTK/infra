@@ -106,7 +106,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 				So(properties, ShouldBeNil)
 			})
 
-			Convey("if unable to get target ref of change", func() {
+			Convey("if unable to get change info", func() {
 				build.Input.GerritChanges = append(build.Input.GerritChanges, &buildbucketpb.GerritChange{
 					Host:     "chromium-review.googlesource.com",
 					Project:  "top/level",
@@ -118,7 +118,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 				properties, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-				So(err, ShouldErrLike, "failed to get target ref for config change")
+				So(err, ShouldErrLike, "failed to get change info for config change")
 				So(properties, ShouldBeNil)
 			})
 

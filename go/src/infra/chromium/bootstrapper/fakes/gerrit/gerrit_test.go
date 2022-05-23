@@ -209,24 +209,14 @@ func TestIntegration(t *testing.T) {
 
 	Convey("gerrit using fake factory", t, func() {
 
-		Convey("succeeds when calling GetTargetRef", func() {
+		Convey("succeeds when calling GetChangeInfo", func() {
 			ctx := gerrit.UseGerritClientFactory(ctx, Factory(nil))
 			client := gerrit.NewClient(ctx)
 
-			ref, err := client.GetTargetRef(ctx, "fake-host", "fake/project", 123)
+			info, err := client.GetChangeInfo(ctx, "fake-host", "fake/project", 234, 1)
 
 			So(err, ShouldBeNil)
-			So(ref, ShouldNotBeEmpty)
-		})
-
-		Convey("succeeds when calling GetRevision", func() {
-			ctx := gerrit.UseGerritClientFactory(ctx, Factory(nil))
-			client := gerrit.NewClient(ctx)
-
-			revision, err := client.GetRevision(ctx, "fake-host", "fake/project", 123, 1)
-
-			So(err, ShouldBeNil)
-			So(revision, ShouldNotBeEmpty)
+			So(info, ShouldNotBeNil)
 		})
 
 	})

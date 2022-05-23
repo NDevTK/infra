@@ -20,12 +20,9 @@ type retryIterator struct {
 }
 
 func (i *retryIterator) Next(ctx context.Context, err error) time.Duration {
-	s, ok := status.FromError(err)
-	if ok {
-		switch s.Code() {
-		case codes.NotFound, codes.Unavailable, codes.DeadlineExceeded:
-			return i.backoff.Next(ctx, err)
-		}
+	switch status.Code(err) {
+	case codes.NotFound, codes.Unavailable, codes.DeadlineExceeded:
+		return i.backoff.Next(ctx, err)
 	}
 	return retry.Stop
 }
