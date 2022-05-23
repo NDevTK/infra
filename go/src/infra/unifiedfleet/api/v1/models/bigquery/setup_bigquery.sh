@@ -54,6 +54,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.ChromePlatformRow  \
     -table "${APPID}".ufs.chrome_platforms); then
   echo ""
@@ -71,6 +72,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.VlanRow  \
     -table "${APPID}".ufs.vlans); then
   echo ""
@@ -88,6 +90,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.MachineRow  \
     -table "${APPID}".ufs.machines); then
   echo ""
@@ -105,6 +108,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.RackRow  \
     -table "${APPID}".ufs.racks); then
   echo ""
@@ -122,6 +126,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.RackLSEPrototypeRow  \
     -table "${APPID}".ufs.rack_lse_prototypes); then
   echo ""
@@ -139,6 +144,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.MachineLSEPrototypeRow  \
     -table "${APPID}".ufs.machine_lse_prototypes); then
   echo ""
@@ -156,6 +162,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.MachineLSERow  \
     -table "${APPID}".ufs.machine_lses); then
   echo ""
@@ -173,6 +180,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.RackLSERow  \
     -table "${APPID}".ufs.rack_lses); then
   echo ""
@@ -190,6 +198,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.KVMRow  \
     -table "${APPID}".ufs.kvms); then
   echo ""
@@ -207,6 +216,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.RPMRow  \
     -table "${APPID}".ufs.rpms); then
   echo ""
@@ -224,6 +234,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.SwitchRow  \
     -table "${APPID}".ufs.switches); then
   echo ""
@@ -241,6 +252,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.DracRow  \
     -table "${APPID}".ufs.dracs); then
   echo ""
@@ -258,6 +270,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.NicRow  \
     -table "${APPID}".ufs.nics); then
   echo ""
@@ -275,6 +288,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.DHCPConfigRow  \
     -table "${APPID}".ufs.dhcps); then
   echo ""
@@ -292,6 +306,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.IPRow  \
     -table "${APPID}".ufs.ips); then
   echo ""
@@ -309,6 +324,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.StateRecordRow  \
     -table "${APPID}".ufs.state_records); then
   echo ""
@@ -326,6 +342,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.ChangeEventRow  \
     -table "${APPID}".ufs.change_events); then
   echo ""
@@ -343,6 +360,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.VMRow  \
     -table "${APPID}".ufs.vms); then
   echo ""
@@ -360,6 +378,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.AssetRow  \
     -table "${APPID}".ufs.assets); then
   echo ""
@@ -377,6 +396,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.DUTStateRecordRow  \
     -table "${APPID}".ufs.dutstates); then
   echo ""
@@ -394,6 +414,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.CachingServiceRow  \
     -table "${APPID}".ufs.caching_services); then
   echo ""
@@ -411,6 +432,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.MachineLSEDeploymentRow  \
     -table "${APPID}".ufs.machine_lse_deployments); then
   echo ""
@@ -428,6 +450,7 @@ echo ""
 echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.SchedulingUnitRow  \
     -table "${APPID}".ufs.scheduling_units); then
   echo ""
