@@ -112,12 +112,14 @@ func TestValidateFaftVersion(t *testing.T) {
 	bad("R1-2.3.4")
 	good("a-firmware/R1-2.3.4")
 	good("octopus-firmware/R72-11297.75.0")
+	good("octopus-release/R72-11297.75.0")
+	bad("octopus-something/R72-11297.75.0")
 	bad("Google_Rammus.11275.41.0")
 }
 
 // TODO(gregorynisbet): replace with table-driven test
 func TestSerializeFaftVersion(t *testing.T) {
-	out := SerializeFaftVersion("a", 1, 2, 3, 4)
+	out := SerializeFaftVersion("a", "firmware", 1, 2, 3, 4)
 	if out != "a-firmware/R1-2.3.4" {
 		t.Errorf("expected: R1-2.3.4 got:%s", out)
 	}
@@ -126,11 +128,12 @@ func TestSerializeFaftVersion(t *testing.T) {
 // TODO(gregorynisbet): replace with table-driven test
 func TestParseFaftVersion(t *testing.T) {
 	Convey("Test Parsing Firwmare Version", t, func() {
-		platform, release, tip, branch, branchBranch, err := ParseFaftVersion("a-firmware/R1-2.3.4")
+		platform, kind, release, tip, branch, branchBranch, err := ParseFaftVersion("a-firmware/R1-2.3.4")
 		if err != nil {
 			t.Errorf("expected a-firmware/R1-2.3.4 to parse: %s", err)
 		} else {
 			So(platform, ShouldEqual, "a")
+			So(kind, ShouldEqual, "firmware")
 			So(release, ShouldEqual, 1)
 			So(tip, ShouldEqual, 2)
 			So(branch, ShouldEqual, 3)
