@@ -15,7 +15,7 @@ import ezt
 
 import settings
 from businesslogic import work_env
-from framework import exceptions
+from framework import exceptions, flaskservlet
 from framework import filecontent
 from framework import framework_helpers
 from framework import gcs_helpers
@@ -155,3 +155,9 @@ class ProjectCreate(servlet.Servlet):
       # Go to the new project's introduction page.
       return framework_helpers.FormatAbsoluteURL(
           mr, urls.ADMIN_INTRO, project_name=project_name)
+
+  # def GetCreateProject(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostCreateProject(self, **kwargs):
+  #   return self.handler(**kwargs)

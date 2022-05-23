@@ -12,16 +12,14 @@ import logging
 import time
 import re
 
-from features import features_constants
 from features import hotlist_helpers
 from framework import exceptions
+from framework import flaskservlet
 from framework import framework_bizobj
 from framework import framework_helpers
 from framework import permissions
 from framework import servlet
-from framework import urls
 from services import features_svc
-from proto import api_pb2_v1
 
 
 _MSG_HOTLIST_NAME_NOT_AVAIL = 'You already have a hotlist with that name.'
@@ -115,3 +113,9 @@ class HotlistCreate(servlet.Servlet):
           mr, hotlist_helpers.GetURLOfHotlist(
               mr.cnxn, hotlist, self.services.user),
           include_project=False)
+
+  # def GetCreateHotlist(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostCreateHotlist(self, **kwargs):
+  #   return self.handler(**kwargs)

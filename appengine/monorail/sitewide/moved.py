@@ -13,7 +13,7 @@ from __future__ import absolute_import
 
 import logging
 
-from framework import exceptions
+from framework import exceptions, flaskservlet
 from framework import framework_helpers
 from framework import servlet
 from framework import urls
@@ -60,3 +60,6 @@ class ProjectMoved(servlet.Servlet):
         'project_name': mr.specified_project,
         'moved_to_url': moved_to_url,
         }
+
+  # def GetProjectMoved(self, **kwargs):
+  #   return self.handler(**kwargs)

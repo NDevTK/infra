@@ -13,7 +13,10 @@ from framework import banned
 from framework import excessiveactivity
 from project import peoplelist
 from project import project_constants
+from sitewide import moved
+from sitewide import projectcreate
 from sitewide import usersettings
+from features import hotlistcreate
 
 
 class ServletRegistry(object):
@@ -70,9 +73,27 @@ class ServletRegistry(object):
         #     '/settings.do',
         #     usersettings.UserSettings(services=service).PostUserSetting,
         #     ['POST']),
+        # ('/noAccess', banned.Banned(services=service).GetNoAccessPage,
+        #   ['GET']),
         # (
-        #     '/noAccess',
-        #     banned.Banned(services=service).GetNoAccessPage, ['GET'])
+        #     '/moved', moved.ProjectMoved(services=service).GetProjectMoved,
+        #     ['GET']),
+        # (
+        #     '/createProject',
+        #     projectcreate.ProjectCreate(services=service).GetCreateProject,
+        #     ['GET']),
+        # (
+        #     '/createProject.do',
+        #     projectcreate.ProjectCreate(services=service).PostCreateProject,
+        #     ['POST']),
+        # (
+        #     '/createHotlist',
+        #     hotlistcreate.HotlistCreate(services=service).GetCreateHotlist,
+        #     ['GET']),
+        # (
+        #     '/createHotlist.do',
+        #     hotlistcreate.HotlistCreate(services=service).PostCreateHotlist,
+        #     ['POST'])
     ]
 
     for rule in _HOSTING_URL:
