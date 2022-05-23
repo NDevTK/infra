@@ -36,6 +36,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b4cd9261_d1f4e3b7",
+        "filename": "go/src/infra/unifiedfleet/app/controller/drac.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 561,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-05-23T06:27:20Z",
+      "side": 1,
+      "message": "Ok. Thanks for clarifying.",
+      "parentUuid": "c7826e39_031e9531",
+      "revId": "06a695435d16cdef67e00b4a08e1ae916919ecec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3933109a_34dd6af9",
@@ -67,6 +85,24 @@
       "side": 1,
       "message": "it\u0027s updating the index of a drac (which is what property means in the function QueryXXXByPropertyName). If a field wants to be updated, it has to be an index (in datastore).\n\nIt wants to highlight that when user want to update a value of an index for a drac, please use this function. It happens when users update another entity\u0027s name, then it affects the index of a drac.",
       "parentUuid": "3933109a_34dd6af9",
+      "revId": "06a695435d16cdef67e00b4a08e1ae916919ecec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6f170a74_9c7e2887",
+        "filename": "go/src/infra/unifiedfleet/app/controller/drac.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 562,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2022-05-23T06:27:20Z",
+      "side": 1,
+      "message": "I see, is this the standard naming scheme we follow whenever we update properties(that are indices)?",
+      "parentUuid": "2c06fb2d_658630ed",
       "revId": "06a695435d16cdef67e00b4a08e1ae916919ecec",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
