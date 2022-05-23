@@ -334,7 +334,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_is_firmware_in_good_state",
 			RecoveryActions: []string{
-				"Fix FW on the DUT to match stable-version",
+				"Fix FW on the DUT to match stable-version and wait to boot",
 				"Update FW from fw-image by servo",
 				"Update firmware from USB-Drive and when booted in recovery mode",
 				"Cold reset DUT by servo and wait to boot",
@@ -487,10 +487,20 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_is_on_rw_firmware_stable_version",
 			RecoveryActions: []string{
-				"Fix FW on the DUT to match stable-version",
+				"Fix FW on the DUT to match stable-version and wait to boot",
 				"Update FW from fw-image by servo",
 				"Update firmware from USB-Drive and when booted in recovery mode",
 			},
+		},
+		"Fix FW on the DUT to match stable-version and wait to boot": {
+			Docs: []string{
+				"Update firmware from the host and reboot, then wait for host be available for SSH.",
+			},
+			Dependencies: []string{
+				"Fix FW on the DUT to match stable-version",
+				"Wait to be SSHable (normal boot)",
+			},
+			ExecName: "sample_pass",
 		},
 		"Fix FW on the DUT to match stable-version": {
 			Docs: []string{
