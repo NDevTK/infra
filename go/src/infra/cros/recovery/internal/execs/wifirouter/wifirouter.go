@@ -7,14 +7,13 @@ package wifirouter
 import (
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/tlw"
 )
 
 // activeHost finds active host related to the executed plan.
-func activeHost(args *execs.RunArgs) (*tlw.WifiRouterHost, error) {
-	for _, router := range args.DUT.WifiRouterHosts {
-		if router.GetName() == args.ResourceName {
+func activeHost(resource string, chromeos *tlw.ChromeOS) (*tlw.WifiRouterHost, error) {
+	for _, router := range chromeos.GetWifiRouters() {
+		if router.GetName() == resource {
 			return router, nil
 		}
 	}

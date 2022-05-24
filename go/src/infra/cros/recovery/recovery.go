@@ -458,17 +458,17 @@ func collectResourcesForPlan(planName string, dut *tlw.Dut) []string {
 		}
 	case config.PlanBluetoothPeer:
 		var resources []string
-		for _, bp := range dut.BluetoothPeerHosts {
-			resources = append(resources, bp.Name)
+		for _, bp := range dut.GetChromeos().GetBluetoothPeers() {
+			resources = append(resources, bp.GetName())
 		}
 		return resources
 	case config.PlanChameleon:
-		if c := dut.GetChromeos().GetChameleon(); c != nil && c.GetName() != "" {
+		if c := dut.GetChromeos().GetChameleon(); c.GetName() != "" {
 			return []string{c.GetName()}
 		}
 	case config.PlanWifiRouter:
 		var resources []string
-		for _, router := range dut.WifiRouterHosts {
+		for _, router := range dut.GetChromeos().GetWifiRouters() {
 			resources = append(resources, router.GetName())
 		}
 		return resources

@@ -7,14 +7,13 @@ package btpeer
 import (
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/tlw"
 )
 
 // activeHost finds active host related to the executed plan.
-func activeHost(args *execs.RunArgs) (*tlw.BluetoothPeer, error) {
-	for _, btp := range args.DUT.BluetoothPeerHosts {
-		if btp.Name == args.ResourceName {
+func activeHost(resource string, chromeos *tlw.ChromeOS) (*tlw.BluetoothPeer, error) {
+	for _, btp := range chromeos.GetBluetoothPeers() {
+		if btp.GetName() == resource {
 			return btp, nil
 		}
 	}

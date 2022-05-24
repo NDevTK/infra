@@ -15,7 +15,7 @@ import (
 
 // setStateBrokenExec sets state as BROKEN.
 func setStateBrokenExec(ctx context.Context, info *execs.ExecInfo) error {
-	if h, err := activeHost(info.RunArgs); err != nil {
+	if h, err := activeHost(info.GetActiveResource(), info.GetChromeos()); err != nil {
 		return errors.Annotate(err, "set state broken").Err()
 	} else {
 		h.State = tlw.WifiRouterHost_BROKEN
@@ -25,7 +25,7 @@ func setStateBrokenExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // setStateWorkingExec sets state as WORKING.
 func setStateWorkingExec(ctx context.Context, info *execs.ExecInfo) error {
-	if h, err := activeHost(info.RunArgs); err != nil {
+	if h, err := activeHost(info.GetActiveResource(), info.GetChromeos()); err != nil {
 		return errors.Annotate(err, "set state working").Err()
 	} else {
 		h.State = tlw.WifiRouterHost_WORKING
@@ -34,7 +34,7 @@ func setStateWorkingExec(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 func matchWifirouterBoardAndModelExec(ctx context.Context, info *execs.ExecInfo) error {
-	if wifiRouterHost, err := activeHost(info.RunArgs); err != nil {
+	if wifiRouterHost, err := activeHost(info.GetActiveResource(), info.GetChromeos()); err != nil {
 		return errors.Annotate(err, "match wifirouter board and model").Err()
 	} else {
 		argsMap := info.GetActionArgs(ctx)
@@ -49,7 +49,7 @@ func matchWifirouterBoardAndModelExec(ctx context.Context, info *execs.ExecInfo)
 
 // wifirouterPresentExec check if wifi router hosts exists
 func wifirouterPresentExec(ctx context.Context, info *execs.ExecInfo) error {
-	if d := info.RunArgs.DUT; d == nil || len(d.WifiRouterHosts) == 0 {
+	if len(info.GetChromeos().GetWifiRouters()) == 0 {
 		return errors.Reason("wifirouter host present: data is not present").Err()
 	}
 	return nil
@@ -57,7 +57,7 @@ func wifirouterPresentExec(ctx context.Context, info *execs.ExecInfo) error {
 
 func updatePeripheralWifiStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	pws := tlw.PeripheralWifiStateWorking
-	for _, routerHost := range info.RunArgs.DUT.WifiRouterHosts {
+	for _, routerHost := range info.GetChromeos().GetWifiRouters() {
 		if routerHost.GetState() != tlw.WifiRouterHost_WORKING {
 			pws = tlw.PeripheralWifiStateBroken
 			break

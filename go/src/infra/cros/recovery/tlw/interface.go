@@ -153,11 +153,7 @@ type Dut struct {
 	// Peripheral devices.
 	// ServoHost of the DUT setup.
 	ServoHost *ServoHost
-	// BluetoothPeer info of DUT setup.
-	BluetoothPeerHosts []*BluetoothPeer
-	// Array of Wifi Router peripheral devices
-	WifiRouterHosts []*WifiRouterHost
-	// Peripehral Wifi state of testbed
+	// Peripheral Wifi state of testbed
 	PeripheralWifiState PeripheralWifiState
 	// RPMOutlet of the DUT setup.
 	RPMOutlet *RPMOutlet

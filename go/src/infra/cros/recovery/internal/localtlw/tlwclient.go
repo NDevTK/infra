@@ -790,21 +790,19 @@ func (c *tlwClient) cacheDevice(dut *tlw.Dut) {
 		c.hostTypes[dut.ServoHost.GetName()] = hostTypeServo
 		c.hostToParents[dut.ServoHost.GetName()] = name
 	}
-	for _, bt := range dut.BluetoothPeerHosts {
-		if bt.Name != "" {
-			c.hostTypes[bt.Name] = hostTypeBtPeer
-			c.hostToParents[bt.Name] = name
+	if chromeos := dut.GetChromeos(); chromeos != nil {
+		for _, bt := range chromeos.GetBluetoothPeers() {
+			c.hostTypes[bt.GetName()] = hostTypeBtPeer
+			c.hostToParents[bt.GetName()] = name
 		}
-	}
-	for _, router := range dut.WifiRouterHosts {
-		if router != nil && router.GetName() != "" {
+		for _, router := range chromeos.GetWifiRouters() {
 			c.hostTypes[router.GetName()] = hostTypeRouter
 			c.hostToParents[router.GetName()] = name
 		}
-	}
-	if chameleon := dut.GetChromeos().GetChameleon(); chameleon != nil && chameleon.GetName() != "" {
-		c.hostTypes[chameleon.GetName()] = hostTypeChameleon
-		c.hostToParents[chameleon.GetName()] = name
+		if chameleon := chromeos.GetChameleon(); chameleon.GetName() != "" {
+			c.hostTypes[chameleon.GetName()] = hostTypeChameleon
+			c.hostToParents[chameleon.GetName()] = name
+		}
 	}
 }
 
@@ -821,15 +819,15 @@ func (c *tlwClient) unCacheDevice(dut *tlw.Dut) {
 		delete(c.hostTypes, dut.ServoHost.GetName())
 		delete(c.hostToParents, dut.ServoHost.GetName())
 	}
-	for _, bt := range dut.BluetoothPeerHosts {
-		if bt.Name != "" {
-			delete(c.hostTypes, bt.Name)
-			delete(c.hostToParents, bt.Name)
+	if chromeos := dut.GetChromeos(); chromeos != nil {
+		for _, bt := range chromeos.GetBluetoothPeers() {
+			delete(c.hostTypes, bt.GetName())
+			delete(c.hostToParents, bt.GetName())
 		}
-	}
-	if chameleon := dut.GetChromeos().GetChameleon(); chameleon != nil && chameleon.GetName() != "" {
-		delete(c.hostTypes, chameleon.GetName())
-		delete(c.hostToParents, chameleon.GetName())
+		if chameleon := chromeos.GetChameleon(); chameleon.GetName() != "" {
+			delete(c.hostTypes, chameleon.GetName())
+			delete(c.hostToParents, chameleon.GetName())
+		}
 	}
 	delete(c.devices, name)
 }

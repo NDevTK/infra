@@ -77,6 +77,14 @@ type ExecInfo struct {
 	ActionTimeout time.Duration
 }
 
+// GetActiveResource returns what is active resource.
+func (i *ExecInfo) GetActiveResource() string {
+	if i == nil || i.RunArgs == nil {
+		return ""
+	}
+	return i.RunArgs.ResourceName
+}
+
 // GetAndroid returns Android device from DUT.
 func (i *ExecInfo) GetAndroid() *tlw.Android {
 	if i == nil || i.RunArgs == nil || i.RunArgs.DUT == nil {

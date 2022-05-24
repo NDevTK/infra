@@ -16,7 +16,7 @@ import (
 
 // setStateBrokenExec sets state as BROKEN.
 func setStateBrokenExec(ctx context.Context, info *execs.ExecInfo) error {
-	if h, err := activeHost(info.RunArgs); err != nil {
+	if h, err := activeHost(info.GetActiveResource(), info.GetChromeos()); err != nil {
 		return errors.Annotate(err, "set state broken").Err()
 	} else {
 		h.State = tlw.BluetoothPeer_BROKEN
@@ -26,7 +26,7 @@ func setStateBrokenExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // setStateWorkingExec sets state as WORKING.
 func setStateWorkingExec(ctx context.Context, info *execs.ExecInfo) error {
-	if h, err := activeHost(info.RunArgs); err != nil {
+	if h, err := activeHost(info.GetActiveResource(), info.GetChromeos()); err != nil {
 		return errors.Annotate(err, "set state working").Err()
 	} else {
 		h.State = tlw.BluetoothPeer_WORKING
@@ -36,7 +36,7 @@ func setStateWorkingExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // getDetectedStatusesExec verifies communication with XMLRPC service running on bluetooth-peer and send one request to verify that service is responsive and initialized.
 func getDetectedStatusesExec(ctx context.Context, info *execs.ExecInfo) error {
-	h, err := activeHost(info.RunArgs)
+	h, err := activeHost(info.GetActiveResource(), info.GetChromeos())
 	if err != nil {
 		return errors.Annotate(err, "get detected statuses").Err()
 	}

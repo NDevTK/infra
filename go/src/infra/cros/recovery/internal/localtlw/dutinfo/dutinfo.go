@@ -131,10 +131,8 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		PowerSupplyType:     supplyType,
 		Storage:             createDUTStorage(dc, ds),
 		Wifi:                createDUTWifi(make, ds),
-		WifiRouterHosts:     createWifiRouterHosts(p.GetWifi()),
 		PeripheralWifiState: convertPeripheralWifiState(ds.GetWifiPeripheralState()),
 		Bluetooth:           createDUTBluetooth(ds, dc),
-		BluetoothPeerHosts:  createBluetoothPeerHosts(p),
 		Battery:             battery,
 		ServoHost:           createServoHost(p, ds),
 		RPMOutlet:           createRPMOutlet(p.GetRpm(), ds),
@@ -142,10 +140,12 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			LoopbackState: convertAudioLoopbackState(ds.GetAudioLoopbackDongle()),
 		},
 		Chromeos: &tlw.ChromeOS{
-			Cr50Phase:  convertCr50Phase(ds.GetCr50Phase()),
-			Cr50KeyEnv: convertCr50KeyEnv(ds.GetCr50KeyEnv()),
-			DeviceSku:  machine.GetChromeosMachine().GetSku(),
-			Chameleon:  createChameleon(name, ds),
+			Cr50Phase:      convertCr50Phase(ds.GetCr50Phase()),
+			Cr50KeyEnv:     convertCr50KeyEnv(ds.GetCr50KeyEnv()),
+			DeviceSku:      machine.GetChromeosMachine().GetSku(),
+			Chameleon:      createChameleon(name, ds),
+			WifiRouters:    createWifiRouterHosts(p.GetWifi()),
+			BluetoothPeers: createBluetoothPeerHosts(p),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
@@ -338,17 +338,19 @@ func getUFSLabDataFromSpecs(dutID string, dut *tlw.Dut) *ufsAPI.UpdateDeviceReco
 		labData.ServoTopology = convertServoTopologyToUFS(sh.ServoTopology)
 		labData.ServoUsbDrive = sh.GetUsbDrive()
 	}
-	for _, router := range dut.WifiRouterHosts {
-		labData.WifiRouters = append(labData.WifiRouters, &ufsAPI.UpdateDeviceRecoveryDataRequest_WifiRouter{
-			Hostname: router.GetName(),
-			State:    convertWifiRouterStateToUFS(router.GetState()),
-		})
-	}
-	for _, btp := range dut.BluetoothPeerHosts {
-		labData.BlueoothPeers = append(labData.BlueoothPeers, &ufsAPI.UpdateDeviceRecoveryDataRequest_BluetoothPeer{
-			Hostname: btp.Name,
-			State:    convertBluetoothPeerStateToUFS(btp.State),
-		})
+	if ch := dut.GetChromeos(); ch != nil {
+		for _, router := range ch.GetWifiRouters() {
+			labData.WifiRouters = append(labData.WifiRouters, &ufsAPI.UpdateDeviceRecoveryDataRequest_WifiRouter{
+				Hostname: router.GetName(),
+				State:    convertWifiRouterStateToUFS(router.GetState()),
+			})
+		}
+		for _, btp := range ch.GetBluetoothPeers() {
+			labData.BlueoothPeers = append(labData.BlueoothPeers, &ufsAPI.UpdateDeviceRecoveryDataRequest_BluetoothPeer{
+				Hostname: btp.GetName(),
+				State:    convertBluetoothPeerStateToUFS(btp.GetState()),
+			})
+		}
 	}
 	return labData
 }
@@ -409,16 +411,18 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 	if b := dut.Bluetooth; b != nil {
 		state.BluetoothState = convertHardwareStateToUFS(b.State)
 	}
-	if ch := dut.GetChromeos().GetChameleon(); ch != nil {
-		for us, rs := range chameleonStates {
-			if ch.State == rs {
-				state.Chameleon = us
+	if chromeos := dut.GetChromeos(); chromeos != nil {
+		if ch := chromeos.GetChameleon(); ch != nil {
+			for us, rs := range chameleonStates {
+				if ch.GetState() == rs {
+					state.Chameleon = us
+				}
 			}
 		}
-	}
-	for _, btph := range dut.BluetoothPeerHosts {
-		if btph.State == tlw.BluetoothPeer_WORKING {
-			state.WorkingBluetoothBtpeer += 1
+		for _, btph := range chromeos.GetBluetoothPeers() {
+			if btph.GetState() == tlw.BluetoothPeer_WORKING {
+				state.WorkingBluetoothBtpeer += 1
+			}
 		}
 	}
 	if dut.Audio != nil && dut.Audio.GetLoopbackState() == tlw.DUTAudio_LOOPBACK_WORKING {
