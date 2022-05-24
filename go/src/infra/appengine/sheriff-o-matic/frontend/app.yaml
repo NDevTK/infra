@@ -1,6 +1,8 @@
-runtime: go111
-instance_class: F4
 service: default
+runtime: go116
+app_engine_apis: true
+
+instance_class: F4
 
 handlers:
 - url: /bower_components

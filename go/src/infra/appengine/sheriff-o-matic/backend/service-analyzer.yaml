@@ -1,5 +1,7 @@
-runtime: go111
 service: analyzer
+runtime: go116
+app_engine_apis: true
+
 instance_class: F4_1G
 
 handlers:
