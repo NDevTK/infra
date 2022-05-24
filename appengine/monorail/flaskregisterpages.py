@@ -20,6 +20,8 @@ from sitewide import usersettings
 from sitewide import groupcreate
 from sitewide import grouplist
 from features import hotlistcreate
+from sitewide import savedqueries
+from sitewide import userhotlists
 
 
 class ServletRegistry(object):
@@ -145,6 +147,31 @@ class ServletRegistry(object):
         #     '/<string:project_name>/people/detail.do',
         #     peopledetail.PeopleDetail(services=service).PostPeopleDetailPage,
         #     ['POST']),
+    ]
+
+    for rule in _PROJECT_URLS:
+      flaskapp_project.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
+    return flaskapp_project
+
+  def RegisterUserUrls(self, service):
+    flaskapp_project = flask.Flask(__name__)
+    _PROJECT_URLS = [
+        # (
+        #     '/<string:viewed_username>/queries',
+        #     savedqueries.SavedQueries(services=service).GetSavedQueriesPage,
+        #     ['GET']),
+        # (
+        #     '/<string:viewed_username>/queries.do',
+        #     savedqueries.SavedQueries(services=service).PostSavedQueriesPage,
+        #     ['Post']),
+        # (
+        #     '/<string:viewed_username>/hotlists',
+        #     userhotlists.UserHotlists(services=service).GetUserHotlistsPage,
+        #     ['GET']),
+        # (
+        #     '/<string:viewed_username>/hotlists.do',
+        #     userhotlists.UserHotlists(services=service).PostUserHotlistsPage,
+        #     ['Post']),
     ]
 
     for rule in _PROJECT_URLS:

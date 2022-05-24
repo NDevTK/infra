@@ -15,6 +15,7 @@ import ezt
 
 from features import savedqueries_helpers
 from framework import framework_helpers
+from framework import flaskservlet
 from framework import permissions
 from framework import servlet
 from framework import urls
@@ -74,3 +75,9 @@ class SavedQueries(servlet.Servlet):
     return framework_helpers.FormatAbsoluteURL(
         mr, '/u/%s%s' % (mr.viewed_username, urls.SAVED_QUERIES),
         include_project=False, saved=1, ts=int(time.time()))
+
+  # def GetSavedQueriesPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostSavedQueriesPage(self, **kwargs):
+  #   return self.handler(**kwargs)
