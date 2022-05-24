@@ -16,7 +16,7 @@ import (
 
 // hasRpmInfoExec verifies if rpm info is present for DUT.
 func hasRpmInfoExec(ctx context.Context, info *execs.ExecInfo) error {
-	if r := info.RunArgs.DUT.RPMOutlet; r != nil {
+	if r := info.GetChromeos().GetRpmOutlet(); r != nil {
 		// TODO(otabek@): set fixed number to check and add accept argument value.
 		if r.GetHostname() != "" && r.GetOutlet() != "" {
 			return nil
@@ -28,7 +28,7 @@ func hasRpmInfoExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // rpmPowerCycleExec performs power cycle the device by RPM.
 func rpmPowerCycleExec(ctx context.Context, info *execs.ExecInfo) error {
-	if err := info.RPMAction(ctx, info.RunArgs.DUT.Name, info.RunArgs.DUT.RPMOutlet, tlw.RunRPMActionRequest_CYCLE); err != nil {
+	if err := info.RPMAction(ctx, info.RunArgs.DUT.Name, info.GetChromeos().GetRpmOutlet(), tlw.RunRPMActionRequest_CYCLE); err != nil {
 		return errors.Annotate(err, "rpm power cycle").Err()
 	}
 	log.Debugf(ctx, "RPM power cycle finished with success.")
@@ -37,7 +37,7 @@ func rpmPowerCycleExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // rpmPowerOffExec performs power off the device by RPM.
 func rpmPowerOffExec(ctx context.Context, info *execs.ExecInfo) error {
-	if err := info.RPMAction(ctx, info.RunArgs.DUT.Name, info.RunArgs.DUT.RPMOutlet, tlw.RunRPMActionRequest_OFF); err != nil {
+	if err := info.RPMAction(ctx, info.RunArgs.DUT.Name, info.GetChromeos().GetRpmOutlet(), tlw.RunRPMActionRequest_OFF); err != nil {
 		return errors.Annotate(err, "rpm power off").Err()
 	}
 	log.Debugf(ctx, "RPM power OFF finished with success.")
@@ -46,7 +46,7 @@ func rpmPowerOffExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // rpmPowerOffExec performs power on the device by RPM.
 func rpmPowerOnExec(ctx context.Context, info *execs.ExecInfo) error {
-	if err := info.RPMAction(ctx, info.RunArgs.DUT.Name, info.RunArgs.DUT.RPMOutlet, tlw.RunRPMActionRequest_ON); err != nil {
+	if err := info.RPMAction(ctx, info.RunArgs.DUT.Name, info.GetChromeos().GetRpmOutlet(), tlw.RunRPMActionRequest_ON); err != nil {
 		return errors.Annotate(err, "rpm power on").Err()
 	}
 	log.Debugf(ctx, "RPM power ON finished with success.")

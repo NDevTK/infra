@@ -135,7 +135,6 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		Bluetooth:           createDUTBluetooth(ds, dc),
 		Battery:             battery,
 		ServoHost:           createServoHost(p, ds),
-		RPMOutlet:           createRPMOutlet(p.GetRpm(), ds),
 		Audio: &tlw.DUTAudio{
 			LoopbackState: convertAudioLoopbackState(ds.GetAudioLoopbackDongle()),
 		},
@@ -146,6 +145,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			Chameleon:      createChameleon(name, ds),
 			WifiRouters:    createWifiRouterHosts(p.GetWifi()),
 			BluetoothPeers: createBluetoothPeerHosts(p),
+			RpmOutlet:      createRPMOutlet(p.GetRpm(), ds),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
@@ -210,11 +210,11 @@ func adaptUfsLabstationToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error
 		SetupType:       tlw.DUTSetupTypeLabstation,
 		PowerSupplyType: tlw.PowerSupplyTypeACOnly,
 		Storage:         createDUTStorage(dc, ds),
-		RPMOutlet:       createRPMOutlet(l.GetRpm(), ds),
 		Chromeos: &tlw.ChromeOS{
 			Cr50Phase:  convertCr50Phase(ds.GetCr50Phase()),
 			Cr50KeyEnv: convertCr50KeyEnv(ds.GetCr50KeyEnv()),
 			DeviceSku:  machine.GetChromeosMachine().GetSku(),
+			RpmOutlet:  createRPMOutlet(l.GetRpm(), ds),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: l.GetPools(),
@@ -382,7 +382,7 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 		}
 		state.ServoUsbState = convertHardwareStateToUFS(sh.UsbkeyState)
 	}
-	if rpm := dut.RPMOutlet; rpm != nil {
+	if rpm := dut.GetChromeos().GetRpmOutlet(); rpm != nil {
 		for us, ls := range rpmStates {
 			if ls == rpm.GetState() {
 				state.RpmState = us

@@ -512,7 +512,7 @@ message ChromeOS {
   // Peripehral Wifi state of testbed
   PeripheralWifiState peripheral_wifi_state = 20;
   // RPMOutlet of the DUT setup.
-  RPMOutlet RPMOutlet = 21;
+  RPMOutlet rpm_outlet = 21;
 }
 
 // Android specific DUT details

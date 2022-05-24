@@ -155,8 +155,6 @@ type Dut struct {
 	ServoHost *ServoHost
 	// Peripheral Wifi state of testbed
 	PeripheralWifiState PeripheralWifiState
-	// RPMOutlet of the DUT setup.
-	RPMOutlet *RPMOutlet
 	// ProvisionedInfo tells provisioned info for the DUT.
 	ProvisionedInfo *ProvisionedInfo
 	// Extra attrubes of the DUT.
