@@ -322,7 +322,7 @@ func validateRenameSwitch(ctx context.Context, oldSwitch *ufspb.Switch, newSwitc
 
 func renameSwitchHelper(ctx context.Context, oldSwitchName, newSwitchName string, hc *HistoryClient) error {
 	// Update MachineLSE with new switch name
-	if err := updateIndexingForMachineLSE(ctx, "switch", oldSwitchName, newSwitchName, hc); err != nil {
+	if err := updateIndexInMachineLSE(ctx, "switch", oldSwitchName, newSwitchName, hc); err != nil {
 		return errors.Annotate(err, "failed to update indexing for hosts").Err()
 	}
 
