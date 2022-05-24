@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"os"
+	"time"
 
 	. "infra/appengine/poros/api/entities"
 	proto "infra/appengine/poros/api/proto"
@@ -28,9 +29,9 @@ func toEntity(model *proto.AssetModel, ancestorKey *datastore.Key) *AssetEntity 
 			AssetId:     model.AssetId,
 			Name:        model.Name,
 			Description: model.Description,
-			CreatedAt:   model.CreatedAt,
+			CreatedAt:   model.CreatedAt.AsTime(),
 			CreatedBy:   model.CreatedBy,
-			ModifiedAt:  model.ModifiedAt,
+			ModifiedAt:  model.ModifiedAt.AsTime(),
 			ModifiedBy:  model.ModifiedBy,
 			Parent:      ancestorKey,
 		}
@@ -44,9 +45,9 @@ func toModel(entity *AssetEntity) *proto.AssetModel {
 			AssetId:     entity.AssetId,
 			Name:        entity.Name,
 			Description: entity.Description,
-			CreatedAt:   entity.CreatedAt,
+			CreatedAt:   timestamppb.New(entity.CreatedAt),
 			CreatedBy:   entity.CreatedBy,
-			ModifiedAt:  entity.ModifiedAt,
+			ModifiedAt:  timestamppb.New(entity.ModifiedAt),
 			ModifiedBy:  entity.ModifiedBy,
 		}
 	}
@@ -73,12 +74,11 @@ func fakeAncestorKey(ctx context.Context) *datastore.Key {
 // Creates the given Asset.
 func (e *AssetHandler) Create(ctx context.Context, req *proto.CreateAssetRequest) (*proto.AssetModel, error) {
 	id := uuid.New().String()
-	currentTime := timestamppb.Now()
 	entity := &AssetEntity{
 		AssetId:     id,
 		Name:        req.GetName(),
 		Description: req.GetDescription(),
-		CreatedAt:   currentTime,
+		CreatedAt:   time.Now().UTC(),
 		Parent:      fakeAncestorKey(ctx),
 	}
 	if err := validateEntity(entity); err != nil {
@@ -114,7 +114,7 @@ func (e *AssetHandler) Update(ctx context.Context, req *proto.UpdateAssetRequest
 		if err != nil {
 			return err
 		}
-		asset.ModifiedAt = timestamppb.Now()
+		asset.ModifiedAt = time.Now().UTC()
 		err = datastore.Put(ctx, id, &asset)
 		return err
 	}, nil)
@@ -142,7 +142,6 @@ func (e *AssetHandler) List(ctx context.Context, in *proto.ListAssetsRequest) (*
 	query := datastore.NewQuery("AssetEntity").Ancestor(fakeAncestorKey(ctx))
 	var assetEntities []*AssetEntity
 	res := &proto.ListAssetsResponse{}
-
 	if err := datastore.GetAll(ctx, query, &assetEntities); err != nil {
 		return nil, err
 	}
