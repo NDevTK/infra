@@ -11,10 +11,7 @@ import (
 	empty "github.com/golang/protobuf/ptypes/empty"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	luciproto "go.chromium.org/luci/common/proto"
-	luciconfig "go.chromium.org/luci/config"
 	"go.chromium.org/luci/grpc/grpcutil"
-	crimsonconfig "go.chromium.org/luci/machine-db/api/config/v1"
 	crimson "go.chromium.org/luci/machine-db/api/crimson/v1"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 
@@ -507,56 +504,6 @@ func (fs *FleetServerImpl) RenameNic(ctx context.Context, req *ufsAPI.RenameNicR
 	// https://aip.dev/122 - as per AIP guideline
 	nic.Name = util.AddPrefix(util.NicCollection, nic.Name)
 	return nic, err
-}
-
-// ImportDatacenters imports the datacenter and its related info in batch.
-func (fs *FleetServerImpl) ImportDatacenters(ctx context.Context, req *ufsAPI.ImportDatacentersRequest) (response *status.Status, err error) {
-	defer func() {
-		err = grpcutil.GRPCifyAndLogErr(ctx, err)
-	}()
-	configSource := req.GetConfigSource()
-	if configSource == nil {
-		return nil, emptyConfigSourceStatus.Err()
-	}
-	if configSource.ConfigServiceName == "" {
-		return nil, invalidConfigServiceName.Err()
-	}
-
-	es, err := external.GetServerInterface(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	logging.Debugf(ctx, "Importing the datacenter config file from luci-config: %s", configSource.FileName)
-	cfgInterface := es.NewCfgInterface(ctx)
-	c, err := cfgInterface.GetConfig(ctx, luciconfig.ServiceSet(configSource.ConfigServiceName), datacenterConfigFile, false)
-	if err != nil {
-		return nil, err
-	}
-	dcs := &crimsonconfig.Datacenters{}
-	if err := luciproto.UnmarshalTextML(c.Content, dcs); err != nil {
-		return nil, err
-	}
-	datacenters := make([]*crimsonconfig.Datacenter, 0)
-	for _, dc := range dcs.GetDatacenter() {
-		logging.Debugf(ctx, "Importing datacenters from luci-config: %s", dc)
-		fetchedConfigs, err := cfgInterface.GetConfig(ctx, luciconfig.ServiceSet(configSource.ConfigServiceName), dc, false)
-		if err != nil {
-			return nil, configServiceFailureStatus.Err()
-		}
-		cdc := &crimsonconfig.Datacenter{}
-		if err := luciproto.UnmarshalTextML(fetchedConfigs.Content, cdc); err != nil {
-			return nil, invalidConfigFileContentStatus.Err()
-		}
-		datacenters = append(datacenters, cdc)
-	}
-
-	res, err := controller.ImportDatacenter(ctx, datacenters, fs.getImportPageSize())
-	s := processImportDatastoreRes(res, err)
-	if s.Err() != nil {
-		return s.Proto(), s.Err()
-	}
-	return successStatus.Proto(), nil
 }
 
 // CreateKVM creates kvm entry in database.

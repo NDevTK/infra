@@ -895,23 +895,6 @@ func (s *DecoratedFleet) RenameNic(ctx context.Context, req *RenameNicRequest) (
 	return
 }
 
-func (s *DecoratedFleet) ImportDatacenters(ctx context.Context, req *ImportDatacentersRequest) (rsp *status.Status, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "ImportDatacenters", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.ImportDatacenters(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "ImportDatacenters", rsp, err)
-	}
-	return
-}
-
 func (s *DecoratedFleet) CreateKVM(ctx context.Context, req *CreateKVMRequest) (rsp *models.KVM, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context

@@ -187,9 +187,6 @@ service Fleet {
   // Rename rename the nic
   rpc RenameNic(RenameNicRequest) returns (models.Nic);
 
-  // ImportDatacenters imports datacenter & its related info, including kvm & switch.
-  rpc ImportDatacenters(ImportDatacentersRequest) returns (google.rpc.Status);
-
   // CreateKVM creates a new KVM
   rpc CreateKVM(CreateKVMRequest) returns (models.KVM);
 
@@ -1329,13 +1326,6 @@ message RenameSwitchRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = { type: "unified-fleet-system.appspot.com/Switch" }
   ];
-}
-
-message ImportDatacentersRequest {
-  oneof source {
-    MachineDBSource machine_db_source = 1;
-    ConfigSource config_source = 2;
-  }
 }
 
 // Contains the required information for creating a KVM represented in

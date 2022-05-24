@@ -1213,43 +1213,6 @@ func TestImportNics(t *testing.T) {
 	})
 }
 
-func TestImportDatacenters(t *testing.T) {
-	t.Parallel()
-	ctx := testingContext()
-	tf, validate := newTestFixtureWithContext(ctx, t)
-	defer validate()
-	Convey("Import datacenters", t, func() {
-		Convey("happy path", func() {
-			req := &ufsAPI.ImportDatacentersRequest{
-				Source: &ufsAPI.ImportDatacentersRequest_ConfigSource{
-					ConfigSource: &ufsAPI.ConfigSource{
-						ConfigServiceName: "fake-service",
-						FileName:          "fakeDatacenter.cfg",
-					},
-				},
-			}
-			res, err := tf.Fleet.ImportDatacenters(ctx, req)
-			So(err, ShouldBeNil)
-			So(res.Code, ShouldEqual, code.Code_OK)
-			dhcps, _, err := configuration.ListDHCPConfigs(ctx, 100, "", nil, false)
-			So(err, ShouldBeNil)
-			So(dhcps, ShouldHaveLength, 3)
-			racks, _, err := registration.ListRacks(ctx, 100, "", nil, false)
-			So(err, ShouldBeNil)
-			So(racks, ShouldHaveLength, 2)
-			So(ufsAPI.ParseResources(racks, "Name"), ShouldResemble, []string{"cr20", "cr22"})
-			kvms, _, err := registration.ListKVMs(ctx, 100, "", nil, false)
-			So(err, ShouldBeNil)
-			So(kvms, ShouldHaveLength, 3)
-			So(ufsAPI.ParseResources(kvms, "Name"), ShouldResemble, []string{"cr20-kvm1", "cr22-kvm1", "cr22-kvm2"})
-			So(ufsAPI.ParseResources(kvms, "ChromePlatform"), ShouldResemble, []string{"Raritan_DKX3", "Raritan_DKX3", "Raritan_DKX3"})
-			switches, _, err := registration.ListSwitches(ctx, 100, "", nil, false)
-			So(err, ShouldBeNil)
-			So(switches, ShouldHaveLength, 4)
-			So(ufsAPI.ParseResources(switches, "Name"), ShouldResemble, []string{"eq017.atl97", "eq041.atl97", "eq050.atl97", "eq113.atl97"})
-		})
-	})
-}
 func TestCreateKVM(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
