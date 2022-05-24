@@ -8,10 +8,10 @@ import (
 	"context"
 	"fmt"
 	"reflect"
-	"time"
 
 	"go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 	"go.chromium.org/luci/common/errors"
+	"google.golang.org/protobuf/types/known/durationpb"
 
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/log"
@@ -22,7 +22,7 @@ import (
 type iServod struct {
 	dut     *tlw.Dut
 	a       tlw.Access
-	timeout time.Duration
+	timeout *durationpb.Duration
 }
 
 // NewServod returns a struct of type components.Servod that allowes communication with servod service.
@@ -30,7 +30,7 @@ func (ei *ExecInfo) NewServod() components.Servod {
 	return &iServod{
 		dut:     ei.RunArgs.DUT,
 		a:       ei.RunArgs.Access,
-		timeout: ei.ActionTimeout,
+		timeout: durationpb.New(ei.ActionTimeout),
 	}
 }
 

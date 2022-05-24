@@ -527,3 +527,27 @@ message Android {
   // Serial number of the DUT.
   string serial_number = 4;
 }
+
+// CopyRequest represents data to perform copy data from/to resource.
+message CopyRequest {
+  // Resource name
+  string resource = 1;
+  // Path to source file or directory.
+  string path_source = 2;
+  // Path to destination file or directory.
+  string path_destination = 3;
+}
+
+// CallServodRequest represents data to run command on servod.
+message CallServodRequest {
+  string resource = 1;
+  string method = 2;
+  repeated chromiumos.config.api.test.xmlrpc.Value args = 3;
+  google.protobuf.Duration timeout = 4;
+}
+
+// CallServodResponse represents result data from running command on servod.
+message CallServodResponse {
+  chromiumos.config.api.test.xmlrpc.Value value = 1;
+  bool fault = 2;
+}

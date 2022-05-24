@@ -7,9 +7,6 @@ package tlw
 
 import (
 	"context"
-	"time"
-
-	"go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 
 	"infra/cros/dutstate"
 )
@@ -60,30 +57,6 @@ type Access interface {
 	Provision(ctx context.Context, req *ProvisionRequest) error
 	// Close closes all used resources.
 	Close(ctx context.Context) error
-}
-
-// CopyRequest represents data to perform copy data from/to resource.
-type CopyRequest struct {
-	// Resource name
-	Resource string
-	// Path to source file or directory.
-	PathSource string
-	// Path to destination file or directory.
-	PathDestination string
-}
-
-// CallServodRequest represents data to run command on servod.
-type CallServodRequest struct {
-	Resource string
-	Method   string
-	Args     []*xmlrpc.Value
-	Timeout  time.Duration
-}
-
-// CallServodResponse represents result data from running command on servod.
-type CallServodResponse struct {
-	Value *xmlrpc.Value
-	Fault bool
 }
 
 // DUTSetupType describes different DUT setups.

@@ -456,6 +456,7 @@ func (c *tlwClient) CallServod(ctx context.Context, req *tlw.CallServodRequest) 
 	if dut.ServoHost == nil || dut.ServoHost.GetName() == "" {
 		return fail(errors.Reason("call servod %q: servo not found", req.Resource).Err())
 	}
+	timeout := req.Timeout.AsDuration()
 	// For container connect to the container as it running on the same host.
 	if isServodContainer(dut) {
 		d, err := c.dockerClient(ctx)
@@ -467,7 +468,7 @@ func (c *tlwClient) CallServod(ctx context.Context, req *tlw.CallServodRequest) 
 			return fail(err)
 		}
 		rpc := tlw_xmlrpc.New(addr, int(dut.ServoHost.GetServodPort()))
-		if val, err := servod.Call(ctx, rpc, req.Timeout, req.Method, req.Args); err != nil {
+		if val, err := servod.Call(ctx, rpc, timeout, req.Method, req.Args); err != nil {
 			return fail(err)
 		} else {
 			return &tlw.CallServodResponse{
@@ -483,7 +484,7 @@ func (c *tlwClient) CallServod(ctx context.Context, req *tlw.CallServodRequest) 
 		if err != nil {
 			return fail(err)
 		}
-		if val, err := s.Call(ctx, c.sshPool, req.Timeout, req.Method, req.Args); err != nil {
+		if val, err := s.Call(ctx, c.sshPool, timeout, req.Method, req.Args); err != nil {
 			return fail(err)
 		} else {
 			return &tlw.CallServodResponse{
