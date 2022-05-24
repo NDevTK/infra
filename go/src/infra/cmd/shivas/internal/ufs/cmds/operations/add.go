@@ -74,6 +74,7 @@ func (c addApp) GetCommands() []*subcommands.Command {
 		subcommands.CmdHelp,
 		asset.AddAssetCmd,
 		dut.AddDUTCmd,
+		devboard.AddDevboardLSECmd,
 		devboard.AddDevboardMachineCmd,
 		labstation.AddLabstationCmd,
 		cachingservice.AddCachingServiceCmd,
