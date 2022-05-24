@@ -98,7 +98,13 @@ func normalizeErrorPolicy(policy string) (ufsErrorPolicy, error) {
 }
 
 // getRolloutConfig gets the applicable rolloutConfig.
-func getRolloutConfig(ctx context.Context, isLabstation bool, expectedState string) (*config.RolloutConfig, error) {
+func getRolloutConfig(ctx context.Context, taskType string, isLabstation bool, expectedState string) (*config.RolloutConfig, error) {
+	if taskType == "" {
+		return nil, errors.Reason("get rollout config: taskType cannot be empty").Err()
+	}
+	if taskType != "repair" {
+		return nil, errors.Reason("getRolloutConfig: tasks other than repair are not supported, %q given", taskType).Err()
+	}
 	if isLabstation {
 		return config.Get(ctx).GetParis().GetLabstationRepair(), nil
 	}
@@ -134,7 +140,7 @@ func RouteRepairTask(ctx context.Context, botID string, expectedState string, po
 		return "", fmt.Errorf("Route repair task: randfloat %f is not in [0, 1]", randFloat)
 	}
 	isLabstation := heuristics.LooksLikeLabstation(botID)
-	rolloutConfig, err := getRolloutConfig(ctx, isLabstation, expectedState)
+	rolloutConfig, err := getRolloutConfig(ctx, "repair", isLabstation, expectedState)
 	if err != nil {
 		return "", errors.Annotate(err, "route repair task").Err()
 	}

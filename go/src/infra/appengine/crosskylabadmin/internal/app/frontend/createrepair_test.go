@@ -539,7 +539,7 @@ func TestGetRolloutConfigSmokeTest(t *testing.T) {
 			},
 		},
 	)
-	cfg, err := getRolloutConfig(ctx, true, "f9a33cf4-02d7-4255-b7c9-aef2f169d4e1")
+	cfg, err := getRolloutConfig(ctx, "repair", true, "f9a33cf4-02d7-4255-b7c9-aef2f169d4e1")
 	if diff := cmp.Diff(cfg, rolloutCfg, protocmp.Transform()); diff != "" {
 		t.Errorf("config should not be nil")
 	}
