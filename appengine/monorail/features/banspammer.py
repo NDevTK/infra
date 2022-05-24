@@ -57,7 +57,7 @@ class BanSpammer(servlet.Servlet):
         saved=1, ts=int(time.time()))
 
 
-# TODO(https://crbug.com/monorail/6511): Fork jsonfeed & extend flaskservlet?
+# when convert to flask switch jsonfeed.FlaskInternalTask
 class BanSpammerTask(jsonfeed.InternalTask):
   """This task will update all of the comments and issues created by the
      target user with is_spam=True, and also add a manual verdict attached
@@ -92,7 +92,18 @@ class BanSpammerTask(jsonfeed.InternalTask):
             self.services.issue, self.services.user, comment.id,
             reporter_id, is_spammer)
 
+    # remove the self.response.body when convert to flask
     self.response.body = json.dumps({
       'comments': len(comments),
       'issues': len(issues),
     })
+  #   self.response.response = json.dumps({
+  #     'comments': len(comments),
+  #     'issues': len(issues),
+  #   })
+
+  # def GetBanSpammer(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostBanSpammer(self, **kwargs):
+  #   return self.handler(**kwargs)

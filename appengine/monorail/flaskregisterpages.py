@@ -20,8 +20,9 @@ from sitewide import usersettings
 from sitewide import groupcreate
 from sitewide import grouplist
 from features import hotlistcreate
-from sitewide import savedqueries
-from sitewide import userhotlists
+from features import savedqueries
+from features import userhotlists
+from features import banspammer
 
 
 class ServletRegistry(object):
@@ -177,3 +178,22 @@ class ServletRegistry(object):
     for rule in _PROJECT_URLS:
       flaskapp_project.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
     return flaskapp_project
+
+  # pylint: disable=unused-argument
+  def RegisterTaskUrl(self, service):
+    flaskapp_task = Flask(__name__)
+    _TASK_URL = [
+        # (
+        #     '/banSpammer',
+        #     banspammer.BanSpammerTask(services=service).GetBanSpammer,
+        #     ['GET']),
+        # (
+        #     '/banSpammer.do',
+        #     banspammer.BanSpammerTask(services=service).PostBanSpammer,
+        #     ['POST']),
+    ]
+
+    for rule in _TASK_URL:
+      flaskapp_task.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
+
+    return flaskapp_task

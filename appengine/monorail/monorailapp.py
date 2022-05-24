@@ -42,6 +42,7 @@ gae_ts_mon.initialize_adhoc(app)
 #         '/hosting': flask_regist.RegisterHostingUrl(services),
 #         '/p': flask_regist.RegisterProjectUrls(services),
 #         '/u': flask_regist.RegisterUserUrls(services),
+#         '/_task': flask_regist.RegisterTaskUrl(services),
 #     })
 
 endpoints = endpoints_webapp2.api_server(
