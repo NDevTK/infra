@@ -91,9 +91,10 @@ class OfflineWinPECustomization(customization.Customization):
   def get_output(self):
     """ return the output of executing this config. Doesn't guarantee that the
         output exists"""
-    if self._key:
+    if self.get_key():
       output = src_pb.GCSSrc(
-          bucket='chrome-gce-images', source='WIB-WIM/{}.zip'.format(self._key))
+          bucket='chrome-gce-images',
+          source='WIB-WIM/{}.zip'.format(self.get_key()))
       return dest_pb.Dest(
           gcs_src=output,
           tags={'orig': self._source.get_url(src_pb.Src(gcs_src=output))},
@@ -169,13 +170,13 @@ class OfflineWinPECustomization(customization.Customization):
     with self._step.nest('Deinit WinPE image modification'):
       if save:
         # copy the config used for building the image
-        source = self._configs.join('{}.cfg'.format(self._key))
+        source = self._configs.join('{}.cfg'.format(self.get_key()))
         self.execute_script(
             'Add cfg {}'.format(source),
             ADDFILE,
             self._configs,
             self._workdir.join('mount'),
-            '{}.cfg'.format(self._key),
+            '{}.cfg'.format(self.get_key()),
             logs=None,
             ret_codes=[0, 1])
       unmount_wim.unmount_win_wim(

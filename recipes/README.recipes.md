@@ -1728,11 +1728,11 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 This recipe runs windows offline builder for a given user config.
 ### *recipes* / [windows\_image\_builder/winpe\_customization](/recipes/recipes/windows_image_builder/winpe_customization.py)
 
-[DEPS](/recipes/recipes/windows_image_builder/winpe_customization.py#14): [depot\_tools/gitiles][depot_tools/recipe_modules/gitiles], [windows\_adk](#recipe_modules-windows_adk), [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
+[DEPS](/recipes/recipes/windows_image_builder/winpe_customization.py#16): [depot\_tools/gitiles][depot_tools/recipe_modules/gitiles], [windows\_adk](#recipe_modules-windows_adk), [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
 
 PYTHON_VERSION_COMPATIBILITY: PY3
 
-&mdash; **def [RunSteps](/recipes/recipes/windows_image_builder/winpe_customization.py#29)(api, image):**
+&mdash; **def [RunSteps](/recipes/recipes/windows_image_builder/winpe_customization.py#31)(api, image):**
 
 This recipe executes offline_winpe_customization.
 ### *recipes* / [windows\_scripts\_executor:examples/add\_windows\_driver](/recipes/recipe_modules/windows_scripts_executor/examples/add_windows_driver.py)

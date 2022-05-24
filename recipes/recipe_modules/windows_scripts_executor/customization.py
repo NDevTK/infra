@@ -71,6 +71,11 @@ class Customization(object):
     """
     self._key = key
 
+  def get_key(self):
+    """ get_key returns the hash associated with the customization
+    """
+    return self._key
+
   def execute_script(self, name, command, *args, **kwargs):
     """ Executes the windows powershell script
         Args:
