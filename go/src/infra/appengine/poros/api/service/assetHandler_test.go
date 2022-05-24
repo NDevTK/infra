@@ -6,6 +6,7 @@ package service
 
 import (
 	"context"
+	"sort"
 	"testing"
 
 	proto "infra/appengine/poros/api/proto"
@@ -94,7 +95,8 @@ func TestListAssets(t *testing.T) {
 		So(response.GetAssets(), ShouldHaveLength, 2)
 		assets := response.GetAssets()
 		want := []string{"Test Asset1", "Test Asset2"}
-		get := []string{assets[1].GetName(), assets[0].GetName()}
+		get := []string{assets[0].GetName(), assets[1].GetName()}
+		sort.Strings(get)
 		So(get, ShouldResemble, want)
 	})
 }
