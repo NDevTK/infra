@@ -12,15 +12,42 @@
 # impose the new schema on the bigquery tables associated with a given
 # Karte project.
 
+import argparse
 import os
 import sys
 import subprocess
 
 this_file = __file__
 
+# Parser parses the arguments to the Karte script, for example -p for project.
+# We only support updating one project at a time.
+parser = argparse.ArgumentParser(
+    description="update bq schema for Karte project")
+parser.add_argument("-p", dest="project", default="dev")
 
-def main():
-  project = "chrome-fleet-karte-dev"
+# PROD is the cloud project ID of the prod project.
+PROD = "chrome-fleet-karte"
+
+# DEV is the cloud project ID of the dev project.
+DEV = "chrome-fleet-karte-dev"
+
+
+def karte_project(project):
+  """Get the full name of the karte cloud project."""
+  if not isinstance(project, str):
+    raise ValueError("project must be str not %s" % type(project))
+  if project in {"prod", PROD}:
+    return PROD
+  if project in {"dev", DEV}:
+    return DEV
+  raise ValueError("unrecognized project name %s" % project)
+
+
+def main(args):
+  """Update the tables for a single Karte cloud project"""
+  if not isinstance(args, argparse.Namespace):
+    raise ValueError("args must be bool not %s" % type(argparse.Namespace))
+  project = karte_project(args.project)
 
   message_dir = os.path.realpath(
       os.path.join(os.path.dirname(this_file), "..", "api", "bigquery"))
@@ -51,4 +78,4 @@ def main():
 
 
 if __name__ == "__main__":
-  main()
+  main(parser.parse_args())
