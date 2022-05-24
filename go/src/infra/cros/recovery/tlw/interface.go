@@ -62,21 +62,6 @@ type Access interface {
 	Close(ctx context.Context) error
 }
 
-// RunResult represents result of executed command.
-type RunResult struct {
-	// Full command executed on the resource.
-	Command string
-	// Exit code return.
-	// Eg: 0 - everything is good
-	// 	   1 - executed stop with error code `1`
-	//     15 - timeout of execution
-	ExitCode int
-	// Standard output
-	Stdout string
-	// Standard error output
-	Stderr string
-}
-
 // CopyRequest represents data to perform copy data from/to resource.
 type CopyRequest struct {
 	// Resource name

@@ -90,7 +90,7 @@ func createSessionAndExecute(ctx context.Context, cmd string, client *ssh.Client
 		case nil:
 			result.ExitCode = 0
 		case *ssh.ExitError:
-			result.ExitCode = t.ExitStatus()
+			result.ExitCode = int32(t.ExitStatus())
 		case *ssh.ExitMissingError:
 			result.ExitCode = -2
 			result.Stderr = t.Error()

@@ -195,7 +195,7 @@ func (c *tlwClient) Run(ctx context.Context, req *tlw.RunRequest) *tlw.RunResult
 			} else {
 				return &tlw.RunResult{
 					Command:  fullCmd,
-					ExitCode: res.ExitCode,
+					ExitCode: int32(res.ExitCode),
 					Stdout:   res.Stdout,
 					Stderr:   res.Stderr,
 				}
@@ -214,7 +214,7 @@ func (c *tlwClient) Run(ctx context.Context, req *tlw.RunRequest) *tlw.RunResult
 			}
 			return &tlw.RunResult{
 				Command:  fullCmd,
-				ExitCode: res.ExitCode,
+				ExitCode: int32(res.ExitCode),
 				Stdout:   res.Stdout,
 				Stderr:   res.Stderr,
 			}
