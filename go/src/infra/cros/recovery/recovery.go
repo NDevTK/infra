@@ -463,8 +463,8 @@ func collectResourcesForPlan(planName string, dut *tlw.Dut) []string {
 		}
 		return resources
 	case config.PlanChameleon:
-		if dut.ChameleonHost != nil {
-			return []string{dut.ChameleonHost.Name}
+		if c := dut.GetChromeos().GetChameleon(); c != nil && c.GetName() != "" {
+			return []string{c.GetName()}
 		}
 	case config.PlanWifiRouter:
 		var resources []string

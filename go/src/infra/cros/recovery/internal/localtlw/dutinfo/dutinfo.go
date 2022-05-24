@@ -137,7 +137,6 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		BluetoothPeerHosts:  createBluetoothPeerHosts(p),
 		Battery:             battery,
 		ServoHost:           createServoHost(p, ds),
-		ChameleonHost:       createChameleonHost(name, ds),
 		RPMOutlet:           createRPMOutlet(p.GetRpm(), ds),
 		Audio: &tlw.DUTAudio{
 			LoopbackState: convertAudioLoopbackState(ds.GetAudioLoopbackDongle()),
@@ -146,6 +145,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			Cr50Phase:  convertCr50Phase(ds.GetCr50Phase()),
 			Cr50KeyEnv: convertCr50KeyEnv(ds.GetCr50KeyEnv()),
 			DeviceSku:  machine.GetChromeosMachine().GetSku(),
+			Chameleon:  createChameleon(name, ds),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
@@ -256,7 +256,7 @@ func createServoHost(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.ServoHost 
 	}
 }
 
-func createChameleonHost(dutName string, ds *ufslab.DutState) *tlw.Chameleon {
+func createChameleon(dutName string, ds *ufslab.DutState) *tlw.Chameleon {
 	return &tlw.Chameleon{
 		Name:  fmt.Sprintf("%s-chameleon", dutName),
 		State: convertChameleonState(ds.GetChameleon()),
@@ -409,7 +409,7 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 	if b := dut.Bluetooth; b != nil {
 		state.BluetoothState = convertHardwareStateToUFS(b.State)
 	}
-	if ch := dut.ChameleonHost; ch != nil {
+	if ch := dut.GetChromeos().GetChameleon(); ch != nil {
 		for us, rs := range chameleonStates {
 			if ch.State == rs {
 				state.Chameleon = us

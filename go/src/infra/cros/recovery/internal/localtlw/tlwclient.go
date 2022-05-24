@@ -802,9 +802,9 @@ func (c *tlwClient) cacheDevice(dut *tlw.Dut) {
 			c.hostToParents[router.GetName()] = name
 		}
 	}
-	if dut.ChameleonHost != nil && dut.ChameleonHost.Name != "" {
-		c.hostTypes[dut.ChameleonHost.Name] = hostTypeChameleon
-		c.hostToParents[dut.ChameleonHost.Name] = name
+	if chameleon := dut.GetChromeos().GetChameleon(); chameleon != nil && chameleon.GetName() != "" {
+		c.hostTypes[chameleon.GetName()] = hostTypeChameleon
+		c.hostToParents[chameleon.GetName()] = name
 	}
 }
 
@@ -827,9 +827,9 @@ func (c *tlwClient) unCacheDevice(dut *tlw.Dut) {
 			delete(c.hostToParents, bt.Name)
 		}
 	}
-	if dut.ChameleonHost != nil && dut.ChameleonHost.Name != "" {
-		delete(c.hostTypes, dut.ChameleonHost.Name)
-		delete(c.hostToParents, dut.ChameleonHost.Name)
+	if chameleon := dut.GetChromeos().GetChameleon(); chameleon != nil && chameleon.GetName() != "" {
+		delete(c.hostTypes, chameleon.GetName())
+		delete(c.hostToParents, chameleon.GetName())
 	}
 	delete(c.devices, name)
 }

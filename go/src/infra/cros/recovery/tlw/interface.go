@@ -153,8 +153,6 @@ type Dut struct {
 	// Peripheral devices.
 	// ServoHost of the DUT setup.
 	ServoHost *ServoHost
-	// Chameleon device of the DUT setup.
-	ChameleonHost *Chameleon
 	// BluetoothPeer info of DUT setup.
 	BluetoothPeerHosts []*BluetoothPeer
 	// Array of Wifi Router peripheral devices
