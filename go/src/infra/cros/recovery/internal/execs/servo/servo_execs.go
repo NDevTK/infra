@@ -582,7 +582,7 @@ func servoValidateBatteryChargingExec(ctx context.Context, info *execs.ExecInfo)
 func initDutForServoExec(ctx context.Context, info *execs.ExecInfo) error {
 	verbose := true
 	s := info.NewServod()
-	if _, err := s.Call(ctx, tlw.ServodMethodHwInit, verbose); err != nil {
+	if _, err := s.Call(ctx, "hwinit", verbose); err != nil {
 		return errors.Annotate(err, "init dut for servo exec").Err()
 	}
 	usbMuxControl := "usb_mux_oe1"

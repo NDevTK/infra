@@ -87,30 +87,10 @@ type CopyRequest struct {
 	PathDestination string
 }
 
-// ServodMethod represents types of methods supporting by servod daemon.
-// Examples:
-//   get: to read data need to pass method:`get`, command:`lid_open`.
-//   set: to update state need to pass method:`set`, command:`lid_open`, value:`no`.
-type ServodMethod = string
-
-const (
-	// Reading data by servod daemon.
-	// Example: ec_board, lid_open.
-	ServodMethodGet ServodMethod = "get"
-	// Set methods used to set values or call methods with providing paramenter.
-	// Example: power_state:reset, lid_open:no.
-	ServodMethodSet ServodMethod = "set"
-	// Verify if control is known and present in servod daemon.
-	// Example: ec_board, lid_open.
-	ServodMethodDoc ServodMethod = "doc"
-	// Initialize all controls
-	ServodMethodHwInit ServodMethod = "hwinit"
-)
-
 // CallServodRequest represents data to run command on servod.
 type CallServodRequest struct {
 	Resource string
-	Method   ServodMethod
+	Method   string
 	Args     []*xmlrpc.Value
 	Timeout  time.Duration
 }
