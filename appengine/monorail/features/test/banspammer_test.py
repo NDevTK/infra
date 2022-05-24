@@ -12,7 +12,7 @@ import json
 import mock
 import os
 import unittest
-import urllib
+from six.moves import urllib
 import webapp2
 
 import settings
@@ -74,7 +74,7 @@ class BanSpammerTest(unittest.TestCase):
         'app_engine_http_request':
             {
                 'relative_uri': urls.BAN_SPAMMER_TASK + '.do',
-                'body': urllib.urlencode(params),
+                'body': urllib.parse.urlencode(params),
                 'headers': {
                     'Content-type': 'application/x-www-form-urlencoded'
                 }

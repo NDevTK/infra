@@ -33,8 +33,8 @@ from __future__ import absolute_import
 
 import logging
 import re
-import urllib
-import urlparse
+from six.moves import urllib
+from six.moves.urllib.parse import urlparse
 
 import settings
 from features import autolink_constants

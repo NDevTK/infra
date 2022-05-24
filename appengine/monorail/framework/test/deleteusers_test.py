@@ -11,7 +11,7 @@ from __future__ import absolute_import
 import logging
 import mock
 import unittest
-import urllib
+from six.moves import urllib
 
 from framework import cloud_tasks_helpers
 from framework import deleteusers
@@ -175,7 +175,7 @@ class DeleteWipeoutUsersTaskTest(unittest.TestCase):
 
     self.assertEqual(get_client_mock().create_task.call_count, 2)
 
-    query = urllib.urlencode(
+    query = urllib.parse.urlencode(
         {'emails': 'user1@gmail.com,user2@gmail.com,user3@gmail.com'})
     expected_task = self.generate_simple_task(
         urls.DELETE_USERS_TASK + '.do', query)
@@ -185,7 +185,7 @@ class DeleteWipeoutUsersTaskTest(unittest.TestCase):
         expected_task,
         retry=cloud_tasks_helpers._DEFAULT_RETRY)
 
-    query = urllib.urlencode({'emails': 'user4@gmail.com'})
+    query = urllib.parse.urlencode({'emails': 'user4@gmail.com'})
     expected_task = self.generate_simple_task(
         urls.DELETE_USERS_TASK + '.do', query)
 
@@ -204,7 +204,7 @@ class DeleteWipeoutUsersTaskTest(unittest.TestCase):
     self.assertEqual(get_client_mock().create_task.call_count, 1)
 
     emails = 'user1@gmail.com,user2@gmail.com,user3@gmail.com,user4@gmail.com'
-    query = urllib.urlencode({'emails': emails})
+    query = urllib.parse.urlencode({'emails': emails})
     expected_task = self.generate_simple_task(
         urls.DELETE_USERS_TASK + '.do', query)
 

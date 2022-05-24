@@ -12,7 +12,7 @@ from __future__ import division
 from __future__ import print_function
 
 import logging
-import urllib
+from six.moves import urllib
 
 from google.api_core import exceptions
 from google.api_core import retry
@@ -91,7 +91,7 @@ def generate_simple_task(url, params):
       'app_engine_http_request':
           {
               'relative_uri': url,
-              'body': urllib.urlencode(params),
+              'body': urllib.parse.urlencode(params),
               'headers': {
                   'Content-type': 'application/x-www-form-urlencoded'
               }

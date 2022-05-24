@@ -10,8 +10,8 @@ from __future__ import absolute_import
 
 import mock
 import unittest
-import urllib
-import urlparse
+from six.moves import urllib
+from six.moves.urllib.parse import parse_qs
 
 import settings
 from features import filterrules_helpers
@@ -139,7 +139,7 @@ class RecomputeAllDerivedFieldsTest(unittest.TestCase):
           'app_engine_http_request':
               {
                   'relative_uri': urls.RECOMPUTE_DERIVED_FIELDS_TASK + '.do',
-                  'body': urllib.urlencode(params),
+                  'body': urllib.parse.urlencode(params),
                   'headers':
                       {
                           'Content-type': 'application/x-www-form-urlencoded'
@@ -177,7 +177,7 @@ class RecomputeAllDerivedFieldsTest(unittest.TestCase):
         'relative_uri')
     self.assertEqual(relative_uri, urls.RECOMPUTE_DERIVED_FIELDS_TASK + '.do')
     encoded_params = called_task.get('app_engine_http_request').get('body')
-    params = {k: v[0] for k, v in urlparse.parse_qs(encoded_params).items()}
+    params = {k: v[0] for k, v in parse_qs(encoded_params).items()}
     self.assertEqual(params['project_id'], str(self.project.project_id))
     self.assertEqual(
         params['lower_bound'], str(12345 // self.BLOCK * self.BLOCK + 1))
@@ -188,7 +188,7 @@ class RecomputeAllDerivedFieldsTest(unittest.TestCase):
         'relative_uri')
     self.assertEqual(relative_uri, urls.RECOMPUTE_DERIVED_FIELDS_TASK + '.do')
     encoded_params = called_task.get('app_engine_http_request').get('body')
-    params = {k: v[0] for k, v in urlparse.parse_qs(encoded_params).items()}
+    params = {k: v[0] for k, v in parse_qs(encoded_params).items()}
     self.assertEqual(params['project_id'], str(self.project.project_id))
     self.assertEqual(params['lower_bound'], str(1))
     self.assertEqual(params['upper_bound'], str(self.BLOCK + 1))

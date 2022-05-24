@@ -18,8 +18,8 @@ import argparse
 import json
 import subprocess
 import sys
-import urllib.error
-import urllib.request
+from six.moves.urllib import error
+from six.moves.urllib import request
 
 
 INFRA_GIT = 'https://chromium.googlesource.com/infra/infra'
@@ -36,8 +36,8 @@ def resolve_commit(ref):
     None if there's no such ref, a gitiles commit URL otherwise.
   """
   try:
-    resp = urllib.request.urlopen('%s/+/%s?format=JSON' % (INFRA_GIT, ref))
-  except urllib.error.HTTPError as exc:
+    resp = request.urlopen('%s/+/%s?format=JSON' % (INFRA_GIT, ref))
+  except error.HTTPError as exc:
     if exc.code == 404:
       return None
     raise

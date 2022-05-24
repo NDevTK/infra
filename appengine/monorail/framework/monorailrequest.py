@@ -16,7 +16,7 @@ from __future__ import absolute_import
 import endpoints
 import logging
 import re
-import urllib
+from six.moves import urllib
 
 import ezt
 import six
@@ -242,7 +242,8 @@ class MonorailRequest(MonorailRequestBase):
       self.request = request
       self.request_path = request.path
       self.current_page_url = request.url
-      self.current_page_url_encoded = urllib.quote_plus(self.current_page_url)
+      self.current_page_url_encoded = urllib.parse.quote_plus(
+          self.current_page_url)
 
       # Only accept a hostport from the request that looks valid.
       if not _HOSTPORT_RE.match(request.host):
@@ -699,15 +700,14 @@ def _ParsePathIdentifiers(path):
     if split_path[0] == 'p':
       project_name = split_path[1]
     if split_path[0] == 'u' or split_path[0] == 'users':
-      viewed_user_val = urllib.unquote(split_path[1])
+      viewed_user_val = urllib.parse.unquote(split_path[1])
       if len(split_path) >= 4 and split_path[2] == 'hotlists':
         try:
-          hotlist_id = int(
-              urllib.unquote(split_path[3].split('.')[0]))
+          hotlist_id = int(urllib.parse.unquote(split_path[3].split('.')[0]))
         except ValueError:
           raw_last_path = (split_path[3][:-3] if
                         split_path[3].endswith('.do') else split_path[3])
-          last_path = urllib.unquote(raw_last_path)
+          last_path = urllib.parse.unquote(raw_last_path)
           match = framework_bizobj.RE_HOTLIST_NAME.match(
               last_path)
           if not match:
@@ -717,7 +717,7 @@ def _ParsePathIdentifiers(path):
             hotlist_name = last_path.lower()
 
     if split_path[0] == 'g':
-      viewed_user_val = urllib.unquote(split_path[1])
+      viewed_user_val = urllib.parse.unquote(split_path[1])
 
   return viewed_user_val, project_name, hotlist_id, hotlist_name
 

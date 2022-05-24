@@ -17,7 +17,7 @@ import itertools
 import logging
 import re
 import time
-import urllib
+from six.moves import urllib
 
 from google.appengine.api import app_identity
 
@@ -151,7 +151,7 @@ def ParseIssueRequest(cnxn, post_data, services, errors, default_project_name):
   comment = post_data.get('comment', '')
   is_description = bool(post_data.get('description', ''))
   status = post_data.get('status', '')
-  template_name = urllib.unquote_plus(post_data.get('template_name', ''))
+  template_name = urllib.parse.unquote_plus(post_data.get('template_name', ''))
   component_str = post_data.get('components', '')
   label_strs = post_data.getall('label')
 
@@ -616,8 +616,10 @@ def FormatIssueListURL(
     url = urls.ISSUE_LIST
     kwargs['projects'] = ','.join(sorted(project_names))
 
-  param_strings = ['%s=%s' % (k, urllib.quote((u'%s' % v).encode('utf-8')))
-                   for k, v in kwargs.items()]
+  param_strings = [
+      '%s=%s' % (k, urllib.parse.quote((u'%s' % v).encode('utf-8')))
+      for k, v in kwargs.items()
+  ]
   if param_strings:
     url += '?' + '&'.join(sorted(param_strings))
   if absolute:

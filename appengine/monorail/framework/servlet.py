@@ -27,7 +27,7 @@ import logging
 import os
 import random
 import time
-import urllib
+from six.moves import urllib
 
 import ezt
 import httpagentparser

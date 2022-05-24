@@ -9,7 +9,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 import time
-import urllib
+from six.moves import urllib
 
 import ezt
 

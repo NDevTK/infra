@@ -17,8 +17,7 @@ import textwrap
 import threading
 import time
 import traceback
-import urllib
-import urlparse
+from six.moves.urllib.parse import urlparse, quote, urlunparse
 
 from google.appengine.api import app_identity
 
@@ -237,12 +236,12 @@ def FormatMovedProjectURL(mr, moved_to):
     The url transposed into the given destination project.
   """
   project_name = moved_to
-  _, _, path, parameters, query, fragment_identifier = urlparse.urlparse(
+  _, _, path, parameters, query, fragment_identifier = urlparse(
       mr.current_page_url)
   # Strip off leading "/p/<moved from project>"
   path = '/' + path.split('/', 3)[3]
-  rest_of_url = urlparse.urlunparse(
-    ('', '', path, parameters, query, fragment_identifier))
+  rest_of_url = urlunparse(
+      ('', '', path, parameters, query, fragment_identifier))
   return '/p/%s%s' % (project_name, rest_of_url)
 
 
@@ -302,8 +301,9 @@ def _FormatQueryString(url, params):
     A URL with the specified query parameters.
   """
   param_string = '&'.join(
-      '%s=%s' % (name, urllib.quote(six.text_type(value).encode('utf-8')))
-      for name, value in params if value is not None)
+      '%s=%s' % (name, quote(six.text_type(value).encode('utf-8')))
+      for name, value in params
+      if value is not None)
   if not param_string:
     qs_start_char = ''
   elif '?' in url:

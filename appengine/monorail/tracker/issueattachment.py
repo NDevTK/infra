@@ -18,7 +18,7 @@ import base64
 import logging
 import os
 import re
-import urllib
+from six.moves import urllib
 
 import webapp2
 

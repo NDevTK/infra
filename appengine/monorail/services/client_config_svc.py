@@ -12,7 +12,7 @@ import json
 import logging
 import os
 import time
-import urllib
+from six.moves import urllib
 import webapp2
 
 from google.appengine.api import app_identity

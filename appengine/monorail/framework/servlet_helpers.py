@@ -12,7 +12,7 @@ import settings
 import calendar
 import datetime
 import logging
-import urllib
+from six.moves import urllib
 import time
 
 from framework import framework_constants
@@ -192,7 +192,6 @@ def ComputeIssueEntryURL(mr):
   else:
     return '/p/%s/issues/entry' % (mr.project_name)
 
-
 def IssueListURL(mr, config, query_string=None):
   """Make an issue list URL for non-members or members."""
   url = '/p/%s%s' % (mr.project_name, urls.ISSUE_LIST)
@@ -200,7 +199,7 @@ def IssueListURL(mr, config, query_string=None):
     url += '?' + query_string
   elif framework_bizobj.UserIsInProject(mr.project, mr.auth.effective_ids):
     if config and config.member_default_query:
-      url += '?q=' + urllib.quote_plus(config.member_default_query)
+      url += '?q=' + urllib.parse.quote_plus(config.member_default_query)
   return url
 
 

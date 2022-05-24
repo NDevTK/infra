@@ -10,7 +10,7 @@ from __future__ import absolute_import
 
 import mock
 import unittest
-import urlparse
+from six.moves.urllib.parse import parse_qs
 
 from features import send_notifications
 from framework import urls
@@ -31,9 +31,7 @@ class SendNotificationTest(unittest.TestCase):
     (args, _kwargs) = call
     path = args[0]['app_engine_http_request']['relative_uri']
     encoded_params = args[0]['app_engine_http_request']['body']
-    params = {
-        k: v[0] for k, v in urlparse.parse_qs(encoded_params, True).items()
-    }
+    params = {k: v[0] for k, v in parse_qs(encoded_params, True).items()}
     return path, params
 
   @mock.patch('framework.cloud_tasks_helpers.create_task')

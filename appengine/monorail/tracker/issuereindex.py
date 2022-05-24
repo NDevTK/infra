@@ -9,7 +9,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 import logging
-import urllib
+from six.moves import urllib
 
 import settings
 from framework import permissions
@@ -83,5 +83,5 @@ class IssueReindex(servlet.Servlet):
       'num': num,
       'auto_submit': bool(auto_submit),
     }
-    return '/p/%s%s?%s' % (mr.project_name, urls.ISSUE_REINDEX,
-                           urllib.urlencode(query_map))
+    return '/p/%s%s?%s' % (
+        mr.project_name, urls.ISSUE_REINDEX, urllib.parse.urlencode(query_map))

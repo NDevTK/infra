@@ -12,7 +12,7 @@ import base64
 import logging
 import os
 import time
-import urllib
+from six.moves import urllib
 import uuid
 
 from datetime import datetime, timedelta
@@ -151,7 +151,7 @@ def SignUrl(bucket, object_id):
         object_id = object_id[1:]
       url = result.format(
           bucket=bucket,
-          object_id=urllib.quote_plus(object_id),
+          object_id=urllib.parse.quote_plus(object_id),
           token=app_identity.get_access_token(scopes)[0])
       attachment_url = _FetchSignedURL(url)
 

@@ -12,7 +12,7 @@ import collections
 import logging
 import re
 import time
-import urllib
+from six.moves import urllib
 
 from google.appengine.api import app_identity
 import ezt
@@ -252,9 +252,12 @@ class LogoView(template_helpers.PBProxy):
     self.thumbnail_url = gcs_helpers.SignUrl(bucket_name,
         gcs_object + '-thumbnail')
     self.viewurl = (
-        gcs_helpers.SignUrl(bucket_name, gcs_object) + '&' + urllib.urlencode(
-            {'response-content-displacement':
-                ('attachment; filename=%s' % self.filename)}))
+        gcs_helpers.SignUrl(bucket_name, gcs_object) + '&' +
+        urllib.parse.urlencode(
+            {
+                'response-content-displacement':
+                    ('attachment; filename=%s' % self.filename)
+            }))
 
 
 class AttachmentView(template_helpers.PBProxy):
