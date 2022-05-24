@@ -107,7 +107,7 @@ def GenTests(api):
       t.INSTALL_DRIVER(
           api, 'add drivers from cipd', image, customization, success=False) +
       # mock winpe t and deinit steps
-      t.MOCK_WPE_INIT_DEINIT_FAILURE(api, key, 'x86', image, customization) +
+      t.MOCK_WPE_INIT_DEINIT_FAILURE(api, 'x86', image, customization) +
       # assert that the install driver step was executed
       t.CHECK_INSTALL_DRIVER(api, image, customization, 'add drivers from cipd',
                              ['-Recurse']) +

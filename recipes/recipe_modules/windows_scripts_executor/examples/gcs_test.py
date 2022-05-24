@@ -37,6 +37,8 @@ def RunSteps(api, config):
   api.windows_scripts_executor.init()
   custs = api.windows_scripts_executor.init_customizations(config)
   custs = api.windows_scripts_executor.process_customizations(custs)
+  # check if we need to execute these customizations
+  custs = api.windows_scripts_executor.filter_executable_customizations(custs)
   api.windows_scripts_executor.download_all_packages(custs)
   api.path.mock_add_paths('[CACHE]\\Pkgs\\GCSPkgs\\WinTools\\net\\ping.exe',
                           'FILE')
@@ -86,6 +88,9 @@ def GenTests(api):
          api.properties(
              t.WPE_IMAGE(image, wib.ARCH_X86, customization,
                          'add artifact from gcs', [ACTION_ADD_PING])) +
+         # allow the build to proceed as there is no image in GCS
+         t.MOCK_CUST_OUTPUT(
+             api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key), False) +
          # mock all the init and deint steps
          t.MOCK_WPE_INIT_DEINIT_SUCCESS(api, key, 'x86', image, customization) +
          # self pinned gcs artifact
@@ -108,13 +113,13 @@ def GenTests(api):
              t.WPE_IMAGE(image, wib.ARCH_X86, customization,
                          'add artifact from gcs', [ACTION_ADD_PING])) +
          # mock all the init and deint steps
-         t.MOCK_WPE_INIT_DEINIT_FAILURE(api, key, 'x86', image, customization) +
+         t.MOCK_WPE_INIT_DEINIT_FAILURE(api, 'x86', image, customization) +
+         # allow the build to proceed as there is no image in GCS
+         t.MOCK_CUST_OUTPUT(
+             api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key), False) +
          # non-existent gcs artifact
          t.GCS_PIN_FILE(
-             api,
-             customization,
-             'gs://WinTools/net/ping.exe',
-             success=False) +
+             api, customization, 'gs://WinTools/net/ping.exe', success=False) +
          # failure adding the file to the image
          t.ADD_FILE(api, image, customization, PING_URL, success=False) +
          api.post_process(StatusFailure) +  # recipe should fail
@@ -126,7 +131,7 @@ def GenTests(api):
   yield (
       api.test('Add customization src image', api.platform('win', 64)) +
       api.properties(WPE_IMAGE_WITH_SRC) +
-      # mock check for customization output existence
+      # allow the build to proceed as there is no image in GCS
       t.MOCK_CUST_OUTPUT(
           api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key), False) +
       t.MOUNT_WIM(api, 'x86', image, customization) +
@@ -151,6 +156,9 @@ def GenTests(api):
   # Test using GCSSrc as an output destination.
   yield (api.test('Add custom gcs destination', api.platform('win', 64)) +
          api.properties(WPE_IMAGE_WITH_DEST) +
+         # allow the build to proceed as there is no image in GCS
+         t.MOCK_CUST_OUTPUT(
+             api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key), False) +
          # mock all the init and deint steps
          t.MOCK_WPE_INIT_DEINIT_SUCCESS(api, key, 'x86', image, customization) +
          # assert that the generated image was uploaded

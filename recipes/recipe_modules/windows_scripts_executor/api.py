@@ -79,8 +79,7 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
     with self.m.step.nest('Process the customizations'):
       self.pin_customizations(custs)
       self.gen_canonical_configs(custs)
-      filtered_custs = self.filter_executable_customizations(custs)
-      return filtered_custs
+      return custs
 
   def pin_customizations(self, customizations):
     """ pin_customizations pins all the sources in the customizations

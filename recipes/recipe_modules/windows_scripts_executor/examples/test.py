@@ -133,8 +133,6 @@ def GenTests(api):
                         'windows/artifacts/startnet.cmd', 'HEAD') +
          # mock failure in gen winpe media step
          t.GEN_WPE_MEDIA(api, arch, image, cust_name, False) +
-         t.MOCK_CUST_OUTPUT(
-             api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key), False) +
          api.post_process(StatusFailure) +  # recipe should fail
          api.post_process(DropExpectation))
 
@@ -158,7 +156,7 @@ def GenTests(api):
              t.WPE_IMAGE(image, wib.ARCH_X86, cust_name, 'network_setup',
                          [ACTION_ADD_STARTNET])) +
          # mock all the init and deinit steps
-         t.MOCK_WPE_INIT_DEINIT_FAILURE(api, key, arch, image, cust_name) +
+         t.MOCK_WPE_INIT_DEINIT_FAILURE(api, arch, image, cust_name) +
          # mock git pin execution
          t.GIT_PIN_FILE(api, cust_name, 'HEAD',
                         'windows/artifacts/startnet.cmd', 'HEAD') +
@@ -207,18 +205,6 @@ def GenTests(api):
          t.MOCK_WPE_INIT_DEINIT_SUCCESS(api, key, arch, image, cust_name) +
          # mock install file step
          t.INSTALL_FILE(api, 'install_winpe_wmi', image, cust_name) +
-         # recipe should pass successfully
-         api.post_process(StatusSuccess) + api.post_process(DropExpectation))
-
-  # Avoid executing configs if the output exists
-  yield (api.test('Avoid executing config for existing output',
-                  api.platform('win', 64)) +
-         # generate image with install wmi action
-         api.properties(
-             t.WPE_IMAGE(image, wib.ARCH_X86, cust_name, 'no_change', [])) +
-         # mock output check to return true
-         t.MOCK_CUST_OUTPUT(
-             api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key), True) +
          # recipe should pass successfully
          api.post_process(StatusSuccess) + api.post_process(DropExpectation))
 
