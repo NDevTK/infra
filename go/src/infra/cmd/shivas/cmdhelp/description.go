@@ -2151,7 +2151,8 @@ shivas delete peripheral-wifi -f {fpath.csv}
 `
 
 	// AddDevboardLSELongDesc long description for AddDevboardCmd
-	AddDevboardLSELongDesc string = `Add a devboard.
+	AddDevboardLSELongDesc string = `Add a devboard LSE.
+
 Examples:
 shivas add devboard-lse -name {name} -asset {asset tag} -servo {servo host}:{servo port} -servo-serial {servo serial} -pools {dut pool}
 Adds a devboard LSE to UFS.
@@ -2161,6 +2162,7 @@ For now, only used on Satlab.
 
 	// AddDevboardMachineLongDesc long description for AddDevboardMachineCmd
 	AddDevboardMachineLongDesc string = `Add a devboard machine.
+
 Examples:
 shivas add devboard-machine -name {name}
 Adds a devboard machine to UFS.

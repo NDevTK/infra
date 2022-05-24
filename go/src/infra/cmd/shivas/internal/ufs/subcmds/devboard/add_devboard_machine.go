@@ -48,7 +48,7 @@ func addDevboardMachineCommandRun() subcommands.CommandRun {
 	c.Flags.Var(flag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times.")
 
 	c.Flags.StringVar(&c.boardType, "type", "", "The type of devboard. Supported values: "+strings.Join(supportedBoardTypes, ", "))
-	c.Flags.StringVar(&c.ultradebug, "ultradebug", "", "Ultradebug serial.")
+	c.Flags.StringVar(&c.ultradebug, "ultradebug", "", "UltraDebug serial.")
 	return c
 }
 
