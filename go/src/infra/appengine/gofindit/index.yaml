@@ -1,7 +1,7 @@
 indexes:
 
 - kind: Suspect
+  ancestor: yes
   properties:
-  - name: parent
   - name: score
     direction: desc
