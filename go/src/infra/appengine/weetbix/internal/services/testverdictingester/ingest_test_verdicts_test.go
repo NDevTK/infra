@@ -56,29 +56,10 @@ func TestSchedule(t *testing.T) {
 	})
 }
 
-func TestUpdateProbability(t *testing.T) {
-	Convey(`TestUpdateProbability`, t, func() {
-		So(durationSinceUpdateToUpdateProbability(-1000*time.Hour), ShouldEqual, 0.0)
-		So(durationSinceUpdateToUpdateProbability(-time.Second), ShouldEqual, 0.0)
-		So(durationSinceUpdateToUpdateProbability(0*time.Hour), ShouldAlmostEqual, 0.000001)
-		So(durationSinceUpdateToUpdateProbability(2*time.Hour), ShouldAlmostEqual, 0.00001)
-		So(durationSinceUpdateToUpdateProbability(4*time.Hour), ShouldAlmostEqual, 0.0001)
-		So(durationSinceUpdateToUpdateProbability(6*time.Hour), ShouldAlmostEqual, 0.001)
-		So(durationSinceUpdateToUpdateProbability(10*time.Hour), ShouldAlmostEqual, 0.1)
-		So(durationSinceUpdateToUpdateProbability(12*time.Hour), ShouldEqual, 1.0)
-		So(durationSinceUpdateToUpdateProbability(24*time.Hour), ShouldEqual, 1.0)
-		So(durationSinceUpdateToUpdateProbability(1000*time.Hour), ShouldEqual, 1.0)
-	})
-}
-
 func TestIngestTestVerdicts(t *testing.T) {
 	Convey(`TestIngestTestVerdicts`, t, func() {
 		ctx := testutil.SpannerTestContext(t)
 		ctx, skdr := tq.TestingContext(ctx, nil)
-
-		// Assume the ingestion process is very (un)lucky, meaning updates
-		// are deferred for as long as possible.
-		ctx = context.WithValue(ctx, &testResultIngestionRandomnessKey, float64(1.0))
 
 		Convey(`partition time`, func() {
 			payload := &taskspb.IngestTestVerdicts{
