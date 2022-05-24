@@ -432,3 +432,98 @@ message Battery {
   // State of the component.
   HardwareState state = 1;
 }
+
+// Chrome OS specific DUT details
+message ChromeOS {
+  reserved 1;
+  // Board name of the DUT.
+  string board = 2;
+  // Model name of the DUT.
+  string model = 3;
+  // Hardware identifier.
+  string hwid = 4;
+  // Hardware phase.
+  string phase = 5;
+  // Serial number of the DUT.
+  string serial_number = 6;
+
+  // PowerSupplyType describes different power supply types for a DUT.
+  enum PowerSupplyType {
+    POWER_SUPPLY_UNSPECIFIED = 0;
+    // Primary power source of the devices is wall-power. Devices does not have
+    // a battery.
+    AC_ONLY = 1;
+    // Primary power source of the devices is battery. Devices still connected
+    // to wall-power to charge it.
+    BATTERY = 2;
+  }
+  // PowerSupplyType describes the DUT's power supply type.
+  PowerSupplyType power_supply_type = 7;
+  // Cr50Phase describes different phases of CR50 firmware used on DUT.
+  // Label indicating the cr50 image type.
+  enum Cr50Phase {
+    CR50_PHASE_UNSPECIFIED = 0;
+    CR50_PHASE_PVT = 1;
+    CR50_PHASE_PREPVT = 2;
+  }
+  // Cr50 firmware phase used on the DUT.
+  Cr50Phase cr50_phase = 8;
+  // Cr50KeyEnv describes key env for cr50 RW version.
+  // Label indicating the cr50 RW version.
+  enum Cr50KeyEnv {
+    CR50_KEYENV_UNSPECIFIED = 0;
+    CR50_KEYENV_PROD = 1;
+    CR50_KEYENV_DEV = 2;
+  }
+  // Key env for RW Cr50 firmware version.
+  Cr50KeyEnv cr50_key_env = 9;
+  // Audio info.
+  DUTAudio audio = 10;
+  // Stock-keeping unit of the DUT.
+  string device_sku = 11;
+
+  // Physical parts of DUT.
+  // Internal storage info.
+  Storage storage = 12;
+  // Battery info.
+  Battery battery = 13;
+  // Wifi info.
+  Wifi wifi = 14;
+  // Bluetooth info.
+  Bluetooth bluetooth = 15;
+
+  // Peripheral devices.
+  // ServoHost of the DUT setup.
+  ServoHost servo_host = 16;
+  // Chameleon device of the DUT
+  // setup.
+  Chameleon chameleon = 17;
+  // BluetoothPeer info of
+  // DUT setup.
+  repeated BluetoothPeer bluetooth_peer_hosts = 18;
+  // Array of Wifi Router peripheral devices
+  repeated WifiRouterHost wifi_router_hosts = 19;
+  // PeripheralWifiState describes the state of peripheral wifi testbed.
+  enum PeripheralWifiState {
+    PERIPHERAL_WIFI_STATE_UNSPECIFIED = 0;
+    // All wifirouters are working as expected.
+    PERIPHERAL_WIFI_STATE_WORKING = 2;
+    // Not all wifirouters are working as expected.
+    PERIPHERAL_WIFI_STATE_BROKEN = 3;
+  }
+  // Peripehral Wifi state of testbed
+  PeripheralWifiState peripheral_wifi_state = 20;
+  // RPMOutlet of the DUT setup.
+  RPMOutlet RPMOutlet = 21;
+}
+
+// Android specific DUT details
+message Android {
+  reserved 1;
+  // Board name of the DUT.
+  string board = 2;
+  // Model name of the DUT.
+  string model = 3;
+  // Serial number of the DUT.
+  string serial_number = 4;
+}
