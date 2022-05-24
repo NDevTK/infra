@@ -438,59 +438,70 @@ func (c *tlwClient) stopServodOnHardwareHost(ctx context.Context, dut *tlw.Dut) 
 // CallServod executes a command on servod related to resource name.
 // Commands will be run against servod on servo-host.
 func (c *tlwClient) CallServod(ctx context.Context, req *tlw.CallServodRequest) *tlw.CallServodResponse {
-	// Translator to convert error to response structure.
-	fail := func(err error) *tlw.CallServodResponse {
-		return &tlw.CallServodResponse{
-			Value: &xmlrpc.Value{
-				ScalarOneof: &xmlrpc.Value_String_{
-					String_: fmt.Sprintf("call servod %q: %s", req.Resource, err),
-				},
-			},
-			Fault: true,
-		}
-	}
 	dut, err := c.getDevice(ctx, req.Resource)
 	if err != nil {
-		return fail(err)
+		return generateFailCallServodResponse(req.GetResource(), err)
 	}
 	if dut.ServoHost == nil || dut.ServoHost.GetName() == "" {
-		return fail(errors.Reason("call servod %q: servo not found", req.Resource).Err())
+		return generateFailCallServodResponse(req.GetResource(), errors.Reason("call servod %q: servo not found", req.GetResource()).Err())
 	}
-	timeout := req.Timeout.AsDuration()
 	// For container connect to the container as it running on the same host.
 	if isServodContainer(dut) {
-		d, err := c.dockerClient(ctx)
-		if err != nil {
-			return fail(err)
-		}
-		addr, err := d.IPAddress(ctx, servoContainerName(dut))
-		if err != nil {
-			return fail(err)
-		}
-		rpc := tlw_xmlrpc.New(addr, int(dut.ServoHost.GetServodPort()))
-		if val, err := servod.Call(ctx, rpc, timeout, req.Method, req.Args); err != nil {
-			return fail(err)
-		} else {
-			return &tlw.CallServodResponse{
-				Value: val,
-				Fault: false,
-			}
-		}
+		return c.callServodOnContainer(ctx, req, dut)
+	}
+	return c.callServodOnHost(ctx, req, dut)
+}
+
+// generateFailCallServodResponse creates response for fail cases when call servod.
+func generateFailCallServodResponse(resource string, err error) *tlw.CallServodResponse {
+	return &tlw.CallServodResponse{
+		Value: &xmlrpc.Value{
+			ScalarOneof: &xmlrpc.Value_String_{
+				String_: fmt.Sprintf("call servod %q: %s", resource, err),
+			},
+		},
+		Fault: true,
+	}
+}
+
+// callServodOnContainer calls servod running on servod-container.
+func (c *tlwClient) callServodOnContainer(ctx context.Context, req *tlw.CallServodRequest, dut *tlw.Dut) *tlw.CallServodResponse {
+	d, err := c.dockerClient(ctx)
+	if err != nil {
+		return generateFailCallServodResponse(req.GetResource(), err)
+	}
+	addr, err := d.IPAddress(ctx, servoContainerName(dut))
+	if err != nil {
+		return generateFailCallServodResponse(req.GetResource(), err)
+	}
+	timeout := req.GetTimeout().AsDuration()
+	rpc := tlw_xmlrpc.New(addr, int(dut.ServoHost.GetServodPort()))
+	if val, err := servod.Call(ctx, rpc, timeout, req.Method, req.Args); err != nil {
+		return generateFailCallServodResponse(req.GetResource(), err)
 	} else {
-		// For labstation using port forward by ssh.
-		s, err := c.servodPool.Get(
-			localproxy.BuildAddr(dut.ServoHost.GetName()),
-			dut.ServoHost.GetServodPort(), nil)
-		if err != nil {
-			return fail(err)
+		return &tlw.CallServodResponse{
+			Value: val,
+			Fault: false,
 		}
-		if val, err := s.Call(ctx, c.sshPool, timeout, req.Method, req.Args); err != nil {
-			return fail(err)
-		} else {
-			return &tlw.CallServodResponse{
-				Value: val,
-				Fault: false,
-			}
+	}
+}
+
+// callServodOnHost calls servod running on physical host.
+func (c *tlwClient) callServodOnHost(ctx context.Context, req *tlw.CallServodRequest, dut *tlw.Dut) *tlw.CallServodResponse {
+	// For labstation using port forward by ssh.
+	s, err := c.servodPool.Get(
+		localproxy.BuildAddr(dut.ServoHost.GetName()),
+		dut.ServoHost.GetServodPort(), nil)
+	if err != nil {
+		return generateFailCallServodResponse(req.GetResource(), err)
+	}
+	timeout := req.GetTimeout().AsDuration()
+	if val, err := s.Call(ctx, c.sshPool, timeout, req.Method, req.Args); err != nil {
+		return generateFailCallServodResponse(req.GetResource(), err)
+	} else {
+		return &tlw.CallServodResponse{
+			Value: val,
+			Fault: false,
 		}
 	}
 }
