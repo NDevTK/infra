@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 
+	"cloud.google.com/go/spanner"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/tsmon/field"
@@ -98,8 +99,8 @@ func JoinBuildResult(ctx context.Context, buildID, buildProject string, isPresub
 			return err
 		}
 		entry := entries[0]
-		// Record does not exist.
 		if entry == nil {
+			// Record does not exist. Create it.
 			entry = &control.Entry{
 				BuildID:     buildID,
 				IsPresubmit: isPresubmit,
@@ -115,12 +116,17 @@ func JoinBuildResult(ctx context.Context, buildID, buildProject string, isPresub
 		}
 		entry.BuildProject = buildProject
 		entry.BuildResult = br
-		if control.SetBuildResult(ctx, entry); err != nil {
-			return err
-		}
+		entry.BuildJoinedTime = spanner.CommitTimestamp
+
 		saved = true
 		taskCreated = createTasksIfNeeded(ctx, entry)
+		if taskCreated {
+			entry.TaskCount = 1
+		}
 
+		if err := control.InsertOrUpdate(ctx, entry); err != nil {
+			return err
+		}
 		// Will only populated if IsPresubmit is not empty.
 		cvProject = entry.PresubmitProject
 		return nil
@@ -181,6 +187,7 @@ func JoinPresubmitResult(ctx context.Context, presubmitResultByBuildID map[strin
 		for i, entry := range entries {
 			buildID := buildIDs[i]
 			if entry == nil {
+				// Record does not exist. Create it.
 				entry = &control.Entry{
 					BuildID:     buildID,
 					IsPresubmit: true,
@@ -193,16 +200,19 @@ func JoinPresubmitResult(ctx context.Context, presubmitResultByBuildID map[strin
 				// Presubmit result already recorded. Do not modify and do not
 				// create a duplicate ingestion.
 				buildIDsSkipped = append(buildIDsSkipped, buildID)
-				return nil
+				continue
 			}
 			entry.PresubmitProject = presubmitProject
 			entry.PresubmitResult = presubmitResultByBuildID[buildID]
-			if err := control.SetPresubmitResult(ctx, entry); err != nil {
-				return err
-			}
-			created := createTasksIfNeeded(ctx, entry)
-			if created {
+			entry.PresubmitJoinedTime = spanner.CommitTimestamp
+
+			taskCreated := createTasksIfNeeded(ctx, entry)
+			if taskCreated {
 				buildsOutputByBuildProject[entry.BuildProject]++
+				entry.TaskCount = 1
+			}
+			if err := control.InsertOrUpdate(ctx, entry); err != nil {
+				return err
 			}
 		}
 		return nil
@@ -223,9 +233,9 @@ func JoinPresubmitResult(ctx context.Context, presubmitResultByBuildID map[strin
 	return nil
 }
 
-// createTaskIfNeeded creates a test-result-ingestion task and a test-verdict
-// -ingestion task if all necessary data for the ingestion is available.
-// Returns true if the tasks are created.
+// createTaskIfNeeded transactionally creates a test-result-ingestion task
+// and a test-verdict -ingestion task if all necessary data for the ingestion
+// is available. Returns true if the tasks are created.
 func createTasksIfNeeded(ctx context.Context, e *control.Entry) bool {
 	if e.BuildResult == nil || (e.IsPresubmit && e.PresubmitResult == nil) {
 		return false
@@ -255,6 +265,8 @@ func createTasksIfNeeded(ctx context.Context, e *control.Entry) bool {
 		PartitionTime: itrTask.PartitionTime,
 		Build:         itrTask.Build,
 		PresubmitRun:  itrTask.PresubmitRun,
+		PageToken:     "",
+		PageIndex:     0,
 	}
 	testverdictingester.Schedule(ctx, itvTask)
 

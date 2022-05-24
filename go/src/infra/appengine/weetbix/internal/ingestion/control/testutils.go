@@ -56,6 +56,7 @@ func NewEntry(uniqifier int) *EntryBuilder {
 			},
 			PresubmitJoinedTime: time.Date(2020, time.December, 12, 1, 1, 1, uniqifier*1000, time.UTC),
 			LastUpdated:         time.Date(2020, time.December, 13, 1, 1, 1, uniqifier*1000, time.UTC),
+			TaskCount:           int64(uniqifier),
 		},
 	}
 }
@@ -108,13 +109,18 @@ func (b *EntryBuilder) WithPresubmitJoinedTime(lastUpdated time.Time) *EntryBuil
 	return b
 }
 
+func (b *EntryBuilder) WithTaskCount(taskCount int64) *EntryBuilder {
+	b.record.TaskCount = taskCount
+	return b
+}
+
 // Build constructs the entry.
 func (b *EntryBuilder) Build() *Entry {
 	return b.record
 }
 
 // SetEntriesForTesting replaces the set of stored entries to match the given set.
-func SetEntriesForTesting(ctx context.Context, es []*Entry) (time.Time, error) {
+func SetEntriesForTesting(ctx context.Context, es ...*Entry) (time.Time, error) {
 	testutil.MustApply(ctx,
 		spanner.Delete("Ingestions", spanner.AllKeys()))
 	// Insert some Ingestion records.
@@ -130,6 +136,7 @@ func SetEntriesForTesting(ctx context.Context, es []*Entry) (time.Time, error) {
 				"PresubmitResult":     r.PresubmitResult,
 				"PresubmitJoinedTime": r.PresubmitJoinedTime,
 				"LastUpdated":         r.LastUpdated,
+				"TaskCount":           r.TaskCount,
 			})
 			span.BufferWrite(ctx, ms)
 		}

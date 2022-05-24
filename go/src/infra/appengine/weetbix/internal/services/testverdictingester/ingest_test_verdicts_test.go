@@ -26,6 +26,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/appengine/weetbix/internal/buildbucket"
+	"infra/appengine/weetbix/internal/ingestion/control"
 	ctrlpb "infra/appengine/weetbix/internal/ingestion/control/proto"
 	"infra/appengine/weetbix/internal/resultdb"
 	"infra/appengine/weetbix/internal/tasks/taskspb"
@@ -34,10 +35,6 @@ import (
 	"infra/appengine/weetbix/pbutil"
 	weetbixpb "infra/appengine/weetbix/proto/v1"
 )
-
-func init() {
-	RegisterTaskClass()
-}
 
 func TestSchedule(t *testing.T) {
 	Convey(`TestSchedule`, t, func() {
@@ -77,6 +74,7 @@ func TestUpdateProbability(t *testing.T) {
 func TestIngestTestVerdicts(t *testing.T) {
 	Convey(`TestIngestTestVerdicts`, t, func() {
 		ctx := testutil.SpannerTestContext(t)
+		ctx, skdr := tq.TestingContext(ctx, nil)
 
 		// Assume the ingestion process is very (un)lucky, meaning updates
 		// are deferred for as long as possible.
@@ -102,98 +100,11 @@ func TestIngestTestVerdicts(t *testing.T) {
 			})
 		})
 
-		Convey(`valid payload`, func() {
-			ctl := gomock.NewController(t)
-			defer ctl.Finish()
-
-			mrc := resultdb.NewMockedClient(ctx, ctl)
-			mbc := buildbucket.NewMockedClient(mrc.Ctx, ctl)
-			ctx = mbc.Ctx
-
-			bID := int64(87654321)
-			inv := "invocations/build-87654321"
-			realm := "chromium:ci"
-
-			request := &bbpb.GetBuildRequest{
-				Id: bID,
-				Mask: &bbpb.BuildMask{
-					Fields: &field_mask.FieldMask{
-						Paths: []string{"input.gerrit_changes", "infra.resultdb", "status"},
-					},
-				},
-			}
-			mbc.GetBuild(request, mockedGetBuildRsp(inv))
-
-			invReq := &rdbpb.GetInvocationRequest{
-				Name: inv,
-			}
-			invRes := &rdbpb.Invocation{
-				Name:  inv,
-				Realm: realm,
-			}
-			mrc.GetInvocation(invReq, invRes)
-
-			tvReq := &rdbpb.QueryTestVariantsRequest{
-				Invocations: []string{inv},
-				PageSize:    10000,
-				ReadMask: &fieldmaskpb.FieldMask{
-					Paths: []string{
-						"test_id",
-						"variant_hash",
-						"status",
-						"variant",
-						"results.*.result.name",
-						"results.*.result.start_time",
-						"results.*.result.status",
-						"results.*.result.expected",
-						"results.*.result.duration",
-					},
-				},
-			}
-			mrc.QueryTestVariants(tvReq, mockedQueryTestVariantsRsp())
-
-			payload := &taskspb.IngestTestVerdicts{
-				Build: &ctrlpb.BuildResult{
-					Host: "cr-buildbucket-dev.appspot.com",
-					Id:   bID,
-				},
-				PartitionTime: timestamppb.New(clock.Now(ctx)),
-				PresubmitRun: &ctrlpb.PresubmitResult{
-					PresubmitRunSucceeded: true,
-				},
-			}
-			err := ingestTestResults(ctx, payload)
-			So(err, ShouldBeNil)
-
-			// Validate IngestedInvocations table is populated.
-			err = testresults.ReadIngestedInvocations(span.Single(ctx), spanner.AllKeys(), func(inv *testresults.IngestedInvocation) error {
-				So(inv, ShouldResemble, &testresults.IngestedInvocation{
-					Project:                      "chromium",
-					IngestedInvocationID:         "build-87654321",
-					SubRealm:                     "ci",
-					PartitionTime:                payload.PartitionTime.AsTime(),
-					BuildStatus:                  weetbixpb.BuildStatus_BUILD_STATUS_FAILURE,
-					HasContributedToClSubmission: true,
-					Changelists: []testresults.Changelist{
-						{
-							Host:     "mygerrit",
-							Change:   12345,
-							Patchset: 5,
-						},
-						{
-							Host:     "anothergerrit",
-							Change:   77788,
-							Patchset: 19,
-						},
-					},
-				})
-				return nil
-			})
-			So(err, ShouldBeNil)
-
+		partitionTime := clock.Now(ctx).Add(-1 * time.Hour)
+		verifyTestResults := func() {
 			trBuilder := testresults.NewTestResult().
 				WithProject("chromium").
-				WithPartitionTime(payload.PartitionTime.AsTime()).
+				WithPartitionTime(timestamppb.New(partitionTime).AsTime()).
 				WithIngestedInvocationID("build-87654321").
 				WithSubRealm("ci").
 				WithBuildStatus(weetbixpb.BuildStatus_BUILD_STATUS_FAILURE).
@@ -296,7 +207,7 @@ func TestIngestTestVerdicts(t *testing.T) {
 
 			// Validate TestResults table is populated.
 			var actualTRs []*testresults.TestResult
-			err = testresults.ReadTestResults(span.Single(ctx), spanner.AllKeys(), func(tr *testresults.TestResult) error {
+			err := testresults.ReadTestResults(span.Single(ctx), spanner.AllKeys(), func(tr *testresults.TestResult) error {
 				actualTRs = append(actualTRs, tr)
 				return nil
 			})
@@ -349,6 +260,189 @@ func TestIngestTestVerdicts(t *testing.T) {
 					Variant:           pbutil.VariantFromResultDB(rdbpbutil.Variant("k1", "v2")),
 					LastIngestionTime: tvrs[3].LastIngestionTime,
 				},
+			})
+		}
+		verifyIngestedInvocation := func(expected *testresults.IngestedInvocation) {
+			var invs []*testresults.IngestedInvocation
+			// Validate IngestedInvocations table is populated.
+			err := testresults.ReadIngestedInvocations(span.Single(ctx), spanner.AllKeys(), func(inv *testresults.IngestedInvocation) error {
+				invs = append(invs, inv)
+				return nil
+			})
+			So(err, ShouldBeNil)
+			if expected == nil {
+				So(invs, ShouldHaveLength, 0)
+			} else {
+				So(invs, ShouldHaveLength, 1)
+				So(invs[0], ShouldResemble, expected)
+			}
+		}
+
+		Convey(`valid payload`, func() {
+			ctl := gomock.NewController(t)
+			defer ctl.Finish()
+
+			bHost := "cr-buildbucket-dev.appspot.com"
+			bID := int64(87654321)
+			inv := "invocations/build-87654321"
+			realm := "chromium:ci"
+
+			mrc := resultdb.NewMockedClient(ctx, ctl)
+			mbc := buildbucket.NewMockedClient(mrc.Ctx, ctl)
+			ctx = mbc.Ctx
+
+			request := &bbpb.GetBuildRequest{
+				Id: bID,
+				Mask: &bbpb.BuildMask{
+					Fields: &field_mask.FieldMask{
+						Paths: []string{"input.gerrit_changes", "infra.resultdb", "status"},
+					},
+				},
+			}
+			mbc.GetBuild(request, mockedGetBuildRsp(inv))
+
+			invReq := &rdbpb.GetInvocationRequest{
+				Name: inv,
+			}
+			invRes := &rdbpb.Invocation{
+				Name:  inv,
+				Realm: realm,
+			}
+			mrc.GetInvocation(invReq, invRes)
+
+			payload := &taskspb.IngestTestVerdicts{
+				Build: &ctrlpb.BuildResult{
+					Host:         bHost,
+					Id:           bID,
+					CreationTime: timestamppb.New(time.Date(2020, time.April, 1, 2, 3, 4, 5, time.UTC)),
+				},
+				PartitionTime: timestamppb.New(partitionTime),
+				PresubmitRun: &ctrlpb.PresubmitResult{
+					PresubmitRunId: &weetbixpb.PresubmitRunId{
+						System: "luci-cv",
+						Id:     "infra/12345",
+					},
+					PresubmitRunSucceeded: true,
+					CreationTime:          timestamppb.New(time.Date(2021, time.April, 1, 2, 3, 4, 5, time.UTC)),
+				},
+				PageToken: "expected_token",
+				PageIndex: 0,
+			}
+
+			ingestionRecord :=
+				control.NewEntry(0).
+					WithBuildID(control.BuildID(bHost, bID)).
+					WithBuildResult(payload.Build).
+					WithPresubmitResult(payload.PresubmitRun).
+					WithTaskCount(1).
+					Build()
+
+			tvReq := &rdbpb.QueryTestVariantsRequest{
+				Invocations: []string{inv},
+				PageSize:    10000,
+				ReadMask: &fieldmaskpb.FieldMask{
+					Paths: []string{
+						"test_id",
+						"variant_hash",
+						"status",
+						"variant",
+						"results.*.result.name",
+						"results.*.result.start_time",
+						"results.*.result.status",
+						"results.*.result.expected",
+						"results.*.result.duration",
+					},
+				},
+				PageToken: "expected_token",
+			}
+			rsp := mockedQueryTestVariantsRsp()
+
+			expectedInvocation := &testresults.IngestedInvocation{
+				Project:                      "chromium",
+				IngestedInvocationID:         "build-87654321",
+				SubRealm:                     "ci",
+				PartitionTime:                timestamppb.New(partitionTime).AsTime(),
+				BuildStatus:                  weetbixpb.BuildStatus_BUILD_STATUS_FAILURE,
+				HasContributedToClSubmission: true,
+				Changelists: []testresults.Changelist{
+					{
+						Host:     "mygerrit",
+						Change:   12345,
+						Patchset: 5,
+					},
+					{
+						Host:     "anothergerrit",
+						Change:   77788,
+						Patchset: 19,
+					},
+				},
+			}
+
+			Convey("First task", func() {
+				rsp.NextPageToken = "continuation_token"
+				mrc.QueryTestVariants(tvReq, rsp)
+
+				_, err := control.SetEntriesForTesting(ctx, ingestionRecord)
+				So(err, ShouldBeNil)
+
+				// Run ingestion. Clone the input to avoid changes the
+				// implementation may make to payload flowing back out.
+				clonedPayload := proto.Clone(payload).(*taskspb.IngestTestVerdicts)
+				err = ingestTestResults(ctx, clonedPayload)
+				So(err, ShouldBeNil)
+
+				// Ensure continuation task is created.
+				So(skdr.Tasks().Payloads(), ShouldHaveLength, 1)
+				task := skdr.Tasks().Payloads()[0].(*taskspb.IngestTestVerdicts)
+				So(task, ShouldResembleProto, &taskspb.IngestTestVerdicts{
+					Build:         payload.Build,
+					PartitionTime: payload.PartitionTime,
+					PresubmitRun:  payload.PresubmitRun,
+					PageToken:     "continuation_token",
+					PageIndex:     1,
+				})
+
+				verifyTestResults()
+				verifyIngestedInvocation(expectedInvocation)
+			})
+			Convey("Final task", func() {
+				ingestionRecord.TaskCount = 10
+				payload.PageIndex = 9
+				rsp.NextPageToken = "" // No more results.
+
+				mrc.QueryTestVariants(tvReq, rsp)
+
+				_, err := control.SetEntriesForTesting(ctx, ingestionRecord)
+				So(err, ShouldBeNil)
+
+				// Run ingestion.
+				err = ingestTestResults(ctx, payload)
+				So(err, ShouldBeNil)
+
+				// No continuation task scheduled.
+				So(skdr.Tasks().Payloads(), ShouldHaveLength, 0)
+
+				verifyTestResults()
+				// As the task was not the first task, ensure the invocation
+				// record has not been created again.
+				verifyIngestedInvocation(nil)
+			})
+			Convey("Retried task", func() {
+				payload.PageIndex = 1
+				ingestionRecord.TaskCount = 3
+				rsp.NextPageToken = "continuation_token"
+
+				mrc.QueryTestVariants(tvReq, rsp)
+
+				_, err := control.SetEntriesForTesting(ctx, ingestionRecord)
+				So(err, ShouldBeNil)
+
+				// Run ingestion.
+				err = ingestTestResults(ctx, payload)
+				So(err, ShouldBeNil)
+
+				// No continuation task scheduled.
+				So(skdr.Tasks().Payloads(), ShouldHaveLength, 0)
 			})
 		})
 	})

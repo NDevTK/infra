@@ -80,7 +80,17 @@ func TestHandleCVRun(t *testing.T) {
 				tasks = make([]*taskspb.IngestTestResults, 0,
 					len(skdr.Tasks().Payloads())-existingTaskCount)
 				for _, pl := range skdr.Tasks().Payloads()[existingTaskCount:] {
-					tasks = append(tasks, pl.(*taskspb.IngestTestResults))
+					switch pl.(type) {
+					case *taskspb.IngestTestResults:
+						tasks = append(tasks, pl.(*taskspb.IngestTestResults))
+					case *taskspb.IngestTestVerdicts:
+						// No need to assert anything about test verdict
+						// tasks, these will only exist temporarily until
+						// the process is merged back into IngestTestResults.
+						break
+					default:
+						panic("unexpected task type")
+					}
 				}
 				return processed, tasks
 			}

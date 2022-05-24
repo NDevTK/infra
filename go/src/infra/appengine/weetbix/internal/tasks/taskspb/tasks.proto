@@ -152,4 +152,13 @@ message IngestTestVerdicts {
   // Context about the presubmit run the build was a part of. Only
   // populated if the build is a presubmit run.
   weetbix.internal.ingestion.control.PresubmitResult presubmit_run = 3;
+
+  // The page token value to use when calling QueryTestVariants.
+  // For the first task, this should be "". For subsequent tasks,
+  // this is the next_page_token value returned by the previous call.
+  string page_token = 4;
+
+  // The page number of test results being ingested. 0 for the first
+  // page, 1 for the second, and so on.
+  int64 page_index = 5;
 }

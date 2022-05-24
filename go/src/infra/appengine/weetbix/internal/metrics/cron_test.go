@@ -57,7 +57,7 @@ func TestGlobalMetrics(t *testing.T) {
 				WithPresubmitJoinedTime(reference).
 				WithBuildResult(nil).Build(),
 		}
-		_, err = control.SetEntriesForTesting(ctx, entriesToCreate)
+		_, err = control.SetEntriesForTesting(ctx, entriesToCreate...)
 		So(err, ShouldBeNil)
 
 		err = GlobalMetrics(ctx)

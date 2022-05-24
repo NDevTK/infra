@@ -9,11 +9,9 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-
-	rdbpb "go.chromium.org/luci/resultdb/proto/v1"
-
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
+	rdbpb "go.chromium.org/luci/resultdb/proto/v1"
 )
 
 func TestResultDB(t *testing.T) {
@@ -26,7 +24,7 @@ func TestResultDB(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		inv := "invocations/build-87654321"
-		Convey(`QueryTestVariants`, func() {
+		Convey(`QueryTestVariantsMany`, func() {
 			req := &rdbpb.QueryTestVariantsRequest{
 				Invocations: []string{inv},
 				PageSize:    1000,
@@ -53,7 +51,7 @@ func TestResultDB(t *testing.T) {
 
 			maxPages := 1
 			var tvs []*rdbpb.TestVariant
-			err := rc.QueryTestVariants(mc.Ctx, req, func(res []*rdbpb.TestVariant) error {
+			err := rc.QueryTestVariantsMany(mc.Ctx, req, func(res []*rdbpb.TestVariant) error {
 				tvs = append(tvs, res...)
 				return nil
 			}, maxPages)

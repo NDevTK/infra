@@ -65,6 +65,19 @@ type Entry struct {
 
 	// LastUpdated is the Spanner commit time the row was last updated.
 	LastUpdated time.Time
+
+	// The number of test result ingestion tasks have been created for this
+	// invocation.
+	// Used to avoid duplicate scheduling of ingestion tasks. If the page_index
+	// is the index of the page being processed, an ingestion task for the next
+	// page will only be created if (page_index + 1) == TaskCount.
+	TaskCount int64
+}
+
+// BuildID returns the control record key for a buildbucket build with the
+// given hostname and ID.
+func BuildID(hostname string, id int64) string {
+	return fmt.Sprintf("%s/%v", hostname, id)
 }
 
 // Read reads ingestion control records for the specified build IDs.
@@ -92,6 +105,7 @@ func Read(ctx context.Context, buildIDs []string) ([]*Entry, error) {
 		"PresubmitResult",
 		"PresubmitJoinedTime",
 		"LastUpdated",
+		"TaskCount",
 	}
 	entryByBuildID := make(map[string]*Entry)
 	rows := span.Read(ctx, "Ingestions", spanner.KeySetFromKeys(keys...), cols)
@@ -103,6 +117,7 @@ func Read(ctx context.Context, buildIDs []string) ([]*Entry, error) {
 		var presubmitResultBytes []byte
 		var buildJoinedTime, presubmitJoinedTime spanner.NullTime
 		var lastUpdated time.Time
+		var taskCount spanner.NullInt64
 
 		err := r.Columns(
 			&buildID,
@@ -113,7 +128,8 @@ func Read(ctx context.Context, buildIDs []string) ([]*Entry, error) {
 			&presubmitProject,
 			&presubmitResultBytes,
 			&presubmitJoinedTime,
-			&lastUpdated)
+			&lastUpdated,
+			&taskCount)
 		if err != nil {
 			return errors.Annotate(err, "read Ingestions row").Err()
 		}
@@ -143,6 +159,7 @@ func Read(ctx context.Context, buildIDs []string) ([]*Entry, error) {
 			PresubmitResult:     presubmitResult,
 			PresubmitJoinedTime: presubmitJoinedTime.Time,
 			LastUpdated:         lastUpdated,
+			TaskCount:           taskCount.Int64,
 		}
 		return nil
 	}
@@ -160,45 +177,26 @@ func Read(ctx context.Context, buildIDs []string) ([]*Entry, error) {
 	return result, nil
 }
 
-// SetBuildResult sets the build result on an ingestion record,
-// creating it if necessary.
-// This sets the BuildProject, BuildResult, BuildJoinedTime
-// fields, as well as the basic identify fields (BuildId, IsPresubmit).
-func SetBuildResult(ctx context.Context, e *Entry) error {
+// InsertOrUpdate creates or updates the given ingestion record.
+// This operation is not safe to perform blindly; perform only in a
+// read/write transaction with an attempted read of the corresponding entry.
+func InsertOrUpdate(ctx context.Context, e *Entry) error {
 	if err := validateEntry(e); err != nil {
 		return err
 	}
-	m := spanutil.InsertOrUpdateMap("Ingestions", map[string]interface{}{
-		"BuildId":         e.BuildID,
-		"IsPresubmit":     spanner.NullBool{Valid: e.IsPresubmit, Bool: e.IsPresubmit},
-		"BuildProject":    spanner.NullString{Valid: e.BuildProject != "", StringVal: e.BuildProject},
-		"BuildResult":     e.BuildResult,
-		"BuildJoinedTime": spanner.CommitTimestamp,
-		"LastUpdated":     spanner.CommitTimestamp,
-	})
-	span.BufferWrite(ctx, m)
-	return nil
-}
-
-// SetPresubmitResult sets the build result on an ingestion record,
-// creating it if necessary.
-// This sets the PresubmitProject, PresubmitResult, PresubmitJoinedTime
-// fields, as well as the basic identify fields (BuildId, IsPresubmit).
-func SetPresubmitResult(ctx context.Context, e *Entry) error {
-	if err := validateEntry(e); err != nil {
-		return err
-	}
-	if !e.IsPresubmit {
-		return errors.New("IsPresubmit must be true if calling SetPresumitResult()")
-	}
-	m := spanutil.InsertOrUpdateMap("Ingestions", map[string]interface{}{
+	update := map[string]interface{}{
 		"BuildId":             e.BuildID,
-		"IsPresubmit":         spanner.NullBool{Valid: true, Bool: true},
+		"IsPresubmit":         spanner.NullBool{Valid: e.IsPresubmit, Bool: e.IsPresubmit},
+		"BuildProject":        spanner.NullString{Valid: e.BuildProject != "", StringVal: e.BuildProject},
+		"BuildResult":         e.BuildResult,
+		"BuildJoinedTime":     spanner.NullTime{Valid: e.BuildJoinedTime != time.Time{}, Time: e.BuildJoinedTime},
 		"PresubmitProject":    spanner.NullString{Valid: e.PresubmitProject != "", StringVal: e.PresubmitProject},
 		"PresubmitResult":     e.PresubmitResult,
-		"PresubmitJoinedTime": spanner.CommitTimestamp,
+		"PresubmitJoinedTime": spanner.NullTime{Valid: e.PresubmitJoinedTime != time.Time{}, Time: e.PresubmitJoinedTime},
 		"LastUpdated":         spanner.CommitTimestamp,
-	})
+		"TaskCount":           e.TaskCount,
+	}
+	m := spanutil.InsertOrUpdateMap("Ingestions", update)
 	span.BufferWrite(ctx, m)
 	return nil
 }
@@ -339,6 +337,9 @@ func validateEntry(e *Entry) error {
 			return errors.New("presubmit project must only be specified" +
 				" if presubmit result is specified")
 		}
+	}
+	if e.TaskCount < 0 {
+		return errors.New("task count must be non-negative")
 	}
 	return nil
 }

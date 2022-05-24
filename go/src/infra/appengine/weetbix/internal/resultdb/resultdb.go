@@ -9,11 +9,10 @@ import (
 	"context"
 	"net/http"
 
-	"google.golang.org/protobuf/proto"
-
 	"go.chromium.org/luci/grpc/prpc"
 	rdbpb "go.chromium.org/luci/resultdb/proto/v1"
 	"go.chromium.org/luci/server/auth"
+	"google.golang.org/protobuf/proto"
 )
 
 // mockResultDBClientKey is the context key indicates using mocked resultb client in tests.
@@ -54,10 +53,15 @@ func NewClient(ctx context.Context, host string) (*Client, error) {
 	}, nil
 }
 
-// QueryTestVariants queries test variants and advances the page automatically.
+// QueryTestVariants queries a single page of test variants.
+func (c *Client) QueryTestVariants(ctx context.Context, req *rdbpb.QueryTestVariantsRequest) (*rdbpb.QueryTestVariantsResponse, error) {
+	return c.client.QueryTestVariants(ctx, req)
+}
+
+// QueryTestVariantsMany queries test variants and advances the page automatically.
 //
 // f is called once per page of test variants.
-func (c *Client) QueryTestVariants(ctx context.Context, req *rdbpb.QueryTestVariantsRequest, f func([]*rdbpb.TestVariant) error, maxPages int) error {
+func (c *Client) QueryTestVariantsMany(ctx context.Context, req *rdbpb.QueryTestVariantsRequest, f func([]*rdbpb.TestVariant) error, maxPages int) error {
 	// Copy the request to avoid aliasing issues when we update the page token.
 	req = proto.Clone(req).(*rdbpb.QueryTestVariantsRequest)
 

@@ -6,16 +6,15 @@ package testverdictingester
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/clock"
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	rdbpb "go.chromium.org/luci/resultdb/proto/v1"
 	"go.chromium.org/luci/server/tq"
-	"golang.org/x/sync/errgroup"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -47,25 +46,22 @@ const (
 	maxResultDBPages = int(^uint(0) >> 1) // set to max int
 )
 
-// RegisterTaskClass registers the task class for tq dispatcher.
-func RegisterTaskClass() {
-	tq.RegisterTaskClass(tq.TaskClass{
-		ID:        taskClass,
-		Prototype: &taskspb.IngestTestVerdicts{},
-		Queue:     queue,
-		Kind:      tq.Transactional,
-		Handler: func(ctx context.Context, payload proto.Message) error {
-			task := payload.(*taskspb.IngestTestVerdicts)
-			return ingestTestResults(ctx, task)
-		},
-	})
-}
+var testVerdictIngestion = tq.RegisterTaskClass(tq.TaskClass{
+	ID:        taskClass,
+	Prototype: &taskspb.IngestTestVerdicts{},
+	Queue:     queue,
+	Kind:      tq.Transactional,
+	Handler: func(ctx context.Context, payload proto.Message) error {
+		task := payload.(*taskspb.IngestTestVerdicts)
+		return ingestTestResults(ctx, task)
+	},
+})
 
 // Schedule enqueues a task to get all the test results from an invocation,
 // group them into test verdicts, and save them to the TestVerdicts table.
-func Schedule(ctx context.Context, task *taskspb.IngestTestVerdicts) error {
-	return tq.AddTask(ctx, &tq.Task{
-		Title:   fmt.Sprintf("%s-%d", task.Build.Host, task.Build.Id),
+func Schedule(ctx context.Context, task *taskspb.IngestTestVerdicts) {
+	tq.MustAddTask(ctx, &tq.Task{
+		Title:   fmt.Sprintf("%s-%d-page-%d", task.Build.Host, task.Build.Id, task.PageIndex),
 		Payload: task,
 	})
 }
@@ -114,49 +110,55 @@ func ingestTestResults(ctx context.Context, payload *taskspb.IngestTestVerdicts)
 	if err != nil {
 		return err
 	}
-	err = recordIngestedInvocation(ctx, ingestedInv)
+	if payload.PageIndex == 0 {
+		err = recordIngestedInvocation(ctx, ingestedInv)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Query test variants from ResultDB.
+	req := &rdbpb.QueryTestVariantsRequest{
+		Invocations: []string{invName},
+		PageSize:    10000,
+		ReadMask: &fieldmaskpb.FieldMask{
+			Paths: []string{
+				"test_id",
+				"variant_hash",
+				"status",
+				"variant",
+				"results.*.result.name",
+				"results.*.result.start_time",
+				"results.*.result.status",
+				"results.*.result.expected",
+				"results.*.result.duration",
+			},
+		},
+		PageToken: payload.PageToken,
+	}
+	rsp, err := rc.QueryTestVariants(ctx, req)
 	if err != nil {
 		return err
 	}
 
-	eg, ctx := errgroup.WithContext(ctx)
-
-	// Query test variants from ResultDB.
-	tvsC := make(chan []*rdbpb.TestVariant)
-	eg.Go(func() error {
-		defer close(tvsC)
-
-		req := &rdbpb.QueryTestVariantsRequest{
-			Invocations: []string{invName},
-			PageSize:    10000,
-			ReadMask: &fieldmaskpb.FieldMask{
-				Paths: []string{
-					"test_id",
-					"variant_hash",
-					"status",
-					"variant",
-					"results.*.result.name",
-					"results.*.result.start_time",
-					"results.*.result.status",
-					"results.*.result.expected",
-					"results.*.result.duration",
-				},
-			},
+	// Schedule a task to deal with the next page of results (if needed).
+	// Do this immediately, so that task can commence while we are still
+	// inserting the results for this page.
+	if rsp.NextPageToken != "" {
+		if err := scheduleNextTask(ctx, payload, rsp.NextPageToken); err != nil {
+			return errors.Annotate(err, "schedule next task").Err()
 		}
-		return rc.QueryTestVariants(ctx, req, func(tvs []*rdbpb.TestVariant) error {
-			tvsC <- tvs
-			return nil
-		}, maxResultDBPages)
-	})
+	}
 
-	// Record the test verdicts.
-	eg.Go(func() error {
-		return recordTestResults(ctx, ingestedInv, tvsC)
-	})
+	// Record the test results.
+	err = recordTestResults(ctx, ingestedInv, rsp.TestVariants)
+	if err != nil {
+		// If any transaction failed, the task will be retried and the tables will be
+		// eventual-consistent.
+		return errors.Annotate(err, "record test results").Err()
+	}
 
-	// If any transaction failed, the task will be retried and the tables will be
-	// eventual-consistent.
-	return eg.Wait()
+	return nil
 }
 
 func validateRequest(ctx context.Context, payload *taskspb.IngestTestVerdicts) error {

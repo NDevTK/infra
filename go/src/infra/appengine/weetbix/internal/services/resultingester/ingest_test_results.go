@@ -263,7 +263,7 @@ func (i *resultIngester) ingestTestResults(ctx context.Context, payload *taskspb
 		},
 		PageSize: 1000,
 	}
-	err = rc.QueryTestVariants(ctx, req, f, maxResultDBPages)
+	err = rc.QueryTestVariantsMany(ctx, req, f, maxResultDBPages)
 	if err != nil {
 		return transient.Tag.Apply(err)
 	}

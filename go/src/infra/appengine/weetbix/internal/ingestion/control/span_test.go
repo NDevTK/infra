@@ -26,7 +26,7 @@ func TestSpan(t *testing.T) {
 				NewEntry(2).WithBuildID("buildbucket-instance/2").WithBuildResult(nil).Build(),
 				NewEntry(3).WithBuildID("buildbucket-instance/3").WithPresubmitResult(nil).Build(),
 			}
-			_, err := SetEntriesForTesting(ctx, entriesToCreate)
+			_, err := SetEntriesForTesting(ctx, entriesToCreate...)
 			So(err, ShouldBeNil)
 
 			Convey(`None exist`, func() {
@@ -52,33 +52,26 @@ func TestSpan(t *testing.T) {
 				So(results[3], ShouldResembleEntry, entriesToCreate[0])
 			})
 		})
-		Convey(`SetBuildResult`, func() {
-			testSetBuildResult := func(e *Entry) (time.Time, error) {
+		Convey(`InsertOrUpdate`, func() {
+			testInsertOrUpdate := func(e *Entry) (time.Time, error) {
 				commitTime, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
-					return SetBuildResult(ctx, e)
+					return InsertOrUpdate(ctx, e)
 				})
 				return commitTime.In(time.UTC), err
 			}
 
-			entriesToCreate := []*Entry{
-				NewEntry(0).Build(),
-			}
-			_, err := SetEntriesForTesting(ctx, entriesToCreate)
+			entryToCreate := NewEntry(0).Build()
+
+			_, err := SetEntriesForTesting(ctx, entryToCreate)
 			So(err, ShouldBeNil)
 
 			e := NewEntry(1).Build()
 
 			Convey(`Valid`, func() {
-				Convey(`Create`, func() {
-					commitTime, err := testSetBuildResult(e)
+				Convey(`Insert`, func() {
+					commitTime, err := testInsertOrUpdate(e)
 					So(err, ShouldBeNil)
-					e.BuildJoinedTime = commitTime
 					e.LastUpdated = commitTime
-
-					// SetBuildResult should not have set these fields.
-					e.PresubmitProject = ""
-					e.PresubmitResult = nil
-					e.PresubmitJoinedTime = time.Time{}
 
 					result, err := Read(span.Single(ctx), []string{e.BuildID})
 					So(err, ShouldBeNil)
@@ -87,17 +80,11 @@ func TestSpan(t *testing.T) {
 				})
 				Convey(`Update`, func() {
 					// Update the existing entry.
-					e.BuildID = entriesToCreate[0].BuildID
+					e.BuildID = entryToCreate.BuildID
 
-					commitTime, err := testSetBuildResult(e)
+					commitTime, err := testInsertOrUpdate(e)
 					So(err, ShouldBeNil)
-					e.BuildJoinedTime = commitTime
 					e.LastUpdated = commitTime
-
-					// SetBuildResult should not update these fields.
-					e.PresubmitProject = entriesToCreate[0].PresubmitProject
-					e.PresubmitResult = entriesToCreate[0].PresubmitResult
-					e.PresubmitJoinedTime = entriesToCreate[0].PresubmitJoinedTime
 
 					result, err := Read(span.Single(ctx), []string{e.BuildID})
 					So(err, ShouldBeNil)
@@ -108,141 +95,81 @@ func TestSpan(t *testing.T) {
 			Convey(`With invalid Build Project`, func() {
 				Convey(`Missing`, func() {
 					e.BuildProject = ""
-					_, err := testSetBuildResult(e)
+					_, err := testInsertOrUpdate(e)
 					So(err, ShouldErrLike, "build project must be valid")
 				})
 				Convey(`Invalid`, func() {
 					e.BuildProject = "!"
-					_, err := testSetBuildResult(e)
+					_, err := testInsertOrUpdate(e)
 					So(err, ShouldErrLike, "build project must be valid")
 				})
 			})
 			Convey(`With missing Build ID`, func() {
 				e.BuildID = ""
-				_, err := testSetBuildResult(e)
+				_, err := testInsertOrUpdate(e)
 				So(err, ShouldErrLike, "build ID must be specified")
 			})
 			Convey(`With invalid Build Result`, func() {
 				Convey(`Missing host`, func() {
 					e.BuildResult.Host = ""
-					_, err := testSetBuildResult(e)
+					_, err := testInsertOrUpdate(e)
 					So(err, ShouldErrLike, "host must be specified")
 				})
 				Convey(`Missing id`, func() {
 					e.BuildResult.Id = 0
-					_, err := testSetBuildResult(e)
+					_, err := testInsertOrUpdate(e)
 					So(err, ShouldErrLike, "id must be specified")
 				})
 				Convey(`Missing creation time`, func() {
 					e.BuildResult.CreationTime = nil
-					_, err := testSetBuildResult(e)
+					_, err := testInsertOrUpdate(e)
 					So(err, ShouldErrLike, "build result: creation time must be specified")
 				})
 			})
-		})
-		Convey(`SetPresubmitResult`, func() {
-			testSetPresubmitResult := func(e *Entry) (time.Time, error) {
-				commitTime, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
-					return SetPresubmitResult(ctx, e)
+			Convey(`With invalid Presubmit Project`, func() {
+				Convey(`Missing`, func() {
+					e.PresubmitProject = ""
+					_, err := testInsertOrUpdate(e)
+					So(err, ShouldErrLike, "presubmit project must be valid")
 				})
-				return commitTime.In(time.UTC), err
-			}
-			entriesToCreate := []*Entry{
-				NewEntry(0).Build(),
-			}
-			_, err := SetEntriesForTesting(ctx, entriesToCreate)
-			So(err, ShouldBeNil)
-
-			e := NewEntry(1).Build()
-
-			Convey(`Valid`, func() {
-				Convey(`Create`, func() {
-					commitTime, err := testSetPresubmitResult(e)
-					So(err, ShouldBeNil)
-					e.PresubmitJoinedTime = commitTime
-					e.LastUpdated = commitTime
-
-					// SetPresubmitResult should not have set these fields.
-					e.BuildProject = ""
-					e.BuildResult = nil
-					e.BuildJoinedTime = time.Time{}
-
-					result, err := Read(span.Single(ctx), []string{e.BuildID})
-					So(err, ShouldBeNil)
-					So(len(result), ShouldEqual, 1)
-					So(result[0], ShouldResembleEntry, e)
-				})
-				Convey(`Update`, func() {
-					// Update the existing entry.
-					e.BuildID = entriesToCreate[0].BuildID
-
-					commitTime, err := testSetPresubmitResult(e)
-					So(err, ShouldBeNil)
-					e.PresubmitJoinedTime = commitTime
-					e.LastUpdated = commitTime
-
-					// SetPresubmitResult should not update these fields.
-					e.BuildProject = entriesToCreate[0].BuildProject
-					e.BuildResult = entriesToCreate[0].BuildResult
-					e.BuildJoinedTime = entriesToCreate[0].BuildJoinedTime
-
-					result, err := Read(span.Single(ctx), []string{e.BuildID})
-					So(err, ShouldBeNil)
-					So(len(result), ShouldEqual, 1)
-					So(result[0], ShouldResembleEntry, e)
+				Convey(`Invalid`, func() {
+					e.PresubmitProject = "!"
+					_, err := testInsertOrUpdate(e)
+					So(err, ShouldErrLike, "presubmit project must be valid")
 				})
 			})
-			Convey(`Invalid`, func() {
-				Convey(`With invalid Presubmit Project`, func() {
-					Convey(`Missing`, func() {
-						e.PresubmitProject = ""
-						_, err := testSetPresubmitResult(e)
-						So(err, ShouldErrLike, "presubmit project must be valid")
-					})
-					Convey(`Invalid`, func() {
-						e.PresubmitProject = "!"
-						_, err := testSetPresubmitResult(e)
-						So(err, ShouldErrLike, "presubmit project must be valid")
-					})
-				})
-				Convey(`With missing Build ID`, func() {
-					e.BuildID = ""
-					_, err := testSetPresubmitResult(e)
-					So(err, ShouldErrLike, "build ID must be specified")
-				})
+			Convey(`Missing Presubmit run ID`, func() {
+				e.PresubmitResult.PresubmitRunId = nil
+				_, err := testInsertOrUpdate(e)
+				So(err, ShouldErrLike, "presubmit run ID must be specified")
+			})
+			Convey(`With invalid Presubmit Result`, func() {
+				e = NewEntry(100).Build()
 				Convey(`Missing Presubmit run ID`, func() {
 					e.PresubmitResult.PresubmitRunId = nil
-					_, err := testSetPresubmitResult(e)
+					_, err := testInsertOrUpdate(e)
 					So(err, ShouldErrLike, "presubmit run ID must be specified")
 				})
-				Convey(`With invalid Presubmit Result`, func() {
-					e = NewEntry(100).Build()
-					Convey(`Missing Presubmit run ID`, func() {
-						e.PresubmitResult.PresubmitRunId = nil
-						_, err := testSetPresubmitResult(e)
-						So(err, ShouldErrLike, "presubmit run ID must be specified")
-					})
-					Convey(`Invalid Presubmit run ID host`, func() {
-						e.PresubmitResult.PresubmitRunId.System = "!"
-						_, err := testSetPresubmitResult(e)
-						So(err, ShouldErrLike, "presubmit run system must be 'luci-cv'")
-					})
-					Convey(`Missing Presubmit run ID system-specific ID`, func() {
-						e.PresubmitResult.PresubmitRunId.Id = ""
-						_, err := testSetPresubmitResult(e)
-						So(err, ShouldErrLike, "presubmit run system-specific ID must be specified")
-					})
-					Convey(`Missing creation time`, func() {
-						e.PresubmitResult.CreationTime = nil
-						_, err := testSetPresubmitResult(e)
-						So(err, ShouldErrLike, "presubmit result: creation time must be specified")
-					})
+				Convey(`Invalid Presubmit run ID host`, func() {
+					e.PresubmitResult.PresubmitRunId.System = "!"
+					_, err := testInsertOrUpdate(e)
+					So(err, ShouldErrLike, "presubmit run system must be 'luci-cv'")
+				})
+				Convey(`Missing Presubmit run ID system-specific ID`, func() {
+					e.PresubmitResult.PresubmitRunId.Id = ""
+					_, err := testInsertOrUpdate(e)
+					So(err, ShouldErrLike, "presubmit run system-specific ID must be specified")
+				})
+				Convey(`Missing creation time`, func() {
+					e.PresubmitResult.CreationTime = nil
+					_, err := testInsertOrUpdate(e)
+					So(err, ShouldErrLike, "presubmit result: creation time must be specified")
 				})
 			})
 		})
 		Convey(`ReadPresubmitRunJoinStatistics`, func() {
 			Convey(`No data`, func() {
-				_, err := SetEntriesForTesting(ctx, nil)
+				_, err := SetEntriesForTesting(ctx, nil...)
 				So(err, ShouldBeNil)
 
 				results, err := ReadPresubmitRunJoinStatistics(span.Single(ctx))
@@ -275,7 +202,7 @@ func TestSpan(t *testing.T) {
 					NewEntry(6).WithBuildProject("alpha").WithBuildJoinedTime(reference.Add(-36 * time.Hour)).Build(),
 					NewEntry(7).WithBuildProject("beta").WithBuildJoinedTime(reference.Add(-36 * time.Hour)).WithPresubmitResult(nil).Build(),
 				}
-				_, err := SetEntriesForTesting(ctx, entriesToCreate)
+				_, err := SetEntriesForTesting(ctx, entriesToCreate...)
 				So(err, ShouldBeNil)
 
 				results, err := ReadPresubmitRunJoinStatistics(span.Single(ctx))
@@ -302,7 +229,7 @@ func TestSpan(t *testing.T) {
 		})
 		Convey(`ReadBuildJoinStatistics`, func() {
 			Convey(`No data`, func() {
-				_, err := SetEntriesForTesting(ctx, nil)
+				_, err := SetEntriesForTesting(ctx, nil...)
 				So(err, ShouldBeNil)
 
 				results, err := ReadBuildJoinStatistics(span.Single(ctx))
@@ -335,7 +262,7 @@ func TestSpan(t *testing.T) {
 					NewEntry(6).WithPresubmitProject("alpha").WithPresubmitJoinedTime(reference.Add(-36 * time.Hour)).Build(),
 					NewEntry(7).WithPresubmitProject("beta").WithPresubmitJoinedTime(reference.Add(-36 * time.Hour)).WithBuildResult(nil).Build(),
 				}
-				_, err := SetEntriesForTesting(ctx, entriesToCreate)
+				_, err := SetEntriesForTesting(ctx, entriesToCreate...)
 				So(err, ShouldBeNil)
 
 				results, err := ReadBuildJoinStatistics(span.Single(ctx))

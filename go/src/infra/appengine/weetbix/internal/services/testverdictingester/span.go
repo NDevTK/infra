@@ -101,7 +101,7 @@ type batch struct {
 	testResults []*spanner.Mutation
 }
 
-func batchTestResults(inv *testresults.IngestedInvocation, inputC chan []*rdbpb.TestVariant, outputC chan batch) {
+func batchTestResults(inv *testresults.IngestedInvocation, tvs []*rdbpb.TestVariant, outputC chan batch) {
 	// Must be selected such that no more than 20,000 mutations occur in
 	// one transaction in the worst case.
 	const batchSize = 1000
@@ -124,59 +124,57 @@ func batchTestResults(inv *testresults.IngestedInvocation, inputC chan []*rdbpb.
 	}
 
 	startBatch()
-	for tvs := range inputC {
-		for _, tv := range tvs {
-			// Limit batch size.
-			// Keep all results for one test variant in one batch, so that the
-			// TestVariantRealm record is kept together with the test results.
-			if len(trs) > batchSize {
-				outputBatch()
-				startBatch()
-			}
+	for _, tv := range tvs {
+		// Limit batch size.
+		// Keep all results for one test variant in one batch, so that the
+		// TestVariantRealm record is kept together with the test results.
+		if len(trs) > batchSize {
+			outputBatch()
+			startBatch()
+		}
 
-			tvr := testresults.TestVariantRealm{
-				Project:           inv.Project,
-				TestID:            tv.TestId,
-				VariantHash:       tv.VariantHash,
-				SubRealm:          inv.SubRealm,
-				Variant:           pbutil.VariantFromResultDB(tv.Variant),
-				LastIngestionTime: spanner.CommitTimestamp,
-			}
-			tvrs = append(tvrs, tvr)
+		tvr := testresults.TestVariantRealm{
+			Project:           inv.Project,
+			TestID:            tv.TestId,
+			VariantHash:       tv.VariantHash,
+			SubRealm:          inv.SubRealm,
+			Variant:           pbutil.VariantFromResultDB(tv.Variant),
+			LastIngestionTime: spanner.CommitTimestamp,
+		}
+		tvrs = append(tvrs, tvr)
 
-			exonerationStatus := resultdb.StatusFromExonerations(tv.Exonerations)
+		exonerationStatus := resultdb.StatusFromExonerations(tv.Exonerations)
 
-			// Group results into test runs and order them by start time.
-			resultsByRun := resultdb.GroupAndOrderTestResults(tv.Results)
-			for runIndex, run := range resultsByRun {
-				for resultIndex, inputTR := range run {
-					tr := testresults.TestResult{
-						Project:                      inv.Project,
-						TestID:                       tv.TestId,
-						PartitionTime:                inv.PartitionTime,
-						VariantHash:                  tv.VariantHash,
-						IngestedInvocationID:         inv.IngestedInvocationID,
-						RunIndex:                     int64(runIndex),
-						ResultIndex:                  int64(resultIndex),
-						IsUnexpected:                 !inputTR.Result.Expected,
-						Status:                       resultdb.TestResultStatus(inputTR.Result.Status),
-						ExonerationStatus:            exonerationStatus,
-						SubRealm:                     inv.SubRealm,
-						BuildStatus:                  inv.BuildStatus,
-						HasContributedToClSubmission: inv.HasContributedToClSubmission,
-						Changelists:                  inv.Changelists,
-					}
-					if inputTR.Result.Duration != nil {
-						d := new(time.Duration)
-						*d = inputTR.Result.Duration.AsDuration()
-						tr.RunDuration = d
-					}
-					// Convert the test result into a mutation immediately
-					// to avoid storing both the TestResult object and
-					// mutation object in memory until the transaction
-					// commits.
-					trs = append(trs, tr.SaveUnverified())
+		// Group results into test runs and order them by start time.
+		resultsByRun := resultdb.GroupAndOrderTestResults(tv.Results)
+		for runIndex, run := range resultsByRun {
+			for resultIndex, inputTR := range run {
+				tr := testresults.TestResult{
+					Project:                      inv.Project,
+					TestID:                       tv.TestId,
+					PartitionTime:                inv.PartitionTime,
+					VariantHash:                  tv.VariantHash,
+					IngestedInvocationID:         inv.IngestedInvocationID,
+					RunIndex:                     int64(runIndex),
+					ResultIndex:                  int64(resultIndex),
+					IsUnexpected:                 !inputTR.Result.Expected,
+					Status:                       resultdb.TestResultStatus(inputTR.Result.Status),
+					ExonerationStatus:            exonerationStatus,
+					SubRealm:                     inv.SubRealm,
+					BuildStatus:                  inv.BuildStatus,
+					HasContributedToClSubmission: inv.HasContributedToClSubmission,
+					Changelists:                  inv.Changelists,
 				}
+				if inputTR.Result.Duration != nil {
+					d := new(time.Duration)
+					*d = inputTR.Result.Duration.AsDuration()
+					tr.RunDuration = d
+				}
+				// Convert the test result into a mutation immediately
+				// to avoid storing both the TestResult object and
+				// mutation object in memory until the transaction
+				// commits.
+				trs = append(trs, tr.SaveUnverified())
 			}
 		}
 	}
@@ -294,7 +292,7 @@ func durationSinceUpdateToUpdateProbability(d time.Duration) float64 {
 }
 
 // recordTestResults records test results from an test-verdict-ingestion task.
-func recordTestResults(ctx context.Context, inv *testresults.IngestedInvocation, inputC chan []*rdbpb.TestVariant) error {
+func recordTestResults(ctx context.Context, inv *testresults.IngestedInvocation, tvs []*rdbpb.TestVariant) error {
 	const workerCount = 8
 
 	return parallel.WorkPool(workerCount, func(c chan<- func() error) {
@@ -302,7 +300,7 @@ func recordTestResults(ctx context.Context, inv *testresults.IngestedInvocation,
 
 		c <- func() error {
 			defer close(batchC)
-			batchTestResults(inv, inputC, batchC)
+			batchTestResults(inv, tvs, batchC)
 			return nil
 		}
 

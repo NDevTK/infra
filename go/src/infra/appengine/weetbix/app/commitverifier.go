@@ -22,6 +22,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"infra/appengine/weetbix/internal/cv"
+	"infra/appengine/weetbix/internal/ingestion/control"
 	ctlpb "infra/appengine/weetbix/internal/ingestion/control/proto"
 	pb "infra/appengine/weetbix/proto/v1"
 )
@@ -131,7 +132,7 @@ func cvPubSubHandlerImpl(ctx context.Context, request *http.Request) (project st
 			continue
 		}
 
-		buildID := buildID(bbHost, b.Id)
+		buildID := control.BuildID(bbHost, b.Id)
 		if _, ok := presubmitResultByBuildID[buildID]; ok {
 			logging.Warningf(ctx, "CV Run %s has build %s as tryjob multiple times, ignoring the second occurances", psRun.Id, buildID)
 			continue

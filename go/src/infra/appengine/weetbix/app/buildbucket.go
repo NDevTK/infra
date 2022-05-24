@@ -18,6 +18,7 @@ import (
 	"go.chromium.org/luci/server/router"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"infra/appengine/weetbix/internal/ingestion/control"
 	ctlpb "infra/appengine/weetbix/internal/ingestion/control/proto"
 )
 
@@ -123,7 +124,7 @@ func processBBMessage(ctx context.Context, message *buildBucketMessage) (process
 	isPresubmit := len(userAgents) == 1 && userAgents[0] == userAgentCQ
 
 	project := message.Build.Project
-	id := buildID(message.Hostname, message.Build.Id)
+	id := control.BuildID(message.Hostname, message.Build.Id)
 	result := &ctlpb.BuildResult{
 		CreationTime: timestamppb.New(bbv1.ParseTimestamp(message.Build.CreatedTs)),
 		Id:           message.Build.Id,

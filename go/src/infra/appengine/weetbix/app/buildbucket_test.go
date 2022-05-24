@@ -51,9 +51,14 @@ func TestHandleBuild(t *testing.T) {
 					So(processed, ShouldBeTrue)
 					So(project, ShouldEqual, "buildproject")
 
-					So(len(skdr.Tasks().Payloads()), ShouldEqual, 1)
-					task := skdr.Tasks().Payloads()[0].(*taskspb.IngestTestResults)
-					So(task, ShouldResembleProto, &taskspb.IngestTestResults{
+					So(len(skdr.Tasks().Payloads()), ShouldEqual, 2)
+					verdictsTask := skdr.Tasks().Payloads()[0].(*taskspb.IngestTestVerdicts)
+					// Don't bother doing extensive tests around the verdicts task. Will be
+					// merged back to ingest test results process soon.
+					So(verdictsTask, ShouldNotBeNil)
+
+					resultsTask := skdr.Tasks().Payloads()[1].(*taskspb.IngestTestResults)
+					So(resultsTask, ShouldResembleProto, &taskspb.IngestTestResults{
 						PartitionTime: timestamppb.New(t),
 						Build: &controlpb.BuildResult{
 							Host:         "bb-hostname",
@@ -62,7 +67,6 @@ func TestHandleBuild(t *testing.T) {
 							Project:      "buildproject",
 						},
 					})
-
 				}
 				Convey(`Standard CI Build`, func() {
 					test()
@@ -132,8 +136,11 @@ func TestHandleBuild(t *testing.T) {
 					So(processed, ShouldBeTrue)
 					So(project, ShouldEqual, "buildproject")
 
-					So(len(skdr.Tasks().Payloads()), ShouldEqual, 1)
-					task := skdr.Tasks().Payloads()[0].(*taskspb.IngestTestResults)
+					So(len(skdr.Tasks().Payloads()), ShouldEqual, 2)
+					verdictsTask := skdr.Tasks().Payloads()[0].(*taskspb.IngestTestVerdicts)
+					So(verdictsTask, ShouldNotBeNil)
+
+					task := skdr.Tasks().Payloads()[1].(*taskspb.IngestTestResults)
 					So(task, ShouldResembleProto, &taskspb.IngestTestResults{
 						PartitionTime: timestamppb.New(partitionTime),
 						Build: &controlpb.BuildResult{

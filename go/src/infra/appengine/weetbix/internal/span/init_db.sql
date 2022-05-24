@@ -330,6 +330,12 @@ CREATE TABLE Ingestions (
   PresubmitJoinedTime TIMESTAMP OPTIONS (allow_commit_timestamp=true),
   -- The Spanner commit time the row last last updated.
   LastUpdated TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true),
+  -- The number of test result ingestion tasks have been created for this
+  -- invocation.
+  -- Used to avoid duplicate scheduling of ingestion tasks. If the page_index
+  -- is the index of the page being processed, an ingestion task for the next
+  -- page will only be created if (page_index + 1) == TaskCount.
+  TaskCount INT64,
 ) PRIMARY KEY (BuildId)
 -- 90 days retention, plus some margin (10 days) to ensure ingestion records
 -- are always retained longer than the ingested results (acknowledging

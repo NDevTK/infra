@@ -41,7 +41,7 @@ import (
 	"infra/appengine/weetbix/internal/services/resultingester"
 	"infra/appengine/weetbix/internal/services/testvariantbqexporter"
 	"infra/appengine/weetbix/internal/services/testvariantupdator"
-	"infra/appengine/weetbix/internal/services/testverdictingester"
+	_ "infra/appengine/weetbix/internal/services/testverdictingester" // ensure task queue registered
 	weetbixpb "infra/appengine/weetbix/proto/v1"
 	"infra/appengine/weetbix/rpc"
 )
@@ -187,7 +187,6 @@ func main() {
 		resultcollector.RegisterTaskClass()
 		testvariantbqexporter.RegisterTaskClass()
 		testvariantupdator.RegisterTaskClass()
-		testverdictingester.RegisterTaskClass()
 
 		return nil
 	})
