@@ -493,16 +493,14 @@ message ChromeOS {
   Bluetooth bluetooth = 15;
 
   // Peripheral devices.
-  // ServoHost of the DUT setup.
-  ServoHost servo_host = 16;
-  // Chameleon device of the DUT
-  // setup.
+  // Servo setup of the DUT setup.
+  ServoHost servo = 16;
+  // Chameleon device of the DUT setup.
   Chameleon chameleon = 17;
-  // BluetoothPeer info of
-  // DUT setup.
-  repeated BluetoothPeer bluetooth_peer_hosts = 18;
-  // Array of Wifi Router peripheral devices
-  repeated WifiRouterHost wifi_router_hosts = 19;
+  // BluetoothPeer info of DUT setup.
+  repeated BluetoothPeer bluetooth_peers = 18;
+  // Array of Wifi Router peripheral devices.
+  repeated WifiRouterHost wifi_routers = 19;
   // PeripheralWifiState describes the state of peripheral wifi testbed.
   enum PeripheralWifiState {
     PERIPHERAL_WIFI_STATE_UNSPECIFIED = 0;
