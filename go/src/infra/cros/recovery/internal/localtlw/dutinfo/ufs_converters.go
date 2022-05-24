@@ -200,28 +200,28 @@ func convertRPMState(s ufslab.PeripheralState) tlw.RPMOutlet_State {
 	return tlw.RPMOutlet_UNSPECIFIED
 }
 
-var cr50Phases = map[ufslab.DutState_CR50Phase]tlw.Cr50Phase{
-	ufslab.DutState_CR50_PHASE_PREPVT: tlw.Cr50PhasePREPVT,
-	ufslab.DutState_CR50_PHASE_PVT:    tlw.Cr50PhasePVT,
+var cr50Phases = map[ufslab.DutState_CR50Phase]tlw.ChromeOS_Cr50Phase{
+	ufslab.DutState_CR50_PHASE_PREPVT: tlw.ChromeOS_CR50_PHASE_PREPVT,
+	ufslab.DutState_CR50_PHASE_PVT:    tlw.ChromeOS_CR50_PHASE_PVT,
 }
 
-func convertCr50Phase(p ufslab.DutState_CR50Phase) tlw.Cr50Phase {
+func convertCr50Phase(p ufslab.DutState_CR50Phase) tlw.ChromeOS_Cr50Phase {
 	if p, ok := cr50Phases[p]; ok {
 		return p
 	}
-	return tlw.Cr50PhaseUnspecified
+	return tlw.ChromeOS_CR50_PHASE_UNSPECIFIED
 }
 
-var cr50KeyEnvs = map[ufslab.DutState_CR50KeyEnv]tlw.Cr50KeyEnv{
-	ufslab.DutState_CR50_KEYENV_PROD: tlw.Cr50KeyEnvProd,
-	ufslab.DutState_CR50_KEYENV_DEV:  tlw.Cr50KeyEnvDev,
+var cr50KeyEnvs = map[ufslab.DutState_CR50KeyEnv]tlw.ChromeOS_Cr50KeyEnv{
+	ufslab.DutState_CR50_KEYENV_PROD: tlw.ChromeOS_CR50_KEYENV_PROD,
+	ufslab.DutState_CR50_KEYENV_DEV:  tlw.ChromeOS_CR50_KEYENV_DEV,
 }
 
-func convertCr50KeyEnv(p ufslab.DutState_CR50KeyEnv) tlw.Cr50KeyEnv {
+func convertCr50KeyEnv(p ufslab.DutState_CR50KeyEnv) tlw.ChromeOS_Cr50KeyEnv {
 	if p, ok := cr50KeyEnvs[p]; ok {
 		return p
 	}
-	return tlw.Cr50KeyEnvUnspecified
+	return tlw.ChromeOS_CR50_KEYENV_UNSPECIFIED
 }
 
 func convertServoTopologyItemFromUFS(i *ufslab.ServoTopologyItem) *tlw.ServoTopologyItem {

@@ -51,28 +51,25 @@ func ConvertAttachedDeviceToTlw(data *ufsAPI.AttachedDeviceData) (dut *tlw.Dut, 
 	}
 	// Determine type of device.
 	setup := tlw.DUTSetupTypeUnspecified
-	switch machine.GetAttachedDevice().GetDeviceType() {
-	case ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_ANDROID_PHONE,
-		ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_ANDROID_TABLET:
+	switch dt := machine.GetAttachedDevice().GetDeviceType(); dt {
+	case ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_ANDROID_PHONE, ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_ANDROID_TABLET:
 		setup = tlw.DUTSetupTypeAndroid
-	case ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_APPLE_PHONE,
-		ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_APPLE_TABLET:
-		setup = tlw.DUTSetupTypeIOS
+	// case ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_APPLE_PHONE, ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_APPLE_TABLET:
+	// 	setup = tlw.DUTSetupTypeIOS
 	default:
-		setup = tlw.DUTSetupTypeUnspecified
+		panic(fmt.Sprintf("Not supported device type %q", dt.String()))
 	}
 	return &tlw.Dut{
-		Id:              machine.GetName(),
-		Name:            machineLSE.GetHostname(),
-		Board:           machine.GetAttachedDevice().GetBuildTarget(),
-		Model:           machine.GetAttachedDevice().GetModel(),
-		SerialNumber:    machine.GetSerialNumber(),
+		Id:   machine.GetName(),
+		Name: machineLSE.GetHostname(),
+		Android: &tlw.Android{
+			Board:        machine.GetAttachedDevice().GetBuildTarget(),
+			Model:        machine.GetAttachedDevice().GetModel(),
+			SerialNumber: machine.GetSerialNumber(),
+		},
 		SetupType:       setup,
 		State:           dutstate.ConvertFromUFSState(machineLSE.GetResourceState()),
-		ExtraAttributes: map[string][]string{
-			// Attached device does not have pools. Need read from Scheduling unit.
-			// tlw.ExtraAttributePools: pools,
-		},
+		ExtraAttributes: map[string][]string{},
 		ProvisionedInfo: &tlw.ProvisionedInfo{},
 	}, nil
 }
@@ -142,12 +139,14 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		ServoHost:           createServoHost(p, ds),
 		ChameleonHost:       createChameleonHost(name, ds),
 		RPMOutlet:           createRPMOutlet(p.GetRpm(), ds),
-		Cr50Phase:           convertCr50Phase(ds.GetCr50Phase()),
-		Cr50KeyEnv:          convertCr50KeyEnv(ds.GetCr50KeyEnv()),
 		Audio: &tlw.DUTAudio{
 			LoopbackState: convertAudioLoopbackState(ds.GetAudioLoopbackDongle()),
 		},
-		DeviceSku: machine.GetChromeosMachine().GetSku(),
+		Chromeos: &tlw.ChromeOS{
+			Cr50Phase:  convertCr50Phase(ds.GetCr50Phase()),
+			Cr50KeyEnv: convertCr50KeyEnv(ds.GetCr50KeyEnv()),
+			DeviceSku:  machine.GetChromeosMachine().GetSku(),
+		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
 		},
@@ -212,9 +211,11 @@ func adaptUfsLabstationToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error
 		PowerSupplyType: tlw.PowerSupplyTypeACOnly,
 		Storage:         createDUTStorage(dc, ds),
 		RPMOutlet:       createRPMOutlet(l.GetRpm(), ds),
-		Cr50Phase:       convertCr50Phase(ds.GetCr50Phase()),
-		Cr50KeyEnv:      convertCr50KeyEnv(ds.GetCr50KeyEnv()),
-		DeviceSku:       machine.GetChromeosMachine().GetSku(),
+		Chromeos: &tlw.ChromeOS{
+			Cr50Phase:  convertCr50Phase(ds.GetCr50Phase()),
+			Cr50KeyEnv: convertCr50KeyEnv(ds.GetCr50KeyEnv()),
+			DeviceSku:  machine.GetChromeosMachine().GetSku(),
+		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: l.GetPools(),
 		},
@@ -323,7 +324,7 @@ func getUFSDutDataFromSpecs(dutID string, dut *tlw.Dut) *ufsAPI.UpdateDeviceReco
 	dutData.SerialNumber = dut.SerialNumber
 	dutData.HwID = dut.Hwid
 	// TODO: update logic if required by b/184391605
-	dutData.DeviceSku = dut.DeviceSku
+	dutData.DeviceSku = dut.GetChromeos().GetDeviceSku()
 	return dutData
 }
 
@@ -387,12 +388,12 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 		}
 	}
 	for us, ls := range cr50Phases {
-		if ls == dut.Cr50Phase {
+		if ls == dut.GetChromeos().GetCr50Phase() {
 			state.Cr50Phase = us
 		}
 	}
 	for us, ls := range cr50KeyEnvs {
-		if ls == dut.Cr50KeyEnv {
+		if ls == dut.GetChromeos().GetCr50KeyEnv() {
 			state.Cr50KeyEnv = us
 		}
 	}

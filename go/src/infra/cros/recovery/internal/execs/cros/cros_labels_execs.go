@@ -29,7 +29,7 @@ func updateDeviceSKUExec(ctx context.Context, info *execs.ExecInfo) error {
 		log.Debugf(ctx, "Device sku label not found in the DUT.")
 		return errors.Annotate(err, "update device sku label").Err()
 	}
-	info.RunArgs.DUT.DeviceSku = skuLabelOutput
+	info.GetChromeos().DeviceSku = skuLabelOutput
 	return nil
 }
 

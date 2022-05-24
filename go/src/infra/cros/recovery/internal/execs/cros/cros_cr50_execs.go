@@ -25,12 +25,12 @@ func updateCr50LabelExec(ctx context.Context, info *execs.ExecInfo) error {
 	// Example of the rwVersion: `0.5.40`
 	rwVersion, err := GetCr50FwVersion(ctx, r, CR50RegionRW)
 	if err != nil {
-		info.RunArgs.DUT.Cr50Phase = tlw.Cr50PhaseUnspecified
+		info.GetChromeos().Cr50Phase = tlw.ChromeOS_CR50_PHASE_UNSPECIFIED
 		return errors.Annotate(err, "update cr50 label").Err()
 	}
 	rwVersionComponents := strings.Split(rwVersion, ".")
 	if len(rwVersionComponents) < 2 {
-		info.RunArgs.DUT.Cr50Phase = tlw.Cr50PhaseUnspecified
+		info.GetChromeos().Cr50Phase = tlw.ChromeOS_CR50_PHASE_UNSPECIFIED
 		return errors.Reason("update cr50 label: the number of version component in the rw version is incorrect.").Err()
 	}
 	// Check the major version to determine prePVT vs PVT.
@@ -39,18 +39,17 @@ func updateCr50LabelExec(ctx context.Context, info *execs.ExecInfo) error {
 	// marjoRwVersion: integer value of 5.
 	majorRwVersion, err := strconv.ParseInt(rwVersionComponents[1], 10, 64)
 	if err != nil {
-		info.RunArgs.DUT.Cr50Phase = tlw.Cr50PhaseUnspecified
+		info.GetChromeos().Cr50Phase = tlw.ChromeOS_CR50_PHASE_UNSPECIFIED
 		return errors.Annotate(err, "update cr50 label").Err()
 	}
 	if majorRwVersion%2 != 0 {
 		// PVT image has a odd major version number.
 		// prePVT image has an even major version number.
-		info.RunArgs.DUT.Cr50Phase = tlw.Cr50PhasePVT
-		log.Infof(ctx, "update DUT's Cr50 to be %s", tlw.Cr50PhasePVT)
+		info.GetChromeos().Cr50Phase = tlw.ChromeOS_CR50_PHASE_PVT
 	} else {
-		info.RunArgs.DUT.Cr50Phase = tlw.Cr50PhasePREPVT
-		log.Infof(ctx, "update DUT's Cr50 to be %s", tlw.Cr50PhasePREPVT)
+		info.GetChromeos().Cr50Phase = tlw.ChromeOS_CR50_PHASE_PREPVT
 	}
+	log.Infof(ctx, "update DUT's Cr50 to be %s", info.GetChromeos().GetCr50Phase())
 	return nil
 }
 
@@ -59,7 +58,7 @@ func updateCr50KeyIdLabelExec(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
 	roKeyIDString, err := GetCr50FwKeyID(ctx, r, CR50RegionRO)
 	if err != nil {
-		info.RunArgs.DUT.Cr50KeyEnv = tlw.Cr50KeyEnvUnspecified
+		info.GetChromeos().Cr50KeyEnv = tlw.ChromeOS_CR50_KEYENV_UNSPECIFIED
 		return errors.Annotate(err, "update cr50 key id").Err()
 	}
 	// Trim "," due to the remaining of the regular expression.
@@ -70,16 +69,15 @@ func updateCr50KeyIdLabelExec(ctx context.Context, info *execs.ExecInfo) error {
 	roKeyIDString = strings.Trim(roKeyIDString, ",0x")
 	roKeyID, err := strconv.ParseInt(roKeyIDString, 16, 64)
 	if err != nil {
-		info.RunArgs.DUT.Cr50KeyEnv = tlw.Cr50KeyEnvUnspecified
+		info.GetChromeos().Cr50KeyEnv = tlw.ChromeOS_CR50_KEYENV_UNSPECIFIED
 		return errors.Annotate(err, "update cr50 key id").Err()
 	}
 	if roKeyID&(1<<2) != 0 {
-		info.RunArgs.DUT.Cr50KeyEnv = tlw.Cr50KeyEnvProd
-		log.Infof(ctx, "update DUT's Cr50 Key Env to be %s", tlw.Cr50KeyEnvProd)
+		info.GetChromeos().Cr50KeyEnv = tlw.ChromeOS_CR50_KEYENV_PROD
 	} else {
-		info.RunArgs.DUT.Cr50KeyEnv = tlw.Cr50KeyEnvDev
-		log.Infof(ctx, "update DUT's Cr50 Key Env to be %s", tlw.Cr50KeyEnvDev)
+		info.GetChromeos().Cr50KeyEnv = tlw.ChromeOS_CR50_KEYENV_DEV
 	}
+	log.Infof(ctx, "update DUT's Cr50 Key Env to be %s", info.GetChromeos().GetCr50KeyEnv())
 	return nil
 }
 
@@ -95,7 +93,7 @@ func reflashCr50FwExec(ctx context.Context, info *execs.ExecInfo) error {
 	waitTimeout := argsMap.AsDuration(ctx, "wait_timeout", 30, time.Second)
 	// Command to update cr50 firmware with post-reset and reboot the DUT.
 	updateCmd := `gsctool -ap /opt/google/cr50/firmware/cr50.bin.%s`
-	if info.RunArgs.DUT.Cr50Phase == tlw.Cr50PhasePREPVT {
+	if info.GetChromeos().GetCr50Phase() == tlw.ChromeOS_CR50_PHASE_PREPVT {
 		updateCmd = fmt.Sprintf(updateCmd, "prepvt")
 	} else {
 		updateCmd = fmt.Sprintf(updateCmd, "prod")
@@ -132,7 +130,7 @@ func reflashCr50FwExec(ctx context.Context, info *execs.ExecInfo) error {
 			return errors.Annotate(err, "reflash cr50 fw: cannot find error code").Err()
 		}
 		if errorCode != 1 {
-			return errors.Annotate(err, "reflash cr50 fw: fail to flash %q", info.RunArgs.DUT.Cr50Phase).Err()
+			return errors.Annotate(err, "reflash cr50 fw: fail to flash %q", info.GetChromeos().GetCr50Phase()).Err()
 		}
 	}
 	log.Debugf(ctx, "cr50 fw update successfully.")

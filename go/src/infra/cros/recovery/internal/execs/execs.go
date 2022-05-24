@@ -77,6 +77,22 @@ type ExecInfo struct {
 	ActionTimeout time.Duration
 }
 
+// GetAndroid returns Android device from DUT.
+func (i *ExecInfo) GetAndroid() *tlw.Android {
+	if i == nil || i.RunArgs == nil || i.RunArgs.DUT == nil {
+		return nil
+	}
+	return i.RunArgs.DUT.GetAndroid()
+}
+
+// GetChromeos returns ChromeOS device from DUT.
+func (i *ExecInfo) GetChromeos() *tlw.ChromeOS {
+	if i == nil || i.RunArgs == nil || i.RunArgs.DUT == nil {
+		return nil
+	}
+	return i.RunArgs.DUT.GetChromeos()
+}
+
 // Run runs exec function provided by this package by name.
 func Run(ctx context.Context, ei *ExecInfo) error {
 	e, ok := knownExecMap[ei.Name]

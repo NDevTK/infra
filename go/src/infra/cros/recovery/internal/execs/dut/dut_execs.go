@@ -57,11 +57,11 @@ func dutServolessExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // hasDutDeviceSkuActionExec verifies that DUT has the device sku label.
 func hasDutDeviceSkuActionExec(ctx context.Context, info *execs.ExecInfo) error {
-	deviceSkuLabel := info.RunArgs.DUT.DeviceSku
-	if deviceSkuLabel == "" {
+	deviceSku := info.GetChromeos().GetDeviceSku()
+	log.Debugf(ctx, "Device sku: %q.", deviceSku)
+	if deviceSku == "" {
 		return errors.Reason("dut device sku label is empty").Err()
 	}
-	log.Debugf(ctx, "dut device sku label: %s.", deviceSkuLabel)
 	return nil
 }
 
@@ -244,7 +244,7 @@ func setDutStateExec(ctx context.Context, info *execs.ExecInfo) error {
 // hasCr50PhaseExec verifies whether the Cr50 firmware is present on
 // the DUT.
 func hasCr50PhaseExec(ctx context.Context, info *execs.ExecInfo) error {
-	if d := info.RunArgs.DUT; d == nil || d.Cr50Phase == "" || d.Cr50Phase == tlw.Cr50PhaseUnspecified {
+	if info.GetChromeos().GetCr50Phase() == tlw.ChromeOS_CR50_PHASE_UNSPECIFIED {
 		return errors.Reason("has Cr50 phase: Cr50 firmware phase could not be determined").Err()
 	}
 	return nil

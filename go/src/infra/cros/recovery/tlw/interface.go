@@ -135,14 +135,8 @@ type Dut struct {
 	SetupType DUTSetupType
 	// PowerSupplyType describes the DUT's power supply type.
 	PowerSupplyType PowerSupplyType
-	// Cr50 firmware phase used on the DUT.
-	Cr50Phase Cr50Phase
-	// Key env for RW Cr50 firmware version.
-	Cr50KeyEnv Cr50KeyEnv
 	// Audio info.
 	Audio *DUTAudio
-	// Stock-keeping unit of the DUT.
-	DeviceSku string
 	// State of the DUT.
 	State dutstate.State
 
@@ -176,6 +170,22 @@ type Dut struct {
 	// All values has to be converted to string.
 	// Example: pools, force_flashing, restrictions and special abilities.
 	ExtraAttributes map[string][]string
+	// Chromeos hold specific data for ChromeOS device's data.
+	Chromeos *ChromeOS
+	// Android hold specific data for Android device's data.
+	Android *Android
+}
+
+// GetAndroid returns Android device.
+// The method created to mimic proto syntactic.
+func (d *Dut) GetAndroid() *Android {
+	return d.Android
+}
+
+// GetChromeos returns ChromeOS device.
+// The method created to mimic proto syntactic.
+func (d *Dut) GetChromeos() *ChromeOS {
+	return d.Chromeos
 }
 
 // PeripheralWifiState describes the state of peripheral wifi testbed.
