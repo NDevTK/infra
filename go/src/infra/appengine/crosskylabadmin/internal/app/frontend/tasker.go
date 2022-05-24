@@ -28,22 +28,6 @@ import (
 	"infra/appengine/crosskylabadmin/internal/app/frontend/internal/worker"
 )
 
-// CreateAuditTask kicks off an audit job.
-func CreateAuditTask(ctx context.Context, botID, taskname, actions string) (string, error) {
-	at := worker.AuditTaskWithActions(ctx, taskname, actions)
-	sc, err := clients.NewSwarmingClient(ctx, config.Get(ctx).Swarming.Host)
-	if err != nil {
-		return "", errors.Annotate(err, "failed to obtain swarming client").Err()
-	}
-	expSec := int64(24 * 60 * 60)
-	execTimeoutSecs := int64(8 * 60 * 60)
-	taskURL, err := runTaskByBotID(ctx, at, sc, botID, "", expSec, execTimeoutSecs)
-	if err != nil {
-		return "", errors.Annotate(err, "fail to create audit task for %s", botID).Err()
-	}
-	return taskURL, nil
-}
-
 func runTaskByBotID(ctx context.Context, at worker.Task, sc clients.SwarmingClient, botID, expectedState string, expirationSecs, executionTimeoutSecs int64) (string, error) {
 	cfg := config.Get(ctx)
 	tags := swarming.AddCommonTags(
