@@ -29,7 +29,7 @@ import {
   queryAssetAsync,
 } from './assetSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { Asset } from './Asset';
+import { setRightSideDrawerOpen } from '../utility/utilitySlice';
 
 export function AssetList() {
   const dispatch = useAppDispatch();
@@ -60,13 +60,19 @@ export function AssetList() {
   ];
   const handleEditClick = (cellValues: GridRenderCellParams) => {
     const selectedRow = cellValues.row;
+    handleRightSideDrawerOpen();
     dispatch(onSelectRecord({ assetId: selectedRow.assetId }));
     console.log(cellValues);
   };
 
   const handleCreateClick = () => {
     dispatch(clearSelectedRecord());
+    handleRightSideDrawerOpen();
   };
+
+  const handleRightSideDrawerOpen = () =>{
+    dispatch(setRightSideDrawerOpen());
+  }
 
   const handleRefreshClick = () => {
     dispatch(queryAssetAsync({ pageSize: 100, pageToken: '' }));
@@ -140,7 +146,6 @@ export function AssetList() {
           }}
         />
       </div>
-      <Asset />
     </div>
   );
 }

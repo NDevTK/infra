@@ -45,7 +45,7 @@ export const Asset = () => {
   return (
     <Box
       sx={{
-        width: 500,
+        width: 720,
         maxWidth: '100%',
         padding: 1,
       }}

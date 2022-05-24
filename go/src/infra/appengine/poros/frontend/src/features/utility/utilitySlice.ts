@@ -9,11 +9,13 @@ import { IUtilityService, UtilityService } from '../../api/utility_service';
 export interface UtilityState {
   userEmail: string;
   userPicture: string;
+  rightSideDrawerOpen: boolean;
 }
 
 const initialState: UtilityState = {
   userEmail: '',
   userPicture: '',
+  rightSideDrawerOpen: false,
 };
 
 export const fetchUserPictureAsync = createAsyncThunk(
@@ -37,6 +39,12 @@ export const utilitySlice = createSlice({
     setUserPicture: (state, action) => {
       state.userPicture = action.payload;
     },
+    setRightSideDrawerClose: (state) => {
+      state.rightSideDrawerOpen = false;
+    },
+    setRightSideDrawerOpen: (state) => {
+      state.rightSideDrawerOpen = true;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchUserPictureAsync.fulfilled, (state, action) => {
@@ -50,6 +58,6 @@ export const utilitySlice = createSlice({
 
 export const selectUtilityState = (state: RootState) => state.utility;
 
-export const { setUserPicture } = utilitySlice.actions;
+export const { setUserPicture, setRightSideDrawerClose, setRightSideDrawerOpen } = utilitySlice.actions;
 
 export default utilitySlice.reducer;

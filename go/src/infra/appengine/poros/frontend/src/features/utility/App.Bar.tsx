@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
-import Box from '@mui/material/Box';
+import Box, { BoxProps as MuiBoxProps } from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -21,14 +21,16 @@ import Avatar from '@mui/material/Avatar';
 import ScienceIcon from '@mui/icons-material/Science';
 import HelpIcon from '@mui/icons-material/Help';
 import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
+import { Drawer } from '@mui/material';
 import { Route, Routes, Link } from 'react-router-dom';
 
 import { Asset } from '../asset/Asset';
 import { AssetList } from '../asset/AssetList';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { fetchUserPictureAsync, logoutAsync } from './utilitySlice';
+import { fetchUserPictureAsync, logoutAsync, setRightSideDrawerClose } from './utilitySlice';
 
 const drawerWidth = 240;
+const rightSideDrawerWidth = 720;
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -64,6 +66,10 @@ interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
 }
 
+interface BoxProps extends MuiBoxProps {
+  rightSideDrawerOpen?: boolean;
+}
+
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })<AppBarProps>(({ theme, open }) => ({
@@ -82,7 +88,7 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-const Drawer = styled(MuiDrawer, {
+const LeftSideDrawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
   width: drawerWidth,
@@ -99,6 +105,26 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
+const CustomBox = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'rightSideDrawerOpen',
+})<BoxProps>(({ theme, rightSideDrawerOpen }) => ({
+  flexGrow: 1,
+  padding: theme.spacing(3),
+  transition: theme.transitions.create(['width', 'margin'], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  marginLeft: 0,
+  marginRight: 0,
+  ...(rightSideDrawerOpen && {
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginRight: rightSideDrawerWidth, 
+  }),
+}));
+
 export default function SideDrawerWithAppBar() {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -110,6 +136,10 @@ export default function SideDrawerWithAppBar() {
   dispatch(fetchUserPictureAsync());
   const userPicture: string = useAppSelector(
     (state) => state.utility.userPicture
+  );
+
+  const rightSideDrawerOpen: boolean = useAppSelector(
+    (state) => state.utility.rightSideDrawerOpen
   );
 
   const routes = [
@@ -146,6 +176,10 @@ export default function SideDrawerWithAppBar() {
   const handleLogout = () => {
     dispatch(logoutAsync());
   };
+
+  const handleRightSideDrawerClose = () =>{
+    dispatch(setRightSideDrawerClose());
+  }
 
   const renderMenu = (
     <Menu
@@ -202,7 +236,7 @@ export default function SideDrawerWithAppBar() {
           </Box>
         </Toolbar>
       </AppBar>
-      <Drawer variant="permanent" open={drawerOpen}>
+      <LeftSideDrawer variant="permanent" open={drawerOpen} anchor = "left">
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === 'rtl' ? (
@@ -264,10 +298,25 @@ export default function SideDrawerWithAppBar() {
             <ListItemText primary="Help" sx={{ opacity: drawerOpen ? 1 : 0 }} />
           </ListItemButton>
         </List>
-      </Drawer>
+      </LeftSideDrawer>
       {renderMenu}
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <CustomBox rightSideDrawerOpen = {rightSideDrawerOpen} component="main"  >
         <DrawerHeader />
+        <Drawer
+        sx={{ width: rightSideDrawerWidth }}
+        variant="persistent"
+        anchor="right"
+        open={rightSideDrawerOpen}
+      >
+        <DrawerHeader />
+        <DrawerHeader>
+          <IconButton onClick={handleRightSideDrawerClose}>
+          <ChevronRightIcon />
+          </IconButton>
+        </DrawerHeader>
+        <Divider />
+        <Asset />
+      </Drawer>
         <Routes>
           {routes.map((route) => (
             <Route
@@ -277,7 +326,7 @@ export default function SideDrawerWithAppBar() {
             ></Route>
           ))}
         </Routes>
-      </Box>
+      </CustomBox>
     </Box>
   );
 }
