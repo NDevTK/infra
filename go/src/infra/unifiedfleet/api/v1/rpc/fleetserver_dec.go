@@ -1371,23 +1371,6 @@ func (s *DecoratedFleet) ImportOSVlans(ctx context.Context, req *ImportOSVlansRe
 	return
 }
 
-func (s *DecoratedFleet) ImportStates(ctx context.Context, req *ImportStatesRequest) (rsp *status.Status, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "ImportStates", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.ImportStates(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "ImportStates", rsp, err)
-	}
-	return
-}
-
 func (s *DecoratedFleet) UpdateState(ctx context.Context, req *UpdateStateRequest) (rsp *models.StateRecord, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context

@@ -10,7 +10,6 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
-	"google.golang.org/genproto/googleapis/rpc/code"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
@@ -21,37 +20,6 @@ import (
 	"infra/unifiedfleet/app/model/state"
 	"infra/unifiedfleet/app/util"
 )
-
-func TestImportStates(t *testing.T) {
-	t.Parallel()
-	ctx := testingContext()
-	tf, validate := newTestFixtureWithContext(ctx, t)
-	defer validate()
-	Convey("Import machine lses", t, func() {
-		Convey("happy path", func() {
-			req := &api.ImportStatesRequest{
-				Source: &api.ImportStatesRequest_MachineDbSource{
-					MachineDbSource: &api.MachineDBSource{
-						Host: "fake_host",
-					},
-				},
-			}
-			res, err := tf.Fleet.ImportStates(ctx, req)
-			So(err, ShouldBeNil)
-			So(res.Code, ShouldEqual, code.Code_OK)
-
-			states, _, err := state.ListStateRecords(ctx, 100, "", nil)
-			So(err, ShouldBeNil)
-			So(api.ParseResources(states, "ResourceName"), ShouldResemble, []string{"hosts/esx-8", "hosts/web", "machines/machine1", "machines/machine2", "machines/machine3", "vms/vm578-m4"})
-			s, err := state.GetStateRecord(ctx, "machines/machine1")
-			So(err, ShouldBeNil)
-			So(s.GetState(), ShouldEqual, ufspb.State_STATE_SERVING)
-			s, err = state.GetStateRecord(ctx, "vms/vm578-m4")
-			So(err, ShouldBeNil)
-			So(s.GetState(), ShouldEqual, ufspb.State_STATE_NEEDS_REPAIR)
-		})
-	})
-}
 
 func TestUpdateState(t *testing.T) {
 	t.Parallel()

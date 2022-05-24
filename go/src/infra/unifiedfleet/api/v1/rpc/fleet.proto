@@ -271,9 +271,6 @@ service Fleet {
   // ImportOSVlans imports the ChromeOS vlans, ips, and dhcp configs.
   rpc ImportOSVlans(ImportOSVlansRequest) returns (google.rpc.Status);
 
-  // ImportStates imports states of all objects.
-  rpc ImportStates(ImportStatesRequest) returns (google.rpc.Status);
-
   // UpdateState updates the state for a resource.
   // If the state doesn't exist before, it will create the state record for the resource.
   rpc UpdateState(UpdateStateRequest) returns (models.StateRecord);
@@ -1710,13 +1707,6 @@ message ImportVlansRequest {
 }
 
 message ImportOSVlansRequest {
-  oneof source {
-    MachineDBSource machine_db_source = 1;
-    ConfigSource config_source = 2;
-  }
-}
-
-message ImportStatesRequest {
   oneof source {
     MachineDBSource machine_db_source = 1;
     ConfigSource config_source = 2;
