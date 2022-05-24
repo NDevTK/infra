@@ -1,6 +1,7 @@
 from typing import List
 import os
 
+import lib.constants as constants
 from .build_dir import BuildDirGenerator
 from .cache import CacheProvider
 from .cdb import CdbGenerator
@@ -20,7 +21,11 @@ class Conductor:
     self.cros_sdk = CrosSdk(self.setup)
     self.cache_provider = cache_provider
 
-  def Prepare(self, package_names: List[str], *, with_build: bool = False):
+  def Prepare(self,
+              package_names: List[str],
+              *,
+              with_build: bool = False,
+              ignore_unsupported: bool = False):
     """
     Does:
       * List packages:
@@ -28,6 +33,9 @@ class Conductor:
         * If not |package_names| - fetches all available packages.
       * If |with_build|:
         * Build packages.
+      * If |ignore_unsupported|:
+        * Ignore any packages marked as unsupported from processing as
+          well as their dependencies.
     """
 
     assert os.path.isdir(
@@ -35,8 +43,20 @@ class Conductor:
 
     package_sleuth = PackageSleuth(self.setup,
                                    cache=self.cache_provider.package_cache)
+
+    if ignore_unsupported:
+      supported_packages = [
+          pn for pn in package_names
+          if not pn in constants.TEMPORARY_UNSUPPORTED_PACKAGES
+      ]
+
+      g_logger.warn("Unsupported input packages: %s",
+                    (set(package_names).difference(supported_packages)))
+    else:
+      supported_packages = package_names
+
     packages_list, ignored_packages_list = package_sleuth.ListPackages(
-        packages_names=package_names)
+        packages_names=supported_packages)
 
     assert packages_list, 'No packages to work with'
     assert len(packages_list) == len(set([p.name for p in packages_list

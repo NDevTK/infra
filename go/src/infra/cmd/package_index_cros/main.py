@@ -124,6 +124,16 @@ def _BuildParser():
     String with space-separated list of full named
     packages to be ignored and skipped.""")
 
+  parser.add_argument(
+      '--ignore-unsupported',
+      '--ignore_unsupported',
+      action='store_true',
+      default=False,
+      dest='ignore_unsupported',
+      help=textwrap.dedent("""\
+    Ignore unsupported packages from the list of specified
+    packages when doing dependency resolution."""))
+
   compile_commands_args = parser.add_mutually_exclusive_group()
   compile_commands_args.add_argument('--compile-commands',
                                      '--compile_commands',
@@ -210,7 +220,10 @@ def main():
 
   cache_provider.package_cache = None
   conductor = Conductor(setup=setup, cache_provider=cache_provider)
-  conductor.Prepare(package_names=args.packages, with_build=args.with_build)
+  conductor.Prepare(
+      package_names=args.packages,
+      with_build=args.with_build,
+      ignore_unsupported=args.ignore_unsupported)
   conductor.DoMagic(
       cdb_output_file=args.compile_commands_file,
       targets_output_file=args.gn_targets_file,
