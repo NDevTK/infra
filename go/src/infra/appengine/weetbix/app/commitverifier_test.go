@@ -83,11 +83,6 @@ func TestHandleCVRun(t *testing.T) {
 					switch pl.(type) {
 					case *taskspb.IngestTestResults:
 						tasks = append(tasks, pl.(*taskspb.IngestTestResults))
-					case *taskspb.IngestTestVerdicts:
-						// No need to assert anything about test verdict
-						// tasks, these will only exist temporarily until
-						// the process is merged back into IngestTestResults.
-						break
 					default:
 						panic("unexpected task type")
 					}

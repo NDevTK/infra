@@ -19,7 +19,6 @@ import (
 	"infra/appengine/weetbix/internal/ingestion/control"
 	ctlpb "infra/appengine/weetbix/internal/ingestion/control/proto"
 	"infra/appengine/weetbix/internal/services/resultingester"
-	"infra/appengine/weetbix/internal/services/testverdictingester"
 	"infra/appengine/weetbix/internal/tasks/taskspb"
 )
 
@@ -234,8 +233,8 @@ func JoinPresubmitResult(ctx context.Context, presubmitResultByBuildID map[strin
 }
 
 // createTaskIfNeeded transactionally creates a test-result-ingestion task
-// and a test-verdict -ingestion task if all necessary data for the ingestion
-// is available. Returns true if the tasks are created.
+// if all necessary data for the ingestion is available. Returns true if the
+// task was created.
 func createTasksIfNeeded(ctx context.Context, e *control.Entry) bool {
 	if e.BuildResult == nil || (e.IsPresubmit && e.PresubmitResult == nil) {
 		return false
@@ -260,15 +259,6 @@ func createTasksIfNeeded(ctx context.Context, e *control.Entry) bool {
 	// after we return.
 	itrTask = proto.Clone(itrTask).(*taskspb.IngestTestResults)
 	resultingester.Schedule(ctx, itrTask)
-
-	itvTask := &taskspb.IngestTestVerdicts{
-		PartitionTime: itrTask.PartitionTime,
-		Build:         itrTask.Build,
-		PresubmitRun:  itrTask.PresubmitRun,
-		PageToken:     "",
-		PageIndex:     0,
-	}
-	testverdictingester.Schedule(ctx, itvTask)
 
 	return true
 }

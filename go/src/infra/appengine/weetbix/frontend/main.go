@@ -41,7 +41,6 @@ import (
 	"infra/appengine/weetbix/internal/services/resultingester"
 	"infra/appengine/weetbix/internal/services/testvariantbqexporter"
 	"infra/appengine/weetbix/internal/services/testvariantupdator"
-	_ "infra/appengine/weetbix/internal/services/testverdictingester" // ensure task queue registered
 	"infra/appengine/weetbix/internal/span"
 	weetbixpb "infra/appengine/weetbix/proto/v1"
 	"infra/appengine/weetbix/rpc"

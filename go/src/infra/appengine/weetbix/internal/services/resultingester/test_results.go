@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package testverdictingester
+package resultingester
 
 import (
 	"context"
@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/spanner"
-	"github.com/pkg/errors"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/sync/parallel"
 	rdbpbutil "go.chromium.org/luci/resultdb/pbutil"
 	rdbpb "go.chromium.org/luci/resultdb/proto/v1"
@@ -26,7 +26,7 @@ import (
 	"infra/appengine/weetbix/utils"
 )
 
-func extractIngestedInvocation(task *taskspb.IngestTestVerdicts, build *bbpb.Build, inv *rdbpb.Invocation) (*testresults.IngestedInvocation, error) {
+func extractIngestedInvocation(task *taskspb.IngestTestResults, build *bbpb.Build, inv *rdbpb.Invocation) (*testresults.IngestedInvocation, error) {
 	invID, err := rdbpbutil.ParseInvocationName(inv.Name)
 	if err != nil {
 		// This should never happen. Inv was originated from ResultDB.
@@ -34,6 +34,13 @@ func extractIngestedInvocation(task *taskspb.IngestTestVerdicts, build *bbpb.Bui
 	}
 
 	proj, subRealm := utils.SplitRealm(inv.Realm)
+	if proj == "" {
+		return nil, errors.Reason("invocation has invalid realm: %q", inv.Realm).Err()
+	}
+	if proj != task.Build.Project {
+		return nil, errors.Reason("invocation project (%q) does not match build project (%q) for build %s-%d",
+			proj, task.Build.Project, task.Build.Host, task.Build.Id).Err()
+	}
 
 	contributedToCLSubmission := false
 	if task.PresubmitRun != nil {
@@ -207,14 +214,14 @@ func recordTestResults(ctx context.Context, inv *testresults.IngestedInvocation,
 					return nil
 				})
 				if err != nil {
-					return errors.Wrap(err, "inserting test variant realms")
+					return errors.Annotate(err, "inserting test variant realms").Err()
 				}
 				_, err = span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
 					span.BufferWrite(ctx, batch.testResults...)
 					return nil
 				})
 				if err != nil {
-					return errors.Wrap(err, "inserting test results")
+					return errors.Annotate(err, "inserting test results").Err()
 				}
 				return nil
 			}

@@ -70,10 +70,7 @@ func TestIngest(t *testing.T) {
 			ImplicitlyExonerateBlockingFailures: false,
 		}
 		testIngestion := func(input []*rdbpb.TestVariant, expectedCFs []*bqpb.ClusteredFailureRow) {
-			ingestion := ingestor.Open(opts)
-			err := ingestion.Put(ctx, input)
-			So(err, ShouldBeNil)
-			err = ingestion.Flush(ctx)
+			err := ingestor.Ingest(ctx, opts, input)
 			So(err, ShouldBeNil)
 
 			insertions := clusteredFailures.InsertionsByProject["chromium"]

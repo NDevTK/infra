@@ -26,6 +26,9 @@ import (
 
 // Options represents parameters to the ingestion.
 type Options struct {
+	// The task index identifying the unique partition of the invocation
+	// being ingested.
+	TaskIndex int64
 	// Project is the LUCI Project.
 	Project string
 	// PartitionTime is the start of the retention period of test results
@@ -93,78 +96,62 @@ type Ingestion struct {
 	opts Options
 	// buffer is the set of failures which have been queued for ingestion but
 	// not yet written to chunks.
-	buffer []*cpb.Failure
-	// page is the number of the next page of failures to be written out.
-	page int
+	//buffer []*cpb.Failure
+	// chunkSeq is the number of the chunk failures written out.
+	chunkSeq int
 }
 
-// Open commences the ingestion of a new invocation, with the specified
-// options.
-func (i *Ingester) Open(opts Options) *Ingestion {
-	return &Ingestion{
-		ingester: i,
-		opts:     opts,
+// Ingest performs the ingestion of the specified test variants, with
+// the specified options.
+func (i *Ingester) Ingest(ctx context.Context, opts Options, tvs []*rdbpb.TestVariant) error {
+	buffer := make([]*cpb.Failure, 0, ChunkSize)
+
+	chunkSeq := 0
+	writeChunk := func() error {
+		if len(buffer) == 0 {
+			panic("logic error: attempt to write empty chunk")
+		}
+		if len(buffer) > ChunkSize {
+			panic("logic error: attempt to write oversize chunk")
+		}
+		// Copy failures buffer.
+		failures := make([]*cpb.Failure, len(buffer))
+		copy(failures, buffer)
+
+		// Reset buffer.
+		buffer = buffer[0:0]
+
+		for i, f := range failures {
+			f.ChunkIndex = int64(i)
+		}
+		chunk := &cpb.Chunk{
+			Failures: failures,
+		}
+		err := i.writeChunk(ctx, opts, chunkSeq, chunk)
+		chunkSeq++
+		return err
 	}
-}
 
-// Put buffers test results for clustering. They will be periodically written
-// out as chunks. Once all test results have been buffered, call Flush to
-// ensure all chunks are written out.
-func (i *Ingestion) Put(ctx context.Context, tvs []*rdbpb.TestVariant) error {
-	failures := failuresFromTestVariants(i.opts, tvs)
-	i.buffer = append(i.buffer, failures...)
+	for _, tv := range tvs {
+		failures := failuresFromTestVariant(opts, tv)
+		// Write out chunks as needed, keeping all failures of
+		// a test variant in one chunk, and the chunk size within
+		// ChunkSize.
+		if len(buffer)+len(failures) > ChunkSize {
+			if err := writeChunk(); err != nil {
+				return err
+			}
+		}
+		buffer = append(buffer, failures...)
+	}
 
-	for len(i.buffer) > ChunkSize {
-		chunk := i.takeChunk()
-		if err := i.writeChunk(ctx, chunk); err != nil {
+	// Write out the last chunk (if needed).
+	if len(buffer) > 0 {
+		if err := writeChunk(); err != nil {
 			return err
 		}
 	}
 	return nil
-}
-
-// Flush clears the ingestion buffer and writes out the last chunk (if any).
-// This should only be called once all calls to Put() have been made, otherwise
-// it introduces non-determinism in the chunks test failures appear in, which
-// breaks retry behaviour.
-func (i *Ingestion) Flush(ctx context.Context) error {
-	chunk := i.takeChunk()
-	if chunk == nil {
-		// All test failures have been written already.
-		return nil
-	}
-	if err := i.writeChunk(ctx, chunk); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (i *Ingestion) takeChunk() *cpb.Chunk {
-	end := ChunkSize
-	if end > len(i.buffer) {
-		end = len(i.buffer)
-	}
-	if end == 0 {
-		// No chunk to take.
-		return nil
-	}
-
-	// Copy the data, to avoid keeping the taken chunk's failures
-	// in memory once they have been written out.
-	// https://go.dev/blog/slices-intro
-	page := make([]*cpb.Failure, end)
-	copy(page, i.buffer[0:end])
-
-	newBuffer := make([]*cpb.Failure, len(i.buffer)-end)
-	copy(newBuffer, i.buffer[end:len(i.buffer)])
-	i.buffer = newBuffer
-
-	for i, f := range page {
-		f.ChunkIndex = int64(i)
-	}
-	return &cpb.Chunk{
-		Failures: page,
-	}
 }
 
 // writeChunk will, for the given chunk:
@@ -172,14 +159,13 @@ func (i *Ingestion) takeChunk() *cpb.Chunk {
 // - Cluster the failures.
 // - Write out the chunk clustering state.
 // - Perform analysis.
-func (i *Ingestion) writeChunk(ctx context.Context, chunk *cpb.Chunk) error {
+func (i *Ingester) writeChunk(ctx context.Context, opts Options, chunkSeq int, chunk *cpb.Chunk) error {
 	// Derive a chunkID deterministically from the ingested root invocation
-	// ID and page number. In case of retry this avoids ingesting the same
-	// data twice.
-	id := chunkID(i.opts.InvocationID, i.page)
-	i.page++
+	// ID, task index and chunk number. In case of retry this avoids ingesting
+	// the same data twice.
+	id := chunkID(opts.InvocationID, opts.TaskIndex, chunkSeq)
 
-	_, err := state.Read(span.Single(ctx), i.opts.Project, id)
+	_, err := state.Read(span.Single(ctx), opts.Project, id)
 	if err == nil {
 		// Chunk was already ingested as part of an earlier ingestion attempt.
 		// Do not attempt to ingest again.
@@ -192,24 +178,24 @@ func (i *Ingestion) writeChunk(ctx context.Context, chunk *cpb.Chunk) error {
 	// Upload the chunk. The objectID is randomly generated each time
 	// so the actual insertion of the chunk will be atomic with the
 	// ClusteringState row in Spanner.
-	objectID, err := i.ingester.chunkStore.Put(ctx, i.opts.Project, chunk)
+	objectID, err := i.chunkStore.Put(ctx, opts.Project, chunk)
 	if err != nil {
 		return err
 	}
 
 	clusterState := &state.Entry{
-		Project:       i.opts.Project,
+		Project:       opts.Project,
 		ChunkID:       id,
-		PartitionTime: i.opts.PartitionTime,
+		PartitionTime: opts.PartitionTime,
 		ObjectID:      objectID,
 	}
 
-	ruleset, err := reclustering.Ruleset(ctx, i.opts.Project, rules.StartingEpoch)
+	ruleset, err := reclustering.Ruleset(ctx, opts.Project, rules.StartingEpoch)
 	if err != nil {
 		return errors.Annotate(err, "obtain ruleset").Err()
 	}
 
-	cfg, err := compiledcfg.Project(ctx, i.opts.Project, config.StartingEpoch)
+	cfg, err := compiledcfg.Project(ctx, opts.Project, config.StartingEpoch)
 	if err != nil {
 		return errors.Annotate(err, "obtain config").Err()
 	}
@@ -221,7 +207,7 @@ func (i *Ingestion) writeChunk(ctx context.Context, chunk *cpb.Chunk) error {
 
 	updates := reclustering.NewPendingUpdates(ctx)
 	updates.Add(update)
-	if err := updates.Apply(ctx, i.ingester.analysis); err != nil {
+	if err := updates.Apply(ctx, i.analysis); err != nil {
 		return err
 	}
 	return nil
@@ -231,8 +217,8 @@ func (i *Ingestion) writeChunk(ctx context.Context, chunk *cpb.Chunk) error {
 // The identifier will be 32 lowercase hexadecimal characters. Generated
 // identifiers will be approximately evenly distributed through
 // the keyspace.
-func chunkID(rootInvocationID string, seq int) string {
-	content := fmt.Sprintf("%q:%v", rootInvocationID, seq)
+func chunkID(rootInvocationID string, taskIndex int64, chunkSeq int) string {
+	content := fmt.Sprintf("%q:%v:%v", rootInvocationID, taskIndex, chunkSeq)
 	sha256 := sha256.Sum256([]byte(content))
 	return hex.EncodeToString(sha256[:16])
 }

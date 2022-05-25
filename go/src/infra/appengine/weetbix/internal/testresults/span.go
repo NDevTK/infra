@@ -62,7 +62,9 @@ func SortChangelists(cls []Changelist) {
 
 // IngestedInvocation represents a row in the IngestedInvocations table.
 type IngestedInvocation struct {
-	Project                      string
+	Project string
+	// IngestedInvocationID is the ID of the (root) ResultDB invocation
+	// being ingested, excluding "invocations/".
 	IngestedInvocationID         string
 	SubRealm                     string
 	PartitionTime                time.Time

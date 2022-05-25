@@ -15,64 +15,68 @@ import (
 	pb "infra/appengine/weetbix/proto/v1"
 )
 
-func failuresFromTestVariants(opts Options, tvs []*rdbpb.TestVariant) []*cpb.Failure {
+func failuresFromTestVariant(opts Options, tv *rdbpb.TestVariant) []*cpb.Failure {
 	var failures []*cpb.Failure
-	for _, tv := range tvs {
-		// Whether there were any passed or expected results.
-		var hasPass bool
-		for _, tr := range tv.Results {
+	if tv.Status == rdbpb.TestVariantStatus_EXPECTED {
+		// Short circuit: There will be nothing in the test variant to
+		// ingest, as everything is expected.
+		return nil
+	}
+
+	// Whether there were any (non-skip) passed or expected results.
+	var hasPass bool
+	for _, tr := range tv.Results {
+		if tr.Result.Status != rdbpb.TestStatus_SKIP &&
+			(tr.Result.Status == rdbpb.TestStatus_PASS ||
+				tr.Result.Expected) {
+			hasPass = true
+		}
+	}
+
+	// Group test results by run and sort in order of start time.
+	resultsByRun := resultdb.GroupAndOrderTestResults(tv.Results)
+
+	resultIndex := 0
+	for _, run := range resultsByRun {
+		// Whether there were any passed or expected results in the run.
+		var testRunHasPass bool
+		for _, tr := range run {
 			if tr.Result.Status != rdbpb.TestStatus_SKIP &&
 				(tr.Result.Status == rdbpb.TestStatus_PASS ||
 					tr.Result.Expected) {
-				hasPass = true
+				testRunHasPass = true
 			}
 		}
 
-		// Group test results by run and sort in order of start time.
-		resultsByRun := resultdb.GroupAndOrderTestResults(tv.Results)
-
-		resultIndex := 0
-		for _, run := range resultsByRun {
-			// Whether there were any passed or expected results in the run.
-			var testRunHasPass bool
-			for _, tr := range run {
-				if tr.Result.Status != rdbpb.TestStatus_SKIP &&
-					(tr.Result.Status == rdbpb.TestStatus_PASS ||
-						tr.Result.Expected) {
-					testRunHasPass = true
-				}
-			}
-
-			for i, tr := range run {
-				if tr.Result.Expected || !isFailure(tr.Result.Status) {
-					// Only unexpected failures are ingested for clustering.
-					resultIndex++
-					continue
-				}
-
-				exoneration := resultdb.StatusFromExonerations(tv.Exonerations)
-				if !hasPass && opts.ImplicitlyExonerateBlockingFailures && exoneration == pb.ExonerationStatus_NOT_EXONERATED {
-					// TODO(meiring): Replace with separate build status field.
-					exoneration = pb.ExonerationStatus_IMPLICIT
-				}
-
-				testRun, err := resultdb.InvocationFromTestResultName(tr.Result.Name)
-				if err != nil {
-					// Should never happen, as the result name from ResultDB
-					// should be valid.
-					panic(err)
-				}
-				failure := failureFromResult(tv, tr.Result, opts, exoneration, testRun)
-				failure.IngestedInvocationResultIndex = int64(resultIndex)
-				failure.IngestedInvocationResultCount = int64(len(tv.Results))
-				failure.IsIngestedInvocationBlocked = !hasPass
-				failure.TestRunResultIndex = int64(i)
-				failure.TestRunResultCount = int64(len(run))
-				failure.IsTestRunBlocked = !testRunHasPass
-				failures = append(failures, failure)
-
+		for i, tr := range run {
+			if tr.Result.Expected || !isFailure(tr.Result.Status) {
+				// Only unexpected failures are ingested for clustering.
 				resultIndex++
+				continue
 			}
+
+			exoneration := resultdb.StatusFromExonerations(tv.Exonerations)
+			if !hasPass && opts.ImplicitlyExonerateBlockingFailures && exoneration == pb.ExonerationStatus_NOT_EXONERATED {
+				// TODO(meiring): Replace with separate build status field.
+				exoneration = pb.ExonerationStatus_IMPLICIT
+			}
+
+			testRun, err := resultdb.InvocationFromTestResultName(tr.Result.Name)
+			if err != nil {
+				// Should never happen, as the result name from ResultDB
+				// should be valid.
+				panic(err)
+			}
+			failure := failureFromResult(tv, tr.Result, opts, exoneration, testRun)
+			failure.IngestedInvocationResultIndex = int64(resultIndex)
+			failure.IngestedInvocationResultCount = int64(len(tv.Results))
+			failure.IsIngestedInvocationBlocked = !hasPass
+			failure.TestRunResultIndex = int64(i)
+			failure.TestRunResultCount = int64(len(run))
+			failure.IsTestRunBlocked = !testRunHasPass
+			failures = append(failures, failure)
+
+			resultIndex++
 		}
 	}
 	return failures

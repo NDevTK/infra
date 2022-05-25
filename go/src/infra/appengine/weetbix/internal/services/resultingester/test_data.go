@@ -5,9 +5,13 @@
 package resultingester
 
 import (
+	"time"
+
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/resultdb/pbutil"
 	rdbpb "go.chromium.org/luci/resultdb/proto/v1"
+	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var sampleVar = pbutil.Variant("k1", "v1")
@@ -18,7 +22,7 @@ var sampleTmd = &rdbpb.TestMetadata{
 func mockedGetBuildRsp(inv string) *bbpb.Build {
 	return &bbpb.Build{
 		Builder: &bbpb.BuilderID{
-			Project: "chromium",
+			Project: "project",
 			Bucket:  "ci",
 			Builder: "builder",
 		},
@@ -29,6 +33,20 @@ func mockedGetBuildRsp(inv string) *bbpb.Build {
 			},
 		},
 		Status: bbpb.Status_FAILURE,
+		Input: &bbpb.Build_Input{
+			GerritChanges: []*bbpb.GerritChange{
+				{
+					Host:     "mygerrit-review.googlesource.com",
+					Change:   12345,
+					Patchset: 5,
+				},
+				{
+					Host:     "anothergerrit-review.googlesource.com",
+					Change:   77788,
+					Patchset: 19,
+				},
+			},
+		},
 	}
 }
 
@@ -36,90 +54,46 @@ func mockedQueryTestVariantsRsp() *rdbpb.QueryTestVariantsResponse {
 	return &rdbpb.QueryTestVariantsResponse{
 		TestVariants: []*rdbpb.TestVariant{
 			{
-				TestId:       "ninja://test_new_failure",
-				VariantHash:  "hash",
-				Status:       rdbpb.TestVariantStatus_UNEXPECTED,
-				Variant:      pbutil.Variant("k1", "v1"),
-				TestMetadata: sampleTmd,
-				Results: []*rdbpb.TestResultBundle{
-					{
-						Result: &rdbpb.TestResult{
-							Name:   "invocations/build-1234/tests/ninja%3A%2F%2Ftest_new_failure/results/one",
-							Status: rdbpb.TestStatus_FAIL,
-							Tags:   pbutil.StringPairs("random_tag", "random_tag_value", "monorail_component", "Monorail>Component"),
-						},
-					},
-				},
-			},
-			{
-				TestId:      "ninja://test_known_flake",
-				VariantHash: "hash",
-				Status:      rdbpb.TestVariantStatus_UNEXPECTED,
-				Results: []*rdbpb.TestResultBundle{
-					{
-						Result: &rdbpb.TestResult{
-							Name:   "invocations/build-1234/tests/ninja%3A%2F%2Ftest_known_flake/results/one",
-							Status: rdbpb.TestStatus_FAIL,
-							Tags:   pbutil.StringPairs("os", "Mac", "monorail_component", "Monorail>Component"),
-						},
-					},
-				},
-			},
-			{
 				TestId:      "ninja://test_consistent_failure",
 				VariantHash: "hash",
-				Status:      rdbpb.TestVariantStatus_UNEXPECTED,
+				Status:      rdbpb.TestVariantStatus_EXONERATED,
+				Exonerations: []*rdbpb.TestExoneration{
+					// Test behaviour in the presence of multiple exoneration reasons.
+					{
+						Reason: rdbpb.ExonerationReason_OCCURS_ON_OTHER_CLS,
+					},
+					{
+						Reason: rdbpb.ExonerationReason_NOT_CRITICAL,
+					},
+					{
+						Reason: rdbpb.ExonerationReason_OCCURS_ON_MAINLINE,
+					},
+				},
 				Results: []*rdbpb.TestResultBundle{
 					{
 						Result: &rdbpb.TestResult{
-							Name:   "invocations/build-1234/tests/ninja%3A%2F%2Ftest_consistent_failure/results/one",
-							Status: rdbpb.TestStatus_FAIL,
+							Name:      "invocations/build-1234/tests/ninja%3A%2F%2Ftest_consistent_failure/results/one",
+							StartTime: timestamppb.New(time.Date(2010, time.March, 1, 0, 0, 0, 0, time.UTC)),
+							Status:    rdbpb.TestStatus_FAIL,
+							Expected:  false,
+							Duration:  durationpb.New(time.Second * 3),
 						},
 					},
 				},
 			},
+			// Should ignore for test variant analysis.
 			{
-				TestId:      "ninja://test_no_new_results",
+				TestId:      "ninja://test_expected",
 				VariantHash: "hash",
-				Status:      rdbpb.TestVariantStatus_UNEXPECTED,
+				Status:      rdbpb.TestVariantStatus_EXPECTED,
 				Results: []*rdbpb.TestResultBundle{
 					{
 						Result: &rdbpb.TestResult{
-							Name:   "invocations/build-1234/tests/ninja%3A%2F%2Ftest_no_new_results/results/one",
-							Status: rdbpb.TestStatus_FAIL,
-						},
-					},
-				},
-			},
-			// Should ignore.
-			{
-				TestId:      "ninja://test_skip",
-				VariantHash: "hash",
-				Status:      rdbpb.TestVariantStatus_UNEXPECTEDLY_SKIPPED,
-				Results: []*rdbpb.TestResultBundle{
-					{
-						Result: &rdbpb.TestResult{
-							Name:   "invocations/build-1234/tests/ninja%3A%2F%2Ftest_skip/results/one",
-							Status: rdbpb.TestStatus_SKIP,
-						},
-					},
-				},
-			},
-			{
-				TestId:      "ninja://test_new_flake",
-				VariantHash: "hash",
-				Status:      rdbpb.TestVariantStatus_FLAKY,
-				Results: []*rdbpb.TestResultBundle{
-					{
-						Result: &rdbpb.TestResult{
-							Name:   "invocations/build-1234/tests/ninja%3A%2F%2Ftest_new_flake/results/one",
-							Status: rdbpb.TestStatus_FAIL,
-						},
-					},
-					{
-						Result: &rdbpb.TestResult{
-							Name:   "invocations/build-1234/tests/ninja%3A%2F%2Ftest_new_flake/results/two",
-							Status: rdbpb.TestStatus_PASS,
+							Name:      "invocations/build-1234/tests/ninja%3A%2F%2Ftest_expected/results/one",
+							StartTime: timestamppb.New(time.Date(2010, time.May, 1, 0, 0, 0, 0, time.UTC)),
+							Status:    rdbpb.TestStatus_PASS,
+							Expected:  true,
+							Duration:  durationpb.New(time.Second * 5),
 						},
 					},
 				},
@@ -131,14 +105,121 @@ func mockedQueryTestVariantsRsp() *rdbpb.QueryTestVariantsResponse {
 				Results: []*rdbpb.TestResultBundle{
 					{
 						Result: &rdbpb.TestResult{
-							Name:   "invocations/build-1234/tests/ninja%3A%2F%2Ftest_has_unexpected/results/one",
-							Status: rdbpb.TestStatus_FAIL,
+							Name:      "invocations/invocation-0b/tests/ninja%3A%2F%2Ftest_has_unexpected/results/one",
+							StartTime: timestamppb.New(time.Date(2010, time.February, 1, 0, 0, 10, 0, time.UTC)),
+							Status:    rdbpb.TestStatus_FAIL,
+							Expected:  false,
 						},
 					},
 					{
 						Result: &rdbpb.TestResult{
-							Name:   "invocations/build-1234/tests/ninja%3A%2F%2Ftest_has_unexpected/results/two",
-							Status: rdbpb.TestStatus_PASS,
+							Name:      "invocations/invocation-0a/tests/ninja%3A%2F%2Ftest_has_unexpected/results/two",
+							StartTime: timestamppb.New(time.Date(2010, time.February, 1, 0, 0, 20, 0, time.UTC)),
+							Status:    rdbpb.TestStatus_PASS,
+							Expected:  true,
+						},
+					},
+				},
+			},
+			{
+				TestId:      "ninja://test_known_flake",
+				VariantHash: "hash_2",
+				Status:      rdbpb.TestVariantStatus_UNEXPECTED,
+				Variant:     pbutil.Variant("k1", "v2"),
+				Results: []*rdbpb.TestResultBundle{
+					{
+						Result: &rdbpb.TestResult{
+							Name:      "invocations/build-1234/tests/ninja%3A%2F%2Ftest_known_flake/results/one",
+							StartTime: timestamppb.New(time.Date(2010, time.February, 1, 0, 0, 0, 0, time.UTC)),
+							Status:    rdbpb.TestStatus_FAIL,
+							Expected:  false,
+							Duration:  durationpb.New(time.Second * 2),
+							Tags:      pbutil.StringPairs("os", "Mac", "monorail_component", "Monorail>Component"),
+						},
+					},
+				},
+			},
+			{
+				TestId:       "ninja://test_new_failure",
+				VariantHash:  "hash_1",
+				Status:       rdbpb.TestVariantStatus_UNEXPECTED,
+				Variant:      pbutil.Variant("k1", "v1"),
+				TestMetadata: sampleTmd,
+				Results: []*rdbpb.TestResultBundle{
+					{
+						Result: &rdbpb.TestResult{
+							Name:      "invocations/build-1234/tests/ninja%3A%2F%2Ftest_new_failure/results/one",
+							StartTime: timestamppb.New(time.Date(2010, time.January, 1, 0, 0, 0, 0, time.UTC)),
+							Status:    rdbpb.TestStatus_FAIL,
+							Expected:  false,
+							Duration:  durationpb.New(time.Second * 1),
+							Tags:      pbutil.StringPairs("random_tag", "random_tag_value", "monorail_component", "Monorail>Component"),
+						},
+					},
+				},
+			},
+			{
+				TestId:      "ninja://test_new_flake",
+				VariantHash: "hash",
+				Status:      rdbpb.TestVariantStatus_FLAKY,
+				Results: []*rdbpb.TestResultBundle{
+					{
+						Result: &rdbpb.TestResult{
+							Name:      "invocations/invocation-1234/tests/ninja%3A%2F%2Ftest_new_flake/results/two",
+							StartTime: timestamppb.New(time.Date(2010, time.January, 1, 0, 0, 20, 0, time.UTC)),
+							Status:    rdbpb.TestStatus_FAIL,
+							Expected:  false,
+							Duration:  durationpb.New(time.Second * 11),
+						},
+					},
+					{
+						Result: &rdbpb.TestResult{
+							Name:      "invocations/invocation-1234/tests/ninja%3A%2F%2Ftest_new_flake/results/one",
+							StartTime: timestamppb.New(time.Date(2010, time.January, 1, 0, 0, 10, 0, time.UTC)),
+							Status:    rdbpb.TestStatus_FAIL,
+							Expected:  false,
+							Duration:  durationpb.New(time.Second * 10),
+						},
+					},
+					{
+						Result: &rdbpb.TestResult{
+							Name:      "invocations/invocation-4567/tests/ninja%3A%2F%2Ftest_new_flake/results/three",
+							StartTime: timestamppb.New(time.Date(2010, time.January, 1, 0, 0, 15, 0, time.UTC)),
+							Status:    rdbpb.TestStatus_PASS,
+							Expected:  true,
+							Duration:  durationpb.New(time.Second * 12),
+						},
+					},
+				},
+			},
+			{
+				TestId:      "ninja://test_no_new_results",
+				VariantHash: "hash",
+				Status:      rdbpb.TestVariantStatus_UNEXPECTED,
+				Results: []*rdbpb.TestResultBundle{
+					{
+						Result: &rdbpb.TestResult{
+							Name:      "invocations/build-1234/tests/ninja%3A%2F%2Ftest_no_new_results/results/one",
+							StartTime: timestamppb.New(time.Date(2010, time.April, 1, 0, 0, 0, 0, time.UTC)),
+							Status:    rdbpb.TestStatus_FAIL,
+							Expected:  false,
+							Duration:  durationpb.New(time.Second * 4),
+						},
+					},
+				},
+			},
+			// Should ignore for test variant analysis.
+			{
+				TestId:      "ninja://test_skip",
+				VariantHash: "hash",
+				Status:      rdbpb.TestVariantStatus_UNEXPECTEDLY_SKIPPED,
+				Results: []*rdbpb.TestResultBundle{
+					{
+						Result: &rdbpb.TestResult{
+							Name:      "invocations/build-1234/tests/ninja%3A%2F%2Ftest_skip/results/one",
+							StartTime: timestamppb.New(time.Date(2010, time.February, 2, 0, 0, 0, 0, time.UTC)),
+							Status:    rdbpb.TestStatus_SKIP,
+							Expected:  false,
 						},
 					},
 				},
@@ -150,8 +231,9 @@ func mockedQueryTestVariantsRsp() *rdbpb.QueryTestVariantsResponse {
 				Results: []*rdbpb.TestResultBundle{
 					{
 						Result: &rdbpb.TestResult{
-							Name:   "invocations/build-1234/tests/ninja%3A%2F%2Ftest_unexpected_pass/results/one",
-							Status: rdbpb.TestStatus_PASS,
+							Name:     "invocations/build-1234/tests/ninja%3A%2F%2Ftest_unexpected_pass/results/one",
+							Status:   rdbpb.TestStatus_PASS,
+							Expected: false,
 						},
 					},
 				},
