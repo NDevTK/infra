@@ -75,8 +75,8 @@ func WrappedServoType(ctx context.Context, info *execs.ExecInfo) (*servo.ServoTy
 	servoType, err := servo.GetServoType(ctx, info.NewServod())
 	if err != nil {
 		log.Debugf(ctx, "Wrapped Servo Type: Could not read the servo type from servod.")
-		if info.RunArgs.DUT != nil && info.RunArgs.DUT.ServoHost != nil && info.RunArgs.DUT.ServoHost.ServodType != "" {
-			servoType = servo.NewServoType(info.RunArgs.DUT.ServoHost.ServodType)
+		if st := info.GetChromeos().GetServo().GetServodType(); st != "" {
+			servoType = servo.NewServoType(st)
 		} else {
 			return nil, errors.Reason("wrapped servo type: could not determine the servo type from servod control as well DUT Info.").Err()
 		}

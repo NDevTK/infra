@@ -28,12 +28,12 @@ func setServoStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 	// Verify if servo is supported.
 	// If servo is not supported the report failure.
-	if d := info.RunArgs.DUT; d == nil || d.ServoHost == nil {
+	if info.GetChromeos().GetServo() == nil {
 		return errors.Reason("set servo state: servo is not supported").Err()
 	}
-	log.Debugf(ctx, "Previous servo state: %s", info.RunArgs.DUT.ServoHost.State)
+	log.Debugf(ctx, "Previous servo state: %s", info.GetChromeos().GetServo().GetState())
 	if v, ok := tlw.ServoHost_State_value[newState]; ok {
-		info.RunArgs.DUT.ServoHost.State = tlw.ServoHost_State(v)
+		info.GetChromeos().GetServo().State = tlw.ServoHost_State(v)
 		log.Infof(ctx, "Set servo state to be: %s", newState)
 		return nil
 	}
@@ -49,14 +49,12 @@ func matchStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	if expectedState == "" {
 		return errors.Reason("match state: state not provided").Err()
 	}
-	if d := info.RunArgs.DUT; d != nil {
-		if sh := d.ServoHost; sh != nil {
-			currentState := strings.ToLower(sh.State.String())
-			if currentState != expectedState {
-				return errors.Reason("match state: state mismatch, expected: %q, but got %q", expectedState, currentState).Err()
-			}
-			return nil
+	if sh := info.GetChromeos().GetServo(); sh != nil {
+		currentState := strings.ToLower(sh.GetState().String())
+		if currentState != expectedState {
+			return errors.Reason("match state: state mismatch, expected: %q, but got %q", expectedState, currentState).Err()
 		}
+		return nil
 	}
 	return errors.Reason("match state: current servo state is unknown").Err()
 }

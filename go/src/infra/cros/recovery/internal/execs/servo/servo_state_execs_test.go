@@ -85,7 +85,11 @@ func TestSetServoStateExec(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
 			args := &execs.RunArgs{
-				DUT: &tlw.Dut{ServoHost: tt.servoHost},
+				DUT: &tlw.Dut{
+					Chromeos: &tlw.ChromeOS{
+						Servo: tt.servoHost,
+					},
+				},
 			}
 			info := &execs.ExecInfo{
 				RunArgs:    args,
@@ -156,7 +160,11 @@ func TestMatchServoStateExec(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
 			args := &execs.RunArgs{
-				DUT: &tlw.Dut{ServoHost: tt.servoHost},
+				DUT: &tlw.Dut{
+					Chromeos: &tlw.ChromeOS{
+						Servo: tt.servoHost,
+					},
+				},
 			}
 			info := &execs.ExecInfo{
 				RunArgs:    args,

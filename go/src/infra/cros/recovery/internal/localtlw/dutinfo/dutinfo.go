@@ -128,7 +128,6 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		Name:      name,
 		SetupType: setup,
 		State:     dutstate.ConvertFromUFSState(lc.GetResourceState()),
-		ServoHost: createServoHost(p, ds),
 		Chromeos: &tlw.ChromeOS{
 			Board:               machine.GetChromeosMachine().GetBuildTarget(),
 			Model:               machine.GetChromeosMachine().GetModel(),
@@ -137,6 +136,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			Phase:               make.GetDevicePhase().String()[len("PHASE_"):],
 			PowerSupplyType:     supplyType,
 			Audio:               audio,
+			Servo:               createServoHost(p, ds),
 			Cr50Phase:           convertCr50Phase(ds.GetCr50Phase()),
 			Cr50KeyEnv:          convertCr50KeyEnv(ds.GetCr50KeyEnv()),
 			DeviceSku:           machine.GetChromeosMachine().GetSku(),
@@ -333,13 +333,13 @@ func getUFSLabDataFromSpecs(dutID string, dut *tlw.Dut) *ufsAPI.UpdateDeviceReco
 	labData := &ufsAPI.UpdateDeviceRecoveryDataRequest_LabData{
 		WifiRouters: []*ufsAPI.UpdateDeviceRecoveryDataRequest_WifiRouter{},
 	}
-	if sh := dut.ServoHost; sh != nil {
-		labData.ServoType = sh.ServodType
-		labData.SmartUsbhub = sh.SmartUsbhubPresent
-		labData.ServoTopology = convertServoTopologyToUFS(sh.ServoTopology)
-		labData.ServoUsbDrive = sh.GetUsbDrive()
-	}
 	if ch := dut.GetChromeos(); ch != nil {
+		if s := ch.GetServo(); s != nil {
+			labData.ServoType = s.GetServodType()
+			labData.SmartUsbhub = s.GetSmartUsbhubPresent()
+			labData.ServoTopology = convertServoTopologyToUFS(s.GetServoTopology())
+			labData.ServoUsbDrive = s.GetUsbDrive()
+		}
 		for _, router := range ch.GetWifiRouters() {
 			labData.WifiRouters = append(labData.WifiRouters, &ufsAPI.UpdateDeviceRecoveryDataRequest_WifiRouter{
 				Hostname: router.GetName(),
@@ -375,15 +375,15 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 	state.WorkingBluetoothBtpeer = 0
 
 	// Update states for present components.
-	if sh := dut.ServoHost; sh != nil {
-		for us, ls := range servoStates {
-			if ls == sh.State {
-				state.Servo = us
-			}
-		}
-		state.ServoUsbState = convertHardwareStateToUFS(sh.UsbkeyState)
-	}
 	if chromeos := dut.GetChromeos(); chromeos != nil {
+		if s := chromeos.GetServo(); s != nil {
+			for us, ls := range servoStates {
+				if ls == s.GetState() {
+					state.Servo = us
+				}
+			}
+			state.ServoUsbState = convertHardwareStateToUFS(s.GetUsbkeyState())
+		}
 		if rpm := chromeos.GetRpmOutlet(); rpm != nil {
 			for us, ls := range rpmStates {
 				if ls == rpm.GetState() {

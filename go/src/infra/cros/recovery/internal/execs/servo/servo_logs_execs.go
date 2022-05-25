@@ -93,9 +93,13 @@ func getServosStartTime(ctx context.Context, logRoot string, servodPort int, run
 
 // regServoLogsStartPointExec cache latest servod start-time by logs.
 func regServoLogsStartPointExec(ctx context.Context, info *execs.ExecInfo) error {
+	sh := info.GetChromeos().GetServo()
+	if sh.GetName() == "" {
+		return errors.Reason("reg servo logs start point: servo is not present as part of dut info").Err()
+	}
 	logRoot := info.GetLogRoot()
 	servod := info.NewServod()
-	run := info.NewRunner(info.RunArgs.DUT.ServoHost.GetName())
+	run := info.NewRunner(sh.GetName())
 	log := info.NewLogger()
 	f := filepath.Join(logRoot, servodStarLogTimeFile)
 	if _, err := os.Stat(f); !base_error.Is(err, os.ErrNotExist) {
@@ -114,7 +118,11 @@ func regServoLogsStartPointExec(ctx context.Context, info *execs.ExecInfo) error
 
 // collectServodLogsExec collects servod logs from servo-host.
 func collectServodLogsExec(ctx context.Context, info *execs.ExecInfo) error {
-	resource := info.RunArgs.DUT.ServoHost.GetName()
+	sh := info.GetChromeos().GetServo()
+	if sh.GetName() == "" {
+		return errors.Reason("collect servo logs: servo is not present as part of dut info").Err()
+	}
+	resource := sh.GetName()
 	run := info.NewRunner(resource)
 	log := info.NewLogger()
 	logRoot := info.GetLogRoot()

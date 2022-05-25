@@ -38,7 +38,7 @@ func hasDutModelActionExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // dutServolessExec verifies that setup is servoless.
 func dutServolessExec(ctx context.Context, info *execs.ExecInfo) error {
-	if sh := info.RunArgs.DUT.ServoHost; sh.GetName() == "" && sh.GetContainerName() == "" {
+	if s := info.GetChromeos().GetServo(); s.GetName() == "" && s.GetContainerName() == "" {
 		log.Debugf(ctx, "DUT servoless confirmed!")
 		return nil
 	}
@@ -110,8 +110,8 @@ func dutCheckBoardExec(ctx context.Context, info *execs.ExecInfo) error {
 // servoVerifySerialNumberExec verifies that the servo host attached
 // to the DUT has a serial number configured.
 func servoVerifySerialNumberExec(ctx context.Context, info *execs.ExecInfo) error {
-	if d := info.RunArgs.DUT; d != nil && d.ServoHost != nil && d.ServoHost.SerialNumber != "" {
-		log.Debugf(ctx, "Servo Verify Serial Number : %q", d.ServoHost.SerialNumber)
+	if sn := info.GetChromeos().GetServo().GetSerialNumber(); sn != "" {
+		log.Debugf(ctx, "Servo Verify Serial Number : %q", sn)
 		return nil
 	}
 	return errors.Reason("servo verify serial number: serial number is not available").Err()
@@ -119,7 +119,7 @@ func servoVerifySerialNumberExec(ctx context.Context, info *execs.ExecInfo) erro
 
 // servoHostPresentExec verifies that servo host present under DUT.
 func servoHostPresentExec(ctx context.Context, info *execs.ExecInfo) error {
-	if d := info.RunArgs.DUT; d == nil || d.ServoHost == nil {
+	if info.GetChromeos().GetServo() == nil {
 		return errors.Reason("servo host present: data is not present").Err()
 	}
 	return nil
@@ -202,12 +202,9 @@ func dutServoStateMandatesManualRepairExec(ctx context.Context, info *execs.Exec
 		log.Debugf(ctx, "DUT Servo State Mandates Manual Repair: no states mentioned in the action, don't have enough information to check whether servo state requires manual repair on the DUT.")
 		return nil
 	}
-	sh := info.RunArgs.DUT.ServoHost
-	// Assume this will always be non-nil because actions using this
-	// exec will be conditioned in the config on availability of
-	// ServoHost.
+	// Assume this will always be non-nil because actions using this exec will be conditioned in the config on availability of ServoHost.
 	for _, s := range servoStates {
-		if state, ok := tlw.ServoHost_State_value[s]; ok && tlw.ServoHost_State(state) == sh.State {
+		if state, ok := tlw.ServoHost_State_value[s]; ok && tlw.ServoHost_State(state) == info.GetChromeos().GetServo().GetState() {
 			log.Debugf(ctx, "DUT Servo State Mandates Manual Repair")
 			return nil
 		}

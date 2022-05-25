@@ -18,7 +18,11 @@ import (
 func servoHostIsLabstationExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
 	expected := argsMap.AsString(ctx, "board", "labstation")
-	run := info.NewRunner(info.RunArgs.DUT.ServoHost.GetName())
+	servo := info.GetChromeos().GetServo()
+	if servo.GetName() == "" {
+		return errors.Reason("servo host is labstation: servo is not present as part of dut info").Err()
+	}
+	run := info.NewRunner(servo.GetName())
 	log := info.NewLogger()
 	board, err := cros.ReleaseBoard(ctx, run, log)
 	if err != nil {
@@ -32,7 +36,7 @@ func servoHostIsLabstationExec(ctx context.Context, info *execs.ExecInfo) error 
 
 // servoUsesServodContainerExec checks if the servo uses a servod-container.
 func servoUsesServodContainerExec(ctx context.Context, info *execs.ExecInfo) error {
-	if !IsContainerizedServoHost(ctx, info.RunArgs.DUT.ServoHost) {
+	if !IsContainerizedServoHost(ctx, info.GetChromeos().GetServo()) {
 		return errors.Reason("servo not using servod container").Err()
 	}
 	return nil

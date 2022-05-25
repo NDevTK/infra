@@ -94,10 +94,6 @@ type Dut struct {
 	SetupType DUTSetupType
 	// State of the DUT.
 	State dutstate.State
-
-	// Peripheral devices.
-	// ServoHost of the DUT setup.
-	ServoHost *ServoHost
 	// ProvisionedInfo tells provisioned info for the DUT.
 	ProvisionedInfo *ProvisionedInfo
 	// Extra attrubes of the DUT.

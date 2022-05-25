@@ -28,8 +28,12 @@ const (
 
 // createServoInUseFlagExec creates servo in-use flag file.
 func createServoInUseFlagExec(ctx context.Context, info *execs.ExecInfo) error {
+	servo := info.GetChromeos().GetServo()
+	if servo.GetName() == "" {
+		return errors.Reason("create servo in use flag: servo is not present as part of dut info").Err()
+	}
 	run := info.DefaultRunner()
-	if _, err := run(ctx, time.Minute, fmt.Sprintf(inUseFlagFileCreateSingleGlob, info.RunArgs.DUT.ServoHost.ServodPort)); err != nil {
+	if _, err := run(ctx, time.Minute, fmt.Sprintf(inUseFlagFileCreateSingleGlob, info.NewServod().Port())); err != nil {
 		// Print finish result as we ignore any errors.
 		log.Debugf(ctx, "Create in-use flag file: %s", err)
 	}
@@ -50,8 +54,12 @@ func hasNoServoInUseExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // removeServoInUseFlagExec removes servo in-use flag file.
 func removeServoInUseFlagExec(ctx context.Context, info *execs.ExecInfo) error {
-	run := info.NewRunner(info.RunArgs.DUT.ServoHost.GetName())
-	if _, err := run(ctx, time.Minute, fmt.Sprintf(inUseFlagFileRemoveSingleGlob, info.RunArgs.DUT.ServoHost.ServodPort)); err != nil {
+	servo := info.GetChromeos().GetServo()
+	if servo.GetName() == "" {
+		return errors.Reason("remove servo in use flag: servo is not present as part of dut info").Err()
+	}
+	run := info.NewRunner(servo.GetName())
+	if _, err := run(ctx, time.Minute, fmt.Sprintf(inUseFlagFileRemoveSingleGlob, info.NewServod().Port())); err != nil {
 		// Print finish result as we ignore any errors.
 		log.Debugf(ctx, "Remove in-use file flag: %s", err)
 	}

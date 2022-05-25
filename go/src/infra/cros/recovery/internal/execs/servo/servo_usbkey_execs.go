@@ -30,7 +30,11 @@ func servoUSBHasCROSStableImageExec(ctx context.Context, info *execs.ExecInfo) e
 	if expectedImage == "" {
 		return errors.Reason("servo usb-key has cros stable image: stable image is not specified").Err()
 	}
-	run := info.NewRunner(info.RunArgs.DUT.ServoHost.GetName())
+	sh := info.GetChromeos().GetServo()
+	if sh.GetName() == "" {
+		return errors.Reason("servo usb-key has cros stable image: servo is not present as part of dut info").Err()
+	}
+	run := info.NewRunner(sh.GetName())
 	servod := info.NewServod()
 	logger := info.NewLogger()
 	usbPath, err := servo.USBDrivePath(ctx, false, run, servod, logger)
@@ -107,8 +111,12 @@ func createMetricsRecordWhenUSBDriveReplaced(ctx context.Context, info *execs.Ex
 
 // servoUpdateUSBKeyHistoryExec will update the inventory record for the servo's usbkey stick with the latest information.
 func servoUpdateUSBKeyHistoryExec(ctx context.Context, info *execs.ExecInfo) error {
-	servoSerial := info.RunArgs.DUT.ServoHost.GetSerialNumber()
-	usbDrives, err := topology.USBDrives(ctx, info.NewRunner(info.RunArgs.DUT.ServoHost.GetName()), servoSerial)
+	sh := info.GetChromeos().GetServo()
+	if sh.GetName() == "" {
+		return errors.Reason("servo update usbkey history: servo is not present as part of dut info").Err()
+	}
+	servoSerial := sh.GetSerialNumber()
+	usbDrives, err := topology.USBDrives(ctx, info.NewRunner(sh.GetName()), servoSerial)
 	if err != nil {
 		return errors.Annotate(err, "servo update usbkey history").Err()
 	} else if len(usbDrives) > 1 {
@@ -120,7 +128,7 @@ func servoUpdateUSBKeyHistoryExec(ctx context.Context, info *execs.ExecInfo) err
 		// If we have device then we set time of detection of it.
 		newDevice.FirstSeenTime = timestamppb.New(time.Now())
 	}
-	oldDevice := info.RunArgs.DUT.ServoHost.UsbDrive
+	oldDevice := sh.GetUsbDrive()
 	// Two cases where we need to update the record for usbkey.
 	if oldDevice.GetSerial() == "" && newDevice.GetSerial() == "" {
 		log.Debugf(ctx, "USB drive not  found and was not in the setup.")
@@ -128,7 +136,7 @@ func servoUpdateUSBKeyHistoryExec(ctx context.Context, info *execs.ExecInfo) err
 		log.Debugf(ctx, "New USB drive detected.")
 		createMetricsRecordWhenNewUSBDriveFound(ctx, info, newDevice)
 		// Updating inventory record.
-		info.RunArgs.DUT.ServoHost.UsbDrive = newDevice
+		sh.UsbDrive = newDevice
 	} else if newDevice.GetSerial() == "" {
 		log.Debugf(ctx, "USB drive removed from the servo.")
 		createMetricsRecordWhenUSBDriveReplaced(ctx, info, oldDevice, newDevice)
@@ -137,7 +145,7 @@ func servoUpdateUSBKeyHistoryExec(ctx context.Context, info *execs.ExecInfo) err
 		createMetricsRecordWhenNewUSBDriveFound(ctx, info, newDevice)
 		createMetricsRecordWhenUSBDriveReplaced(ctx, info, oldDevice, newDevice)
 		// Updating inventory record.
-		info.RunArgs.DUT.ServoHost.UsbDrive = newDevice
+		sh.UsbDrive = newDevice
 	}
 	return nil
 }

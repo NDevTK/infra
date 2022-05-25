@@ -246,7 +246,8 @@ func (c *tlwClient) InitServod(ctx context.Context, req *tlw.InitServodRequest) 
 	if err != nil {
 		return errors.Annotate(err, "init servod %q", req.Resource).Err()
 	}
-	if dut.ServoHost == nil || dut.ServoHost.GetName() == "" {
+	chromeos := dut.GetChromeos()
+	if chromeos.GetServo().GetName() == "" {
 		return errors.Reason("init servod %q: servo is not found", req.Resource).Err()
 	}
 	if isServodContainer(dut) {
@@ -255,8 +256,8 @@ func (c *tlwClient) InitServod(ctx context.Context, req *tlw.InitServodRequest) 
 	}
 	if !req.GetNoServod() {
 		s, err := c.servodPool.Get(
-			localproxy.BuildAddr(dut.ServoHost.GetName()),
-			dut.ServoHost.GetServodPort(),
+			localproxy.BuildAddr(chromeos.GetServo().GetName()),
+			chromeos.GetServo().GetServodPort(),
 			func() ([]string, error) {
 				return servod.GenerateParams(req.Options), nil
 			})
@@ -268,7 +269,7 @@ func (c *tlwClient) InitServod(ctx context.Context, req *tlw.InitServodRequest) 
 		}
 	} else {
 		// Just try to stop servod if it is running.
-		if err := c.stopServodOnHardwareHost(ctx, dut); err != nil {
+		if err := c.stopServodOnHardwareHost(ctx, chromeos); err != nil {
 			log.Debugf(ctx, "(Not critical) Fail to stop servod as requested to prepare servo-host without servod daemon: %s", err)
 		}
 	}
@@ -398,7 +399,8 @@ func (c *tlwClient) StopServod(ctx context.Context, resourceName string) error {
 	if err != nil {
 		return errors.Annotate(err, "stop servod %q", resourceName).Err()
 	}
-	if dut.ServoHost == nil || dut.ServoHost.GetName() == "" {
+	chromeos := dut.GetChromeos()
+	if chromeos.GetServo().GetName() == "" {
 		return errors.Reason("stop servod %q: servo is not found", resourceName).Err()
 	}
 	if isServodContainer(dut) {
@@ -409,19 +411,19 @@ func (c *tlwClient) StopServod(ctx context.Context, resourceName string) error {
 			return errors.Annotate(err, "stop servod %q", resourceName).Err()
 		}
 	}
-	if err := c.stopServodOnHardwareHost(ctx, dut); err != nil {
+	if err := c.stopServodOnHardwareHost(ctx, chromeos); err != nil {
 		return errors.Annotate(err, "stop servod %q", resourceName).Err()
 	}
 	return nil
 }
 
 // stopServodOnHardwareHost stops servod on labstation and servo_v3.
-func (c *tlwClient) stopServodOnHardwareHost(ctx context.Context, dut *tlw.Dut) error {
+func (c *tlwClient) stopServodOnHardwareHost(ctx context.Context, chromeos *tlw.ChromeOS) error {
 	o := &tlw.ServodOptions{
-		ServodPort: dut.ServoHost.GetServodPort(),
+		ServodPort: chromeos.GetServo().GetServodPort(),
 	}
 	s, err := c.servodPool.Get(
-		localproxy.BuildAddr(dut.ServoHost.GetName()),
+		localproxy.BuildAddr(chromeos.GetServo().GetName()),
 		o.ServodPort,
 		func() ([]string, error) {
 			return servod.GenerateParams(o), nil
@@ -442,7 +444,8 @@ func (c *tlwClient) CallServod(ctx context.Context, req *tlw.CallServodRequest) 
 	if err != nil {
 		return generateFailCallServodResponse(req.GetResource(), err)
 	}
-	if dut.ServoHost == nil || dut.ServoHost.GetName() == "" {
+	chromeos := dut.GetChromeos()
+	if chromeos.GetServo().GetName() == "" {
 		return generateFailCallServodResponse(req.GetResource(), errors.Reason("call servod %q: servo not found", req.GetResource()).Err())
 	}
 	// For container connect to the container as it running on the same host.
@@ -475,7 +478,7 @@ func (c *tlwClient) callServodOnContainer(ctx context.Context, req *tlw.CallServ
 		return generateFailCallServodResponse(req.GetResource(), err)
 	}
 	timeout := req.GetTimeout().AsDuration()
-	rpc := tlw_xmlrpc.New(addr, int(dut.ServoHost.GetServodPort()))
+	rpc := tlw_xmlrpc.New(addr, int(dut.GetChromeos().GetServo().GetServodPort()))
 	if val, err := servod.Call(ctx, rpc, timeout, req.Method, req.Args); err != nil {
 		return generateFailCallServodResponse(req.GetResource(), err)
 	} else {
@@ -490,8 +493,8 @@ func (c *tlwClient) callServodOnContainer(ctx context.Context, req *tlw.CallServ
 func (c *tlwClient) callServodOnHost(ctx context.Context, req *tlw.CallServodRequest, dut *tlw.Dut) *tlw.CallServodResponse {
 	// For labstation using port forward by ssh.
 	s, err := c.servodPool.Get(
-		localproxy.BuildAddr(dut.ServoHost.GetName()),
-		dut.ServoHost.GetServodPort(), nil)
+		localproxy.BuildAddr(dut.GetChromeos().GetServo().GetName()),
+		dut.GetChromeos().GetServo().GetServodPort(), nil)
 	if err != nil {
 		return generateFailCallServodResponse(req.GetResource(), err)
 	}
@@ -786,11 +789,11 @@ func (c *tlwClient) cacheDevice(dut *tlw.Dut) {
 	c.devices[name] = dut
 	c.hostToParents[name] = name
 	c.hostTypes[dut.Name] = hostTypeCros
-	if dut.ServoHost != nil && dut.ServoHost.GetName() != "" {
-		c.hostTypes[dut.ServoHost.GetName()] = hostTypeServo
-		c.hostToParents[dut.ServoHost.GetName()] = name
-	}
 	if chromeos := dut.GetChromeos(); chromeos != nil {
+		if s := chromeos.GetServo(); s.GetName() != "" {
+			c.hostTypes[s.GetName()] = hostTypeServo
+			c.hostToParents[s.GetName()] = name
+		}
 		for _, bt := range chromeos.GetBluetoothPeers() {
 			c.hostTypes[bt.GetName()] = hostTypeBtPeer
 			c.hostToParents[bt.GetName()] = name
@@ -815,11 +818,11 @@ func (c *tlwClient) unCacheDevice(dut *tlw.Dut) {
 	name := dut.Name
 	delete(c.hostToParents, name)
 	delete(c.hostTypes, name)
-	if dut.ServoHost != nil && dut.ServoHost.GetName() != "" {
-		delete(c.hostTypes, dut.ServoHost.GetName())
-		delete(c.hostToParents, dut.ServoHost.GetName())
-	}
 	if chromeos := dut.GetChromeos(); chromeos != nil {
+		if sh := chromeos.GetServo(); sh.GetName() != "" {
+			delete(c.hostTypes, sh.GetName())
+			delete(c.hostToParents, sh.GetName())
+		}
 		for _, bt := range chromeos.GetBluetoothPeers() {
 			delete(c.hostTypes, bt.GetName())
 			delete(c.hostToParents, bt.GetName())
@@ -924,8 +927,5 @@ func isServodContainer(d *tlw.Dut) bool {
 
 // servoContainerName returns container name specified for servo-host.
 func servoContainerName(d *tlw.Dut) string {
-	if d == nil || d.ServoHost == nil {
-		return ""
-	}
-	return d.ServoHost.ContainerName
+	return d.GetChromeos().GetServo().GetContainerName()
 }

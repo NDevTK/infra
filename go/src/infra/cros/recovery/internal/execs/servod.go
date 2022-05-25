@@ -83,7 +83,7 @@ func (s *iServod) Has(ctx context.Context, command string) error {
 
 // Port provides port used for running servod daemon.
 func (s *iServod) Port() int {
-	return int(s.dut.ServoHost.GetServodPort())
+	return int(s.dut.GetChromeos().GetServo().GetServodPort())
 }
 
 // packToXMLRPCValues packs values to XMLRPC structs.

@@ -372,7 +372,7 @@ func runDUTPlans(ctx context.Context, dut *tlw.Dut, c *config.Configuration, arg
 		for _, planName := range planNames {
 			resources := collectResourcesForPlan(planName, execArgs.DUT)
 			for _, resource := range resources {
-				if sh := execArgs.DUT.ServoHost; sh != nil && sh.Name == resource && sh.ContainerName != "" {
+				if sh := execArgs.DUT.GetChromeos().GetServo(); sh.GetName() == resource && sh.GetContainerName() != "" {
 					continue
 				}
 				if err := localproxy.RegHost(ctx, resource, jumpHostForLocalProxy); err != nil {
@@ -453,8 +453,8 @@ func collectResourcesForPlan(planName string, dut *tlw.Dut) []string {
 			return []string{dut.Name}
 		}
 	case config.PlanServo:
-		if dut.ServoHost != nil {
-			return []string{dut.ServoHost.GetName()}
+		if s := dut.GetChromeos().GetServo(); s != nil {
+			return []string{s.GetName()}
 		}
 	case config.PlanBluetoothPeer:
 		var resources []string

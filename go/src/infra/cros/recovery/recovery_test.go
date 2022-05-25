@@ -198,8 +198,10 @@ func TestRunDUTPlan(t *testing.T) {
 		ctx := context.Background()
 		dut := &tlw.Dut{
 			Name: "test_dut",
-			ServoHost: &tlw.ServoHost{
-				Name: "servo_host",
+			Chromeos: &tlw.ChromeOS{
+				Servo: &tlw.ServoHost{
+					Name: "servo_host",
+				},
 			},
 		}
 		args := &RunArgs{
@@ -273,8 +275,10 @@ func TestRunDUTPlan(t *testing.T) {
 		ctx := context.Background()
 		dut := &tlw.Dut{
 			Name: "test_dut",
-			ServoHost: &tlw.ServoHost{
-				Name: "servo_host",
+			Chromeos: &tlw.ChromeOS{
+				Servo: &tlw.ServoHost{
+					Name: "servo_host",
+				},
 			},
 		}
 		args := &RunArgs{

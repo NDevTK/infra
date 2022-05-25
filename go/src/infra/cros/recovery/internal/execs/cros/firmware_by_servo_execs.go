@@ -19,7 +19,7 @@ import (
 
 func readGbbFlagsByServoExec(ctx context.Context, info *execs.ExecInfo) error {
 	servod := info.NewServod()
-	run := info.NewRunner(info.RunArgs.DUT.ServoHost.GetName())
+	run := info.NewRunner(info.GetChromeos().GetServo().GetName())
 	req := &firmware.ReadAPInfoRequest{
 		FilePath: defaultAPFilePath(info.RunArgs.DUT),
 		GBBFlags: true,
@@ -57,7 +57,7 @@ func readGbbFlagsByServoExec(ctx context.Context, info *execs.ExecInfo) error {
 
 func checkIfApHasDevSignedImageExec(ctx context.Context, info *execs.ExecInfo) error {
 	servod := info.NewServod()
-	run := info.NewRunner(info.RunArgs.DUT.ServoHost.GetName())
+	run := info.NewRunner(info.GetChromeos().GetServo().GetName())
 	req := &firmware.ReadAPInfoRequest{
 		FilePath: defaultAPFilePath(info.RunArgs.DUT),
 		Keys:     true,
@@ -75,7 +75,7 @@ func checkIfApHasDevSignedImageExec(ctx context.Context, info *execs.ExecInfo) e
 
 // Please be sure that.
 func removeAPFileFromServoHostExec(ctx context.Context, info *execs.ExecInfo) error {
-	run := info.NewRunner(info.RunArgs.DUT.ServoHost.GetName())
+	run := info.NewRunner(info.GetChromeos().GetServo().GetName())
 	p := defaultAPFilePath(info.RunArgs.DUT)
 	if _, err := run(ctx, 30*time.Second, "rm", "-f", p); err != nil {
 		// Do not fail if we cannot remove the file.
@@ -93,7 +93,7 @@ func setGbbFlagsByServoExec(ctx context.Context, info *execs.ExecInfo) error {
 		UpdateGBBFlags: true,
 	}
 	servod := info.NewServod()
-	run := info.NewRunner(info.RunArgs.DUT.ServoHost.GetName())
+	run := info.NewRunner(info.GetChromeos().GetServo().GetName())
 	if err := firmware.SetApInfoByServo(ctx, req, run, servod, info.NewLogger()); err != nil {
 		return errors.Annotate(err, "set gbb flags").Err()
 	}
@@ -149,7 +149,7 @@ func updateFwWithFwImageByServo(ctx context.Context, info *execs.ExecInfo) error
 		GBBFlags:             am.AsString(ctx, "gbb_flags", ""),
 	}
 	servod := info.NewServod()
-	run := info.NewRunner(info.RunArgs.DUT.ServoHost.GetName())
+	run := info.NewRunner(info.GetChromeos().GetServo().GetName())
 	err = firmware.InstallFwFromFwImage(ctx, req, run, servod, info.NewLogger())
 	return errors.Annotate(err, mn).Err()
 }

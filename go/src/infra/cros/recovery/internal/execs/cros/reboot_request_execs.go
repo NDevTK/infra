@@ -27,7 +27,7 @@ const (
 // createRebootRequestExec creates reboot flag file request.
 func createRebootRequestExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
-	_, err := run(ctx, time.Minute, fmt.Sprintf(rebootRequestCreateSingleGlob, info.RunArgs.DUT.ServoHost.ServodPort))
+	_, err := run(ctx, time.Minute, fmt.Sprintf(rebootRequestCreateSingleGlob, info.NewServod().Port()))
 	if err != nil {
 		// Print finish result as we ignore any errors.
 		log.Debugf(ctx, "Create the reboot request: %s", err)
@@ -58,8 +58,12 @@ func removeAllRebootRequestsExec(ctx context.Context, info *execs.ExecInfo) erro
 
 // removeRebootRequestExec removes reboot flag file request.
 func removeRebootRequestExec(ctx context.Context, info *execs.ExecInfo) error {
-	run := info.NewRunner(info.RunArgs.DUT.ServoHost.GetName())
-	if _, err := run(ctx, time.Minute, fmt.Sprintf(rebootRequestRemoveSingleGlob, info.RunArgs.DUT.ServoHost.ServodPort)); err != nil {
+	servo := info.GetChromeos().GetServo()
+	if servo.GetName() == "" {
+		return errors.Reason("remove servo in use flag: servo is not present as part of dut info").Err()
+	}
+	run := info.NewRunner(servo.GetName())
+	if _, err := run(ctx, time.Minute, fmt.Sprintf(rebootRequestRemoveSingleGlob, info.NewServod().Port())); err != nil {
 		// Print finish result as we ignore any errors.
 		log.Debugf(ctx, "Remove the reboot request: %s", err)
 	}

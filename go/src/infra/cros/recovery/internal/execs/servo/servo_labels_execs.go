@@ -16,11 +16,15 @@ import (
 
 // updateServoTypeLabelExec updates DUT's servo type to the correct servo type string.
 func updateServoTypeLabelExec(ctx context.Context, info *execs.ExecInfo) error {
+	sh := info.GetChromeos().GetServo()
+	if sh.GetName() == "" {
+		return errors.Reason("update servo type: servo is not present as part of dut info").Err()
+	}
 	servoType, err := servo.GetServoType(ctx, info.NewServod())
 	if err != nil {
 		return errors.Annotate(err, "update servo type label").Err()
 	}
-	info.RunArgs.DUT.ServoHost.ServodType = servoType.String()
+	sh.ServodType = servoType.String()
 	log.Infof(ctx, "Set DUT's servo type to be: %s", servoType)
 	return nil
 }
