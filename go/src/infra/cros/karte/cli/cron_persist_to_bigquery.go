@@ -15,6 +15,7 @@ import (
 
 	kartepb "infra/cros/karte/api"
 	"infra/cros/karte/client"
+	"infra/cros/karte/internal/commonflags"
 	"infra/cros/karte/internal/errors"
 	"infra/cros/karte/internal/site"
 )
@@ -27,6 +28,7 @@ var CronPersistToBigquery = &subcommands.Command{
 	LongDesc:  `Call the cron-persist-to-bigquery cron job`,
 	CommandRun: func() subcommands.CommandRun {
 		r := &cronPersistToBigqueryRun{}
+		r.commonFlags.Register(&r.Flags)
 		r.authFlags.Register(&r.Flags, site.DefaultAuthOptions)
 		return r
 	},
@@ -35,7 +37,8 @@ var CronPersistToBigquery = &subcommands.Command{
 // cronPersistToBigqueryRun runs the command.
 type cronPersistToBigqueryRun struct {
 	subcommands.CommandRunBase
-	authFlags authcli.Flags
+	authFlags   authcli.Flags
+	commonFlags commonflags.Flags
 }
 
 // Run logs an error message if there is one and returns an exit status.
@@ -57,7 +60,7 @@ func (c *cronPersistToBigqueryRun) innerRun(ctx context.Context, a subcommands.A
 	if err != nil {
 		return errors.Annotate(err, "persist action range").Err()
 	}
-	kClient, err := client.NewCronClient(ctx, client.DevConfig(authOptions))
+	kClient, err := client.NewCronClient(ctx, c.commonFlags.MustSelectKarteConfig(authOptions))
 	if err != nil {
 		return errors.Annotate(err, "persist action range").Err()
 	}
