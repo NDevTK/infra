@@ -92,8 +92,6 @@ type Dut struct {
 	Name string
 	// SetupType describes the setup of the DUT, which affects how it is verified/repaired.
 	SetupType DUTSetupType
-	// Audio info.
-	Audio *DUTAudio
 	// State of the DUT.
 	State dutstate.State
 

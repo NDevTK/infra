@@ -127,7 +127,7 @@ func servoHostPresentExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // dutInAudioBoxExec checks if DUT is in audio box.
 func dutInAudioBoxExec(ctx context.Context, info *execs.ExecInfo) error {
-	if d := info.RunArgs.DUT; d == nil || d.Audio == nil || !d.Audio.GetInBox() {
+	if info.GetChromeos().GetAudio().GetInBox() {
 		return errors.Reason("is audio box: is not in audio-box").Err()
 	}
 	return nil

@@ -35,7 +35,7 @@ func updateDeviceSKUExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // isAudioLoopBackStateWorkingExec checks if the DUT's audio loop back state has already been in the working state.
 func isAudioLoopBackStateWorkingExec(ctx context.Context, info *execs.ExecInfo) error {
-	if info.RunArgs.DUT.Audio.GetLoopbackState() != tlw.DUTAudio_LOOPBACK_WORKING {
+	if info.GetChromeos().GetAudio().GetLoopbackState() != tlw.DUTAudio_LOOPBACK_WORKING {
 		return errors.Reason("audio loop back state working: not working").Err()
 	}
 	return nil
@@ -46,8 +46,8 @@ func isAudioLoopBackStateWorkingExec(ctx context.Context, info *execs.ExecInfo) 
 // if both the Headphone and Mic exists on the DUT, then the state is working.
 // For all other cases, state is unspecified.
 func updateAudioLoopbackLabelExec(ctx context.Context, info *execs.ExecInfo) error {
-	info.RunArgs.DUT.Audio.LoopbackState = tlw.DUTAudio_LOOPBACK_UNSPECIFIED
-	defer log.Infof(ctx, "Setting DUT's Audio Loopback State to be %s", info.RunArgs.DUT.Audio.GetLoopbackState())
+	info.GetChromeos().GetAudio().LoopbackState = tlw.DUTAudio_LOOPBACK_UNSPECIFIED
+	defer log.Infof(ctx, "Setting DUT's Audio Loopback State to be %s", info.GetChromeos().GetAudio().GetLoopbackState())
 	r := info.DefaultRunner()
 	// check if the Headphone cras audio type exists on the DUT.
 	isAudioHeadPhoneExist, err := CrasAudioNodeTypeIsPlugged(ctx, r, CrasAudioHeadphone)
@@ -60,7 +60,7 @@ func updateAudioLoopbackLabelExec(ctx context.Context, info *execs.ExecInfo) err
 		return errors.Annotate(err, "update audio loop back label").Err()
 	}
 	if isAudioHeadPhoneExist && isAudioMicExist {
-		info.RunArgs.DUT.Audio.LoopbackState = tlw.DUTAudio_LOOPBACK_WORKING
+		info.GetChromeos().GetAudio().LoopbackState = tlw.DUTAudio_LOOPBACK_WORKING
 	}
 	return nil
 }
