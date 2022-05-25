@@ -221,7 +221,8 @@ func deployActions() map[string]*Action {
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 1200},
 			RecoveryActions: []string{
-				// The only reason why it can fail on good DUT is that USB-key has not good image.
+				"Cold reset DUT by servo and wait to boot",
+				// The other reason why it fail on good DUT is that USB-key has not good image.
 				"Download stable image to USB-key",
 			},
 		},
@@ -296,9 +297,10 @@ func deployActions() map[string]*Action {
 			ExecName: "sample_pass",
 		},
 		"Collect DUT labels": {
-			Docs: []string{"Updating device info in inventory."},
+			Docs: []string{
+				"Updating device info in inventory.",
+			},
 			Dependencies: []string{
-				"Device is SSHable",
 				"Read HWID from DUT",
 				"Read HWID from DUT (Satlab)",
 				"Read DUT serial-number from DUT",

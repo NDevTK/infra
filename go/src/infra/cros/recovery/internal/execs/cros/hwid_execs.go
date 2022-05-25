@@ -28,8 +28,8 @@ func updateHWIDToInvExec(ctx context.Context, info *execs.ExecInfo) error {
 	if hwid == "" {
 		return errors.Reason("update HWID in DUT-info: is empty").Err()
 	}
-	log.Debugf(ctx, "Update HWID %q in DUT-info.", hwid)
 	info.RunArgs.DUT.Hwid = hwid
+	log.Debugf(ctx, "Update HWID: %q", info.RunArgs.DUT.Hwid)
 	return nil
 }
 

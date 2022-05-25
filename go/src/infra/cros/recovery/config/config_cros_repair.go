@@ -777,7 +777,8 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Check whether the DUT information includes its HWID.",
 			},
-			ExecName: "dut_has_hwid",
+			ExecName:   "dut_has_hwid",
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Is HWID empty": {
 			Docs: []string{
@@ -786,14 +787,16 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Is HWID known",
 			},
-			ExecName: "sample_fail",
+			ExecName:   "sample_fail",
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Is serial-number known": {
 			Docs: []string{
 				"Check whether the DUT information includes its ",
 				"serial number.",
 			},
-			ExecName: "dut_has_serial_number",
+			ExecName:   "dut_has_serial_number",
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Is serial-number empty": {
 			Docs: []string{
@@ -803,7 +806,8 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Is serial-number known",
 			},
-			ExecName: "sample_fail",
+			ExecName:   "sample_fail",
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Not Satlab device": {
 			Docs: []string{
@@ -827,26 +831,30 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Not Satlab device",
 			},
-			ExecName: "cros_update_serial_number_inventory",
+			ExecName:   "cros_update_serial_number_inventory",
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Read DUT serial-number from DUT (Satlab)": {
 			Conditions: []string{
 				"Is Satlab device",
 			},
 			ExecName:               "cros_update_serial_number_inventory",
+			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 		},
 		"Read HWID from DUT": {
 			Conditions: []string{
 				"Not Satlab device",
 			},
-			ExecName: "cros_update_hwid_to_inventory",
+			ExecName:   "cros_update_hwid_to_inventory",
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Read HWID from DUT (Satlab)": {
 			Conditions: []string{
 				"Is Satlab device",
 			},
 			ExecName:               "cros_update_hwid_to_inventory",
+			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 		},
 		"Internal storage is responsive": {
@@ -1130,6 +1138,7 @@ func crosRepairActions() map[string]*Action {
 				"cros_switch_to_secure_mode",
 				"Simple reboot",
 				"Wait to be pingable (normal boot)",
+				"Wait to be SSHable (normal boot)",
 			},
 			ExecName: "sample_pass",
 		},

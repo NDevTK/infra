@@ -181,7 +181,6 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 			defer func() { i.Dedent() }()
 		}
 	}
-	log.Infof(ctx, "Action %q: started.", actionName)
 	defer func() {
 		if rErr != nil {
 			log.Debugf(ctx, "Action %q: finished with error %s.", actionName, rErr)
@@ -204,13 +203,14 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 		}
 		return errors.Annotate(aErr, "run action %q: (cached)", actionName).Err()
 	}
+	log.Infof(ctx, "Action %q: started.", actionName)
 	conditionName, err := r.runActionConditions(ctx, actionName)
 	if err != nil {
 		log.Infof(ctx, "Action %q: skipping, one of conditions %q failed.", actionName, conditionName)
 		if step != nil {
 			// Use modify as Step already can have other messages inside.
 			step.Modify(func(v *build.StepView) {
-				log.Infof(ctx, "Original v.SummaryMarkdown=%q", v.SummaryMarkdown)
+				log.Debugf(ctx, "Original v.SummaryMarkdown=%q", v.SummaryMarkdown)
 				if v.SummaryMarkdown != "" {
 					v.SummaryMarkdown += "<br/>"
 				}
