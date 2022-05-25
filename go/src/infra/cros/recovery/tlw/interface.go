@@ -140,16 +140,6 @@ type Dut struct {
 	// State of the DUT.
 	State dutstate.State
 
-	// Physical parts of DUT.
-	// Internal storage info.
-	Storage *Storage
-	// Battery info.
-	Battery *Battery
-	// Wifi info.
-	Wifi *Wifi
-	// Bluetooth info.
-	Bluetooth *Bluetooth
-
 	// Peripheral devices.
 	// ServoHost of the DUT setup.
 	ServoHost *ServoHost

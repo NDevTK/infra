@@ -26,28 +26,31 @@ const (
 // Detect if the DUT has wifi device listed in the output of 'lspci' command.
 func auditWiFiExec(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
+	wifi := info.GetChromeos().GetWifi()
+	if wifi == nil {
+		return errors.Reason("audit wifi: data is not present in dut info").Err()
+	}
 	_, err := r(ctx, time.Minute, wifiDetectCmd)
 	if err == nil {
 		// successfully detected
-		info.RunArgs.DUT.Wifi.State = tlw.HardwareState_HARDWARE_NORMAL
+		wifi.State = tlw.HardwareState_HARDWARE_NORMAL
 		log.Infof(ctx, "set wifi state to be: %s", tlw.HardwareState_HARDWARE_NORMAL)
 		return nil
 	}
 	if execs.SSHErrorInternal.In(err) || execs.SSHErrorCLINotFound.In(err) {
-		info.RunArgs.DUT.Wifi.State = tlw.HardwareState_HARDWARE_UNSPECIFIED
+		wifi.State = tlw.HardwareState_HARDWARE_UNSPECIFIED
 		return errors.Annotate(err, "audit wifi").Err()
 	}
-	if info.RunArgs.DUT.Wifi.ChipName != "" {
+	if wifi.GetChipName() != "" {
 		// If wifi chip is not detected, but was expected by setup info then we
 		// set needs_replacement as it is probably a hardware issue.
-		info.RunArgs.DUT.Wifi.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
-		log.Infof(ctx, "set wifi state to be: %s", tlw.HardwareState_HARDWARE_NEED_REPLACEMENT)
-		return errors.Annotate(err, "audit wifi").Err()
+		wifi.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
+	} else {
+		// the wifi state cannot be determined due to cmd failed
+		// therefore, set it to HardwareStateNotDetected
+		wifi.State = tlw.HardwareState_HARDWARE_NOT_DETECTED
 	}
-	// the wifi state cannot be determined due to cmd failed
-	// therefore, set it to HardwareStateNotDetected
-	info.RunArgs.DUT.Wifi.State = tlw.HardwareState_HARDWARE_NOT_DETECTED
-	log.Infof(ctx, "set wifi state to be: %s", tlw.HardwareState_HARDWARE_NOT_DETECTED)
+	log.Infof(ctx, "set wifi state to be: %s", wifi.State)
 	return errors.Annotate(err, "audit wifi").Err()
 }
 

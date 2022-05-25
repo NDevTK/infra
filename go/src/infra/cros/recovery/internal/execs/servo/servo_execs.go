@@ -535,14 +535,11 @@ func servoServodOldLogsCleanupExec(ctx context.Context, info *execs.ExecInfo) er
 // charged. It marks the DUT for replacement if its battery cannot be
 // charged.
 func servoValidateBatteryChargingExec(ctx context.Context, info *execs.ExecInfo) error {
-	// This is the number of times we will try to read the value of
-	// battery gcontrols from servod.
+	// This is the number of times we will try to read the value of battery controls from servod.
 	const servodBatteryReadRetryLimit = 3
-	// This is the servod control to determine battery's last full
-	// charge.
+	// This is the servod control to determine battery's last full charge.
 	const batteryFullChargeServodControl = "battery_full_charge_mah"
-	// This is the servod control to determine the bettery's full
-	// capacity by design.
+	// This is the servod control to determine the bettery's full capacity by design.
 	const batteryDesignFullCapacityServodControl = "battery_full_design_mah"
 	var lastFullCharge, batteryCapacity int32
 	var getLastFullCharge = func() error {
@@ -550,29 +547,32 @@ func servoValidateBatteryChargingExec(ctx context.Context, info *execs.ExecInfo)
 		lastFullCharge, err = servodGetInt(ctx, info.NewServod(), batteryFullChargeServodControl)
 		return err
 	}
-	if err := retry.LimitCount(ctx, servodBatteryReadRetryLimit, -1, getLastFullCharge, "get last full charge"); err != nil {
-		log.Debugf(ctx, "Servo Validate Battery Charging Exec: could not read last full charge despite trying %d times", servodBatteryReadRetryLimit)
-		return errors.Annotate(err, "servo validate battery charging exec").Err()
+	if info.GetChromeos().GetBattery() == nil {
+		return errors.Reason("servo validate battery charging: data is not present in dut info").Err()
 	}
-	log.Debugf(ctx, "Servo Validate Battery Charging Exec: last full charge is %d", lastFullCharge)
+	if err := retry.LimitCount(ctx, servodBatteryReadRetryLimit, -1, getLastFullCharge, "get last full charge"); err != nil {
+		log.Debugf(ctx, "Servo Validate Battery Charging: could not read last full charge despite trying %d times", servodBatteryReadRetryLimit)
+		return errors.Annotate(err, "servo validate battery charging").Err()
+	}
+	log.Debugf(ctx, "Servo Validate Battery Charging: last full charge is %d", lastFullCharge)
 	var getBatteryCapacity = func() error {
 		var err error
 		batteryCapacity, err = servodGetInt(ctx, info.NewServod(), batteryDesignFullCapacityServodControl)
 		return err
 	}
 	if err := retry.LimitCount(ctx, servodBatteryReadRetryLimit, -1, getBatteryCapacity, "get battery capacity"); err != nil {
-		log.Debugf(ctx, "Servo Validate Battery Charging Exec: could not read battery capacity despite trying %d times", servodBatteryReadRetryLimit)
-		return errors.Annotate(err, "servo validate battery charging exec").Err()
+		log.Debugf(ctx, "Servo Validate Battery Charging: could not read battery capacity despite trying %d times", servodBatteryReadRetryLimit)
+		return errors.Annotate(err, "servo validate battery charging").Err()
 	}
-	log.Debugf(ctx, "Servo Validate Battery Charging Exec: battery capacity is %d", batteryCapacity)
+	log.Debugf(ctx, "Servo Validate Battery Charging: battery capacity is %d", batteryCapacity)
 	hardwareState := battery.DetermineHardwareStatus(ctx, float64(lastFullCharge), float64(batteryCapacity))
 	log.Infof(ctx, "Battery hardware state: %s", hardwareState)
 	if hardwareState == tlw.HardwareState_HARDWARE_UNSPECIFIED {
-		return errors.Reason("audit battery: dut battery did not detected or state cannot extracted").Err()
+		return errors.Reason("servo validate battery charging: dut battery did not detected or state cannot extracted").Err()
 	}
 	if hardwareState == tlw.HardwareState_HARDWARE_NEED_REPLACEMENT {
 		log.Infof(ctx, "Detected issue with storage on the DUT.")
-		info.RunArgs.DUT.Battery.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
+		info.GetChromeos().GetBattery().State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
 	}
 	return nil
 }

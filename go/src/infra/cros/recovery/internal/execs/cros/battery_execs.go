@@ -20,9 +20,13 @@ import (
 // and mark the DUT if it needs replacement.
 func auditBatteryExec(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
+	batteryInfo := info.GetChromeos().GetBattery()
+	if batteryInfo == nil {
+		return errors.Reason("audit battery: data is not present in dut info").Err()
+	}
 	b, err := battery.ReadBatteryInfo(ctx, r)
 	if err != nil {
-		info.RunArgs.DUT.Battery.State = tlw.HardwareState_HARDWARE_UNSPECIFIED
+		batteryInfo.State = tlw.HardwareState_HARDWARE_UNSPECIFIED
 		return errors.Annotate(err, "audit battery: dut battery state cannot extracted").Err()
 	}
 	hardwareState := battery.DetermineHardwareStatus(ctx, b.FullChargeCapacity, b.FullChargeCapacityDesigned)
@@ -32,7 +36,7 @@ func auditBatteryExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 	if hardwareState == tlw.HardwareState_HARDWARE_NEED_REPLACEMENT {
 		log.Infof(ctx, "Detected issue with storage on the DUT.")
-		info.RunArgs.DUT.Battery.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
+		batteryInfo.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
 		log.Debugf(ctx, "Audit Battery Exec: setting dut state to %s", string(dutstate.NeedsReplacement))
 		info.RunArgs.DUT.State = dutstate.NeedsReplacement
 	}

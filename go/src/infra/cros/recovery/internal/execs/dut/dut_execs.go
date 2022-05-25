@@ -154,7 +154,7 @@ func dutInAudioBoxExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // hasBatteryExec checks if DUT is expected to have a battery.
 func hasBatteryExec(ctx context.Context, info *execs.ExecInfo) error {
-	if d := info.RunArgs.DUT; d == nil || d.Battery == nil {
+	if info.GetChromeos().GetBattery() == nil {
 		return errors.Reason("has battery: data is not present").Err()
 	}
 	return nil
@@ -164,8 +164,9 @@ func hasBatteryExec(ctx context.Context, info *execs.ExecInfo) error {
 //
 // Please provide expected state by action args [state:your-state]
 func matchBatteryStateExec(ctx context.Context, info *execs.ExecInfo) error {
-	if d := info.RunArgs.DUT; d == nil || d.Battery == nil {
-		return errors.Reason("match battery state: data is not present").Err()
+	battery := info.GetChromeos().GetBattery()
+	if battery == nil {
+		return errors.Reason("match battery state: data is not present in dut info").Err()
 	}
 	actionMap := info.GetActionArgs(ctx)
 	state := strings.ToUpper(actionMap.AsString(ctx, "state", ""))
@@ -176,7 +177,7 @@ func matchBatteryStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	if !ok {
 		return errors.Reason("match battery state: state %q is invalid", state).Err()
 	}
-	currentState := info.RunArgs.DUT.Battery.GetState()
+	currentState := battery.GetState()
 	if s != int32(currentState) {
 		return errors.Reason("match battery state: current state %s does not match expected state %q", currentState.String(), s).Err()
 	}

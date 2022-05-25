@@ -129,11 +129,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		SetupType:           setup,
 		State:               dutstate.ConvertFromUFSState(lc.GetResourceState()),
 		PowerSupplyType:     supplyType,
-		Storage:             createDUTStorage(dc, ds),
-		Wifi:                createDUTWifi(make, ds),
 		PeripheralWifiState: convertPeripheralWifiState(ds.GetWifiPeripheralState()),
-		Bluetooth:           createDUTBluetooth(ds, dc),
-		Battery:             battery,
 		ServoHost:           createServoHost(p, ds),
 		Audio: &tlw.DUTAudio{
 			LoopbackState: convertAudioLoopbackState(ds.GetAudioLoopbackDongle()),
@@ -142,6 +138,10 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			Cr50Phase:      convertCr50Phase(ds.GetCr50Phase()),
 			Cr50KeyEnv:     convertCr50KeyEnv(ds.GetCr50KeyEnv()),
 			DeviceSku:      machine.GetChromeosMachine().GetSku(),
+			Storage:        createDUTStorage(dc, ds),
+			Wifi:           createDUTWifi(make, ds),
+			Bluetooth:      createDUTBluetooth(ds, dc),
+			Battery:        battery,
 			Chameleon:      createChameleon(name, ds),
 			WifiRouters:    createWifiRouterHosts(p.GetWifi()),
 			BluetoothPeers: createBluetoothPeerHosts(p),
@@ -209,11 +209,11 @@ func adaptUfsLabstationToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error
 		SerialNumber:    machine.GetSerialNumber(),
 		SetupType:       tlw.DUTSetupTypeLabstation,
 		PowerSupplyType: tlw.PowerSupplyTypeACOnly,
-		Storage:         createDUTStorage(dc, ds),
 		Chromeos: &tlw.ChromeOS{
 			Cr50Phase:  convertCr50Phase(ds.GetCr50Phase()),
 			Cr50KeyEnv: convertCr50KeyEnv(ds.GetCr50KeyEnv()),
 			DeviceSku:  machine.GetChromeosMachine().GetSku(),
+			Storage:    createDUTStorage(dc, ds),
 			RpmOutlet:  createRPMOutlet(l.GetRpm(), ds),
 		},
 		ExtraAttributes: map[string][]string{
@@ -382,36 +382,36 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 		}
 		state.ServoUsbState = convertHardwareStateToUFS(sh.UsbkeyState)
 	}
-	if rpm := dut.GetChromeos().GetRpmOutlet(); rpm != nil {
-		for us, ls := range rpmStates {
-			if ls == rpm.GetState() {
-				state.RpmState = us
+	if chromeos := dut.GetChromeos(); chromeos != nil {
+		if rpm := chromeos.GetRpmOutlet(); rpm != nil {
+			for us, ls := range rpmStates {
+				if ls == rpm.GetState() {
+					state.RpmState = us
+				}
 			}
 		}
-	}
-	for us, ls := range cr50Phases {
-		if ls == dut.GetChromeos().GetCr50Phase() {
-			state.Cr50Phase = us
+		for us, ls := range cr50Phases {
+			if ls == chromeos.GetCr50Phase() {
+				state.Cr50Phase = us
+			}
 		}
-	}
-	for us, ls := range cr50KeyEnvs {
-		if ls == dut.GetChromeos().GetCr50KeyEnv() {
-			state.Cr50KeyEnv = us
+		for us, ls := range cr50KeyEnvs {
+			if ls == chromeos.GetCr50KeyEnv() {
+				state.Cr50KeyEnv = us
+			}
 		}
-	}
-	if s := dut.Storage; s != nil {
-		state.StorageState = convertHardwareStateToUFS(s.State)
-	}
-	if b := dut.Battery; b != nil {
-		state.BatteryState = convertHardwareStateToUFS(b.State)
-	}
-	if w := dut.Wifi; w != nil {
-		state.WifiState = convertHardwareStateToUFS(w.State)
-	}
-	if b := dut.Bluetooth; b != nil {
-		state.BluetoothState = convertHardwareStateToUFS(b.State)
-	}
-	if chromeos := dut.GetChromeos(); chromeos != nil {
+		if s := chromeos.GetStorage(); s != nil {
+			state.StorageState = convertHardwareStateToUFS(s.GetState())
+		}
+		if b := chromeos.GetBattery(); b != nil {
+			state.BatteryState = convertHardwareStateToUFS(b.GetState())
+		}
+		if w := chromeos.GetWifi(); w != nil {
+			state.WifiState = convertHardwareStateToUFS(w.GetState())
+		}
+		if b := chromeos.GetBluetooth(); b != nil {
+			state.BluetoothState = convertHardwareStateToUFS(b.GetState())
+		}
 		if ch := chromeos.GetChameleon(); ch != nil {
 			for us, rs := range chameleonStates {
 				if ch.GetState() == rs {

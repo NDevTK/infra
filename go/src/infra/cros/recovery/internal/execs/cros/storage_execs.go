@@ -35,6 +35,9 @@ var storageStateMap = map[storage.StorageState]tlw.HardwareState{
 // auditStorageSMARTExec confirms that it is able to audi smartStorage info and mark the dut if it needs replacement.
 func auditStorageSMARTExec(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
+	if info.GetChromeos().GetStorage() == nil {
+		return errors.Reason("audit storage smart: data is not present in dut info").Err()
+	}
 	rawOutput, err := r(ctx, time.Minute, readStorageInfoCMD)
 	if err != nil {
 		return errors.Annotate(err, "audit storage smart").Err()
@@ -54,7 +57,7 @@ func auditStorageSMARTExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 	if convertedHardwareState == tlw.HardwareState_HARDWARE_NEED_REPLACEMENT {
 		log.Debugf(ctx, "Detected issue with storage on the DUT")
-		info.RunArgs.DUT.Storage.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
+		info.GetChromeos().GetStorage().State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
 		log.Debugf(ctx, "Audit Storage Smart: setting the dut state to :%s", string(dutstate.NeedsReplacement))
 		info.RunArgs.DUT.State = dutstate.NeedsReplacement
 		return errors.Reason("audit storage smart: hardware state need replacement").Err()

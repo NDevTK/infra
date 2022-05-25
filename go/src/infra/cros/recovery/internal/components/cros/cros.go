@@ -25,15 +25,15 @@ const (
 // RecoveryModeRequiredPDOff examines whether servo_v4 role needs to
 // snk when booting into recovery mode.
 func RecoveryModeRequiredPDOff(ctx context.Context, run components.Runner, pinger components.Pinger, servod components.Servod, dut *tlw.Dut) (bool, error) {
-	hasBattery := (dut != nil && dut.Battery != nil)
-	if !hasBattery {
+	expectBattery := dut.GetChromeos().GetBattery() != nil
+	if !expectBattery {
 		log.Debugf(ctx, "recovery mode required PD off: DUT is not expected to have the battery")
 		return false, nil
 	}
 	if p, err := power.ReadPowerInfo(ctx, run); err == nil {
-		hasBattery, _ = p.HasBattery()
+		expectBattery, _ = p.HasBattery()
 	}
-	if !hasBattery {
+	if !expectBattery {
 		return false, nil
 	}
 	if pdControlSupported, err := servo.ServoSupportsBuiltInPDControl(ctx, servod); err != nil {
