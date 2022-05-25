@@ -20,7 +20,7 @@ import (
 
 	api "infra/appengine/cros/lab_inventory/api/v1"
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	dsinventory "infra/appengine/crosskylabadmin/internal/app/frontend/internal/datastore/inventory"
+	dsinventory "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/inventory"
 	"infra/appengine/crosskylabadmin/internal/app/gitstore"
 	"infra/libs/skylab/inventory"
 )

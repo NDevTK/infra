@@ -24,8 +24,8 @@ import (
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/internal/swarming"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/internal/worker"
+	"infra/appengine/crosskylabadmin/internal/app/frontend/swarming"
+	"infra/appengine/crosskylabadmin/internal/app/frontend/worker"
 )
 
 func runTaskByBotID(ctx context.Context, at worker.Task, sc clients.SwarmingClient, botID, expectedState string, expirationSecs, executionTimeoutSecs int64) (string, error) {

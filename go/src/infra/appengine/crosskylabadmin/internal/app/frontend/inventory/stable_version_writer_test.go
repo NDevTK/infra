@@ -12,7 +12,7 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/internal/datastore/stableversion/satlab"
+	"infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion/satlab"
 )
 
 // TestSetSatlabStableVersion tests that SetSatlabStableVersion returns a not-yet-implemented response.

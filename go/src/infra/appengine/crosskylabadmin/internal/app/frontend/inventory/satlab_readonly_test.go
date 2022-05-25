@@ -24,9 +24,9 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	dsinventory "infra/appengine/crosskylabadmin/internal/app/frontend/internal/datastore/inventory"
-	dssv "infra/appengine/crosskylabadmin/internal/app/frontend/internal/datastore/stableversion"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/internal/datastore/stableversion/satlab"
+	dsinventory "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/inventory"
+	dssv "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion"
+	"infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion/satlab"
 	"infra/libs/skylab/inventory"
 )
 

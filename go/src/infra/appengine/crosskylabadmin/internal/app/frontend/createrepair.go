@@ -18,7 +18,7 @@ import (
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/internal/worker"
+	"infra/appengine/crosskylabadmin/internal/app/frontend/worker"
 	"infra/appengine/crosskylabadmin/site"
 	"infra/cros/recovery/tasknames"
 	"infra/libs/skylab/buildbucket"

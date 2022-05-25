@@ -21,7 +21,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/internal/worker"
+	"infra/appengine/crosskylabadmin/internal/app/frontend/worker"
 )
 
 func TestRunTaskByBotID(t *testing.T) {

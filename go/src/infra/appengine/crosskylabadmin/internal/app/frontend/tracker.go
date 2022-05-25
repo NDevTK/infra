@@ -31,7 +31,7 @@ import (
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
-	swarming_utils "infra/appengine/crosskylabadmin/internal/app/frontend/internal/swarming"
+	swarming_utils "infra/appengine/crosskylabadmin/internal/app/frontend/swarming"
 	"infra/cros/lab_inventory/utilization"
 )
 

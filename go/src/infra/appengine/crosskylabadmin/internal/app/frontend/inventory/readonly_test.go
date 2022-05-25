@@ -30,9 +30,9 @@ import (
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/internal/datastore/dronecfg"
-	dsinventory "infra/appengine/crosskylabadmin/internal/app/frontend/internal/datastore/inventory"
-	dssv "infra/appengine/crosskylabadmin/internal/app/frontend/internal/datastore/stableversion"
+	"infra/appengine/crosskylabadmin/internal/app/frontend/datastore/dronecfg"
+	dsinventory "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/inventory"
+	dssv "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion"
 	"infra/appengine/crosskylabadmin/internal/app/gitstore/fakes"
 	"infra/libs/skylab/inventory"
 )

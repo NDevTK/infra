@@ -11,7 +11,7 @@ import (
 
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/internal/worker"
+	"infra/appengine/crosskylabadmin/internal/app/frontend/worker"
 )
 
 // CreateAuditTask kicks off an audit job.

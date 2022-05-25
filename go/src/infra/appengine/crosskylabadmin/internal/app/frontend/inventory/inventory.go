@@ -41,7 +41,7 @@ import (
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
-	dataSV "infra/appengine/crosskylabadmin/internal/app/frontend/internal/datastore/stableversion"
+	dataSV "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion"
 	"infra/appengine/crosskylabadmin/internal/app/gitstore"
 	"infra/cros/lab_inventory/manufacturingconfig"
 	sv "infra/cros/stableversion"

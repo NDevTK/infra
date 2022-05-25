@@ -30,8 +30,8 @@ import (
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/internal/dutpool"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/internal/swarming"
+	"infra/appengine/crosskylabadmin/internal/app/frontend/dutpool"
+	"infra/appengine/crosskylabadmin/internal/app/frontend/swarming"
 	"infra/libs/skylab/inventory"
 )
 
