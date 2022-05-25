@@ -15,6 +15,7 @@ import (
 
 	"github.com/google/uuid"
 	"go.chromium.org/luci/gae/service/datastore"
+	"go.chromium.org/luci/server/auth"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -78,6 +79,7 @@ func (e *AssetHandler) Create(ctx context.Context, req *proto.CreateAssetRequest
 		AssetId:     id,
 		Name:        req.GetName(),
 		Description: req.GetDescription(),
+		CreatedBy:   auth.CurrentUser(ctx).Email,
 		CreatedAt:   time.Now().UTC(),
 		Parent:      fakeAncestorKey(ctx),
 	}
@@ -114,6 +116,7 @@ func (e *AssetHandler) Update(ctx context.Context, req *proto.UpdateAssetRequest
 		if err != nil {
 			return err
 		}
+		asset.ModifiedBy = auth.CurrentUser(ctx).Email
 		asset.ModifiedAt = time.Now().UTC()
 		err = datastore.Put(ctx, id, &asset)
 		return err
