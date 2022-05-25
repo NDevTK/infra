@@ -15,11 +15,14 @@ from project import peopledetail
 from project import peoplelist
 from project import project_constants
 from sitewide import moved
+from sitewide import userclearbouncing
+from sitewide import userupdates
 from sitewide import userprofile
 from sitewide import projectcreate
 from sitewide import usersettings
 from sitewide import groupcreate
 from sitewide import grouplist
+from features import banspammer
 from features import hotlistcreate
 from features import savedqueries
 from features import userhotlists
@@ -186,6 +189,30 @@ class ServletRegistry(object):
         #     '/<string:viewed_username>/ban.do',
         #     userprofile.BanUser(services=service).PostBanUserPage,
         #     ['POST']),
+        # (
+        #     '/<string:viewed_username>/banSpammer.do',
+        #     banspammer.BanSpammer(services=service).PostBanSpammerPage,
+        #     ['POST']),
+        # (
+        #     '/<string:viewed_username>/clearBouncing',
+        #     userclearbouncing.UserClearBouncing(
+        #         services=service).GetUserClearBouncingPage, ['GET']),
+        # (
+        #     '/<string:viewed_username>/clearBouncing.do',
+        #     userclearbouncing.UserClearBouncing(
+        #         services=service).PostUserClearBouncingPage, ['Post']),
+        # (
+        #     '/<string:viewed_username>/updates/projects',
+        #     userupdates.UserUpdatesProjects(
+        #         services=service).GetUserUpdatesProjectsPage, ['GET']),
+        # (
+        #     '/<string:viewed_username>/updates/developers',
+        #     userupdates.UserUpdatesDevelopers(
+        #         services=service).GetUserUpdatesDevelopersPage, ['GET']),
+        # (
+        #     '/<string:viewed_username>/updates',
+        #     userupdates.UserUpdatesIndividual(
+        #         services=service).GetUserUpdatesPage, ['GET']),
     ]
 
     for rule in _USER_URLS:

@@ -22,6 +22,7 @@ import ezt
 from businesslogic import work_env
 from features import activities
 from framework import servlet
+from framework import flaskservlet
 from framework import urls
 from sitewide import sitewide_helpers
 
@@ -87,6 +88,9 @@ class UserUpdatesProjects(AbstractUserUpdatesPage):
           viewed_user_id=mr.viewed_user_auth.user_id)
     return [project.project_id for project in starred_projects]
 
+  # def GetUserUpdatesProjectsPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
 
 class UserUpdatesDevelopers(AbstractUserUpdatesPage):
   """Shows a page of updates from developers starred by a user."""
@@ -104,6 +108,9 @@ class UserUpdatesDevelopers(AbstractUserUpdatesPage):
     logging.debug('StarredUsers: %r', user_ids)
     return user_ids
 
+  # def GetUserUpdatesDevelopersPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
 
 class UserUpdatesIndividual(AbstractUserUpdatesPage):
   """Shows a page of updates initiated by a user."""
@@ -116,3 +123,6 @@ class UserUpdatesIndividual(AbstractUserUpdatesPage):
   def _GetUserIDsForUpdates(self, mr):
     """Returns a list of user IDs whom to retrieve activities from."""
     return [mr.viewed_user_auth.user_id]
+
+  # def GetUserUpdatesPage(self, **kwargs):
+  #   return self.handler(**kwargs)

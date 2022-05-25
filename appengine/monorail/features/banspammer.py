@@ -13,6 +13,7 @@ import json
 import time
 
 from framework import cloud_tasks_helpers
+from framework import flaskservlet
 from framework import framework_helpers
 from framework import permissions
 from framework import jsonfeed
@@ -55,6 +56,9 @@ class BanSpammer(servlet.Servlet):
     return framework_helpers.FormatAbsoluteURL(
         mr, mr.viewed_user_auth.user_view.profile_url, include_project=False,
         saved=1, ts=int(time.time()))
+
+  # def PostBanSpammerPage(self, **kwargs):
+  #   return self.handler(**kwargs)
 
 
 # when convert to flask switch jsonfeed.FlaskInternalTask

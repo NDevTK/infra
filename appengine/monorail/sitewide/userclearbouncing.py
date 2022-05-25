@@ -12,6 +12,7 @@ import logging
 import time
 
 from framework import framework_helpers
+from framework import flaskservlet
 from framework import permissions
 from framework import servlet
 from framework import timestr
@@ -60,3 +61,9 @@ class UserClearBouncing(servlet.Servlet):
     return framework_helpers.FormatAbsoluteURL(
         mr, mr.viewed_user_auth.user_view.profile_url, include_project=False,
         saved=1, ts=int(time.time()))
+
+  # def GetUserClearBouncingPage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostUserClearBouncingPage(self, **kwargs):
+  #   return self.handler(**kwargs)
