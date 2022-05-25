@@ -98,8 +98,6 @@ type Dut struct {
 	// Peripheral devices.
 	// ServoHost of the DUT setup.
 	ServoHost *ServoHost
-	// Peripheral Wifi state of testbed
-	PeripheralWifiState PeripheralWifiState
 	// ProvisionedInfo tells provisioned info for the DUT.
 	ProvisionedInfo *ProvisionedInfo
 	// Extra attrubes of the DUT.
@@ -124,14 +122,3 @@ func (d *Dut) GetAndroid() *Android {
 func (d *Dut) GetChromeos() *ChromeOS {
 	return d.Chromeos
 }
-
-// PeripheralWifiState describes the state of peripheral wifi testbed.
-type PeripheralWifiState string
-
-const (
-	PeripheralWifiStateUnspecified PeripheralWifiState = "UNSPECIFIED"
-	// All wifirouters are working as expected.
-	PeripheralWifiStateWorking PeripheralWifiState = "WORKING"
-	// Not all wifirouters are working as expected.
-	PeripheralWifiStateBroken PeripheralWifiState = "BROKEN"
-)

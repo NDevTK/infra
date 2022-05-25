@@ -164,21 +164,21 @@ func convertWifiRouterStateToUFS(s tlw.WifiRouterHost_State) ufslab.PeripheralSt
 }
 
 // peripheralWifiStates maps the ufs peripheral state to tlw peripheral wifi state
-var peripheralWifiStates = map[ufslab.PeripheralState]tlw.PeripheralWifiState{
-	ufslab.PeripheralState_WORKING: tlw.PeripheralWifiStateWorking,
-	ufslab.PeripheralState_BROKEN:  tlw.PeripheralWifiStateBroken,
+var peripheralWifiStates = map[ufslab.PeripheralState]tlw.ChromeOS_PeripheralWifiState{
+	ufslab.PeripheralState_WORKING: tlw.ChromeOS_PERIPHERAL_WIFI_STATE_WORKING,
+	ufslab.PeripheralState_BROKEN:  tlw.ChromeOS_PERIPHERAL_WIFI_STATE_BROKEN,
 }
 
 // convert wifiRouterState UFS state to TLW peripheralWifiState
-func convertPeripheralWifiState(s ufslab.PeripheralState) tlw.PeripheralWifiState {
+func convertPeripheralWifiState(s ufslab.PeripheralState) tlw.ChromeOS_PeripheralWifiState {
 	if ns, ok := peripheralWifiStates[s]; ok {
 		return ns
 	}
-	return tlw.PeripheralWifiStateUnspecified
+	return tlw.ChromeOS_PERIPHERAL_WIFI_STATE_UNSPECIFIED
 }
 
 // convertPeripheralWifiState tlw state to UFS peripheral state
-func convertPeripheralWifiStateToUFS(s tlw.PeripheralWifiState) ufslab.PeripheralState {
+func convertPeripheralWifiStateToUFS(s tlw.ChromeOS_PeripheralWifiState) ufslab.PeripheralState {
 	for us, ls := range peripheralWifiStates {
 		if ls == s {
 			return us

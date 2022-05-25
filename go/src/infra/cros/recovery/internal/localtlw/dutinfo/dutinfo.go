@@ -124,31 +124,31 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		StaticCable:   p.GetAudio().GetAudioCable(),
 	}
 	d := &tlw.Dut{
-		Id:                  machine.GetName(),
-		Name:                name,
-		SetupType:           setup,
-		State:               dutstate.ConvertFromUFSState(lc.GetResourceState()),
-		PeripheralWifiState: convertPeripheralWifiState(ds.GetWifiPeripheralState()),
-		ServoHost:           createServoHost(p, ds),
+		Id:        machine.GetName(),
+		Name:      name,
+		SetupType: setup,
+		State:     dutstate.ConvertFromUFSState(lc.GetResourceState()),
+		ServoHost: createServoHost(p, ds),
 		Chromeos: &tlw.ChromeOS{
-			Board:           machine.GetChromeosMachine().GetBuildTarget(),
-			Model:           machine.GetChromeosMachine().GetModel(),
-			Hwid:            machine.GetChromeosMachine().GetHwid(),
-			SerialNumber:    machine.GetSerialNumber(),
-			Phase:           make.GetDevicePhase().String()[len("PHASE_"):],
-			PowerSupplyType: supplyType,
-			Audio:           audio,
-			Cr50Phase:       convertCr50Phase(ds.GetCr50Phase()),
-			Cr50KeyEnv:      convertCr50KeyEnv(ds.GetCr50KeyEnv()),
-			DeviceSku:       machine.GetChromeosMachine().GetSku(),
-			Storage:         createDUTStorage(dc, ds),
-			Wifi:            createDUTWifi(make, ds),
-			Bluetooth:       createDUTBluetooth(ds, dc),
-			Battery:         battery,
-			Chameleon:       createChameleon(name, ds),
-			WifiRouters:     createWifiRouterHosts(p.GetWifi()),
-			BluetoothPeers:  createBluetoothPeerHosts(p),
-			RpmOutlet:       createRPMOutlet(p.GetRpm(), ds),
+			Board:               machine.GetChromeosMachine().GetBuildTarget(),
+			Model:               machine.GetChromeosMachine().GetModel(),
+			Hwid:                machine.GetChromeosMachine().GetHwid(),
+			SerialNumber:        machine.GetSerialNumber(),
+			Phase:               make.GetDevicePhase().String()[len("PHASE_"):],
+			PowerSupplyType:     supplyType,
+			Audio:               audio,
+			Cr50Phase:           convertCr50Phase(ds.GetCr50Phase()),
+			Cr50KeyEnv:          convertCr50KeyEnv(ds.GetCr50KeyEnv()),
+			DeviceSku:           machine.GetChromeosMachine().GetSku(),
+			Storage:             createDUTStorage(dc, ds),
+			Wifi:                createDUTWifi(make, ds),
+			Bluetooth:           createDUTBluetooth(ds, dc),
+			Battery:             battery,
+			Chameleon:           createChameleon(name, ds),
+			WifiRouters:         createWifiRouterHosts(p.GetWifi()),
+			PeripheralWifiState: convertPeripheralWifiState(ds.GetWifiPeripheralState()),
+			BluetoothPeers:      createBluetoothPeerHosts(p),
+			RpmOutlet:           createRPMOutlet(p.GetRpm(), ds),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
@@ -425,12 +425,12 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 				state.WorkingBluetoothBtpeer += 1
 			}
 		}
+		if chromeos.GetAudio().GetLoopbackState() == tlw.DUTAudio_LOOPBACK_WORKING {
+			state.AudioLoopbackDongle = ufslab.PeripheralState_WORKING
+		} else {
+			state.AudioLoopbackDongle = ufslab.PeripheralState_UNKNOWN
+		}
+		state.WifiPeripheralState = convertPeripheralWifiStateToUFS(chromeos.GetPeripheralWifiState())
 	}
-	if dut.GetChromeos().GetAudio().GetLoopbackState() == tlw.DUTAudio_LOOPBACK_WORKING {
-		state.AudioLoopbackDongle = ufslab.PeripheralState_WORKING
-	} else {
-		state.AudioLoopbackDongle = ufslab.PeripheralState_UNKNOWN
-	}
-	state.WifiPeripheralState = convertPeripheralWifiStateToUFS(dut.PeripheralWifiState)
 	return state
 }

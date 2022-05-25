@@ -56,14 +56,18 @@ func wifirouterPresentExec(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 func updatePeripheralWifiStateExec(ctx context.Context, info *execs.ExecInfo) error {
-	pws := tlw.PeripheralWifiStateWorking
-	for _, routerHost := range info.GetChromeos().GetWifiRouters() {
+	chromeos := info.GetChromeos()
+	if chromeos == nil {
+		return errors.Reason("update peripheral wifi state: chromeos is not present").Err()
+	}
+	pws := tlw.ChromeOS_PERIPHERAL_WIFI_STATE_WORKING
+	for _, routerHost := range chromeos.GetWifiRouters() {
 		if routerHost.GetState() != tlw.WifiRouterHost_WORKING {
-			pws = tlw.PeripheralWifiStateBroken
+			pws = tlw.ChromeOS_PERIPHERAL_WIFI_STATE_BROKEN
 			break
 		}
 	}
-	info.RunArgs.DUT.PeripheralWifiState = pws
+	chromeos.PeripheralWifiState = pws
 	return nil
 }
 
