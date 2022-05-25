@@ -121,7 +121,6 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 	d := &tlw.Dut{
 		Id:                  machine.GetName(),
 		Name:                name,
-		Phase:               make.GetDevicePhase().String()[len("PHASE_"):],
 		SetupType:           setup,
 		State:               dutstate.ConvertFromUFSState(lc.GetResourceState()),
 		PowerSupplyType:     supplyType,
@@ -135,6 +134,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			Model:        machine.GetChromeosMachine().GetModel(),
 			Hwid:         machine.GetChromeosMachine().GetHwid(),
 			SerialNumber: machine.GetSerialNumber(),
+			Phase:        make.GetDevicePhase().String()[len("PHASE_"):],
 
 			Cr50Phase:      convertCr50Phase(ds.GetCr50Phase()),
 			Cr50KeyEnv:     convertCr50KeyEnv(ds.GetCr50KeyEnv()),
@@ -203,7 +203,6 @@ func adaptUfsLabstationToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error
 	d := &tlw.Dut{
 		Id:              machine.GetName(),
 		Name:            name,
-		Phase:           make.GetDevicePhase().String()[len("PHASE_"):],
 		SetupType:       tlw.DUTSetupTypeLabstation,
 		PowerSupplyType: tlw.PowerSupplyTypeACOnly,
 		Chromeos: &tlw.ChromeOS{
@@ -211,6 +210,7 @@ func adaptUfsLabstationToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error
 			Model:        machine.GetChromeosMachine().GetModel(),
 			Hwid:         machine.GetChromeosMachine().GetHwid(),
 			SerialNumber: machine.GetSerialNumber(),
+			Phase:        make.GetDevicePhase().String()[len("PHASE_"):],
 
 			Cr50Phase:  convertCr50Phase(ds.GetCr50Phase()),
 			Cr50KeyEnv: convertCr50KeyEnv(ds.GetCr50KeyEnv()),

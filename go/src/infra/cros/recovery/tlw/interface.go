@@ -121,8 +121,6 @@ type Dut struct {
 	Id string
 	// Name is the resource name for the DUT.
 	Name string
-	// Hardware phase.
-	Phase string
 	// SetupType describes the setup of the DUT, which affects how it is verified/repaired.
 	SetupType DUTSetupType
 	// PowerSupplyType describes the DUT's power supply type.
