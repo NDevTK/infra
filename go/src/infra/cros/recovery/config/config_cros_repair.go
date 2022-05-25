@@ -719,6 +719,23 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 			},
 		},
+		"Is not booted in secure mode (condition)": {
+			Docs: []string{
+				"Check if the device is not booted in secure mode.",
+			},
+			Conditions: []string{
+				"Booted in secure mode (condition)",
+			},
+			ExecName:   "sample_fail",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Booted in secure mode (condition)": {
+			Docs: []string{
+				"Check if the device booted in secure mode.",
+			},
+			ExecName:   "cros_is_booted_in_secure_mode",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
 		"Missing HWID": {
 			Docs: []string{
 				"Verify if device missing HWID because deployment was missed.",
@@ -1132,6 +1149,7 @@ func crosRepairActions() map[string]*Action {
 				//TODO(b:231640496): flex board unpingable after switching to secure-mode.
 				"Is not Flex device",
 				"Pools required to be in Secure mode",
+				"Is not booted in secure mode (condition)",
 			},
 			Dependencies: []string{
 				"Reset GBB flags by host",

@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -102,6 +103,25 @@ func isNotInDevModeExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
 	err := cros.MatchCrossystemValueToExpectation(ctx, run, "devsw_boot", "0")
 	return errors.Annotate(err, "not in dev mode").Err()
+}
+
+// isBootedInSecureModeExec checks is device booted in secure mode.
+func isBootedInSecureModeExec(ctx context.Context, info *execs.ExecInfo) error {
+	run := info.DefaultRunner()
+	if err := cros.MatchCrossystemValueToExpectation(ctx, run, "devsw_boot", "0"); err != nil {
+		return errors.Annotate(err, "is booted in secure mode").Err()
+	}
+	out, err := run(ctx, time.Minute, "/usr/share/vboot/bin/get_gbb_flags.sh")
+	if err != nil {
+		return errors.Annotate(err, "is booted in secure mode").Err()
+	}
+	// Check if GBB flags is set as 0x0 as expected for device booted in secure mode
+	if r, err := regexp.Compile(`Chrome OS GBB set flags:([0x ]*)$`); err != nil {
+		return errors.Annotate(err, "is booted in secure mode").Err()
+	} else if !r.MatchString(out) {
+		return errors.Reason("is booted in secure mode: gbb flags are not set to 0(zero)").Err()
+	}
+	return nil
 }
 
 // runShellCommandExec runs a given action exec arguments in shell.
@@ -297,6 +317,7 @@ func init() {
 	execs.Register("cros_read_os_version", readOSVersionExec)
 	execs.Register("cros_is_default_boot_from_disk", isDefaultBootFromDiskExec)
 	execs.Register("cros_is_not_in_dev_mode", isNotInDevModeExec)
+	execs.Register("cros_is_booted_in_secure_mode", isBootedInSecureModeExec)
 	execs.Register("cros_run_shell_command", runShellCommandExec)
 	execs.Register("cros_is_file_system_writable", isFileSystemWritableExec)
 	execs.Register("cros_has_python_interpreter_working", hasPythonInterpreterExec)
