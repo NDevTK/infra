@@ -49,6 +49,7 @@ def MakeReqInfo(
   mr.viewed_user_auth.user_view = framework_views.UserView(viewed_user_pb)
   mr.viewed_user_name = viewed_user_name
   mr.request = webapp2.Request.blank("/")
+  mr.request_path = mr.request.path
   return mr
 
 

@@ -17,6 +17,7 @@ import ezt
 import settings
 from businesslogic import work_env
 from framework import framework_helpers
+from framework import flaskservlet
 from framework import framework_views
 from framework import permissions
 from framework import servlet
@@ -146,9 +147,9 @@ class UserProfile(servlet.Servlet):
     ban_token = None
     ban_spammer_token = None
     if mr.auth.user_id and can_ban:
-      form_token_path = mr.request.path + 'ban.do'
+      form_token_path = mr.request_path + 'ban.do'
       ban_token = xsrf.GenerateToken(mr.auth.user_id, form_token_path)
-      form_token_path = mr.request.path + 'banSpammer.do'
+      form_token_path = mr.request_path + 'banSpammer.do'
       ban_spammer_token = xsrf.GenerateToken(mr.auth.user_id, form_token_path)
 
     can_delete_user = permissions.CanExpungeUsers(mr)
@@ -230,6 +231,12 @@ class UserProfile(servlet.Servlet):
         mr, mr.viewed_user_auth.user_view.profile_url, include_project=False,
         saved=1, ts=int(time.time()))
 
+  # def GetUserProfilePage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
+  # def PostUserProfilePage(self, **kwargs):
+  #   return self.handler(**kwargs)
+
 
 def _ComputePossibleParentAccounts(
     we, user_view, linked_parent, linked_children):
@@ -244,13 +251,6 @@ def _ComputePossibleParentAccounts(
   found_users, _ = we.ListReferencedUsers(possible_emails)
   found_emails = [user.email for user in found_users]
   return found_emails
-
-
-class UserProfilePolymer(UserProfile):
-  """New Polymer version of user profiles in Monorail."""
-
-  _PAGE_TEMPLATE = 'sitewide/user-profile-page-polymer.ezt'
-
 
 class BanUser(servlet.Servlet):
   """Bans or un-bans a user."""
@@ -269,3 +269,6 @@ class BanUser(servlet.Servlet):
     return framework_helpers.FormatAbsoluteURL(
         mr, mr.viewed_user_auth.user_view.profile_url, include_project=False,
         saved=1, ts=int(time.time()))
+
+  # def PostBanUserPage(self, **kwargs):
+  #   return self.handler(**kwargs)

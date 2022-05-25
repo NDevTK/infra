@@ -15,6 +15,7 @@ from project import peopledetail
 from project import peoplelist
 from project import project_constants
 from sitewide import moved
+from sitewide import userprofile
 from sitewide import projectcreate
 from sitewide import usersettings
 from sitewide import groupcreate
@@ -155,8 +156,8 @@ class ServletRegistry(object):
     return flaskapp_project
 
   def RegisterUserUrls(self, service):
-    flaskapp_project = flask.Flask(__name__)
-    _PROJECT_URLS = [
+    flaskapp_user = flask.Flask(__name__)
+    _USER_URLS = [
         # (
         #     '/<string:viewed_username>/queries',
         #     savedqueries.SavedQueries(services=service).GetSavedQueriesPage,
@@ -173,15 +174,27 @@ class ServletRegistry(object):
         #     '/<string:viewed_username>/hotlists.do',
         #     userhotlists.UserHotlists(services=service).PostUserHotlistsPage,
         #     ['Post']),
+        # (
+        #     '/<string:viewed_username>/',
+        #     userprofile.UserProfile(services=service).GetUserProfilePage,
+        #     ['GET']),
+        # (
+        #     '/<string:viewed_username>/edit.do',
+        #     userprofile.UserProfile(services=service).PostUserProfilePage,
+        #     ['POST']),
+        # (
+        #     '/<string:viewed_username>/ban.do',
+        #     userprofile.BanUser(services=service).PostBanUserPage,
+        #     ['POST']),
     ]
 
-    for rule in _PROJECT_URLS:
-      flaskapp_project.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
-    return flaskapp_project
+    for rule in _USER_URLS:
+      flaskapp_user.add_url_rule(rule[0], view_func=rule[1], methods=rule[2])
+    return flaskapp_user
 
   # pylint: disable=unused-argument
   def RegisterTaskUrl(self, service):
-    flaskapp_task = Flask(__name__)
+    flaskapp_task = flask.Flask(__name__)
     _TASK_URL = [
         # (
         #     '/banSpammer',
