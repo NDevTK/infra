@@ -6,63 +6,67 @@ package main
 
 import (
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"infra/tools/vpython_ng/pkg/application"
 	"infra/tools/vpython_ng/pkg/python"
 	"infra/tools/vpython_ng/pkg/wheels"
 
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/system/exitcode"
 	"go.chromium.org/luci/common/system/filesystem"
-)
 
-var testStorageDir string
+	. "github.com/smartystreets/goconvey/convey"
+)
 
 func testData(filename string) string {
 	return filepath.Join("..", "..", "testdata", filename)
 }
 
-func must(tb testing.TB, err error) {
-	if err != nil {
-		tb.Fatal(err)
-	}
-}
+var testStorageDir string
 
-func run(tb testing.TB, spec, script string, app *application.Application) error {
-	app.ForkExec = true // Prevent using execve
+func cmd(app *application.Application) *exec.Cmd {
 	app.Arguments = append([]string{
 		"-vpython-root",
 		testStorageDir,
-		"-vpython-spec",
-		testData(spec),
-		testData(script),
 	}, app.Arguments...)
 
 	app.Initialize()
 
-	must(tb, app.ParseEnvs())
-	must(tb, app.ParseArgs())
+	So(app.ParseEnvs(), ShouldBeNil)
+	So(app.ParseArgs(), ShouldBeNil)
 
-	must(tb, app.LoadSpec())
-	must(tb, func() error {
-		env := python.NewEnvironment(python.Versions{
-			CPython:    "version:2@3.8.10.chromium.24",
-			VirtualENV: "version:2@16.7.10.chromium.7",
-		})
-		wheels, err := wheels.FromSpec(app.VpythonSpec, env.Pep425Tags())
-		if err != nil {
-			return err
-		}
-		venv := env.WithWheels(wheels)
-		return app.BuildVENV(venv)
-	}())
+	So(app.LoadSpec(), ShouldBeNil)
+
+	env := python.NewEnvironment(python.Versions{
+		CPython:    "version:2@3.8.10.chromium.24",
+		VirtualENV: "version:2@16.7.10.chromium.7",
+	})
+	wheels, err := wheels.FromSpec(app.VpythonSpec, env.Pep425Tags())
+	So(err, ShouldBeNil)
+	venv := env.WithWheels(wheels)
+
+	So(app.BuildVENV(venv), ShouldBeNil)
 
 	// Usually we don't need to RUnlock the venv package. It will be unlocked
 	// when the vpython process exits. However for tests, the lock will prevent
 	// the temporary vpython root directory from being removed on Windows.
 	defer app.VENVPackage.RUnlock()
-	return app.ExecutePython()
+
+	return app.GetExecCommand()
+}
+
+func output(c *exec.Cmd) interface{} {
+	var out strings.Builder
+	c.Stdout = &out
+	c.Stderr = &out
+	if err := c.Run(); err != nil {
+		return errors.Annotate(err, out.String()).Err()
+	}
+	return strings.TrimSpace(out.String())
 }
 
 func TestMain(m *testing.M) {
@@ -81,10 +85,58 @@ func TestMain(m *testing.M) {
 	os.Exit(rc)
 }
 
-func TestExitCode(t *testing.T) {
-	err := run(t, "default.vpython3", "test_exit_code.py", &application.Application{})
+func TestBadCWD(t *testing.T) {
+	Convey("Test bad cwd", t, func() {
+		cwd, err := os.Getwd()
+		So(err, ShouldBeNil)
+		err = os.Chdir(testData("test_bad_cwd"))
+		So(err, ShouldBeNil)
 
-	if rc, has := exitcode.Get(err); !has || rc != 42 {
-		t.Errorf("expect error with code 42, got %v", err)
-	}
+		c := cmd(&application.Application{
+			Arguments: []string{
+				"bisect.py",
+			},
+		})
+		So(output(c), ShouldEqual, "SUCCESS")
+
+		err = os.Chdir(cwd)
+		So(err, ShouldBeNil)
+	})
+}
+
+func TestExitCode(t *testing.T) {
+	Convey("Test exit code", t, func() {
+		c := cmd(&application.Application{
+			Arguments: []string{
+				"-vpython-spec",
+				testData("default.vpython3"),
+				testData("test_exit_code.py"),
+			},
+		})
+
+		err := output(c)
+		rc, has := exitcode.Get(err.(error))
+		So(has, ShouldBeTrue)
+		So(rc, ShouldEqual, 42)
+	})
+}
+
+func BenchmarkStartup(b *testing.B) {
+	Convey("Benchmark startup", b, func() {
+		c := func() *exec.Cmd {
+			return cmd(&application.Application{
+				Arguments: []string{
+					"-vpython-spec",
+					testData("default.vpython3"),
+					"-c",
+					"print(1)",
+				},
+			})
+		}
+		So(output(c()), ShouldEqual, "1")
+		b.ResetTimer()
+		for n := 0; n < b.N; n++ {
+			_ = c()
+		}
+	})
 }

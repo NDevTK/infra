@@ -45,5 +45,5 @@ func main() {
 		return app.BuildVENV(venv)
 	}())
 
-	app.MustExecutePython()
+	app.Must(app.ExecutePython())
 }

@@ -31,28 +31,18 @@ func FromSpec(spec *vpython.Spec, tags cipkg.Generator) (cipkg.Generator, error)
 		return nil, errors.Annotate(err, "failed to marshal vpython spec").Err()
 	}
 
-	wheelFiles := &utilities.BaseGenerator{
-		Name:    "wheel_files",
+	return &utilities.BaseGenerator{
+		Name:    "wheels",
 		Builder: "builtin:udf:ensureWheels",
 		Args:    []string{"v1", string(raw)},
 		Dependencies: []cipkg.Dependency{
 			{Type: cipkg.DepsHostTarget, Generator: tags},
-		},
-	}
-
-	return &utilities.BaseGenerator{
-		Name:    "wheels",
-		Builder: "builtin:udf:generateWheelsDir",
-		Args:    []string{"v1", "{{.wheel_files}}"},
-		Dependencies: []cipkg.Dependency{
-			{Type: cipkg.DepsHostTarget, Generator: wheelFiles},
 		},
 	}, nil
 }
 
 func init() {
 	builtins.RegisterUserDefinedFunction("ensureWheels", ensureWheels)
-	builtins.RegisterUserDefinedFunction("generateWheelsDir", generateWheelsDir)
 }
 
 func ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
@@ -91,7 +81,7 @@ func ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
 	}
 	ef := ensure.File{
 		ServiceURL:       chromeinfra.CIPDServiceURL,
-		PackagesBySubdir: map[string]ensure.PackageSlice{"": pslice},
+		PackagesBySubdir: map[string]ensure.PackageSlice{"wheels": pslice},
 	}
 	var efs strings.Builder
 	if err := ef.Serialize(&efs); err != nil {
@@ -107,6 +97,7 @@ func ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
 	}
 
 	// Construct CIPD command and execute
+	// TODO: Replacing it with executing cipd binary directly
 	cipd := exec.CommandContext(ctx, builtins.CIPDEnsureBuilder, efs.String())
 	cipd.Env = append(env, cmd.Env...)
 	cipd.Stdin = cmd.Stdin
@@ -114,22 +105,21 @@ func ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
 	cipd.Stderr = cmd.Stderr
 	cipd.Dir = cmd.Dir
 
-	return builtins.Execute(ctx, cipd)
-}
+	if err := builtins.Execute(ctx, cipd); err != nil {
+		return err
+	}
 
-func generateWheelsDir(ctx context.Context, cmd *exec.Cmd) error {
-	// cmd.Args = ["builtin:udf:generateWheelsDir", Version, {{.wheel_files}}]
-	files := cmd.Args[2]
+	// Generate requirements.txt
 	out := builtins.GetEnv("out", cmd.Env)
-	ws, err := wheel.ScanDir(files)
+
+	wheels := filepath.Join(out, "wheels")
+	ws, err := wheel.ScanDir(wheels)
 	if err != nil {
 		return errors.Annotate(err, "failed to scan wheels").Err()
 	}
 	if err := wheel.WriteRequirementsFile(filepath.Join(out, "requirements.txt"), ws); err != nil {
 		return errors.Annotate(err, "failed to write requirements.txt").Err()
 	}
-	if err := os.Symlink(files, filepath.Join(out, "wheels")); err != nil {
-		return errors.Annotate(err, "failed to symlink wheels").Err()
-	}
+
 	return nil
 }

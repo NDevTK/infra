@@ -24,7 +24,6 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/common/system/environ"
-	"go.chromium.org/luci/common/system/exitcode"
 	"go.chromium.org/luci/common/system/filesystem"
 	"go.chromium.org/luci/vpython"
 	vpythonAPI "go.chromium.org/luci/vpython/api/vpython"
@@ -89,10 +88,9 @@ type Application struct {
 	// cleaned up on completion.
 	VpythonRoot string
 
-	// Fork and execute the python command instead of replacing current process.
-	// Vpython will behave as a supervisor and wait until python existed. It's
-	// useful for testing purpose.
-	ForkExec bool
+	// WorkDir is the Python working directory. If empty, the current working
+	// directory will be used.
+	WorkDir string
 
 	// Context used through runtime. By default it will be context.Background.
 	Context context.Context
@@ -191,6 +189,7 @@ func (a *Application) LoadSpec() error {
 			PartnerSuffix: ".vpython3",
 		},
 		CommandLine: a.PythonCommandLine,
+		WorkDir:     a.WorkDir,
 	}
 
 	if opts.WorkDir == "" {
@@ -254,10 +253,11 @@ func (a *Application) BuildVENV(venv cipkg.Generator) error {
 	if err := b.BuildAll(func(p cipkg.Package) error {
 		var out strings.Builder
 		// We don't expect to use a temporary directory. So command is executed
-		// in current working directory.
+		// in the output directory.
 		cmd := utilities.CommandFromPackage(p)
 		cmd.Stdout = &out
 		cmd.Stderr = &out
+		cmd.Dir = p.Directory()
 		if err := builtins.Execute(ctx, cmd); err != nil {
 			logging.Errorf(ctx, "%#v", out.String())
 			return err
@@ -268,6 +268,7 @@ func (a *Application) BuildVENV(venv cipkg.Generator) error {
 	}
 
 	// This lock is expected to be held during the lifetime of the process.
+	// TODO: cpython need to be locked here
 	if err := pkg.RLock(); err != nil {
 		return errors.Annotate(err, "failed to acquire read lock for venv").Err()
 	}
@@ -276,7 +277,9 @@ func (a *Application) BuildVENV(venv cipkg.Generator) error {
 	a.PythonExecutable = common.Python3VENV(pkg.Directory())
 
 	// Prune used packages
-	s.Prune(ctx, a.PruneThreshold, a.MaxPrunesPerSweep)
+	if a.PruneThreshold > 0 {
+		s.Prune(ctx, a.PruneThreshold, a.MaxPrunesPerSweep)
+	}
 	return nil
 }
 
@@ -291,41 +294,27 @@ func (a *Application) ExecutePython() error {
 	}
 
 	env := environ.New(a.Environments)
+	python.IsolateEnvironment(&env, false)
 
-	if a.ForkExec {
-		cl := a.PythonCommandLine.Clone()
-		cl.AddSingleFlag("s")
-
-		cmd := exec.Cmd{
-			Path:   a.PythonExecutable,
-			Args:   append([]string{a.PythonExecutable}, cl.BuildArgs()...),
-			Env:    env.Sorted(),
-			Stdin:  os.Stdin,
-			Stdout: os.Stdout,
-			Stderr: os.Stderr,
-		}
-
-		return cmd.Run()
-	}
-
-	if err := vpython.Exec(ctx, &python.Interpreter{Python: a.PythonExecutable}, a.PythonCommandLine, env, "", nil); err != nil {
+	// TODO: Pass exec.Cmd instead. exec.Cmd should includes enough information
+	// for execution.
+	if err := vpython.Exec(ctx, &python.Interpreter{Python: a.PythonExecutable}, a.PythonCommandLine, env, a.WorkDir, nil); err != nil {
 		return errors.Annotate(err, "failed to execute python").Err()
 	}
 	return nil
 }
 
-// MustExecutePython will exit with the python's return code if python is
-// executed and exited with any error. This happens either on windows or
-// app.ForkExec is true.
-func (a *Application) MustExecutePython() {
-	ctx := a.Context
+func (a *Application) GetExecCommand() *exec.Cmd {
+	env := environ.New(a.Environments)
+	python.IsolateEnvironment(&env, false)
 
-	// Bypass the error code and prevent unexpected log message.
-	if err := a.ExecutePython(); err != nil {
-		if rc, has := exitcode.Get(err); has {
-			logging.Debugf(ctx, "python subprocess has terminated: %v", err)
-			os.Exit(rc)
-		}
-		a.Must(err)
+	cl := a.PythonCommandLine.Clone()
+	cl.AddSingleFlag("s")
+
+	return &exec.Cmd{
+		Path: a.PythonExecutable,
+		Args: append([]string{a.PythonExecutable}, cl.BuildArgs()...),
+		Env:  env.Sorted(),
+		Dir:  a.WorkDir,
 	}
 }
