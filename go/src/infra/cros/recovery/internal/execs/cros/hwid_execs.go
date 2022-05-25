@@ -28,8 +28,8 @@ func updateHWIDToInvExec(ctx context.Context, info *execs.ExecInfo) error {
 	if hwid == "" {
 		return errors.Reason("update HWID in DUT-info: is empty").Err()
 	}
-	info.RunArgs.DUT.Hwid = hwid
-	log.Debugf(ctx, "Update HWID: %q", info.RunArgs.DUT.Hwid)
+	info.GetChromeos().Hwid = hwid
+	log.Debugf(ctx, "Update HWID: %q", info.GetChromeos().GetHwid())
 	return nil
 }
 
@@ -40,7 +40,7 @@ func matchHWIDToInvExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err != nil {
 		return errors.Annotate(err, "match HWID to inventory").Err()
 	}
-	expectedHWID := info.RunArgs.DUT.Hwid
+	expectedHWID := info.GetChromeos().GetHwid()
 	if actualHWID != expectedHWID {
 		return errors.Reason("match HWID to inventory: failed, expected: %q, but got %q", expectedHWID, actualHWID).Err()
 	}

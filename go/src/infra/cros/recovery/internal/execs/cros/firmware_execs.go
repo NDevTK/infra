@@ -68,7 +68,7 @@ func isRWFirmwareStableVersionAvailableExec(ctx context.Context, info *execs.Exe
 	if err != nil {
 		return errors.Annotate(err, "rw firmware stable version available").Err()
 	}
-	modelFirmware, err := ReadFirmwareManifest(ctx, r, info.RunArgs.DUT.Model)
+	modelFirmware, err := ReadFirmwareManifest(ctx, r, info.GetChromeos().GetModel())
 	if err != nil {
 		return errors.Annotate(err, "rw firmware stable version available").Err()
 	}

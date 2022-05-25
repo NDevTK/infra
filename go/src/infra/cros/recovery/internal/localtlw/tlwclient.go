@@ -855,7 +855,7 @@ func (c *tlwClient) getCrosStableVersion(ctx context.Context, dut *tlw.Dut) (*tl
 	}
 	return &tlw.VersionResponse{
 		Value: map[string]string{
-			"os_image":   fmt.Sprintf("%s-release/%s", dut.Board, res.GetCrosVersion()),
+			"os_image":   fmt.Sprintf("%s-release/%s", dut.GetChromeos().GetBoard(), res.GetCrosVersion()),
 			"fw_image":   res.GetFaftVersion(),
 			"fw_version": res.GetFirmwareVersion(),
 		},

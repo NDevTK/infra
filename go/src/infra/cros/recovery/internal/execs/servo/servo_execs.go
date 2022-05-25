@@ -80,8 +80,8 @@ func servodInitActionExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 	o := &tlw.ServodOptions{
 		RecoveryMode:  true,
-		DutBoard:      d.Board,
-		DutModel:      d.Model,
+		DutBoard:      d.GetChromeos().GetBoard(),
+		DutModel:      d.GetChromeos().GetModel(),
 		ServodPort:    int32(sh.ServodPort),
 		ServoSerial:   sh.SerialNumber,
 		ServoDual:     false,

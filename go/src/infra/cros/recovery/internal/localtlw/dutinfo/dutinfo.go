@@ -121,11 +121,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 	d := &tlw.Dut{
 		Id:                  machine.GetName(),
 		Name:                name,
-		Board:               machine.GetChromeosMachine().GetBuildTarget(),
-		Model:               machine.GetChromeosMachine().GetModel(),
-		Hwid:                machine.GetChromeosMachine().GetHwid(),
 		Phase:               make.GetDevicePhase().String()[len("PHASE_"):],
-		SerialNumber:        machine.GetSerialNumber(),
 		SetupType:           setup,
 		State:               dutstate.ConvertFromUFSState(lc.GetResourceState()),
 		PowerSupplyType:     supplyType,
@@ -135,6 +131,11 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			LoopbackState: convertAudioLoopbackState(ds.GetAudioLoopbackDongle()),
 		},
 		Chromeos: &tlw.ChromeOS{
+			Board:        machine.GetChromeosMachine().GetBuildTarget(),
+			Model:        machine.GetChromeosMachine().GetModel(),
+			Hwid:         machine.GetChromeosMachine().GetHwid(),
+			SerialNumber: machine.GetSerialNumber(),
+
 			Cr50Phase:      convertCr50Phase(ds.GetCr50Phase()),
 			Cr50KeyEnv:     convertCr50KeyEnv(ds.GetCr50KeyEnv()),
 			DeviceSku:      machine.GetChromeosMachine().GetSku(),
@@ -202,14 +203,15 @@ func adaptUfsLabstationToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error
 	d := &tlw.Dut{
 		Id:              machine.GetName(),
 		Name:            name,
-		Board:           machine.GetChromeosMachine().GetBuildTarget(),
-		Model:           machine.GetChromeosMachine().GetModel(),
-		Hwid:            machine.GetChromeosMachine().GetHwid(),
 		Phase:           make.GetDevicePhase().String()[len("PHASE_"):],
-		SerialNumber:    machine.GetSerialNumber(),
 		SetupType:       tlw.DUTSetupTypeLabstation,
 		PowerSupplyType: tlw.PowerSupplyTypeACOnly,
 		Chromeos: &tlw.ChromeOS{
+			Board:        machine.GetChromeosMachine().GetBuildTarget(),
+			Model:        machine.GetChromeosMachine().GetModel(),
+			Hwid:         machine.GetChromeosMachine().GetHwid(),
+			SerialNumber: machine.GetSerialNumber(),
+
 			Cr50Phase:  convertCr50Phase(ds.GetCr50Phase()),
 			Cr50KeyEnv: convertCr50KeyEnv(ds.GetCr50KeyEnv()),
 			DeviceSku:  machine.GetChromeosMachine().GetSku(),
@@ -320,11 +322,12 @@ func configHasFeature(dc *ufsdevice.Config, hf ufsdevice.Config_HardwareFeature)
 }
 
 func getUFSDutDataFromSpecs(dutID string, dut *tlw.Dut) *ufsAPI.UpdateDeviceRecoveryDataRequest_DutData {
-	dutData := &ufsAPI.UpdateDeviceRecoveryDataRequest_DutData{}
-	dutData.SerialNumber = dut.SerialNumber
-	dutData.HwID = dut.Hwid
-	// TODO: update logic if required by b/184391605
-	dutData.DeviceSku = dut.GetChromeos().GetDeviceSku()
+	dutData := &ufsAPI.UpdateDeviceRecoveryDataRequest_DutData{
+		SerialNumber: dut.GetChromeos().GetSerialNumber(),
+		HwID:         dut.GetChromeos().GetHwid(),
+		// TODO: update logic if required by b/184391605
+		DeviceSku: dut.GetChromeos().GetDeviceSku(),
+	}
 	return dutData
 }
 

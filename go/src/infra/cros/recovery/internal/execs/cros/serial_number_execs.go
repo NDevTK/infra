@@ -29,7 +29,7 @@ func updateSerialNumberToInvExec(ctx context.Context, info *execs.ExecInfo) erro
 		return errors.Reason("update serial number in DUT-info: is empty").Err()
 	}
 	log.Debugf(ctx, "Update serial_number %q in DUT-info.", sn)
-	info.RunArgs.DUT.SerialNumber = sn
+	info.GetChromeos().SerialNumber = sn
 	return nil
 }
 
@@ -40,7 +40,7 @@ func matchSerialNumberToInvExec(ctx context.Context, info *execs.ExecInfo) error
 	if err != nil {
 		return errors.Annotate(err, "match serial number to inventory").Err()
 	}
-	expectedSerialNumber := info.RunArgs.DUT.SerialNumber
+	expectedSerialNumber := info.GetChromeos().GetSerialNumber()
 	if actualSerialNumber != expectedSerialNumber {
 		return errors.Reason("match serial number to inventory: failed, expected: %q, but got %q", expectedSerialNumber, actualSerialNumber).Err()
 	}
