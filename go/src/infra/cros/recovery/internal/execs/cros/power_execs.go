@@ -35,7 +35,7 @@ func isACPowerConnectedExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // isBatteryExpectedExec confirms whether the DUT is expected to have battery according to inventory.
 func isBatteryExpectedExec(ctx context.Context, info *execs.ExecInfo) error {
-	if info.RunArgs.DUT.PowerSupplyType != tlw.PowerSupplyTypeBattery {
+	if info.GetChromeos().GetPowerSupplyType() != tlw.ChromeOS_BATTERY {
 		return errors.Reason("is battery expected: battery is not expected").Err()
 	}
 	return nil

@@ -101,16 +101,16 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 	make := data.GetManufacturingConfig()
 	name := lc.GetName()
 	var battery *tlw.Battery
-	supplyType := tlw.PowerSupplyTypeUnspecified
+	supplyType := tlw.ChromeOS_POWER_SUPPLY_UNSPECIFIED
 	if dc != nil {
 		switch dc.GetPower() {
 		case ufsdevice.Config_POWER_SUPPLY_BATTERY:
-			supplyType = tlw.PowerSupplyTypeBattery
+			supplyType = tlw.ChromeOS_BATTERY
 			battery = &tlw.Battery{
 				State: convertHardwareState(ds.GetBatteryState()),
 			}
 		case ufsdevice.Config_POWER_SUPPLY_AC_ONLY:
-			supplyType = tlw.PowerSupplyTypeACOnly
+			supplyType = tlw.ChromeOS_AC_ONLY
 		}
 	}
 	setup := tlw.DUTSetupTypeCros
@@ -123,18 +123,18 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		Name:                name,
 		SetupType:           setup,
 		State:               dutstate.ConvertFromUFSState(lc.GetResourceState()),
-		PowerSupplyType:     supplyType,
 		PeripheralWifiState: convertPeripheralWifiState(ds.GetWifiPeripheralState()),
 		ServoHost:           createServoHost(p, ds),
 		Audio: &tlw.DUTAudio{
 			LoopbackState: convertAudioLoopbackState(ds.GetAudioLoopbackDongle()),
 		},
 		Chromeos: &tlw.ChromeOS{
-			Board:        machine.GetChromeosMachine().GetBuildTarget(),
-			Model:        machine.GetChromeosMachine().GetModel(),
-			Hwid:         machine.GetChromeosMachine().GetHwid(),
-			SerialNumber: machine.GetSerialNumber(),
-			Phase:        make.GetDevicePhase().String()[len("PHASE_"):],
+			Board:           machine.GetChromeosMachine().GetBuildTarget(),
+			Model:           machine.GetChromeosMachine().GetModel(),
+			Hwid:            machine.GetChromeosMachine().GetHwid(),
+			SerialNumber:    machine.GetSerialNumber(),
+			Phase:           make.GetDevicePhase().String()[len("PHASE_"):],
+			PowerSupplyType: supplyType,
 
 			Cr50Phase:      convertCr50Phase(ds.GetCr50Phase()),
 			Cr50KeyEnv:     convertCr50KeyEnv(ds.GetCr50KeyEnv()),
@@ -201,16 +201,16 @@ func adaptUfsLabstationToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error
 	make := data.GetManufacturingConfig()
 	name := lc.GetName()
 	d := &tlw.Dut{
-		Id:              machine.GetName(),
-		Name:            name,
-		SetupType:       tlw.DUTSetupTypeLabstation,
-		PowerSupplyType: tlw.PowerSupplyTypeACOnly,
+		Id:        machine.GetName(),
+		Name:      name,
+		SetupType: tlw.DUTSetupTypeLabstation,
 		Chromeos: &tlw.ChromeOS{
-			Board:        machine.GetChromeosMachine().GetBuildTarget(),
-			Model:        machine.GetChromeosMachine().GetModel(),
-			Hwid:         machine.GetChromeosMachine().GetHwid(),
-			SerialNumber: machine.GetSerialNumber(),
-			Phase:        make.GetDevicePhase().String()[len("PHASE_"):],
+			Board:           machine.GetChromeosMachine().GetBuildTarget(),
+			Model:           machine.GetChromeosMachine().GetModel(),
+			Hwid:            machine.GetChromeosMachine().GetHwid(),
+			SerialNumber:    machine.GetSerialNumber(),
+			Phase:           make.GetDevicePhase().String()[len("PHASE_"):],
+			PowerSupplyType: tlw.ChromeOS_AC_ONLY,
 
 			Cr50Phase:  convertCr50Phase(ds.GetCr50Phase()),
 			Cr50KeyEnv: convertCr50KeyEnv(ds.GetCr50KeyEnv()),

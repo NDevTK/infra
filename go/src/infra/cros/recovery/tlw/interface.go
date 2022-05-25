@@ -76,37 +76,6 @@ const (
 	DUTSetupTypeIOS DUTSetupType = "IOS"
 )
 
-// PowerSupplyType describes different power supply types for a DUT.
-type PowerSupplyType string
-
-const (
-	PowerSupplyTypeUnspecified PowerSupplyType = "UNSPECIFIED"
-	// Primary power source of the devices is wall-power. Devices does not have a battery.
-	PowerSupplyTypeACOnly PowerSupplyType = "AC_ONLY"
-	// Primary power source of the devices is battery. Devices still connected to wall-power to charge it.
-	PowerSupplyTypeBattery PowerSupplyType = "BATTERY"
-)
-
-// Cr50Phase describes different phases of CR50 firmware used on DUT.
-// Label indicating the cr50 image type.
-type Cr50Phase string
-
-const (
-	Cr50PhaseUnspecified Cr50Phase = "UNSPECIFIED"
-	Cr50PhasePVT         Cr50Phase = "CR50_PHASE_PVT"
-	Cr50PhasePREPVT      Cr50Phase = "CR50_PHASE_PREPVT"
-)
-
-// Cr50KeyEnv describes key env for cr50 RW version.
-// Label indicating the cr50 RW version.
-type Cr50KeyEnv string
-
-const (
-	Cr50KeyEnvUnspecified Cr50KeyEnv = "UNSPECIFIED"
-	Cr50KeyEnvProd        Cr50KeyEnv = "CR50_KEYENV_PROD"
-	Cr50KeyEnvDev         Cr50KeyEnv = "CR50_KEYENV_DEV"
-)
-
 const (
 	// Extra attributes for DUT to provide custom info.
 	ExtraAttributePools          = "POOLS"
@@ -123,8 +92,6 @@ type Dut struct {
 	Name string
 	// SetupType describes the setup of the DUT, which affects how it is verified/repaired.
 	SetupType DUTSetupType
-	// PowerSupplyType describes the DUT's power supply type.
-	PowerSupplyType PowerSupplyType
 	// Audio info.
 	Audio *DUTAudio
 	// State of the DUT.
