@@ -93,7 +93,7 @@ func TestTestHistoryServer(t *testing.T) {
 					baseTestResult = baseTestResult.WithChangelists(nil)
 				}
 
-				trs := testresults.NewTestVariant().
+				trs := testresults.NewTestVerdict().
 					WithBaseTestResult(baseTestResult.Build()).
 					WithStatus(pb.TestVerdictStatus_EXPECTED).
 					WithPassedAvgDuration(nil).

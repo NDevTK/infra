@@ -33,6 +33,7 @@ message QueryTestVariantFailureRateRequest {
 
     // The list of test variants to retrieve results for.
     // At most 100 test variants may be specified in one request.
+    // It is an error to request the same test variant twice.
     repeated TestVariantIdentifier test_variants = 2;
 }
 
@@ -64,7 +65,7 @@ message TestVariantFailureRateAnalysis {
 
     // A signal relevant to detecting deterministically or
     // very flaky tests, measured over the last 10 verdicts (or 24 hours
-    // of weekday data, whichever is less).
+    // of weekday data (in UTC), whichever is less).
     //
     // See FailingRunRatio for more details about signal design, usage
     // and limitations.
@@ -78,14 +79,8 @@ message TestVariantFailureRateAnalysis {
     //    reject the CL by default (fail-closed) or exonerate by default
     //    (fail-open).
     //
-    // The example criteria limits false exoneration occurrences to an average
-    // of 1 CL per year, assuming:
-    // - a bad CL (CL that actually breaks a given test) rate of 0.1%,
-    // - 1,000 CLs tested per day,
-    // - 1,000,000 tests run per CL
-    // It results in ~5 CLs incorrectly not exonerated per deterministic test
-    // breakage (plus more depending on ingestion latency), absent other
-    // exoneration strategies.
+    // See go/weetbix-failing-test-detection for more details about the
+    // example exoneration criteria.
     FailingRunRatio failing_run_ratio = 3;
 
     // The failing runs included in the numerator of failing_run_ratio
@@ -93,8 +88,8 @@ message TestVariantFailureRateAnalysis {
     repeated VerdictExample failing_run_examples = 4;
 
     // A signal relevant to detecting the low to moderately
-    // flaky tests, over a period including the last 24 hours worth of
-    // weekday data (in UTC), or last 1000 verdicts, whichever is less.
+    // flaky tests, over a period including the last 1000 verdicts, or
+    // 24 hours worth of weekday data (in UTC), whichever is less.
     //
     // Definition of "the last 24 hours worth of weekday data":
     // If it is currently a weekend (in UTC), the returned data will cover all
@@ -112,6 +107,30 @@ message TestVariantFailureRateAnalysis {
     // If there are more than 10, only the 10 most recent examples are
     // returned. Entries are returned in descending partition_time order.
     repeated VerdictExample flaky_verdict_examples = 6;
+
+    // Sample describes the sample of verdicts used to generate the response.
+    // For debug use only - do not access in your code. This field may be
+    // modified or deleted in future.
+    message Sample {
+        // The number of verdicts included in the sample of verdicts that
+        // was used to calculate the statistics included in the response.
+        // Each of these verdicts is guaranteed to be for a unique
+        // changelist (if they tested a changelist) to avoid overrepresentation
+        // of any single CL in the sample.
+        // Verdicts which tested multiple CLs are excluded.
+        // The implementation limits this to 1,000.
+        int64 verdicts = 1;
+        // The number of verdicts processed to obtain the sample, including
+        // verdicts that were excluded from the sample because they were
+        // for the same changelist as another verdict.
+        // The implementation limits this to 2,000.
+        int64 verdicts_pre_deduplication = 2;
+    }
+
+    // Describes the sample of verdicts used to generate the response.
+    // For debug use only - do not access in your code. This field may be
+    // modified or deleted in future.
+    Sample sample = 7;
 }
 
 // FlakyVerdictRatio counts the number of verdicts with both a failing
@@ -223,5 +242,5 @@ message VerdictExample {
     string ingested_invocation_id = 2;
 
     // The changelist(s) tested, if any.
-    repeated Changelist changelist = 3;
+    repeated Changelist changelists = 3;
 }

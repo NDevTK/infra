@@ -130,6 +130,9 @@ func (b *TestResultBuilder) WithChangelists(changelist []Changelist) *TestResult
 	// after this call propagating into the resultant test result.
 	cls := make([]Changelist, len(changelist))
 	copy(cls, changelist)
+
+	// Ensure changelists are stored sorted.
+	SortChangelists(cls)
 	b.result.Changelists = cls
 	return b
 }
@@ -146,17 +149,28 @@ func (b *TestResultBuilder) Build() *TestResult {
 	return result
 }
 
-// TestVariantBuilder provides methods to build a test variant for testing.
-type TestVariantBuilder struct {
+// TestVerdictBuilder provides methods to build a test variant for testing.
+type TestVerdictBuilder struct {
 	baseResult        TestResult
-	status            pb.TestVerdictStatus
+	status            *pb.TestVerdictStatus
+	runStatuses       []RunStatus
 	passedAvgDuration *time.Duration
 }
 
-func NewTestVariant() *TestVariantBuilder {
-	result := new(TestVariantBuilder)
+type RunStatus int64
+
+const (
+	Unexpected RunStatus = iota
+	Flaky
+	Expected
+)
+
+func NewTestVerdict() *TestVerdictBuilder {
+	result := new(TestVerdictBuilder)
 	result.baseResult = *NewTestResult().WithStatus(pb.TestResultStatus_PASS).Build()
-	result.status = pb.TestVerdictStatus_FLAKY
+	status := pb.TestVerdictStatus_FLAKY
+	result.status = &status
+	result.runStatuses = nil
 	d := 919191 * time.Microsecond
 	result.passedAvgDuration = &d
 	return result
@@ -164,7 +178,7 @@ func NewTestVariant() *TestVariantBuilder {
 
 // WithBaseTestResult specifies a test result to use as the template for
 // the test variant's test results.
-func (b *TestVariantBuilder) WithBaseTestResult(testResult *TestResult) *TestVariantBuilder {
+func (b *TestVerdictBuilder) WithBaseTestResult(testResult *TestResult) *TestVerdictBuilder {
 	b.baseResult = *testResult
 	return b
 }
@@ -173,99 +187,153 @@ func (b *TestVariantBuilder) WithBaseTestResult(testResult *TestResult) *TestVar
 // passed test results. If setting to a non-nil value, make sure
 // to set the result status as passed on the base test result if
 // using this option.
-func (b *TestVariantBuilder) WithPassedAvgDuration(duration *time.Duration) *TestVariantBuilder {
+func (b *TestVerdictBuilder) WithPassedAvgDuration(duration *time.Duration) *TestVerdictBuilder {
 	b.passedAvgDuration = duration
 	return b
 }
 
-// WithPassedAvgDuration specifies the status of the test verdict.
-func (b *TestVariantBuilder) WithStatus(status pb.TestVerdictStatus) *TestVariantBuilder {
-	b.status = status
+// WithStatus specifies the status of the test verdict.
+func (b *TestVerdictBuilder) WithStatus(status pb.TestVerdictStatus) *TestVerdictBuilder {
+	b.status = &status
 	return b
 }
 
-func (b *TestVariantBuilder) Build() []*TestResult {
-	result := make([]*TestResult, 3)
-	result[0] = new(TestResult)
-	*result[0] = b.baseResult
-	result[1] = new(TestResult)
-	*result[1] = b.baseResult
-	result[2] = new(TestResult)
-	*result[2] = b.baseResult
+// WithRunStatus specifies the status of runs of the test verdict.
+func (b *TestVerdictBuilder) WithRunStatus(runStatuses ...RunStatus) *TestVerdictBuilder {
+	b.runStatuses = runStatuses
+	return b
+}
 
-	// Set status.
-	for _, tr := range result {
+func applyStatus(trs []*TestResult, status pb.TestVerdictStatus) {
+	// Set all test results to unexpected, not exonerated by default.
+	for _, tr := range trs {
 		tr.IsUnexpected = true
 		tr.ExonerationStatus = pb.ExonerationStatus_NOT_EXONERATED
 	}
-	result[0].RunIndex = 0
-	result[0].ResultIndex = 0
-	result[1].RunIndex = 1
-	result[1].ResultIndex = 0
-	result[2].RunIndex = 1
-	result[2].ResultIndex = 1
-
-	switch b.status {
+	switch status {
 	case pb.TestVerdictStatus_EXONERATED:
-		result[0].ExonerationStatus = pb.ExonerationStatus_OCCURS_ON_MAINLINE
-		result[1].ExonerationStatus = pb.ExonerationStatus_OCCURS_ON_MAINLINE
-		result[2].ExonerationStatus = pb.ExonerationStatus_OCCURS_ON_MAINLINE
+		for _, tr := range trs {
+			tr.ExonerationStatus = pb.ExonerationStatus_OCCURS_ON_MAINLINE
+		}
 	case pb.TestVerdictStatus_UNEXPECTED:
 		// No changes required.
 	case pb.TestVerdictStatus_EXPECTED:
-		result[0].IsUnexpected = false
-		result[1].IsUnexpected = false
-		result[2].IsUnexpected = false
+		allSkipped := true
+		for _, tr := range trs {
+			tr.IsUnexpected = false
+			if tr.Status != pb.TestResultStatus_SKIP {
+				allSkipped = false
+			}
+		}
 		// Make sure not all test results are SKIPPED, to avoid the status
 		// UNEXPECTEDLY_SKIPPED.
-		if result[0].Status == pb.TestResultStatus_SKIP {
-			result[0].Status = pb.TestResultStatus_CRASH
+		if allSkipped {
+			trs[0].Status = pb.TestResultStatus_CRASH
 		}
 	case pb.TestVerdictStatus_UNEXPECTEDLY_SKIPPED:
-		result[0].Status = pb.TestResultStatus_SKIP
-		result[1].Status = pb.TestResultStatus_SKIP
-		result[2].Status = pb.TestResultStatus_SKIP
+		for _, tr := range trs {
+			tr.Status = pb.TestResultStatus_SKIP
+		}
 	case pb.TestVerdictStatus_FLAKY:
-		result[0].IsUnexpected = false
-		result[1].IsUnexpected = true
-		result[2].IsUnexpected = false
+		trs[0].IsUnexpected = false
 	default:
 		panic("status must be specified")
 	}
+}
 
-	// Set average passed duration.
+// applyRunStatus applies the given run status to the given test results.
+func applyRunStatus(trs []*TestResult, runStatus RunStatus) {
+	for _, tr := range trs {
+		tr.IsUnexpected = true
+	}
+	switch runStatus {
+	case Expected:
+		for _, tr := range trs {
+			tr.IsUnexpected = false
+		}
+	case Flaky:
+		trs[0].IsUnexpected = false
+	case Unexpected:
+		// All test results already unexpected.
+	}
+}
+
+func applyAvgPassedDuration(trs []*TestResult, passedAvgDuration *time.Duration) {
+	if passedAvgDuration == nil {
+		for _, tr := range trs {
+			if tr.Status == pb.TestResultStatus_PASS {
+				tr.RunDuration = nil
+			}
+		}
+		return
+	}
+
 	passCount := 0
-	for _, tr := range result {
+	for _, tr := range trs {
 		if tr.Status == pb.TestResultStatus_PASS {
 			passCount++
 		}
 	}
-	for i, tr := range result {
+	passIndex := 0
+	for _, tr := range trs {
 		if tr.Status == pb.TestResultStatus_PASS {
-			if b.passedAvgDuration == nil {
+			d := *passedAvgDuration
+			if passCount == 1 {
+				// If there is only one pass, assign it the
+				// set duration.
+				tr.RunDuration = &d
+				break
+			}
+			if passIndex == 0 && passCount%2 == 1 {
+				// If there are an odd number of passes, and
+				// more than one pass, assign the first pass
+				// a nil duration.
 				tr.RunDuration = nil
 			} else {
-				d := *b.passedAvgDuration
-				if passCount == 1 {
+				// Assigning alternating passes 2*d the duration
+				// and 0 duration, to keep the average correct.
+				if passIndex%2 == 0 {
+					d = d * 2
 					tr.RunDuration = &d
-				} else { // passCount == 2 or 3
-					if i == 0 {
-						// Set one test result to have twice
-						// the average duration.
-						d = d * 2
-						tr.RunDuration = &d
-					} else if i == 1 {
-						// Set the second to have zero
-						// duration.
-						d = 0
-						tr.RunDuration = &d
-					} else if i == 2 {
-						// Set the last to have no duration.
-						tr.RunDuration = nil
-					}
+				} else {
+					d = 0
+					tr.RunDuration = &d
 				}
 			}
+			passIndex++
 		}
 	}
-	return result
+}
+
+func (b *TestVerdictBuilder) Build() []*TestResult {
+	runs := 2
+	if len(b.runStatuses) > 0 {
+		runs = len(b.runStatuses)
+	}
+
+	// Create two test results per run, to allow
+	// for all expected, all unexpected and
+	// flaky (mixed expected+unexpected) statuses
+	// to be represented.
+	trs := make([]*TestResult, 0, runs*2)
+	for i := 0; i < runs*2; i++ {
+		tr := new(TestResult)
+		*tr = b.baseResult
+		tr.RunIndex = int64(i / 2)
+		tr.ResultIndex = int64(i % 2)
+		trs = append(trs, tr)
+	}
+
+	// Normally only one of these should be set.
+	// If both are set, run statuses has precedence.
+	if b.status != nil {
+		applyStatus(trs, *b.status)
+	}
+	for i, runStatus := range b.runStatuses {
+		runTRs := trs[i*2 : (i+1)*2]
+		applyRunStatus(runTRs, runStatus)
+	}
+
+	applyAvgPassedDuration(trs, b.passedAvgDuration)
+	return trs
 }

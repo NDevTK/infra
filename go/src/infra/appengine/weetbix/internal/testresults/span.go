@@ -6,6 +6,7 @@ package testresults
 
 import (
 	"context"
+	"sort"
 	"text/template"
 	"time"
 
@@ -39,6 +40,24 @@ type Changelist struct {
 	Host     string
 	Change   int64
 	Patchset int64
+}
+
+// SortChangelists sorts a slice of changelists to be in ascending
+// lexicographical order by (host, change, patchset).
+func SortChangelists(cls []Changelist) {
+	sort.Slice(cls, func(i, j int) bool {
+		// Returns true iff cls[i] is less than cls[j].
+		if cls[i].Host < cls[j].Host {
+			return true
+		}
+		if cls[i].Host == cls[j].Host && cls[i].Change < cls[j].Change {
+			return true
+		}
+		if cls[i].Host == cls[j].Host && cls[i].Change == cls[j].Change && cls[i].Patchset < cls[j].Patchset {
+			return true
+		}
+		return false
+	})
 }
 
 // IngestedInvocation represents a row in the IngestedInvocations table.

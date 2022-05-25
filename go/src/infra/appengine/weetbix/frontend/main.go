@@ -42,6 +42,7 @@ import (
 	"infra/appengine/weetbix/internal/services/testvariantbqexporter"
 	"infra/appengine/weetbix/internal/services/testvariantupdator"
 	_ "infra/appengine/weetbix/internal/services/testverdictingester" // ensure task queue registered
+	"infra/appengine/weetbix/internal/span"
 	weetbixpb "infra/appengine/weetbix/proto/v1"
 	"infra/appengine/weetbix/rpc"
 )
@@ -153,6 +154,7 @@ func main() {
 		}
 		// TODO(crbug/1082369): Remove this workaround once field masks can be decoded.
 		srv.PRPC.HackFixFieldMasksForJSON = true
+		srv.RegisterUnaryServerInterceptor(span.SpannerDefaultsInterceptor())
 
 		ac, err := analysis.NewClient(srv.Context, srv.Options.CloudProject)
 		if err != nil {
@@ -162,6 +164,7 @@ func main() {
 		weetbixpb.RegisterRulesServer(srv.PRPC, rpc.NewRulesSever())
 		weetbixpb.RegisterProjectsServer(srv.PRPC, rpc.NewProjectsServer())
 		weetbixpb.RegisterInitDataGeneratorServer(srv.PRPC, rpc.NewInitDataGeneratorServer())
+		weetbixpb.RegisterTestVariantsServer(srv.PRPC, rpc.NewTestVariantsServer())
 		weetbixpb.RegisterTestHistoryServer(srv.PRPC, rpc.NewTestHistoryServer())
 		adminpb.RegisterAdminServer(srv.PRPC, admin.CreateServer())
 

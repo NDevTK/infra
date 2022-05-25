@@ -67,6 +67,9 @@ func extractIngestedInvocation(task *taskspb.IngestTestVerdicts, build *bbpb.Bui
 			Patchset: change.Patchset,
 		})
 	}
+	// Store the tested changelists in sorted order. This ensures that for
+	// the same combination of CLs tested, the arrays are identical.
+	testresults.SortChangelists(changelists)
 
 	return &testresults.IngestedInvocation{
 		Project:                      proj,

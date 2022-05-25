@@ -73,7 +73,7 @@ func TestReadTestHistory(t *testing.T) {
 					baseTestResult = baseTestResult.WithChangelists(nil)
 				}
 
-				trs := NewTestVariant().
+				trs := NewTestVerdict().
 					WithBaseTestResult(baseTestResult.Build()).
 					WithStatus(status).
 					WithPassedAvgDuration(avgDuration).
@@ -431,7 +431,7 @@ func TestReadTestHistoryStats(t *testing.T) {
 					baseTestResult = baseTestResult.WithChangelists(nil)
 				}
 
-				trs := NewTestVariant().
+				trs := NewTestVerdict().
 					WithBaseTestResult(baseTestResult.Build()).
 					WithStatus(status).
 					WithPassedAvgDuration(avgDuration).

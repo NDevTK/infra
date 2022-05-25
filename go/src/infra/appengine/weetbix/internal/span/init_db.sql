@@ -529,6 +529,8 @@ CREATE TABLE TestResults (
   -- are matched in length and correspond in index, i.e.
   -- ChangelistHosts[OFFSET(0)] corresponds with ChangelistChanges[OFFSET(0)]
   -- and ChangelistPatchsets[OFFSET(0)].
+  -- Changelists are stored in ascending lexicographical order (over
+  -- (hostname, change, patchset)).
 
   -- Hostname(s) of the gerrit instance of the changelist that was tested
   -- (if any). For storage efficiency, the suffix "-review.googlesource.com"
@@ -590,6 +592,8 @@ CREATE TABLE IngestedInvocations (
   -- are matched in length and correspond in index, i.e.
   -- ChangelistHosts[OFFSET(0)] corresponds with ChangelistChanges[OFFSET(0)]
   -- and ChangelistPatchsets[OFFSET(0)].
+  -- Changelists are stored in ascending lexicographical order (over
+  -- (hostname, change, patchset)).
 
   -- Hostname(s) of the gerrit instance of the changelist that was tested
   -- (if any). For storage efficiency, the suffix "-review.googlesource.com"

@@ -91,14 +91,14 @@ func TestIngestTestVerdicts(t *testing.T) {
 				WithBuildStatus(weetbixpb.BuildStatus_BUILD_STATUS_FAILURE).
 				WithChangelists([]testresults.Changelist{
 					{
-						Host:     "mygerrit",
-						Change:   12345,
-						Patchset: 5,
-					},
-					{
 						Host:     "anothergerrit",
 						Change:   77788,
 						Patchset: 19,
+					},
+					{
+						Host:     "mygerrit",
+						Change:   12345,
+						Patchset: 5,
 					},
 				}).
 				WithHasContributedToClSubmission(true)
@@ -347,14 +347,14 @@ func TestIngestTestVerdicts(t *testing.T) {
 				HasContributedToClSubmission: true,
 				Changelists: []testresults.Changelist{
 					{
-						Host:     "mygerrit",
-						Change:   12345,
-						Patchset: 5,
-					},
-					{
 						Host:     "anothergerrit",
 						Change:   77788,
 						Patchset: 19,
+					},
+					{
+						Host:     "mygerrit",
+						Change:   12345,
+						Patchset: 5,
 					},
 				},
 			}
