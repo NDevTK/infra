@@ -84,7 +84,7 @@ func (c *customProvisionRun) innerRun(a subcommands.Application, args []string, 
 			UpdateInventory: false,
 			ExtraTags: []string{
 				"task:custom_provision",
-				clientTag,
+				site.ClientTag,
 				fmt.Sprintf("version:%s", v),
 			},
 		},

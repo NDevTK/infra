@@ -179,3 +179,6 @@ func prpcOptionWithUserAgent(userAgent string) *prpc.Options {
 	options.UserAgent = userAgent
 	return &options
 }
+
+// Client tag used for PARIS tasks scheduling.
+const ClientTag = "client:mallet"

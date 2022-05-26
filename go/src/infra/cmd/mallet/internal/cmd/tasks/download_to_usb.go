@@ -87,7 +87,7 @@ func (c *downloadToUsbDriveRun) innerRun(a subcommands.Application, args []strin
 				UpdateInventory: false,
 				ExtraTags: []string{
 					"task:download_to_usb",
-					clientTag,
+					site.ClientTag,
 					fmt.Sprintf("version:%s", v),
 				},
 			},
