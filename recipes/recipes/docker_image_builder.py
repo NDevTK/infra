@@ -21,10 +21,7 @@ DEPS = [
 ]
 
 
-# Service account for push access to container registry, deployed by Puppet.
-_CONTAINER_REGISTRY_CREDENTIAL_PATH = (
-    '/creds/service_accounts/service-account-container_registry_pusher.json')
-_CONTAINER_REGISTRY_PROJECT = 'chromium-container-registry'
+_CONTAINER_REGISTRY_PROJECT = 'chops-public-images-prod'
 
 PROPERTIES = {
     'arch_type': Property(

@@ -170,7 +170,7 @@
       "[CLEANUP]/.docker",
       "tag",
       "swarm_docker:latest",
-      "gcr.io/chromium-container-registry/swarm_docker:2012-05-14-12-53"
+      "gcr.io/chops-public-images-prod/swarm_docker:2012-05-14-12-53"
     ],
     "name": "docker tag"
   },
@@ -180,7 +180,7 @@
       "--config",
       "[CLEANUP]/.docker",
       "push",
-      "gcr.io/chromium-container-registry/swarm_docker:2012-05-14-12-53"
+      "gcr.io/chops-public-images-prod/swarm_docker:2012-05-14-12-53"
     ],
     "name": "docker push",
     "~followup_annotations": [
