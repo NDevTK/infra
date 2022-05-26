@@ -7,7 +7,7 @@
 package tasknames
 
 // TaskName describes which flow/plans will be involved in the process.
-type TaskName string
+type TaskName = string
 
 const (
 	// Audit is used to run audit task of RPM.
