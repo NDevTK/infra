@@ -26,27 +26,32 @@ import IconButton from '@mui/material/IconButton';
 import {
   clearSelectedRecord,
   onSelectRecord,
-  queryAssetAsync,
-} from './assetSlice';
+  queryResourceAsync,
+} from './resourceSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
   setRightSideDrawerOpen,
   setActiveEntity,
 } from '../utility/utilitySlice';
 
-export function AssetList() {
+export function ResourceList() {
   const dispatch = useAppDispatch();
 
   // Calls only once when the component is loaded.
   React.useEffect(() => {
-    dispatch(setActiveEntity('assets'));
+    dispatch(setActiveEntity('resources'));
   }, []);
 
-  const rows: GridRowsProp = useAppSelector((state) => state.asset.assets);
+  const rows: GridRowsProp = useAppSelector(
+    (state) => state.resource.resources
+  );
   const columns: GridColDef[] = [
-    { field: 'assetId', headerName: 'Id', width: 150 },
+    { field: 'resourceId', headerName: 'Id', width: 150 },
     { field: 'name', headerName: 'Name', width: 150 },
+    { field: 'type', headerName: 'Type', width: 150 },
     { field: 'description', headerName: 'Description', width: 150 },
+    { field: 'machineInfo', headerName: 'Machine Info', width: 150 },
+    { field: 'domainInfo', headerName: 'Domain Info', width: 150 },
     { field: 'createdBy', headerName: 'Created By', width: 150 },
     { field: 'createdAt', headerName: 'Created At', width: 150 },
     {
@@ -69,8 +74,7 @@ export function AssetList() {
   const handleEditClick = (cellValues: GridRenderCellParams) => {
     const selectedRow = cellValues.row;
     handleRightSideDrawerOpen();
-    dispatch(onSelectRecord({ assetId: selectedRow.assetId }));
-    console.log(cellValues);
+    dispatch(onSelectRecord({ resourceId: selectedRow.resourceId }));
   };
 
   const handleCreateClick = () => {
@@ -83,7 +87,7 @@ export function AssetList() {
   };
 
   const handleRefreshClick = () => {
-    dispatch(queryAssetAsync({ pageSize: 100, pageToken: '' }));
+    dispatch(queryResourceAsync({ pageSize: 100, pageToken: '' }));
   };
 
   function CustomToolbar() {
@@ -107,7 +111,7 @@ export function AssetList() {
           }}
           xs={8}
         >
-          <Typography variant="h6">Assets</Typography>
+          <Typography variant="h6">Resources</Typography>
         </Grid>
         <Grid
           item
@@ -140,7 +144,7 @@ export function AssetList() {
       <div style={{ width: '100%' }}>
         <DataGrid
           autoHeight
-          getRowId={(r) => r.assetId}
+          getRowId={(r) => r.resourceId}
           rows={rows}
           columns={columns}
           components={{

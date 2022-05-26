@@ -10,12 +10,14 @@ export interface UtilityState {
   userEmail: string;
   userPicture: string;
   rightSideDrawerOpen: boolean;
+  activeEntity: string;
 }
 
 const initialState: UtilityState = {
   userEmail: '',
   userPicture: '',
   rightSideDrawerOpen: false,
+  activeEntity: '',
 };
 
 export const fetchUserPictureAsync = createAsyncThunk(
@@ -45,6 +47,9 @@ export const utilitySlice = createSlice({
     setRightSideDrawerOpen: (state) => {
       state.rightSideDrawerOpen = true;
     },
+    setActiveEntity: (state, action) => {
+      state.activeEntity = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchUserPictureAsync.fulfilled, (state, action) => {
@@ -58,6 +63,11 @@ export const utilitySlice = createSlice({
 
 export const selectUtilityState = (state: RootState) => state.utility;
 
-export const { setUserPicture, setRightSideDrawerClose, setRightSideDrawerOpen } = utilitySlice.actions;
+export const {
+  setUserPicture,
+  setRightSideDrawerClose,
+  setRightSideDrawerOpen,
+  setActiveEntity,
+} = utilitySlice.actions;
 
 export default utilitySlice.reducer;

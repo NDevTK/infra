@@ -25,9 +25,16 @@ import { Drawer } from '@mui/material';
 import { Route, Routes, Link } from 'react-router-dom';
 
 import { Asset } from '../asset/Asset';
+import { Resource } from '../resource/Resource';
+
 import { AssetList } from '../asset/AssetList';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { fetchUserPictureAsync, logoutAsync, setRightSideDrawerClose } from './utilitySlice';
+import {
+  fetchUserPictureAsync,
+  logoutAsync,
+  setRightSideDrawerClose,
+} from './utilitySlice';
+import { ResourceList } from '../resource/ResourceList';
 
 const drawerWidth = 240;
 const rightSideDrawerWidth = 720;
@@ -121,7 +128,7 @@ const CustomBox = styled(Box, {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
-    marginRight: rightSideDrawerWidth, 
+    marginRight: rightSideDrawerWidth,
   }),
 }));
 
@@ -142,18 +149,24 @@ export default function SideDrawerWithAppBar() {
     (state) => state.utility.rightSideDrawerOpen
   );
 
+  const getActiveEntity: string = useAppSelector(
+    (state) => state.utility.activeEntity
+  );
+
   const routes = [
     {
       text: 'Enterprise Lab',
       icon: ScienceIcon,
       path: '/lab',
+      entityIdentifier: 'assets',
       component: AssetList,
     },
     {
-      text: 'Machines',
+      text: 'Resources',
       icon: AutoAwesomeMotionIcon,
-      path: '/machines',
-      component: Asset,
+      path: '/resources',
+      entityIdentifier: 'resources',
+      component: ResourceList,
     },
   ];
 
@@ -177,9 +190,9 @@ export default function SideDrawerWithAppBar() {
     dispatch(logoutAsync());
   };
 
-  const handleRightSideDrawerClose = () =>{
+  const handleRightSideDrawerClose = () => {
     dispatch(setRightSideDrawerClose());
-  }
+  };
 
   const renderMenu = (
     <Menu
@@ -200,6 +213,15 @@ export default function SideDrawerWithAppBar() {
       <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
   );
+
+  const renderRightSideDrawerContents = (activeEntity: string) => {
+    switch (activeEntity) {
+      case 'assets':
+        return <Asset />;
+      case 'resources':
+        return <Resource />;
+    }
+  };
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -236,7 +258,7 @@ export default function SideDrawerWithAppBar() {
           </Box>
         </Toolbar>
       </AppBar>
-      <LeftSideDrawer variant="permanent" open={drawerOpen} anchor = "left">
+      <LeftSideDrawer variant="permanent" open={drawerOpen} anchor="left">
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === 'rtl' ? (
@@ -300,23 +322,23 @@ export default function SideDrawerWithAppBar() {
         </List>
       </LeftSideDrawer>
       {renderMenu}
-      <CustomBox rightSideDrawerOpen = {rightSideDrawerOpen} component="main"  >
+      <CustomBox rightSideDrawerOpen={rightSideDrawerOpen} component="main">
         <DrawerHeader />
         <Drawer
-        sx={{ width: rightSideDrawerWidth }}
-        variant="persistent"
-        anchor="right"
-        open={rightSideDrawerOpen}
-      >
-        <DrawerHeader />
-        <DrawerHeader>
-          <IconButton onClick={handleRightSideDrawerClose}>
-          <ChevronRightIcon />
-          </IconButton>
-        </DrawerHeader>
-        <Divider />
-        <Asset />
-      </Drawer>
+          sx={{ width: rightSideDrawerWidth }}
+          variant="persistent"
+          anchor="right"
+          open={rightSideDrawerOpen}
+        >
+          <DrawerHeader />
+          <DrawerHeader>
+            <IconButton onClick={handleRightSideDrawerClose}>
+              <ChevronRightIcon />
+            </IconButton>
+          </DrawerHeader>
+          <Divider />
+          {renderRightSideDrawerContents(getActiveEntity)}
+        </Drawer>
         <Routes>
           {routes.map((route) => (
             <Route
