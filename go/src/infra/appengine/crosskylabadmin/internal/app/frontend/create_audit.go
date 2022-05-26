@@ -8,14 +8,21 @@ import (
 	"context"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/worker"
 )
 
-// CreateLegacyAuditTask kicks off a legacy audit job.
-func CreateLegacyAuditTask(ctx context.Context, botID, taskname, actions string) (string, error) {
+// CreateAuditTask kicks off an audit job.
+func CreateAuditTask(ctx context.Context, botID string, taskname string, actions string, randFloat float64) (string, error) {
+	logging.Infof(ctx, "Creating audit task for %q with random input %f", botID, randFloat)
+	return createLegacyAuditTask(ctx, botID, taskname, actions)
+}
+
+// createLegacyAuditTask kicks off a legacy audit job.
+func createLegacyAuditTask(ctx context.Context, botID string, taskname string, actions string) (string, error) {
 	at := worker.AuditTaskWithActions(ctx, taskname, actions)
 	sc, err := clients.NewSwarmingClient(ctx, config.Get(ctx).Swarming.Host)
 	if err != nil {

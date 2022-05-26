@@ -100,7 +100,8 @@ func runAuditQueueHandler(c *router.Context) (err error) {
 	botID := c.Request.FormValue("botID")
 	actions := c.Request.FormValue("actions")
 	taskname := c.Request.FormValue("taskname")
-	taskURL, err := frontend.CreateLegacyAuditTask(c.Context, botID, taskname, actions)
+	randFloat := rand.Float64()
+	taskURL, err := frontend.CreateAuditTask(c.Context, botID, taskname, actions, randFloat)
 	if err != nil {
 		return err
 	}
