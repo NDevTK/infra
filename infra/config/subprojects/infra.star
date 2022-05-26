@@ -74,10 +74,10 @@ def try_builder(
 # Go.
 
 # CI Linux.
-ci_builder(name = "infra-continuous-bionic-arm64", os = "Ubuntu-18.04", cpu = "arm64", console_category = "linux|18.04|ARM", properties = {
+ci_builder(name = "infra-continuous-bionic-64", os = "Ubuntu-18.04", tree_closing = True, properties = {
     "go_version_variant": "bleeding_edge",
 })
-ci_builder(name = "infra-continuous-bionic-64", os = "Ubuntu-18.04", tree_closing = True, properties = {
+ci_builder(name = "infra-continuous-focal-arm64", os = "Ubuntu-20.04", cpu = "arm64", console_category = "linux|20.04|ARM", properties = {
     "go_version_variant": "bleeding_edge",
 })
 
