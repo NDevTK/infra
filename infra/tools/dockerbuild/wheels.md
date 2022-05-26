@@ -197,24 +197,6 @@ wheel: <
 
 ## **MarkupSafe**
 
-### 1.0
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/markupsafe/${vpython_platform}"
-  version: "version:1.0"
->
-```
-
-
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
-
 ### 1.1.1
 
 ```protobuf
@@ -225,23 +207,12 @@ wheel: <
 ```
 
 
-* *linux-arm64*
 * *linux-arm64-py3*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
 * *mac-arm64-cp38*
-* *mac-x64*
 * *mac-x64-cp38*
-* *manylinux-x64*
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
-* *manylinux-x64-ucs2*
-* *windows-x64*
 * *windows-x64-py3*
-* *windows-x86*
 * *windows-x86-py3*
 
 ### 2.0.1
@@ -261,23 +232,6 @@ wheel: <
 * *manylinux-x64-py3.9*
 * *windows-x64-py3*
 * *windows-x86-py3*
-
-## **MySQL-python**
-
-### 1.2.5
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/mysql-python/${vpython_platform}"
-  version: "version:1.2.5"
->
-```
-
-
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips64*
-* *manylinux-x64*
 
 ## **PeakUtils**
 
@@ -309,28 +263,6 @@ wheel: <
 
 ## **PyYAML**
 
-### 3.12
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/pyyaml/${vpython_platform}"
-  version: "version:3.12"
->
-```
-
-
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
-* *mac-x64*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
-* *windows-x64*
-* *windows-x86*
-
 ### 5.4.1.chromium.1
 
 ```protobuf
@@ -341,23 +273,12 @@ wheel: <
 ```
 
 
-* *linux-arm64*
 * *linux-arm64-py3*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
 * *mac-arm64-cp38*
-* *mac-x64*
 * *mac-x64-cp38*
-* *manylinux-x64*
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
-* *manylinux-x64-ucs2*
-* *windows-x64*
 * *windows-x64-py3*
-* *windows-x86*
 * *windows-x86-py3*
 
 ## **PyYAML-py3**
@@ -387,20 +308,6 @@ wheel: <
 
 
 * *universal*
-
-## **SQLAlchemy**
-
-### 1.2.5
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/sqlalchemy/${vpython_platform}"
-  version: "version:1.2.5"
->
-```
-
-
-* *manylinux-x64*
 
 ## **SecretStorage-py3**
 
@@ -506,20 +413,6 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/absl-py-py3"
   version: "version:0.11.0"
->
-```
-
-
-* *universal*
-
-## **aenum-py2**
-
-### 2.1.2
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/aenum-py2"
-  version: "version:2.1.2"
 >
 ```
 
@@ -1010,20 +903,6 @@ wheel: <
 
 * *universal*
 
-## **backport_ipaddress-py2**
-
-### 0.1
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/backport_ipaddress-py2"
-  version: "version:0.1"
->
-```
-
-
-* *universal*
-
 ## **backports.functools_lru_cache**
 
 ### 1.5
@@ -1078,35 +957,12 @@ wheel: <
 ```
 
 
-* *linux-arm64*
 * *linux-arm64-py3*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-x64*
-* *manylinux-x64*
+* *mac-x64-cp38*
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
-* *manylinux-x64-ucs2*
-* *windows-x64*
 * *windows-x64-py3*
-* *windows-x86*
 * *windows-x86-py3*
-
-## **beautifulsoup4-py2**
-
-### 4.9.0
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/beautifulsoup4-py2"
-  version: "version:4.9.0"
->
-```
-
-
-* *universal*
 
 ## **beautifulsoup4-py3**
 
@@ -1142,20 +998,6 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/black-py3"
   version: "version:22.3.0"
->
-```
-
-
-* *universal*
-
-## **blessings-py2**
-
-### 1.7
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/blessings-py2"
-  version: "version:1.7"
 >
 ```
 
@@ -1340,48 +1182,6 @@ wheel: <
 
 ## **cffi**
 
-### 1.10.0
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/cffi/${vpython_platform}"
-  version: "version:1.10.0"
->
-```
-
-
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-x64*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
-* *windows-x64*
-* *windows-x86*
-
-### 1.12.3
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/cffi/${vpython_platform}"
-  version: "version:1.12.3"
->
-```
-
-
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-x64*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
-* *windows-x64*
-* *windows-x86*
-
 ### 1.14.3
 
 ```protobuf
@@ -1408,23 +1208,12 @@ wheel: <
 ```
 
 
-* *linux-arm64*
 * *linux-arm64-py3*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
 * *mac-arm64-cp38*
-* *mac-x64*
 * *mac-x64-cp38*
-* *manylinux-x64*
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
-* *manylinux-x64-ucs2*
-* *windows-x64*
 * *windows-x64-py3*
-* *windows-x86*
 * *windows-x86-py3*
 
 ### 1.15.0
@@ -1437,23 +1226,12 @@ wheel: <
 ```
 
 
-* *linux-arm64*
 * *linux-arm64-py3*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
 * *mac-arm64-cp38*
-* *mac-x64*
 * *mac-x64-cp38*
-* *manylinux-x64*
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
-* *manylinux-x64-ucs2*
-* *windows-x64*
 * *windows-x64-py3*
-* *windows-x86*
 * *windows-x86-py3*
 
 ## **chardet**
@@ -1582,72 +1360,6 @@ wheel: <
 
 ## **coverage**
 
-### 4.3.4
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/coverage/${vpython_platform}"
-  version: "version:4.3.4"
->
-```
-
-
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
-* *mac-x64*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
-* *windows-x64*
-* *windows-x86*
-
-### 4.5.1
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/coverage/${vpython_platform}"
-  version: "version:4.5.1"
->
-```
-
-
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
-* *mac-x64*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
-* *windows-x64*
-* *windows-x86*
-
-### 4.5.3
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/coverage/${vpython_platform}"
-  version: "version:4.5.3"
->
-```
-
-
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
-* *mac-x64*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
-* *windows-x64*
-* *windows-x86*
-
 ### 5.5.chromium.3
 
 ```protobuf
@@ -1658,54 +1370,32 @@ wheel: <
 ```
 
 
-* *linux-arm64*
 * *linux-arm64-py3*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
 * *mac-arm64-cp38*
-* *mac-x64*
 * *mac-x64-cp38*
-* *manylinux-x64*
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
-* *manylinux-x64-ucs2*
-* *windows-x64*
 * *windows-x64-py3*
-* *windows-x86*
 * *windows-x86-py3*
 
 ## **crcmod**
 
-### 1.7.chromium.3
+### 1.7.chromium.4
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/crcmod/${vpython_platform}"
-  version: "version:1.7.chromium.3"
+  version: "version:1.7.chromium.4"
 >
 ```
 
 
-* *linux-arm64*
 * *linux-arm64-py3*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
 * *mac-arm64-cp38*
-* *mac-x64*
 * *mac-x64-cp38*
-* *manylinux-x64*
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
-* *manylinux-x64-ucs2*
-* *windows-x64*
 * *windows-x64-py3*
-* *windows-x86*
 * *windows-x86-py3*
 
 ## **crontab**
@@ -1724,27 +1414,6 @@ wheel: <
 
 ## **cryptography**
 
-### 2.0.3
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/cryptography/${vpython_platform}"
-  version: "version:2.0.3"
->
-```
-
-
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-x64*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
-* *windows-x64*
-* *windows-x86*
-
 ### 2.6.1
 
 ```protobuf
@@ -1755,18 +1424,8 @@ wheel: <
 ```
 
 
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-x64*
-* *manylinux-x64*
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
-* *manylinux-x64-ucs2*
-* *windows-x64*
-* *windows-x86*
 
 ### 2.9.2.chromium.1
 
@@ -1778,23 +1437,12 @@ wheel: <
 ```
 
 
-* *linux-arm64*
 * *linux-arm64-py3*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
 * *mac-arm64-cp38*
-* *mac-x64*
 * *mac-x64-cp38*
-* *manylinux-x64*
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
-* *manylinux-x64-ucs2*
-* *windows-x64*
 * *windows-x64-py3*
-* *windows-x86*
 * *windows-x86-py3*
 
 ### 3.3.1.chromium.1
@@ -1807,41 +1455,15 @@ wheel: <
 ```
 
 
-* *linux-arm64*
 * *linux-arm64-py3*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
 * *mac-arm64-cp38*
-* *mac-x64*
 * *mac-x64-cp38*
-* *manylinux-x64*
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
-* *manylinux-x64-ucs2*
-* *windows-x64*
 * *windows-x64-py3*
-* *windows-x86*
 * *windows-x86-py3*
 
 ## **debugpy**
-
-### 1.0.0rc2
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/debugpy/${vpython_platform}"
-  version: "version:1.0.0rc2"
->
-```
-
-
-* *mac-x64*
-* *manylinux-x64*
-* *windows-x64*
-* *windows-x86*
 
 ### 1.5.1
 
@@ -1904,20 +1526,6 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/dill-py3"
   version: "version:0.3.4"
->
-```
-
-
-* *universal*
-
-## **distlib-py2**
-
-### 0.3.0
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/distlib-py2"
-  version: "version:0.3.0"
 >
 ```
 
@@ -2008,20 +1616,6 @@ wheel: <
 
 * *universal*
 
-## **enum34-py2**
-
-### 1.1.6
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/enum34-py2"
-  version: "version:1.1.6"
->
-```
-
-
-* *universal*
-
 ## **enum34-py3**
 
 ### 1.1.6
@@ -2058,20 +1652,6 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/expect_tests-py2"
   version: "version:0.3.27"
->
-```
-
-
-* *universal*
-
-## **fabric-py2**
-
-### 1.14.0
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/fabric-py2"
-  version: "version:1.14.0"
 >
 ```
 
@@ -2174,14 +1754,10 @@ wheel: <
 ```
 
 
-* *mac-x64*
 * *mac-x64-cp38*
-* *manylinux-x64*
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
-* *windows-x64*
 * *windows-x64-py3*
-* *windows-x86*
 * *windows-x86-py3*
 
 ### 2.2.0.chromium.4
@@ -2254,20 +1830,6 @@ wheel: <
 
 * *universal*
 
-## **futures-py2**
-
-### 3.1.1
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/futures-py2"
-  version: "version:3.1.1"
->
-```
-
-
-* *universal*
-
 ## **futures-py3**
 
 ### 3.1.1
@@ -2311,28 +1873,6 @@ wheel: <
 * *universal*
 
 ## **gevent**
-
-### 1.4.0.chromium.1
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/gevent/${vpython_platform}"
-  version: "version:1.4.0.chromium.1"
->
-```
-
-
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
-* *mac-x64*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
-* *windows-x64*
-* *windows-x86*
 
 ### 1.5.0.chromium.1
 
@@ -2494,20 +2034,6 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/google-api-python-client-py3"
   version: "version:2.2.0"
->
-```
-
-
-* *universal*
-
-## **google-apitools-py2**
-
-### 0.5.27
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/google-apitools-py2"
-  version: "version:0.5.27"
 >
 ```
 
@@ -3206,22 +2732,11 @@ wheel: <
 ```
 
 
-* *linux-arm64*
 * *linux-arm64-py3*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
 * *mac-arm64-cp38*
-* *mac-x64*
 * *mac-x64-cp38*
-* *manylinux-x64*
 * *manylinux-x64-py3*
-* *manylinux-x64-ucs2*
-* *windows-x64*
 * *windows-x64-py3*
-* *windows-x86*
 * *windows-x86-py3*
 
 ### 0.4.16
@@ -3234,23 +2749,12 @@ wheel: <
 ```
 
 
-* *linux-arm64*
 * *linux-arm64-py3*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
 * *mac-arm64-cp38*
-* *mac-x64*
 * *mac-x64-cp38*
-* *manylinux-x64*
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
-* *manylinux-x64-ucs2*
-* *windows-x64*
 * *windows-x64-py3*
-* *windows-x86*
 * *windows-x86-py3*
 
 ### 1.0.0.chromium.1
@@ -3263,23 +2767,12 @@ wheel: <
 ```
 
 
-* *linux-arm64*
 * *linux-arm64-py3*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
 * *mac-arm64-cp38*
-* *mac-x64*
 * *mac-x64-cp38*
-* *manylinux-x64*
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
-* *manylinux-x64-ucs2*
-* *windows-x64*
 * *windows-x64-py3*
-* *windows-x86*
 * *windows-x86-py3*
 
 ## **grpc-google-iam-admin-v1**
@@ -3325,27 +2818,6 @@ wheel: <
 * *universal*
 
 ## **grpcio**
-
-### 1.4.0
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/grpcio/${vpython_platform}"
-  version: "version:1.4.0"
->
-```
-
-
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-x64*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
-* *windows-x64*
-* *windows-x86*
 
 ### 1.32.0
 
@@ -3770,34 +3242,6 @@ wheel: <
 
 * *universal*
 
-## **ipaddress-py2**
-
-### 1.0.18
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/ipaddress-py2"
-  version: "version:1.0.18"
->
-```
-
-
-* *universal*
-
-## **iso8601-py2**
-
-### 0.1.12
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/iso8601-py2"
-  version: "version:0.1.12"
->
-```
-
-
-* *universal*
-
 ## **iso8601-py3**
 
 ### 0.1.12
@@ -3806,20 +3250,6 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/iso8601-py3"
   version: "version:0.1.12"
->
-```
-
-
-* *universal*
-
-## **isort-py2**
-
-### 4.3.4
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/isort-py2"
-  version: "version:4.3.4"
 >
 ```
 
@@ -4000,21 +3430,10 @@ wheel: <
 ```
 
 
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
 * *mac-arm64-cp38*
-* *mac-x64*
-* *manylinux-x64*
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
-* *manylinux-x64-ucs2*
-* *windows-x64*
 * *windows-x64-py3*
-* *windows-x86*
 * *windows-x86-py3*
 
 ### 1.4.3
@@ -4120,21 +3539,6 @@ wheel: <
 
 ## **lxml**
 
-### 4.2.5
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/lxml/${vpython_platform}"
-  version: "version:4.2.5"
->
-```
-
-
-* *mac-x64*
-* *manylinux-x64*
-* *windows-x64*
-* *windows-x86*
-
 ### 4.6.2
 
 ```protobuf
@@ -4230,20 +3634,6 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/monotonic-py2_py3"
   version: "version:1.5"
->
-```
-
-
-* *universal*
-
-## **more-itertools-py2**
-
-### 4.1.0
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/more-itertools-py2"
-  version: "version:4.1.0"
 >
 ```
 
@@ -4446,20 +3836,6 @@ wheel: <
 
 * *universal*
 
-## **mozprocess-py2**
-
-### 0.26
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/mozprocess-py2"
-  version: "version:0.26"
->
-```
-
-
-* *universal*
-
 ## **mozprocess-py3**
 
 ### 1.3.0
@@ -4516,27 +3892,6 @@ wheel: <
 
 * *universal*
 
-## **netifaces**
-
-### 0.10.9
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/netifaces/${vpython_platform}"
-  version: "version:0.10.9"
->
-```
-
-
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
-
 ## **networkx-py3**
 
 ### 2.5
@@ -4565,20 +3920,6 @@ wheel: <
 
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
-
-## **nose-py2**
-
-### 1.3.7
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/nose-py2"
-  version: "version:1.3.7"
->
-```
-
-
-* *universal*
 
 ## **nose-py3**
 
@@ -4644,66 +3985,13 @@ wheel: <
 ```
 
 
-* *linux-arm64*
 * *linux-arm64-py3*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
 * *mac-arm64-cp38*
-* *mac-x64*
 * *mac-x64-cp38*
-* *manylinux-x64*
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
-* *manylinux-x64-ucs2*
-* *windows-x64*
 * *windows-x64-py3*
-* *windows-x86*
 * *windows-x86-py3*
-
-### 1.11.3
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/numpy/${vpython_platform}"
-  version: "version:1.11.3"
->
-```
-
-
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
-* *mac-x64*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
-* *windows-x64*
-* *windows-x86*
-
-### 1.12.1
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/numpy/${vpython_platform}"
-  version: "version:1.12.1"
->
-```
-
-
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-x64*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
-* *windows-x64*
-* *windows-x86*
 
 ### 1.18.5
 
@@ -4922,32 +4210,6 @@ wheel: <
 
 ## **opencv_python**
 
-### 2.4.13.2
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/opencv_python/${vpython_platform}"
-  version: "version:2.4.13.2"
->
-```
-
-
-* *manylinux-x64*
-
-### 3.2.0.7
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/opencv_python/${vpython_platform}"
-  version: "version:3.2.0.7"
->
-```
-
-
-* *manylinux-x64*
-* *windows-x64*
-* *windows-x86*
-
 ### 4.5.3.56.chromium.4
 
 ```protobuf
@@ -5008,21 +4270,6 @@ wheel: <
 * *universal*
 
 ## **pandas**
-
-### 0.23.4
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/pandas/${vpython_platform}"
-  version: "version:0.23.4"
->
-```
-
-
-* *mac-x64*
-* *manylinux-x64*
-* *windows-x64*
-* *windows-x86*
 
 ### 1.1.3
 
@@ -5156,19 +4403,12 @@ wheel: <
 ```
 
 
-* *linux-arm64*
 * *linux-arm64-py3*
-* *mac-arm64*
 * *mac-arm64-cp38*
-* *mac-x64*
 * *mac-x64-cp38*
-* *manylinux-x64*
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
-* *manylinux-x64-ucs2*
-* *windows-x64*
 * *windows-x64-py3*
-* *windows-x86*
 * *windows-x86-py3*
 
 ## **pathspec-py3**
@@ -5239,71 +4479,15 @@ wheel: <
 ```
 
 
-* *linux-arm64*
 * *linux-arm64-py3*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
 * *mac-arm64-cp38*
-* *mac-x64*
 * *mac-x64-cp38*
-* *manylinux-x64*
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
-* *manylinux-x64-ucs2*
-* *windows-x64*
 * *windows-x64-py3*
-* *windows-x86*
 * *windows-x86-py3*
 
 ## **pillow**
-
-### 5.2.0
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/pillow/${vpython_platform}"
-  version: "version:5.2.0"
->
-```
-
-
-* *mac-x64*
-* *manylinux-x64*
-* *windows-x64*
-* *windows-x86*
-
-### 5.4.1
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/pillow/${vpython_platform}"
-  version: "version:5.4.1"
->
-```
-
-
-* *mac-x64*
-* *manylinux-x64*
-* *windows-x64*
-* *windows-x86*
-
-### 6.0.0
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/pillow/${vpython_platform}"
-  version: "version:6.0.0"
->
-```
-
-
-* *mac-x64*
-* *manylinux-x64*
-* *windows-x64*
-* *windows-x86*
 
 ### 8.1.2
 
@@ -5350,20 +4534,6 @@ wheel: <
 * *manylinux-x64-py3.9*
 * *windows-x64-py3*
 * *windows-x86-py3*
-
-## **pipenv-py2**
-
-### 2018.11.26
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/pipenv-py2"
-  version: "version:2018.11.26"
->
-```
-
-
-* *universal*
 
 ## **pipenv-py3**
 
@@ -5413,20 +4583,6 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/pluggy-py2_py3"
   version: "version:0.8.1"
->
-```
-
-
-* *universal*
-
-## **pluggy-py2**
-
-### 0.6.0
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/pluggy-py2"
-  version: "version:0.6.0"
 >
 ```
 
@@ -5715,67 +4871,6 @@ wheel: <
 
 ## **psutil**
 
-### 1.2.1
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/psutil/${vpython_platform}"
-  version: "version:1.2.1"
->
-```
-
-
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-x64*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
-
-### 5.2.2
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/psutil/${vpython_platform}"
-  version: "version:5.2.2"
->
-```
-
-
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-x64*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
-* *windows-x64*
-* *windows-x86*
-
-### 5.4.7
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/psutil/${vpython_platform}"
-  version: "version:5.4.7"
->
-```
-
-
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-x64*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
-* *windows-x64*
-* *windows-x86*
-
 ### 5.6.2
 
 ```protobuf
@@ -5786,19 +4881,9 @@ wheel: <
 ```
 
 
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
 * *mac-arm64-cp38*
-* *mac-x64*
 * *mac-x64-cp38*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
-* *windows-x64*
 * *windows-x64-py3*
-* *windows-x86*
 * *windows-x86-py3*
 
 ### 5.7.2
@@ -5829,23 +4914,12 @@ wheel: <
 ```
 
 
-* *linux-arm64*
 * *linux-arm64-py3*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
 * *mac-arm64-cp38*
-* *mac-x64*
 * *mac-x64-cp38*
-* *manylinux-x64*
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
-* *manylinux-x64-ucs2*
-* *windows-x64*
 * *windows-x64-py3*
-* *windows-x86*
 * *windows-x86-py3*
 
 ## **py**
@@ -5893,20 +4967,6 @@ wheel: <
 * *manylinux-x64-py3.9*
 * *windows-x64-py3*
 * *windows-x86-py3*
-
-## **pyasn**
-
-### 1.6.0b1
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/pyasn/${vpython_platform}"
-  version: "version:1.6.0b1"
->
-```
-
-
-* *manylinux-x64*
 
 ## **pyasn1**
 
@@ -6048,8 +5108,6 @@ wheel: <
 ```
 
 
-* *mac-x64*
-* *manylinux-x64*
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
 
@@ -6133,71 +5191,6 @@ wheel: <
 
 
 * *universal*
-
-## **pylint-py2**
-
-### 1.5.6-54804455f2f2c7725985ed423989f768
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/pylint-py2"
-  version: "version:1.5.6-54804455f2f2c7725985ed423989f768"
->
-```
-
-
-* *universal*
-* custom patches: multiprocessing
-
-### 1.6.5
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/pylint-py2"
-  version: "version:1.6.5"
->
-```
-
-
-* *universal*
-
-### 1.7.6
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/pylint-py2"
-  version: "version:1.7.6"
->
-```
-
-
-* *universal*
-
-### 1.8.4-45a720817e4de1df2f173c7e4029e176
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/pylint-py2"
-  version: "version:1.8.4-45a720817e4de1df2f173c7e4029e176"
->
-```
-
-
-* *universal*
-* custom patches: disable-log-spam
-
-### 1.9.5-45a720817e4de1df2f173c7e4029e176
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/pylint-py2"
-  version: "version:1.9.5-45a720817e4de1df2f173c7e4029e176"
->
-```
-
-
-* *universal*
-* custom patches: disable-log-spam
 
 ## **pylint-py3**
 
@@ -6429,8 +5422,6 @@ wheel: <
 ```
 
 
-* *mac-x64*
-* *manylinux-x64*
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
 
@@ -6452,30 +5443,6 @@ wheel: <
 * *windows-x86-py3*
 
 ## **pyobjc**
-
-### 2.5.1
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/pyobjc/${vpython_platform}"
-  version: "version:2.5.1"
->
-```
-
-
-* *mac-x64*
-
-### 4.1
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/pyobjc/${vpython_platform}"
-  version: "version:4.1"
->
-```
-
-
-* *mac-x64*
 
 ### 6.2.2
 
@@ -6595,21 +5562,6 @@ wheel: <
 
 
 * *universal*
-
-## **pypiwin32**
-
-### 219
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/pypiwin32/${vpython_platform}"
-  version: "version:219"
->
-```
-
-
-* *windows-x64*
-* *windows-x86*
 
 ## **pyrsistent-py3**
 
@@ -6941,45 +5893,6 @@ wheel: <
 
 ## **pywin32**
 
-### 224
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/pywin32/${vpython_platform}"
-  version: "version:224"
->
-```
-
-
-* *windows-x64*
-* *windows-x86*
-
-### 225
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/pywin32/${vpython_platform}"
-  version: "version:225"
->
-```
-
-
-* *windows-x64*
-* *windows-x86*
-
-### 227
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/pywin32/${vpython_platform}"
-  version: "version:227"
->
-```
-
-
-* *windows-x64*
-* *windows-x86*
-
 ### 300
 
 ```protobuf
@@ -7185,87 +6098,7 @@ wheel: <
 * *windows-x64-py3*
 * *windows-x86-py3*
 
-## **scan-build**
-
-### 2.0.8
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/scan-build/${vpython_platform}"
-  version: "version:2.0.8"
->
-```
-
-
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
-
-## **scandir**
-
-### 1.7
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/scandir/${vpython_platform}"
-  version: "version:1.7"
->
-```
-
-
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
-* *mac-x64*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
-* *windows-x64*
-* *windows-x86*
-
-### 1.9.0
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/scandir/${vpython_platform}"
-  version: "version:1.9.0"
->
-```
-
-
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
-* *mac-x64*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
-* *windows-x64*
-* *windows-x86*
-
 ## **scipy**
-
-### 0.19.0
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/scipy/${vpython_platform}"
-  version: "version:0.19.0"
->
-```
-
-
-* *mac-x64*
-* *manylinux-x64*
 
 ### 1.6.0
 
@@ -7414,30 +6247,6 @@ wheel: <
 
 * *universal*
 
-## **simplejson**
-
-### 3.13.2
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/simplejson/${vpython_platform}"
-  version: "version:3.13.2"
->
-```
-
-
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
-* *mac-x64*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
-* *windows-x64*
-* *windows-x86*
-
 ## **singledispatch**
 
 ### 3.4.0.3
@@ -7581,28 +6390,6 @@ wheel: <
 
 
 * *universal*
-
-## **subprocess32**
-
-### 3.5.0rc1
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/subprocess32/${vpython_platform}"
-  version: "version:3.5.0rc1"
->
-```
-
-
-* *linux-arm64*
-* *linux-armv6*
-* *linux-mips*
-* *linux-mips64*
-* *linux-mipsel*
-* *mac-arm64*
-* *mac-x64*
-* *manylinux-x64*
-* *manylinux-x64-ucs2*
 
 ## **tabulate-py3**
 
@@ -8057,20 +6844,6 @@ wheel: <
 * *windows-x64-py3*
 * *windows-x86-py3*
 
-## **typing-py2**
-
-### 3.6.4
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/typing-py2"
-  version: "version:3.6.4"
->
-```
-
-
-* *universal*
-
 ## **typing-extensions-py3**
 
 ### 3.7.4.3
@@ -8376,7 +7149,6 @@ wheel: <
 
 
 * *mac-x64-cp38*
-* *manylinux-x64*
 * *manylinux-x64-py3*
 * *manylinux-x64-py3.9*
 * *windows-x64-py3*
