@@ -14,8 +14,8 @@ import (
 	"infra/appengine/crosskylabadmin/internal/app/frontend/worker"
 )
 
-// CreateAuditTask kicks off an audit job.
-func CreateAuditTask(ctx context.Context, botID, taskname, actions string) (string, error) {
+// CreateLegacyAuditTask kicks off a legacy audit job.
+func CreateLegacyAuditTask(ctx context.Context, botID, taskname, actions string) (string, error) {
 	at := worker.AuditTaskWithActions(ctx, taskname, actions)
 	sc, err := clients.NewSwarmingClient(ctx, config.Get(ctx).Swarming.Host)
 	if err != nil {
