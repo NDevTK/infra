@@ -14,6 +14,7 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 
 	"infra/appengine/crosskylabadmin/internal/app/config"
+	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
 )
 
 // TestIsDisjoint tests that isDisjoint(a, b) returns true if and only if
@@ -101,7 +102,7 @@ func TestRouteRepairTaskImplDUT(t *testing.T) {
 		pools     []string
 		randFloat float64
 		out       string
-		reason    reason
+		reason    routing.Reason
 	}{
 		{
 			name: "good DUT is NOT blocked",
@@ -112,8 +113,8 @@ func TestRouteRepairTaskImplDUT(t *testing.T) {
 			},
 			randFloat: 0.5,
 			pools:     []string{"pool"},
-			out:       paris,
-			reason:    scoreBelowThreshold,
+			out:       routing.Paris,
+			reason:    routing.ScoreBelowThreshold,
 		},
 	}
 
@@ -123,7 +124,7 @@ func TestRouteRepairTaskImplDUT(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
 			expected := tt.out
-			expectedReason := reasonMessageMap[tt.reason]
+			expectedReason := routing.ReasonMessageMap[tt.reason]
 			if expectedReason == "" {
 				t.Errorf("expected reason should be valid reason")
 			}
@@ -136,7 +137,7 @@ func TestRouteRepairTaskImplDUT(t *testing.T) {
 				},
 				tt.randFloat,
 			)
-			actualReason := reasonMessageMap[r]
+			actualReason := routing.ReasonMessageMap[r]
 			if diff := cmp.Diff(expected, actual); diff != "" {
 				t.Errorf("unexpected diff (-want +got) in subtest %d %q: %s", i, tt.name, diff)
 			}
@@ -159,15 +160,15 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 		pools     []string
 		randFloat float64
 		out       string
-		reason    reason
+		reason    routing.Reason
 	}{
 		{
 			name:      "default config",
 			in:        nil,
 			randFloat: 0.5,
 			pools:     nil,
-			out:       legacy,
-			reason:    parisNotEnabled,
+			out:       routing.Legacy,
+			reason:    routing.ParisNotEnabled,
 		},
 		{
 			name: "do not use labstation",
@@ -177,8 +178,8 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 			},
 			randFloat: 0.5,
 			pools:     []string{"some pool"},
-			out:       legacy,
-			reason:    scoreTooHigh,
+			out:       routing.Legacy,
+			reason:    routing.ScoreTooHigh,
 		},
 		{
 			name: "do use labstation",
@@ -189,8 +190,8 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 			},
 			randFloat: 0.5,
 			pools:     []string{"some pool"},
-			out:       paris,
-			reason:    scoreBelowThreshold,
+			out:       routing.Paris,
+			reason:    routing.ScoreBelowThreshold,
 		},
 		{
 			name: "no pool means UFS error",
@@ -200,8 +201,8 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 			},
 			pools:     nil,
 			randFloat: 1,
-			out:       legacy,
-			reason:    noPools,
+			out:       routing.Legacy,
+			reason:    routing.NoPools,
 		},
 		{
 			name: "use labstation -- default threshold of zero is not okay",
@@ -211,8 +212,8 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 			},
 			pools:     []string{"some-pool"},
 			randFloat: 0,
-			out:       legacy,
-			reason:    thresholdZero,
+			out:       routing.Legacy,
+			reason:    routing.ThresholdZero,
 		},
 		{
 			name: "all labstations are opted in",
@@ -223,8 +224,8 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 			},
 			pools:     []string{"some-pool"},
 			randFloat: 0.5,
-			out:       paris,
-			reason:    scoreBelowThreshold,
+			out:       routing.Paris,
+			reason:    routing.ScoreBelowThreshold,
 		},
 		{
 			name: "use permille even when all labstations are opted in",
@@ -235,8 +236,8 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 			},
 			pools:     []string{"some-pool"},
 			randFloat: 0.5,
-			out:       legacy,
-			reason:    scoreTooHigh,
+			out:       routing.Legacy,
+			reason:    routing.ScoreTooHigh,
 		},
 		{
 			name: "use labstation sometimes - good",
@@ -247,8 +248,8 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 			},
 			pools:     []string{"some-pool"},
 			randFloat: 0.5,
-			out:       paris,
-			reason:    scoreBelowThreshold,
+			out:       routing.Paris,
+			reason:    routing.ScoreBelowThreshold,
 		},
 		{
 			name: "use labstation sometimes - near miss",
@@ -258,8 +259,8 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 			},
 			pools:     []string{"some-pool"},
 			randFloat: 0.5,
-			out:       legacy,
-			reason:    scoreTooHigh,
+			out:       routing.Legacy,
+			reason:    routing.ScoreTooHigh,
 		},
 		{
 			name: "good pool",
@@ -271,8 +272,8 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 			},
 			pools:     []string{"paris"},
 			randFloat: 0.5,
-			out:       paris,
-			reason:    scoreBelowThreshold,
+			out:       routing.Paris,
+			reason:    routing.ScoreBelowThreshold,
 		},
 		{
 			name: "bad pool",
@@ -284,8 +285,8 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 			},
 			pools:     []string{"NOT PARIS"},
 			randFloat: 0.5,
-			out:       legacy,
-			reason:    wrongPool,
+			out:       routing.Legacy,
+			reason:    routing.WrongPool,
 		},
 		{
 			name: "ignore UFS error",
@@ -296,8 +297,8 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 				UfsErrorPolicy: "lax",
 			},
 			randFloat: 0.5,
-			out:       paris,
-			reason:    scoreBelowThreshold,
+			out:       routing.Paris,
+			reason:    routing.ScoreBelowThreshold,
 		},
 		{
 			name: "don't ignore UFS error if we're above the threshold",
@@ -308,8 +309,8 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 				UfsErrorPolicy: "lax",
 			},
 			randFloat: 0.5,
-			out:       legacy,
-			reason:    scoreTooHigh,
+			out:       routing.Legacy,
+			reason:    routing.ScoreTooHigh,
 		},
 	}
 
@@ -319,7 +320,7 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
 			expected := tt.out
-			expectedReason := reasonMessageMap[tt.reason]
+			expectedReason := routing.ReasonMessageMap[tt.reason]
 			if expectedReason == "" {
 				t.Errorf("expected reason should be valid reason")
 			}
@@ -332,7 +333,7 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 				},
 				tt.randFloat,
 			)
-			actualReason := reasonMessageMap[r]
+			actualReason := routing.ReasonMessageMap[r]
 			if diff := cmp.Diff(expected, actual); diff != "" {
 				t.Errorf("unexpected diff (-want +got) in subtest %d %q: %s", i, tt.name, diff)
 			}
@@ -364,7 +365,7 @@ func TestRouteRepairTask(t *testing.T) {
 			botID:         "foo-labstation1",
 			expectedState: "ready",
 			randFloat:     0.5,
-			out:           legacy,
+			out:           routing.Legacy,
 			hasErr:        false,
 		},
 		{
@@ -380,7 +381,7 @@ func TestRouteRepairTask(t *testing.T) {
 			expectedState: "ready",
 			pools:         []string{"some-pool"},
 			randFloat:     1,
-			out:           paris,
+			out:           routing.Paris,
 			hasErr:        false,
 		},
 		{
@@ -396,7 +397,7 @@ func TestRouteRepairTask(t *testing.T) {
 			expectedState: "ready",
 			pools:         []string{"some-pool"},
 			randFloat:     1,
-			out:           parisLatest,
+			out:           routing.ParisLatest,
 			hasErr:        false,
 		},
 		{
@@ -410,7 +411,7 @@ func TestRouteRepairTask(t *testing.T) {
 			expectedState: "ready",
 			pools:         nil,
 			randFloat:     1,
-			out:           legacy,
+			out:           routing.Legacy,
 			hasErr:        false,
 		},
 		{
@@ -426,7 +427,7 @@ func TestRouteRepairTask(t *testing.T) {
 			expectedState: "needs_repair",
 			pools:         []string{"some-pool"},
 			randFloat:     1,
-			out:           paris,
+			out:           routing.Paris,
 			hasErr:        false,
 		},
 		{
@@ -440,7 +441,7 @@ func TestRouteRepairTask(t *testing.T) {
 			expectedState: "repair_failed",
 			pools:         []string{"some-pool"},
 			randFloat:     1,
-			out:           legacy,
+			out:           routing.Legacy,
 			hasErr:        false,
 		},
 		{
@@ -454,7 +455,7 @@ func TestRouteRepairTask(t *testing.T) {
 			expectedState: "needs_repair",
 			pools:         []string{"some-pool"},
 			randFloat:     1,
-			out:           legacy,
+			out:           routing.Legacy,
 			hasErr:        false,
 		},
 		{
@@ -586,17 +587,17 @@ func TestRouteRepairTaskProbability(t *testing.T) {
 			rand.Float64(),
 		)
 		switch reason {
-		case scoreBelowThreshold:
+		case routing.ScoreBelowThreshold:
 			// do nothing
-		case scoreTooHigh:
+		case routing.ScoreTooHigh:
 			// do nothing
 		default:
-			t.Errorf("unexpected reason: %q", reasonMessageMap[reason])
+			t.Errorf("unexpected reason: %q", routing.ReasonMessageMap[reason])
 		}
 		switch dest {
-		case paris:
+		case routing.Paris:
 			prodTally++
-		case parisLatest:
+		case routing.ParisLatest:
 			latestTally++
 		}
 	}

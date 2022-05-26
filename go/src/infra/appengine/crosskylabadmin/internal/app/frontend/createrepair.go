@@ -18,6 +18,7 @@ import (
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
+	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/worker"
 	"infra/appengine/crosskylabadmin/site"
 	"infra/cros/recovery/tasknames"
@@ -25,47 +26,6 @@ import (
 	"infra/libs/skylab/buildbucket/labpack"
 	"infra/libs/skylab/common/heuristics"
 )
-
-// paris represents a decision to use the paris stack for this request.
-const paris = "paris"
-
-// parisLatest represents a decision to use the paris stack on the latest channel for this request.
-const parisLatest = "latest"
-
-// legacy represents a decision to use the legacy stack for this request.
-const legacy = "legacy"
-
-// Reason is a rationale for why we made the decision that we made.
-type reason int
-
-const (
-	parisNotEnabled reason = iota
-	allDevicesAreOptedIn
-	noPools
-	wrongPool
-	scoreBelowThreshold
-	scoreTooHigh
-	thresholdZero
-	malformedPolicy
-	nilArgument
-	notALabstation
-	errorExtractingPermilleInfo
-)
-
-// ReasonMessageMap maps each reason to a readable description.
-var reasonMessageMap = map[reason]string{
-	parisNotEnabled:             "PARIS is not enabled",
-	allDevicesAreOptedIn:        "All devices are opted in",
-	noPools:                     "Device has no pools, possibly due to error calling UFS",
-	wrongPool:                   "Device has a pool not matching opted-in pools",
-	scoreBelowThreshold:         "Random score associated with is below threshold, authorizing new flow",
-	scoreTooHigh:                "Random score associated with task is too high",
-	thresholdZero:               "Route labstation repair task: a threshold of zero implies that optinAllLabstations should be set, but optinAllLabstations is not set",
-	malformedPolicy:             "Unrecognized policy",
-	nilArgument:                 "A required argument was unexpectedly nil",
-	notALabstation:              "Paris not enabled yet for non-labstations",
-	errorExtractingPermilleInfo: "Error extracting permille info",
-}
 
 // UFSErrorPolicy controls how UFS errors are handled.
 type ufsErrorPolicy string
@@ -162,10 +122,10 @@ type dutRoutingInfo struct {
 }
 
 // RouteLabstationRepairTask takes a repair task for a labstation and routes it.
-func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dutRoutingInfo, randFloat float64) (string, reason) {
+func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dutRoutingInfo, randFloat float64) (string, routing.Reason) {
 	if info == nil {
 		logging.Errorf(ctx, "info cannot be nil, falling back to legacy")
-		return legacy, nilArgument
+		return routing.Legacy, routing.NilArgument
 	}
 	// TODO(gregorynisbet): Log instead of silently falling back to the default error handling policy.
 	ufsErrorPolicy, err := normalizeErrorPolicy(r.GetUfsErrorPolicy())
@@ -174,7 +134,7 @@ func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dut
 	}
 	// Check that the feature is enabled at all.
 	if !r.GetEnable() {
-		return legacy, parisNotEnabled
+		return routing.Legacy, routing.ParisNotEnabled
 	}
 	// Check for malformed input data that would cause us to be unable to make a decision.
 	if len(info.pools) == 0 {
@@ -183,17 +143,17 @@ func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dut
 			// Do nothing.
 		case ufsErrorPolicyStrict:
 			// TODO(gregorynisbet): Make strict error handling propagate the failure back up.
-			return legacy, noPools
+			return routing.Legacy, routing.NoPools
 		case ufsErrorPolicyFallback:
-			return legacy, noPools
+			return routing.Legacy, routing.NoPools
 		default:
-			return legacy, malformedPolicy
+			return routing.Legacy, routing.MalformedPolicy
 		}
 	}
 
 	d, err := r.ComputePermilleData(ctx, info.hostname)
 	if err != nil {
-		return legacy, errorExtractingPermilleInfo
+		return routing.Legacy, routing.ErrorExtractingPermilleInfo
 	}
 
 	// threshold is the chance of using Paris at all, which is equal to prod + latest.
@@ -208,26 +168,26 @@ func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dut
 	if r.GetOptinAllDuts() {
 		switch {
 		case valueBelowLatestThreshold:
-			return parisLatest, scoreBelowThreshold
+			return routing.ParisLatest, routing.ScoreBelowThreshold
 		case valueBelowThreshold:
-			return paris, scoreBelowThreshold
+			return routing.Paris, routing.ScoreBelowThreshold
 		default:
-			return legacy, scoreTooHigh
+			return routing.Legacy, routing.ScoreTooHigh
 		}
 	}
 	if threshold == 0 {
-		return legacy, thresholdZero
+		return routing.Legacy, routing.ThresholdZero
 	}
 	if !r.GetOptinAllDuts() && len(r.GetOptinDutPool()) > 0 && isDisjoint(info.pools, r.GetOptinDutPool()) {
-		return legacy, wrongPool
+		return routing.Legacy, routing.WrongPool
 	}
 	switch {
 	case valueBelowLatestThreshold:
-		return parisLatest, scoreBelowThreshold
+		return routing.ParisLatest, routing.ScoreBelowThreshold
 	case valueBelowThreshold:
-		return paris, scoreBelowThreshold
+		return routing.Paris, routing.ScoreBelowThreshold
 	default:
-		return legacy, scoreTooHigh
+		return routing.Legacy, routing.ScoreTooHigh
 	}
 }
 

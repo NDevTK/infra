@@ -7,6 +7,7 @@ package frontend
 import (
 	"context"
 	"fmt"
+	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
 	"infra/libs/skylab/common/heuristics"
 
 	"go.chromium.org/luci/common/errors"
@@ -63,7 +64,7 @@ func routeRepairTask(ctx context.Context, botID string, expectedState string, po
 		},
 		randFloat,
 	)
-	reason, ok := reasonMessageMap[r]
+	reason, ok := routing.ReasonMessageMap[r]
 	if !ok {
 		logging.Infof(ctx, "Unrecognized reason %d", int64(r))
 	}
