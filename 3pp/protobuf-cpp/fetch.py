@@ -6,6 +6,7 @@
 import argparse
 import json
 import os
+import re
 import sys
 import urllib.request
 
@@ -46,7 +47,9 @@ def do_latest():
 
 
 def get_download_url(version):
-  name = 'protobuf-cpp-%s.tar.gz' % version
+  # Starting with v21, the language major version is decoupled from the
+  # protocol buffers version.
+  name_re = r'protobuf-cpp-([0-9]*\.)?%s.tar.gz' % version
 
   rsp = json.load(urllib.request.urlopen(TAGGED_RELEASE % version))
   actual_tag = rsp['tag_name'][1:]
@@ -54,7 +57,7 @@ def get_download_url(version):
     raise ValueError('expected %s, actual is %s' % (version, actual_tag))
 
   for a in rsp['assets']:
-    if a['name'] == name:
+    if re.match(name_re, a['name']):
       partial_manifest = {
           'url': [a['browser_download_url']],
           'ext': '.tar.gz',
