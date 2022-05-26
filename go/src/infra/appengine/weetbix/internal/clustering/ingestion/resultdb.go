@@ -96,7 +96,8 @@ func failureFromResult(tv *rdbpb.TestVariant, tr *rdbpb.TestResult, opts Options
 		Realm:                         opts.Realm,
 		TestId:                        tv.TestId,                              // Get from variant, as it is not populated on each result.
 		Variant:                       pbutil.VariantFromResultDB(tv.Variant), // Get from variant, as it is not populated on each result.
-		VariantHash:                   tv.VariantHash,                         // Get from variant, as it is not populated on each result.
+		Tags:                          pbutil.StringPairFromResultDB(tr.Tags),
+		VariantHash:                   tv.VariantHash, // Get from variant, as it is not populated on each result.
 		FailureReason:                 pbutil.FailureReasonFromResultDB(tr.FailureReason),
 		BugTrackingComponent:          extractBugTrackingComponent(tr.Tags),
 		StartTime:                     tr.StartTime,

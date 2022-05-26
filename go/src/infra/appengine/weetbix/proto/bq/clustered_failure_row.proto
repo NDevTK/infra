@@ -16,7 +16,7 @@ option go_package = "infra/appengine/weetbix/proto/bq;weetbixpb";
 
 // ClusteredFailureRow represents a row in a BigQuery table for a clustered
 // test failure.
-// Next ID: 32.
+// Next ID: 33.
 message ClusteredFailureRow {
   // The clustering algorithm which clustered the test failure.
   string cluster_algorithm = 1;
@@ -128,6 +128,12 @@ message ClusteredFailureRow {
   // e.g. a specific bucket, builder and a test suite.
   // For ResultDB, this is the known field.
   repeated weetbix.v1.StringPair variant = 13;
+
+  // Metadata key value pairs for this test result.
+  // It might describe this particular execution or the test case.
+  // A key can be repeated.
+  repeated weetbix.v1.StringPair tags = 32;
+
 
   // Hash of the variant.
   // hex(sha256(''.join(sorted('%s:%s\n' for k, v in variant.items())))).

@@ -22,7 +22,7 @@ message Chunk {
 }
 
 // Weetbix internal representation of an unexpected test failure.
-// Next ID: 25.
+// Next ID: 26.
 message Failure {
   // The identity of the test result, as defined by the source system.
   weetbix.v1.TestResultId test_result_id = 1;
@@ -47,6 +47,12 @@ message Failure {
   // key:value pairs to specify the way of running a particular test.
   // e.g. a specific bucket, builder and a test suite.
   weetbix.v1.Variant variant = 6;
+
+  // Metadata key value pairs for this test result.
+  // It might describe this particular execution or the test case.
+  // A key can be repeated.
+  repeated weetbix.v1.StringPair tags = 25;
+
 
   // Hash of the variant.
   // hex(sha256(''.join(sorted('%s:%s\n' for k, v in variant.items())))).

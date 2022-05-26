@@ -175,6 +175,20 @@ func TestIngest(t *testing.T) {
 				testIngestion(tvs, expectedCFs)
 				So(len(chunkStore.Contents), ShouldEqual, 0)
 			})
+			Convey(`Failure with no tags`, func() {
+				// Tests are allowed to have no tags.
+				tv.Results[0].Result.Tags = nil
+
+				regexpCF.Tags = nil
+				regexpCF.BugTrackingComponent = nil
+				testnameCF.Tags = nil
+				testnameCF.BugTrackingComponent = nil
+				ruleCF.Tags = nil
+				ruleCF.BugTrackingComponent = nil
+
+				testIngestion(tvs, expectedCFs)
+				So(len(chunkStore.Contents), ShouldEqual, 1)
+			})
 			Convey(`Failure without variant`, func() {
 				// Tests are allowed to have no variant.
 				tv.Variant = nil
@@ -494,6 +508,12 @@ func expectedClusteredFailure(uniqifier, testRunCount, testRunNum, resultsPerTes
 
 		Realm:  "chromium:ci",
 		TestId: fmt.Sprintf("ninja://test_name/%v", uniqifier),
+		Tags: []*pb.StringPair{
+			{
+				Key:   "monorail_component",
+				Value: "Component>MyComponent",
+			},
+		},
 		Variant: []*pb.StringPair{
 			{
 				Key:   "k1",

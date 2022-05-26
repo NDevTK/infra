@@ -140,6 +140,7 @@ func entryFromUpdate(project, chunkID string, cluster clustering.ClusterID, fail
 
 		Realm:                failure.Realm,
 		TestId:               failure.TestId,
+		Tags:                 failure.Tags,
 		Variant:              variantPairs(failure.Variant),
 		VariantHash:          failure.VariantHash,
 		FailureReason:        failure.FailureReason,
