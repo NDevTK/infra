@@ -124,44 +124,6 @@ func getRolloutConfig(ctx context.Context, taskType string, isLabstation bool, e
 	return nil, errors.Reason("get rollout config: expected state %q is not recognized", expectedState).Err()
 }
 
-// RouteRepairTask routes a repair task for a given bot.
-//
-// The possible return values are:
-// - "legacy"  (for legacy, which is the default)
-// -       ""  (indicates an error, should be treated as equivalent to "legacy" by callers)
-// -  "paris"  (for PARIS, which is new)
-//
-// RouteRepairTask takes as an argument randFloat (which is a float64 in the closed interval [0, 1]).
-// This argument is, by design, all the entropy that randFloat will need. Taking this as an argument allows
-// RouteRepairTask itself to be deterministic because the caller is responsible for generating the random
-// value.
-func RouteRepairTask(ctx context.Context, botID string, expectedState string, pools []string, randFloat float64) (string, error) {
-	if !(0.0 <= randFloat && randFloat <= 1.0) {
-		return "", fmt.Errorf("Route repair task: randfloat %f is not in [0, 1]", randFloat)
-	}
-	isLabstation := heuristics.LooksLikeLabstation(botID)
-	rolloutConfig, err := getRolloutConfig(ctx, "repair", isLabstation, expectedState)
-	if err != nil {
-		return "", errors.Annotate(err, "route repair task").Err()
-	}
-	out, r := routeRepairTaskImpl(
-		ctx,
-		rolloutConfig,
-		&dutRoutingInfo{
-			hostname:   heuristics.NormalizeBotNameToDeviceName(botID),
-			labstation: isLabstation,
-			pools:      pools,
-		},
-		randFloat,
-	)
-	reason, ok := reasonMessageMap[r]
-	if !ok {
-		logging.Infof(ctx, "Unrecognized reason %d", int64(r))
-	}
-	logging.Infof(ctx, "Sending device repair to %q because %q", out, reason)
-	return out, nil
-}
-
 // CreateRepairTask kicks off a repair job.
 //
 // This function will either schedule a legacy repair task or a PARIS repair task.
@@ -169,7 +131,7 @@ func RouteRepairTask(ctx context.Context, botID string, expectedState string, po
 func CreateRepairTask(ctx context.Context, botID string, expectedState string, pools []string, randFloat float64) (string, error) {
 	logging.Infof(ctx, "Creating repair task for %q expected state %q with random input %f", botID, expectedState, randFloat)
 	// If we encounter an error picking paris or legacy, do the safe thing and use legacy.
-	taskType, err := RouteRepairTask(ctx, botID, expectedState, pools, randFloat)
+	taskType, err := RouteTask(ctx, "repair", botID, expectedState, pools, randFloat)
 	if err != nil {
 		logging.Infof(ctx, "Create repair task: falling back to legacy repair by default: %s", err)
 	}

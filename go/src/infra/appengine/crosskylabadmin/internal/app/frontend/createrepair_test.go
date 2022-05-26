@@ -503,7 +503,7 @@ func TestRouteRepairTask(t *testing.T) {
 			cfg.Paris = tt.in
 			ctx = config.Use(ctx, cfg)
 			expected := tt.out
-			actual, err := RouteRepairTask(ctx, tt.botID, tt.expectedState, tt.pools, tt.randFloat)
+			actual, err := routeRepairTask(ctx, tt.botID, tt.expectedState, tt.pools, tt.randFloat)
 			if diff := cmp.Diff(expected, actual); diff != "" {
 				t.Errorf("unexpected diff (-want +got) in subtest %d: %s", i, diff)
 			}
