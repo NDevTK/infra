@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/retry/transient"
+	"go.chromium.org/luci/common/trace"
 	"go.chromium.org/luci/common/tsmon/field"
 	"go.chromium.org/luci/common/tsmon/metric"
 	rdbpb "go.chromium.org/luci/resultdb/proto/v1"
@@ -221,18 +222,24 @@ func (i *resultIngester) ingestTestResults(ctx context.Context, payload *taskspb
 		}
 	}
 
-	// Insert the test results for clustering.
-	err = ingestForClustering(ctx, i.clustering, payload, ingestedInv, rsp.TestVariants)
-	if err != nil {
-		return err
-	}
-
 	// Record the test results for test history.
 	err = recordTestResults(ctx, ingestedInv, rsp.TestVariants)
 	if err != nil {
 		// If any transaction failed, the task will be retried and the tables will be
 		// eventual-consistent.
 		return errors.Annotate(err, "record test results").Err()
+	}
+
+	failingTVs := filterToTestVariantsWithUnexpectedFailures(rsp.TestVariants)
+	nextPageToken := rsp.NextPageToken
+	// Allow garbage collector to free test variants except for those that are
+	// unexpected.
+	rsp = nil
+
+	// Insert the test results for clustering.
+	err = ingestForClustering(ctx, i.clustering, payload, ingestedInv, failingTVs)
+	if err != nil {
+		return err
 	}
 
 	// Ingest for test variant analysis.
@@ -245,12 +252,12 @@ func (i *resultIngester) ingestTestResults(ctx context.Context, payload *taskspb
 		shouldIngestForTestVariants(realmCfg, payload)
 
 	if ingestForTestVariantAnalysis {
-		if err := createOrUpdateAnalyzedTestVariants(ctx, inv.Realm, builder, rsp.TestVariants); err != nil {
+		if err := createOrUpdateAnalyzedTestVariants(ctx, inv.Realm, builder, failingTVs); err != nil {
 			err = errors.Annotate(err, "ingesting for test variant analysis").Err()
 			return transient.Tag.Apply(err)
 		}
 
-		if rsp.NextPageToken == "" {
+		if nextPageToken == "" {
 			// In the last task, after all test variants ingested.
 			isPreSubmit := payload.PresubmitRun != nil
 			contributedToCLSubmission := payload.PresubmitRun != nil && payload.PresubmitRun.PresubmitRunSucceeded
@@ -260,11 +267,23 @@ func (i *resultIngester) ingestTestResults(ctx context.Context, payload *taskspb
 		}
 	}
 
-	if rsp.NextPageToken == "" {
+	if nextPageToken == "" {
 		// In the last task.
 		taskCounter.Add(ctx, 1, payload.Build.Project, "success")
 	}
 	return nil
+}
+
+// filterToTestVariantsWithUnexpectedFailures filters the given list of
+// test variants to only those with unexpected failures.
+func filterToTestVariantsWithUnexpectedFailures(tvs []*rdbpb.TestVariant) []*rdbpb.TestVariant {
+	var results []*rdbpb.TestVariant
+	for _, tv := range tvs {
+		if hasUnexpectedFailures(tv) {
+			results = append(results, tv)
+		}
+	}
+	return results
 }
 
 // scheduleNextTask schedules a task to continue the ingestion,
@@ -323,11 +342,14 @@ func scheduleNextTask(ctx context.Context, task *taskspb.IngestTestResults, next
 	return err
 }
 
-func ingestForClustering(ctx context.Context, clustering *ingestion.Ingester, payload *taskspb.IngestTestResults, inv *testresults.IngestedInvocation, tvs []*rdbpb.TestVariant) error {
+func ingestForClustering(ctx context.Context, clustering *ingestion.Ingester, payload *taskspb.IngestTestResults, inv *testresults.IngestedInvocation, tvs []*rdbpb.TestVariant) (err error) {
 	if payload.PresubmitRun != nil && payload.PresubmitRun.Mode != "FULL_RUN" {
 		// Do not ingest dry run data.
 		return nil
 	}
+
+	ctx, s := trace.StartSpan(ctx, "infra/appengine/weetbix/internal/services/resultingester.ingestForClustering")
+	defer func() { s.End(err) }()
 
 	if _, err := config.Project(ctx, payload.Build.Project); err != nil {
 		if err == config.NotExistsErr {

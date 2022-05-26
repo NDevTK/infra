@@ -13,6 +13,7 @@ import (
 	"cloud.google.com/go/spanner"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/trace"
 	rdbpb "go.chromium.org/luci/resultdb/proto/v1"
 	"go.chromium.org/luci/server/span"
 	"google.golang.org/protobuf/proto"
@@ -60,10 +61,13 @@ func shouldIngestForTestVariants(realmcfg *configpb.RealmConfig, task *taskspb.I
 
 // createOrUpdateAnalyzedTestVariants looks for new analyzed test variants or
 // the ones to be updated, and save them in Spanner.
-func createOrUpdateAnalyzedTestVariants(ctx context.Context, realm, builder string, tvs []*rdbpb.TestVariant) error {
+func createOrUpdateAnalyzedTestVariants(ctx context.Context, realm, builder string, tvs []*rdbpb.TestVariant) (err error) {
 	if len(tvs) == 0 {
 		return nil
 	}
+
+	ctx, s := trace.StartSpan(ctx, "infra/appengine/weetbix/internal/services/resultingester.createOrUpdateAnalyzedTestVariants")
+	defer func() { s.End(err) }()
 
 	rc, err := config.Realm(ctx, realm)
 	switch {
@@ -75,8 +79,40 @@ func createOrUpdateAnalyzedTestVariants(ctx context.Context, realm, builder stri
 		return fmt.Errorf("no UpdateTestVariantTask config found for realm %s", realm)
 	}
 
+	// The number of test variants to update at once.
+	const pageSize = 1000
+
+	// Process test variants in pages, to avoid exceeding Spanner mutation limits.
+	for page := 0; ; page++ {
+		pageStart := page * pageSize
+		pageEnd := (page + 1) * pageSize
+		if pageStart >= len(tvs) {
+			break
+		}
+		if pageEnd > len(tvs) {
+			pageEnd = len(tvs)
+		}
+		page := tvs[pageStart:pageEnd]
+		err := createOrUpdateAnalyzedTestVariantsPage(ctx, realm, builder, rc, page)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// createOrUpdateAnalyzedTestVariantsPage looks for new analyzed test variants
+// or the ones to be updated, and save them in Spanner. At most 2,000 test
+// variants can be processed in one call due to Spanner mutation limits.
+func createOrUpdateAnalyzedTestVariantsPage(ctx context.Context, realm, builder string, rc *configpb.RealmConfig, tvs []*rdbpb.TestVariant) error {
+	for _, tv := range tvs {
+		if !hasUnexpectedFailures(tv) {
+			panic("logic error: createOrUpdateAnalyzedTestVariants should only be called with interesting test variants")
+		}
+	}
+
 	ks := testVariantKeySet(realm, tvs)
-	_, err = span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
+	_, err := span.ReadWriteTransaction(ctx, func(ctx context.Context) error {
 		found := make(map[testVariantKey]*atvpb.AnalyzedTestVariant)
 		err := analyzedtestvariants.ReadStatusAndTags(ctx, ks, func(atv *atvpb.AnalyzedTestVariant) error {
 			k := testVariantKey{atv.TestId, atv.VariantHash}
@@ -93,9 +129,6 @@ func createOrUpdateAnalyzedTestVariants(ctx context.Context, realm, builder stri
 		tvToEnQTime := make(map[testVariantKey]time.Time)
 		for _, tv := range tvs {
 			tvStr := fmt.Sprintf("%s-%s-%s", realm, tv.TestId, tv.VariantHash)
-			if shouldSkipTestVariant(tv) {
-				continue
-			}
 
 			k := testVariantKey{tv.TestId, tv.VariantHash}
 			atv, ok := found[k]
@@ -154,29 +187,27 @@ func createOrUpdateAnalyzedTestVariants(ctx context.Context, realm, builder stri
 }
 
 func testVariantKeySet(realm string, tvs []*rdbpb.TestVariant) spanner.KeySet {
-	ks := spanner.KeySets()
+	keys := make([]spanner.Key, 0, len(tvs))
 	for _, tv := range tvs {
-		if tv.Status == rdbpb.TestVariantStatus_UNEXPECTEDLY_SKIPPED {
-			continue
-		}
-		ks = spanner.KeySets(spanner.Key{realm, tv.TestId, tv.VariantHash}, ks)
+		keys = append(keys, spanner.Key{realm, tv.TestId, tv.VariantHash})
 	}
-	return ks
+	return spanner.KeySetFromKeys(keys...)
 }
 
-func shouldSkipTestVariant(tv *rdbpb.TestVariant) bool {
-	if tv.Status == rdbpb.TestVariantStatus_UNEXPECTEDLY_SKIPPED {
-		return true
+func hasUnexpectedFailures(tv *rdbpb.TestVariant) bool {
+	if tv.Status == rdbpb.TestVariantStatus_UNEXPECTEDLY_SKIPPED ||
+		tv.Status == rdbpb.TestVariantStatus_EXPECTED {
+		return false
 	}
 
 	for _, trb := range tv.Results {
 		tr := trb.Result
 		if !tr.Expected && tr.Status != rdbpb.TestStatus_PASS && tr.Status != rdbpb.TestStatus_SKIP {
 			// If any result is an unexpected failure, Weetbix should save this test variant.
-			return false
+			return true
 		}
 	}
-	return true
+	return false
 }
 
 func insertRow(ctx context.Context, realm, builder string, tv *rdbpb.TestVariant) (mu *spanner.Mutation, enqueueTime time.Time, err error) {

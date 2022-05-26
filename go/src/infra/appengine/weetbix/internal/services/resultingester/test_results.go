@@ -14,6 +14,7 @@ import (
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/sync/parallel"
+	"go.chromium.org/luci/common/trace"
 	rdbpbutil "go.chromium.org/luci/resultdb/pbutil"
 	rdbpb "go.chromium.org/luci/resultdb/proto/v1"
 	"go.chromium.org/luci/server/span"
@@ -191,7 +192,10 @@ func batchTestResults(inv *testresults.IngestedInvocation, tvs []*rdbpb.TestVari
 }
 
 // recordTestResults records test results from an test-verdict-ingestion task.
-func recordTestResults(ctx context.Context, inv *testresults.IngestedInvocation, tvs []*rdbpb.TestVariant) error {
+func recordTestResults(ctx context.Context, inv *testresults.IngestedInvocation, tvs []*rdbpb.TestVariant) (err error) {
+	ctx, s := trace.StartSpan(ctx, "infra/appengine/weetbix/internal/services/resultingester.recordTestResults")
+	defer func() { s.End(err) }()
+
 	const workerCount = 8
 
 	return parallel.WorkPool(workerCount, func(c chan<- func() error) {
