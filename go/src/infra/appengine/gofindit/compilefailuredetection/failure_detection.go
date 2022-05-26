@@ -27,7 +27,7 @@ func AnalyzeBuild(c context.Context, bbid int64) (bool, error) {
 	logging.Infof(c, "AnalyzeBuild %d", bbid)
 	build, err := buildbucket.GetBuild(c, bbid, &buildbucketpb.BuildMask{
 		Fields: &fieldmaskpb.FieldMask{
-			Paths: []string{"id", "builder", "input", "status", "steps"},
+			Paths: []string{"id", "builder", "input", "status", "steps", "number", "start_time", "end_time", "create_time"},
 		},
 	})
 	if err != nil {

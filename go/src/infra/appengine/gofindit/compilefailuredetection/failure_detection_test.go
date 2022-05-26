@@ -195,4 +195,64 @@ func TestFailureDetection(t *testing.T) {
 			So(cf.MergedFailureKey.IntID(), ShouldEqual, 8001)
 		})
 	})
+
+	Convey("createCompileFailureModel", t, func() {
+		c := memory.Use(context.Background())
+
+		build := &buildbucketpb.Build{
+			Id: 8003,
+			Builder: &buildbucketpb.BuilderID{
+				Project: "chromium",
+				Bucket:  "ci",
+				Builder: "ios",
+			},
+			Number:     124,
+			Status:     buildbucketpb.Status_FAILURE,
+			StartTime:  &timestamppb.Timestamp{Seconds: 100},
+			EndTime:    &timestamppb.Timestamp{Seconds: 101},
+			CreateTime: &timestamppb.Timestamp{Seconds: 100},
+			Input: &buildbucketpb.Build_Input{
+				GitilesCommit: &buildbucketpb.GitilesCommit{
+					Host:    "chromium.googlesource.com",
+					Project: "chromium/src",
+					Id:      "refs/heads/gfiTest",
+					Ref:     "1",
+				},
+			},
+		}
+
+		// Create a CompileFailure record in datastore
+		compileFailure, err := createCompileFailureModel(c, build)
+		So(compileFailure, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		Convey("Can create LuciFailedBuild with same info", func() {
+			// Get the record from datastore
+			failedBuild := &model.LuciFailedBuild{Id: 8003}
+			err := datastore.Get(c, failedBuild)
+			So(err, ShouldBeNil)
+			// Check that the build information matches
+			So(failedBuild, ShouldResemble, &model.LuciFailedBuild{
+				Id: 8003,
+				LuciBuild: model.LuciBuild{
+					BuildId:     8003,
+					Project:     "chromium",
+					Bucket:      "ci",
+					Builder:     "ios",
+					BuildNumber: 124,
+					GitilesCommit: buildbucketpb.GitilesCommit{
+						Host:    "chromium.googlesource.com",
+						Project: "chromium/src",
+						Id:      "refs/heads/gfiTest",
+						Ref:     "1",
+					},
+					CreateTime: (&timestamppb.Timestamp{Seconds: 100}).AsTime(),
+					EndTime:    (&timestamppb.Timestamp{Seconds: 101}).AsTime(),
+					StartTime:  (&timestamppb.Timestamp{Seconds: 100}).AsTime(),
+					Status:     buildbucketpb.Status_FAILURE,
+				},
+				FailureType: model.BuildFailureType_Compile,
+			})
+		})
+	})
 }
