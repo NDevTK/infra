@@ -604,7 +604,6 @@
       "-l=Code-Review+1",
       "-r",
       "meep@example.com",
-      "--r-owners",
       "--use-commit-queue",
       "--bypass-hooks",
       "-f",

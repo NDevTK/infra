@@ -602,7 +602,6 @@
       "--send-mail",
       "-r",
       "meep@example.com",
-      "--r-owners",
       "--use-commit-queue",
       "--bypass-hooks",
       "-f",

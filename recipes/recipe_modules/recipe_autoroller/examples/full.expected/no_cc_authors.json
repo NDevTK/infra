@@ -607,7 +607,6 @@
       "--set-bot-commit",
       "-r",
       "meep@example.com",
-      "--r-owners",
       "--use-commit-queue",
       "--bypass-hooks",
       "-f",
