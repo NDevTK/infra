@@ -1,0 +1,82 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package poros;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "poros/api/proto/resources.proto";
+
+option go_package = "infra/appengine/poros/api/proto;proto";
+
+// Performs operations on Resources.
+service Resource {
+  // Creates the given Resource.
+  rpc Create(CreateResourceRequest) returns (ResourceModel);
+
+  // Retrieves a Resource for a given unique value.
+  rpc Get(GetResourceRequest) returns (ResourceModel);
+
+  // Update a single resource in EnterpriseResource.
+  rpc Update(UpdateResourceRequest) returns (ResourceModel);
+
+  // Deletes the given Resource.
+  rpc Delete(DeleteResourceRequest) returns (.google.protobuf.Empty);
+
+  // Lists all Resources.
+  rpc List(ListResourcesRequest) returns (ListResourcesResponse);
+}
+// Request to create a single resource in ResourceService
+message CreateResourceRequest {
+  // The new resource to add to the database.
+  string name = 1;
+  string description = 2;
+  string type = 3;
+  string image = 4;
+}
+
+// Gets a Resource resource.
+message GetResourceRequest {
+  // The unique identifier of the resource to retrieve.
+  string resource_id = 1;
+}
+
+// Request to update a single resource.
+message UpdateResourceRequest {
+  // The existing resource to update in the database.
+  ResourceModel resource = 1;
+
+  // The list of fields to update.
+  .google.protobuf.FieldMask update_mask = 2;
+}
+
+// Request to delete a single resource.
+message DeleteResourceRequest {
+  // The unique identifier of the resource to delete from the database.
+  string resource_id = 1;
+}
+
+// Request to list all resources.
+message ListResourcesRequest {
+  // Fields to include on each result
+  .google.protobuf.FieldMask read_mask = 1;
+
+  // Number of results per page
+  int32 page_size = 2;
+
+  // Page token from a previous page's ListResourcesResponse
+  string page_token = 3;
+}
+
+// Response to ListResourcesRequest.
+message ListResourcesResponse {
+  // The result set.
+  repeated ResourceModel resources = 1;
+
+  // A page token that can be passed into future requests to get the next page.
+  // Empty if there is no next page.
+  string next_page_token = 2;
+}
