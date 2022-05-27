@@ -56,6 +56,7 @@ PROTOC_PLATFORMS = {
     'linux-amd64': 'linux-x86_64',
     'linux-arm64': 'linux-aarch_64',
     'mac-amd64': 'osx-x86_64',
+    'mac-arm64': 'osx-aarch_64',
     'windows-386': 'win32',
     'windows-amd64': 'win64',
 }
@@ -69,6 +70,19 @@ def do_latest():
 def get_download_url(version, platform):
   if platform not in PROTOC_PLATFORMS:
     raise ValueError('unsupported platform %s' % platform)
+
+  # The protobuf team made releases labelled "osx-aarch_64" for awhile that
+  # were actually amd64 releases. That was resolved with v21. Around the same
+  # time they changed their release number format, moving from "v3.20" to "v21".
+  # Explicitly disable any "v##.*" releases from being packaged for arm64 where
+  # "##" is less than 21.
+  if platform == 'mac-arm64':
+    major_version = int(version.split('.')[0])
+    if major_version < 21:
+      raise ValueError(
+          'unsupported platform %s for version %s' % (platform, version)
+      )
+
   name = 'protoc-%s-%s.zip' % (version, PROTOC_PLATFORMS[platform])
 
   rsp = json.load(urllib.request.urlopen(TAGGED_RELEASE % version))
