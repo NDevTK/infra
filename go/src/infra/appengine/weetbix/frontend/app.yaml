@@ -7,7 +7,7 @@ service: default
 automatic_scaling:
   target_throughput_utilization: 0.90
   target_cpu_utilization: 0.90
-  max_concurrent_requests: 50
+  max_concurrent_requests: 20
 
 # Note: this is interpreted by gae.py, it maps the app ID being deployed to
 # values of ${...} vars.
