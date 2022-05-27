@@ -96,8 +96,12 @@ func CreateRepairTask(ctx context.Context, botID string, expectedState string, p
 		logging.Infof(ctx, "Create repair task: falling back to legacy repair by default: %s", err)
 	}
 	switch taskType {
-	case "paris":
-		url, err := createBuildbucketRepairTask(ctx, botID, expectedState)
+	case "paris", "latest":
+		url, err := createBuildbucketRepairTask(ctx, createBuildBucketRepairTaskRequest{
+			taskType:      labpack.TaskMap[taskType],
+			botID:         botID,
+			expectedState: expectedState,
+		})
 		if err != nil {
 			logging.Errorf(ctx, "Attempted and failed to create buildbucket task: %s", err)
 			logging.Errorf(ctx, "Falling back to legacy flow")
@@ -191,11 +195,22 @@ func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dut
 	}
 }
 
+// createBuildBucketRepairTaskRequest consists of the parameters needed to schedule a buildbucket repair task.
+type createBuildBucketRepairTaskRequest struct {
+	taskType labpack.CIPDVersion
+	// botID is the ID of the bot, for example, "crossk-chromeos...".
+	botID         string
+	expectedState string
+}
+
 // CreateBuildbucketRepairTask creates a new repair task for a labstation.
 // Err should be non-nil if and only if a task was created.
 // We rely on this signal to decide whether to fall back to the legacy flow.
-func createBuildbucketRepairTask(ctx context.Context, botID string, expectedState string) (string, error) {
-	logging.Infof(ctx, "Using new repair flow for bot %q with expected state %q", botID, expectedState)
+func createBuildbucketRepairTask(ctx context.Context, params createBuildBucketRepairTaskRequest) (string, error) {
+	if err := params.taskType.Validate(); err != nil {
+		return "", errors.Annotate(err, "create buildbucket repair task: invalid task type %v", params.taskType).Err()
+	}
+	logging.Infof(ctx, "Using new repair flow for bot %q with expected state %q", params.botID, params.expectedState)
 	transport, err := auth.GetRPCTransport(ctx, auth.AsSelf)
 	if err != nil {
 		return "", errors.Annotate(err, "failed to get RPC transport").Err()
@@ -209,7 +224,7 @@ func createBuildbucketRepairTask(ctx context.Context, botID string, expectedStat
 		return "", errors.Annotate(err, "create buildbucket repair task").Err()
 	}
 	p := &labpack.Params{
-		UnitName:       heuristics.NormalizeBotNameToDeviceName(botID),
+		UnitName:       heuristics.NormalizeBotNameToDeviceName(params.botID),
 		TaskName:       string(tasknames.Recovery),
 		EnableRecovery: true,
 		// TODO(gregorynisbet): This is our own name, move it to the config.
@@ -222,7 +237,7 @@ func createBuildbucketRepairTask(ctx context.Context, botID string, expectedStat
 		// TODO(gregorynisbet): Pass config file to labpack task.
 		Configuration: "",
 	}
-	taskID, err := labpack.ScheduleTask(ctx, bc, labpack.CIPDProd, p)
+	taskID, err := labpack.ScheduleTask(ctx, bc, params.taskType, p)
 	if err != nil {
 		logging.Errorf(ctx, "error scheduling task: %q", err)
 		return "", errors.Annotate(err, "create buildbucket repair task").Err()
