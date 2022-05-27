@@ -656,6 +656,20 @@ wheel: <
 
 * *universal*
 
+## **argh**
+
+### 0.26.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/argh-py2_py3"
+  version: "version:0.26.2"
+>
+```
+
+
+* *universal*
+
 ## **argparse**
 
 ### 1.4.0
