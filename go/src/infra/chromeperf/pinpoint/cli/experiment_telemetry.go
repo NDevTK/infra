@@ -228,6 +228,7 @@ var (
 	botCfgs = map[string]string{
 		"Android Nexus5X WebView Perf": "performance_webview_test_suite",
 		"android-go_webview-perf":      "performance_webview_test_suite",
+		"android-go-perf":              "performance_test_suite_android_clank_chrome",
 		"android-pixel2_webview-perf":  "performance_webview_test_suite",
 		"android-pixel4_webview-perf":  "performance_webview_test_suite",
 		"Android Nexus5 Perf":          "performance_test_suite_android_chrome",
