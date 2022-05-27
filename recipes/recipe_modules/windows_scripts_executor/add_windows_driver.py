@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 INSTALL_DRIVER_CMD = 'Add-WindowsDriver'
+INSTALL_DRIVER_SCRIPT = 'Add-WindowsDriver.ps1'
 INSTALL_DRIVER_PATH = '-Driver {}'
 INSTALL_DRIVER_ROOT = '-Path {}'
 INSTALL_DRIVER_LOG_PATH = '-LogPath "{}"'
@@ -10,15 +11,16 @@ INSTALL_DRIVER_LOG_LEVEL = '-LogLevel {}'
 
 
 def install_driver(powershell,
+                   scripts,
                    awd,
-                   package,
+                   driver,
                    mnt_dir,
                    logs,
                    log_level='WarningsInfo'):
   """Install a driver to the mounted image"""
   # Args for the install command
   args = [
-      INSTALL_DRIVER_PATH.format(package),
+      INSTALL_DRIVER_PATH.format(driver),
       INSTALL_DRIVER_ROOT.format(mnt_dir),
       INSTALL_DRIVER_LOG_PATH.format(
           logs.join(INSTALL_DRIVER_CMD, 'ins_driver.log')),
@@ -30,6 +32,6 @@ def install_driver(powershell,
 
   return powershell(
       'Install driver {}'.format(awd.name),
-      INSTALL_DRIVER_CMD,
+      scripts.join(INSTALL_DRIVER_SCRIPT),
       logs=[logs.join(INSTALL_DRIVER_CMD)],
       args=args)

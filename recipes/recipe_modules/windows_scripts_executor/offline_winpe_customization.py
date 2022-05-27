@@ -272,6 +272,6 @@ class OfflineWinPECustomization(customization.Customization):
           awd: actions.AddWindowsDriver proto object
           src: Path to the driver on bot disk
     """
-    add_windows_driver.install_driver(self._powershell, awd, src,
+    add_windows_driver.install_driver(self._powershell, self._scripts, awd, src,
                                       self._workdir.join('mount'),
                                       self._scratchpad)
