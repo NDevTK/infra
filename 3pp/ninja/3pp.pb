@@ -14,7 +14,7 @@ create {
         val: "1.8.2"
       }
     }
-    patch_version: "chromium.2"
+    patch_version: "chromium.3"
   }
 }
 
