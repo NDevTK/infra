@@ -7,10 +7,6 @@
 . /install-util.sh
 
 # Install missing packages for system Python modules.
-#
-# For CentOS, "dockcross" currently uses CentOS 5.11, which is end-of-life. We
-# have to update its repositories to point to the CentOS vault in order for
-# "yum" to work.
 if [ -x /usr/bin/apt-get ]; then
   apt-get install -y zlib1g-dev libbz2-dev libltdl-dev texi2html texinfo python
   apt-get clean --yes
