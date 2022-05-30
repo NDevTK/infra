@@ -15,7 +15,6 @@
   * [provenance](#recipe_modules-provenance) (Python3 ✅)
   * [qemu](#recipe_modules-qemu) (Python3 ✅)
   * [recipe_autoroller](#recipe_modules-recipe_autoroller) (Python3 ✅)
-  * [snoopy](#recipe_modules-snoopy) (Python3 ✅)
   * [support_3pp](#recipe_modules-support_3pp) (Python3 ✅) &mdash; Allows uniform cross-compiliation, version tracking and archival for third-party software packages (libs+tools) for distribution via CIPD.
   * [windows_adk](#recipe_modules-windows_adk) (Python3 ✅)
   * [windows_scripts_executor](#recipe_modules-windows_scripts_executor) (Python3 ✅)
@@ -65,7 +64,6 @@
   * [recipe_roll_tryjob](#recipes-recipe_roll_tryjob) (Python3 ✅)
   * [recipe_simulation](#recipes-recipe_simulation) (Python3 ✅) &mdash; A continuous builder which runs recipe tests.
   * [recipes_py_continuous](#recipes-recipes_py_continuous) (Python3 ✅)
-  * [snoopy:examples/usage](#recipes-snoopy_examples_usage) (Python3 ✅)
   * [support_3pp:tests/full](#recipes-support_3pp_tests_full) (Python3 ✅)
   * [tricium_infra](#recipes-tricium_infra) (Python3 ✅)
   * [update_submodules_mirror](#recipes-update_submodules_mirror) (Python3 ✅)
@@ -608,68 +606,6 @@ Args:
     project_url (string): Git repository URL of the project.
     db_gcs_bucket (string): The GCS bucket used as a database for previous
       roll attempts.
-### *recipe_modules* / [snoopy](/recipes/recipe_modules/snoopy)
-
-[DEPS](/recipes/recipe_modules/snoopy/__init__.py#17): [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/step][recipe_engine/recipe_modules/step]
-
-PYTHON_VERSION_COMPATIBILITY: PY2+3
-
-#### **class [SnoopyApi](/recipes/recipe_modules/snoopy/api.py#23)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
-
-API for interacting with Snoopy using the snoopy_broker tool.
-
-&emsp; **@property**<br>&mdash; **def [pid](/recipes/recipe_modules/snoopy/api.py#51)(self):**
-
-Returns the current process id if the recipe is running.
-
-&mdash; **def [report\_cipd](/recipes/recipe_modules/snoopy/api.py#87)(self, digest, pkg, iid, snoopy_url=None):**
-
-Reports cipd digest to local snoopy server.
-
-This is used to report produced artifacts hash and metadata to snoopy, it is
-used to generate provenance.
-
-Args:
-  * digest (str) - The hash of the artifact.
-  * pkg (str) - Name of the cipd package built.
-  * iid (str) - Instance ID of the package.
-  * snoopy_url (Optional[str]) - URL for the local snoopy server, snoopy
-    broker tool will use default if not specified.
-
-&mdash; **def [report\_gcs](/recipes/recipe_modules/snoopy/api.py#116)(self, digest, guri, snoopy_url=None):**
-
-Reports cipd digest to local snoopy server.
-
-This is used to report produced artifacts hash and metadata to snoopy, it is
-used to generate provenance.
-
-Args:
-  * digest (str) - The hash of the artifact.
-  * guri (str) - Name of the GCS artifact built. This is the unique GCS URI,
-    e.g. gs://bucket/path/to/binary.
-  * snoopy_url (Optional[str]) - URL for the local snoopy server, snoopy
-    broker tool will use default if not specified.
-
-&mdash; **def [report\_stage](/recipes/recipe_modules/snoopy/api.py#56)(self, stage, snoopy_url=None):**
-
-Reports task stage to local snoopy server.
-
-Args:
-  * stage (str) - The stage at which task is executing currently, e.g.
-    "start". Concept of task stage is native to Snoopy, this is a way of
-    self-reporting phase of a task's lifecycle. This information is used in
-    conjunction with process-inspected data to make security policy
-    decisions.
-    Valid stages: (start, fetch, compile, upload, upload-complete, test).
-  * snoopy_url (Optional[str]) - URL for the local snoopy server, snoopy
-    broker tool will use default if not specified.
-
-&emsp; **@property**<br>&mdash; **def [snoopy\_path](/recipes/recipe_modules/snoopy/api.py#35)(self):**
-
-Returns the path to snoopy_broker binary.
-
-When the property is accessed the first time, the latest, released
-snoopy_broker will be installed using cipd.
 ### *recipe_modules* / [support\_3pp](/recipes/recipe_modules/support_3pp)
 
 [DEPS](/recipes/recipe_modules/support_3pp/__init__.py#7): [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/osx\_sdk][depot_tools/recipe_modules/osx_sdk], [depot\_tools/tryserver][depot_tools/recipe_modules/tryserver], [depot\_tools/windows\_sdk][depot_tools/recipe_modules/windows_sdk], [recipe\_engine/archive][recipe_engine/recipe_modules/archive], [recipe\_engine/bcid\_reporter][recipe_engine/recipe_modules/bcid_reporter], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/runtime][recipe_engine/recipe_modules/runtime], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/url][recipe_engine/recipe_modules/url]
@@ -1676,13 +1612,6 @@ A continuous builder which runs recipe tests.
 PYTHON_VERSION_COMPATIBILITY: PY2+3
 
 &mdash; **def [RunSteps](/recipes/recipes/recipes_py_continuous.py#19)(api):**
-### *recipes* / [snoopy:examples/usage](/recipes/recipe_modules/snoopy/examples/usage.py)
-
-[DEPS](/recipes/recipe_modules/snoopy/examples/usage.py#17): [snoopy](#recipe_modules-snoopy), [recipe\_engine/path][recipe_engine/recipe_modules/path]
-
-PYTHON_VERSION_COMPATIBILITY: PY2+3
-
-&mdash; **def [RunSteps](/recipes/recipe_modules/snoopy/examples/usage.py#22)(api):**
 ### *recipes* / [support\_3pp:tests/full](/recipes/recipe_modules/support_3pp/tests/full.py)
 
 [DEPS](/recipes/recipe_modules/support_3pp/tests/full.py#13): [depot\_tools/tryserver][depot_tools/recipe_modules/tryserver], [support\_3pp](#recipe_modules-support_3pp), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
