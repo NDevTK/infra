@@ -53,6 +53,7 @@ func TestIngest(t *testing.T) {
 			PartitionTime:     time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
 			Realm:             "chromium:ci",
 			InvocationID:      "build-123456790123456",
+			TaskIndex:         1,
 			PresubmitRunID:    &pb.PresubmitRunId{System: "luci-cv", Id: "cq-run-123"},
 			PresubmitRunOwner: "automation",
 			PresubmitRunCls: []*pb.Changelist{

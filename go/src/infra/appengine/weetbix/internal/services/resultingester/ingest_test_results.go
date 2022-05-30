@@ -382,6 +382,7 @@ func ingestForClustering(ctx context.Context, clustering *ingestion.Ingester, pa
 		InvocationID:  inv.IngestedInvocationID,
 		PartitionTime: inv.PartitionTime,
 		Realm:         inv.Project + ":" + inv.SubRealm,
+		TaskIndex:     payload.TaskIndex,
 		// In case of Success, Cancellation, or Infra Failure automatically
 		// exonerate failures of tests which were invocation-blocking,
 		// even if the recipe did not upload an exoneration to ResultDB.
