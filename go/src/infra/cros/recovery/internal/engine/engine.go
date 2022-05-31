@@ -53,7 +53,9 @@ func (r *recoveryEngine) close() {
 	if r.actionResultsCache != nil {
 		r.actionResultsCache = nil
 	}
-	// TODO(otabek@): Close the caches.
+	if r.recoveryUsageCache != nil {
+		r.recoveryUsageCache = nil
+	}
 }
 
 // runPlan executes recovery plan with critical-actions.
