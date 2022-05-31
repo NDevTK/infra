@@ -225,6 +225,23 @@ class ComputerCreateUrl(unittest.TestCase):
     self.assertIn('/AccountChooser', url)
     self.assertIn('current.url.to.return.to', url)
 
+  def testCreateLoginUrl(self):
+    _, mr = testing_helpers.GetRequestObjects(
+        path='/p/proj/issues/detail?id=123&q=term', project=self.project)
+    url = servlet_helpers.SafeCreateLoginURL(mr, 'current.url.to.return.to')
+    # Ensure that users can pick their account to use with Monorail.
+    self.assertIn('/AccountChooser', url)
+    self.assertIn('current.url.to.return.to', url)
+
+  def testCreateEscapedLoginUrlFromMR(self):
+    _, mr = testing_helpers.GetRequestObjects(
+        path='/p/proj/issues/detail?id=123&q=term', project=self.project)
+    mr.current_page_url_encoded = (
+        'https%3A%2F%2Fbugs.chromium.org'
+        '%2Fp%2Fchromium%2Fissues%2Fentry')
+    url = servlet_helpers.SafeCreateLoginURL(mr)
+    self.assertIn('https%3A%2F%2Fbugs.chromium.org%2Fp', url)
+
   def testCreateLogoutUrl(self):
     _, mr = testing_helpers.GetRequestObjects(
         path='/p/proj/issues/detail?id=123&q=term', project=self.project)
