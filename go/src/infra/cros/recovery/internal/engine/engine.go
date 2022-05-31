@@ -9,6 +9,7 @@ package engine
 import (
 	"context"
 	"fmt"
+	"io"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
@@ -72,7 +73,7 @@ func (r *recoveryEngine) runPlan(ctx context.Context) (rErr error) {
 			var step *build.Step
 			step, ctx = build.StartStep(ctx, fmt.Sprintf("Run plan %q", r.planName))
 			if r.plan.GetAllowFail() {
-				step.SetSummaryMarkdown("Allowed to fail!")
+				step.Log("Allowed to fail!")
 			}
 			defer func() { step.End(rErr) }()
 		}
@@ -208,14 +209,10 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 	if err != nil {
 		log.Infof(ctx, "Action %q: skipping, one of conditions %q failed.", actionName, conditionName)
 		if step != nil {
-			// Use modify as Step already can have other messages inside.
-			step.Modify(func(v *build.StepView) {
-				log.Debugf(ctx, "Original v.SummaryMarkdown=%q", v.SummaryMarkdown)
-				if v.SummaryMarkdown != "" {
-					v.SummaryMarkdown += "<br/>"
-				}
-				v.SummaryMarkdown += fmt.Sprintf(" * Skipped as condition %q failed!", conditionName)
-			})
+			stepLog := step.Log("Skipped")
+			if _, err := io.WriteString(stepLog, fmt.Sprintf("The condition %q failed!", conditionName)); err != nil {
+				log.Debugf(ctx, "Fail to write reason why action skipped: %v.", err)
+			}
 		}
 		log.Debugf(ctx, "Action %q: conditions fail with %s", actionName, err)
 		// Return nil error so we can continue execution of next actions...
