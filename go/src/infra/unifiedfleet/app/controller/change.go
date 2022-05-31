@@ -204,6 +204,7 @@ func (hc *HistoryClient) LogMachineChanges(oldData *ufspb.Machine, newData *ufsp
 	hc.changes = append(hc.changes, logCommon(resourceName, "machine.serial_number", oldData.GetSerialNumber(), newData.GetSerialNumber())...)
 	hc.changes = append(hc.changes, logCommon(resourceName, "machine.location", oldData.GetLocation(), newData.GetLocation())...)
 	hc.changes = append(hc.changes, logCommon(resourceName, "machine.realm", oldData.GetRealm(), newData.GetRealm())...)
+	hc.changes = append(hc.changes, logCommon(resourceName, "machine.resource_state", oldData.GetResourceState(), newData.GetResourceState())...)
 	if newData.GetChromeBrowserMachine() != nil {
 		hc.changes = append(hc.changes, logChromeBrowserMachine(resourceName, oldData.GetChromeBrowserMachine(), newData.GetChromeBrowserMachine())...)
 	} else {
@@ -392,6 +393,7 @@ func (hc *HistoryClient) LogRackChanges(oldData *ufspb.Rack, newData *ufspb.Rack
 	hc.changes = append(hc.changes, logCommon(newResName, "rack.capacity_ru", oldData.GetCapacityRu(), newData.GetCapacityRu())...)
 	hc.changes = append(hc.changes, logCommon(newResName, "rack.realm", oldData.GetRealm(), newData.GetRealm())...)
 	hc.changes = append(hc.changes, logCommon(newResName, "rack.description", oldData.GetDescription(), newData.GetDescription())...)
+	hc.changes = append(hc.changes, logCommon(newResName, "rack.resource_state", oldData.GetResourceState(), newData.GetResourceState())...)
 	if newData.GetChromeBrowserRack() != nil {
 		hc.changes = append(hc.changes, logChromeBrowserRack(newResName, oldData.GetChromeBrowserRack(), newData.GetChromeBrowserRack())...)
 	}
