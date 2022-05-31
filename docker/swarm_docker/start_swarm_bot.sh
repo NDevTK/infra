@@ -11,6 +11,13 @@ cd $SWARM_DIR
 rm -rf swarming_bot*.zip
 /bin/su -c "/usr/bin/curl -sSLOJ $SWARM_URL" chrome-bot
 
+# Initialize tuntap for qemu running inside of the docker instance on arm64.
+if [[ $(arch) = "aarch64" ]]; then
+  ip tuntap add qemu mode tap user chrome-bot
+  ip link set dev qemu up
+  ip addr flush qemu
+fi
+
 echo "Starting $SWARM_ZIP"
 # Run the swarming bot in the background, and immediately wait for it. This
 # allows the signal trapping to actually work.
