@@ -8,15 +8,14 @@ package main
 import (
 	"net/http"
 
-	"infra/appengine/sheriff-o-matic/som/analyzer"
-	"infra/appengine/sheriff-o-matic/som/handler"
-
-	"google.golang.org/appengine"
-
 	"go.chromium.org/luci/appengine/gaeauth/server"
 	"go.chromium.org/luci/appengine/gaemiddleware/standard"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/router"
+	"google.golang.org/appengine"
+
+	"infra/appengine/sheriff-o-matic/som/analyzer"
+	"infra/appengine/sheriff-o-matic/som/handler"
 )
 
 // base is the root of the middleware chain.
@@ -45,7 +44,6 @@ func init() {
 
 	r.GET("/_cron/analyze/:tree", basemw, handler.GetAnalyzeHandler)
 	r.GET("/_cron/bq_query/:project", basemw, handler.GetBQQueryHandler)
-	r.GET("/_ah/queue/addannotationtrees", basemw, handler.AnnotationTreeWorker)
 
 	http.DefaultServeMux.Handle("/", r)
 }
