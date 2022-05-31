@@ -68,24 +68,6 @@ const (
 	CIPDLatest CIPDVersion = "latest"
 )
 
-// TaskMap maps names to cipd packages.
-var TaskMap = map[string]CIPDVersion{
-	"prod":   CIPDProd,
-	"latest": CIPDLatest,
-}
-
-// Validate takes a cipd version and checks whether it's valid.
-func (v CIPDVersion) Validate() error {
-	switch v {
-	case CIPDProd:
-		return nil
-	case CIPDLatest:
-		return nil
-	default:
-		return errors.Reason("validate cipd version: unrecognized version %q", string(v)).Err()
-	}
-}
-
 // ScheduleTask schedules a buildbucket task.
 func ScheduleTask(ctx context.Context, client buildbucket.Client, v CIPDVersion, params *Params) (int64, error) {
 	props, err := structbuilder.NewStruct(params.AsMap())
