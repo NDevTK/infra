@@ -20,7 +20,7 @@ class Platform(
             'name',
 
             # If the platform is "manylinux', the "manylinux" Docker image build
-            # name (e.g., "cp27-cp27mu").
+            # name (e.g., "cp38-cp38").
             'manylinux_name',
 
             # The value to pass to e.g. `./configure --host ...`
@@ -69,43 +69,12 @@ class Platform(
     return 'infra-dockerbuild-%s' % (self.name,)
 
   @property
-  def pyversion(self):
-    return 'py2' if self.wheel_abi.startswith('cp2') else 'py3'
-
-  @property
   def universal(self):
     return 'any' in self.wheel_plat
 
 
 ALL = {
     p.name: p for p in (
-        Platform(
-            name='linux-armv6',
-            manylinux_name=None,
-            cross_triple='arm-linux-gnueabihf',
-            wheel_abi='cp27mu',
-            wheel_plat=('linux_armv6l', 'linux_armv7l', 'linux_armv8l',
-                        'linux_armv9l'),
-            dockcross_base='linux-armv6',
-            dockcross_tag='20210625-795dd4d',
-            openssl_target='linux-armv4',
-            packaged=False,
-            cipd_platform='linux-armv6l',
-            env={},
-        ),
-        Platform(
-            name='linux-arm64',
-            manylinux_name=None,
-            cross_triple='aarch64-unknown-linux-gnueabi',
-            wheel_abi='cp27mu',
-            wheel_plat=('linux_arm64', 'linux_aarch64'),
-            dockcross_base='linux-arm64',
-            dockcross_tag='20210625-795dd4d',
-            openssl_target='linux-aarch64',
-            packaged=False,
-            cipd_platform='linux-arm64',
-            env={},
-        ),
         Platform(
             name='linux-arm64-py3',
             manylinux_name=None,
@@ -118,61 +87,6 @@ ALL = {
             packaged=False,
             cipd_platform='linux-arm64',
             env={},
-        ),
-        Platform(
-            name='linux-mipsel',
-            manylinux_name=None,
-            cross_triple='mipsel-linux-gnu',
-            wheel_abi='cp27mu',
-            wheel_plat=('linux_mipsel',),
-            dockcross_base='linux-mipsel',
-            dockcross_tag='latest',
-            openssl_target='linux-mips32',
-            packaged=False,
-            cipd_platform='linux-mips32',
-            env={},
-        ),
-
-        # NOTE: "mips" and "mips64" both use 32-bit MIPS, which is consistent
-        # with our devices.
-        Platform(
-            name='linux-mips',
-            manylinux_name=None,
-            cross_triple='mips-unknown-linux-gnu',
-            wheel_abi='cp27mu',
-            wheel_plat=('linux_mips',),
-            dockcross_base='linux-mips',
-            dockcross_tag='20210629-12a662e',
-            openssl_target='linux-mips32',
-            packaged=False,
-            cipd_platform='linux-mips',
-            env={},
-        ),
-        Platform(
-            name='linux-mips64',
-            manylinux_name=None,
-            cross_triple='mips-unknown-linux-gnu',
-            wheel_abi='cp27mu',
-            wheel_plat=('linux_mips64',),
-            dockcross_base='linux-mips',
-            dockcross_tag='20210629-12a662e',
-            openssl_target='linux-mips32',
-            packaged=False,
-            cipd_platform='linux-mips64',
-            env={},
-        ),
-        Platform(
-            name='manylinux-x64',
-            manylinux_name='cp27-cp27mu',
-            cross_triple='x86_64-linux-gnu',
-            wheel_abi='cp27mu',
-            wheel_plat=('manylinux2014_x86_64',),
-            dockcross_base='manylinux2014-x64',
-            dockcross_tag='latest',
-            openssl_target='linux-x86_64',
-            packaged=True,
-            cipd_platform='linux-amd64',
-            env=_MANYLINUX_ENV,
         ),
         Platform(
             name='manylinux-x64-py3',
@@ -200,37 +114,6 @@ ALL = {
             cipd_platform='linux-amd64',
             env=_MANYLINUX_ENV,
         ),
-
-        # Atypical but possible Python configuration using "2-byte UCS", with
-        # ABI "cp27m".
-        Platform(
-            name='manylinux-x64-ucs2',
-            manylinux_name='cp27-cp27m',
-            cross_triple='x86_64-linux-gnu',
-            wheel_abi='cp27m',
-            wheel_plat=('manylinux2014_x86_64',),
-            dockcross_base='manylinux2014-x64',
-            dockcross_tag='latest',
-            openssl_target='linux-x86_64',
-            packaged=True,
-            cipd_platform='linux-amd64',
-            env=_MANYLINUX_ENV,
-        ),
-        Platform(
-            name='mac-x64',
-            manylinux_name=None,
-            cross_triple='',
-            wheel_abi='cp27m',
-            wheel_plat=('macosx_10_11_x86_64',),
-            dockcross_base=None,
-            dockcross_tag=None,
-            openssl_target='darwin64-x86_64-cc',
-            packaged=True,
-            cipd_platform='mac-amd64',
-            # This ensures compatibibility regardless of the OS version this
-            # runs on.
-            env={'MACOSX_DEPLOYMENT_TARGET': '10.11'},
-        ),
         Platform(
             # TODO: Rename to -py3 to conform to other Python 3 platform names.
             name='mac-x64-cp38',
@@ -248,26 +131,6 @@ ALL = {
                 # https://github.com/giampaolo/psutil/issues/1832
                 'ARCHFLAGS': '-arch x86_64',
                 'MACOSX_DEPLOYMENT_TARGET': '10.11'
-            },
-        ),
-        Platform(
-            name='mac-arm64',
-            manylinux_name=None,
-            cross_triple='',
-            wheel_abi='cp27m',
-            wheel_plat=('macosx_11_0_arm64',),
-            dockcross_base=None,
-            dockcross_tag=None,
-            openssl_target='darwin64-arm64-cc',
-            # We've done our own backport of ARM64 support to python 2.7, so
-            # there won't be any pre-packaged wheels available.
-            packaged=False,
-            cipd_platform='mac-arm64',
-            env={
-                # Necessary for some wheels to build. See for instance:
-                # https://github.com/giampaolo/psutil/issues/1832
-                'ARCHFLAGS': '-arch arm64',
-                'MACOSX_DEPLOYMENT_TARGET': '11.0'
             },
         ),
         Platform(
@@ -291,19 +154,6 @@ ALL = {
             },
         ),
         Platform(
-            name='windows-x86',
-            manylinux_name=None,
-            cross_triple='',
-            wheel_abi='cp27m',
-            wheel_plat=('win32',),
-            dockcross_base=None,
-            dockcross_tag=None,
-            openssl_target='Cygwin-x86',
-            packaged=True,
-            cipd_platform='windows-386',
-            env={},
-        ),
-        Platform(
             name='windows-x86-py3',
             manylinux_name=None,
             cross_triple='',
@@ -314,19 +164,6 @@ ALL = {
             openssl_target='Cygwin-x86',
             packaged=True,
             cipd_platform='windows-386',
-            env={},
-        ),
-        Platform(
-            name='windows-x64',
-            manylinux_name=None,
-            cross_triple='',
-            wheel_abi='cp27m',
-            wheel_plat=('win_amd64',),
-            dockcross_base=None,
-            dockcross_tag=None,
-            openssl_target='Cygwin-x86_64',
-            packaged=True,
-            cipd_platform='windows-amd64',
             env={},
         ),
         Platform(
@@ -396,12 +233,9 @@ def NativePlatforms():
   if sys.platform == 'darwin':
     arch = {'x86_64': 'x64', 'arm64': 'arm64'}[NativeMachine()]
     plat_name = 'mac-%s' % arch
-    return plats + [ALL[plat_name], ALL[plat_name + '-cp38']]
+    return plats + [ALL[plat_name + '-cp38']]
   elif sys.platform == 'win32':
-    return plats + [
-        ALL['windows-x86'], ALL['windows-x86-py3'], ALL['windows-x64'],
-        ALL['windows-x64-py3']
-    ]
+    return plats + [ALL['windows-x86-py3'], ALL['windows-x64-py3']]
   elif sys.platform.startswith('linux'):
     # Linux platforms are built with docker, so Linux doesn't support any
     # non-universal platforms natively.

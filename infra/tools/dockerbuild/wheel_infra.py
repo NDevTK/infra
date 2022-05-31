@@ -23,7 +23,7 @@ class InfraPackage(Builder):
             name,
             None,
             universal=True,
-            pyversions=['py2'],
+            pyversions=None,
             default=True,
             version_suffix=None,
         ))
@@ -37,7 +37,7 @@ class InfraPackage(Builder):
           system,
           None,
           '.',
-          ['python', 'setup.py', '--version'],
+          ['python3', 'setup.py', '--version'],
           cwd=pkg_path,
       )
     return self._resolved_version

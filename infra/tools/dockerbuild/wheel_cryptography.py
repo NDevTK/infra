@@ -107,20 +107,13 @@ class Cryptography(Builder):
       # to be present in $PATH, i.e. in Swarming or via depot_tools), so we can
       # pre-install this wheel and its dependencies.
       if wheel.plat.dockcross_base is None:
-        interpreter_flag = '-vpython-interpreter %s' % py_binary
-        if wheel.plat.pyversion == 'py2':
-          py_binary = 'vpython'
-          vpython_spec = '.vpython'
-        else:
-          py_binary = 'vpython3'
-          vpython_spec = '.vpython3'
-        py_binary += ' %s' % interpreter_flag
+        py_binary = 'vpython3 -vpython-interpreter %s' % py_binary
 
         # Work around the fact that we may be running an emulated vpython
         # with a native python interpreter.
         vpython_platform = '%s_${py_python}_${py_abi}' % HostCipdPlatform()
 
-        with open(os.path.join(crypt_dir, vpython_spec), 'w') as spec:
+        with open(os.path.join(crypt_dir, '.vpython3'), 'w') as spec:
           for name, version in [('cffi/%s' % vpython_platform, '1.14.5'),
                                 ('pycparser-py2_py3', '2.17')]:
             spec.write('wheel: <\n')
@@ -179,7 +172,7 @@ class Cryptography(Builder):
 
 class CryptographyPyPI(Cryptography):
 
-  def __init__(self, name, ver, openssl, pyversions=('py2',), **kwargs):
+  def __init__(self, name, ver, openssl, pyversions=('py3',), **kwargs):
     """Adapts Cryptography wheel builder to use available PyPI wheels.
 
     Builds wheels for platforms not present in PyPI (e.g ARM) from source.
@@ -193,8 +186,5 @@ class CryptographyPyPI(Cryptography):
             version=openssl,
             url='https://www.openssl.org/source/openssl-%s.tar.gz' % openssl,
         ),
-        arch_map={
-            'mac-x64': ['macosx_10_6_intel'],
-        },
         pyversions=pyversions,
         **kwargs)
